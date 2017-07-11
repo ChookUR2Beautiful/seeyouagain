@@ -1,0 +1,46 @@
+body{
+	padding:0;
+	margin: 0;
+	width: 100%;
+	height: 100%;
+	font-family: Microsoft Yahei;
+}
+
+.apply-title{
+	padding-top:36px;
+	font-size: 32px;
+	color:#365dc9;
+	text-align: center;
+	padding-bottom: 5px;
+}
+
+.apply-text{
+	margin:0;
+	text-align: center;color:#365dc9;
+	font-size: 16px;
+	margin-top:5px;
+}
+
+.apply-img{
+	width: 60%;
+	height: auto;
+	margin:20px auto 15px;
+}
+
+.apply-img img{
+	width: 100%;
+	height: auto;
+	vertical-align: middle;
+}
+
+.apply-btn{
+	display: block;
+	width: 90%;
+	border-radius: 7px;
+	padding:10px 0;
+	text-align: center;
+	text-decoration: none;
+	margin:0 auto 15px;
+	background: #365dc9;
+	color:#fff;
+}

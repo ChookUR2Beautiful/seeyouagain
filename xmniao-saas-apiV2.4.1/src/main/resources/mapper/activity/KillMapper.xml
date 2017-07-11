@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.activity.KillDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.saas.entity.activity.Kill" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="begin_date" property="beginDate" jdbcType="TIMESTAMP" />
+    <result column="end_date" property="endDate" jdbcType="TIMESTAMP" />
+    <result column="begin_time" property="beginTime" jdbcType="TIME" />
+    <result column="end_time" property="endTime" jdbcType="TIME" />
+    <result column="join_number" property="joinNumber" jdbcType="INTEGER" />
+    <result column="give_number" property="giveNumber" jdbcType="INTEGER" />
+    <result column="sec_kill_amount" property="secKillAmount" jdbcType="DECIMAL" />
+    <result column="sec_kill_number" property="secKillNumber" jdbcType="INTEGER" />
+    <result column="limit_number" property="limitNumber" jdbcType="INTEGER" />
+    <result column="views" property="views" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="newuser_num" property="newuserNum" jdbcType="INTEGER" />
+    <result column="consume_amount" property="consumeAmount" jdbcType="DECIMAL" />
+    <result column="give_awardCount" property="giveAwardCount" jdbcType="INTEGER" />
+    <result column="end_activity_time" property="endActivityTime" jdbcType="TIMESTAMP" />
+    <result column="use_number" property="useNumber" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, sellerid, name, begin_date, end_date, begin_time, end_time, join_number, give_number, 
+     sec_kill_amount, sec_kill_number, limit_number, views, status, create_time, 
+    newuser_num, consume_amount,end_activity_time
+  </sql>
+  <select id="list" resultMap="BaseResultMap">
+  	select
+  	<include refid="Base_Column_List" />
+  	from t_activity_kill
+  	where sellerid = #{sellerid}
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_activity_kill
+    where id = #{id,jdbcType=INTEGER} and sellerid = #{sellerId,jdbcType=INTEGER}
+  </select>
+  <select id="findByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_activity_kill
+    where id = #{id,jdbcType=INTEGER} 
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_activity_kill
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmn.saas.entity.activity.Kill"  useGeneratedKeys="true" keyProperty="id">
+    insert into t_activity_kill (id, sellerid, name, 
+      begin_date, end_date, begin_time, 
+      end_time, join_number, give_number, 
+      sec_kill_amount, sec_kill_number, 
+      limit_number, views, status, 
+      create_time, newuser_num, consume_amount
+      )
+    values (#{id,jdbcType=INTEGER}, #{sellerid,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
+      #{beginDate,jdbcType=TIMESTAMP}, #{endDate,jdbcType=TIMESTAMP}, #{beginTime,jdbcType=TIME}, 
+      #{endTime,jdbcType=TIME}, #{joinNumber,jdbcType=INTEGER}, #{giveNumber,jdbcType=INTEGER}, 
+      #{secKillAmount,jdbcType=DECIMAL}, #{secKillNumber,jdbcType=INTEGER}, 
+      #{limitNumber,jdbcType=INTEGER}, #{views,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{newuserNum,jdbcType=INTEGER}, #{consumeAmount,jdbcType=DECIMAL}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmn.saas.entity.activity.Kill" >
+    insert into t_activity_kill
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="sellerid != null" >
+        sellerid,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="beginDate != null" >
+        begin_date,
+      </if>
+      <if test="endDate != null" >
+        end_date,
+      </if>
+      <if test="beginTime != null" >
+        begin_time,
+      </if>
+      <if test="endTime != null" >
+        end_time,
+      </if>
+      <if test="joinNumber != null" >
+        join_number,
+      </if>
+      <if test="giveNumber != null" >
+        give_number,
+      </if>
+      <if test="secKillAmount != null" >
+        sec_kill_amount,
+      </if>
+      <if test="secKillNumber != null" >
+        sec_kill_number,
+      </if>
+      <if test="limitNumber != null" >
+        limit_number,
+      </if>
+      <if test="views != null" >
+        views,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="newuserNum != null" >
+        newuser_num,
+      </if>
+      <if test="consumeAmount != null" >
+        consume_amount,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="sellerid != null" >
+        #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="beginDate != null" >
+        #{beginDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="beginTime != null" >
+        #{beginTime,jdbcType=TIME},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIME},
+      </if>
+      <if test="joinNumber != null" >
+        #{joinNumber,jdbcType=INTEGER},
+      </if>
+      <if test="giveNumber != null" >
+        #{giveNumber,jdbcType=INTEGER},
+      </if>
+      <if test="useNumber != null" >
+        #{useNumber,jdbcType=INTEGER},
+      </if>
+      <if test="secKillAmount != null" >
+        #{secKillAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="secKillNumber != null" >
+        #{secKillNumber,jdbcType=INTEGER},
+      </if>
+      <if test="limitNumber != null" >
+        #{limitNumber,jdbcType=INTEGER},
+      </if>
+      <if test="views != null" >
+        #{views,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="newuserNum != null" >
+        #{newuserNum,jdbcType=INTEGER},
+      </if>
+      <if test="consumeAmount != null" >
+        #{consumeAmount,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <select id="getList" parameterType="com.xmn.saas.entity.activity.Kill" >
+    select <include refid="Base_Column_List" /> t_activity_kill where 1=1
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="sellerid != null" >
+        sellerid,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="beginDate != null" >
+        begin_date,
+      </if>
+      <if test="endDate != null" >
+        end_date,
+      </if>
+      <if test="beginTime != null" >
+        begin_time,
+      </if>
+      <if test="endTime != null" >
+        end_time,
+      </if>
+      <if test="joinNumber != null" >
+        join_number,
+      </if>
+      <if test="giveNumber != null" >
+        give_number,
+      </if>
+      <if test="secKillAmount != null" >
+        sec_kill_amount,
+      </if>
+      <if test="secKillNumber != null" >
+        sec_kill_number,
+      </if>
+      <if test="limitNumber != null" >
+        limit_number,
+      </if>
+      <if test="views != null" >
+        views,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="newuserNum != null" >
+        newuser_num,
+      </if>
+      <if test="consumeAmount != null" >
+        consume_amount,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="sellerid != null" >
+        #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="beginDate != null" >
+        #{beginDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="beginTime != null" >
+        #{beginTime,jdbcType=TIME},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIME},
+      </if>
+      <if test="joinNumber != null" >
+        #{joinNumber,jdbcType=INTEGER},
+      </if>
+      <if test="giveNumber != null" >
+        #{giveNumber,jdbcType=INTEGER},
+      </if>
+      <if test="useNumber != null" >
+        #{useNumber,jdbcType=INTEGER},
+      </if>
+      <if test="secKillAmount != null" >
+        #{secKillAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="secKillNumber != null" >
+        #{secKillNumber,jdbcType=INTEGER},
+      </if>
+      <if test="limitNumber != null" >
+        #{limitNumber,jdbcType=INTEGER},
+      </if>
+      <if test="views != null" >
+        #{views,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="newuserNum != null" >
+        #{newuserNum,jdbcType=INTEGER},
+      </if>
+      <if test="consumeAmount != null" >
+        #{consumeAmount,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </select>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.saas.entity.activity.Kill" >
+    update t_activity_kill
+    <set >
+      <if test="sellerid != null" >
+        sellerid = #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="beginDate != null" >
+        begin_date = #{beginDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        end_date = #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="beginTime != null" >
+        begin_time = #{beginTime,jdbcType=TIME},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIME},
+      </if>
+      <if test="joinNumber != null" >
+        join_number = #{joinNumber,jdbcType=INTEGER},
+      </if>
+      <if test="giveNumber != null" >
+        give_number = #{giveNumber,jdbcType=INTEGER},
+      </if>
+      <if test="secKillAmount != null" >
+        sec_kill_amount = #{secKillAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="secKillNumber != null" >
+        sec_kill_number = #{secKillNumber,jdbcType=INTEGER},
+      </if>
+      <if test="limitNumber != null" >
+        limit_number = #{limitNumber,jdbcType=INTEGER},
+      </if>
+      <if test="views != null" >
+        views = #{views,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="newuserNum != null" >
+        newuser_num = #{newuserNum,jdbcType=INTEGER},
+      </if>
+      <if test="consumeAmount != null" >
+        consume_amount = #{consumeAmount,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.saas.entity.activity.Kill" >
+    update t_activity_kill
+    set sellerid = #{sellerid,jdbcType=INTEGER},
+      name = #{name,jdbcType=VARCHAR},
+      begin_date = #{beginDate,jdbcType=TIMESTAMP},
+      end_date = #{endDate,jdbcType=TIMESTAMP},
+      begin_time = #{beginTime,jdbcType=TIME},
+      end_time = #{endTime,jdbcType=TIME},
+      join_number = #{joinNumber,jdbcType=INTEGER},
+      give_number = #{giveNumber,jdbcType=INTEGER},
+      sec_kill_amount = #{secKillAmount,jdbcType=DECIMAL},
+      sec_kill_number = #{secKillNumber,jdbcType=INTEGER},
+      limit_number = #{limitNumber,jdbcType=INTEGER},
+      views = #{views,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      newuser_num = #{newuserNum,jdbcType=INTEGER},
+      consume_amount = #{consumeAmount,jdbcType=DECIMAL}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="listBeing" resultMap="BaseResultMap">
+  	select  distinct
+  	<include refid="Base_Column_List" />,IFNULL(r.give_awardCount,0) as give_awardCount,IFNULL(fr.use_number,0) as use_number
+  	from t_activity_kill a  left join  (select r.activity_id as activity_id,count(*) as give_awardCount from t_activity_kill_record r   where  r.cid is not null and r.pay_status = 1   GROUP BY r.activity_id) r on a.id=r.activity_id
+  	left join (select  t_activity_kill_record.activity_id as activity_id,IFNULL(count(*),0) as use_number from t_user_coupon fr join t_activity_kill_record on fr.activity_id=t_activity_kill_record.id where fr.use_status=2 and fr.activity_type = 3 GROUP BY fr.activity_id
+	) fr on a.id=fr.activity_id
+  	where sellerid = #{sellerid} and UNIX_TIMESTAMP(now()) - UNIX_TIMESTAMP(end_date) &lt; 0 and status = 0
+  </select>
+  
+  <select id="listEnd" resultMap="BaseResultMap"> 	
+  	select  distinct
+  	<include refid="Base_Column_List" />,IFNULL(r.give_awardCount,0) as give_awardCount,IFNULL(fr.use_number,0) as use_number
+  	from t_activity_kill a  left join  (select r.activity_id as activity_id,count(*) as give_awardCount from t_activity_kill_record r   where  r.cid is not null and r.pay_status = 1   GROUP BY r.activity_id) r on a.id=r.activity_id
+  	left join (select  t_activity_kill_record.activity_id as activity_id,IFNULL(count(*),0) as use_number from t_user_coupon fr join t_activity_kill_record on fr.activity_id=t_activity_kill_record.id where fr.use_status=2 and fr.activity_type = 3 GROUP BY fr.activity_id
+	) fr on a.id=fr.activity_id
+  	where sellerid = #{sellerId} and (UNIX_TIMESTAMP(now()) - UNIX_TIMESTAMP(end_date) > 0 or status=1) order by create_time desc
+  	<if test="pageSize!=null">
+  			<if test="pageIndex!=null">
+				limit ${(pageIndex-1)*pageSize},#{pageSize}  			
+  			</if>
+  	</if>
+  </select>
+  
+  <select id="selectByPrimaryKeyAndGiveAwardCount" resultMap="BaseResultMap">
+  		select  distinct
+  	<include refid="Base_Column_List" />,IFNULL(r.give_awardCount,0) as give_awardCount
+  	from t_activity_kill a  left join  (select r.activity_id as activity_id,count(*) as give_awardCount from t_activity_kill_record r   where  r.cid &lt;> '' and r.pay_status = 1   GROUP BY r.activity_id) r on a.id=r.activity_id
+  	where sellerid = #{sellerId} and id = #{id} 
+  </select>
+  
+  <select id="CountBeingActivity" resultType="java.lang.Integer">
+  		select count(*) from t_activity_kill where UNIX_TIMESTAMP(now()) - UNIX_TIMESTAMP(end_date) &lt; 0 and sellerid = #{sellerId} and status = 0
+  </select>
+  	<update id="endActivity">
+  		update t_activity_kill set end_activity_time = now() ,status = 1 where  id = #{id,jdbcType=INTEGER} and sellerid = #{sellerId,jdbcType=INTEGER}
+  	</update>
+  	
+  
+</mapper>

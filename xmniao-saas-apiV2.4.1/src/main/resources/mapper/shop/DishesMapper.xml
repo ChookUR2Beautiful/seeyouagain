@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.shop.DishesDao" >
+
+  <resultMap id="BaseResultMap" type="com.xmn.saas.entity.shop.Dishes" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="bigpic" property="url" jdbcType="VARCHAR" />
+     <result column="cprice" property="price" jdbcType="DOUBLE" />
+      <result column="remark" property="remark" jdbcType="VARCHAR" />
+      <result column="foodname" property="name" jdbcType="VARCHAR" />
+       <result column="datastatus" property="datastatus" jdbcType="INTEGER" />
+        <result column="atag" property="atag" jdbcType="INTEGER" />
+  </resultMap>
+  
+
+  
+  <!-- 根据商家ID查询推荐菜列表 -->
+  <select id="queryFoodList" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    concat(#{fileUrl},bigpic) bigpic,id
+    from t_food
+    where sellerid=#{sellerid} and datastatus=1
+  </select>
+  
+    <!--查询推荐菜详情 -->
+  <select id="queryFoodById" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    concat(#{fileUrl},bigpic) bigpic,id,cprice,remark,foodname,datastatus,atag
+    from t_food
+    where id=#{id}
+  </select>
+  
+  
+  <sql id="dishesColume">
+  	    <trim suffix="" suffixOverrides=",">
+            <if test="url != null">
+                bigpic,
+            </if>
+            <if test="name != null">
+                foodname,
+            </if>
+            <if test="price != null">
+                cprice,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="sellerid != null">
+                sellerid,
+            </if>
+            
+             <if test="sdate != null">
+                sdate,
+            </if>
+            
+             <if test="atag != null">
+                atag,
+            </if>
+            
+             <if test="datastatus != null">
+                datastatus,
+            </if>
+             <if test="source != null">
+                source,
+            </if>
+         
+        </trim>
+  </sql>
+  
+    <sql id="dishesValue">
+  	    <trim suffix="" suffixOverrides=",">
+               <if test="url != null">
+                #{url},
+            </if>
+            <if test="name != null">
+                #{name},
+            </if>
+            <if test="price != null">
+                #{price},
+            </if>
+            <if test="remark != null">
+                #{remark},
+            </if>
+         	 <if test="sellerid != null">
+                #{sellerid},
+            </if>
+            
+               <if test="sdate != null">
+                #{sdate},
+            </if>
+            
+             <if test="atag != null">
+                #{atag},
+            </if>
+            
+             <if test="datastatus != null">
+                #{datastatus},
+            </if>
+            
+           <if test="source != null">
+                #{source},
+            </if>
+        </trim>
+  </sql>
+  
+  <!-- 添加推荐菜 -->
+  <insert id="create" parameterType="map" useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+  
+  		  insert into t_food (
+                <include refid="dishesColume"/>
+        ) values (
+                <include refid="dishesValue"/>
+        )
+  </insert>
+  <!-- 修改推荐菜 -->
+  <update id="modify" parameterType="map">
+ 	update t_food
+ 		<set>
+ 			<if test="url!=null">
+ 				bigpic=#{url},
+ 			</if>
+ 			
+ 			<if test="name!=null">
+ 				foodname=#{name},
+ 			</if>
+ 			
+ 			<if test="pdate!=null">
+ 				pdate=#{pdate},
+ 			</if>
+ 			
+ 			<if test="price!=null">
+ 				cprice=#{price},
+ 			</if>
+ 			
+ 			<if test="remark !=null">
+ 				remark=#{remark},
+ 			</if>
+ 			     <if test="datastatus != null">
+               datastatus= #{datastatus}
+            </if>
+ 			
+ 		</set>
+ 		where id=#{id}
+ 	</update>
+</mapper>

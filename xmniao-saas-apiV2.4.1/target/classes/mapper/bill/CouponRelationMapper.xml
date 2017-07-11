@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.bill.CouponRelationDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.saas.entity.bill.CouponRelation" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="bid" property="bid" jdbcType="BIGINT" />
+    <result column="cserial" property="cserial" jdbcType="VARCHAR" />
+    <result column="cdenom" property="cdenom" jdbcType="DECIMAL" />
+    <result column="cuser" property="cuser" jdbcType="DECIMAL" />
+    <result column="ctype" property="ctype" jdbcType="TINYINT" />
+    <result column="cdid" property="cdid" jdbcType="INTEGER" />
+    <result column="serial" property="serial" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, bid, cserial, cdenom, cuser, ctype, cdid, serial
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_coupon_relation
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_coupon_relation
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmn.saas.entity.bill.CouponRelation" >
+    insert into t_coupon_relation (id, bid, cserial, 
+      cdenom, cuser, ctype, 
+      cdid, serial)
+    values (#{id,jdbcType=INTEGER}, #{bid,jdbcType=BIGINT}, #{cserial,jdbcType=VARCHAR}, 
+      #{cdenom,jdbcType=DECIMAL}, #{cuser,jdbcType=DECIMAL}, #{ctype,jdbcType=TINYINT}, 
+      #{cdid,jdbcType=INTEGER}, #{serial,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmn.saas.entity.bill.CouponRelation" >
+    insert into t_coupon_relation
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="bid != null" >
+        bid,
+      </if>
+      <if test="cserial != null" >
+        cserial,
+      </if>
+      <if test="cdenom != null" >
+        cdenom,
+      </if>
+      <if test="cuser != null" >
+        cuser,
+      </if>
+      <if test="ctype != null" >
+        ctype,
+      </if>
+      <if test="cdid != null" >
+        cdid,
+      </if>
+      <if test="serial != null" >
+        serial,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="bid != null" >
+        #{bid,jdbcType=BIGINT},
+      </if>
+      <if test="cserial != null" >
+        #{cserial,jdbcType=VARCHAR},
+      </if>
+      <if test="cdenom != null" >
+        #{cdenom,jdbcType=DECIMAL},
+      </if>
+      <if test="cuser != null" >
+        #{cuser,jdbcType=DECIMAL},
+      </if>
+      <if test="ctype != null" >
+        #{ctype,jdbcType=TINYINT},
+      </if>
+      <if test="cdid != null" >
+        #{cdid,jdbcType=INTEGER},
+      </if>
+      <if test="serial != null" >
+        #{serial,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.saas.entity.bill.CouponRelation" >
+    update t_coupon_relation
+    <set >
+      <if test="bid != null" >
+        bid = #{bid,jdbcType=BIGINT},
+      </if>
+      <if test="cserial != null" >
+        cserial = #{cserial,jdbcType=VARCHAR},
+      </if>
+      <if test="cdenom != null" >
+        cdenom = #{cdenom,jdbcType=DECIMAL},
+      </if>
+      <if test="cuser != null" >
+        cuser = #{cuser,jdbcType=DECIMAL},
+      </if>
+      <if test="ctype != null" >
+        ctype = #{ctype,jdbcType=TINYINT},
+      </if>
+      <if test="cdid != null" >
+        cdid = #{cdid,jdbcType=INTEGER},
+      </if>
+      <if test="serial != null" >
+        serial = #{serial,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.saas.entity.bill.CouponRelation" >
+    update t_coupon_relation
+    set bid = #{bid,jdbcType=BIGINT},
+      cserial = #{cserial,jdbcType=VARCHAR},
+      cdenom = #{cdenom,jdbcType=DECIMAL},
+      cuser = #{cuser,jdbcType=DECIMAL},
+      ctype = #{ctype,jdbcType=TINYINT},
+      cdid = #{cdid,jdbcType=INTEGER},
+      serial = #{serial,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

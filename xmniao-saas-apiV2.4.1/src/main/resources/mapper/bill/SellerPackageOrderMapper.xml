@@ -1,0 +1,553 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.bill.SellerPackageOrderDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.saas.entity.bill.SellerPackageOrder" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="pid" property="pid" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="uname" property="uname" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="pay_time" property="payTime" jdbcType="TIMESTAMP" />
+    <result column="last_time" property="lastTime" jdbcType="TIMESTAMP" />
+    <result column="nums" property="nums" jdbcType="INTEGER" />
+    <result column="original_price" property="originalPrice" jdbcType="DECIMAL" />
+    <result column="selling_price" property="sellingPrice" jdbcType="DECIMAL" />
+    <result column="selling_coin_price" property="sellingCoinPrice" jdbcType="DECIMAL" />
+    <result column="total_amount" property="totalAmount" jdbcType="DECIMAL" />
+    <result column="total_coin_amount" property="totalCoinAmount" jdbcType="DECIMAL" />
+    <result column="seller_agio" property="sellerAgio" jdbcType="DECIMAL" />
+    <result column="base_agio" property="baseAgio" jdbcType="DECIMAL" />
+    <result column="cash" property="cash" jdbcType="DECIMAL" />
+    <result column="balance" property="balance" jdbcType="DECIMAL" />
+    <result column="commision" property="commision" jdbcType="DECIMAL" />
+    <result column="zbalance" property="zbalance" jdbcType="DECIMAL" />
+    <result column="seller_coin" property="sellerCoin" jdbcType="DECIMAL" />
+    <result column="beans" property="beans" jdbcType="DECIMAL" />
+    <result column="cuser" property="cuser" jdbcType="DECIMAL" />
+    <result column="cdid" property="cdid" jdbcType="INTEGER" />
+    <result column="retrun_coupon_amount" property="retrunCouponAmount" jdbcType="DECIMAL" />
+    <result column="payment_type" property="paymentType" jdbcType="VARCHAR" />
+    <result column="payid" property="payid" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="ledger_type" property="ledgerType" jdbcType="INTEGER" />
+    <result column="ledger_ratio" property="ledgerRatio" jdbcType="DECIMAL" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="uid_relation_chain" property="uidRelationChain" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="order_source" property="orderSource" jdbcType="INTEGER" />
+    <result column="buy_source" property="buySource" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.xmn.saas.entity.bill.SellerPackageOrder" extends="BaseResultMap" >
+    <result column="notice" property="notice" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, order_no, pid, title, sellerid, uid, phone, uname, create_time, pay_time, last_time, 
+    nums, original_price, selling_price, selling_coin_price, total_amount, total_coin_amount, 
+    seller_agio, base_agio, cash, balance, commision, zbalance, seller_coin, beans, cuser, 
+    cdid, retrun_coupon_amount, payment_type, payid, status, ledger_type, ledger_ratio, 
+    update_time, uid_relation_chain, version, order_source, buy_source
+  </sql>
+  <sql id="Blob_Column_List" >
+    notice
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_seller_package_order
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+   <select id="selectByOrderNo" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_seller_package_order
+    where order_no = #{orderNo}
+  </select>
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_seller_package_order
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmn.saas.entity.bill.SellerPackageOrder" >
+    insert into t_seller_package_order (id, order_no, pid, 
+      title, sellerid, uid, 
+      phone, uname, create_time, 
+      pay_time, last_time, nums, 
+      original_price, selling_price, selling_coin_price, 
+      total_amount, total_coin_amount, seller_agio, 
+      base_agio, cash, balance, 
+      commision, zbalance, seller_coin, 
+      beans, cuser, cdid, 
+      retrun_coupon_amount, payment_type, payid, 
+      status, ledger_type, ledger_ratio, 
+      update_time, uid_relation_chain, version, 
+      order_source, buy_source, notice
+      )
+    values (#{id,jdbcType=INTEGER}, #{orderNo,jdbcType=VARCHAR}, #{pid,jdbcType=INTEGER}, 
+      #{title,jdbcType=VARCHAR}, #{sellerid,jdbcType=INTEGER}, #{uid,jdbcType=INTEGER}, 
+      #{phone,jdbcType=VARCHAR}, #{uname,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{payTime,jdbcType=TIMESTAMP}, #{lastTime,jdbcType=TIMESTAMP}, #{nums,jdbcType=INTEGER}, 
+      #{originalPrice,jdbcType=DECIMAL}, #{sellingPrice,jdbcType=DECIMAL}, #{sellingCoinPrice,jdbcType=DECIMAL}, 
+      #{totalAmount,jdbcType=DECIMAL}, #{totalCoinAmount,jdbcType=DECIMAL}, #{sellerAgio,jdbcType=DECIMAL}, 
+      #{baseAgio,jdbcType=DECIMAL}, #{cash,jdbcType=DECIMAL}, #{balance,jdbcType=DECIMAL}, 
+      #{commision,jdbcType=DECIMAL}, #{zbalance,jdbcType=DECIMAL}, #{sellerCoin,jdbcType=DECIMAL}, 
+      #{beans,jdbcType=DECIMAL}, #{cuser,jdbcType=DECIMAL}, #{cdid,jdbcType=INTEGER}, 
+      #{retrunCouponAmount,jdbcType=DECIMAL}, #{paymentType,jdbcType=VARCHAR}, #{payid,jdbcType=VARCHAR}, 
+      #{status,jdbcType=INTEGER}, #{ledgerType,jdbcType=INTEGER}, #{ledgerRatio,jdbcType=DECIMAL}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{uidRelationChain,jdbcType=VARCHAR}, #{version,jdbcType=INTEGER}, 
+      #{orderSource,jdbcType=INTEGER}, #{buySource,jdbcType=INTEGER}, #{notice,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmn.saas.entity.bill.SellerPackageOrder" >
+    insert into t_seller_package_order
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="orderNo != null" >
+        order_no,
+      </if>
+      <if test="pid != null" >
+        pid,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="sellerid != null" >
+        sellerid,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="uname != null" >
+        uname,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="payTime != null" >
+        pay_time,
+      </if>
+      <if test="lastTime != null" >
+        last_time,
+      </if>
+      <if test="nums != null" >
+        nums,
+      </if>
+      <if test="originalPrice != null" >
+        original_price,
+      </if>
+      <if test="sellingPrice != null" >
+        selling_price,
+      </if>
+      <if test="sellingCoinPrice != null" >
+        selling_coin_price,
+      </if>
+      <if test="totalAmount != null" >
+        total_amount,
+      </if>
+      <if test="totalCoinAmount != null" >
+        total_coin_amount,
+      </if>
+      <if test="sellerAgio != null" >
+        seller_agio,
+      </if>
+      <if test="baseAgio != null" >
+        base_agio,
+      </if>
+      <if test="cash != null" >
+        cash,
+      </if>
+      <if test="balance != null" >
+        balance,
+      </if>
+      <if test="commision != null" >
+        commision,
+      </if>
+      <if test="zbalance != null" >
+        zbalance,
+      </if>
+      <if test="sellerCoin != null" >
+        seller_coin,
+      </if>
+      <if test="beans != null" >
+        beans,
+      </if>
+      <if test="cuser != null" >
+        cuser,
+      </if>
+      <if test="cdid != null" >
+        cdid,
+      </if>
+      <if test="retrunCouponAmount != null" >
+        retrun_coupon_amount,
+      </if>
+      <if test="paymentType != null" >
+        payment_type,
+      </if>
+      <if test="payid != null" >
+        payid,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="ledgerType != null" >
+        ledger_type,
+      </if>
+      <if test="ledgerRatio != null" >
+        ledger_ratio,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="uidRelationChain != null" >
+        uid_relation_chain,
+      </if>
+      <if test="version != null" >
+        version,
+      </if>
+      <if test="orderSource != null" >
+        order_source,
+      </if>
+      <if test="buySource != null" >
+        buy_source,
+      </if>
+      <if test="notice != null" >
+        notice,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="pid != null" >
+        #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="sellerid != null" >
+        #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="uname != null" >
+        #{uname,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="payTime != null" >
+        #{payTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastTime != null" >
+        #{lastTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="nums != null" >
+        #{nums,jdbcType=INTEGER},
+      </if>
+      <if test="originalPrice != null" >
+        #{originalPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="sellingPrice != null" >
+        #{sellingPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="sellingCoinPrice != null" >
+        #{sellingCoinPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="totalAmount != null" >
+        #{totalAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="totalCoinAmount != null" >
+        #{totalCoinAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="sellerAgio != null" >
+        #{sellerAgio,jdbcType=DECIMAL},
+      </if>
+      <if test="baseAgio != null" >
+        #{baseAgio,jdbcType=DECIMAL},
+      </if>
+      <if test="cash != null" >
+        #{cash,jdbcType=DECIMAL},
+      </if>
+      <if test="balance != null" >
+        #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="commision != null" >
+        #{commision,jdbcType=DECIMAL},
+      </if>
+      <if test="zbalance != null" >
+        #{zbalance,jdbcType=DECIMAL},
+      </if>
+      <if test="sellerCoin != null" >
+        #{sellerCoin,jdbcType=DECIMAL},
+      </if>
+      <if test="beans != null" >
+        #{beans,jdbcType=DECIMAL},
+      </if>
+      <if test="cuser != null" >
+        #{cuser,jdbcType=DECIMAL},
+      </if>
+      <if test="cdid != null" >
+        #{cdid,jdbcType=INTEGER},
+      </if>
+      <if test="retrunCouponAmount != null" >
+        #{retrunCouponAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="paymentType != null" >
+        #{paymentType,jdbcType=VARCHAR},
+      </if>
+      <if test="payid != null" >
+        #{payid,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="ledgerType != null" >
+        #{ledgerType,jdbcType=INTEGER},
+      </if>
+      <if test="ledgerRatio != null" >
+        #{ledgerRatio,jdbcType=DECIMAL},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uidRelationChain != null" >
+        #{uidRelationChain,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null" >
+        #{version,jdbcType=INTEGER},
+      </if>
+      <if test="orderSource != null" >
+        #{orderSource,jdbcType=INTEGER},
+      </if>
+      <if test="buySource != null" >
+        #{buySource,jdbcType=INTEGER},
+      </if>
+      <if test="notice != null" >
+        #{notice,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.saas.entity.bill.SellerPackageOrder" >
+    update t_seller_package_order
+    <set >
+      <if test="orderNo != null" >
+        order_no = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="pid != null" >
+        pid = #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="sellerid != null" >
+        sellerid = #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="uname != null" >
+        uname = #{uname,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="payTime != null" >
+        pay_time = #{payTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastTime != null" >
+        last_time = #{lastTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="nums != null" >
+        nums = #{nums,jdbcType=INTEGER},
+      </if>
+      <if test="originalPrice != null" >
+        original_price = #{originalPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="sellingPrice != null" >
+        selling_price = #{sellingPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="sellingCoinPrice != null" >
+        selling_coin_price = #{sellingCoinPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="totalAmount != null" >
+        total_amount = #{totalAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="totalCoinAmount != null" >
+        total_coin_amount = #{totalCoinAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="sellerAgio != null" >
+        seller_agio = #{sellerAgio,jdbcType=DECIMAL},
+      </if>
+      <if test="baseAgio != null" >
+        base_agio = #{baseAgio,jdbcType=DECIMAL},
+      </if>
+      <if test="cash != null" >
+        cash = #{cash,jdbcType=DECIMAL},
+      </if>
+      <if test="balance != null" >
+        balance = #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="commision != null" >
+        commision = #{commision,jdbcType=DECIMAL},
+      </if>
+      <if test="zbalance != null" >
+        zbalance = #{zbalance,jdbcType=DECIMAL},
+      </if>
+      <if test="sellerCoin != null" >
+        seller_coin = #{sellerCoin,jdbcType=DECIMAL},
+      </if>
+      <if test="beans != null" >
+        beans = #{beans,jdbcType=DECIMAL},
+      </if>
+      <if test="cuser != null" >
+        cuser = #{cuser,jdbcType=DECIMAL},
+      </if>
+      <if test="cdid != null" >
+        cdid = #{cdid,jdbcType=INTEGER},
+      </if>
+      <if test="retrunCouponAmount != null" >
+        retrun_coupon_amount = #{retrunCouponAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="paymentType != null" >
+        payment_type = #{paymentType,jdbcType=VARCHAR},
+      </if>
+      <if test="payid != null" >
+        payid = #{payid,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="ledgerType != null" >
+        ledger_type = #{ledgerType,jdbcType=INTEGER},
+      </if>
+      <if test="ledgerRatio != null" >
+        ledger_ratio = #{ledgerRatio,jdbcType=DECIMAL},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uidRelationChain != null" >
+        uid_relation_chain = #{uidRelationChain,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null" >
+        version = #{version,jdbcType=INTEGER},
+      </if>
+      <if test="orderSource != null" >
+        order_source = #{orderSource,jdbcType=INTEGER},
+      </if>
+      <if test="buySource != null" >
+        buy_source = #{buySource,jdbcType=INTEGER},
+      </if>
+      <if test="notice != null" >
+        notice = #{notice,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.xmn.saas.entity.bill.SellerPackageOrder" >
+    update t_seller_package_order
+    set order_no = #{orderNo,jdbcType=VARCHAR},
+      pid = #{pid,jdbcType=INTEGER},
+      title = #{title,jdbcType=VARCHAR},
+      sellerid = #{sellerid,jdbcType=INTEGER},
+      uid = #{uid,jdbcType=INTEGER},
+      phone = #{phone,jdbcType=VARCHAR},
+      uname = #{uname,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      pay_time = #{payTime,jdbcType=TIMESTAMP},
+      last_time = #{lastTime,jdbcType=TIMESTAMP},
+      nums = #{nums,jdbcType=INTEGER},
+      original_price = #{originalPrice,jdbcType=DECIMAL},
+      selling_price = #{sellingPrice,jdbcType=DECIMAL},
+      selling_coin_price = #{sellingCoinPrice,jdbcType=DECIMAL},
+      total_amount = #{totalAmount,jdbcType=DECIMAL},
+      total_coin_amount = #{totalCoinAmount,jdbcType=DECIMAL},
+      seller_agio = #{sellerAgio,jdbcType=DECIMAL},
+      base_agio = #{baseAgio,jdbcType=DECIMAL},
+      cash = #{cash,jdbcType=DECIMAL},
+      balance = #{balance,jdbcType=DECIMAL},
+      commision = #{commision,jdbcType=DECIMAL},
+      zbalance = #{zbalance,jdbcType=DECIMAL},
+      seller_coin = #{sellerCoin,jdbcType=DECIMAL},
+      beans = #{beans,jdbcType=DECIMAL},
+      cuser = #{cuser,jdbcType=DECIMAL},
+      cdid = #{cdid,jdbcType=INTEGER},
+      retrun_coupon_amount = #{retrunCouponAmount,jdbcType=DECIMAL},
+      payment_type = #{paymentType,jdbcType=VARCHAR},
+      payid = #{payid,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      ledger_type = #{ledgerType,jdbcType=INTEGER},
+      ledger_ratio = #{ledgerRatio,jdbcType=DECIMAL},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      uid_relation_chain = #{uidRelationChain,jdbcType=VARCHAR},
+      version = #{version,jdbcType=INTEGER},
+      order_source = #{orderSource,jdbcType=INTEGER},
+      buy_source = #{buySource,jdbcType=INTEGER},
+      notice = #{notice,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.saas.entity.bill.SellerPackageOrder" >
+    update t_seller_package_order
+    set order_no = #{orderNo,jdbcType=VARCHAR},
+      pid = #{pid,jdbcType=INTEGER},
+      title = #{title,jdbcType=VARCHAR},
+      sellerid = #{sellerid,jdbcType=INTEGER},
+      uid = #{uid,jdbcType=INTEGER},
+      phone = #{phone,jdbcType=VARCHAR},
+      uname = #{uname,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      pay_time = #{payTime,jdbcType=TIMESTAMP},
+      last_time = #{lastTime,jdbcType=TIMESTAMP},
+      nums = #{nums,jdbcType=INTEGER},
+      original_price = #{originalPrice,jdbcType=DECIMAL},
+      selling_price = #{sellingPrice,jdbcType=DECIMAL},
+      selling_coin_price = #{sellingCoinPrice,jdbcType=DECIMAL},
+      total_amount = #{totalAmount,jdbcType=DECIMAL},
+      total_coin_amount = #{totalCoinAmount,jdbcType=DECIMAL},
+      seller_agio = #{sellerAgio,jdbcType=DECIMAL},
+      base_agio = #{baseAgio,jdbcType=DECIMAL},
+      cash = #{cash,jdbcType=DECIMAL},
+      balance = #{balance,jdbcType=DECIMAL},
+      commision = #{commision,jdbcType=DECIMAL},
+      zbalance = #{zbalance,jdbcType=DECIMAL},
+      seller_coin = #{sellerCoin,jdbcType=DECIMAL},
+      beans = #{beans,jdbcType=DECIMAL},
+      cuser = #{cuser,jdbcType=DECIMAL},
+      cdid = #{cdid,jdbcType=INTEGER},
+      retrun_coupon_amount = #{retrunCouponAmount,jdbcType=DECIMAL},
+      payment_type = #{paymentType,jdbcType=VARCHAR},
+      payid = #{payid,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      ledger_type = #{ledgerType,jdbcType=INTEGER},
+      ledger_ratio = #{ledgerRatio,jdbcType=DECIMAL},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      uid_relation_chain = #{uidRelationChain,jdbcType=VARCHAR},
+      version = #{version,jdbcType=INTEGER},
+      order_source = #{orderSource,jdbcType=INTEGER},
+      buy_source = #{buySource,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

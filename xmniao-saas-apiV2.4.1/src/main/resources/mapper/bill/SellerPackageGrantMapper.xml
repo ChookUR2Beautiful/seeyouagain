@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.bill.SellerPackageGrantDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.saas.entity.bill.SellerPackageGrant" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="serial" property="serial" jdbcType="VARCHAR" />
+    <result column="pid" property="pid" jdbcType="INTEGER" />
+    <result column="denomination" property="denomination" jdbcType="DECIMAL" />
+    <result column="ledger_amount" property="ledgerAmount" jdbcType="DECIMAL" />
+    <result column="use_start_time" property="useStartTime" jdbcType="TIMESTAMP" />
+    <result column="use_end_time" property="useEndTime" jdbcType="TIMESTAMP" />
+    <result column="forbid_start_time" property="forbidStartTime" jdbcType="TIMESTAMP" />
+    <result column="forbid_end_time" property="forbidEndTime" jdbcType="TIMESTAMP" />
+    <result column="get_time" property="getTime" jdbcType="TIMESTAMP" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="user_status" property="userStatus" jdbcType="TINYINT" />
+    <result column="user_time" property="userTime" jdbcType="TIMESTAMP" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="bid" property="bid" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, serial, pid, denomination, use_start_time, use_end_time, forbid_start_time, forbid_end_time, 
+    get_time, uid, phone, user_status, user_time, order_no, sellerid, bid,ledger_amount
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_seller_package_grant
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+   <select id="selectBySerial" resultMap="BaseResultMap"  >
+    select 
+    <include refid="Base_Column_List" />
+    from t_seller_package_grant
+    where serial = #{serial} and sellerid = #{sellerid}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_seller_package_grant
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmn.saas.entity.bill.SellerPackageGrant" >
+    insert into t_seller_package_grant (id, serial, pid, 
+      denomination, use_start_time, use_end_time, 
+      forbid_start_time, forbid_end_time, get_time, 
+      uid, phone, user_status, 
+      user_time, order_no, sellerid, 
+      bid)
+    values (#{id,jdbcType=INTEGER}, #{serial,jdbcType=VARCHAR}, #{pid,jdbcType=INTEGER}, 
+      #{denomination,jdbcType=DECIMAL}, #{useStartTime,jdbcType=TIMESTAMP}, #{useEndTime,jdbcType=TIMESTAMP}, 
+      #{forbidStartTime,jdbcType=TIMESTAMP}, #{forbidEndTime,jdbcType=TIMESTAMP}, #{getTime,jdbcType=TIMESTAMP}, 
+      #{uid,jdbcType=INTEGER}, #{phone,jdbcType=VARCHAR}, #{userStatus,jdbcType=TINYINT}, 
+      #{userTime,jdbcType=TIMESTAMP}, #{orderNo,jdbcType=VARCHAR}, #{sellerid,jdbcType=INTEGER}, 
+      #{bid,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmn.saas.entity.bill.SellerPackageGrant" >
+    insert into t_seller_package_grant
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="serial != null" >
+        serial,
+      </if>
+      <if test="pid != null" >
+        pid,
+      </if>
+      <if test="denomination != null" >
+        denomination,
+      </if>
+      <if test="useStartTime != null" >
+        use_start_time,
+      </if>
+      <if test="useEndTime != null" >
+        use_end_time,
+      </if>
+      <if test="forbidStartTime != null" >
+        forbid_start_time,
+      </if>
+      <if test="forbidEndTime != null" >
+        forbid_end_time,
+      </if>
+      <if test="getTime != null" >
+        get_time,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="userStatus != null" >
+        user_status,
+      </if>
+      <if test="userTime != null" >
+        user_time,
+      </if>
+      <if test="orderNo != null" >
+        order_no,
+      </if>
+      <if test="sellerid != null" >
+        sellerid,
+      </if>
+      <if test="bid != null" >
+        bid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="serial != null" >
+        #{serial,jdbcType=VARCHAR},
+      </if>
+      <if test="pid != null" >
+        #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="denomination != null" >
+        #{denomination,jdbcType=DECIMAL},
+      </if>
+      <if test="useStartTime != null" >
+        #{useStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="useEndTime != null" >
+        #{useEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="forbidStartTime != null" >
+        #{forbidStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="forbidEndTime != null" >
+        #{forbidEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="getTime != null" >
+        #{getTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="userStatus != null" >
+        #{userStatus,jdbcType=TINYINT},
+      </if>
+      <if test="userTime != null" >
+        #{userTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="sellerid != null" >
+        #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="bid != null" >
+        #{bid,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.saas.entity.bill.SellerPackageGrant" >
+    update t_seller_package_grant
+    <set >
+      <if test="serial != null" >
+        serial = #{serial,jdbcType=VARCHAR},
+      </if>
+      <if test="pid != null" >
+        pid = #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="denomination != null" >
+        denomination = #{denomination,jdbcType=DECIMAL},
+      </if>
+      <if test="useStartTime != null" >
+        use_start_time = #{useStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="useEndTime != null" >
+        use_end_time = #{useEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="forbidStartTime != null" >
+        forbid_start_time = #{forbidStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="forbidEndTime != null" >
+        forbid_end_time = #{forbidEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="getTime != null" >
+        get_time = #{getTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="userStatus != null" >
+        user_status = #{userStatus,jdbcType=TINYINT},
+      </if>
+      <if test="userTime != null" >
+        user_time = #{userTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="orderNo != null" >
+        order_no = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="sellerid != null" >
+        sellerid = #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="bid != null" >
+        bid = #{bid,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.saas.entity.bill.SellerPackageGrant" >
+    update t_seller_package_grant
+    set serial = #{serial,jdbcType=VARCHAR},
+      pid = #{pid,jdbcType=INTEGER},
+      denomination = #{denomination,jdbcType=DECIMAL},
+      use_start_time = #{useStartTime,jdbcType=TIMESTAMP},
+      use_end_time = #{useEndTime,jdbcType=TIMESTAMP},
+      forbid_start_time = #{forbidStartTime,jdbcType=TIMESTAMP},
+      forbid_end_time = #{forbidEndTime,jdbcType=TIMESTAMP},
+      get_time = #{getTime,jdbcType=TIMESTAMP},
+      uid = #{uid,jdbcType=INTEGER},
+      phone = #{phone,jdbcType=VARCHAR},
+      user_status = #{userStatus,jdbcType=TINYINT},
+      user_time = #{userTime,jdbcType=TIMESTAMP},
+      order_no = #{orderNo,jdbcType=VARCHAR},
+      sellerid = #{sellerid,jdbcType=INTEGER},
+      bid = #{bid,jdbcType=BIGINT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

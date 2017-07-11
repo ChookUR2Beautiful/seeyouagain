@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.sellercard.DebitcardSellerDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.saas.entity.sellercard.DebitcardSeller" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="sellertype" property="sellertype" jdbcType="INTEGER" />
+    <result column="sellername" property="sellername" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="sub_sellerid" property="subSellerid" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, sellerid, sellertype, sellername, status, sub_sellerid, update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_debitcard_seller
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.saas.entity.sellercard.DebitcardSeller" >
+    update t_debitcard_seller
+    <set >
+      <if test="sellerid != null" >
+        sellerid = #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="sellertype != null" >
+        sellertype = #{sellertype,jdbcType=INTEGER},
+      </if>
+      <if test="sellername != null" >
+        sellername = #{sellername,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="subSellerid != null" >
+        sub_sellerid = #{subSellerid,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.saas.entity.sellercard.DebitcardSeller" >
+    update t_debitcard_seller
+    set sellerid = #{sellerid,jdbcType=INTEGER},
+      sellertype = #{sellertype,jdbcType=INTEGER},
+      sellername = #{sellername,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      sub_sellerid = #{subSellerid,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="findBySellerId" resultMap="BaseResultMap">
+  	SELECT
+  		<include refid="Base_Column_List" />
+    FROM t_debitcard_seller WHERE (sellerid=#{sellerid} OR sub_sellerid like concat('%',#{sellerid},'%')) AND status=0
+  </select>
+  
+   <select id="selectBySellerId" resultMap="BaseResultMap">
+  	SELECT
+  		<include refid="Base_Column_List" />
+  	FROM t_debitcard_seller WHERE sellerid=#{sellerid}  AND status=0 and sellertype =1 
+  </select>
+</mapper>

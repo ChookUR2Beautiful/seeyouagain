@@ -1,0 +1,1632 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.bill.BillDao">
+	<resultMap id="BaseResultMap" type="com.xmn.saas.entity.bill.Bill">
+		<id column="bid" property="bid" jdbcType="BIGINT" />
+		<result column="codeid" property="codeid" jdbcType="INTEGER" />
+		<result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+		<result column="sellername" property="sellername" jdbcType="VARCHAR" />
+		<result column="consume_jointid" property="consumeJointid"
+			jdbcType="INTEGER" />
+		<result column="nname" property="nname" jdbcType="VARCHAR" />
+		<result column="money" property="money" jdbcType="DECIMAL" />
+		<result column="profit" property="profit" jdbcType="DECIMAL" />
+		<result column="commision" property="commision" jdbcType="DECIMAL" />
+		<result column="payment" property="payment" jdbcType="DECIMAL" />
+		<result column="rebate" property="rebate" jdbcType="DECIMAL" />
+		<result column="full_reduction" property="fullReduction"
+			jdbcType="DECIMAL" />
+		<result column="aid" property="aid" jdbcType="INTEGER" />
+		<result column="fullname" property="fullname" jdbcType="VARCHAR" />
+		<result column="phoneid" property="phoneid" jdbcType="VARCHAR" />
+		<result column="bfirst" property="bfirst" jdbcType="BIT" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="sdate" property="sdate" jdbcType="TIMESTAMP" />
+		<result column="zdate" property="zdate" jdbcType="TIMESTAMP" />
+		<result column="ydate" property="ydate" jdbcType="TIMESTAMP" />
+		<result column="number" property="number" jdbcType="VARCHAR" />
+		<result column="paytype" property="paytype" jdbcType="VARCHAR" />
+		<result column="isaccount" property="isaccount" jdbcType="INTEGER" />
+		<result column="baseagio" property="baseagio" jdbcType="DOUBLE" />
+		<result column="type" property="type" jdbcType="INTEGER" />
+		<result column="hstatus" property="hstatus" jdbcType="INTEGER" />
+		<result column="consume_corporate" property="consumeCorporate"
+			jdbcType="VARCHAR" />
+		<result column="genussellerid" property="genussellerid"
+			jdbcType="INTEGER" />
+		<result column="genusname" property="genusname" jdbcType="VARCHAR" />
+		<result column="jointid" property="jointid" jdbcType="INTEGER" />
+		<result column="corporate" property="corporate" jdbcType="VARCHAR" />
+		<result column="mike_type" property="mikeType" jdbcType="TINYINT" />
+		<result column="uid" property="uid" jdbcType="INTEGER" />
+		<result column="commission" property="commission" jdbcType="VARCHAR" />
+		<result column="area" property="area" jdbcType="VARCHAR" />
+		<result column="zoneid" property="zoneid" jdbcType="INTEGER" />
+		<result column="payid" property="payid" jdbcType="VARCHAR" />
+		<result column="isverify" property="isverify" jdbcType="INTEGER" />
+		<result column="ldate" property="ldate" jdbcType="TIMESTAMP" />
+		<result column="fdate" property="fdate" jdbcType="TIMESTAMP" />
+		<result column="edate" property="edate" jdbcType="TIMESTAMP" />
+		<result column="comm_status" property="commStatus" jdbcType="TINYINT" />
+		<result column="estimate" property="estimate" jdbcType="TINYINT" />
+		<result column="is_virtual" property="isVirtual" jdbcType="INTEGER" />
+		<result column="flat_agio" property="flatAgio" jdbcType="DOUBLE" />
+		<result column="entry_status" property="entryStatus" jdbcType="TINYINT" />
+		<result column="give_money" property="giveMoney" jdbcType="DECIMAL" />
+		<result column="flat_money" property="flatMoney" jdbcType="DECIMAL" />
+		<result column="max_history" property="maxHistory" jdbcType="DECIMAL" />
+		<result column="cuser" property="cuser" jdbcType="DECIMAL" />
+		<result column="cdenom" property="cdenom" jdbcType="DECIMAL" />
+		<result column="third_uid" property="thirdUid" jdbcType="VARCHAR" />
+		<result column="normal" property="normal" jdbcType="TINYINT" />
+		<result column="is_activity" property="isActivity" jdbcType="TINYINT" />
+		<result column="prize_num" property="prizeNum" jdbcType="DECIMAL" />
+		<result column="source" property="source" jdbcType="INTEGER" />
+		<result column="phone_type" property="phoneType" jdbcType="TINYINT" />
+		<result column="version" property="version" jdbcType="VARCHAR" />
+		<result column="version_id" property="versionId" jdbcType="INTEGER" />
+		<result column="app_serial" property="appSerial" jdbcType="INTEGER" />
+		<result column="imei" property="imei" jdbcType="VARCHAR" />
+		<result column="ratio" property="ratio" jdbcType="DOUBLE" />
+		<result column="ratio_money" property="ratioMoney" jdbcType="DECIMAL" />
+		<result column="order_source" property="orderSource" jdbcType="INTEGER" />
+		<result column="noId" property="noid" jdbcType="BIGINT" />
+		<result column="amount" property="amount" jdbcType="DECIMAL" />
+		<result column="integral" property="integral" jdbcType="DOUBLE" />
+		<result column="xmer_uid" property="xmerUid" jdbcType="INTEGER" />
+		<result column="mikeid" property="mikeid" jdbcType="INTEGER" />
+		<result column="mikename" property="mikename" jdbcType="VARCHAR" />
+		<result column="reduction" property="reduction" jdbcType="DECIMAL" />
+		<result column="coupon_type" property="couponType" jdbcType="INTEGER" />
+		<result column="ledger_mode" property="ledgerMode" jdbcType="INTEGER" />
+	</resultMap>
+	
+	<resultMap id="ListBaseResultMap" type="com.xmn.saas.entity.bill.BillList">
+		<result column="bid" property="bid" jdbcType="VARCHAR" />
+		<result column="codeid" property="codeid" jdbcType="INTEGER" />
+		<result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+		<result column="sellername" property="sellername" jdbcType="VARCHAR" />
+		<result column="consume_jointid" property="consumeJointid"
+			jdbcType="INTEGER" />
+		<result column="nname" property="nname" jdbcType="VARCHAR" />
+		<result column="money" property="money" jdbcType="DECIMAL" />
+		<result column="profit" property="profit" jdbcType="DECIMAL" />
+		<result column="commision" property="commision" jdbcType="DECIMAL" />
+		<result column="payment" property="payment" jdbcType="DECIMAL" />
+		<result column="rebate" property="rebate" jdbcType="DECIMAL" />
+		<result column="full_reduction" property="fullReduction"
+			jdbcType="DECIMAL" />
+		<result column="aid" property="aid" jdbcType="INTEGER" />
+		<result column="fullname" property="fullname" jdbcType="VARCHAR" />
+		<result column="phoneid" property="phoneid" jdbcType="VARCHAR" />
+		<result column="bfirst" property="bfirst" jdbcType="BIT" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="sdate" property="sdate" jdbcType="TIMESTAMP" />
+		<result column="zdate" property="zdate" jdbcType="TIMESTAMP" />
+		<result column="ydate" property="ydate" jdbcType="TIMESTAMP" />
+		<result column="number" property="number" jdbcType="VARCHAR" />
+		<result column="paytype" property="paytype" jdbcType="VARCHAR" />
+		<result column="isaccount" property="isaccount" jdbcType="INTEGER" />
+		<result column="baseagio" property="baseagio" jdbcType="DOUBLE" />
+		<result column="type" property="type" jdbcType="INTEGER" />
+		<result column="hstatus" property="hstatus" jdbcType="INTEGER" />
+		<result column="consume_corporate" property="consumeCorporate"
+			jdbcType="VARCHAR" />
+		<result column="genussellerid" property="genussellerid"
+			jdbcType="INTEGER" />
+		<result column="genusname" property="genusname" jdbcType="VARCHAR" />
+		<result column="jointid" property="jointid" jdbcType="INTEGER" />
+		<result column="corporate" property="corporate" jdbcType="VARCHAR" />
+		<result column="mike_type" property="mikeType" jdbcType="TINYINT" />
+		<result column="uid" property="uid" jdbcType="INTEGER" />
+		<result column="commission" property="commission" jdbcType="VARCHAR" />
+		<result column="area" property="area" jdbcType="VARCHAR" />
+		<result column="zoneid" property="zoneid" jdbcType="INTEGER" />
+		<result column="payid" property="payid" jdbcType="VARCHAR" />
+		<result column="isverify" property="isverify" jdbcType="INTEGER" />
+		<result column="ldate" property="ldate" jdbcType="TIMESTAMP" />
+		<result column="fdate" property="fdate" jdbcType="TIMESTAMP" />
+		<result column="edate" property="edate" jdbcType="TIMESTAMP" />
+		<result column="comm_status" property="commStatus" jdbcType="TINYINT" />
+		<result column="estimate" property="estimate" jdbcType="TINYINT" />
+		<result column="is_virtual" property="isVirtual" jdbcType="INTEGER" />
+		<result column="flat_agio" property="flatAgio" jdbcType="DOUBLE" />
+		<result column="entry_status" property="entryStatus" jdbcType="TINYINT" />
+		<result column="give_money" property="giveMoney" jdbcType="DECIMAL" />
+		<result column="flat_money" property="flatMoney" jdbcType="DECIMAL" />
+		<result column="max_history" property="maxHistory" jdbcType="DECIMAL" />
+		<result column="cuser" property="cuser" jdbcType="DECIMAL" />
+		<result column="cdenom" property="cdenom" jdbcType="DECIMAL" />
+		<result column="third_uid" property="thirdUid" jdbcType="VARCHAR" />
+		<result column="normal" property="normal" jdbcType="TINYINT" />
+		<result column="is_activity" property="isActivity" jdbcType="TINYINT" />
+		<result column="prize_num" property="prizeNum" jdbcType="DECIMAL" />
+		<result column="source" property="source" jdbcType="INTEGER" />
+		<result column="phone_type" property="phoneType" jdbcType="TINYINT" />
+		<result column="version" property="version" jdbcType="VARCHAR" />
+		<result column="version_id" property="versionId" jdbcType="INTEGER" />
+		<result column="app_serial" property="appSerial" jdbcType="INTEGER" />
+		<result column="imei" property="imei" jdbcType="VARCHAR" />
+		<result column="ratio" property="ratio" jdbcType="DOUBLE" />
+		<result column="ratio_money" property="ratioMoney" jdbcType="DECIMAL" />
+		<result column="order_source" property="orderSource" jdbcType="INTEGER" />
+		<result column="noId" property="noid" jdbcType="BIGINT" />
+		<result column="amount" property="amount" jdbcType="DECIMAL" />
+		<result column="integral" property="integral" jdbcType="DOUBLE" />
+		<result column="xmer_uid" property="xmerUid" jdbcType="INTEGER" />
+		<result column="mikeid" property="mikeid" jdbcType="INTEGER" />
+		<result column="mikename" property="mikename" jdbcType="VARCHAR" />
+		<result column="reduction" property="reduction" jdbcType="DECIMAL" />
+		<result column="coupon_type" property="couponType" jdbcType="INTEGER" />
+		<result column="ledger_mode" property="ledgerMode" jdbcType="INTEGER" />
+	</resultMap>
+	
+	<resultMap id="ResultMapWithBLOBs" type="com.xmn.saas.entity.bill.Bill"
+		extends="BaseResultMap">
+		<result column="activity_conent" property="activityConent"
+			jdbcType="LONGVARCHAR" />
+		<result column="activity_rest" property="activityRest"
+			jdbcType="LONGVARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		bid, codeid, sellerid, sellername, consume_jointid, nname,
+		money, profit,
+		commision,
+		payment, rebate, aid, fullname, phoneid,
+		bfirst, status, sdate, zdate, ydate,
+		number,
+		paytype, isaccount,
+		baseagio, type, hstatus, consume_corporate, genussellerid,
+		genusname,
+		jointid, corporate, mike_type, uid, commission, area, zoneid, payid,
+		isverify,
+		ldate,
+		fdate, edate, comm_status, estimate, is_virtual,
+		flat_agio, entry_status,
+		give_money,
+		flat_money, max_history, cuser,
+		cdenom, third_uid, normal, is_activity,
+		prize_num,
+		source, phone_type,
+		version, version_id, app_serial, imei, ratio,
+		ratio_money,
+		order_source,
+		noId, amount, integral, xmer_uid, mikeid, mikename,
+		reduction, coupon_type
+	</sql>
+
+	<sql id="t_activity_kill_record_sql">
+		UNION
+		SELECT
+		number bidno , codeid,sellerid, phone sellername,
+		phone nname,
+		sec_kill_amount money,0 profit,
+		0 commision,
+		0 payment,0
+		rebate,0 aid,0 fullname,phone phoneid,
+		0 bfirst,pay_status status,
+		pay_time sdate,pay_time zdate,
+		number,
+		pay_type paytype,0 isaccount,
+		0
+		baseagio,0 type,0 hstatus,0 consume_corporate,0 genussellerid,
+		0
+		genusname,
+		0 jointid,0 corporate,0 mike_type, uid,0 commission,0 area,0
+		zoneid,0 payid,
+		0 isverify,
+		0 ldate,
+		0 cuser,
+		0 cdenom,0 is_activity,
+		0
+		order_source,pay_amount amount,
+		0 reduction,0 coupon_type, 2 billType
+		from t_activity_kill_record
+
+	</sql>
+	
+	<sql id="t_micro_bill_sql">
+		UNION
+		SELECT
+		order_number bidno ,0 codeid, sellerid, order_name sellername,
+		order_name nname,
+		total_amount money,0 profit,
+		0 commision,
+		0 payment,0
+		rebate,0 aid,0 fullname,0 phoneid,
+		0 bfirst,pay_status status,
+		create_time sdate,create_time zdate,
+		order_number number,
+		pay_type paytype,0 isaccount,
+		0
+		baseagio,0 type,0 hstatus,0 consume_corporate,0 genussellerid,
+		0
+		genusname,
+		0 jointid,0 corporate,0 mike_type, uid,0 commission,0 area,0
+		zoneid,0 payid,
+		0 isverify,
+		0 ldate,
+		0 cuser,
+		0 cdenom,0 is_activity,
+		0
+		source,total_amount amount,
+		0 reduction,0 coupon_type, 3 billType
+		from t_micro_bill
+	</sql>
+	
+	<sql id="Blob_Column_List">
+		activity_conent, activity_rest
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from t_bill
+		where bid = #{bid,jdbcType=BIGINT}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		delete from t_bill
+		where bid = #{bid,jdbcType=BIGINT}
+	</delete>
+	<insert id="insert" parameterType="com.xmn.saas.entity.bill.Bill">
+		insert into t_bill (bid,
+		codeid, sellerid,
+		sellername, consume_jointid, nname,
+		money, profit,
+		commision,
+		payment, rebate, aid,
+		fullname, phoneid, bfirst,
+		status,
+		sdate, zdate,
+		ydate, number, paytype,
+		isaccount, baseagio, type,
+		hstatus, consume_corporate, genussellerid,
+		genusname, jointid,
+		corporate,
+		mike_type, uid, commission,
+		area, zoneid, payid,
+		isverify,
+		ldate, fdate,
+		edate, comm_status, estimate,
+		is_virtual, flat_agio,
+		entry_status,
+		give_money, flat_money, max_history,
+		cuser, cdenom,
+		third_uid,
+		normal, is_activity, prize_num,
+		source, phone_type, version,
+		version_id, app_serial, imei,
+		ratio, ratio_money, order_source,
+		noId,
+		amount, integral,
+		xmer_uid, mikeid, mikename,
+		reduction, coupon_type,
+	    live_ledger,live_ledger_style,live_ledger_mode,live_ledger_ratio,uid_relation_chain  )
+		values (#{bid,jdbcType=BIGINT},
+		#{codeid,jdbcType=INTEGER},
+		#{sellerid,jdbcType=INTEGER},
+		#{sellername,jdbcType=VARCHAR}, #{consumeJointid,jdbcType=INTEGER},
+		#{nname,jdbcType=VARCHAR},
+		#{money,jdbcType=DECIMAL},
+		#{profit,jdbcType=DECIMAL},
+		#{commision,jdbcType=DECIMAL},
+		#{payment,jdbcType=DECIMAL}, #{rebate,jdbcType=DECIMAL},
+		#{aid,jdbcType=INTEGER},
+		#{fullname,jdbcType=VARCHAR},
+		#{phoneid,jdbcType=VARCHAR},
+		#{bfirst,jdbcType=BIT},
+		#{status,jdbcType=INTEGER}, #{sdate,jdbcType=TIMESTAMP},
+		#{zdate,jdbcType=TIMESTAMP},
+		#{ydate,jdbcType=TIMESTAMP},
+		#{number,jdbcType=VARCHAR},
+		#{paytype,jdbcType=VARCHAR},
+		#{isaccount,jdbcType=INTEGER}, #{baseagio,jdbcType=DOUBLE},
+		#{type,jdbcType=INTEGER},
+		#{hstatus,jdbcType=INTEGER},
+		#{consumeCorporate,jdbcType=VARCHAR},
+		#{genussellerid,jdbcType=INTEGER},
+		#{genusname,jdbcType=VARCHAR},
+		#{jointid,jdbcType=INTEGER}, #{corporate,jdbcType=VARCHAR},
+		#{mikeType,jdbcType=TINYINT}, #{uid,jdbcType=INTEGER},
+		#{commission,jdbcType=VARCHAR},
+		#{area,jdbcType=VARCHAR},
+		#{zoneid,jdbcType=INTEGER}, #{payid,jdbcType=VARCHAR},
+		#{isverify,jdbcType=INTEGER}, #{ldate,jdbcType=TIMESTAMP},
+		#{fdate,jdbcType=TIMESTAMP},
+		#{edate,jdbcType=TIMESTAMP},
+		#{commStatus,jdbcType=TINYINT}, #{estimate,jdbcType=TINYINT},
+		#{isVirtual,jdbcType=INTEGER}, #{flatAgio,jdbcType=DOUBLE},
+		#{entryStatus,jdbcType=TINYINT},
+		#{giveMoney,jdbcType=DECIMAL},
+		#{flatMoney,jdbcType=DECIMAL}, #{maxHistory,jdbcType=DECIMAL},
+		#{cuser,jdbcType=DECIMAL}, #{cdenom,jdbcType=DECIMAL},
+		#{thirdUid,jdbcType=VARCHAR},
+		#{normal,jdbcType=TINYINT},
+		#{isActivity,jdbcType=TINYINT}, #{prizeNum,jdbcType=DECIMAL},
+		#{source,jdbcType=INTEGER}, #{phoneType,jdbcType=TINYINT},
+		#{version,jdbcType=VARCHAR},
+		#{versionId,jdbcType=INTEGER},
+		#{appSerial,jdbcType=INTEGER}, #{imei,jdbcType=VARCHAR},
+		#{ratio,jdbcType=DOUBLE}, #{ratioMoney,jdbcType=DECIMAL},
+		#{orderSource,jdbcType=INTEGER},
+		#{noid,jdbcType=BIGINT},
+		#{amount,jdbcType=DECIMAL}, #{integral,jdbcType=DOUBLE},
+		#{xmerUid,jdbcType=INTEGER}, #{mikeid,jdbcType=INTEGER},
+		#{mikename,jdbcType=VARCHAR},
+		#{reduction,jdbcType=DECIMAL},
+		#{couponType,jdbcType=INTEGER},
+		#{liveLedger},#{liveLedgerStyle},#{liveLedgerMode},#{liveLedgerRatio},#{uidRelationChain})
+	</insert>
+	<insert id="insertSelective" parameterType="com.xmn.saas.entity.bill.Bill">
+		insert into t_bill
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bid != null">
+				bid,
+			</if>
+			<if test="codeid != null">
+				codeid,
+			</if>
+			<if test="sellerid != null">
+				sellerid,
+			</if>
+			<if test="sellername != null">
+				sellername,
+			</if>
+			<if test="consumeJointid != null">
+				consume_jointid,
+			</if>
+			<if test="nname != null">
+				nname,
+			</if>
+			<if test="money != null">
+				money,
+			</if>
+			<if test="profit != null">
+				profit,
+			</if>
+			<if test="commision != null">
+				commision,
+			</if>
+			<if test="payment != null">
+				payment,
+			</if>
+			<if test="rebate != null">
+				rebate,
+			</if>
+			<if test="aid != null">
+				aid,
+			</if>
+			<if test="fullname != null">
+				fullname,
+			</if>
+			<if test="phoneid != null">
+				phoneid,
+			</if>
+			<if test="bfirst != null">
+				bfirst,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="sdate != null">
+				sdate,
+			</if>
+			<if test="zdate != null">
+				zdate,
+			</if>
+			<if test="ydate != null">
+				ydate,
+			</if>
+			<if test="number != null">
+				number,
+			</if>
+			<if test="paytype != null">
+				paytype,
+			</if>
+			<if test="isaccount != null">
+				isaccount,
+			</if>
+			<if test="baseagio != null">
+				baseagio,
+			</if>
+			<if test="type != null">
+				type,
+			</if>
+			<if test="hstatus != null">
+				hstatus,
+			</if>
+			<if test="consumeCorporate != null">
+				consume_corporate,
+			</if>
+			<if test="genussellerid != null">
+				genussellerid,
+			</if>
+			<if test="genusname != null">
+				genusname,
+			</if>
+			<if test="jointid != null">
+				jointid,
+			</if>
+			<if test="corporate != null">
+				corporate,
+			</if>
+			<if test="mikeType != null">
+				mike_type,
+			</if>
+			<if test="uid != null">
+				uid,
+			</if>
+			<if test="commission != null">
+				commission,
+			</if>
+			<if test="area != null">
+				area,
+			</if>
+			<if test="zoneid != null">
+				zoneid,
+			</if>
+			<if test="payid != null">
+				payid,
+			</if>
+			<if test="isverify != null">
+				isverify,
+			</if>
+			<if test="ldate != null">
+				ldate,
+			</if>
+			<if test="fdate != null">
+				fdate,
+			</if>
+			<if test="edate != null">
+				edate,
+			</if>
+			<if test="commStatus != null">
+				comm_status,
+			</if>
+			<if test="estimate != null">
+				estimate,
+			</if>
+			<if test="isVirtual != null">
+				is_virtual,
+			</if>
+			<if test="flatAgio != null">
+				flat_agio,
+			</if>
+			<if test="entryStatus != null">
+				entry_status,
+			</if>
+			<if test="giveMoney != null">
+				give_money,
+			</if>
+			<if test="flatMoney != null">
+				flat_money,
+			</if>
+			<if test="maxHistory != null">
+				max_history,
+			</if>
+			<if test="cuser != null">
+				cuser,
+			</if>
+			<if test="cdenom != null">
+				cdenom,
+			</if>
+			<if test="thirdUid != null">
+				third_uid,
+			</if>
+			<if test="normal != null">
+				normal,
+			</if>
+			<if test="isActivity != null">
+				is_activity,
+			</if>
+			<if test="prizeNum != null">
+				prize_num,
+			</if>
+			<if test="source != null">
+				source,
+			</if>
+			<if test="phoneType != null">
+				phone_type,
+			</if>
+			<if test="version != null">
+				version,
+			</if>
+			<if test="versionId != null">
+				version_id,
+			</if>
+			<if test="appSerial != null">
+				app_serial,
+			</if>
+			<if test="imei != null">
+				imei,
+			</if>
+			<if test="ratio != null">
+				ratio,
+			</if>
+			<if test="ratioMoney != null">
+				ratio_money,
+			</if>
+			<if test="orderSource != null">
+				order_source,
+			</if>
+			<if test="noid != null">
+				noId,
+			</if>
+			<if test="amount != null">
+				amount,
+			</if>
+			<if test="integral != null">
+				integral,
+			</if>
+			<if test="xmerUid != null">
+				xmer_uid,
+			</if>
+			<if test="mikeid != null">
+				mikeid,
+			</if>
+			<if test="mikename != null">
+				mikename,
+			</if>
+			<if test="reduction != null">
+				reduction,
+			</if>
+			<if test="couponType != null">
+				coupon_type,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bid != null">
+				#{bid,jdbcType=BIGINT},
+			</if>
+			<if test="codeid != null">
+				#{codeid,jdbcType=INTEGER},
+			</if>
+			<if test="sellerid != null">
+				#{sellerid,jdbcType=INTEGER},
+			</if>
+			<if test="sellername != null">
+				#{sellername,jdbcType=VARCHAR},
+			</if>
+			<if test="consumeJointid != null">
+				#{consumeJointid,jdbcType=INTEGER},
+			</if>
+			<if test="nname != null">
+				#{nname,jdbcType=VARCHAR},
+			</if>
+			<if test="money != null">
+				#{money,jdbcType=DECIMAL},
+			</if>
+			<if test="profit != null">
+				#{profit,jdbcType=DECIMAL},
+			</if>
+			<if test="commision != null">
+				#{commision,jdbcType=DECIMAL},
+			</if>
+			<if test="payment != null">
+				#{payment,jdbcType=DECIMAL},
+			</if>
+			<if test="rebate != null">
+				#{rebate,jdbcType=DECIMAL},
+			</if>
+			<if test="aid != null">
+				#{aid,jdbcType=INTEGER},
+			</if>
+			<if test="fullname != null">
+				#{fullname,jdbcType=VARCHAR},
+			</if>
+			<if test="phoneid != null">
+				#{phoneid,jdbcType=VARCHAR},
+			</if>
+			<if test="bfirst != null">
+				#{bfirst,jdbcType=BIT},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+			<if test="sdate != null">
+				#{sdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="zdate != null">
+				#{zdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="ydate != null">
+				#{ydate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="number != null">
+				#{number,jdbcType=VARCHAR},
+			</if>
+			<if test="paytype != null">
+				#{paytype,jdbcType=VARCHAR},
+			</if>
+			<if test="isaccount != null">
+				#{isaccount,jdbcType=INTEGER},
+			</if>
+			<if test="baseagio != null">
+				#{baseagio,jdbcType=DOUBLE},
+			</if>
+			<if test="type != null">
+				#{type,jdbcType=INTEGER},
+			</if>
+			<if test="hstatus != null">
+				#{hstatus,jdbcType=INTEGER},
+			</if>
+			<if test="consumeCorporate != null">
+				#{consumeCorporate,jdbcType=VARCHAR},
+			</if>
+			<if test="genussellerid != null">
+				#{genussellerid,jdbcType=INTEGER},
+			</if>
+			<if test="genusname != null">
+				#{genusname,jdbcType=VARCHAR},
+			</if>
+			<if test="jointid != null">
+				#{jointid,jdbcType=INTEGER},
+			</if>
+			<if test="corporate != null">
+				#{corporate,jdbcType=VARCHAR},
+			</if>
+			<if test="mikeType != null">
+				#{mikeType,jdbcType=TINYINT},
+			</if>
+			<if test="uid != null">
+				#{uid,jdbcType=INTEGER},
+			</if>
+			<if test="commission != null">
+				#{commission,jdbcType=VARCHAR},
+			</if>
+			<if test="area != null">
+				#{area,jdbcType=VARCHAR},
+			</if>
+			<if test="zoneid != null">
+				#{zoneid,jdbcType=INTEGER},
+			</if>
+			<if test="payid != null">
+				#{payid,jdbcType=VARCHAR},
+			</if>
+			<if test="isverify != null">
+				#{isverify,jdbcType=INTEGER},
+			</if>
+			<if test="ldate != null">
+				#{ldate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="fdate != null">
+				#{fdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="edate != null">
+				#{edate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="commStatus != null">
+				#{commStatus,jdbcType=TINYINT},
+			</if>
+			<if test="estimate != null">
+				#{estimate,jdbcType=TINYINT},
+			</if>
+			<if test="isVirtual != null">
+				#{isVirtual,jdbcType=INTEGER},
+			</if>
+			<if test="flatAgio != null">
+				#{flatAgio,jdbcType=DOUBLE},
+			</if>
+			<if test="entryStatus != null">
+				#{entryStatus,jdbcType=TINYINT},
+			</if>
+			<if test="giveMoney != null">
+				#{giveMoney,jdbcType=DECIMAL},
+			</if>
+			<if test="flatMoney != null">
+				#{flatMoney,jdbcType=DECIMAL},
+			</if>
+			<if test="maxHistory != null">
+				#{maxHistory,jdbcType=DECIMAL},
+			</if>
+			<if test="cuser != null">
+				#{cuser,jdbcType=DECIMAL},
+			</if>
+			<if test="cdenom != null">
+				#{cdenom,jdbcType=DECIMAL},
+			</if>
+			<if test="thirdUid != null">
+				#{thirdUid,jdbcType=VARCHAR},
+			</if>
+			<if test="normal != null">
+				#{normal,jdbcType=TINYINT},
+			</if>
+			<if test="isActivity != null">
+				#{isActivity,jdbcType=TINYINT},
+			</if>
+			<if test="prizeNum != null">
+				#{prizeNum,jdbcType=DECIMAL},
+			</if>
+			<if test="source != null">
+				#{source,jdbcType=INTEGER},
+			</if>
+			<if test="phoneType != null">
+				#{phoneType,jdbcType=TINYINT},
+			</if>
+			<if test="version != null">
+				#{version,jdbcType=VARCHAR},
+			</if>
+			<if test="versionId != null">
+				#{versionId,jdbcType=INTEGER},
+			</if>
+			<if test="appSerial != null">
+				#{appSerial,jdbcType=INTEGER},
+			</if>
+			<if test="imei != null">
+				#{imei,jdbcType=VARCHAR},
+			</if>
+			<if test="ratio != null">
+				#{ratio,jdbcType=DOUBLE},
+			</if>
+			<if test="ratioMoney != null">
+				#{ratioMoney,jdbcType=DECIMAL},
+			</if>
+			<if test="orderSource != null">
+				#{orderSource,jdbcType=INTEGER},
+			</if>
+			<if test="noid != null">
+				#{noid,jdbcType=BIGINT},
+			</if>
+			<if test="amount != null">
+				#{amount,jdbcType=DECIMAL},
+			</if>
+			<if test="integral != null">
+				#{integral,jdbcType=DOUBLE},
+			</if>
+			<if test="xmerUid != null">
+				#{xmerUid,jdbcType=INTEGER},
+			</if>
+			<if test="mikeid != null">
+				#{mikeid,jdbcType=INTEGER},
+			</if>
+			<if test="mikename != null">
+				#{mikename,jdbcType=VARCHAR},
+			</if>
+			<if test="reduction != null">
+				#{reduction,jdbcType=DECIMAL},
+			</if>
+			<if test="couponType != null">
+				#{couponType,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.xmn.saas.entity.bill.Bill">
+		update t_bill
+		<set>
+			<if test="codeid != null">
+				codeid = #{codeid,jdbcType=INTEGER},
+			</if>
+			<if test="sellerid != null">
+				sellerid = #{sellerid,jdbcType=INTEGER},
+			</if>
+			<if test="sellername != null">
+				sellername = #{sellername,jdbcType=VARCHAR},
+			</if>
+			<if test="consumeJointid != null">
+				consume_jointid = #{consumeJointid,jdbcType=INTEGER},
+			</if>
+			<if test="nname != null">
+				nname = #{nname,jdbcType=VARCHAR},
+			</if>
+			<if test="money != null">
+				money = #{money,jdbcType=DECIMAL},
+			</if>
+			<if test="profit != null">
+				profit = #{profit,jdbcType=DECIMAL},
+			</if>
+			<if test="commision != null">
+				commision = #{commision,jdbcType=DECIMAL},
+			</if>
+			<if test="payment != null">
+				payment = #{payment,jdbcType=DECIMAL},
+			</if>
+			<if test="rebate != null">
+				rebate = #{rebate,jdbcType=DECIMAL},
+			</if>
+			<if test="aid != null">
+				aid = #{aid,jdbcType=INTEGER},
+			</if>
+			<if test="fullname != null">
+				fullname = #{fullname,jdbcType=VARCHAR},
+			</if>
+			<if test="phoneid != null">
+				phoneid = #{phoneid,jdbcType=VARCHAR},
+			</if>
+			<if test="bfirst != null">
+				bfirst = #{bfirst,jdbcType=BIT},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="sdate != null">
+				sdate = #{sdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="zdate != null">
+				zdate = #{zdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="ydate != null">
+				ydate = #{ydate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="number != null">
+				number = #{number,jdbcType=VARCHAR},
+			</if>
+			<if test="paytype != null">
+				paytype = #{paytype,jdbcType=VARCHAR},
+			</if>
+			<if test="isaccount != null">
+				isaccount = #{isaccount,jdbcType=INTEGER},
+			</if>
+			<if test="baseagio != null">
+				baseagio = #{baseagio,jdbcType=DOUBLE},
+			</if>
+			<if test="type != null">
+				type = #{type,jdbcType=INTEGER},
+			</if>
+			<if test="hstatus != null">
+				hstatus = #{hstatus,jdbcType=INTEGER},
+			</if>
+			<if test="consumeCorporate != null">
+				consume_corporate = #{consumeCorporate,jdbcType=VARCHAR},
+			</if>
+			<if test="genussellerid != null">
+				genussellerid = #{genussellerid,jdbcType=INTEGER},
+			</if>
+			<if test="genusname != null">
+				genusname = #{genusname,jdbcType=VARCHAR},
+			</if>
+			<if test="jointid != null">
+				jointid = #{jointid,jdbcType=INTEGER},
+			</if>
+			<if test="corporate != null">
+				corporate = #{corporate,jdbcType=VARCHAR},
+			</if>
+			<if test="mikeType != null">
+				mike_type = #{mikeType,jdbcType=TINYINT},
+			</if>
+			<if test="uid != null">
+				uid = #{uid,jdbcType=INTEGER},
+			</if>
+			<if test="commission != null">
+				commission = #{commission,jdbcType=VARCHAR},
+			</if>
+			<if test="area != null">
+				area = #{area,jdbcType=VARCHAR},
+			</if>
+			<if test="zoneid != null">
+				zoneid = #{zoneid,jdbcType=INTEGER},
+			</if>
+			<if test="payid != null">
+				payid = #{payid,jdbcType=VARCHAR},
+			</if>
+			<if test="isverify != null">
+				isverify = #{isverify,jdbcType=INTEGER},
+			</if>
+			<if test="ldate != null">
+				ldate = #{ldate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="fdate != null">
+				fdate = #{fdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="edate != null">
+				edate = #{edate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="commStatus != null">
+				comm_status = #{commStatus,jdbcType=TINYINT},
+			</if>
+			<if test="estimate != null">
+				estimate = #{estimate,jdbcType=TINYINT},
+			</if>
+			<if test="isVirtual != null">
+				is_virtual = #{isVirtual,jdbcType=INTEGER},
+			</if>
+			<if test="flatAgio != null">
+				flat_agio = #{flatAgio,jdbcType=DOUBLE},
+			</if>
+			<if test="entryStatus != null">
+				entry_status = #{entryStatus,jdbcType=TINYINT},
+			</if>
+			<if test="giveMoney != null">
+				give_money = #{giveMoney,jdbcType=DECIMAL},
+			</if>
+			<if test="flatMoney != null">
+				flat_money = #{flatMoney,jdbcType=DECIMAL},
+			</if>
+			<if test="maxHistory != null">
+				max_history = #{maxHistory,jdbcType=DECIMAL},
+			</if>
+			<if test="cuser != null">
+				cuser = #{cuser,jdbcType=DECIMAL},
+			</if>
+			<if test="cdenom != null">
+				cdenom = #{cdenom,jdbcType=DECIMAL},
+			</if>
+			<if test="thirdUid != null">
+				third_uid = #{thirdUid,jdbcType=VARCHAR},
+			</if>
+			<if test="normal != null">
+				normal = #{normal,jdbcType=TINYINT},
+			</if>
+			<if test="isActivity != null">
+				is_activity = #{isActivity,jdbcType=TINYINT},
+			</if>
+			<if test="prizeNum != null">
+				prize_num = #{prizeNum,jdbcType=DECIMAL},
+			</if>
+			<if test="source != null">
+				source = #{source,jdbcType=INTEGER},
+			</if>
+			<if test="phoneType != null">
+				phone_type = #{phoneType,jdbcType=TINYINT},
+			</if>
+			<if test="version != null">
+				version = #{version,jdbcType=VARCHAR},
+			</if>
+			<if test="versionId != null">
+				version_id = #{versionId,jdbcType=INTEGER},
+			</if>
+			<if test="appSerial != null">
+				app_serial = #{appSerial,jdbcType=INTEGER},
+			</if>
+			<if test="imei != null">
+				imei = #{imei,jdbcType=VARCHAR},
+			</if>
+			<if test="ratio != null">
+				ratio = #{ratio,jdbcType=DOUBLE},
+			</if>
+			<if test="ratioMoney != null">
+				ratio_money = #{ratioMoney,jdbcType=DECIMAL},
+			</if>
+			<if test="orderSource != null">
+				order_source = #{orderSource,jdbcType=INTEGER},
+			</if>
+			<if test="noid != null">
+				noId = #{noid,jdbcType=BIGINT},
+			</if>
+			<if test="amount != null">
+				amount = #{amount,jdbcType=DECIMAL},
+			</if>
+			<if test="integral != null">
+				integral = #{integral,jdbcType=DOUBLE},
+			</if>
+			<if test="xmerUid != null">
+				xmer_uid = #{xmerUid,jdbcType=INTEGER},
+			</if>
+			<if test="mikeid != null">
+				mikeid = #{mikeid,jdbcType=INTEGER},
+			</if>
+			<if test="mikename != null">
+				mikename = #{mikename,jdbcType=VARCHAR},
+			</if>
+			<if test="reduction != null">
+				reduction = #{reduction,jdbcType=DECIMAL},
+			</if>
+			<if test="couponType != null">
+				coupon_type = #{couponType,jdbcType=INTEGER},
+			</if>
+		</set>
+		where bid = #{bid,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKeyWithBLOBs" parameterType="com.xmn.saas.entity.bill.Bill">
+		update
+		t_bill
+		set codeid = #{codeid,jdbcType=INTEGER},
+		sellerid =
+		#{sellerid,jdbcType=INTEGER},
+		sellername =
+		#{sellername,jdbcType=VARCHAR},
+		consume_jointid =
+		#{consumeJointid,jdbcType=INTEGER},
+		nname = #{nname,jdbcType=VARCHAR},
+		money = #{money,jdbcType=DECIMAL},
+		profit = #{profit,jdbcType=DECIMAL},
+		commision = #{commision,jdbcType=DECIMAL},
+		payment =
+		#{payment,jdbcType=DECIMAL},
+		rebate = #{rebate,jdbcType=DECIMAL},
+		aid =
+		#{aid,jdbcType=INTEGER},
+		fullname = #{fullname,jdbcType=VARCHAR},
+		phoneid = #{phoneid,jdbcType=VARCHAR},
+		bfirst = #{bfirst,jdbcType=BIT},
+		status = #{status,jdbcType=INTEGER},
+		sdate =
+		#{sdate,jdbcType=TIMESTAMP},
+		zdate = #{zdate,jdbcType=TIMESTAMP},
+		ydate
+		= #{ydate,jdbcType=TIMESTAMP},
+		number = #{number,jdbcType=VARCHAR},
+		paytype = #{paytype,jdbcType=VARCHAR},
+		isaccount =
+		#{isaccount,jdbcType=INTEGER},
+		baseagio = #{baseagio,jdbcType=DOUBLE},
+		type = #{type,jdbcType=INTEGER},
+		hstatus = #{hstatus,jdbcType=INTEGER},
+		consume_corporate = #{consumeCorporate,jdbcType=VARCHAR},
+		genussellerid = #{genussellerid,jdbcType=INTEGER},
+		genusname =
+		#{genusname,jdbcType=VARCHAR},
+		jointid = #{jointid,jdbcType=INTEGER},
+		corporate = #{corporate,jdbcType=VARCHAR},
+		mike_type =
+		#{mikeType,jdbcType=TINYINT},
+		uid = #{uid,jdbcType=INTEGER},
+		commission
+		= #{commission,jdbcType=VARCHAR},
+		area = #{area,jdbcType=VARCHAR},
+		zoneid = #{zoneid,jdbcType=INTEGER},
+		payid = #{payid,jdbcType=VARCHAR},
+		isverify = #{isverify,jdbcType=INTEGER},
+		ldate =
+		#{ldate,jdbcType=TIMESTAMP},
+		fdate = #{fdate,jdbcType=TIMESTAMP},
+		edate
+		= #{edate,jdbcType=TIMESTAMP},
+		comm_status =
+		#{commStatus,jdbcType=TINYINT},
+		estimate =
+		#{estimate,jdbcType=TINYINT},
+		is_virtual =
+		#{isVirtual,jdbcType=INTEGER},
+		flat_agio = #{flatAgio,jdbcType=DOUBLE},
+		entry_status = #{entryStatus,jdbcType=TINYINT},
+		give_money =
+		#{giveMoney,jdbcType=DECIMAL},
+		flat_money =
+		#{flatMoney,jdbcType=DECIMAL},
+		max_history =
+		#{maxHistory,jdbcType=DECIMAL},
+		cuser = #{cuser,jdbcType=DECIMAL},
+		cdenom = #{cdenom,jdbcType=DECIMAL},
+		third_uid =
+		#{thirdUid,jdbcType=VARCHAR},
+		normal = #{normal,jdbcType=TINYINT},
+		is_activity = #{isActivity,jdbcType=TINYINT},
+		prize_num =
+		#{prizeNum,jdbcType=DECIMAL},
+		source = #{source,jdbcType=INTEGER},
+		phone_type = #{phoneType,jdbcType=TINYINT},
+		version =
+		#{version,jdbcType=VARCHAR},
+		version_id =
+		#{versionId,jdbcType=INTEGER},
+		app_serial =
+		#{appSerial,jdbcType=INTEGER},
+		imei = #{imei,jdbcType=VARCHAR},
+		ratio =
+		#{ratio,jdbcType=DOUBLE},
+		ratio_money = #{ratioMoney,jdbcType=DECIMAL},
+		order_source = #{orderSource,jdbcType=INTEGER},
+		noId =
+		#{noid,jdbcType=BIGINT},
+		amount = #{amount,jdbcType=DECIMAL},
+		integral =
+		#{integral,jdbcType=DOUBLE},
+		xmer_uid = #{xmerUid,jdbcType=INTEGER},
+		mikeid = #{mikeid,jdbcType=INTEGER},
+		mikename =
+		#{mikename,jdbcType=VARCHAR},
+		reduction =
+		#{reduction,jdbcType=DECIMAL},
+		coupon_type =
+		#{couponType,jdbcType=INTEGER},
+		activity_conent =
+		#{activityConent,jdbcType=LONGVARCHAR},
+		activity_rest =
+		#{activityRest,jdbcType=LONGVARCHAR}
+		where bid = #{bid,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.xmn.saas.entity.bill.Bill">
+		update t_bill
+		set
+		codeid = #{codeid,jdbcType=INTEGER},
+		sellerid =
+		#{sellerid,jdbcType=INTEGER},
+		sellername =
+		#{sellername,jdbcType=VARCHAR},
+		consume_jointid =
+		#{consumeJointid,jdbcType=INTEGER},
+		nname = #{nname,jdbcType=VARCHAR},
+		money = #{money,jdbcType=DECIMAL},
+		profit = #{profit,jdbcType=DECIMAL},
+		commision = #{commision,jdbcType=DECIMAL},
+		payment =
+		#{payment,jdbcType=DECIMAL},
+		rebate = #{rebate,jdbcType=DECIMAL},
+		aid =
+		#{aid,jdbcType=INTEGER},
+		fullname = #{fullname,jdbcType=VARCHAR},
+		phoneid = #{phoneid,jdbcType=VARCHAR},
+		bfirst = #{bfirst,jdbcType=BIT},
+		status = #{status,jdbcType=INTEGER},
+		sdate =
+		#{sdate,jdbcType=TIMESTAMP},
+		zdate = #{zdate,jdbcType=TIMESTAMP},
+		ydate
+		= #{ydate,jdbcType=TIMESTAMP},
+		number = #{number,jdbcType=VARCHAR},
+		paytype = #{paytype,jdbcType=VARCHAR},
+		isaccount =
+		#{isaccount,jdbcType=INTEGER},
+		baseagio = #{baseagio,jdbcType=DOUBLE},
+		type = #{type,jdbcType=INTEGER},
+		hstatus = #{hstatus,jdbcType=INTEGER},
+		consume_corporate = #{consumeCorporate,jdbcType=VARCHAR},
+		genussellerid = #{genussellerid,jdbcType=INTEGER},
+		genusname =
+		#{genusname,jdbcType=VARCHAR},
+		jointid = #{jointid,jdbcType=INTEGER},
+		corporate = #{corporate,jdbcType=VARCHAR},
+		mike_type =
+		#{mikeType,jdbcType=TINYINT},
+		uid = #{uid,jdbcType=INTEGER},
+		commission
+		= #{commission,jdbcType=VARCHAR},
+		area = #{area,jdbcType=VARCHAR},
+		zoneid = #{zoneid,jdbcType=INTEGER},
+		payid = #{payid,jdbcType=VARCHAR},
+		isverify = #{isverify,jdbcType=INTEGER},
+		ldate =
+		#{ldate,jdbcType=TIMESTAMP},
+		fdate = #{fdate,jdbcType=TIMESTAMP},
+		edate
+		= #{edate,jdbcType=TIMESTAMP},
+		comm_status =
+		#{commStatus,jdbcType=TINYINT},
+		estimate =
+		#{estimate,jdbcType=TINYINT},
+		is_virtual =
+		#{isVirtual,jdbcType=INTEGER},
+		flat_agio = #{flatAgio,jdbcType=DOUBLE},
+		entry_status = #{entryStatus,jdbcType=TINYINT},
+		give_money =
+		#{giveMoney,jdbcType=DECIMAL},
+		flat_money =
+		#{flatMoney,jdbcType=DECIMAL},
+		max_history =
+		#{maxHistory,jdbcType=DECIMAL},
+		cuser = #{cuser,jdbcType=DECIMAL},
+		cdenom = #{cdenom,jdbcType=DECIMAL},
+		third_uid =
+		#{thirdUid,jdbcType=VARCHAR},
+		normal = #{normal,jdbcType=TINYINT},
+		is_activity = #{isActivity,jdbcType=TINYINT},
+		prize_num =
+		#{prizeNum,jdbcType=DECIMAL},
+		source = #{source,jdbcType=INTEGER},
+		phone_type = #{phoneType,jdbcType=TINYINT},
+		version =
+		#{version,jdbcType=VARCHAR},
+		version_id =
+		#{versionId,jdbcType=INTEGER},
+		app_serial =
+		#{appSerial,jdbcType=INTEGER},
+		imei = #{imei,jdbcType=VARCHAR},
+		ratio =
+		#{ratio,jdbcType=DOUBLE},
+		ratio_money = #{ratioMoney,jdbcType=DECIMAL},
+		order_source = #{orderSource,jdbcType=INTEGER},
+		noId =
+		#{noid,jdbcType=BIGINT},
+		amount = #{amount,jdbcType=DECIMAL},
+		integral =
+		#{integral,jdbcType=DOUBLE},
+		xmer_uid = #{xmerUid,jdbcType=INTEGER},
+		mikeid = #{mikeid,jdbcType=INTEGER},
+		mikename =
+		#{mikename,jdbcType=VARCHAR},
+		reduction =
+		#{reduction,jdbcType=DECIMAL},
+		coupon_type =
+		#{couponType,jdbcType=INTEGER}
+		where bid = #{bid,jdbcType=BIGINT}
+	</update>
+
+	<select id="findFansList" resultType="com.xmn.saas.entity.bill.Bill">
+	<![CDATA[
+	 select uid, bid ,cdenom,sellerid,coupon_type,zdate ,paytype from t_bill where coupon_type=3 and zdate!='0000 00:00:00' and sellerid=#{sellerid} and zdate >= #{sdate} and zdate <= #{edate} ORDER BY zdate desc
+	]]>
+	</select>
+
+	<select id="findFansCountDate" resultType="String"
+		parameterType="map">
+		<![CDATA[select DATE_FORMAT(zdate,'%Y-%m-%d') countDate  from t_bill where coupon_type=3 and zdate!='0000 00:00:00' and sellerid=#{sellerid} and zdate >= #{sdate} and zdate <= #{edate}
+		 GROUP BY DATE_FORMAT(zdate,'%Y-%m-%d')  ORDER BY zdate desc]]>
+		<include refid="pageInfoFilter"></include>
+	</select>
+
+
+	<select id="findMember" resultType="map" parameterType="map">
+	  <![CDATA[	
+		SELECT *
+		FROM ( 
+			(SELECT COUNT(DISTINCT uid) normalCount FROM t_bill WHERE sellerid=#{sellerid} AND STATUS!=0 AND STATUS!=5 AND sellerid != genussellerid
+		AND TO_DAYS(zdate)<=TO_DAYS(#{zdate})  AND TO_DAYS(zdate) >=TO_DAYS(#{zdate}) 
+		AND uid NOT IN (SELECT  bill.uid FROM t_bill bill WHERE bill.sellerid=#{sellerid} AND bill.STATUS!=0 AND bill.STATUS!=5 AND bill.sellerid != bill.genussellerid
+		AND TO_DAYS(bill.zdate)<TO_DAYS(#{zdate})   )
+		) t,
+		
+		(SELECT COUNT(*) AS
+		bindCount FROM t_bill WHERE
+		sellerid =
+		genussellerid AND sellerid
+		=#{sellerid} AND
+		bfirst=1 AND zdate >=
+		#{zdate}) b  )
+		]]>
+	</select>
+
+	<select id="findBillList" resultType="com.xmn.saas.entity.bill.BillList"
+		parameterType="map" resultMap="ListBaseResultMap">
+		
+		<![CDATA[
+		select * FROM (
+		select 
+	    concat(bid,'')  bidno, codeid, sellerid, sellername,  nname,
+		money, profit,
+		commision,
+		payment, rebate, aid, fullname, phoneid,
+		bfirst, status, sdate, zdate,
+		number,
+		paytype, isaccount,
+		baseagio, type, hstatus, consume_corporate, genussellerid,
+		genusname,
+		jointid, corporate, mike_type, uid, commission, area, zoneid, payid,
+		isverify,
+		ldate,
+		 cuser,
+		cdenom,  is_activity,
+		order_source, amount, 
+		reduction, coupon_type,1 billType
+		FROM t_bill
+		where
+		 zdate !='0000 00:00:00' and zdate !=''
+		 and status !=0 and ledger_mode !=1  and money >=0.05   and zdate >= #{sdate} and zdate <= #{edate}  and sellerid = #{uId}]]>
+		<include refid="t_activity_kill_record_sql" />  
+       <![CDATA[ where pay_time >= #{sdate} and pay_time <= #{edate}  and sellerid = #{uId} and pay_status =1]]>
+       <include refid="t_micro_bill_sql" />  
+       <![CDATA[ where create_time >= #{sdate} and create_time <= #{edate}  and sellerid = #{uId} and pay_status =1) t  ORDER BY t.zdate desc]]>
+       
+       
+	</select>
+
+	<select id="findCountDate" resultType="String" parameterType="map">
+		<![CDATA[
+		select DATE_FORMAT(zdate,'%Y-%m-%d') countDate  FROM (
+		select 
+	    concat(bid,'') bidno, codeid, sellerid, sellername,  nname,
+		money, profit,
+		commision,
+		payment, rebate, aid, fullname, phoneid,
+		bfirst, status, sdate, zdate,
+		number,
+		paytype, isaccount,
+		baseagio, type, hstatus, consume_corporate, genussellerid,
+		genusname,
+		jointid, corporate, mike_type, uid, commission, area, zoneid, payid,
+		isverify,
+		ldate,
+		 cuser,
+		cdenom,  is_activity,
+		order_source, amount, 
+		reduction, coupon_type,1 billType
+		FROM t_bill
+		where
+		 zdate !='0000 00:00:00' and zdate !=''
+		 and status !=0 and ledger_mode !=1  and money >=0.05   and zdate >= #{sdate} and zdate <= #{edate}  and sellerid = #{uId} ]]>
+		<include refid="t_activity_kill_record_sql" /> 
+        <![CDATA[ where pay_time >= #{sdate} and pay_time <= #{edate}  and sellerid = #{uId} and pay_status =1]]>
+        
+        <include refid="t_micro_bill_sql" />  
+        <![CDATA[ where create_time >= #{sdate} and create_time <= #{edate}  and sellerid = #{uId} and pay_status =1]]>
+	    
+	    ) t GROUP BY DATE_FORMAT(t.zdate,'%Y-%m-%d')
+		ORDER BY t.zdate desc
+		
+
+		<include refid="pageInfoFilter"></include>
+	</select>
+
+	<select id="findCountDateSum" resultType="String" parameterType="map">
+		<![CDATA[select DATE_FORMAT(zdate,'%Y-%m-%d') countDate  from t_bill where
+		sellerid = #{uId} and zdate !='0000 00:00:00' and zdate !=''
+		and zdate >= #{sdate} and zdate <= #{edate} and status !=0 and ledger_mode !=1 GROUP BY DATE_FORMAT(zdate,'%Y-%m-%d')  ORDER BY zdate desc]]>
+	</select>
+
+	<select id="findBillCount" resultType="com.xmn.saas.entity.bill.BillList"
+		parameterType="map" resultMap="ListBaseResultMap">
+		<![CDATA[
+		select * FROM (
+		select 
+	    concat(bid,'') bidno, codeid, sellerid, sellername,  nname,
+		money, profit,
+		commision,
+		payment, rebate, aid, fullname, phoneid,
+		bfirst, status, sdate, zdate,
+		number,
+		paytype, isaccount,
+		baseagio, type, hstatus, consume_corporate, genussellerid,
+		genusname,
+		jointid, corporate, mike_type, uid, commission, area, zoneid, payid,
+		isverify,
+		ldate,
+		 cuser,
+		cdenom,  is_activity,
+		order_source, amount, 
+		reduction, coupon_type,1 billType
+		FROM t_bill
+		where
+		 zdate !='0000 00:00:00' and zdate !=''
+		 and status !=0 and ledger_mode !=1  and money >=0.05   and zdate >= #{sdate} and zdate <= #{edate}  and sellerid = #{uId}]]>
+         <include refid="t_activity_kill_record_sql" /> 
+         <![CDATA[  where pay_time >= #{sdate} and pay_time <= #{edate}  and sellerid = #{uId} and pay_status =1]]> 
+         
+         <include refid="t_micro_bill_sql" />  
+         <![CDATA[ where create_time >= #{sdate} and create_time <= #{edate}  and sellerid = #{uId} and pay_status =1]]>
+         
+         )t ORDER BY t.zdate desc
+		
+	</select>
+
+
+	<!-- 登录查询营收记录 -->
+	<select id="findLoginBillList" resultType="com.xmn.saas.entity.bill.Bill"
+		parameterType="map" resultMap="BaseResultMap">
+		<![CDATA[select * FROM t_bill
+		where
+		sellerid = #{uId} and zdate !='0000 00:00:00' and zdate !=''
+		and zdate >= #{sdate} and zdate <= #{edate} and status !=0
+		order by
+		zdate desc
+		]]>
+	</select>
+
+	<select id="findLoginCountDate" resultType="String"
+		parameterType="map">
+		<![CDATA[select DATE_FORMAT(zdate,'%Y-%m-%d') countDate  from t_bill where
+		sellerid = #{uId} and zdate !='0000 00:00:00' and zdate !=''
+		and zdate >= #{sdate} and zdate <= #{edate} and status !=0 GROUP BY DATE_FORMAT(zdate,'%Y-%m-%d')  ORDER BY zdate desc]]>
+		<include refid="pageInfoFilter"></include>
+	</select>
+
+	<select id="findLoginBillCount" resultType="com.xmn.saas.entity.bill.Bill"
+		parameterType="map" resultMap="BaseResultMap">
+		<![CDATA[
+		select * from
+		t_bill where sellerid= #{uId} 
+		and zdate >= #{sdate} and zdate <= #{edate} and
+		status !=0 
+		]]>
+	</select>
+
+	<!-- 查询本店消费几次 -->
+	<select id="findConsumTimes" resultType="java.lang.Integer"
+		parameterType="map">
+		select count(*) count from t_bill bill where
+		bill.sellerid = #{sellerid} and
+		bill.uid = (SELECT t.uid from t_bill t
+		where t.bid = #{bid} )
+	</select>
+
+	<select id="findBillDetail" resultType="com.xmn.saas.entity.bill.BillList"
+		parameterType="map" resultMap="ListBaseResultMap">
+		select * FROM (
+		select 
+	    concat(bid,'') bidno, codeid, sellerid, sellername,  nname,
+		money, profit,
+		commision,
+		payment, rebate, aid, fullname, phoneid,
+		bfirst, status, sdate, zdate,
+		number,
+		paytype, isaccount,
+		baseagio, type, hstatus, consume_corporate, genussellerid,
+		genusname,
+		jointid, corporate, mike_type, uid, commission, area, zoneid, payid,
+		isverify,
+		ldate,
+		 cuser,
+		cdenom,  is_activity,
+		order_source, amount, 
+		reduction, coupon_type,1 billType
+		FROM t_bill where bid =
+		#{bid}
+		<include refid="t_activity_kill_record_sql" />  where number =
+		#{bid} and pay_status =1
+		<include refid="t_micro_bill_sql" />  where order_number =
+		#{bid} and pay_status =1
+		  ) t  
+
+	</select>
+	<!-- 分页组件 -->
+	<sql id="pageInfoFilter">
+		<if test="pageOffset != null and pageSize != null">
+			LIMIT ${pageOffset},${pageSize}
+		</if>
+	</sql>
+
+	<resultMap id="BillResultMap" type="com.xmn.saas.entity.bill.Bill">
+		<id column="bid" property="bid" jdbcType="BIGINT" />
+		<result column="codeid" property="codeid" jdbcType="INTEGER" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="zdate" property="zdate" jdbcType="TIMESTAMP" />
+		<result column="money" property="money" jdbcType="DOUBLE" />
+		<result column="ledger_mode" property="ledgerMode" jdbcType="INTEGER" />
+		<result column="cuser" property="cuser" jdbcType="DECIMAL" />
+		<result column="full_reduction" property="fullReduction"
+			jdbcType="DECIMAL" />
+		<result column="reduction" property="reduction" jdbcType="DECIMAL" />
+		<result column="coupon_type" property="couponType" jdbcType="DECIMAL" />
+		<result column="phoneid" property="phoneid" jdbcType="DECIMAL" />
+		<result column="live_ledger" property="liveLedger" jdbcType="INTEGER" />
+
+	</resultMap>
+
+	<select id="selectBillByBid" parameterType="String" resultMap="BillResultMap">
+		select
+		bid,status,codeid,zdate,sdate,bfirst,money,baseagio
+		from t_bill
+		where bid=#{bid} and source!=2 and zdate!='0000-00-00 00:00:00'
+	</select>
+
+	<insert id="inserBillRecord" parameterType="map">
+		insert into
+		t_bill_record( bid,status,explains,cdate)
+		values(#{bid},#{status},#{explains},#{cdate})
+	</insert>
+
+
+	<!-- 分账后更新订单状态 -->
+	<update id="modifyHstatus" parameterType="java.util.Map">
+		update t_bill
+		<set>
+			<if test="status != null">
+				status = #{status},
+			</if>
+			<if test="hstatus != null">
+				hstatus = #{hstatus},
+			</if>
+			<if test="ldate != null">
+				ldate = #{ldate},ydate=#{ldate},
+			</if>
+
+		</set>
+		where bid=#{bid}
+	</update>
+	<!-- 根据商户ID和消费吗查询订单信息 -->
+	<select id="selectBillByCodeidAndSellerid" parameterType="map"
+		resultMap="BillResultMap">
+		select
+		bid,status,codeid,zdate,sdate,bfirst,money,baseagio,live_ledger,
+		cuser,full_reduction,reduction,coupon_type,phoneid
+		from t_bill where
+		sellerid=#{sellerid} and codeid=#{codeid} and
+		source!=2 and
+		zdate!='0000-00-00 00:00:00' and status=1
+	</select>
+
+
+	<resultMap id="BaginResultMap" type="com.xmn.saas.entity.bill.Bagin">
+		<id column="bid" property="bid" jdbcType="BIGINT" />
+		<result column="codeid" property="codeid" jdbcType="INTEGER" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="zdate" property="zdate" jdbcType="VARCHAR" />
+		<result column="money" property="money" jdbcType="DOUBLE" />
+		<result column="money" property="money" jdbcType="INTEGER" />
+	</resultMap>
+	<!--根据商户ID和消费码查询爆品订单信息 -->
+	<select id="selectBarginBycodeidAndSellerid" parameterType="map"
+		resultMap="BaginResultMap">
+		select
+		bid,date_format(pay_time,'%Y-%m-%d %h:%i')
+		zdate,codeid,amount money,bpid
+		from t_bill_bargain
+		where status=1 and
+		codeid=#{codeid} and sellerid=#{sellerid} and bstatus=0
+	</select>
+
+	<!-- 修改积分订单状态 -->
+	<update id="modifyBarginBycodeid" parameterType="map">
+		update
+		t_bill_bargain set hstatus=11,bstatus=1 where sellerid=#{sellerid}
+		and
+		bid=#{bid} and status=1
+	</update>
+
+	<!-- 修改积分商品卖出数量 -->
+	<update id="modifyBarginCount" parameterType="int">
+		update
+		t_bargain_product set sale_num=sale_num+1 where bp_id=#{bpid}
+	</update>
+
+	<resultMap id="couponResultMap" type="com.xmn.saas.entity.bill.Coupon">
+		<id column="cuid" property="cuid" jdbcType="INTEGER" />
+		<result column="start_date" property="sdate" jdbcType="VARCHAR" />
+		<result column="end_date" property="edate" jdbcType="VARCHAR" />
+		<result column="get_time" property="gdate" jdbcType="VARCHAR" />
+		<result column="denomination" property="denomination" jdbcType="DOUBLE" />
+		<result column="phone" property="phone" jdbcType="VARCHAR" />
+		<result column="use_money" property="useMoney" jdbcType="VARCHAR" />
+		<result column="get_way" property="getWay" jdbcType="VARCHAR" />
+		<result column="cname" property="cname" jdbcType="VARCHAR" />
+		<result column="description" property="description" jdbcType="VARCHAR" />
+		<result column="sellername" property="sellerName" jdbcType="VARCHAR" />
+		<result column="useStatus" property="useStatus" jdbcType="INTEGER" />
+	</resultMap>
+	<!-- 根据商户ID和验证码查询优惠券信息（商家优惠卷） -->
+	<select id="selectCouponByCodeidAndSellerid" parameterType="map"
+		resultMap="couponResultMap">
+		select 
+		date_format(c.start_date,'%Y-%m-%d %H:%i') start_date,
+		date_format(c.end_date,'%Y-%m-%d %H:%i')end_date,
+		date_format(c.get_time,'%Y-%m-%d %H:%i')get_time,c.cuid,
+		c.denomination,c.phone,c.use_money,c.get_way,s.cname,s.description
+		from t_user_coupon
+		c,t_seller_coupon_detail s
+		where c.cid=s.cid and
+		c.use_status=0 and
+		s.sellerid=#{sellerid} and
+		c.serial_no=#{codeid} and
+		s.coupon_type=4
+	</select>
+	<!-- 根据商户ID和验证码查询粉丝卷信息 （粉丝卷）-->	
+	<select id="queryCouponByCodeidAndSellerid" parameterType="map"
+		resultMap="couponResultMap">
+		select c.cname,
+		s.sellername,
+		c.validity_desc description,
+		date_format(d.start_date,'%Y.%m.%d %H:%i')start_date,
+		date_format(d.end_date,'%Y.%m.%d %H:%i')end_date,
+		d.cdid cuid,
+		d.user_status useStatus from t_coupon_detail d
+		 LEFT JOIN  t_coupon_order o on d.order_no = o.order_sn
+		 LEFT JOIN t_seller s on o.sellerid = s.sellerid
+		 LEFT JOIN t_coupon c on  c.cid  = d.cid
+		 where o.sellerid=#{sellerid} and d.serial=#{codeid}
+	</select>
+
+	<!-- 修改商家赠送券使用状态 -->
+	<update id="modifyCouponSellerStatusByCuid" parameterType="map">
+		update
+		t_user_coupon set use_status=2,use_time=#{date} where cuid=#{cuid}
+
+	</update>
+	
+	<!-- 修改商家赠送券使用状态 -->
+	<update id="modifyCouponStatusByCuid" parameterType="map">
+		update
+		t_coupon_detail set user_status=2,user_time=#{date} where cdid=#{cdid}
+
+	</update>
+
+	<select id="countFullJoinNum" resultType="java.lang.Integer">
+		select count(bid) from
+		t_bill where full_reduction_id = #{fullRedutionId}
+	</select>
+	
+	<select id="selectFirstConsume" resultType="java.util.Date" >
+		SELECT zdate as first FROM `t_bill` where zdate is not null and zdate &lt;> '0000-00-00 00:00:00' and sellerid=#{sellerid} and uid=#{uid}  order by zdate asc  LIMIT 0,1
+	</select>
+	
+	<select id="selectLastConsume" resultType="java.util.Date">
+		SELECT zdate FROM `t_bill` where zdate is not null and zdate &lt;> '0000-00-00 00:00:00' and sellerid=#{sellerid} and uid=#{uid}  order by zdate desc  LIMIT 0,1
+	</select>
+	
+	<select id="CountConsume" resultType="java.lang.Integer">
+		SELECT count(*) FROM `t_bill` where zdate is not null and zdate &lt;> '0000-00-00 00:00:00' and sellerid=#{sellerid} and uid=#{uid}
+	</select>
+	
+	<select id="sumConsume" resultType="java.math.BigDecimal">
+		SELECT sum(payment) FROM `t_bill` where zdate is not null and zdate &lt;> '0000-00-00 00:00:00'  and sellerid=#{sellerid} and uid=#{uid}
+	</select>
+	<select id="maxConsume" resultType="java.math.BigDecimal">
+		SELECT max(payment) FROM `t_bill` where zdate is not null and zdate &lt;> '0000-00-00 00:00:00'  and sellerid=#{sellerid} and uid=#{uid}
+	</select>
+	<select id="minConsume" resultType="java.math.BigDecimal">
+		SELECT min(payment) FROM `t_bill` where zdate is not null and zdate &lt;> '0000-00-00 00:00:00' and sellerid=#{sellerid} and uid=#{uid}
+	</select>
+	<select id="avgConsume" resultType="java.math.BigDecimal">
+		SELECT avg(payment) FROM `t_bill` where zdate is not null and zdate &lt;> '0000-00-00 00:00:00' and sellerid=#{sellerid} and uid=#{uid}
+	</select>
+	
+</mapper>

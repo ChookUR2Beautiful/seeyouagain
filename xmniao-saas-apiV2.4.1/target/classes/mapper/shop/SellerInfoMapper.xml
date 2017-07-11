@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.shop.SellerInfoDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.saas.entity.shop.SellerInfo" >
+    <id column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="sellerName" property="sellerName" jdbcType="VARCHAR" />
+    <result column="zoneId" property="zoneId" jdbcType="INTEGER" />
+    <result column="zoneName" property="zoneName" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="tel" property="phone" jdbcType="VARCHAR" />
+    <result column="typeName" property="typeName" jdbcType="VARCHAR" />
+    <result column="sdate" property="openDate" jdbcType="VARCHAR" />
+    <result column="tradename" property="tradename" jdbcType="VARCHAR" />
+    <result column="category" property="category" jdbcType="VARCHAR" />
+    <result column="genre" property="genre" jdbcType="VARCHAR" />
+    <result column="agio" property="agio" jdbcType="DOUBLE" />
+    <result column="fullname" property="fullname" jdbcType="VARCHAR" />
+    <result column="signdate" property="signdate" jdbcType="VARCHAR" />
+     <result column="province" property="provinceNo" jdbcType="INTEGER" />
+    <result column="city" property="cityNo" jdbcType="INTEGER" />
+    <result column="area" property="areaNo" jdbcType="INTEGER" />
+      <result column="tag_ids" property="tagIds" jdbcType="VARCHAR"/>
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    sellerid,sellerName,zoneId,address,tel,typeName,sdate,agio,tradename,category,genre,fullname,DATE_FORMAT(signdate,'%Y-%m-%d %H:%i')signdate,
+     province,city,area,tag_ids
+  </sql>
+  
+  <!-- 查询商家基本信息 -->
+  <select id="querySellerBySellerId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_seller
+    where sellerid=#{sellerid}
+  </select>
+  <!-- 修改店铺资料 -->
+  <update id="saveSeller" parameterType="map">
+	update t_seller
+	<set>
+		<if test="sellerName != null">
+			sellerName = #{sellerName},
+		</if>
+		<if test="zoneId != null">
+			zoneId = #{zoneId},
+		</if>
+		<if test="phone != null">
+			phoneid = #{phone},
+		</if>
+
+		<if test="typeName != null">
+			typeName = #{typeName},
+		</if>
+
+		<if test="openDate != null">
+			sdate = #{openDate},
+		</if>
+		
+		<if test="address != null">
+			address = #{address},
+		</if>
+		<if test="udate != null">
+			udate = #{udate},
+		</if>
+		<if test="tradename != null">
+			tradename = #{tradename},
+		</if>
+		<if test="category != null">
+			category = #{category},
+		</if>
+		<if test="genre != null">
+			genre = #{genre},
+		</if>
+        <if test="tagIds != null">
+            tag_ids = #{tagIds}
+        </if>
+		
+	</set>
+	where sellerid=#{sellerid}
+
+	</update>
+  
+  
+   <resultMap id="SellerDetailedMap" type="com.xmn.saas.entity.shop.SellerDetailed" >
+    <id column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="consume" property="consume" jdbcType="DOUBLE" />
+    <result column="iswifi" property="isWifi" jdbcType="INTEGER" />
+    <result column="isParking" property="isParking" jdbcType="INTEGER" />
+    <result column="landMark" property="landMark" jdbcType="VARCHAR" />
+    <result column="operating_out" property="operating" jdbcType="INTEGER" />
+  </resultMap>
+   <sql id="Detailed_Column_List" >
+    sellerid,consume,iswifi,isparking,landMark,operating_out
+  </sql>
+ <!-- 查询商家详细信息 -->
+ <select id="querySellerDetailedBySellerid" resultMap="SellerDetailedMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Detailed_Column_List" />
+    from t_seller_detailed
+    where sellerid=#{sellerid}
+  </select>
+  <!-- 修改店铺详细资料 -->
+  <update id="saveSellerDetailed" parameterType="map">
+  	update t_seller_detailed
+	<set>
+		<if test="consume != null">
+			consume = #{consume},
+		</if>
+		<if test="isWifi != null">
+			isWifi = #{isWifi},
+		</if>
+		<if test="isParking != null">
+			isParking = #{isParking},
+		</if>
+
+		<if test="landMark != null">
+			landMark = #{landMark},
+		</if>
+
+	</set>
+	where sellerid=#{sellerid}
+  </update>
+  
+ 
+    <resultMap id="SellerLandMarkMap" type="com.xmn.saas.entity.shop.SellerLandMark" >
+    <id column="lid" property="lid" jdbcType="INTEGER" />
+    <result column="longitude" property="longitude" jdbcType="DOUBLE" />
+    <result column="latitude" property="latitude" jdbcType="DOUBLE" />
+    <result column="gg_lat" property="ggLat" jdbcType="DOUBLE" />
+    <result column="gg_lng" property="ggLng" jdbcType="DOUBLE" />
+  	</resultMap>
+   <sql id="LandMark_Column_List" >
+    lid,longitude,latitude,gg_lat,gg_lng
+  </sql>
+ 
+ <!-- 查询商家坐标信息-->
+ <select id="queryLandMarkBySellerid" resultMap="SellerLandMarkMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="LandMark_Column_List" />
+    from t_seller_landmark
+    where sellerid=#{sellerid}
+  </select>
+  
+  <!-- 修改商家坐标信息 -->
+  <update id="saveSellerLandMark" parameterType="map">
+  	update t_seller_landmark
+	<set>
+		<if test="longitude != null">
+			longitude = #{longitude},
+		</if>
+		<if test="latitude != null">
+			latitude = #{latitude},
+		</if>
+		<if test="ggLat != null">
+			gg_Lat = #{ggLat},
+		</if>
+
+		<if test="ggLng != null">
+			gg_Lng = #{ggLng},
+		</if>
+
+	</set>
+	where sellerid=#{sellerid}
+  
+  </update>
+  
+  
+      <resultMap id="BusinessMap" type="com.xmn.saas.entity.shop.Business">
+    <id column="bid" property="bid" jdbcType="INTEGER" />
+    <result column="longitude" property="longitude" jdbcType="DOUBLE" />
+    <result column="latitude" property="latitude" jdbcType="DOUBLE" />
+    <result column="gg_lat" property="ggLat" jdbcType="DOUBLE" />
+    <result column="gg_lng" property="ggLng" jdbcType="DOUBLE" />
+     <result column="title" property="title" jdbcType="VARCHAR" />
+  	</resultMap>
+  	
+	   <sql id="Business_Column_List" >
+	    bid,longitude,latitude,gg_lat,gg_lng,title
+	  </sql>
+	  <!-- 查询商圈信息 -->
+  <select id="queryBusinessBySellerid" resultMap="BusinessMap" parameterType="java.lang.Integer">
+    select 
+    <include refid="Business_Column_List" />
+    from t_business
+    where bid=#{bid}
+  </select>
+  
+  <sql id="SellerApplyColume">
+        <trim suffix="" suffixOverrides=",">
+            <if test="sellerid != null">
+                sellerid,
+            </if>
+            <if test="sellerName != null">
+                sellername,
+            </if>
+            <if test="address != null">
+                address,
+            </if>
+            <if test="landMark != null">
+                landmark,
+            </if>
+            <if test="zoneId != null">
+                zoneId,
+            </if>
+            <if test="longitude != null">
+                longitude,
+            </if>
+            <if test="latitude != null">
+                latitude,
+            </if>
+            <if test="source != null">
+                source,
+            </if>
+            <if test="phone != null">
+                phone,
+            </if>
+            <if test="sdate != null">
+                sdate,
+            </if>
+             <if test="provinceNo != 0">
+                province,
+            </if>
+             <if test="cityNo != 0">
+                city,
+            </if>
+             <if test="areaNo != 0">
+                area,
+            </if>
+        </trim>
+    </sql>
+    
+     <sql id="SellerApplyValue">
+        <trim suffix="" suffixOverrides=",">
+            <if test="sellerid != null">
+                #{sellerid},
+            </if>
+            <if test="sellerName != null">
+                #{sellerName},
+            </if>
+            <if test="address != null">
+                 #{address},
+            </if>
+            <if test="landMark != null">
+                 #{landMark},
+            </if>
+            <if test="zoneId != null">
+                 #{zoneId},
+            </if>
+            <if test="longitude != null">
+                 #{longitude},
+            </if>
+            <if test="latitude != null">
+                 #{latitude},
+            </if>
+            <if test="source != null">
+                 #{source},
+            </if>
+            <if test="phone != null">
+                 #{phone},
+            </if>
+              <if test="sdate != null">
+                 #{sdate},
+            </if>
+             <if test="provinceNo != 0">
+                #{provinceNo},
+            </if>
+             <if test="cityNo != 0">
+               #{cityNo},
+            </if>
+             <if test="areaNo != 0">
+                #{areaNo}
+            </if>
+        </trim>
+    </sql>
+  
+  
+  <!-- 添加商家修改资料申请 -->
+  <insert id="insertSellerApply" parameterType="map" useGeneratedKeys="true" keyProperty="id">
+  	<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+			  SELECT LAST_INSERT_ID() AS id
+	</selectKey>
+  	  insert into t_seller_apply (
+                <include refid="SellerApplyColume"/>
+        ) values (
+                <include refid="SellerApplyValue"/>
+        )
+  
+  </insert>
+  
+  <!-- 查询商家提交待审核的数量 -->
+  <select id="querySellerApplyCount" parameterType="int" resultType="int">
+  	select count(1) from t_seller_apply where sellerid=#{sellerid} and source=#{type} and status=0
+  </select>
+ 	
+   <resultMap id="ApplyResultMap" type="com.xmn.saas.entity.shop.SellerApply" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+     <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="sellerName" property="sellerName" jdbcType="VARCHAR" />
+    <result column="zoneId" property="zoneId" jdbcType="INTEGER" />
+    <result column="zoneName" property="zoneName" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="typeName" property="typeName" jdbcType="VARCHAR" />
+    <result column="sdate" property="sdate" jdbcType="VARCHAR" />
+     <result column="consume" property="consume" jdbcType="DOUBLE" />
+    <result column="iswifi" property="isWifi" jdbcType="INTEGER" />
+    <result column="isParking" property="isParking" jdbcType="INTEGER" />
+    <result column="landMark" property="landMark" jdbcType="VARCHAR" />
+      <result column="longitude" property="longitude" jdbcType="DOUBLE" />
+    <result column="latitude" property="latitude" jdbcType="DOUBLE" />
+     <result column="openDate" property="openDate" jdbcType="VARCHAR" />
+     
+     <result column="province" property="provinceNo" jdbcType="INTEGER" />
+    <result column="city" property="cityNo" jdbcType="INTEGER" />
+     <result column="area" property="areaNo" jdbcType="INTEGER" />
+  </resultMap>
+
+	<sql id="SellerApply_Column_List">
+		id,
+		sellerid,
+		sellerName,
+		address,
+		landMark,
+		zoneId,
+		longitude,
+		latitude,
+		source,
+		phone,
+		province,
+		city,
+		area
+	
+	</sql>	
+  
+ <!-- 查询待审核的数据 -->	
+ <select id="querySellerApply" parameterType="int" resultMap="ApplyResultMap">
+  	select <include refid="SellerApply_Column_List" /> 
+  	from t_seller_apply where sellerid=#{sellerid} and source=#{type} and status=0 order by id desc limit 0,1
+  </select>
+  
+  
+     <resultMap id="PicResultMap" type="com.xmn.saas.entity.shop.SellerPic" >
+    <id column="picid" property="id" jdbcType="INTEGER" />
+     <result column="picurl" property="url" jdbcType="VARCHAR" />
+    <result column="islogo" property="type" jdbcType="VARCHAR" />
+    <result column="islogo" property="type" jdbcType="INTEGER" />
+
+  </resultMap>
+  <!-- 查询商家图片列表 -->
+  <select id="querySellerPicBySellerId" resultMap="PicResultMap" parameterType="map"> 
+  select picid, CONCAT(#{fileUrl},picurl) picurl,islogo
+  from t_seller_pic where sellerid=#{sellerid}
+  <if test="type != null">
+  and islogo=#{type}
+  </if>
+  
+  </select>
+  
+  <!-- 查询审核表图片信息 -->
+  <select id="querySellerPicApplyByid" resultMap="PicResultMap" parameterType="map">
+  	select  picid,CONCAT(#{fileUrl},pic_url) picurl,type from t_seller_pic_apply where said=#{id}
+  </select>
+ 	
+ <!--  添加审核图片 -->
+ <insert id="inserSellerPicApply" parameterType="map">
+ 	insert into t_seller_pic_apply(sellerid,said,type,pic_url,update_date) values(#{sellerid},#{id},#{type},#{url},#{udate})
+ </insert>
+ 
+ <!-- 查询离商家最近的商圈信息 -->
+ <select resultMap="BusinessMap" id="queryBusinessBylongAndlat" parameterType="map">
+ SELECT longitude,latitude,bid,title,
+	ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{latitude}*PI()/180-latitude*PI()/180)/2),2)+COS(#{latitude}*PI()/180)*COS(latitude*PI()/180)*POW(SIN((#{longitude}*PI()/180-longitude*PI()/180)/2),2)))*1000)
+	as `range`
+	FROM t_business b where  b.`latitude` IS NOT NULL order by `range`  limit 1
+ </select>
+ <!-- 删除图片 -->
+ <delete id="deleteSellerPic" parameterType="map">
+ 	 delete from t_seller_pic where picurl=#{url} and sellerid=#{sellerid} and islogo=0 
+ 	<!-- delete from t_seller_pic where picid=30601 -->
+ </delete>
+ <!-- 删除审核中的图片 -->
+  <delete id="deleteSellerPicApply" parameterType="map">
+ 	delete from t_seller_pic_apply where pic_url=#{url} and sellerid=#{sellerid} and type=1
+ </delete>
+ 
+</mapper>

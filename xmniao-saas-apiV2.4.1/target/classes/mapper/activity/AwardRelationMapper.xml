@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.activity.AwardRelationDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.saas.entity.activity.AwardRelation" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="activity_id" property="activityId" jdbcType="INTEGER" />
+    <result column="award_id" property="awardId" jdbcType="INTEGER" />
+    <result column="award_name" property="awardName" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="award_type" property="awardType" jdbcType="INTEGER" />
+    <result column="activity_type" property="activityType" jdbcType="INTEGER" />
+    <result column="amount" property="amount" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, activity_id, award_id, award_name, status, award_type,activity_type,amount
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_activity_award_relation
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_activity_award_relation
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmn.saas.entity.activity.AwardRelation" >
+    insert into t_activity_award_relation (id, activity_id, award_id, 
+      award_name, status, award_type,activity_type,amount
+      )
+    values (#{id,jdbcType=INTEGER}, #{activityId,jdbcType=INTEGER}, #{awardId,jdbcType=INTEGER}, 
+      #{awardName,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{awardType,jdbcType=INTEGER},
+      #{activityType,jdbcType=INTEGER},#{amount,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmn.saas.entity.activity.AwardRelation" >
+    insert into t_activity_award_relation
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="activityId != null" >
+        activity_id,
+      </if>
+      <if test="awardId != null" >
+        award_id,
+      </if>
+      <if test="awardName != null" >
+        award_name,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="awardType != null" >
+        award_type,
+      </if>
+      <if test="activityType != null" >
+        activity_type,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="activityId != null" >
+        #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="awardId != null" >
+        #{awardId,jdbcType=INTEGER},
+      </if>
+      <if test="awardName != null" >
+        #{awardName,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="awardType != null" >
+        #{awardType,jdbcType=INTEGER},
+      </if>
+      <if test="activityType != null" >
+        #{activityType,jdbcType=INTEGER},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.saas.entity.activity.AwardRelation" >
+    update t_activity_award_relation
+    <set >
+      <if test="activityId != null" >
+        activity_id = #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="awardId != null" >
+        award_id = #{awardId,jdbcType=INTEGER},
+      </if>
+      <if test="awardName != null" >
+        award_name = #{awardName,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="awardType != null" >
+        award_type = #{awardType,jdbcType=INTEGER},
+      </if>
+      <if test="activityType != null" >
+        activity_type = #{activityType,jdbcType=INTEGER},
+      </if>
+      <if test="amount != null" >
+        activity_type = #{amount,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.saas.entity.activity.AwardRelation" >
+    update t_activity_award_relation
+    set activity_id = #{activityId,jdbcType=INTEGER},
+      award_id = #{awardId,jdbcType=INTEGER},
+      award_name = #{awardName,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      award_type = #{awardType,jdbcType=INTEGER},
+      activity_type=#{activityType,jdbcType=INTEGER},
+      amount=#{amount,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="getActivityAward" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+  	select <include refid="Base_Column_List" />
+  	from t_activity_award_relation
+  	where activity_id = #{activityId,jdbcType=INTEGER} and activity_type=#{activityType,jdbcType=INTEGER}
+  </select>
+  
+  <update id="updateStatus">
+  		 update t_activity_award_relation
+    set status = #{status,jdbcType=INTEGER} where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="sumAward" resultType="java.lang.Integer">
+  	select sum(amount) from t_activity_award_relation where activity_id=#{activityId,jdbcType=INTEGER} and activity_type = #{activityType,jdbcType=INTEGER}
+  </select>
+</mapper>

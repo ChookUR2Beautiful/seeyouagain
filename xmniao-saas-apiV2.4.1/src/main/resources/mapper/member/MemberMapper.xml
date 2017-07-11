@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.member.MemberDao" >
+
+	<resultMap id="BaseResultMap" type="com.xmn.saas.entity.member.MemberDetail">
+		
+		<result column="count" property="count" jdbcType="INTEGER" />
+		<result column="nearDate" property="nearDate" jdbcType="VARCHAR" />
+		<result column="firstDate" property="firstDate" jdbcType="VARCHAR" />
+		<result column="maxMoney" property="maxMoney" jdbcType="DOUBLE" />
+		<result column="minMoney" property="minMoney" jdbcType="DOUBLE" />
+		<result column="sumMoney" property="sumMoney" jdbcType="DOUBLE" />
+		<result column="avgMoney" property="avgMoney" jdbcType="DOUBLE" />
+	</resultMap>
+  
+
+  
+  <!-- 查询会员详细信息（统计会员信息） -->
+  <select id="detail" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+	<!-- select MAX(DATE_FORMAT(zdate,'%Y-%m-%d %H:%i'))nearDate,MIN(DATE_FORMAT(zdate,'%Y-%m-%d %H:%i'))
+	firstDate,count(1) count,MAX(money) maxMoney,MIN(money)
+	minMoney,SUM(money) sumMoney,avg(money) avgMoney from t_bill where
+	uid=#{uid} and sellerid=#{sellerid} and zdate!='0000-00-00 00:00:00' and status !=0 and status!=5  -->
+	select MAX(DATE_FORMAT(zdate,'%Y-%m-%d %H:%i'))nearDate,MIN(DATE_FORMAT(zdate,'%Y-%m-%d %H:%i'))
+	firstDate,count(1) count,MAX(money) maxMoney,MIN(money)
+	minMoney,SUM(money) sumMoney,avg(money) avgMoney from (
+	select zdate, money from t_bill where uid=#{uid} and sellerid=#{sellerid} and zdate>'2010-10-10' and status !=0 and status!=5 
+	UNION ALL
+	select pay_time zdate,pay_amount money from t_activity_kill_record where uid =#{uid} and  pay_time >'2010-10-10' and pay_status =1 and sellerid =#{sellerid}
+	)a 
+	
+  </select>
+  
+  <resultMap id="BillResultMap" type="com.xmn.saas.entity.member.MemberBill">
+		
+		<result column="nname" property="name" jdbcType="VARCHAR" />
+		<result column="isBind" property="isBind" jdbcType="INTEGER" />
+		<result column="uid" property="uid" jdbcType="INTEGER" />
+		<result column="num" property="count" jdbcType="VARCHAR" />
+		<result column="zdate" property="zdate" jdbcType="VARCHAR" />
+		<result column="phoneid" property="phone" jdbcType="VARCHAR" />
+	</resultMap>
+  
+  <select id="queryBillBySellerid" parameterType="map" resultMap="BillResultMap">
+	<![CDATA[ select DATE_FORMAT(zdate1,'%Y.%m.%d')zdate,(select count(1) from 
+ (
+select zdate as zdate1 ,uid from t_bill where sellerid =#{sellerid} and zdate > '2010-10-10'
+UNION ALL
+select pay_time as zdate1,uid from t_activity_kill_record where pay_status = 1 and sellerid =#{sellerid} and pay_time > '2010-10-10'
+)
+aa  where aa.uid=a.uid and aa.zdate1<=a.zdate1) num,uid,phone,IFNULL(isbind,0)isbind
+ from (
+select zdate as zdate1,uid,phoneid phone,case when sellerid=genussellerid then 1 else 0 end isbind from t_bill where sellerid =#{sellerid} and zdate > '2010-10-10'
+UNION ALL
+select pay_time as zdate1,uid,phone,is_binding isbind from t_activity_kill_record where pay_status = 1 and sellerid =#{sellerid} and pay_time > '2010-10-10'
+) a 
+where zdate1 > '2010-10-10' 
+]]>
+	
+	<if test="searchType == 1">
+		<if test="sdate!=null">
+	 	and DATE_FORMAT(zdate1,'%Y-%m-%d')>=#{sdate}
+		</if>
+		<if test="edate!=null">
+	 <![CDATA[	and DATE_FORMAT(zdate1,'%Y-%m-%d')<=#{edate}]]>
+		</if>
+	</if>
+	
+	<if test="userType==1">
+	 and	isbind=1
+	</if>
+	
+	<if test="userType==2">
+	 and (isbind=0 or isbind is null)
+	</if>
+	 order by zdate1  desc limit ${(pageNo-1)*pageSize},#{pageSize}
+  </select>
+  
+  <!-- 查询总会员人数 -->
+  <select id="queryMemberAllCount" parameterType="int" resultType="int">
+  select count(distinct uid) allCount from t_bill where sellerid=#{sellerid} and status!=0 and status!=5
+  <if test="userType==1">
+  	and sellerid = genussellerid
+  </if>
+  <if test="userType==2">
+  	and sellerid != genussellerid
+  </if>
+  
+  	<if test="searchType == 1">
+		<if test="sdate!=null">
+	 	and DATE_FORMAT(zdate,'%Y-%m-%d')>=#{sdate}
+		</if>
+		<if test="edate!=null">
+	 <![CDATA[	and DATE_FORMAT(zdate,'%Y-%m-%d')<=#{edate}]]>
+		</if>
+	</if>
+  </select>
+ 
+</mapper>

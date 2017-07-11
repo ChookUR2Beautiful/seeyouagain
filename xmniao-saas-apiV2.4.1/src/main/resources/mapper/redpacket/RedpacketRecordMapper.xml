@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.redpacket.RedpacketRecordDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.saas.entity.redpacket.RedpacketRecord" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="redpacket_id" property="redpacketId" jdbcType="BIGINT" />
+    <result column="denomination" property="denomination" jdbcType="DECIMAL" />
+    <result column="record_time" property="recordTime" jdbcType="TIMESTAMP" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="is_new_user" property="isNewUser" jdbcType="INTEGER" />
+    <result column="is_binding" property="isBinding" jdbcType="INTEGER" />
+    <result column="is_share" property="isShare" jdbcType="INTEGER" />
+    <result column="sec_share_uid" property="secShareUid" jdbcType="BIGINT" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id,sellerid,redpacket_id, denomination, record_time, user_id, phone, is_new_user, 
+    is_binding, is_share, sec_share_uid,order_no,status
+  </sql>
+  
+   <select id="findRedpacketRecordByParams" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		
+		from t_redpacket_record where 0=0
+		
+		<if test="REDPACKET_ID !=null">
+			and redpacket_id=#{REDPACKET_ID}
+		</if>
+		
+		<if test="USER_ID !=null">
+		    and user_id=#{USER_ID}
+		</if>
+		
+		<if test="ORDER_NO !=null">
+		    and order_no=#{ORDER_NO}
+		</if>
+		
+		<if test="STATUS !=null">
+		    and status=#{STATUS}
+		</if>
+		
+		order by id desc
+  </select>
+  
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_redpacket_record
+    where id = #{redpacketRecordId,jdbcType=BIGINT}
+  </select>
+    <select id="selectByRedpacketIdAndLimit" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM t_redpacket_record
+        WHERE redpacket_id = #{0}
+        Limit #{1}, #{2}
+    </select>
+    <select id="countByRedpacketId" resultType="java.lang.Object">
+        SELECT count(1)
+      FROM t_redpacket_record
+      WHERE redpacket_id = #{0}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_redpacket_record
+    where id = #{redpacketRecordId,jdbcType=BIGINT}
+  </delete>
+  
+  <insert id="insert" parameterType="com.xmn.saas.entity.redpacket.RedpacketRecord" >
+    insert into t_redpacket_record (id,sellerid,redpacket_id, denomination, 
+      record_time, user_id, phone, 
+      is_new_user, is_binding, is_share, 
+      sec_share_uid,order_no,status)
+      values (#{redpacketRecordId,jdbcType=BIGINT}, #{sellerid,jdbcType=BIGINT}, #{redpacketId,jdbcType=BIGINT}, #{denomination,jdbcType=DECIMAL}, 
+      #{recordTime,jdbcType=TIMESTAMP}, #{userId,jdbcType=BIGINT}, #{phone,jdbcType=VARCHAR}, 
+      #{isNewUser,jdbcType=INTEGER}, #{isBinding,jdbcType=INTEGER}, #{isShare,jdbcType=INTEGER},#{secShareUid,jdbcType=BIGINT},#{orderNo,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER})
+  </insert>
+  
+  <update id="updateByPrimaryKey" parameterType="com.xmn.saas.entity.redpacket.RedpacketRecord" >
+    update t_redpacket_record
+      set sellerid = #{sellerid,jdbcType=BIGINT},
+      redpacket_id = #{redpacketId,jdbcType=BIGINT},
+      denomination = #{denomination,jdbcType=DECIMAL},
+      record_time = #{recordTime,jdbcType=TIMESTAMP},
+      user_id = #{userId,jdbcType=BIGINT},
+      phone = #{phone,jdbcType=VARCHAR},
+      is_new_user = #{isNewUser,jdbcType=INTEGER},
+      is_binding = #{isBinding,jdbcType=INTEGER},
+      is_share = #{isShare,jdbcType=INTEGER},
+      sec_share_uid = #{secShareUid,jdbcType=BIGINT},
+      order_no = #{orderNo,jdbcType=VARCHAR},
+      status = #{isShare,jdbcType=INTEGER}
+      }
+    where id = #{redpacketRecordId,jdbcType=BIGINT}
+  </update>
+  
+</mapper>

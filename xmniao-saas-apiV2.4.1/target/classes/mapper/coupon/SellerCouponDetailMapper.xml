@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.coupon.SellerCouponDetailDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.saas.entity.coupon.SellerCouponDetail" >
+    <id column="cid" property="cid" jdbcType="INTEGER" />
+    <result column="cname" property="cname" jdbcType="VARCHAR" />
+    <result column="denomination" property="denomination" jdbcType="DECIMAL" />
+    <result column="start_date" property="startDate" jdbcType="TIMESTAMP" />
+    <result column="end_date" property="endDate" jdbcType="TIMESTAMP" />
+    <result column="conditions" property="conditions" jdbcType="DECIMAL" />
+    <result column="limit_amount" property="limitAmount" jdbcType="DECIMAL" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="use_num" property="useNumaw" jdbcType="INTEGER" />
+    <result column="coupon_type" property="couponType" jdbcType="INTEGER" />
+    <result column="send_type" property="sendType" jdbcType="INTEGER" />
+    <result column="send_num" property="sendNum" jdbcType="INTEGER" />
+    <result column="maximum" property="maximum" jdbcType="INTEGER" />
+    <result column="min_m" property="minM" jdbcType="DECIMAL" />
+    <result column="max_m" property="maxM" jdbcType="DECIMAL" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="send_object" property="sendObject" jdbcType="VARCHAR" />
+    <result column="send_status" property="sendStatus" jdbcType="INTEGER" />
+    <result column="award_condition" property="awardCondition" jdbcType="INTEGER" />
+    <result column="award_number" property="awardNumber" jdbcType="INTEGER" />
+    <result column="use_number" property="useNumber" jdbcType="INTEGER" />
+    <result column="limit_number" property="limitNumber" jdbcType="INTEGER" />
+    <result column="views" property="views" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    cid, cname, denomination, start_date, end_date, conditions, limit_amount, sellerid, 
+    use_num, coupon_type, send_type, send_num, maximum, min_m, max_m, amount, send_object, 
+    send_status,award_condition, award_number, use_number, limit_number, views, status, 
+    description, create_date
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_seller_coupon_detail
+    where cid = #{cid,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 查询商户促销优惠列表信息 -->
+    <select id="queryCouponList" parameterType="com.xmn.saas.controller.h5.coupon.vo.QueryCondition" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_seller_coupon_detail
+    where sellerid =#{sellerid,jdbcType=INTEGER} 
+    <if test="type != null" >
+    	and coupon_type = #{type,jdbcType=INTEGER}
+    </if>
+    <if test="status != null" >
+    	and status = #{status,jdbcType=INTEGER}
+    </if>
+    <if test="startDate != null" >
+    	<![CDATA[ and end_date  >  #{startDate}  ]]>
+    </if>
+    <if test="endDate != null" >
+    	<![CDATA[ and end_date  <=  #{endDate}  ]]>
+    </if>
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_seller_coupon_detail
+    where cid = #{cid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyProperty="cid" parameterType="com.xmn.saas.entity.coupon.SellerCouponDetail" >
+    insert into t_seller_coupon_detail (cid, cname, denomination, 
+      start_date, end_date, conditions, 
+      limit_amount, sellerid, use_num, 
+      coupon_type, send_type, send_num, 
+      maximum, min_m, max_m, 
+      amount, send_object, send_status, 
+      award_condition, award_number, use_number, 
+      limit_number, views, status, 
+      description, create_date)
+    values (#{cid,jdbcType=INTEGER}, #{cname,jdbcType=VARCHAR}, #{denomination,jdbcType=DECIMAL}, 
+      #{startDate,jdbcType=TIMESTAMP}, #{endDate,jdbcType=TIMESTAMP}, #{conditions,jdbcType=DECIMAL}, 
+      #{limitAmount,jdbcType=DECIMAL}, #{sellerid,jdbcType=INTEGER}, #{useNumaw,jdbcType=INTEGER}, 
+      #{couponType,jdbcType=INTEGER}, #{sendType,jdbcType=INTEGER}, #{sendNum,jdbcType=INTEGER}, 
+      #{maximum,jdbcType=INTEGER}, #{minM,jdbcType=DECIMAL}, #{maxM,jdbcType=DECIMAL}, 
+      #{amount,jdbcType=DECIMAL}, #{sendObject,jdbcType=VARCHAR}, #{sendStatus,jdbcType=INTEGER}, 
+      #{awardCondition,jdbcType=INTEGER}, #{awardNumber,jdbcType=INTEGER}, #{useNumber,jdbcType=INTEGER}, 
+      #{limitNumber,jdbcType=INTEGER}, #{views,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, 
+      #{description,jdbcType=VARCHAR},#{createDate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" keyProperty="cid" useGeneratedKeys="true" parameterType="com.xmn.saas.entity.coupon.SellerCouponDetail" >
+    insert into t_seller_coupon_detail
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="cid != null" >
+        cid,
+      </if>
+      <if test="cname != null" >
+        cname,
+      </if>
+      <if test="denomination != null" >
+        denomination,
+      </if>
+      <if test="startDate != null" >
+        start_date,
+      </if>
+      <if test="endDate != null" >
+        end_date,
+      </if>
+      <if test="conditions != null" >
+        conditions,
+      </if>
+      <if test="limitAmount != null" >
+        limit_amount,
+      </if>
+      <if test="sellerid != null" >
+        sellerid,
+      </if>
+      <if test="useNumaw != null" >
+        use_num,
+      </if>
+      <if test="couponType != null" >
+        coupon_type,
+      </if>
+      <if test="sendType != null" >
+        send_type,
+      </if>
+      <if test="sendNum != null" >
+        send_num,
+      </if>
+      <if test="maximum != null" >
+        maximum,
+      </if>
+      <if test="minM != null" >
+        min_m,
+      </if>
+      <if test="maxM != null" >
+        max_m,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="sendObject != null" >
+        send_object,
+      </if>
+      <if test="sendStatus != null" >
+        send_status,
+      </if>
+      <if test="awardCondition != null" >
+        award_condition,
+      </if>
+      <if test="awardNumber != null" >
+        award_number,
+      </if>
+      <if test="useNumber != null" >
+        use_number,
+      </if>
+      <if test="limitNumber != null" >
+        limit_number,
+      </if>
+      <if test="views != null" >
+        views,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="createDate != null" >
+        create_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="cid != null" >
+        #{cid,jdbcType=INTEGER},
+      </if>
+      <if test="cname != null" >
+        #{cname,jdbcType=VARCHAR},
+      </if>
+      <if test="denomination != null" >
+        #{denomination,jdbcType=DECIMAL},
+      </if>
+      <if test="startDate != null" >
+        #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="conditions != null" >
+        #{conditions,jdbcType=DECIMAL},
+      </if>
+      <if test="limitAmount != null" >
+        #{limitAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="sellerid != null" >
+        #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="useNumaw != null" >
+        #{useNumaw,jdbcType=INTEGER},
+      </if>
+      <if test="couponType != null" >
+        #{couponType,jdbcType=INTEGER},
+      </if>
+      <if test="sendType != null" >
+        #{sendType,jdbcType=INTEGER},
+      </if>
+      <if test="sendNum != null" >
+        #{sendNum,jdbcType=INTEGER},
+      </if>
+      <if test="maximum != null" >
+        #{maximum,jdbcType=INTEGER},
+      </if>
+      <if test="minM != null" >
+        #{minM,jdbcType=DECIMAL},
+      </if>
+      <if test="maxM != null" >
+        #{maxM,jdbcType=DECIMAL},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="sendObject != null" >
+        #{sendObject,jdbcType=VARCHAR},
+      </if>
+      <if test="sendStatus != null" >
+        #{sendStatus,jdbcType=INTEGER},
+      </if>
+      <if test="awardCondition != null" >
+        #{awardCondition,jdbcType=INTEGER},
+      </if>
+      <if test="awardNumber != null" >
+        #{awardNumber,jdbcType=INTEGER},
+      </if>
+      <if test="useNumber != null" >
+        #{useNumber,jdbcType=INTEGER},
+      </if>
+      <if test="limitNumber != null" >
+        #{limitNumber,jdbcType=INTEGER},
+      </if>
+      <if test="views != null" >
+        #{views,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.saas.entity.coupon.SellerCouponDetail" >
+    update t_seller_coupon_detail
+    <set >
+      <if test="cname != null" >
+        cname = #{cname,jdbcType=VARCHAR},
+      </if>
+      <if test="denomination != null" >
+        denomination = #{denomination,jdbcType=DECIMAL},
+      </if>
+      <if test="startDate != null" >
+        start_date = #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        end_date = #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="conditions != null" >
+        conditions = #{conditions,jdbcType=DECIMAL},
+      </if>
+      <if test="limitAmount != null" >
+        limit_amount = #{limitAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="sellerid != null" >
+        sellerid = #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="useNumaw != null" >
+        use_num = #{useNumaw,jdbcType=INTEGER},
+      </if>
+      <if test="couponType != null" >
+        coupon_type = #{couponType,jdbcType=INTEGER},
+      </if>
+      <if test="sendType != null" >
+        send_type = #{sendType,jdbcType=INTEGER},
+      </if>
+      <if test="sendNum != null" >
+        send_num = #{sendNum,jdbcType=INTEGER},
+      </if>
+      <if test="maximum != null" >
+        maximum = #{maximum,jdbcType=INTEGER},
+      </if>
+      <if test="minM != null" >
+        min_m = #{minM,jdbcType=DECIMAL},
+      </if>
+      <if test="maxM != null" >
+        max_m = #{maxM,jdbcType=DECIMAL},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="sendObject != null" >
+        send_object = #{sendObject,jdbcType=VARCHAR},
+      </if>
+      <if test="sendStatus != null" >
+        send_status = #{sendStatus,jdbcType=INTEGER},
+      </if>
+      <if test="awardCondition != null" >
+        award_condition = #{awardCondition,jdbcType=INTEGER},
+      </if>
+      <if test="awardNumber != null" >
+        award_number = #{awardNumber,jdbcType=INTEGER},
+      </if>
+      <if test="useNumber != null" >
+        use_number = #{useNumber,jdbcType=INTEGER},
+      </if>
+      <if test="limitNumber != null" >
+        limit_number = #{limitNumber,jdbcType=INTEGER},
+      </if>
+      <if test="views != null" >
+        views = #{views,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where cid = #{cid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.saas.entity.coupon.SellerCouponDetail" >
+    update t_seller_coupon_detail
+    set cname = #{cname,jdbcType=VARCHAR},
+      denomination = #{denomination,jdbcType=DECIMAL},
+      start_date = #{startDate,jdbcType=TIMESTAMP},
+      end_date = #{endDate,jdbcType=TIMESTAMP},
+      conditions = #{conditions,jdbcType=DECIMAL},
+      limit_amount = #{limitAmount,jdbcType=DECIMAL},
+      sellerid = #{sellerid,jdbcType=INTEGER},
+      use_num = #{useNumaw,jdbcType=INTEGER},
+      coupon_type = #{couponType,jdbcType=INTEGER},
+      send_type = #{sendType,jdbcType=INTEGER},
+      send_num = #{sendNum,jdbcType=INTEGER},
+      maximum = #{maximum,jdbcType=INTEGER},
+      min_m = #{minM,jdbcType=DECIMAL},
+      max_m = #{maxM,jdbcType=DECIMAL},
+      amount = #{amount,jdbcType=DECIMAL},
+      send_object = #{sendObject,jdbcType=VARCHAR},
+      send_status = #{sendStatus,jdbcType=INTEGER},
+      award_condition = #{awardCondition,jdbcType=INTEGER},
+      award_number = #{awardNumber,jdbcType=INTEGER},
+      use_number = #{useNumber,jdbcType=INTEGER},
+      limit_number = #{limitNumber,jdbcType=INTEGER},
+      views = #{views,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      description = #{description,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP}
+    where cid = #{cid,jdbcType=INTEGER}
+  </update>
+
+  <select id="getNameBy" resultType="java.lang.String">
+  	 select cname from t_seller_coupon_detail where cid = #{awardId,jdbcType=INTEGER} and coupon_type = #{awardType,jdbcType=INTEGER}
+  </select>
+  
+  
+  <select id="listRoulleteAward" resultMap="BaseResultMap" parameterType="java.lang.Integer">	
+    SELECT <include refid="Base_Column_List" /> from t_seller_coupon_detail 
+    where sellerid = #{sellerid,jdbcType=INTEGER} and coupon_type in (3,4) and status = 0
+  </select>
+  
+  <select id="selectByFreetry" resultMap="BaseResultMap" parameterType="java.lang.String">
+  		select 
+  		<include refid="Base_Column_List" />
+  		from t_seller_coupon_detail  where cid in (#{ids})  
+  </select>
+  
+  <update id="setAward">
+  		UPDATE `t_seller_coupon_detail` SET   `status`=2  WHERE (`cid`=#{cid});
+  </update>
+  
+  <select id="listFreetryAward" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	SELECT <include refid="Base_Column_List" /> from t_seller_coupon_detail 
+    where sellerid = #{sellerid,jdbcType=INTEGER} and coupon_type in (4) and status = 0  and end_date > now()
+  </select>
+  
+  <select id="getZhengpinCoupons" resultMap="BaseResultMap" parameterType="java.lang.Integer">	
+    SELECT <include refid="Base_Column_List" /> from t_seller_coupon_detail 
+    where sellerid = #{sellerid,jdbcType=INTEGER} and coupon_type in (4) and status = 0 and end_date > now() 
+  </select>
+  
+  <select id="getDiyongCoupons" resultMap="BaseResultMap" parameterType="java.lang.Integer">	
+    SELECT <include refid="Base_Column_List" /> from t_seller_coupon_detail 
+    where sellerid = #{sellerid,jdbcType=INTEGER} and coupon_type in (3) and status = 0 and end_date > now()
+  </select>
+  
+  <select id="getActivityAward" resultMap="BaseResultMap" parameterType="java.lang.Integer"> 
+  	SELECT c.* FROM `t_seller_coupon_detail` c join t_activity_award_relation a on c.cid = a.award_id where a.award_type in (3,4) and a.activity_type = #{activityType} and a.activity_id = #{activityId} and end_date > now(); 
+  </select>
+  
+  <update id="updateAwardNumber">
+  	UPDATE `t_seller_coupon_detail` SET award_number = #{awardNumber,jdbcType=INTEGER}  WHERE (`cid`=#{cid});
+  </update>
+  
+  
+  <select id="selectOneByAward"  resultMap="BaseResultMap" parameterType="java.lang.Integer">
+  	select  <include refid="Base_Column_List" />  from t_seller_coupon_detail join t_activity_award_relation  on  t_seller_coupon_detail.cid =  t_activity_award_relation.award_id  where award_type=#{awardType} and award_id=#{awardId}
+  </select>
+</mapper>

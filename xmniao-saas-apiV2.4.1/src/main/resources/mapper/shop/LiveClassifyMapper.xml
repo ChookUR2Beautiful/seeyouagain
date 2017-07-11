@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.shop.LiveClassifyDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.saas.entity.shop.LiveClassify" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="classify_type" property="classifyType" jdbcType="INTEGER" />
+    <result column="classify_name" property="classifyName" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, classify_type, classify_name, update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_live_classify
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+    <select id="selectSellerTagClass" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from t_live_classify
+        WHERE classify_type = 1
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_live_classify
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmn.saas.entity.shop.LiveClassify" >
+    insert into t_live_classify (id, classify_type, classify_name, 
+      update_time)
+    values (#{id,jdbcType=INTEGER}, #{classifyType,jdbcType=INTEGER}, #{classifyName,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmn.saas.entity.shop.LiveClassify" >
+    insert into t_live_classify
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="classifyType != null" >
+        classify_type,
+      </if>
+      <if test="classifyName != null" >
+        classify_name,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="classifyType != null" >
+        #{classifyType,jdbcType=INTEGER},
+      </if>
+      <if test="classifyName != null" >
+        #{classifyName,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.saas.entity.shop.LiveClassify" >
+    update t_live_classify
+    <set >
+      <if test="classifyType != null" >
+        classify_type = #{classifyType,jdbcType=INTEGER},
+      </if>
+      <if test="classifyName != null" >
+        classify_name = #{classifyName,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.saas.entity.shop.LiveClassify" >
+    update t_live_classify
+    set classify_type = #{classifyType,jdbcType=INTEGER},
+      classify_name = #{classifyName,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

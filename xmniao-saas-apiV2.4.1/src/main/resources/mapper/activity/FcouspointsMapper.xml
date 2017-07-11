@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.activity.FcouspointsDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.saas.entity.activity.Fcouspoints" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="begin_date" property="beginDate" jdbcType="TIMESTAMP" />
+    <result column="end_date" property="endDate" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="give_number" property="giveNumber" jdbcType="INTEGER" />
+    <result column="points_number" property="pointsNumber" jdbcType="INTEGER" />
+    <result column="full_price" property="fullPrice" jdbcType="DECIMAL" />
+    <result column="is_suposition" property="isSuposition" jdbcType="INTEGER" />
+    <result column="count_points" property="countPoints" jdbcType="INTEGER" />
+    <result column="join_number" property="joinNumber" jdbcType="INTEGER" />
+    <result column="conversion_number" property="conversionNumber" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="views" property="views" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, sellerid, name, begin_date, end_date, end_time, give_number, points_number, full_price, 
+    is_suposition, count_points, join_number, conversion_number, status, views, create_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_activity_fcouspoints
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_activity_fcouspoints
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmn.saas.entity.activity.Fcouspoints"  useGeneratedKeys="true" keyProperty="id">
+    insert into t_activity_fcouspoints (id, sellerid, name, 
+      begin_date, end_date, end_time, 
+      give_number, points_number, full_price, 
+      is_suposition, count_points, join_number, 
+      conversion_number, status, views, 
+      create_time)
+    values (#{id,jdbcType=INTEGER}, #{sellerid,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
+      #{beginDate,jdbcType=TIMESTAMP}, #{endDate,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, 
+      #{giveNumber,jdbcType=INTEGER}, #{pointsNumber,jdbcType=INTEGER}, #{fullPrice,jdbcType=DECIMAL}, 
+      #{isSuposition,jdbcType=INTEGER}, #{countPoints,jdbcType=INTEGER}, #{joinNumber,jdbcType=INTEGER}, 
+      #{conversionNumber,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{views,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmn.saas.entity.activity.Fcouspoints" >
+    insert into t_activity_fcouspoints
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="sellerid != null" >
+        sellerid,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="beginDate != null" >
+        begin_date,
+      </if>
+      <if test="endDate != null" >
+        end_date,
+      </if>
+      <if test="endTime != null" >
+        end_time,
+      </if>
+      <if test="giveNumber != null" >
+        give_number,
+      </if>
+      <if test="pointsNumber != null" >
+        points_number,
+      </if>
+      <if test="fullPrice != null" >
+        full_price,
+      </if>
+      <if test="isSuposition != null" >
+        is_suposition,
+      </if>
+      <if test="countPoints != null" >
+        count_points,
+      </if>
+      <if test="joinNumber != null" >
+        join_number,
+      </if>
+      <if test="conversionNumber != null" >
+        conversion_number,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="views != null" >
+        views,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="sellerid != null" >
+        #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="beginDate != null" >
+        #{beginDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="giveNumber != null" >
+        #{giveNumber,jdbcType=INTEGER},
+      </if>
+      <if test="pointsNumber != null" >
+        #{pointsNumber,jdbcType=INTEGER},
+      </if>
+      <if test="fullPrice != null" >
+        #{fullPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="isSuposition != null" >
+        #{isSuposition,jdbcType=INTEGER},
+      </if>
+      <if test="countPoints != null" >
+        #{countPoints,jdbcType=INTEGER},
+      </if>
+      <if test="joinNumber != null" >
+        #{joinNumber,jdbcType=INTEGER},
+      </if>
+      <if test="conversionNumber != null" >
+        #{conversionNumber,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="views != null" >
+        #{views,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.saas.entity.activity.Fcouspoints" >
+    update t_activity_fcouspoints
+    <set >
+      <if test="sellerid != null" >
+        sellerid = #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="beginDate != null" >
+        begin_date = #{beginDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        end_date = #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="giveNumber != null" >
+        give_number = #{giveNumber,jdbcType=INTEGER},
+      </if>
+      <if test="pointsNumber != null" >
+        points_number = #{pointsNumber,jdbcType=INTEGER},
+      </if>
+      <if test="fullPrice != null" >
+        full_price = #{fullPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="isSuposition != null" >
+        is_suposition = #{isSuposition,jdbcType=INTEGER},
+      </if>
+      <if test="countPoints != null" >
+        count_points = #{countPoints,jdbcType=INTEGER},
+      </if>
+      <if test="joinNumber != null" >
+        join_number = #{joinNumber,jdbcType=INTEGER},
+      </if>
+      <if test="conversionNumber != null" >
+        conversion_number = #{conversionNumber,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="views != null" >
+        views = #{views,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.saas.entity.activity.Fcouspoints" >
+    update t_activity_fcouspoints
+    set sellerid = #{sellerid,jdbcType=INTEGER},
+      name = #{name,jdbcType=VARCHAR},
+      begin_date = #{beginDate,jdbcType=TIMESTAMP},
+      end_date = #{endDate,jdbcType=TIMESTAMP},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      give_number = #{giveNumber,jdbcType=INTEGER},
+      points_number = #{pointsNumber,jdbcType=INTEGER},
+      full_price = #{fullPrice,jdbcType=DECIMAL},
+      is_suposition = #{isSuposition,jdbcType=INTEGER},
+      count_points = #{countPoints,jdbcType=INTEGER},
+      join_number = #{joinNumber,jdbcType=INTEGER},
+      conversion_number = #{conversionNumber,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      views = #{views,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="selectBySellerKey" resultMap="BaseResultMap">
+  	select  <include refid="Base_Column_List" />
+    from t_activity_fcouspoints
+    where id = #{id,jdbcType=INTEGER} and sellerid = #{sellerid}
+  </select>
+  
+  <select id="listBeing" resultMap="BaseResultMap">
+  	select  <include refid="Base_Column_List" />
+    from t_activity_fcouspoints
+    where sellerid = #{sellerid} and UNIX_TIMESTAMP(now()) - UNIX_TIMESTAMP(end_date) &lt; 0 and status = 0 
+  </select>
+  
+  <select id="listEnd" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List" /> from t_activity_fcouspoints where sellerid = #{sellerid} 
+	and ( UNIX_TIMESTAMP(now()) - UNIX_TIMESTAMP(end_date) > 0 or status=1 )  order by create_time desc
+  	<if test="pageSize!=null">
+  			<if test="pageIndex!=null">
+				limit ${(pageIndex-1)*pageSize},#{pageSize}  			
+  			</if>
+  	</if>
+  </select>
+  
+  <select id="CountBeingActivity" resultType="java.lang.Integer">
+  	select count(*) from t_activity_fcouspoints where UNIX_TIMESTAMP(now()) - UNIX_TIMESTAMP(end_date) &lt; 0  and sellerid = #{sellerId} and status = 0
+  </select>
+  
+  <update id="endActivity">
+  		update t_activity_fcouspoints set end_time = now() ,status = 1 where  id = #{activityId,jdbcType=INTEGER} and sellerid = #{sellerid,jdbcType=INTEGER}
+  	</update>
+</mapper>

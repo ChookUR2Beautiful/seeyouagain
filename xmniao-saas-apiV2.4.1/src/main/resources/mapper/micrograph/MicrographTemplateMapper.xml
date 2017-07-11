@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.micrograph.MicrographTemplateDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.saas.entity.micrograph.MicrographTemplate" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="sold_times" property="soldTimes" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="serial_no" property="serialNo" jdbcType="INTEGER" />
+    <result column="cover_image" property="coverImage" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    t_micrograph_template.id, sold_times, title, t_micrograph_template.create_time, t_micrograph_template.update_time, serial_no, cover_image, 
+    t_micrograph_template.status
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_micrograph_template
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_micrograph_template
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmn.saas.entity.micrograph.MicrographTemplate" >
+    insert into t_micrograph_template (id, sold_times, 
+      title, create_time, update_time, 
+      serial_no, cover_image, status
+      )
+    values (#{id,jdbcType=INTEGER}, #{soldTimes,jdbcType=INTEGER}, 
+      #{title,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{serialNo,jdbcType=INTEGER}, #{coverImage,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmn.saas.entity.micrograph.MicrographTemplate" >
+    insert into t_micrograph_template
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="soldTimes != null" >
+        sold_times,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="serialNo != null" >
+        serial_no,
+      </if>
+      <if test="coverImage != null" >
+        cover_image,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="soldTimes != null" >
+        #{soldTimes,jdbcType=INTEGER},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=INTEGER},
+      </if>
+      <if test="coverImage != null" >
+        #{coverImage,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.saas.entity.micrograph.MicrographTemplate" >
+    update t_micrograph_template
+    <set >
+      <if test="soldTimes != null" >
+        sold_times = #{soldTimes,jdbcType=INTEGER},
+      </if>
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="serialNo != null" >
+        serial_no = #{serialNo,jdbcType=INTEGER},
+      </if>
+      <if test="coverImage != null" >
+        cover_image = #{coverImage,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.saas.entity.micrograph.MicrographTemplate" >
+    update t_micrograph_template
+    set 
+      sold_times = #{soldTimes,jdbcType=INTEGER},
+      title = #{title,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      serial_no = #{serialNo,jdbcType=INTEGER},
+      cover_image = #{coverImage,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="selecDownSerial" resultMap="BaseResultMap">
+  	 <choose>
+  	<when test="tag!=null">
+  		 select <include refid="Base_Column_List" /> from t_micrograph_template left join t_micrograph_template_tag t_tag on  t_micrograph_template.id=t_tag.template_id where 
+		t_tag.tag_id=#{tag} and status=0
+  	</when>
+  	<otherwise>
+  		select <include refid="Base_Column_List" /> from t_micrograph_template where 1=1 and status=0
+  	</otherwise>
+  </choose>
+   <if test="searchName!=null">
+   		and title like '%${searchName}%'
+   </if>
+  	  ORDER BY sold_times asc
+	<if test="pageSize!=null">
+  			<if test="pageIndex!=null">
+				limit ${(pageIndex-1)*pageSize},#{pageSize}  			
+  			</if>
+  	</if>   
+  </select>
+ 
+  <select id="selectUpSerial" resultMap="BaseResultMap">
+  <choose>
+  	<when test="tag!=null">
+  		 select <include refid="Base_Column_List" /> from t_micrograph_template left join t_micrograph_template_tag t_tag on  t_micrograph_template.id=t_tag.template_id where 
+		t_tag.tag_id=#{tag} and status=0
+  	</when>
+  	<otherwise>
+  		select <include refid="Base_Column_List" /> from t_micrograph_template where 1=1 and status=0
+  	</otherwise>
+  </choose>
+   <if test="searchName!=null">
+   		and title like '%${searchName}%'
+   </if>
+    ORDER BY sold_times desc
+	<if test="pageSize!=null">
+  			<if test="pageIndex!=null">
+				limit ${(pageIndex-1)*pageSize},#{pageSize}  			
+  			</if>
+  	</if>   
+  </select>
+  
+  <select id="selectBySerial" resultMap="BaseResultMap">
+    <choose>
+  	<when test="tag!=null">
+  		 select <include refid="Base_Column_List" /> from t_micrograph_template left join t_micrograph_template_tag t_tag on  t_micrograph_template.id=t_tag.template_id where 
+		t_tag.tag_id=#{tag} and status=0
+  	</when>
+  	<otherwise>
+  		select <include refid="Base_Column_List" /> from t_micrograph_template where 1=1 and status=0
+  	</otherwise>
+  </choose>
+   <if test="searchName!=null">
+   		and title like '%${searchName}%'
+   </if>
+   ORDER BY serial_no asc
+	<if test="pageSize!=null">
+  			<if test="pageIndex!=null">
+				limit ${(pageIndex-1)*pageSize},#{pageSize}  			
+  			</if>
+  	</if>   
+  </select>
+  
+  <resultMap type="java.util.HashMap" id="resultMap">
+  		<result column="title" property="title" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="searchLike" resultMap="resultMap">
+  	 select distinct title from t_micrograph_template where title like '${searchName}%' and status=0
+  </select>
+  
+  <select id="selectByModelId" resultMap="BaseResultMap">
+     select <include refid="Base_Column_List" /> from t_micrograph_template join t_micrograph_page page  on  page.template_id= t_micrograph_template.id join t_micrograph_module module on module.page_id=page.id 
+     where module.id=#{modulId}
+  </select>
+  
+  <update id="updateSoldTimes" >
+  	 update t_micrograph_template set sold_times = sold_times+1 where id=#{id}
+  </update>
+  
+  <select id="selectByPageId" resultMap="BaseResultMap" >
+  	 select <include refid="Base_Column_List" /> from t_micrograph_template join t_micrograph_page page  on  page.template_id= t_micrograph_template.id where page.id=#{id}
+  </select>
+</mapper>

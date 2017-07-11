@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.wallet.BankDao" >
+	
+	 <resultMap id="BankListMap" type="com.xmn.saas.entity.wallet.BankList">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="bankname" property="bankName" jdbcType="VARCHAR"/>
+         <result column="abbrev" property="abbrev" jdbcType="VARCHAR"/>
+        
+    </resultMap>
+ 
+ 	<select id="bankList" resultMap="BankListMap">
+ 		select id,bankname,abbrev from t_bank_list
+ 	</select>
+ 
+</mapper>

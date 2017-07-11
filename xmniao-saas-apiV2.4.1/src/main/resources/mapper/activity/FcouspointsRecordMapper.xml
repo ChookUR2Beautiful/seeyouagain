@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.activity.FcouspointsRecordDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.saas.entity.activity.FcouspointsRecord" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="activity_id" property="activityId" jdbcType="INTEGER" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="bid" property="bid" jdbcType="BIGINT" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="give_points" property="givePoints" jdbcType="INTEGER" />
+    <result column="get_time" property="getTime" jdbcType="TIMESTAMP" />
+    <result column="paytype" property="payType" jdbcType="VARCHAR" />
+    <result column="payment" property="payment" jdbcType="DECIMAL" />
+    <result column="number" property="number" jdbcType="VARCHAR" />
+    <result column="bfirst" property="bfirst" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    t_activity_fcouspoints_record.id, 
+    t_activity_fcouspoints_record.activity_id, 
+    t_activity_fcouspoints_record.sellerid, 
+    t_activity_fcouspoints_record.bid, 
+    t_activity_fcouspoints_record.uid, 
+    t_activity_fcouspoints_record.phone, 
+    t_activity_fcouspoints_record.give_points, 
+    t_activity_fcouspoints_record.get_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />,bill.number as number,bill.paytype as paytype,bill.bfirst as bfirst
+    from t_activity_fcouspoints_record join t_bill bill on t_activity_fcouspoints_record.bid=bill.bid 
+    where t_activity_fcouspoints_record.id = #{id,jdbcType=INTEGER} and t_activity_fcouspoints_record.sellerid=#{sellerid}
+    
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_activity_fcouspoints_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmn.saas.entity.activity.FcouspointsRecord" >
+    insert into t_activity_fcouspoints_record (id, activity_id, sellerid, 
+      bid, uid, phone, give_points, 
+      get_time)
+    values (#{id,jdbcType=INTEGER}, #{activityId,jdbcType=INTEGER}, #{sellerid,jdbcType=INTEGER}, 
+      #{bid,jdbcType=BIGINT}, #{uid,jdbcType=INTEGER}, #{phone,jdbcType=VARCHAR}, #{givePoints,jdbcType=INTEGER}, 
+      #{getTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmn.saas.entity.activity.FcouspointsRecord" >
+    insert into t_activity_fcouspoints_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="activityId != null" >
+        activity_id,
+      </if>
+      <if test="sellerid != null" >
+        sellerid,
+      </if>
+      <if test="bid != null" >
+        bid,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="givePoints != null" >
+        give_points,
+      </if>
+      <if test="getTime != null" >
+        get_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="activityId != null" >
+        #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="sellerid != null" >
+        #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="bid != null" >
+        #{bid,jdbcType=BIGINT},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="givePoints != null" >
+        #{givePoints,jdbcType=INTEGER},
+      </if>
+      <if test="getTime != null" >
+        #{getTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.saas.entity.activity.FcouspointsRecord" >
+    update t_activity_fcouspoints_record
+    <set >
+      <if test="activityId != null" >
+        activity_id = #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="sellerid != null" >
+        sellerid = #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="bid != null" >
+        bid = #{bid,jdbcType=BIGINT},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="givePoints != null" >
+        give_points = #{givePoints,jdbcType=INTEGER},
+      </if>
+      <if test="getTime != null" >
+        get_time = #{getTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.saas.entity.activity.FcouspointsRecord" >
+    update t_activity_fcouspoints_record
+    set activity_id = #{activityId,jdbcType=INTEGER},
+      sellerid = #{sellerid,jdbcType=INTEGER},
+      bid = #{bid,jdbcType=BIGINT},
+      uid = #{uid,jdbcType=INTEGER},
+      phone = #{phone,jdbcType=VARCHAR},
+      give_points = #{givePoints,jdbcType=INTEGER},
+      get_time = #{getTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+   <select id="use_status" resultType="java.lang.Integer">
+  	select count(*) from t_activity_fcouspoints_record where activity_id = #{activityId}
+  </select>
+  
+  <select id="listRecord" resultMap="BaseResultMap">
+  	SELECT <include refid="Base_Column_List" />,bill.paytype as paytype,bill.payment as payment from  t_activity_fcouspoints_record join t_bill bill  on  bill.bid =  t_activity_fcouspoints_record.bid  where t_activity_fcouspoints_record.activity_id = #{activityId} and t_activity_fcouspoints_record.sellerid = #{sellerid}
+  	order by t_activity_fcouspoints_record.get_time desc 
+  	<if test="pageSize!=null">
+  			<if test="pageIndex!=null">
+				limit ${(pageIndex-1)*pageSize},#{pageSize}  			
+  			</if>
+  	</if> 
+  </select>
+  
+    <resultMap id="RecordMap" type="java.util.HashMap" >
+    <result column="get_Time" property="getTime" jdbcType="VARCHAR" />
+    <result column="give_points" property="givePoints" jdbcType="INTEGER" />
+    </resultMap>
+  <select id="countRecordByDate" resultMap="RecordMap">
+  	SELECT DATE_FORMAT( get_time, "%Y-%m-%d" ) as get_Time , sum(give_points) as  give_points
+	FROM t_activity_fcouspoints_record where activity_id=#{activityId}
+	GROUP BY DATE_FORMAT( get_time, "%Y-%m-%d" )  
+  </select>
+</mapper>

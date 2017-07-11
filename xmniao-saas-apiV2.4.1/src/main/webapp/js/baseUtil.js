@@ -1,0 +1,114 @@
+    /**
+	  *@Title:超时无操作设置
+	  *@param obj(对象)
+	  *@param ms（毫秒）
+	  */
+	 function timeOutSet(obj,ms){
+		 if((obj!="" && obj!=null)&& (ms!="" && ms!=null)){
+			 var timestamp = Math.round(new Date().getTime() / 1000);
+			 var lastTime = timestamp;
+			 //根据时间（毫秒）设置元素属性
+			 setTimeout(function() {
+					if (lastTime - timestamp == 0) {
+						obj.css('border-color', '#ee0000');
+					}
+			  },ms);
+			 
+			 //键盘输入事件
+			 obj.keypress(function(event) {
+				  setTimeout(function() {
+						if (lastTime - timestamp == 0) {
+							obj.css('border-color', '');
+						}
+				   }, 0);
+					
+			       if(parseInt(event.which)!=1){
+			    	    obj.each(function(index,val){
+				        	var intX= setInterval(function(){
+				        		 obj.css('border-color', '#ee0000');
+				        		 window.clearInterval(intX);
+				             },ms)
+					     }); 
+			        } 
+			 });
+			 
+			 //得到焦点时触发的事件
+			 obj.focus(function() {
+				obj.css('border-color', '');
+				 
+				setTimeout(function() {
+					if (lastTime - timestamp == 0) {
+						obj.css('border-color', '#ee0000');
+					}
+				}, ms);
+			  });
+
+			 //失去焦点时触发的事件
+			 obj.blur(function() {
+				setTimeout(function() {
+					if (lastTime - timestamp == 0) {
+						if(obj.val()=="" || obj.val()==null){
+							obj.css('border-color','#ee0000');
+						}else{
+							obj.css('border-color', '');
+						}
+					}
+				 }, ms);
+			 });
+		 }else{
+			 alert("超时无操作参数出错");
+		 }
+	 }
+	 
+	    //判断是否是ios系统
+	    function isIOS(){
+	    	var ua = navigator.userAgent.toLowerCase();	
+	    	if (/iphone|ipad|ipod/.test(ua)) {
+	    		return true;		
+	    	} else{
+	    		return false;	
+	    	}
+	    }
+	    
+	    /**
+		  * ios交互回调初始化
+		  * @param callback
+		  * @returns
+		  */
+		 function setupWebViewJavascriptBridge(callback) {
+		 	if (window.WebViewJavascriptBridge) { return callback(WebViewJavascriptBridge); }
+		        if (window.WVJBCallbacks) { return window.WVJBCallbacks.push(callback); }
+		        window.WVJBCallbacks = [callback];
+		        var WVJBIframe = document.createElement('iframe');
+		        WVJBIframe.style.display = 'none';
+		        WVJBIframe.src = 'wvjbscheme://__BRIDGE_LOADED__';
+		        document.documentElement.appendChild(WVJBIframe);
+		        setTimeout(function() { document.documentElement.removeChild(WVJBIframe) }, 0)
+		 }
+			//分享
+			function share (_this,type,myUrl){
+				var shareLink;
+		    	var shareTitle = $(_this).attr("value");
+		    	   $.ajax({
+		           	type:"post",
+		           	url: myUrl?myUrl:basePath + '/api/v1/common/activity_share_url',
+		           	data:{'title': shareTitle,'id':_this.id,'type':type},
+		           	dataType:"json",
+		           	success:function(data){
+		           		if(data.state==0){
+		    		 		if(isIOS()){
+		    					setupWebViewJavascriptBridge(function(bridge) {
+		    						bridge.callHandler('shareCallback', {'url': data.result.url}, function(response) {
+		    						})
+		    					})
+		    				}else{
+		    					webAppActivity.getShareContent(data.result.url);
+		    				}
+		           			
+		           		}else{
+		           			alert.show('分享失败！');
+		           		} 
+		           	}
+		           });
+		    	
+			 }

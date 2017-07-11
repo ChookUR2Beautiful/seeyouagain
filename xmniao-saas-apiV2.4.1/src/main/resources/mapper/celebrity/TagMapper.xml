@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.celebrity.TagDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.saas.entity.celebrity.Tag" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="tag_category_id" property="tagCategoryId" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, tag_category_id, name
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_saas_tag
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_saas_tag
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmn.saas.entity.celebrity.Tag" >
+    insert into t_saas_tag (id, tag_category_id, name
+      )
+    values (#{id,jdbcType=BIGINT}, #{tagCategoryId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmn.saas.entity.celebrity.Tag" >
+    insert into t_saas_tag
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="tagCategoryId != null" >
+        tag_category_id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="tagCategoryId != null" >
+        #{tagCategoryId,jdbcType=BIGINT},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.saas.entity.celebrity.Tag" >
+    update t_saas_tag
+    <set >
+      <if test="tagCategoryId != null" >
+        tag_category_id = #{tagCategoryId,jdbcType=BIGINT},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.saas.entity.celebrity.Tag" >
+    update t_saas_tag
+    set tag_category_id = #{tagCategoryId,jdbcType=BIGINT},
+      name = #{name,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectTagsBySerial" resultMap="BaseResultMap">
+  	 select  <include refid="Base_Column_List" /> from t_saas_tag order by id desc
+  </select> 
+</mapper>

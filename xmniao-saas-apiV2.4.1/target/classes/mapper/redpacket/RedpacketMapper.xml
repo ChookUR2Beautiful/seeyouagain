@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.redpacket.RedpacketDao">
+    <resultMap id="BaseResultMap" type="com.xmn.saas.entity.redpacket.Redpacket">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="sellerid" property="sellerid" jdbcType="INTEGER"/>
+        <result column="redpacket_type" property="redpacketType" jdbcType="INTEGER"/>
+        <result column="amount_type" property="amountType" jdbcType="INTEGER"/>
+        <result column="redpacket_name" property="redpacketName" jdbcType="VARCHAR"/>
+        <result column="begin_date" property="beginDate" jdbcType="DATE"/>
+        <result column="end_date" property="endDate" jdbcType="DATE"/>
+        <result column="begin_time" property="beginTime" jdbcType="VARCHAR"/>
+        <result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+        <result column="total_amount" property="totalAmount" jdbcType="DECIMAL"/>
+        <result column="random_amount_mini" property="randomAmountMini" jdbcType="DECIMAL"/>
+        <result column="random_amount_max" property="randomAmountMax" jdbcType="DECIMAL"/>
+        <result column="redpacket_number" property="redpacketNumber" jdbcType="INTEGER"/>
+        <result column="single_amount" property="singleAmount" jdbcType="DECIMAL"/>
+        <result column="new_user_amount" property="newUserAmount" jdbcType="DECIMAL"/>
+        <result column="old_user_amount" property="oldUserAmount" jdbcType="DECIMAL"/>
+        <result column="share_awards_proportion" property="shareAwardsProportion" jdbcType="VARCHAR"/>
+        <result column="longitude" property="longitude" jdbcType="VARCHAR"/>
+        <result column="latitude" property="latitude" jdbcType="VARCHAR"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="receive_condition" property="receiveCondition" jdbcType="DECIMAL"/>
+        <result column="deductible_amount" property="deductibleAmount" jdbcType="DECIMAL"/>
+        <result column="views" property="views" jdbcType="BIGINT"/>
+        <result column="real_spending" property="realSpending" jdbcType="DECIMAL"/>
+        <result column="pay_status" property="payStatus" jdbcType="INTEGER"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="pay_type" property="payType" jdbcType="INTEGER"/>
+        <result column="zbalance" property="zbalance" jdbcType="DECIMAL"/>
+        <result column="amount" property="amount" jdbcType="DECIMAL"/>
+        <result column="balance" property="balance" jdbcType="DECIMAL"/>
+        <result column="commision" property="commision" jdbcType="DECIMAL"/>
+        <result column="integral" property="integral" jdbcType="DECIMAL"/>
+        <result column="profit" property="profit" jdbcType="DECIMAL"/>
+        <result column="payid" property="payid" jdbcType="VARCHAR"/>
+        <result column="order_no" property="orderNo" jdbcType="VARCHAR"/>
+        <result column="third_serial" property="thirdSerial" jdbcType="VARCHAR"/>
+        <result column="version_lock" property="versionLock" jdbcType="BIGINT"/>
+        <result column="refund_amount" property="refundAmount" jdbcType="DECIMAL"/>
+        <result column="get_redpacket" property="getRedpacket" jdbcType="DECIMAL"/>
+        <result column="get_redpacket_number" property="getRedpacketNumber" jdbcType="INTEGER"/>
+        <result column="newuser_num" property="newUserNumber" jdbcType="INTEGER"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, sellerid, redpacket_type, amount_type, redpacket_name, begin_date, end_date, begin_time,
+        end_time, total_amount, random_amount_mini, random_amount_max, redpacket_number,
+        single_amount, new_user_amount, old_user_amount, share_awards_proportion, longitude,
+        latitude, address, receive_condition, deductible_amount, views, real_spending, pay_status, status, create_time,
+        pay_type, zbalance, amount, balance, commision, integral, profit, payid, order_no, third_serial,
+        version_lock, refund_amount,newuser_num,get_redpacket,get_redpacket_number
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from t_redpacket
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+
+    <select id="findRedpacketByOrderNo" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from t_redpacket where 0=0 and order_no=#{orderNo,jdbcType=VARCHAR} order by create_time desc
+    </select>
+
+
+    <select id="findRedpacketByParams" resultMap="BaseResultMap" parameterType="java.util.Map">
+        select
+        <include refid="Base_Column_List"/>
+
+        from t_redpacket where 0=0
+
+        <if test="SELLER_ID !=null ">
+            and sellerid=#{SELLER_ID}
+        </if>
+
+        <if test="REDPACKET_ID !=null ">
+            and id=#{REDPACKET_ID}
+        </if>
+
+        <if test="REDPACKET_TYPE !=null ">
+            and redpacket_type=#{REDPACKET_TYPE}
+        </if>
+
+        <if test="PAY_STATUS !=null ">
+            and pay_status=#{PAY_STATUS}
+        </if>
+
+        <if test="PAYID !=null ">
+            and payid=#{PAYID}
+        </if>
+
+        <if test="THIRD_SERIAL !=null ">
+            and third_serial=#{THIRD_SERIAL}
+        </if>
+
+        <if test="ORDER_NO !=null ">
+            and order_no=#{ORDER_NO}
+        </if>
+
+        <if test="STATUS !=null ">
+            and status in(#{STATUS})
+        </if>
+
+        order by id desc
+    </select>
+
+    <select id="findRedpacketBySellerid" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from t_redpacket
+        where sellerid = #{sellerid,jdbcType=INTEGER}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        DELETE FROM t_redpacket
+        WHERE id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.xmn.saas.entity.redpacket.Redpacket">
+        INSERT INTO t_redpacket (id, sellerid, redpacket_type, amount_type,
+                                 redpacket_name, begin_date, end_date,
+                                 begin_time, end_time, total_amount,
+                                 random_amount_mini, random_amount_max, redpacket_number,
+                                 single_amount, new_user_amount, old_user_amount,
+                                 share_awards_proportion, longitude, latitude, address,
+                                 receive_condition, deductible_amount, views,
+                                 real_spending, pay_status, status, create_time,
+                                 pay_type, zbalance, amount, balance, commision, integral, profit, payid, order_no, third_serial, version_lock, refund_amount)
+        VALUES (#{id,jdbcType=BIGINT}, #{sellerid,jdbcType=INTEGER}, #{redpacketType,jdbcType=INTEGER},
+                                       #{amountType,jdbcType=INTEGER},
+                                       #{redpacketName,jdbcType=VARCHAR}, #{beginDate,jdbcType=DATE},
+                                       #{endDate,jdbcType=DATE},
+                                       #{beginTime,jdbcType=VARCHAR}, #{endTime,jdbcType=VARCHAR},
+                                       #{totalAmount,jdbcType=DECIMAL},
+                                       #{randomAmountMini,jdbcType=DECIMAL}, #{randomAmountMax,jdbcType=DECIMAL},
+                                                                             #{redpacketNumber,jdbcType=INTEGER},
+                                                                             #{singleAmount,jdbcType=DECIMAL},
+                                                                             #{newUserAmount,jdbcType=DECIMAL},
+                                                                             #{oldUserAmount,jdbcType=DECIMAL},
+                                                                             #{shareAwardsProportion,jdbcType=VARCHAR},
+                                                                             #{longitude,jdbcType=VARCHAR},
+                                                                             #{latitude,jdbcType=VARCHAR},
+                                                                             #{address,jdbcType=VARCHAR},
+                                                                             #{receiveCondition,jdbcType=DECIMAL},
+            #{deductibleAmount,jdbcType=DECIMAL}, #{views,jdbcType=BIGINT},
+            #{realSpending,jdbcType=DECIMAL}, #{payStatus,jdbcType=INTEGER}, #{status,jdbcType=INTEGER},
+            #{createTime,jdbcType=TIMESTAMP},
+            #{payType,jdbcType=INTEGER}, #{zbalance,jdbcType=DECIMAL}, #{amount,jdbcType=DECIMAL},
+            #{balance,jdbcType=DECIMAL}, #{commision,jdbcType=DECIMAL},
+                #{integral,jdbcType=DECIMAL}, #{profit,jdbcType=DECIMAL}, #{payid,jdbcType=VARCHAR},
+                #{orderNo,jdbcType=VARCHAR}, #{thirdSerial,jdbcType=VARCHAR}, #{versionLock,jdbcType=BIGINT},
+                #{refundAmount,jdbcType=DECIMAL})
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="com.xmn.saas.entity.redpacket.Redpacket">
+        UPDATE t_redpacket
+        SET sellerid                = #{sellerid,jdbcType=INTEGER},
+            redpacket_type          = #{redpacketType,jdbcType=INTEGER},
+            amount_type             = #{amountType,jdbcType=INTEGER},
+            redpacket_name          = #{redpacketName,jdbcType=VARCHAR},
+            begin_date              = #{beginDate,jdbcType=DATE},
+            end_date                = #{endDate,jdbcType=DATE},
+            begin_time              = #{beginTime,jdbcType=VARCHAR},
+            end_time                = #{endTime,jdbcType=VARCHAR},
+            total_amount            = #{totalAmount,jdbcType=DECIMAL},
+            random_amount_mini      = #{randomAmountMini,jdbcType=DECIMAL},
+            random_amount_max       = #{randomAmountMax,jdbcType=DECIMAL},
+            redpacket_number        = #{redpacketNumber,jdbcType=INTEGER},
+            single_amount           = #{singleAmount,jdbcType=DECIMAL},
+            new_user_amount         = #{newUserAmount,jdbcType=DECIMAL},
+            old_user_amount         = #{oldUserAmount,jdbcType=DECIMAL},
+            share_awards_proportion = #{shareAwardsProportion,jdbcType=VARCHAR},
+            longitude               = #{longitude,jdbcType=VARCHAR},
+            latitude                = #{latitude,jdbcType=VARCHAR},
+            address                 = #{address,jdbcType=VARCHAR},
+            receive_condition       = #{receiveCondition,jdbcType=DECIMAL},
+            deductible_amount       = #{deductibleAmount,jdbcType=DECIMAL},
+            views                   = #{views,jdbcType=BIGINT},
+            real_spending           = #{realSpending,jdbcType=DECIMAL},
+            pay_status              = #{payStatus,jdbcType=INTEGER},
+            status                  = #{status,jdbcType=INTEGER},
+            create_time             = #{createTime,jdbcType=TIMESTAMP},
+            pay_type                = #{payType,jdbcType=INTEGER},
+            zbalance                = #{zbalance,jdbcType=DECIMAL},
+            amount                  = #{amount,jdbcType=DECIMAL},
+            balance                 = #{balance,jdbcType=DECIMAL},
+            commision               = #{commision,jdbcType=DECIMAL},
+            integral                = #{integral,jdbcType=DECIMAL},
+            profit                  = #{profit,jdbcType=DECIMAL},
+            payid                   = #{payid,jdbcType=VARCHAR},
+            order_no                = #{orderNo,jdbcType=VARCHAR},
+            third_serial            = #{thirdSerial,jdbcType=VARCHAR},
+            version_lock            = #{versionLock,jdbcType=BIGINT},
+            refund_amount           = #{refundAmount,jdbcType=DECIMAL}
+        WHERE id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateByPrimaryKeyAndVersionLock" parameterType="com.xmn.saas.entity.redpacket.Redpacket">
+        UPDATE t_redpacket
+        SET sellerid                = #{sellerid,jdbcType=INTEGER},
+            redpacket_type          = #{redpacketType,jdbcType=INTEGER},
+            amount_type             = #{amountType,jdbcType=INTEGER},
+            redpacket_name          = #{redpacketName,jdbcType=VARCHAR},
+            begin_date              = #{beginDate,jdbcType=DATE},
+            end_date                = #{endDate,jdbcType=DATE},
+            begin_time              = #{beginTime,jdbcType=VARCHAR},
+            end_time                = #{endTime,jdbcType=VARCHAR},
+            total_amount            = #{totalAmount,jdbcType=DECIMAL},
+            random_amount_mini      = #{randomAmountMini,jdbcType=DECIMAL},
+            random_amount_max       = #{randomAmountMax,jdbcType=DECIMAL},
+            redpacket_number        = #{redpacketNumber,jdbcType=INTEGER},
+            single_amount           = #{singleAmount,jdbcType=DECIMAL},
+            new_user_amount         = #{newUserAmount,jdbcType=DECIMAL},
+            old_user_amount         = #{oldUserAmount,jdbcType=DECIMAL},
+            share_awards_proportion = #{shareAwardsProportion,jdbcType=VARCHAR},
+            longitude               = #{longitude,jdbcType=VARCHAR},
+            latitude                = #{latitude,jdbcType=VARCHAR},
+            address                 = #{address,jdbcType=VARCHAR},
+            receive_condition       = #{receiveCondition,jdbcType=DECIMAL},
+            deductible_amount       = #{deductibleAmount,jdbcType=DECIMAL},
+            views                   = #{views,jdbcType=BIGINT},
+            real_spending           = #{realSpending,jdbcType=DECIMAL},
+            pay_status              = #{payStatus,jdbcType=INTEGER},
+            status                  = #{status,jdbcType=INTEGER},
+            create_time             = #{createTime,jdbcType=TIMESTAMP},
+            pay_type                = #{payType,jdbcType=INTEGER},
+            zbalance                = #{zbalance,jdbcType=DECIMAL},
+            amount                  = #{amount,jdbcType=DECIMAL},
+            balance                 = #{balance,jdbcType=DECIMAL},
+            commision               = #{commision,jdbcType=DECIMAL},
+            integral                = #{integral,jdbcType=DECIMAL},
+            profit                  = #{profit,jdbcType=DECIMAL},
+            payid                   = #{payid,jdbcType=VARCHAR},
+            order_no                = #{orderNo,jdbcType=VARCHAR},
+            third_serial            = #{thirdSerial,jdbcType=VARCHAR},
+            version_lock            = #{versionLock,jdbcType=BIGINT} + 1,
+            refund_amount           = #{refundAmount,jdbcType=DECIMAL}
+        WHERE id = #{id,jdbcType=BIGINT} AND version_lock = #{versionLock,jdbcType=BIGINT}
+    </update>
+
+    <select id="listRoulleteAward" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        SELECT *
+        FROM t_redpacket
+        WHERE status = 1 AND pay_status = 2 AND redpacket_type = 4 AND sellerid = #{sellerid,jdbcType=INTEGER} AND
+              end_date >= curdate();
+    </select>
+
+    <update id="setAward">
+        UPDATE `t_redpacket`
+        SET `status` = 2
+        WHERE (`id` = #{id});
+    </update>
+    <update id="updateStatusById" parameterType="com.xmn.saas.entity.redpacket.Redpacket">
+        UPDATE t_redpacket
+        set status = #{status}
+        WHERE id = #{id}
+    </update>
+
+    <select id="getActivityAward" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        SELECT c.*
+        FROM `t_redpacket` c
+            JOIN t_activity_award_relation a ON c.id = a.award_id
+        WHERE a.award_type = 5 AND a.activity_type = #{activityType} AND a.activity_id = #{activityId} AND
+              c.redpacket_type = 4 AND end_date >= curdate();
+    </select>
+    <select id="selectRedpacketBySellerIdAndRedpacketTypeAndStatus"
+            resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM t_redpacket
+        WHERE sellerid = #{sellerid}
+        AND redpacket_type = #{redpacketType}
+        AND status = #{status}
+        limit 0,1
+
+    </select>
+    <select id="selectExpiredRedpacketByEndDateAndStatus" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_redpacket
+        WHERE
+        end_date &lt; DATE_FORMAT(NOW(), '%Y-%m-%d')
+        AND pay_status = 2
+    </select>
+
+</mapper>

@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.activity.BargaindayDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.saas.entity.activity.Bargainday" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="begin_date" property="beginDate" jdbcType="TIMESTAMP" />
+    <result column="end_date" property="endDate" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="give_number" property="giveNumber" jdbcType="INTEGER" />
+    <result column="join_number" property="joinNumber" jdbcType="INTEGER" />
+    <result column="same" property="same" jdbcType="INTEGER" />
+    <result column="limit_number" property="limitNumber" jdbcType="INTEGER" />
+    <result column="views" property="views" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="newuser_num" property="newuserNum" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, sellerid, name, begin_date, end_date, end_time, give_number, join_number, same, 
+    limit_number, views, status, newuser_num, create_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_activity_bargainday
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_activity_bargainday
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmn.saas.entity.activity.Bargainday" >
+    insert into t_activity_bargainday (id, sellerid, name, 
+      begin_date, end_date, end_time, 
+      give_number, join_number, same, 
+      limit_number, views, status, 
+      newuser_num, create_time)
+    values (#{id,jdbcType=INTEGER}, #{sellerid,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
+      #{beginDate,jdbcType=TIMESTAMP}, #{endDate,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, 
+      #{giveNumber,jdbcType=INTEGER}, #{joinNumber,jdbcType=INTEGER}, #{same,jdbcType=INTEGER}, 
+      #{limitNumber,jdbcType=INTEGER}, #{views,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, 
+      #{newuserNum,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmn.saas.entity.activity.Bargainday" >
+    insert into t_activity_bargainday
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="sellerid != null" >
+        sellerid,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="beginDate != null" >
+        begin_date,
+      </if>
+      <if test="endDate != null" >
+        end_date,
+      </if>
+      <if test="endTime != null" >
+        end_time,
+      </if>
+      <if test="giveNumber != null" >
+        give_number,
+      </if>
+      <if test="joinNumber != null" >
+        join_number,
+      </if>
+      <if test="same != null" >
+        same,
+      </if>
+      <if test="limitNumber != null" >
+        limit_number,
+      </if>
+      <if test="views != null" >
+        views,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="newuserNum != null" >
+        newuser_num,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="sellerid != null" >
+        #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="beginDate != null" >
+        #{beginDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="giveNumber != null" >
+        #{giveNumber,jdbcType=INTEGER},
+      </if>
+      <if test="joinNumber != null" >
+        #{joinNumber,jdbcType=INTEGER},
+      </if>
+      <if test="same != null" >
+        #{same,jdbcType=INTEGER},
+      </if>
+      <if test="limitNumber != null" >
+        #{limitNumber,jdbcType=INTEGER},
+      </if>
+      <if test="views != null" >
+        #{views,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="newuserNum != null" >
+        #{newuserNum,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.saas.entity.activity.Bargainday" >
+    update t_activity_bargainday
+    <set >
+      <if test="sellerid != null" >
+        sellerid = #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="beginDate != null" >
+        begin_date = #{beginDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        end_date = #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="giveNumber != null" >
+        give_number = #{giveNumber,jdbcType=INTEGER},
+      </if>
+      <if test="joinNumber != null" >
+        join_number = #{joinNumber,jdbcType=INTEGER},
+      </if>
+      <if test="same != null" >
+        same = #{same,jdbcType=INTEGER},
+      </if>
+      <if test="limitNumber != null" >
+        limit_number = #{limitNumber,jdbcType=INTEGER},
+      </if>
+      <if test="views != null" >
+        views = #{views,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="newuserNum != null" >
+        newuser_num = #{newuserNum,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.saas.entity.activity.Bargainday" >
+    update t_activity_bargainday
+    set sellerid = #{sellerid,jdbcType=INTEGER},
+      name = #{name,jdbcType=VARCHAR},
+      begin_date = #{beginDate,jdbcType=TIMESTAMP},
+      end_date = #{endDate,jdbcType=TIMESTAMP},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      give_number = #{giveNumber,jdbcType=INTEGER},
+      join_number = #{joinNumber,jdbcType=INTEGER},
+      same = #{same,jdbcType=INTEGER},
+      limit_number = #{limitNumber,jdbcType=INTEGER},
+      views = #{views,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      newuser_num = #{newuserNum,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

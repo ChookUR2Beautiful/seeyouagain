@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.celebrity.CelebrityTagRelationDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.saas.entity.celebrity.CelebrityTagRelation" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="celebrity_id" property="celebrityId" jdbcType="BIGINT" />
+    <result column="tag_id" property="tagId" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, celebrity_id, tag_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_celebrity_tag_relation
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_celebrity_tag_relation
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmn.saas.entity.celebrity.CelebrityTagRelation" >
+    insert into t_celebrity_tag_relation (id, celebrity_id, tag_id
+      )
+    values (#{id,jdbcType=BIGINT}, #{celebrityId,jdbcType=BIGINT}, #{tagId,jdbcType=BIGINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmn.saas.entity.celebrity.CelebrityTagRelation" >
+    insert into t_celebrity_tag_relation
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="celebrityId != null" >
+        celebrity_id,
+      </if>
+      <if test="tagId != null" >
+        tag_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="celebrityId != null" >
+        #{celebrityId,jdbcType=BIGINT},
+      </if>
+      <if test="tagId != null" >
+        #{tagId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.saas.entity.celebrity.CelebrityTagRelation" >
+    update t_celebrity_tag_relation
+    <set >
+      <if test="celebrityId != null" >
+        celebrity_id = #{celebrityId,jdbcType=BIGINT},
+      </if>
+      <if test="tagId != null" >
+        tag_id = #{tagId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.saas.entity.celebrity.CelebrityTagRelation" >
+    update t_celebrity_tag_relation
+    set celebrity_id = #{celebrityId,jdbcType=BIGINT},
+      tag_id = #{tagId,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

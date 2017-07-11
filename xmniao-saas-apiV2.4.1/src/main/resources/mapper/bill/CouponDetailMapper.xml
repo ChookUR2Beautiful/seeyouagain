@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.bill.CouponDetailDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.saas.entity.bill.CouponDetail" >
+    <id column="cdid" property="cdid" jdbcType="INTEGER" />
+    <id column="ctype" property="ctype" jdbcType="INTEGER" />
+    <result column="aid" property="aid" jdbcType="INTEGER" />
+    <result column="cid" property="cid" jdbcType="INTEGER" />
+    <result column="serial" property="serial" jdbcType="VARCHAR" />
+    <result column="denomination" property="denomination" jdbcType="DECIMAL" />
+    <result column="get_way" property="getWay" jdbcType="TINYINT" />
+    <result column="start_date" property="startDate" jdbcType="TIMESTAMP" />
+    <result column="end_date" property="endDate" jdbcType="TIMESTAMP" />
+    <result column="get_status" property="getStatus" jdbcType="TINYINT" />
+    <result column="get_time" property="getTime" jdbcType="TIMESTAMP" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="third_uid" property="thirdUid" jdbcType="VARCHAR" />
+    <result column="user_status" property="userStatus" jdbcType="TINYINT" />
+    <result column="user_money" property="userMoney" jdbcType="DECIMAL" />
+    <result column="lock_time" property="lockTime" jdbcType="TIMESTAMP" />
+    <result column="user_time" property="userTime" jdbcType="TIMESTAMP" />
+    <result column="issue_id" property="issueId" jdbcType="INTEGER" />
+    <result column="date_issue" property="dateIssue" jdbcType="TIMESTAMP" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="send_status" property="sendStatus" jdbcType="INTEGER" />
+    <result column="is_read" property="isRead" jdbcType="BIT" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="bid" property="bid" jdbcType="BIGINT" />
+    <result column="anchor_cid" property="anchorCid" jdbcType="INTEGER" />
+    <result column="seats" property="seats" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    cdid, ctype, aid, cid, serial, denomination, get_way, start_date, end_date, get_status, 
+    get_time, uid, phone, third_uid, user_status, user_money, lock_time, user_time, issue_id, 
+    date_issue, order_no, send_status, is_read, sellerid, bid, anchor_cid, seats
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.xmn.saas.entity.bill.CouponDetail" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_coupon_detail
+    where cdid = #{cdid,jdbcType=INTEGER}
+      and ctype = #{ctype,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectBySerial" resultMap="BaseResultMap" parameterType="com.xmn.saas.entity.bill.CouponDetail" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_coupon_detail
+    where serial = #{serial}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.xmn.saas.entity.bill.CouponDetail" >
+    delete from t_coupon_detail
+    where cdid = #{cdid,jdbcType=INTEGER}
+      and ctype = #{ctype,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmn.saas.entity.bill.CouponDetail" >
+    insert into t_coupon_detail (cdid, ctype, aid, 
+      cid, serial, denomination, 
+      get_way, start_date, end_date, 
+      get_status, get_time, uid, 
+      phone, third_uid, user_status, 
+      user_money, lock_time, user_time, 
+      issue_id, date_issue, order_no, 
+      send_status, is_read, sellerid, 
+      bid, anchor_cid, seats
+      )
+    values (#{cdid,jdbcType=INTEGER}, #{ctype,jdbcType=INTEGER}, #{aid,jdbcType=INTEGER}, 
+      #{cid,jdbcType=INTEGER}, #{serial,jdbcType=VARCHAR}, #{denomination,jdbcType=DECIMAL}, 
+      #{getWay,jdbcType=TINYINT}, #{startDate,jdbcType=TIMESTAMP}, #{endDate,jdbcType=TIMESTAMP}, 
+      #{getStatus,jdbcType=TINYINT}, #{getTime,jdbcType=TIMESTAMP}, #{uid,jdbcType=INTEGER}, 
+      #{phone,jdbcType=VARCHAR}, #{thirdUid,jdbcType=VARCHAR}, #{userStatus,jdbcType=TINYINT}, 
+      #{userMoney,jdbcType=DECIMAL}, #{lockTime,jdbcType=TIMESTAMP}, #{userTime,jdbcType=TIMESTAMP}, 
+      #{issueId,jdbcType=INTEGER}, #{dateIssue,jdbcType=TIMESTAMP}, #{orderNo,jdbcType=VARCHAR}, 
+      #{sendStatus,jdbcType=INTEGER}, #{isRead,jdbcType=BIT}, #{sellerid,jdbcType=INTEGER}, 
+      #{bid,jdbcType=BIGINT}, #{anchorCid,jdbcType=INTEGER}, #{seats,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmn.saas.entity.bill.CouponDetail" >
+    insert into t_coupon_detail
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="cdid != null" >
+        cdid,
+      </if>
+      <if test="ctype != null" >
+        ctype,
+      </if>
+      <if test="aid != null" >
+        aid,
+      </if>
+      <if test="cid != null" >
+        cid,
+      </if>
+      <if test="serial != null" >
+        serial,
+      </if>
+      <if test="denomination != null" >
+        denomination,
+      </if>
+      <if test="getWay != null" >
+        get_way,
+      </if>
+      <if test="startDate != null" >
+        start_date,
+      </if>
+      <if test="endDate != null" >
+        end_date,
+      </if>
+      <if test="getStatus != null" >
+        get_status,
+      </if>
+      <if test="getTime != null" >
+        get_time,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="thirdUid != null" >
+        third_uid,
+      </if>
+      <if test="userStatus != null" >
+        user_status,
+      </if>
+      <if test="userMoney != null" >
+        user_money,
+      </if>
+      <if test="lockTime != null" >
+        lock_time,
+      </if>
+      <if test="userTime != null" >
+        user_time,
+      </if>
+      <if test="issueId != null" >
+        issue_id,
+      </if>
+      <if test="dateIssue != null" >
+        date_issue,
+      </if>
+      <if test="orderNo != null" >
+        order_no,
+      </if>
+      <if test="sendStatus != null" >
+        send_status,
+      </if>
+      <if test="isRead != null" >
+        is_read,
+      </if>
+      <if test="sellerid != null" >
+        sellerid,
+      </if>
+      <if test="bid != null" >
+        bid,
+      </if>
+      <if test="anchorCid != null" >
+        anchor_cid,
+      </if>
+      <if test="seats != null" >
+        seats,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="cdid != null" >
+        #{cdid,jdbcType=INTEGER},
+      </if>
+      <if test="ctype != null" >
+        #{ctype,jdbcType=INTEGER},
+      </if>
+      <if test="aid != null" >
+        #{aid,jdbcType=INTEGER},
+      </if>
+      <if test="cid != null" >
+        #{cid,jdbcType=INTEGER},
+      </if>
+      <if test="serial != null" >
+        #{serial,jdbcType=VARCHAR},
+      </if>
+      <if test="denomination != null" >
+        #{denomination,jdbcType=DECIMAL},
+      </if>
+      <if test="getWay != null" >
+        #{getWay,jdbcType=TINYINT},
+      </if>
+      <if test="startDate != null" >
+        #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="getStatus != null" >
+        #{getStatus,jdbcType=TINYINT},
+      </if>
+      <if test="getTime != null" >
+        #{getTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="thirdUid != null" >
+        #{thirdUid,jdbcType=VARCHAR},
+      </if>
+      <if test="userStatus != null" >
+        #{userStatus,jdbcType=TINYINT},
+      </if>
+      <if test="userMoney != null" >
+        #{userMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="lockTime != null" >
+        #{lockTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userTime != null" >
+        #{userTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="issueId != null" >
+        #{issueId,jdbcType=INTEGER},
+      </if>
+      <if test="dateIssue != null" >
+        #{dateIssue,jdbcType=TIMESTAMP},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="sendStatus != null" >
+        #{sendStatus,jdbcType=INTEGER},
+      </if>
+      <if test="isRead != null" >
+        #{isRead,jdbcType=BIT},
+      </if>
+      <if test="sellerid != null" >
+        #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="bid != null" >
+        #{bid,jdbcType=BIGINT},
+      </if>
+      <if test="anchorCid != null" >
+        #{anchorCid,jdbcType=INTEGER},
+      </if>
+      <if test="seats != null" >
+        #{seats,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.saas.entity.bill.CouponDetail" >
+    update t_coupon_detail
+    <set >
+      <if test="aid != null" >
+        aid = #{aid,jdbcType=INTEGER},
+      </if>
+      <if test="cid != null" >
+        cid = #{cid,jdbcType=INTEGER},
+      </if>
+      <if test="serial != null" >
+        serial = #{serial,jdbcType=VARCHAR},
+      </if>
+      <if test="denomination != null" >
+        denomination = #{denomination,jdbcType=DECIMAL},
+      </if>
+      <if test="getWay != null" >
+        get_way = #{getWay,jdbcType=TINYINT},
+      </if>
+      <if test="startDate != null" >
+        start_date = #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        end_date = #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="getStatus != null" >
+        get_status = #{getStatus,jdbcType=TINYINT},
+      </if>
+      <if test="getTime != null" >
+        get_time = #{getTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="thirdUid != null" >
+        third_uid = #{thirdUid,jdbcType=VARCHAR},
+      </if>
+      <if test="userStatus != null" >
+        user_status = #{userStatus,jdbcType=TINYINT},
+      </if>
+      <if test="userMoney != null" >
+        user_money = #{userMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="lockTime != null" >
+        lock_time = #{lockTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userTime != null" >
+        user_time = #{userTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="issueId != null" >
+        issue_id = #{issueId,jdbcType=INTEGER},
+      </if>
+      <if test="dateIssue != null" >
+        date_issue = #{dateIssue,jdbcType=TIMESTAMP},
+      </if>
+      <if test="orderNo != null" >
+        order_no = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="sendStatus != null" >
+        send_status = #{sendStatus,jdbcType=INTEGER},
+      </if>
+      <if test="isRead != null" >
+        is_read = #{isRead,jdbcType=BIT},
+      </if>
+      <if test="sellerid != null" >
+        sellerid = #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="bid != null" >
+        bid = #{bid,jdbcType=BIGINT},
+      </if>
+      <if test="anchorCid != null" >
+        anchor_cid = #{anchorCid,jdbcType=INTEGER},
+      </if>
+      <if test="seats != null" >
+        seats = #{seats,jdbcType=INTEGER},
+      </if>
+    </set>
+    where cdid = #{cdid,jdbcType=INTEGER}
+      and ctype = #{ctype,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.saas.entity.bill.CouponDetail" >
+    update t_coupon_detail
+    set aid = #{aid,jdbcType=INTEGER},
+      cid = #{cid,jdbcType=INTEGER},
+      serial = #{serial,jdbcType=VARCHAR},
+      denomination = #{denomination,jdbcType=DECIMAL},
+      get_way = #{getWay,jdbcType=TINYINT},
+      start_date = #{startDate,jdbcType=TIMESTAMP},
+      end_date = #{endDate,jdbcType=TIMESTAMP},
+      get_status = #{getStatus,jdbcType=TINYINT},
+      get_time = #{getTime,jdbcType=TIMESTAMP},
+      uid = #{uid,jdbcType=INTEGER},
+      phone = #{phone,jdbcType=VARCHAR},
+      third_uid = #{thirdUid,jdbcType=VARCHAR},
+      user_status = #{userStatus,jdbcType=TINYINT},
+      user_money = #{userMoney,jdbcType=DECIMAL},
+      lock_time = #{lockTime,jdbcType=TIMESTAMP},
+      user_time = #{userTime,jdbcType=TIMESTAMP},
+      issue_id = #{issueId,jdbcType=INTEGER},
+      date_issue = #{dateIssue,jdbcType=TIMESTAMP},
+      order_no = #{orderNo,jdbcType=VARCHAR},
+      send_status = #{sendStatus,jdbcType=INTEGER},
+      is_read = #{isRead,jdbcType=BIT},
+      sellerid = #{sellerid,jdbcType=INTEGER},
+      bid = #{bid,jdbcType=BIGINT},
+      anchor_cid = #{anchorCid,jdbcType=INTEGER},
+      seats = #{seats,jdbcType=INTEGER}
+    where cdid = #{cdid,jdbcType=INTEGER}
+      and ctype = #{ctype,jdbcType=INTEGER}
+  </update>
+</mapper>

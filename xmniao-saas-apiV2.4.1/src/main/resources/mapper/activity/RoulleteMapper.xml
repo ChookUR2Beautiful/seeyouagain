@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.activity.RoulleteDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.saas.entity.activity.Roullete" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="begin_date" property="beginDate" jdbcType="TIMESTAMP" />
+    <result column="end_date" property="endDate" jdbcType="TIMESTAMP" />
+    <result column="begin_time" property="beginTime" jdbcType="TIME" />
+    <result column="end_time" property="endTime" jdbcType="TIME" />
+    <result column="award_proportion" property="awardProportion" jdbcType="DECIMAL" />
+    <result column="prize_draw_number" property="prizeDrawNumber" jdbcType="INTEGER" />
+    <result column="limit_number" property="limitNumber" jdbcType="INTEGER" />
+    <result column="set_condition" property="setCondition" jdbcType="INTEGER" />
+    <result column="views" property="views" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="join_number" property="joinNumber" jdbcType="BIGINT" />
+    <result column="give_number" property="giveNumber" jdbcType="INTEGER" />
+    <result column="newuser_num" property="newuserNum" jdbcType="INTEGER" />
+    <result column="consume_amount" property="consumeAmount" jdbcType="DECIMAL" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="give_awardCount" property="giveAwardCount" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, sellerid, name, begin_date, end_date, begin_time, end_time, award_proportion, 
+    prize_draw_number, limit_number, set_condition, views, status, join_number, 
+    give_number, newuser_num, consume_amount, create_time
+  </sql>
+  
+  <select id="list" resultMap="BaseResultMap">
+  	select
+  	<include refid="Base_Column_List" />
+  	from t_activity_roullete
+  	where sellerid = #{sellerid}
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_activity_roullete
+    where id = #{id,jdbcType=INTEGER} and sellerid = #{sellerid,jdbcType=INTEGER}
+  </select>
+   <select id="findByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_activity_roullete
+    where id = #{id,jdbcType=INTEGER} 
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_activity_roullete
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmn.saas.entity.activity.Roullete" useGeneratedKeys="true" keyProperty="id">
+    insert into t_activity_roullete (id, sellerid, name, 
+      begin_date, end_date, begin_time, 
+      end_time, award_proportion, prize_draw_number, 
+      limit_number, set_condition, views, 
+      status, join_number, 
+      give_number, newuser_num, consume_amount, 
+      create_time)
+    values (#{id,jdbcType=INTEGER}, #{sellerid,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
+      #{beginDate,jdbcType=TIMESTAMP}, #{endDate,jdbcType=TIMESTAMP}, #{beginTime,jdbcType=TIME}, 
+      #{endTime,jdbcType=TIME}, #{awardProportion,jdbcType=DECIMAL}, #{prizeDrawNumber,jdbcType=INTEGER}, 
+      #{limitNumber,jdbcType=INTEGER}, #{setCondition,jdbcType=INTEGER}, #{views,jdbcType=INTEGER}, 
+      #{status,jdbcType=INTEGER}, #{joinNumber,jdbcType=BIGINT}, 
+      #{giveNumber,jdbcType=INTEGER}, #{newuserNum,jdbcType=INTEGER}, #{consumeAmount,jdbcType=DECIMAL}, 
+      #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmn.saas.entity.activity.Roullete" >
+    insert into t_activity_roullete
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="sellerid != null" >
+        sellerid,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="beginDate != null" >
+        begin_date,
+      </if>
+      <if test="endDate != null" >
+        end_date,
+      </if>
+      <if test="beginTime != null" >
+        begin_time,
+      </if>
+      <if test="endTime != null" >
+        end_time,
+      </if>
+      <if test="awardProportion != null" >
+        award_proportion,
+      </if>
+      <if test="prizeDrawNumber != null" >
+        prize_draw_number,
+      </if>
+      <if test="limitNumber != null" >
+        limit_number,
+      </if>
+      <if test="setCondition != null" >
+        set_condition,
+      </if>
+      <if test="views != null" >
+        views,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      
+      <if test="joinNumber != null" >
+        join_number,
+      </if>
+      <if test="giveNumber != null" >
+        give_number,
+      </if>
+      <if test="newuserNum != null" >
+        newuser_num,
+      </if>
+      <if test="consumeAmount != null" >
+        consume_amount,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="sellerid != null" >
+        #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="beginDate != null" >
+        #{beginDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="beginTime != null" >
+        #{beginTime,jdbcType=TIME},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIME},
+      </if>
+      <if test="awardProportion != null" >
+        #{awardProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="prizeDrawNumber != null" >
+        #{prizeDrawNumber,jdbcType=INTEGER},
+      </if>
+      <if test="limitNumber != null" >
+        #{limitNumber,jdbcType=INTEGER},
+      </if>
+      <if test="setCondition != null" >
+        #{setCondition,jdbcType=INTEGER},
+      </if>
+      <if test="views != null" >
+        #{views,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      
+      <if test="joinNumber != null" >
+        #{joinNumber,jdbcType=BIGINT},
+      </if>
+      <if test="giveNumber != null" >
+        #{giveNumber,jdbcType=INTEGER},
+      </if>
+      <if test="newuserNum != null" >
+        #{newuserNum,jdbcType=INTEGER},
+      </if>
+      <if test="consumeAmount != null" >
+        #{consumeAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.saas.entity.activity.Roullete" >
+    update t_activity_roullete
+    <set >
+      <if test="sellerid != null" >
+        sellerid = #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="beginDate != null" >
+        begin_date = #{beginDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        end_date = #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="beginTime != null" >
+        begin_time = #{beginTime,jdbcType=TIME},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIME},
+      </if>
+      <if test="awardProportion != null" >
+        award_proportion = #{awardProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="prizeDrawNumber != null" >
+        prize_draw_number = #{prizeDrawNumber,jdbcType=INTEGER},
+      </if>
+      <if test="limitNumber != null" >
+        limit_number = #{limitNumber,jdbcType=INTEGER},
+      </if>
+      <if test="setCondition != null" >
+        set_condition = #{setCondition,jdbcType=INTEGER},
+      </if>
+      <if test="views != null" >
+        views = #{views,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+     
+      <if test="joinNumber != null" >
+        join_number = #{joinNumber,jdbcType=BIGINT},
+      </if>
+      <if test="giveNumber != null" >
+        give_number = #{giveNumber,jdbcType=INTEGER},
+      </if>
+      <if test="newuserNum != null" >
+        newuser_num = #{newuserNum,jdbcType=INTEGER},
+      </if>
+      <if test="consumeAmount != null" >
+        consume_amount = #{consumeAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.saas.entity.activity.Roullete" >
+    update t_activity_roullete
+    set sellerid = #{sellerid,jdbcType=INTEGER},
+      name = #{name,jdbcType=VARCHAR},
+      begin_date = #{beginDate,jdbcType=TIMESTAMP},
+      end_date = #{endDate,jdbcType=TIMESTAMP},
+      begin_time = #{beginTime,jdbcType=TIME},
+      end_time = #{endTime,jdbcType=TIME},
+      award_proportion = #{awardProportion,jdbcType=DECIMAL},
+      prize_draw_number = #{prizeDrawNumber,jdbcType=INTEGER},
+      limit_number = #{limitNumber,jdbcType=INTEGER},
+      set_condition = #{setCondition,jdbcType=INTEGER},
+      views = #{views,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      join_number = #{joinNumber,jdbcType=BIGINT},
+      give_number = #{giveNumber,jdbcType=INTEGER},
+      newuser_num = #{newuserNum,jdbcType=INTEGER},
+      consume_amount = #{consumeAmount,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+   <select id="listBeing" resultMap="BaseResultMap">
+  	select  distinct
+  	<include refid="Base_Column_List" />,IFNULL(r.give_awardCount,0) as give_awardCount
+  	from t_activity_roullete a  left join  (select r.activity_id as activity_id,count(*) as give_awardCount from t_activity_roullete_record r   where  r.cid &lt;> ''  GROUP BY r.activity_id) r on a.id=r.activity_id
+  	where sellerid = #{sellerid} and UNIX_TIMESTAMP(now()) - UNIX_TIMESTAMP(end_date) &lt; 0  and status = 0
+  </select>
+  
+  <select id="listEnd" resultMap="BaseResultMap">
+  	select  distinct
+  	<include refid="Base_Column_List" />,IFNULL(r.give_awardCount,0) as give_awardCount
+  	from t_activity_roullete a  left join  (select r.activity_id as activity_id,count(*) as give_awardCount from t_activity_roullete_record r   where  r.cid &lt;> ''  GROUP BY r.activity_id) r on a.id=r.activity_id
+  	where sellerid = #{sellerId} and (UNIX_TIMESTAMP(now()) - UNIX_TIMESTAMP(end_date) > 0 or status=1 ) order by create_time desc
+  	<if test="pageSize!=null">
+  			<if test="pageIndex!=null">
+				limit ${(pageIndex-1)*pageSize},#{pageSize}  			
+  			</if>
+  	</if>
+  </select>
+  
+   <select id="CountBeingActivity" resultType="java.lang.Integer">
+  		select count(*) from t_activity_roullete where UNIX_TIMESTAMP(now()) - UNIX_TIMESTAMP(end_date) &lt; 0  and sellerid = #{sellerId} and status = 0
+  	</select>
+  
+  <update id="endActivity">
+  		update t_activity_roullete set end_time = now() ,status = 1 where  id = #{id,jdbcType=INTEGER} and sellerid = #{sellerId,jdbcType=INTEGER}
+  	</update>
+  	
+  	<select id="selectByPrimaryKeyAndGiveAwardCount" resultMap="BaseResultMap">
+  		select  distinct
+  	<include refid="Base_Column_List" />,IFNULL(r.give_awardCount,0) as give_awardCount
+  	from t_activity_roullete a  left join  (select r.activity_id as activity_id,count(*) as give_awardCount from t_activity_roullete_record r   where  r.cid &lt;> ''  GROUP BY r.activity_id) r on a.id=r.activity_id
+  	where sellerid = #{sellerid} and id = #{id} 
+  </select>
+</mapper>

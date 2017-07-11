@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.common.AreaDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.saas.entity.common.Area" >
+    <id column="area_id" property="id" jdbcType="INTEGER" />
+    <result column="title" property="name" jdbcType="VARCHAR" />
+     
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    area_id,title
+  </sql>
+  
+  <!-- 根据父ID查询商家经营分类 -->
+  <select id="findAreaByPid" resultMap="BaseResultMap" parameterType="int" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_area
+    where pid=#{pid} and status=0 order by short desc
+  </select>
+ 
+ <select id="getName" resultType="java.lang.String"  parameterType="java.lang.Integer">
+ 	select title from t_area where area_id = #{areaId}
+ </select>
+ 
+ <select id="countLastArea" resultType="java.lang.Integer">
+ 	select count(*) from t_area where pid = #{pid}
+ </select>
+ <select id="selectAreaByidOrname" resultMap="BaseResultMap" parameterType="map">
+ 	select area_id,title from t_area where 1=1
+ 	<if test="id != null">
+ 		and area_id=#{id}
+ 	</if>
+ 	<if test="name != null">
+ 		and title like CONCAT(#{name},'%' )
+ 	</if>
+ 	<if test="pid!=null">
+ 		and pid=#{pid}
+ 	</if>
+ </select>
+ <select id="selectAreaById" parameterType="int" resultType="string">
+	select title from t_area where area_id = #{id}
+</select> 
+</mapper>

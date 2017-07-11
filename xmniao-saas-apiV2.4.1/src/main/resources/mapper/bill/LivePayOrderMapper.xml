@@ -1,0 +1,566 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.bill.LivePayOrderDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.saas.entity.bill.LivePayOrder" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="pay_no" property="payNo" jdbcType="VARCHAR" />
+    <result column="pay_code" property="payCode" jdbcType="VARCHAR" />
+    <result column="combo_id" property="comboId" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="payment" property="payment" jdbcType="DECIMAL" />
+    <result column="free_coin" property="freeCoin" jdbcType="DECIMAL" />
+    <result column="real_coin" property="realCoin" jdbcType="DECIMAL" />
+    <result column="pay_type" property="payType" jdbcType="VARCHAR" />
+    <result column="pay_state" property="payState" jdbcType="INTEGER" />
+    <result column="pay_time" property="payTime" jdbcType="TIMESTAMP" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="total_ledger_amount" property="totalLedgerAmount" jdbcType="DECIMAL" />
+    <result column="consume_ledger" property="consumeLedger" jdbcType="DECIMAL" />
+    <result column="privilege_ledger" property="privilegeLedger" jdbcType="DECIMAL" />
+    <result column="ledger_level" property="ledgerLevel" jdbcType="INTEGER" />
+    <result column="current_consume_ledger" property="currentConsumeLedger" jdbcType="DECIMAL" />
+    <result column="current_privilege_ledger" property="currentPrivilegeLedger" jdbcType="DECIMAL" />
+    <result column="current_dividend_ledger" property="currentDividendLedger" jdbcType="DECIMAL" />
+    <result column="current_dividend_coin_ledger" property="currentDividendCoinLedger" jdbcType="DECIMAL" />
+    <result column="quantity" property="quantity" jdbcType="INTEGER" />
+    <result column="has_recomend" property="hasRecomend" jdbcType="INTEGER" />
+    <result column="has_dividend" property="hasDividend" jdbcType="INTEGER" />
+    <result column="is_ledger" property="isLedger" jdbcType="INTEGER" />
+    <result column="quota" property="quota" jdbcType="DECIMAL" />
+    <result column="q_quota" property="qQuota" jdbcType="DECIMAL" />
+    <result column="entry_selleragio" property="entrySelleragio" jdbcType="DECIMAL" />
+    <result column="debitcard_id" property="debitcardId" jdbcType="INTEGER" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="sellertype" property="sellertype" jdbcType="INTEGER" />
+    <result column="sellername" property="sellername" jdbcType="VARCHAR" />
+    <result column="object_oriented" property="objectOriented" jdbcType="INTEGER" />
+    <result column="seller_income" property="sellerIncome" jdbcType="DECIMAL" />
+    <result column="offset_seller_income" property="offsetSellerIncome" jdbcType="DECIMAL" />
+    <result column="is_to_pay" property="isToPay" jdbcType="INTEGER" />
+    <result column="pay_uid" property="payUid" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.xmn.saas.entity.bill.LivePayOrderWithBLOBs" extends="BaseResultMap" >
+    <result column="receipt" property="receipt" jdbcType="LONGVARCHAR" />
+    <result column="uid_relation_chain" property="uidRelationChain" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, order_no, pay_no, pay_code, combo_id, uid, payment, free_coin, real_coin, pay_type, 
+    pay_state, pay_time, version, create_time, update_time, total_ledger_amount, consume_ledger, 
+    privilege_ledger, ledger_level, current_consume_ledger, current_privilege_ledger, 
+    current_dividend_ledger, current_dividend_coin_ledger, quantity, has_recomend, has_dividend, 
+    is_ledger, quota, q_quota, debitcard_id, sellerid, sellertype, sellername, object_oriented, 
+    seller_income, offset_seller_income, is_to_pay, pay_uid,entry_selleragio
+  </sql>
+  <sql id="Blob_Column_List" >
+    receipt, uid_relation_chain
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_live_pay_order
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectByOrderNo" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_live_pay_order
+    where order_no = #{orderNo}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_live_pay_order
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmn.saas.entity.bill.LivePayOrderWithBLOBs" >
+    insert into t_live_pay_order (id, order_no, pay_no, 
+      pay_code, combo_id, uid, 
+      payment, free_coin, real_coin, 
+      pay_type, pay_state, pay_time, 
+      version, create_time, update_time, 
+      total_ledger_amount, consume_ledger, privilege_ledger, 
+      ledger_level, current_consume_ledger, current_privilege_ledger, 
+      current_dividend_ledger, current_dividend_coin_ledger, 
+      quantity, has_recomend, has_dividend, 
+      is_ledger, quota, q_quota, 
+      debitcard_id, sellerid, sellertype, 
+      sellername, object_oriented, seller_income, 
+      offset_seller_income, is_to_pay, pay_uid, 
+      receipt, uid_relation_chain)
+    values (#{id,jdbcType=INTEGER}, #{orderNo,jdbcType=VARCHAR}, #{payNo,jdbcType=VARCHAR}, 
+      #{payCode,jdbcType=VARCHAR}, #{comboId,jdbcType=INTEGER}, #{uid,jdbcType=INTEGER}, 
+      #{payment,jdbcType=DECIMAL}, #{freeCoin,jdbcType=DECIMAL}, #{realCoin,jdbcType=DECIMAL}, 
+      #{payType,jdbcType=VARCHAR}, #{payState,jdbcType=INTEGER}, #{payTime,jdbcType=TIMESTAMP}, 
+      #{version,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{totalLedgerAmount,jdbcType=DECIMAL}, #{consumeLedger,jdbcType=DECIMAL}, #{privilegeLedger,jdbcType=DECIMAL}, 
+      #{ledgerLevel,jdbcType=INTEGER}, #{currentConsumeLedger,jdbcType=DECIMAL}, #{currentPrivilegeLedger,jdbcType=DECIMAL}, 
+      #{currentDividendLedger,jdbcType=DECIMAL}, #{currentDividendCoinLedger,jdbcType=DECIMAL}, 
+      #{quantity,jdbcType=INTEGER}, #{hasRecomend,jdbcType=INTEGER}, #{hasDividend,jdbcType=INTEGER}, 
+      #{isLedger,jdbcType=INTEGER}, #{quota,jdbcType=DECIMAL}, #{qQuota,jdbcType=DECIMAL}, 
+      #{debitcardId,jdbcType=INTEGER}, #{sellerid,jdbcType=INTEGER}, #{sellertype,jdbcType=INTEGER}, 
+      #{sellername,jdbcType=VARCHAR}, #{objectOriented,jdbcType=INTEGER}, #{sellerIncome,jdbcType=DECIMAL}, 
+      #{offsetSellerIncome,jdbcType=DECIMAL}, #{isToPay,jdbcType=INTEGER}, #{payUid,jdbcType=INTEGER}, 
+      #{receipt,jdbcType=LONGVARCHAR}, #{uidRelationChain,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmn.saas.entity.bill.LivePayOrderWithBLOBs" >
+    insert into t_live_pay_order
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="orderNo != null" >
+        order_no,
+      </if>
+      <if test="payNo != null" >
+        pay_no,
+      </if>
+      <if test="payCode != null" >
+        pay_code,
+      </if>
+      <if test="comboId != null" >
+        combo_id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="payment != null" >
+        payment,
+      </if>
+      <if test="freeCoin != null" >
+        free_coin,
+      </if>
+      <if test="realCoin != null" >
+        real_coin,
+      </if>
+      <if test="payType != null" >
+        pay_type,
+      </if>
+      <if test="payState != null" >
+        pay_state,
+      </if>
+      <if test="payTime != null" >
+        pay_time,
+      </if>
+      <if test="version != null" >
+        version,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="totalLedgerAmount != null" >
+        total_ledger_amount,
+      </if>
+      <if test="consumeLedger != null" >
+        consume_ledger,
+      </if>
+      <if test="privilegeLedger != null" >
+        privilege_ledger,
+      </if>
+      <if test="ledgerLevel != null" >
+        ledger_level,
+      </if>
+      <if test="currentConsumeLedger != null" >
+        current_consume_ledger,
+      </if>
+      <if test="currentPrivilegeLedger != null" >
+        current_privilege_ledger,
+      </if>
+      <if test="currentDividendLedger != null" >
+        current_dividend_ledger,
+      </if>
+      <if test="currentDividendCoinLedger != null" >
+        current_dividend_coin_ledger,
+      </if>
+      <if test="quantity != null" >
+        quantity,
+      </if>
+      <if test="hasRecomend != null" >
+        has_recomend,
+      </if>
+      <if test="hasDividend != null" >
+        has_dividend,
+      </if>
+      <if test="isLedger != null" >
+        is_ledger,
+      </if>
+      <if test="quota != null" >
+        quota,
+      </if>
+      <if test="qQuota != null" >
+        q_quota,
+      </if>
+      <if test="debitcardId != null" >
+        debitcard_id,
+      </if>
+      <if test="sellerid != null" >
+        sellerid,
+      </if>
+      <if test="sellertype != null" >
+        sellertype,
+      </if>
+      <if test="sellername != null" >
+        sellername,
+      </if>
+      <if test="objectOriented != null" >
+        object_oriented,
+      </if>
+      <if test="sellerIncome != null" >
+        seller_income,
+      </if>
+      <if test="offsetSellerIncome != null" >
+        offset_seller_income,
+      </if>
+      <if test="isToPay != null" >
+        is_to_pay,
+      </if>
+      <if test="payUid != null" >
+        pay_uid,
+      </if>
+      <if test="receipt != null" >
+        receipt,
+      </if>
+      <if test="uidRelationChain != null" >
+        uid_relation_chain,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="payNo != null" >
+        #{payNo,jdbcType=VARCHAR},
+      </if>
+      <if test="payCode != null" >
+        #{payCode,jdbcType=VARCHAR},
+      </if>
+      <if test="comboId != null" >
+        #{comboId,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="payment != null" >
+        #{payment,jdbcType=DECIMAL},
+      </if>
+      <if test="freeCoin != null" >
+        #{freeCoin,jdbcType=DECIMAL},
+      </if>
+      <if test="realCoin != null" >
+        #{realCoin,jdbcType=DECIMAL},
+      </if>
+      <if test="payType != null" >
+        #{payType,jdbcType=VARCHAR},
+      </if>
+      <if test="payState != null" >
+        #{payState,jdbcType=INTEGER},
+      </if>
+      <if test="payTime != null" >
+        #{payTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="version != null" >
+        #{version,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="totalLedgerAmount != null" >
+        #{totalLedgerAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="consumeLedger != null" >
+        #{consumeLedger,jdbcType=DECIMAL},
+      </if>
+      <if test="privilegeLedger != null" >
+        #{privilegeLedger,jdbcType=DECIMAL},
+      </if>
+      <if test="ledgerLevel != null" >
+        #{ledgerLevel,jdbcType=INTEGER},
+      </if>
+      <if test="currentConsumeLedger != null" >
+        #{currentConsumeLedger,jdbcType=DECIMAL},
+      </if>
+      <if test="currentPrivilegeLedger != null" >
+        #{currentPrivilegeLedger,jdbcType=DECIMAL},
+      </if>
+      <if test="currentDividendLedger != null" >
+        #{currentDividendLedger,jdbcType=DECIMAL},
+      </if>
+      <if test="currentDividendCoinLedger != null" >
+        #{currentDividendCoinLedger,jdbcType=DECIMAL},
+      </if>
+      <if test="quantity != null" >
+        #{quantity,jdbcType=INTEGER},
+      </if>
+      <if test="hasRecomend != null" >
+        #{hasRecomend,jdbcType=INTEGER},
+      </if>
+      <if test="hasDividend != null" >
+        #{hasDividend,jdbcType=INTEGER},
+      </if>
+      <if test="isLedger != null" >
+        #{isLedger,jdbcType=INTEGER},
+      </if>
+      <if test="quota != null" >
+        #{quota,jdbcType=DECIMAL},
+      </if>
+      <if test="qQuota != null" >
+        #{qQuota,jdbcType=DECIMAL},
+      </if>
+      <if test="debitcardId != null" >
+        #{debitcardId,jdbcType=INTEGER},
+      </if>
+      <if test="sellerid != null" >
+        #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="sellertype != null" >
+        #{sellertype,jdbcType=INTEGER},
+      </if>
+      <if test="sellername != null" >
+        #{sellername,jdbcType=VARCHAR},
+      </if>
+      <if test="objectOriented != null" >
+        #{objectOriented,jdbcType=INTEGER},
+      </if>
+      <if test="sellerIncome != null" >
+        #{sellerIncome,jdbcType=DECIMAL},
+      </if>
+      <if test="offsetSellerIncome != null" >
+        #{offsetSellerIncome,jdbcType=DECIMAL},
+      </if>
+      <if test="isToPay != null" >
+        #{isToPay,jdbcType=INTEGER},
+      </if>
+      <if test="payUid != null" >
+        #{payUid,jdbcType=INTEGER},
+      </if>
+      <if test="receipt != null" >
+        #{receipt,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="uidRelationChain != null" >
+        #{uidRelationChain,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.saas.entity.bill.LivePayOrderWithBLOBs" >
+    update t_live_pay_order
+    <set >
+      <if test="orderNo != null" >
+        order_no = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="payNo != null" >
+        pay_no = #{payNo,jdbcType=VARCHAR},
+      </if>
+      <if test="payCode != null" >
+        pay_code = #{payCode,jdbcType=VARCHAR},
+      </if>
+      <if test="comboId != null" >
+        combo_id = #{comboId,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="payment != null" >
+        payment = #{payment,jdbcType=DECIMAL},
+      </if>
+      <if test="freeCoin != null" >
+        free_coin = #{freeCoin,jdbcType=DECIMAL},
+      </if>
+      <if test="realCoin != null" >
+        real_coin = #{realCoin,jdbcType=DECIMAL},
+      </if>
+      <if test="payType != null" >
+        pay_type = #{payType,jdbcType=VARCHAR},
+      </if>
+      <if test="payState != null" >
+        pay_state = #{payState,jdbcType=INTEGER},
+      </if>
+      <if test="payTime != null" >
+        pay_time = #{payTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="version != null" >
+        version = #{version,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="totalLedgerAmount != null" >
+        total_ledger_amount = #{totalLedgerAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="consumeLedger != null" >
+        consume_ledger = #{consumeLedger,jdbcType=DECIMAL},
+      </if>
+      <if test="privilegeLedger != null" >
+        privilege_ledger = #{privilegeLedger,jdbcType=DECIMAL},
+      </if>
+      <if test="ledgerLevel != null" >
+        ledger_level = #{ledgerLevel,jdbcType=INTEGER},
+      </if>
+      <if test="currentConsumeLedger != null" >
+        current_consume_ledger = #{currentConsumeLedger,jdbcType=DECIMAL},
+      </if>
+      <if test="currentPrivilegeLedger != null" >
+        current_privilege_ledger = #{currentPrivilegeLedger,jdbcType=DECIMAL},
+      </if>
+      <if test="currentDividendLedger != null" >
+        current_dividend_ledger = #{currentDividendLedger,jdbcType=DECIMAL},
+      </if>
+      <if test="currentDividendCoinLedger != null" >
+        current_dividend_coin_ledger = #{currentDividendCoinLedger,jdbcType=DECIMAL},
+      </if>
+      <if test="quantity != null" >
+        quantity = #{quantity,jdbcType=INTEGER},
+      </if>
+      <if test="hasRecomend != null" >
+        has_recomend = #{hasRecomend,jdbcType=INTEGER},
+      </if>
+      <if test="hasDividend != null" >
+        has_dividend = #{hasDividend,jdbcType=INTEGER},
+      </if>
+      <if test="isLedger != null" >
+        is_ledger = #{isLedger,jdbcType=INTEGER},
+      </if>
+      <if test="quota != null" >
+        quota = #{quota,jdbcType=DECIMAL},
+      </if>
+      <if test="qQuota != null" >
+        q_quota = #{qQuota,jdbcType=DECIMAL},
+      </if>
+      <if test="debitcardId != null" >
+        debitcard_id = #{debitcardId,jdbcType=INTEGER},
+      </if>
+      <if test="sellerid != null" >
+        sellerid = #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="sellertype != null" >
+        sellertype = #{sellertype,jdbcType=INTEGER},
+      </if>
+      <if test="sellername != null" >
+        sellername = #{sellername,jdbcType=VARCHAR},
+      </if>
+      <if test="objectOriented != null" >
+        object_oriented = #{objectOriented,jdbcType=INTEGER},
+      </if>
+      <if test="sellerIncome != null" >
+        seller_income = #{sellerIncome,jdbcType=DECIMAL},
+      </if>
+      <if test="offsetSellerIncome != null" >
+        offset_seller_income = #{offsetSellerIncome,jdbcType=DECIMAL},
+      </if>
+      <if test="isToPay != null" >
+        is_to_pay = #{isToPay,jdbcType=INTEGER},
+      </if>
+      <if test="payUid != null" >
+        pay_uid = #{payUid,jdbcType=INTEGER},
+      </if>
+      <if test="receipt != null" >
+        receipt = #{receipt,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="uidRelationChain != null" >
+        uid_relation_chain = #{uidRelationChain,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.xmn.saas.entity.bill.LivePayOrderWithBLOBs" >
+    update t_live_pay_order
+    set order_no = #{orderNo,jdbcType=VARCHAR},
+      pay_no = #{payNo,jdbcType=VARCHAR},
+      pay_code = #{payCode,jdbcType=VARCHAR},
+      combo_id = #{comboId,jdbcType=INTEGER},
+      uid = #{uid,jdbcType=INTEGER},
+      payment = #{payment,jdbcType=DECIMAL},
+      free_coin = #{freeCoin,jdbcType=DECIMAL},
+      real_coin = #{realCoin,jdbcType=DECIMAL},
+      pay_type = #{payType,jdbcType=VARCHAR},
+      pay_state = #{payState,jdbcType=INTEGER},
+      pay_time = #{payTime,jdbcType=TIMESTAMP},
+      version = #{version,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      total_ledger_amount = #{totalLedgerAmount,jdbcType=DECIMAL},
+      consume_ledger = #{consumeLedger,jdbcType=DECIMAL},
+      privilege_ledger = #{privilegeLedger,jdbcType=DECIMAL},
+      ledger_level = #{ledgerLevel,jdbcType=INTEGER},
+      current_consume_ledger = #{currentConsumeLedger,jdbcType=DECIMAL},
+      current_privilege_ledger = #{currentPrivilegeLedger,jdbcType=DECIMAL},
+      current_dividend_ledger = #{currentDividendLedger,jdbcType=DECIMAL},
+      current_dividend_coin_ledger = #{currentDividendCoinLedger,jdbcType=DECIMAL},
+      quantity = #{quantity,jdbcType=INTEGER},
+      has_recomend = #{hasRecomend,jdbcType=INTEGER},
+      has_dividend = #{hasDividend,jdbcType=INTEGER},
+      is_ledger = #{isLedger,jdbcType=INTEGER},
+      quota = #{quota,jdbcType=DECIMAL},
+      q_quota = #{qQuota,jdbcType=DECIMAL},
+      debitcard_id = #{debitcardId,jdbcType=INTEGER},
+      sellerid = #{sellerid,jdbcType=INTEGER},
+      sellertype = #{sellertype,jdbcType=INTEGER},
+      sellername = #{sellername,jdbcType=VARCHAR},
+      object_oriented = #{objectOriented,jdbcType=INTEGER},
+      seller_income = #{sellerIncome,jdbcType=DECIMAL},
+      offset_seller_income = #{offsetSellerIncome,jdbcType=DECIMAL},
+      is_to_pay = #{isToPay,jdbcType=INTEGER},
+      pay_uid = #{payUid,jdbcType=INTEGER},
+      receipt = #{receipt,jdbcType=LONGVARCHAR},
+      uid_relation_chain = #{uidRelationChain,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.saas.entity.bill.LivePayOrder" >
+    update t_live_pay_order
+    set order_no = #{orderNo,jdbcType=VARCHAR},
+      pay_no = #{payNo,jdbcType=VARCHAR},
+      pay_code = #{payCode,jdbcType=VARCHAR},
+      combo_id = #{comboId,jdbcType=INTEGER},
+      uid = #{uid,jdbcType=INTEGER},
+      payment = #{payment,jdbcType=DECIMAL},
+      free_coin = #{freeCoin,jdbcType=DECIMAL},
+      real_coin = #{realCoin,jdbcType=DECIMAL},
+      pay_type = #{payType,jdbcType=VARCHAR},
+      pay_state = #{payState,jdbcType=INTEGER},
+      pay_time = #{payTime,jdbcType=TIMESTAMP},
+      version = #{version,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      total_ledger_amount = #{totalLedgerAmount,jdbcType=DECIMAL},
+      consume_ledger = #{consumeLedger,jdbcType=DECIMAL},
+      privilege_ledger = #{privilegeLedger,jdbcType=DECIMAL},
+      ledger_level = #{ledgerLevel,jdbcType=INTEGER},
+      current_consume_ledger = #{currentConsumeLedger,jdbcType=DECIMAL},
+      current_privilege_ledger = #{currentPrivilegeLedger,jdbcType=DECIMAL},
+      current_dividend_ledger = #{currentDividendLedger,jdbcType=DECIMAL},
+      current_dividend_coin_ledger = #{currentDividendCoinLedger,jdbcType=DECIMAL},
+      quantity = #{quantity,jdbcType=INTEGER},
+      has_recomend = #{hasRecomend,jdbcType=INTEGER},
+      has_dividend = #{hasDividend,jdbcType=INTEGER},
+      is_ledger = #{isLedger,jdbcType=INTEGER},
+      quota = #{quota,jdbcType=DECIMAL},
+      q_quota = #{qQuota,jdbcType=DECIMAL},
+      debitcard_id = #{debitcardId,jdbcType=INTEGER},
+      sellerid = #{sellerid,jdbcType=INTEGER},
+      sellertype = #{sellertype,jdbcType=INTEGER},
+      sellername = #{sellername,jdbcType=VARCHAR},
+      object_oriented = #{objectOriented,jdbcType=INTEGER},
+      seller_income = #{sellerIncome,jdbcType=DECIMAL},
+      offset_seller_income = #{offsetSellerIncome,jdbcType=DECIMAL},
+      is_to_pay = #{isToPay,jdbcType=INTEGER},
+      pay_uid = #{payUid,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

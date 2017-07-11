@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.activity.FullreductionDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.saas.entity.activity.Fullreduction" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="begin_date" property="beginDate" jdbcType="DATE" />
+    <result column="end_date" property="endDate" jdbcType="DATE" />
+    <result column="limit_number" property="limitNumber" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="offset_amount" property="offsetAmount" jdbcType="DECIMAL" />
+    <result column="is_derate" property="isDerate" jdbcType="INTEGER" />
+    <result column="derate_level1_amount" property="derateLevel1Amount" jdbcType="DECIMAL" />
+    <result column="consume_and_pay1" property="consumeAndPay1" jdbcType="DECIMAL" />
+    <result column="derate_level2_amount" property="derateLevel2Amount" jdbcType="DECIMAL" />
+    <result column="consume_and_pay2" property="consumeAndPay2" jdbcType="DECIMAL" />
+    <result column="derate_level3_amount" property="derateLevel3Amount" jdbcType="DECIMAL" />
+    <result column="consume_and_pay3" property="consumeAndPay3" jdbcType="DECIMAL" />
+    <result column="consume_and_pay" property="consumeAndPay" jdbcType="DECIMAL" />
+    <result column="reduction_amount" property="reductionAmount" jdbcType="DECIMAL" />
+    <result column="join_number" property="joinNumber" jdbcType="INTEGER" />
+    <result column="views" property="views" jdbcType="INTEGER" />
+    <result column="give_number" property="giveNumber" jdbcType="INTEGER" />
+    <result column="use_number" property="useNumber" jdbcType="INTEGER" />
+    <result column="newuser_num" property="newuserNum" jdbcType="INTEGER" />
+    <result column="consume_amount" property="consumeAmount" jdbcType="DECIMAL" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, sellerid, name, begin_date, end_date,
+    limit_number, status, offset_amount, is_derate, derate_level1_amount, consume_and_pay1, 
+    derate_level2_amount, consume_and_pay2, derate_level3_amount, consume_and_pay3, consume_and_pay, 
+    reduction_amount, join_number, views, give_number, use_number, newuser_num, consume_amount, 
+    create_time
+  </sql>
+  <!-- 根据主键查询商户满减信息 -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_activity_fullreduction
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <!-- 查询商户当前满减列表信息 -->
+  <select id="queryListBySerllIdAndDate" resultMap="BaseResultMap" parameterType="com.xmn.saas.controller.h5.coupon.vo.QueryCondition" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_activity_fullreduction
+    where sellerid = #{sellerid,jdbcType=INTEGER} 
+     <if test="startDate != null" >
+    	<![CDATA[ and end_date  >=  #{startDate}  ]]> and  status=0
+    </if>
+    <if test="endDate != null" >
+    	<![CDATA[ and end_date  <=  #{endDate}  ]]>
+    </if>
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_activity_fullreduction
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.xmn.saas.entity.activity.Fullreduction" >
+    insert into t_activity_fullreduction (id, sellerid, name, 
+      begin_date, end_date, limit_number, 
+      status, offset_amount, is_derate, 
+      derate_level1_amount, consume_and_pay1, derate_level2_amount, 
+      consume_and_pay2, derate_level3_amount, consume_and_pay3, 
+      consume_and_pay, reduction_amount, join_number, 
+      views, give_number, use_number, 
+      newuser_num, consume_amount, create_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{sellerid,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
+      #{beginDate,jdbcType=DATE}, #{endDate,jdbcType=DATE}, #{limitNumber,jdbcType=INTEGER}, 
+      #{status,jdbcType=INTEGER}, #{offsetAmount,jdbcType=DECIMAL}, #{isDerate,jdbcType=INTEGER}, 
+      #{derateLevel1Amount,jdbcType=DECIMAL}, #{consumeAndPay1,jdbcType=DECIMAL}, #{derateLevel2Amount,jdbcType=DECIMAL}, 
+      #{consumeAndPay2,jdbcType=DECIMAL}, #{derateLevel3Amount,jdbcType=DECIMAL}, #{consumeAndPay3,jdbcType=DECIMAL}, 
+      #{consumeAndPay,jdbcType=DECIMAL}, #{reductionAmount,jdbcType=DECIMAL}, #{joinNumber,jdbcType=INTEGER}, 
+      #{views,jdbcType=INTEGER}, #{giveNumber,jdbcType=INTEGER}, #{useNumber,jdbcType=INTEGER}, 
+      #{newuserNum,jdbcType=INTEGER}, #{consumeAmount,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmn.saas.entity.activity.Fullreduction" >
+    insert into t_activity_fullreduction
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="sellerid != null" >
+        sellerid,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="beginDate != null" >
+        begin_date,
+      </if>
+      <if test="endDate != null" >
+        end_date,
+      </if>
+      <if test="beginTime != null" >
+        begin_time,
+      </if>
+      <if test="endTime != null" >
+        end_time,
+      </if>
+      <if test="limitNumber != null" >
+        limit_number,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="offsetAmount != null" >
+        offset_amount,
+      </if>
+      <if test="isDerate != null" >
+        is_derate,
+      </if>
+      <if test="derateLevel1Amount != null" >
+        derate_level1_amount,
+      </if>
+      <if test="consumeAndPay1 != null" >
+        consume_and_pay1,
+      </if>
+      <if test="derateLevel2Amount != null" >
+        derate_level2_amount,
+      </if>
+      <if test="consumeAndPay2 != null" >
+        consume_and_pay2,
+      </if>
+      <if test="derateLevel3Amount != null" >
+        derate_level3_amount,
+      </if>
+      <if test="consumeAndPay3 != null" >
+        consume_and_pay3,
+      </if>
+      <if test="consumeAndPay != null" >
+        consume_and_pay,
+      </if>
+      <if test="reductionAmount != null" >
+        reduction_amount,
+      </if>
+      <if test="joinNumber != null" >
+        join_number,
+      </if>
+      <if test="views != null" >
+        views,
+      </if>
+      <if test="giveNumber != null" >
+        give_number,
+      </if>
+      <if test="useNumber != null" >
+        use_number,
+      </if>
+      <if test="newuserNum != null" >
+        newuser_num,
+      </if>
+      <if test="consumeAmount != null" >
+        consume_amount,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="sellerid != null" >
+        #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="beginDate != null" >
+        #{beginDate,jdbcType=DATE},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=DATE},
+      </if>
+      <if test="beginTime != null" >
+        #{beginTime,jdbcType=TIME},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIME},
+      </if>
+      <if test="limitNumber != null" >
+        #{limitNumber,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="offsetAmount != null" >
+        #{offsetAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="isDerate != null" >
+        #{isDerate,jdbcType=INTEGER},
+      </if>
+      <if test="derateLevel1Amount != null" >
+        #{derateLevel1Amount,jdbcType=DECIMAL},
+      </if>
+      <if test="consumeAndPay1 != null" >
+        #{consumeAndPay1,jdbcType=DECIMAL},
+      </if>
+      <if test="derateLevel2Amount != null" >
+        #{derateLevel2Amount,jdbcType=DECIMAL},
+      </if>
+      <if test="consumeAndPay2 != null" >
+        #{consumeAndPay2,jdbcType=DECIMAL},
+      </if>
+      <if test="derateLevel3Amount != null" >
+        #{derateLevel3Amount,jdbcType=DECIMAL},
+      </if>
+      <if test="consumeAndPay3 != null" >
+        #{consumeAndPay3,jdbcType=DECIMAL},
+      </if>
+      <if test="consumeAndPay != null" >
+        #{consumeAndPay,jdbcType=DECIMAL},
+      </if>
+      <if test="reductionAmount != null" >
+        #{reductionAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="joinNumber != null" >
+        #{joinNumber,jdbcType=INTEGER},
+      </if>
+      <if test="views != null" >
+        #{views,jdbcType=INTEGER},
+      </if>
+      <if test="giveNumber != null" >
+        #{giveNumber,jdbcType=INTEGER},
+      </if>
+      <if test="useNumber != null" >
+        #{useNumber,jdbcType=INTEGER},
+      </if>
+      <if test="newuserNum != null" >
+        #{newuserNum,jdbcType=INTEGER},
+      </if>
+      <if test="consumeAmount != null" >
+        #{consumeAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.saas.entity.activity.Fullreduction" >
+    update t_activity_fullreduction
+    <set >
+      <if test="sellerid != null" >
+        sellerid = #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="beginDate != null" >
+        begin_date = #{beginDate,jdbcType=DATE},
+      </if>
+      <if test="endDate != null" >
+        end_date = #{endDate,jdbcType=DATE},
+      </if>
+      <if test="limitNumber != null" >
+        limit_number = #{limitNumber,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="offsetAmount != null" >
+        offset_amount = #{offsetAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="isDerate != null" >
+        is_derate = #{isDerate,jdbcType=INTEGER},
+      </if>
+      <if test="derateLevel1Amount != null" >
+        derate_level1_amount = #{derateLevel1Amount,jdbcType=DECIMAL},
+      </if>
+      <if test="consumeAndPay1 != null" >
+        consume_and_pay1 = #{consumeAndPay1,jdbcType=DECIMAL},
+      </if>
+      <if test="derateLevel2Amount != null" >
+        derate_level2_amount = #{derateLevel2Amount,jdbcType=DECIMAL},
+      </if>
+      <if test="consumeAndPay2 != null" >
+        consume_and_pay2 = #{consumeAndPay2,jdbcType=DECIMAL},
+      </if>
+      <if test="derateLevel3Amount != null" >
+        derate_level3_amount = #{derateLevel3Amount,jdbcType=DECIMAL},
+      </if>
+      <if test="consumeAndPay3 != null" >
+        consume_and_pay3 = #{consumeAndPay3,jdbcType=DECIMAL},
+      </if>
+      <if test="consumeAndPay != null" >
+        consume_and_pay = #{consumeAndPay,jdbcType=DECIMAL},
+      </if>
+      <if test="reductionAmount != null" >
+        reduction_amount = #{reductionAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="joinNumber != null" >
+        join_number = #{joinNumber,jdbcType=INTEGER},
+      </if>
+      <if test="views != null" >
+        views = #{views,jdbcType=INTEGER},
+      </if>
+      <if test="giveNumber != null" >
+        give_number = #{giveNumber,jdbcType=INTEGER},
+      </if>
+      <if test="useNumber != null" >
+        use_number = #{useNumber,jdbcType=INTEGER},
+      </if>
+      <if test="newuserNum != null" >
+        newuser_num = #{newuserNum,jdbcType=INTEGER},
+      </if>
+      <if test="consumeAmount != null" >
+        consume_amount = #{consumeAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.saas.entity.activity.Fullreduction" >
+    update t_activity_fullreduction
+    set sellerid = #{sellerid,jdbcType=INTEGER},
+      name = #{name,jdbcType=VARCHAR},
+      begin_date = #{beginDate,jdbcType=DATE},
+      end_date = #{endDate,jdbcType=DATE},
+      limit_number = #{limitNumber,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      offset_amount = #{offsetAmount,jdbcType=DECIMAL},
+      is_derate = #{isDerate,jdbcType=INTEGER},
+      derate_level1_amount = #{derateLevel1Amount,jdbcType=DECIMAL},
+      consume_and_pay1 = #{consumeAndPay1,jdbcType=DECIMAL},
+      derate_level2_amount = #{derateLevel2Amount,jdbcType=DECIMAL},
+      consume_and_pay2 = #{consumeAndPay2,jdbcType=DECIMAL},
+      derate_level3_amount = #{derateLevel3Amount,jdbcType=DECIMAL},
+      consume_and_pay3 = #{consumeAndPay3,jdbcType=DECIMAL},
+      consume_and_pay = #{consumeAndPay,jdbcType=DECIMAL},
+      reduction_amount = #{reductionAmount,jdbcType=DECIMAL},
+      join_number = #{joinNumber,jdbcType=INTEGER},
+      views = #{views,jdbcType=INTEGER},
+      give_number = #{giveNumber,jdbcType=INTEGER},
+      use_number = #{useNumber,jdbcType=INTEGER},
+      newuser_num = #{newuserNum,jdbcType=INTEGER},
+      consume_amount = #{consumeAmount,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

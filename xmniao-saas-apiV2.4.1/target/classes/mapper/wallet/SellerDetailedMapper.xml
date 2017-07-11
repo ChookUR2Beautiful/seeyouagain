@@ -1,0 +1,478 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.wallet.SellerDetailedDao">
+	<resultMap id="BaseResultMap" type="com.xmn.saas.entity.wallet.SellerDetailed">
+		<id column="sellerid" property="sellerid" jdbcType="INTEGER" />
+		<result column="consume" property="consume" jdbcType="DOUBLE" />
+		<result column="returnrmb" property="returnrmb" jdbcType="VARCHAR" />
+		<result column="iswifi" property="iswifi" jdbcType="INTEGER" />
+		<result column="isparking" property="isparking" jdbcType="INTEGER" />
+		<result column="dishes" property="dishes" jdbcType="VARCHAR" />
+		<result column="rule" property="rule" jdbcType="VARCHAR" />
+		<result column="landmark" property="landmark" jdbcType="VARCHAR" />
+		<result column="number" property="number" jdbcType="INTEGER" />
+		<result column="xnumber" property="xnumber" jdbcType="INTEGER" />
+		<result column="is_chain" property="isChain" jdbcType="INTEGER" />
+		<result column="shop_area" property="shopArea" jdbcType="DOUBLE" />
+		<result column="staff_number" property="staffNumber" jdbcType="INTEGER" />
+		<result column="monthly_turnover" property="monthlyTurnover"
+			jdbcType="DOUBLE" />
+		<result column="seller_grade" property="sellerGrade" jdbcType="INTEGER" />
+		<result column="rebate_out" property="rebateOut" jdbcType="INTEGER" />
+		<result column="operating_out" property="operatingOut"
+			jdbcType="INTEGER" />
+		<result column="is_shopinfo" property="isShopinfo" jdbcType="INTEGER" />
+		<result column="is_discount" property="isDiscount" jdbcType="INTEGER" />
+		<result column="wifilocation" property="wifilocation" jdbcType="INTEGER" />
+		<result column="tips" property="tips" jdbcType="VARCHAR" />
+		<result column="ssid" property="ssid" jdbcType="VARCHAR" />
+		<result column="wifi_pwd" property="wifiPwd" jdbcType="VARCHAR" />
+		<result column="is_pay" property="isPay" jdbcType="INTEGER" />
+		<result column="adjust_reason" property="adjustReason"
+			jdbcType="VARCHAR" />
+		<result column="is_first" property="isFirst" jdbcType="INTEGER" />
+		<result column="is_open_booking" property="isOpenBooking"
+			jdbcType="INTEGER" />
+		<result column="amount_limit" property="amountLimit" jdbcType="DOUBLE" />
+		<result column="short_message" property="shortMessage"
+			jdbcType="INTEGER" />
+		<result column="message_push" property="messagePush" jdbcType="INTEGER" />
+	</resultMap>
+	<resultMap id="ResultMapWithBLOBs" type="com.xmn.saas.entity.wallet.SellerDetailed"
+		extends="BaseResultMap">
+		<result column="introduce" property="introduce" jdbcType="LONGVARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		sellerid, consume, returnrmb, iswifi, isparking, dishes, rule, landmark,
+		number,
+		xnumber, is_chain, shop_area, staff_number, monthly_turnover, seller_grade,
+		rebate_out,
+		operating_out, is_shopinfo, is_discount, wifilocation, tips, ssid, wifi_pwd, is_pay,
+		adjust_reason, is_first, is_open_booking, amount_limit, short_message,
+		message_push
+	</sql>
+	<sql id="Blob_Column_List">
+		introduce
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from t_seller_detailed
+		where sellerid = #{sellerid,jdbcType=INTEGER}
+	</select>
+	<select id="selectOpertingOutBySellerid" resultType="java.lang.Integer">
+		SELECT operating_out FROM t_seller_detailed WHERE sellerid = #{sellerid}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		DELETE FROM t_seller_detailed
+		WHERE sellerid = #{sellerid,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.xmn.saas.entity.wallet.SellerDetailed">
+		INSERT INTO t_seller_detailed (sellerid, consume, returnrmb,
+		iswifi, isparking, dishes,
+		rule, landmark, number,
+		xnumber, is_chain, shop_area,
+		staff_number, monthly_turnover, seller_grade,
+		rebate_out, operating_out, is_shopinfo,
+		is_discount, wifilocation, tips,
+		ssid, wifi_pwd, is_pay,
+		adjust_reason, is_first, is_open_booking,
+		amount_limit, short_message, message_push,
+		introduce)
+		VALUES (#{sellerid,jdbcType=INTEGER}, #{consume,jdbcType=DOUBLE},
+		#{returnrmb,jdbcType=VARCHAR},
+		#{iswifi,jdbcType=INTEGER}, #{isparking,jdbcType=INTEGER},
+		#{dishes,jdbcType=VARCHAR},
+		#{rule,jdbcType=VARCHAR}, #{landmark,jdbcType=VARCHAR},
+		#{number,jdbcType=INTEGER},
+		#{xnumber,jdbcType=INTEGER}, #{isChain,jdbcType=INTEGER},
+		#{shopArea,jdbcType=DOUBLE},
+		#{staffNumber,jdbcType=INTEGER}, #{monthlyTurnover,jdbcType=DOUBLE},
+		#{sellerGrade,jdbcType=INTEGER},
+		#{rebateOut,jdbcType=INTEGER}, #{operatingOut,jdbcType=INTEGER}, #{isShopinfo,jdbcType=INTEGER},
+		#{isDiscount,jdbcType=INTEGER}, #{wifilocation,jdbcType=INTEGER},
+		#{tips,jdbcType=VARCHAR},
+		#{ssid,jdbcType=VARCHAR}, #{wifiPwd,jdbcType=VARCHAR}, #{isPay,jdbcType=INTEGER},
+		#{adjustReason,jdbcType=VARCHAR}, #{isFirst,jdbcType=INTEGER},
+		#{isOpenBooking,jdbcType=INTEGER},
+		#{amountLimit,jdbcType=DOUBLE}, #{shortMessage,jdbcType=INTEGER}, #{messagePush,jdbcType=INTEGER},
+		#{introduce,jdbcType=LONGVARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.xmn.saas.entity.wallet.SellerDetailed">
+		insert into t_seller_detailed
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="sellerid != null">
+				sellerid,
+			</if>
+			<if test="consume != null">
+				consume,
+			</if>
+			<if test="returnrmb != null">
+				returnrmb,
+			</if>
+			<if test="iswifi != null">
+				iswifi,
+			</if>
+			<if test="isparking != null">
+				isparking,
+			</if>
+			<if test="dishes != null">
+				dishes,
+			</if>
+			<if test="rule != null">
+				rule,
+			</if>
+			<if test="landmark != null">
+				landmark,
+			</if>
+			<if test="number != null">
+				number,
+			</if>
+			<if test="xnumber != null">
+				xnumber,
+			</if>
+			<if test="isChain != null">
+				is_chain,
+			</if>
+			<if test="shopArea != null">
+				shop_area,
+			</if>
+			<if test="staffNumber != null">
+				staff_number,
+			</if>
+			<if test="monthlyTurnover != null">
+				monthly_turnover,
+			</if>
+			<if test="sellerGrade != null">
+				seller_grade,
+			</if>
+			<if test="rebateOut != null">
+				rebate_out,
+			</if>
+			<if test="operatingOut != null">
+				operating_out,
+			</if>
+			<if test="isShopinfo != null">
+				is_shopinfo,
+			</if>
+			<if test="isDiscount != null">
+				is_discount,
+			</if>
+			<if test="wifilocation != null">
+				wifilocation,
+			</if>
+			<if test="tips != null">
+				tips,
+			</if>
+			<if test="ssid != null">
+				ssid,
+			</if>
+			<if test="wifiPwd != null">
+				wifi_pwd,
+			</if>
+			<if test="isPay != null">
+				is_pay,
+			</if>
+			<if test="adjustReason != null">
+				adjust_reason,
+			</if>
+			<if test="isFirst != null">
+				is_first,
+			</if>
+			<if test="isOpenBooking != null">
+				is_open_booking,
+			</if>
+			<if test="amountLimit != null">
+				amount_limit,
+			</if>
+			<if test="shortMessage != null">
+				short_message,
+			</if>
+			<if test="messagePush != null">
+				message_push,
+			</if>
+			<if test="introduce != null">
+				introduce,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="sellerid != null">
+				#{sellerid,jdbcType=INTEGER},
+			</if>
+			<if test="consume != null">
+				#{consume,jdbcType=DOUBLE},
+			</if>
+			<if test="returnrmb != null">
+				#{returnrmb,jdbcType=VARCHAR},
+			</if>
+			<if test="iswifi != null">
+				#{iswifi,jdbcType=INTEGER},
+			</if>
+			<if test="isparking != null">
+				#{isparking,jdbcType=INTEGER},
+			</if>
+			<if test="dishes != null">
+				#{dishes,jdbcType=VARCHAR},
+			</if>
+			<if test="rule != null">
+				#{rule,jdbcType=VARCHAR},
+			</if>
+			<if test="landmark != null">
+				#{landmark,jdbcType=VARCHAR},
+			</if>
+			<if test="number != null">
+				#{number,jdbcType=INTEGER},
+			</if>
+			<if test="xnumber != null">
+				#{xnumber,jdbcType=INTEGER},
+			</if>
+			<if test="isChain != null">
+				#{isChain,jdbcType=INTEGER},
+			</if>
+			<if test="shopArea != null">
+				#{shopArea,jdbcType=DOUBLE},
+			</if>
+			<if test="staffNumber != null">
+				#{staffNumber,jdbcType=INTEGER},
+			</if>
+			<if test="monthlyTurnover != null">
+				#{monthlyTurnover,jdbcType=DOUBLE},
+			</if>
+			<if test="sellerGrade != null">
+				#{sellerGrade,jdbcType=INTEGER},
+			</if>
+			<if test="rebateOut != null">
+				#{rebateOut,jdbcType=INTEGER},
+			</if>
+			<if test="operatingOut != null">
+				#{operatingOut,jdbcType=INTEGER},
+			</if>
+			<if test="isShopinfo != null">
+				#{isShopinfo,jdbcType=INTEGER},
+			</if>
+			<if test="isDiscount != null">
+				#{isDiscount,jdbcType=INTEGER},
+			</if>
+			<if test="wifilocation != null">
+				#{wifilocation,jdbcType=INTEGER},
+			</if>
+			<if test="tips != null">
+				#{tips,jdbcType=VARCHAR},
+			</if>
+			<if test="ssid != null">
+				#{ssid,jdbcType=VARCHAR},
+			</if>
+			<if test="wifiPwd != null">
+				#{wifiPwd,jdbcType=VARCHAR},
+			</if>
+			<if test="isPay != null">
+				#{isPay,jdbcType=INTEGER},
+			</if>
+			<if test="adjustReason != null">
+				#{adjustReason,jdbcType=VARCHAR},
+			</if>
+			<if test="isFirst != null">
+				#{isFirst,jdbcType=INTEGER},
+			</if>
+			<if test="isOpenBooking != null">
+				#{isOpenBooking,jdbcType=INTEGER},
+			</if>
+			<if test="amountLimit != null">
+				#{amountLimit,jdbcType=DOUBLE},
+			</if>
+			<if test="shortMessage != null">
+				#{shortMessage,jdbcType=INTEGER},
+			</if>
+			<if test="messagePush != null">
+				#{messagePush,jdbcType=INTEGER},
+			</if>
+			<if test="introduce != null">
+				#{introduce,jdbcType=LONGVARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.xmn.saas.entity.wallet.SellerDetailed">
+		update t_seller_detailed
+		<set>
+			<if test="consume != null">
+				consume = #{consume,jdbcType=DOUBLE},
+			</if>
+			<if test="returnrmb != null">
+				returnrmb = #{returnrmb,jdbcType=VARCHAR},
+			</if>
+			<if test="iswifi != null">
+				iswifi = #{iswifi,jdbcType=INTEGER},
+			</if>
+			<if test="isparking != null">
+				isparking = #{isparking,jdbcType=INTEGER},
+			</if>
+			<if test="dishes != null">
+				dishes = #{dishes,jdbcType=VARCHAR},
+			</if>
+			<if test="rule != null">
+				rule = #{rule,jdbcType=VARCHAR},
+			</if>
+			<if test="landmark != null">
+				landmark = #{landmark,jdbcType=VARCHAR},
+			</if>
+			<if test="number != null">
+				number = #{number,jdbcType=INTEGER},
+			</if>
+			<if test="xnumber != null">
+				xnumber = #{xnumber,jdbcType=INTEGER},
+			</if>
+			<if test="isChain != null">
+				is_chain = #{isChain,jdbcType=INTEGER},
+			</if>
+			<if test="shopArea != null">
+				shop_area = #{shopArea,jdbcType=DOUBLE},
+			</if>
+			<if test="staffNumber != null">
+				staff_number = #{staffNumber,jdbcType=INTEGER},
+			</if>
+			<if test="monthlyTurnover != null">
+				monthly_turnover = #{monthlyTurnover,jdbcType=DOUBLE},
+			</if>
+			<if test="sellerGrade != null">
+				seller_grade = #{sellerGrade,jdbcType=INTEGER},
+			</if>
+			<if test="rebateOut != null">
+				rebate_out = #{rebateOut,jdbcType=INTEGER},
+			</if>
+			<if test="operatingOut != null">
+				operating_out = #{operatingOut,jdbcType=INTEGER},
+			</if>
+			<if test="isShopinfo != null">
+				is_shopinfo = #{isShopinfo,jdbcType=INTEGER},
+			</if>
+			<if test="isDiscount != null">
+				is_discount = #{isDiscount,jdbcType=INTEGER},
+			</if>
+			<if test="wifilocation != null">
+				wifilocation = #{wifilocation,jdbcType=INTEGER},
+			</if>
+			<if test="tips != null">
+				tips = #{tips,jdbcType=VARCHAR},
+			</if>
+			<if test="ssid != null">
+				ssid = #{ssid,jdbcType=VARCHAR},
+			</if>
+			<if test="wifiPwd != null">
+				wifi_pwd = #{wifiPwd,jdbcType=VARCHAR},
+			</if>
+			<if test="isPay != null">
+				is_pay = #{isPay,jdbcType=INTEGER},
+			</if>
+			<if test="adjustReason != null">
+				adjust_reason = #{adjustReason,jdbcType=VARCHAR},
+			</if>
+			<if test="isFirst != null">
+				is_first = #{isFirst,jdbcType=INTEGER},
+			</if>
+			<if test="isOpenBooking != null">
+				is_open_booking = #{isOpenBooking,jdbcType=INTEGER},
+			</if>
+			<if test="amountLimit != null">
+				amount_limit = #{amountLimit,jdbcType=DOUBLE},
+			</if>
+			<if test="shortMessage != null">
+				short_message = #{shortMessage,jdbcType=INTEGER},
+			</if>
+			<if test="messagePush != null">
+				message_push = #{messagePush,jdbcType=INTEGER},
+			</if>
+			<if test="introduce != null">
+				introduce = #{introduce,jdbcType=LONGVARCHAR},
+			</if>
+		</set>
+		where sellerid = #{sellerid,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKeyWithBLOBs" parameterType="com.xmn.saas.entity.wallet.SellerDetailed">
+		UPDATE t_seller_detailed
+		SET consume = #{consume,jdbcType=DOUBLE},
+		returnrmb = #{returnrmb,jdbcType=VARCHAR},
+		iswifi = #{iswifi,jdbcType=INTEGER},
+		isparking = #{isparking,jdbcType=INTEGER},
+		dishes = #{dishes,jdbcType=VARCHAR},
+		rule = #{rule,jdbcType=VARCHAR},
+		landmark = #{landmark,jdbcType=VARCHAR},
+		number = #{number,jdbcType=INTEGER},
+		xnumber = #{xnumber,jdbcType=INTEGER},
+		is_chain = #{isChain,jdbcType=INTEGER},
+		shop_area = #{shopArea,jdbcType=DOUBLE},
+		staff_number = #{staffNumber,jdbcType=INTEGER},
+		monthly_turnover = #{monthlyTurnover,jdbcType=DOUBLE},
+		seller_grade = #{sellerGrade,jdbcType=INTEGER},
+		rebate_out = #{rebateOut,jdbcType=INTEGER},
+		operating_out = #{operatingOut,jdbcType=INTEGER},
+		is_shopinfo = #{isShopinfo,jdbcType=INTEGER},
+		is_discount = #{isDiscount,jdbcType=INTEGER},
+		wifilocation = #{wifilocation,jdbcType=INTEGER},
+		tips = #{tips,jdbcType=VARCHAR},
+		ssid = #{ssid,jdbcType=VARCHAR},
+		wifi_pwd = #{wifiPwd,jdbcType=VARCHAR},
+		is_pay = #{isPay,jdbcType=INTEGER},
+		adjust_reason = #{adjustReason,jdbcType=VARCHAR},
+		is_first = #{isFirst,jdbcType=INTEGER},
+		is_open_booking = #{isOpenBooking,jdbcType=INTEGER},
+		amount_limit = #{amountLimit,jdbcType=DOUBLE},
+		short_message = #{shortMessage,jdbcType=INTEGER},
+		message_push = #{messagePush,jdbcType=INTEGER},
+		introduce = #{introduce,jdbcType=LONGVARCHAR}
+		WHERE sellerid = #{sellerid,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.xmn.saas.entity.wallet.SellerDetailed">
+		UPDATE t_seller_detailed
+		SET consume = #{consume,jdbcType=DOUBLE},
+		returnrmb = #{returnrmb,jdbcType=VARCHAR},
+		iswifi = #{iswifi,jdbcType=INTEGER},
+		isparking = #{isparking,jdbcType=INTEGER},
+		dishes = #{dishes,jdbcType=VARCHAR},
+		rule = #{rule,jdbcType=VARCHAR},
+		landmark = #{landmark,jdbcType=VARCHAR},
+		number = #{number,jdbcType=INTEGER},
+		xnumber = #{xnumber,jdbcType=INTEGER},
+		is_chain = #{isChain,jdbcType=INTEGER},
+		shop_area = #{shopArea,jdbcType=DOUBLE},
+		staff_number = #{staffNumber,jdbcType=INTEGER},
+		monthly_turnover = #{monthlyTurnover,jdbcType=DOUBLE},
+		seller_grade = #{sellerGrade,jdbcType=INTEGER},
+		rebate_out = #{rebateOut,jdbcType=INTEGER},
+		operating_out = #{operatingOut,jdbcType=INTEGER},
+		is_shopinfo = #{isShopinfo,jdbcType=INTEGER},
+		is_discount = #{isDiscount,jdbcType=INTEGER},
+		wifilocation = #{wifilocation,jdbcType=INTEGER},
+		tips = #{tips,jdbcType=VARCHAR},
+		ssid = #{ssid,jdbcType=VARCHAR},
+		wifi_pwd = #{wifiPwd,jdbcType=VARCHAR},
+		is_pay = #{isPay,jdbcType=INTEGER},
+		adjust_reason = #{adjustReason,jdbcType=VARCHAR},
+		is_first = #{isFirst,jdbcType=INTEGER},
+		is_open_booking = #{isOpenBooking,jdbcType=INTEGER},
+		amount_limit = #{amountLimit,jdbcType=DOUBLE},
+		short_message = #{shortMessage,jdbcType=INTEGER},
+		message_push = #{messagePush,jdbcType=INTEGER}
+		WHERE sellerid = #{sellerid,jdbcType=INTEGER}
+	</update>
+	<update id="updateAccreditStatus" parameterType="map">
+		UPDATE
+		t_seller_detailed
+		SET
+		operating_out = #{operatingout}
+		WHERE
+		sellerid = #{sellerid}
+	</update>
+
+	<!-- 查询是否连锁店和是否允许总店提现 -->
+	<select id="queryChainAndHeadDraw" parameterType="int"
+		resultType="map">
+		SELECT ifnull(is_chain,0) ischain , ifnull(rebate_out,0)
+		rebateout, ifnull(operating_out,0) operatingout,
+		ifnull(amount_limit,50000) amount_limit FROM t_seller_detailed WHERE
+		sellerid=#{sellerid}
+	</select>
+
+</mapper>

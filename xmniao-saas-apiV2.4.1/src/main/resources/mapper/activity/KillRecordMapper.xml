@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.activity.KillRecordDao">
+	<resultMap id="BaseResultMap" type="com.xmn.saas.entity.activity.KillRecord">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="activity_id" property="activityId" jdbcType="INTEGER" />
+		<result column="cid" property="cid" jdbcType="INTEGER" />
+		<result column="serial_no" property="serialNo" jdbcType="VARCHAR" />
+		<result column="get_time" property="getTime" jdbcType="TIMESTAMP" />
+		<result column="uid" property="uid" jdbcType="INTEGER" />
+		<result column="phone" property="phone" jdbcType="VARCHAR" />
+		<result column="use_status" property="useStatus" jdbcType="INTEGER" />
+		<result column="use_time" property="useTime" jdbcType="TIMESTAMP" />
+		<result column="is_binding" property="isBinding" jdbcType="INTEGER" />
+		<result column="is_share" property="isShare" jdbcType="INTEGER" />
+		<result column="name" property="usrName" jdbcType="VARCHAR" />
+		<result column="award_name" property="awardName" jdbcType="VARCHAR" />
+		<result column="award_type" property="awardType" jdbcType="INTEGER" />
+		<result column="number" property="number" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		t_activity_kill_record.id,
+		t_activity_kill_record.activity_id,
+		t_activity_kill_record.cid,
+		t_activity_kill_record.serial_no,
+		t_activity_kill_record.get_time, 
+		t_activity_kill_record.uid,
+		t_activity_kill_record.phone, 
+		t_activity_kill_record.use_status,
+		t_activity_kill_record.is_binding, 
+		t_activity_kill_record.number
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_activity_kill_record
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from t_activity_kill_record
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.xmn.saas.entity.activity.KillRecord">
+		insert into t_activity_kill_record (id, activity_id, cid,
+		serial_no,  get_time,
+		uid, phone, use_status,
+		 is_binding,
+		number)
+		values (#{id,jdbcType=INTEGER}, #{activityId,jdbcType=INTEGER},
+		#{cid,jdbcType=INTEGER},
+		#{serialNo,jdbcType=VARCHAR}, #{getWay,jdbcType=INTEGER}, #{getTime,jdbcType=TIMESTAMP},
+		#{uid,jdbcType=INTEGER}, #{phone,jdbcType=VARCHAR},
+		#{useStatus,jdbcType=INTEGER},
+		#{lockTime,jdbcType=TIMESTAMP},#{isBinding,jdbcType=INTEGER},
+		,#{number,jdbcType=VARCHAR},)
+	</insert>
+	<insert id="insertSelective" parameterType="com.xmn.saas.entity.activity.KillRecord">
+		insert into t_activity_kill_record
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="activityId != null">
+				activity_id,
+			</if>
+			<if test="cid != null">
+				cid,
+			</if>
+			<if test="serialNo != null">
+				serial_no,
+			</if>
+			<if test="getTime != null">
+				get_time,
+			</if>
+			<if test="uid != null">
+				uid,
+			</if>
+			<if test="phone != null">
+				phone,
+			</if>
+			<if test="useStatus != null">
+				use_status,
+			</if>
+			<if test="isBinding != null">
+				is_binding,
+			</if>
+			<if test="number != null">
+				number,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="activityId != null">
+				#{activityId,jdbcType=INTEGER},
+			</if>
+			<if test="cid != null">
+				#{cid,jdbcType=INTEGER},
+			</if>
+			<if test="serialNo != null">
+				#{serialNo,jdbcType=VARCHAR},
+			</if>
+			<if test="getWay != null">
+				#{getWay,jdbcType=INTEGER},
+			</if>
+			<if test="getTime != null">
+				#{getTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="uid != null">
+				#{uid,jdbcType=INTEGER},
+			</if>
+			<if test="phone != null">
+				#{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="useStatus != null">
+				#{useStatus,jdbcType=INTEGER},
+			</if>
+			<if test="lockTime != null">
+				#{lockTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="isBinding != null">
+				#{isBinding,jdbcType=INTEGER},
+			</if>
+			<if test="number != null">
+				#{number,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.xmn.saas.entity.activity.KillRecord">
+		update t_activity_kill_record
+		<set>
+			<if test="activityId != null">
+				activity_id = #{activityId,jdbcType=INTEGER},
+			</if>
+			<if test="cid != null">
+				cid = #{cid,jdbcType=INTEGER},
+			</if>
+			<if test="serialNo != null">
+				serial_no = #{serialNo,jdbcType=VARCHAR},
+			</if>
+			<if test="getTime != null">
+				get_time = #{getTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="uid != null">
+				uid = #{uid,jdbcType=INTEGER},
+			</if>
+			<if test="phone != null">
+				phone = #{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="useStatus != null">
+				use_status = #{useStatus,jdbcType=INTEGER},
+			</if>
+			<if test="isBinding != null">
+				is_binding = #{isBinding,jdbcType=INTEGER},
+			</if>
+			<if test="number != null">
+				number = #{number,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.xmn.saas.entity.activity.KillRecord">
+		update t_activity_kill_record
+		set activity_id = #{activityId,jdbcType=INTEGER},
+		cid = #{cid,jdbcType=INTEGER},
+		serial_no = #{serialNo,jdbcType=VARCHAR},
+		get_time = #{getTime,jdbcType=TIMESTAMP},
+		uid = #{uid,jdbcType=INTEGER},
+		phone = #{phone,jdbcType=VARCHAR},
+		use_status = #{useStatus,jdbcType=INTEGER},
+		is_binding = #{isBinding,jdbcType=INTEGER},
+		number = #{number,jdbcType=VARCHAR},
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+
+	<select id="list" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />,
+		award.award_name as awardName,award.award_type as awardType FROM
+		`t_activity_kill_record`
+		LEFT JOIN
+		t_activity_award_relation award on t_activity_kill_record.cid =
+		award.id 
+		where
+		t_activity_kill_record.activity_id =#{activityId} and
+		award.activity_type= 3 and t_activity_kill_record.cid is not null and t_activity_kill_record.pay_status=1
+		order by get_time desc		
+		<if test="pageSize!=null">
+  			<if test="pageIndex!=null">
+				limit ${(pageIndex-1)*pageSize},#{pageSize}  			
+  			</if>
+  	</if>		
+	</select>
+	<select id="detail" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		,
+		award.award_name as awardName,user.`nname` as
+		usrName,award.award_type as awardType ,cou.is_share as is_share,cou.use_time as use_time FROM
+		`t_activity_kill_record`
+		LEFT JOIN
+		t_activity_award_relation award on t_activity_kill_record.cid =
+		award.id left join
+		t_seller_account user on
+		t_activity_kill_record.uid = user.aid left join t_user_coupon cou on t_activity_kill_record.id = cou.activity_id
+		where
+		t_activity_kill_record.activity_id =#{activityId} and
+		award.activity_type= 3 and t_activity_kill_record.id=#{id} and cou.activity_type=3 ;
+	</select>
+	
+	<select id="countRecord" resultType="java.lang.Integer">
+  		select ifnull(count(*),0) from t_activity_kill_record where activity_id = #{activityId,jdbcType=INTEGER} and cid  is not null and pay_status = 1
+  	</select>
+</mapper>

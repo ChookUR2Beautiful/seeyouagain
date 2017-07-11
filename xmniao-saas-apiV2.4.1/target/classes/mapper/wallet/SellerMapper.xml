@@ -1,0 +1,1002 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.wallet.SellerDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.saas.entity.wallet.Seller" >
+    <id column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="staffid" property="staffid" jdbcType="INTEGER" />
+    <result column="jointid" property="jointid" jdbcType="INTEGER" />
+    <result column="sellername" property="sellername" jdbcType="VARCHAR" />
+    <result column="province" property="province" jdbcType="VARCHAR" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="area" property="area" jdbcType="VARCHAR" />
+    <result column="zoneid" property="zoneid" jdbcType="INTEGER" />
+    <result column="category" property="category" jdbcType="VARCHAR" />
+    <result column="genre" property="genre" jdbcType="VARCHAR" />
+    <result column="bewrite" property="bewrite" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="fullname" property="fullname" jdbcType="VARCHAR" />
+    <result column="identity" property="identity" jdbcType="VARCHAR" />
+    <result column="phoneid" property="phoneid" jdbcType="VARCHAR" />
+    <result column="orgid" property="orgid" jdbcType="VARCHAR" />
+    <result column="licenseid" property="licenseid" jdbcType="VARCHAR" />
+    <result column="licenseurl" property="licenseurl" jdbcType="VARCHAR" />
+    <result column="sdate" property="sdate" jdbcType="VARCHAR" />
+    <result column="sexplain" property="sexplain" jdbcType="VARCHAR" />
+    <result column="svalidity" property="svalidity" jdbcType="TIMESTAMP" />
+    <result column="evalidity" property="evalidity" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="examineinfo" property="examineinfo" jdbcType="VARCHAR" />
+    <result column="signdate" property="signdate" jdbcType="TIMESTAMP" />
+    <result column="udate" property="udate" jdbcType="TIMESTAMP" />
+    <result column="give" property="give" jdbcType="INTEGER" />
+    <result column="fatherid" property="fatherid" jdbcType="INTEGER" />
+    <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="identityzurl" property="identityzurl" jdbcType="VARCHAR" />
+    <result column="identityfurl" property="identityfurl" jdbcType="VARCHAR" />
+    <result column="licensefurl" property="licensefurl" jdbcType="VARCHAR" />
+    <result column="agreement" property="agreement" jdbcType="VARCHAR" />
+    <result column="lssellername" property="lssellername" jdbcType="VARCHAR" />
+    <result column="typename" property="typename" jdbcType="VARCHAR" />
+    <result column="tradename" property="tradename" jdbcType="VARCHAR" />
+    <result column="isprotocol" property="isprotocol" jdbcType="INTEGER" />
+    <result column="agio_type" property="agioType" jdbcType="TINYINT" />
+    <result column="agio" property="agio" jdbcType="DOUBLE" />
+    <result column="yledger" property="yledger" jdbcType="REAL" />
+    <result column="agio_time" property="agioTime" jdbcType="TIMESTAMP" />
+    <result column="entry" property="entry" jdbcType="REAL" />
+    <result column="is_virtual" property="isVirtual" jdbcType="INTEGER" />
+    <result column="flat_agio" property="flatAgio" jdbcType="DOUBLE" />
+    <result column="isforce" property="isforce" jdbcType="INTEGER" />
+    <result column="isonline" property="isonline" jdbcType="INTEGER" />
+    <result column="agio_agio" property="agioAgio" jdbcType="INTEGER" />
+    <result column="agio_instruction" property="agioInstruction" jdbcType="VARCHAR" />
+    <result column="ismultiple" property="ismultiple" jdbcType="INTEGER" />
+    <result column="recommend" property="recommend" jdbcType="BIT" />
+    <result column="recom_num" property="recomNum" jdbcType="INTEGER" />
+    <result column="data_source" property="dataSource" jdbcType="INTEGER" />
+    <result column="offline_reason" property="offlineReason" jdbcType="VARCHAR" />
+    <result column="date_operate" property="dateOperate" jdbcType="TIMESTAMP" />
+    <result column="xmn_service" property="xmnService" jdbcType="INTEGER" />
+    <result column="islock" property="islock" jdbcType="INTEGER" />
+    <result column="ratio" property="ratio" jdbcType="DOUBLE" />
+    <result column="isfees" property="isfees" jdbcType="INTEGER" />
+    <result column="debit" property="debit" jdbcType="DOUBLE" />
+    <result column="agreement2" property="agreement2" jdbcType="VARCHAR" />
+    <result column="agreement3" property="agreement3" jdbcType="VARCHAR" />
+    <result column="agreement4" property="agreement4" jdbcType="VARCHAR" />
+    <result column="label" property="label" jdbcType="INTEGER" />
+    <result column="order" property="order" jdbcType="INTEGER" />
+    <result column="real_order" property="realOrder" jdbcType="INTEGER" />
+    <result column="agio_agio_num" property="agioAgioNum" jdbcType="DECIMAL" />
+    <result column="is_ka" property="isKa" jdbcType="INTEGER" />
+    <result column="brand_id" property="brandId" jdbcType="INTEGER" />
+    <result column="save_money" property="saveMoney" jdbcType="DECIMAL" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="identitynurl" property="identitynurl" jdbcType="VARCHAR" />
+    <result column="ledger_mode" property="ledgerMode" jdbcType="INTEGER" />
+    <result column="live_coin_pay" property="liveCoinPay" jdbcType="INTEGER" />
+    <result column="is_public" property="isPublic" jdbcType="INTEGER" />
+    <result column="is_paid" property="isPaid" jdbcType="INTEGER" />
+    <result column="join_dividend" property="joinDividend" jdbcType="INTEGER" />
+    <result column="total_limit_turnover" property="totalLimitTurnover" jdbcType="DOUBLE" />
+    <result column="daily_limit_turnover" property="dailyLimitTurnover" jdbcType="DOUBLE" />
+    <result column="daily_limit_withdraw" property="dailyLimitWithdraw" jdbcType="DOUBLE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    sellerid, staffid, jointid, sellername, province, city, area, zoneid, category, genre, 
+    bewrite, address, tel, fullname, identity, phoneid, orgid, licenseid, licenseurl, 
+    sdate, sexplain, svalidity, evalidity, `status`, examineinfo, signdate, udate, give,
+    fatherid, remarks, email, identityzurl, identityfurl, licensefurl, agreement, lssellername, 
+    typename, tradename, isprotocol, agio_type, agio, yledger, agio_time, entry, is_virtual, 
+    flat_agio, isforce, isonline, agio_agio, agio_instruction, ismultiple, recommend, 
+    recom_num, data_source, offline_reason, date_operate, xmn_service, islock, ratio, 
+    isfees, debit, agreement2, agreement3, agreement4, label, `order`, real_order, agio_agio_num,
+    is_ka, brand_id, save_money, uid, identitynurl, ledger_mode, live_coin_pay, is_public, 
+    is_paid, join_dividend, total_limit_turnover, daily_limit_turnover, daily_limit_withdraw
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_seller
+    where sellerid = #{sellerid,jdbcType=INTEGER}
+  </select>
+   <select id="findBySellerid" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    daily_limit_withdraw  dailyLimitWithdraw, is_paid isPaid ,isonline,agio,zoneid,area,uid,sellername
+    from t_seller
+    where sellerid = #{sellerid,jdbcType=INTEGER}
+  </select>
+    <select id="selectByAccount" resultMap="BaseResultMap">
+        SELECT DISTINCT s.sellername, s.sellerid
+        FROM `t_seller` s INNER JOIN t_seller_account sa on s.sellerid = sa.sellerid
+        where sa.account = #{account};
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_seller
+    where sellerid = #{sellerid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmn.saas.entity.wallet.Seller" >
+    insert into t_seller (sellerid, staffid, jointid, 
+      sellername, province, city, 
+      area, zoneid, category, 
+      genre, bewrite, address, 
+      tel, fullname, identity, 
+      phoneid, orgid, licenseid, 
+      licenseurl, sdate, sexplain, 
+      svalidity, evalidity, status, 
+      examineinfo, signdate, udate, 
+      give, fatherid, remarks, 
+      email, identityzurl, identityfurl, 
+      licensefurl, agreement, lssellername, 
+      typename, tradename, isprotocol, 
+      agio_type, agio, yledger, 
+      agio_time, entry, is_virtual, 
+      flat_agio, isforce, isonline, 
+      agio_agio, agio_instruction, ismultiple, 
+      recommend, recom_num, data_source, 
+      offline_reason, date_operate, xmn_service, 
+      islock, ratio, isfees, 
+      debit, agreement2, agreement3, 
+      agreement4, label, order, 
+      real_order, agio_agio_num, is_ka, 
+      brand_id, save_money, uid, 
+      identitynurl, ledger_mode, live_coin_pay, 
+      is_public, is_paid, join_dividend, 
+      total_limit_turnover, daily_limit_turnover, daily_limit_withdraw
+      )
+    values (#{sellerid,jdbcType=INTEGER}, #{staffid,jdbcType=INTEGER}, #{jointid,jdbcType=INTEGER}, 
+      #{sellername,jdbcType=VARCHAR}, #{province,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, 
+      #{area,jdbcType=VARCHAR}, #{zoneid,jdbcType=INTEGER}, #{category,jdbcType=VARCHAR}, 
+      #{genre,jdbcType=VARCHAR}, #{bewrite,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
+      #{tel,jdbcType=VARCHAR}, #{fullname,jdbcType=VARCHAR}, #{identity,jdbcType=VARCHAR}, 
+      #{phoneid,jdbcType=VARCHAR}, #{orgid,jdbcType=VARCHAR}, #{licenseid,jdbcType=VARCHAR}, 
+      #{licenseurl,jdbcType=VARCHAR}, #{sdate,jdbcType=VARCHAR}, #{sexplain,jdbcType=VARCHAR}, 
+      #{svalidity,jdbcType=TIMESTAMP}, #{evalidity,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}, 
+      #{examineinfo,jdbcType=VARCHAR}, #{signdate,jdbcType=TIMESTAMP}, #{udate,jdbcType=TIMESTAMP}, 
+      #{give,jdbcType=INTEGER}, #{fatherid,jdbcType=INTEGER}, #{remarks,jdbcType=VARCHAR}, 
+      #{email,jdbcType=VARCHAR}, #{identityzurl,jdbcType=VARCHAR}, #{identityfurl,jdbcType=VARCHAR}, 
+      #{licensefurl,jdbcType=VARCHAR}, #{agreement,jdbcType=VARCHAR}, #{lssellername,jdbcType=VARCHAR}, 
+      #{typename,jdbcType=VARCHAR}, #{tradename,jdbcType=VARCHAR}, #{isprotocol,jdbcType=INTEGER}, 
+      #{agioType,jdbcType=TINYINT}, #{agio,jdbcType=DOUBLE}, #{yledger,jdbcType=REAL}, 
+      #{agioTime,jdbcType=TIMESTAMP}, #{entry,jdbcType=REAL}, #{isVirtual,jdbcType=INTEGER}, 
+      #{flatAgio,jdbcType=DOUBLE}, #{isforce,jdbcType=INTEGER}, #{isonline,jdbcType=INTEGER}, 
+      #{agioAgio,jdbcType=INTEGER}, #{agioInstruction,jdbcType=VARCHAR}, #{ismultiple,jdbcType=INTEGER}, 
+      #{recommend,jdbcType=BIT}, #{recomNum,jdbcType=INTEGER}, #{dataSource,jdbcType=INTEGER}, 
+      #{offlineReason,jdbcType=VARCHAR}, #{dateOperate,jdbcType=TIMESTAMP}, #{xmnService,jdbcType=INTEGER}, 
+      #{islock,jdbcType=INTEGER}, #{ratio,jdbcType=DOUBLE}, #{isfees,jdbcType=INTEGER}, 
+      #{debit,jdbcType=DOUBLE}, #{agreement2,jdbcType=VARCHAR}, #{agreement3,jdbcType=VARCHAR}, 
+      #{agreement4,jdbcType=VARCHAR}, #{label,jdbcType=INTEGER}, #{order,jdbcType=INTEGER}, 
+      #{realOrder,jdbcType=INTEGER}, #{agioAgioNum,jdbcType=DECIMAL}, #{isKa,jdbcType=INTEGER}, 
+      #{brandId,jdbcType=INTEGER}, #{saveMoney,jdbcType=DECIMAL}, #{uid,jdbcType=INTEGER}, 
+      #{identitynurl,jdbcType=VARCHAR}, #{ledgerMode,jdbcType=INTEGER}, #{liveCoinPay,jdbcType=INTEGER}, 
+      #{isPublic,jdbcType=INTEGER}, #{isPaid,jdbcType=INTEGER}, #{joinDividend,jdbcType=INTEGER}, 
+      #{totalLimitTurnover,jdbcType=DOUBLE}, #{dailyLimitTurnover,jdbcType=DOUBLE}, #{dailyLimitWithdraw,jdbcType=DOUBLE}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmn.saas.entity.wallet.Seller" >
+    insert into t_seller
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="sellerid != null" >
+        sellerid,
+      </if>
+      <if test="staffid != null" >
+        staffid,
+      </if>
+      <if test="jointid != null" >
+        jointid,
+      </if>
+      <if test="sellername != null" >
+        sellername,
+      </if>
+      <if test="province != null" >
+        province,
+      </if>
+      <if test="city != null" >
+        city,
+      </if>
+      <if test="area != null" >
+        area,
+      </if>
+      <if test="zoneid != null" >
+        zoneid,
+      </if>
+      <if test="category != null" >
+        category,
+      </if>
+      <if test="genre != null" >
+        genre,
+      </if>
+      <if test="bewrite != null" >
+        bewrite,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="tel != null" >
+        tel,
+      </if>
+      <if test="fullname != null" >
+        fullname,
+      </if>
+      <if test="identity != null" >
+        identity,
+      </if>
+      <if test="phoneid != null" >
+        phoneid,
+      </if>
+      <if test="orgid != null" >
+        orgid,
+      </if>
+      <if test="licenseid != null" >
+        licenseid,
+      </if>
+      <if test="licenseurl != null" >
+        licenseurl,
+      </if>
+      <if test="sdate != null" >
+        sdate,
+      </if>
+      <if test="sexplain != null" >
+        sexplain,
+      </if>
+      <if test="svalidity != null" >
+        svalidity,
+      </if>
+      <if test="evalidity != null" >
+        evalidity,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="examineinfo != null" >
+        examineinfo,
+      </if>
+      <if test="signdate != null" >
+        signdate,
+      </if>
+      <if test="udate != null" >
+        udate,
+      </if>
+      <if test="give != null" >
+        give,
+      </if>
+      <if test="fatherid != null" >
+        fatherid,
+      </if>
+      <if test="remarks != null" >
+        remarks,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="identityzurl != null" >
+        identityzurl,
+      </if>
+      <if test="identityfurl != null" >
+        identityfurl,
+      </if>
+      <if test="licensefurl != null" >
+        licensefurl,
+      </if>
+      <if test="agreement != null" >
+        agreement,
+      </if>
+      <if test="lssellername != null" >
+        lssellername,
+      </if>
+      <if test="typename != null" >
+        typename,
+      </if>
+      <if test="tradename != null" >
+        tradename,
+      </if>
+      <if test="isprotocol != null" >
+        isprotocol,
+      </if>
+      <if test="agioType != null" >
+        agio_type,
+      </if>
+      <if test="agio != null" >
+        agio,
+      </if>
+      <if test="yledger != null" >
+        yledger,
+      </if>
+      <if test="agioTime != null" >
+        agio_time,
+      </if>
+      <if test="entry != null" >
+        entry,
+      </if>
+      <if test="isVirtual != null" >
+        is_virtual,
+      </if>
+      <if test="flatAgio != null" >
+        flat_agio,
+      </if>
+      <if test="isforce != null" >
+        isforce,
+      </if>
+      <if test="isonline != null" >
+        isonline,
+      </if>
+      <if test="agioAgio != null" >
+        agio_agio,
+      </if>
+      <if test="agioInstruction != null" >
+        agio_instruction,
+      </if>
+      <if test="ismultiple != null" >
+        ismultiple,
+      </if>
+      <if test="recommend != null" >
+        recommend,
+      </if>
+      <if test="recomNum != null" >
+        recom_num,
+      </if>
+      <if test="dataSource != null" >
+        data_source,
+      </if>
+      <if test="offlineReason != null" >
+        offline_reason,
+      </if>
+      <if test="dateOperate != null" >
+        date_operate,
+      </if>
+      <if test="xmnService != null" >
+        xmn_service,
+      </if>
+      <if test="islock != null" >
+        islock,
+      </if>
+      <if test="ratio != null" >
+        ratio,
+      </if>
+      <if test="isfees != null" >
+        isfees,
+      </if>
+      <if test="debit != null" >
+        debit,
+      </if>
+      <if test="agreement2 != null" >
+        agreement2,
+      </if>
+      <if test="agreement3 != null" >
+        agreement3,
+      </if>
+      <if test="agreement4 != null" >
+        agreement4,
+      </if>
+      <if test="label != null" >
+        label,
+      </if>
+      <if test="order != null" >
+        order,
+      </if>
+      <if test="realOrder != null" >
+        real_order,
+      </if>
+      <if test="agioAgioNum != null" >
+        agio_agio_num,
+      </if>
+      <if test="isKa != null" >
+        is_ka,
+      </if>
+      <if test="brandId != null" >
+        brand_id,
+      </if>
+      <if test="saveMoney != null" >
+        save_money,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="identitynurl != null" >
+        identitynurl,
+      </if>
+      <if test="ledgerMode != null" >
+        ledger_mode,
+      </if>
+      <if test="liveCoinPay != null" >
+        live_coin_pay,
+      </if>
+      <if test="isPublic != null" >
+        is_public,
+      </if>
+      <if test="isPaid != null" >
+        is_paid,
+      </if>
+      <if test="joinDividend != null" >
+        join_dividend,
+      </if>
+      <if test="totalLimitTurnover != null" >
+        total_limit_turnover,
+      </if>
+      <if test="dailyLimitTurnover != null" >
+        daily_limit_turnover,
+      </if>
+      <if test="dailyLimitWithdraw != null" >
+        daily_limit_withdraw,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="sellerid != null" >
+        #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="staffid != null" >
+        #{staffid,jdbcType=INTEGER},
+      </if>
+      <if test="jointid != null" >
+        #{jointid,jdbcType=INTEGER},
+      </if>
+      <if test="sellername != null" >
+        #{sellername,jdbcType=VARCHAR},
+      </if>
+      <if test="province != null" >
+        #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null" >
+        #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="area != null" >
+        #{area,jdbcType=VARCHAR},
+      </if>
+      <if test="zoneid != null" >
+        #{zoneid,jdbcType=INTEGER},
+      </if>
+      <if test="category != null" >
+        #{category,jdbcType=VARCHAR},
+      </if>
+      <if test="genre != null" >
+        #{genre,jdbcType=VARCHAR},
+      </if>
+      <if test="bewrite != null" >
+        #{bewrite,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null" >
+        #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="fullname != null" >
+        #{fullname,jdbcType=VARCHAR},
+      </if>
+      <if test="identity != null" >
+        #{identity,jdbcType=VARCHAR},
+      </if>
+      <if test="phoneid != null" >
+        #{phoneid,jdbcType=VARCHAR},
+      </if>
+      <if test="orgid != null" >
+        #{orgid,jdbcType=VARCHAR},
+      </if>
+      <if test="licenseid != null" >
+        #{licenseid,jdbcType=VARCHAR},
+      </if>
+      <if test="licenseurl != null" >
+        #{licenseurl,jdbcType=VARCHAR},
+      </if>
+      <if test="sdate != null" >
+        #{sdate,jdbcType=VARCHAR},
+      </if>
+      <if test="sexplain != null" >
+        #{sexplain,jdbcType=VARCHAR},
+      </if>
+      <if test="svalidity != null" >
+        #{svalidity,jdbcType=TIMESTAMP},
+      </if>
+      <if test="evalidity != null" >
+        #{evalidity,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="examineinfo != null" >
+        #{examineinfo,jdbcType=VARCHAR},
+      </if>
+      <if test="signdate != null" >
+        #{signdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="udate != null" >
+        #{udate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="give != null" >
+        #{give,jdbcType=INTEGER},
+      </if>
+      <if test="fatherid != null" >
+        #{fatherid,jdbcType=INTEGER},
+      </if>
+      <if test="remarks != null" >
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="identityzurl != null" >
+        #{identityzurl,jdbcType=VARCHAR},
+      </if>
+      <if test="identityfurl != null" >
+        #{identityfurl,jdbcType=VARCHAR},
+      </if>
+      <if test="licensefurl != null" >
+        #{licensefurl,jdbcType=VARCHAR},
+      </if>
+      <if test="agreement != null" >
+        #{agreement,jdbcType=VARCHAR},
+      </if>
+      <if test="lssellername != null" >
+        #{lssellername,jdbcType=VARCHAR},
+      </if>
+      <if test="typename != null" >
+        #{typename,jdbcType=VARCHAR},
+      </if>
+      <if test="tradename != null" >
+        #{tradename,jdbcType=VARCHAR},
+      </if>
+      <if test="isprotocol != null" >
+        #{isprotocol,jdbcType=INTEGER},
+      </if>
+      <if test="agioType != null" >
+        #{agioType,jdbcType=TINYINT},
+      </if>
+      <if test="agio != null" >
+        #{agio,jdbcType=DOUBLE},
+      </if>
+      <if test="yledger != null" >
+        #{yledger,jdbcType=REAL},
+      </if>
+      <if test="agioTime != null" >
+        #{agioTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="entry != null" >
+        #{entry,jdbcType=REAL},
+      </if>
+      <if test="isVirtual != null" >
+        #{isVirtual,jdbcType=INTEGER},
+      </if>
+      <if test="flatAgio != null" >
+        #{flatAgio,jdbcType=DOUBLE},
+      </if>
+      <if test="isforce != null" >
+        #{isforce,jdbcType=INTEGER},
+      </if>
+      <if test="isonline != null" >
+        #{isonline,jdbcType=INTEGER},
+      </if>
+      <if test="agioAgio != null" >
+        #{agioAgio,jdbcType=INTEGER},
+      </if>
+      <if test="agioInstruction != null" >
+        #{agioInstruction,jdbcType=VARCHAR},
+      </if>
+      <if test="ismultiple != null" >
+        #{ismultiple,jdbcType=INTEGER},
+      </if>
+      <if test="recommend != null" >
+        #{recommend,jdbcType=BIT},
+      </if>
+      <if test="recomNum != null" >
+        #{recomNum,jdbcType=INTEGER},
+      </if>
+      <if test="dataSource != null" >
+        #{dataSource,jdbcType=INTEGER},
+      </if>
+      <if test="offlineReason != null" >
+        #{offlineReason,jdbcType=VARCHAR},
+      </if>
+      <if test="dateOperate != null" >
+        #{dateOperate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="xmnService != null" >
+        #{xmnService,jdbcType=INTEGER},
+      </if>
+      <if test="islock != null" >
+        #{islock,jdbcType=INTEGER},
+      </if>
+      <if test="ratio != null" >
+        #{ratio,jdbcType=DOUBLE},
+      </if>
+      <if test="isfees != null" >
+        #{isfees,jdbcType=INTEGER},
+      </if>
+      <if test="debit != null" >
+        #{debit,jdbcType=DOUBLE},
+      </if>
+      <if test="agreement2 != null" >
+        #{agreement2,jdbcType=VARCHAR},
+      </if>
+      <if test="agreement3 != null" >
+        #{agreement3,jdbcType=VARCHAR},
+      </if>
+      <if test="agreement4 != null" >
+        #{agreement4,jdbcType=VARCHAR},
+      </if>
+      <if test="label != null" >
+        #{label,jdbcType=INTEGER},
+      </if>
+      <if test="order != null" >
+        #{order,jdbcType=INTEGER},
+      </if>
+      <if test="realOrder != null" >
+        #{realOrder,jdbcType=INTEGER},
+      </if>
+      <if test="agioAgioNum != null" >
+        #{agioAgioNum,jdbcType=DECIMAL},
+      </if>
+      <if test="isKa != null" >
+        #{isKa,jdbcType=INTEGER},
+      </if>
+      <if test="brandId != null" >
+        #{brandId,jdbcType=INTEGER},
+      </if>
+      <if test="saveMoney != null" >
+        #{saveMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="identitynurl != null" >
+        #{identitynurl,jdbcType=VARCHAR},
+      </if>
+      <if test="ledgerMode != null" >
+        #{ledgerMode,jdbcType=INTEGER},
+      </if>
+      <if test="liveCoinPay != null" >
+        #{liveCoinPay,jdbcType=INTEGER},
+      </if>
+      <if test="isPublic != null" >
+        #{isPublic,jdbcType=INTEGER},
+      </if>
+      <if test="isPaid != null" >
+        #{isPaid,jdbcType=INTEGER},
+      </if>
+      <if test="joinDividend != null" >
+        #{joinDividend,jdbcType=INTEGER},
+      </if>
+      <if test="totalLimitTurnover != null" >
+        #{totalLimitTurnover,jdbcType=DOUBLE},
+      </if>
+      <if test="dailyLimitTurnover != null" >
+        #{dailyLimitTurnover,jdbcType=DOUBLE},
+      </if>
+      <if test="dailyLimitWithdraw != null" >
+        #{dailyLimitWithdraw,jdbcType=DOUBLE},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.saas.entity.wallet.Seller" >
+    update t_seller
+    <set >
+      <if test="staffid != null" >
+        staffid = #{staffid,jdbcType=INTEGER},
+      </if>
+      <if test="jointid != null" >
+        jointid = #{jointid,jdbcType=INTEGER},
+      </if>
+      <if test="sellername != null" >
+        sellername = #{sellername,jdbcType=VARCHAR},
+      </if>
+      <if test="province != null" >
+        province = #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null" >
+        city = #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="area != null" >
+        area = #{area,jdbcType=VARCHAR},
+      </if>
+      <if test="zoneid != null" >
+        zoneid = #{zoneid,jdbcType=INTEGER},
+      </if>
+      <if test="category != null" >
+        category = #{category,jdbcType=VARCHAR},
+      </if>
+      <if test="genre != null" >
+        genre = #{genre,jdbcType=VARCHAR},
+      </if>
+      <if test="bewrite != null" >
+        bewrite = #{bewrite,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null" >
+        tel = #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="fullname != null" >
+        fullname = #{fullname,jdbcType=VARCHAR},
+      </if>
+      <if test="identity != null" >
+        identity = #{identity,jdbcType=VARCHAR},
+      </if>
+      <if test="phoneid != null" >
+        phoneid = #{phoneid,jdbcType=VARCHAR},
+      </if>
+      <if test="orgid != null" >
+        orgid = #{orgid,jdbcType=VARCHAR},
+      </if>
+      <if test="licenseid != null" >
+        licenseid = #{licenseid,jdbcType=VARCHAR},
+      </if>
+      <if test="licenseurl != null" >
+        licenseurl = #{licenseurl,jdbcType=VARCHAR},
+      </if>
+      <if test="sdate != null" >
+        sdate = #{sdate,jdbcType=VARCHAR},
+      </if>
+      <if test="sexplain != null" >
+        sexplain = #{sexplain,jdbcType=VARCHAR},
+      </if>
+      <if test="svalidity != null" >
+        svalidity = #{svalidity,jdbcType=TIMESTAMP},
+      </if>
+      <if test="evalidity != null" >
+        evalidity = #{evalidity,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="examineinfo != null" >
+        examineinfo = #{examineinfo,jdbcType=VARCHAR},
+      </if>
+      <if test="signdate != null" >
+        signdate = #{signdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="udate != null" >
+        udate = #{udate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="give != null" >
+        give = #{give,jdbcType=INTEGER},
+      </if>
+      <if test="fatherid != null" >
+        fatherid = #{fatherid,jdbcType=INTEGER},
+      </if>
+      <if test="remarks != null" >
+        remarks = #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="identityzurl != null" >
+        identityzurl = #{identityzurl,jdbcType=VARCHAR},
+      </if>
+      <if test="identityfurl != null" >
+        identityfurl = #{identityfurl,jdbcType=VARCHAR},
+      </if>
+      <if test="licensefurl != null" >
+        licensefurl = #{licensefurl,jdbcType=VARCHAR},
+      </if>
+      <if test="agreement != null" >
+        agreement = #{agreement,jdbcType=VARCHAR},
+      </if>
+      <if test="lssellername != null" >
+        lssellername = #{lssellername,jdbcType=VARCHAR},
+      </if>
+      <if test="typename != null" >
+        typename = #{typename,jdbcType=VARCHAR},
+      </if>
+      <if test="tradename != null" >
+        tradename = #{tradename,jdbcType=VARCHAR},
+      </if>
+      <if test="isprotocol != null" >
+        isprotocol = #{isprotocol,jdbcType=INTEGER},
+      </if>
+      <if test="agioType != null" >
+        agio_type = #{agioType,jdbcType=TINYINT},
+      </if>
+      <if test="agio != null" >
+        agio = #{agio,jdbcType=DOUBLE},
+      </if>
+      <if test="yledger != null" >
+        yledger = #{yledger,jdbcType=REAL},
+      </if>
+      <if test="agioTime != null" >
+        agio_time = #{agioTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="entry != null" >
+        entry = #{entry,jdbcType=REAL},
+      </if>
+      <if test="isVirtual != null" >
+        is_virtual = #{isVirtual,jdbcType=INTEGER},
+      </if>
+      <if test="flatAgio != null" >
+        flat_agio = #{flatAgio,jdbcType=DOUBLE},
+      </if>
+      <if test="isforce != null" >
+        isforce = #{isforce,jdbcType=INTEGER},
+      </if>
+      <if test="isonline != null" >
+        isonline = #{isonline,jdbcType=INTEGER},
+      </if>
+      <if test="agioAgio != null" >
+        agio_agio = #{agioAgio,jdbcType=INTEGER},
+      </if>
+      <if test="agioInstruction != null" >
+        agio_instruction = #{agioInstruction,jdbcType=VARCHAR},
+      </if>
+      <if test="ismultiple != null" >
+        ismultiple = #{ismultiple,jdbcType=INTEGER},
+      </if>
+      <if test="recommend != null" >
+        recommend = #{recommend,jdbcType=BIT},
+      </if>
+      <if test="recomNum != null" >
+        recom_num = #{recomNum,jdbcType=INTEGER},
+      </if>
+      <if test="dataSource != null" >
+        data_source = #{dataSource,jdbcType=INTEGER},
+      </if>
+      <if test="offlineReason != null" >
+        offline_reason = #{offlineReason,jdbcType=VARCHAR},
+      </if>
+      <if test="dateOperate != null" >
+        date_operate = #{dateOperate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="xmnService != null" >
+        xmn_service = #{xmnService,jdbcType=INTEGER},
+      </if>
+      <if test="islock != null" >
+        islock = #{islock,jdbcType=INTEGER},
+      </if>
+      <if test="ratio != null" >
+        ratio = #{ratio,jdbcType=DOUBLE},
+      </if>
+      <if test="isfees != null" >
+        isfees = #{isfees,jdbcType=INTEGER},
+      </if>
+      <if test="debit != null" >
+        debit = #{debit,jdbcType=DOUBLE},
+      </if>
+      <if test="agreement2 != null" >
+        agreement2 = #{agreement2,jdbcType=VARCHAR},
+      </if>
+      <if test="agreement3 != null" >
+        agreement3 = #{agreement3,jdbcType=VARCHAR},
+      </if>
+      <if test="agreement4 != null" >
+        agreement4 = #{agreement4,jdbcType=VARCHAR},
+      </if>
+      <if test="label != null" >
+        label = #{label,jdbcType=INTEGER},
+      </if>
+      <if test="order != null" >
+        order = #{order,jdbcType=INTEGER},
+      </if>
+      <if test="realOrder != null" >
+        real_order = #{realOrder,jdbcType=INTEGER},
+      </if>
+      <if test="agioAgioNum != null" >
+        agio_agio_num = #{agioAgioNum,jdbcType=DECIMAL},
+      </if>
+      <if test="isKa != null" >
+        is_ka = #{isKa,jdbcType=INTEGER},
+      </if>
+      <if test="brandId != null" >
+        brand_id = #{brandId,jdbcType=INTEGER},
+      </if>
+      <if test="saveMoney != null" >
+        save_money = #{saveMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="identitynurl != null" >
+        identitynurl = #{identitynurl,jdbcType=VARCHAR},
+      </if>
+      <if test="ledgerMode != null" >
+        ledger_mode = #{ledgerMode,jdbcType=INTEGER},
+      </if>
+      <if test="liveCoinPay != null" >
+        live_coin_pay = #{liveCoinPay,jdbcType=INTEGER},
+      </if>
+      <if test="isPublic != null" >
+        is_public = #{isPublic,jdbcType=INTEGER},
+      </if>
+      <if test="isPaid != null" >
+        is_paid = #{isPaid,jdbcType=INTEGER},
+      </if>
+      <if test="joinDividend != null" >
+        join_dividend = #{joinDividend,jdbcType=INTEGER},
+      </if>
+      <if test="totalLimitTurnover != null" >
+        total_limit_turnover = #{totalLimitTurnover,jdbcType=DOUBLE},
+      </if>
+      <if test="dailyLimitTurnover != null" >
+        daily_limit_turnover = #{dailyLimitTurnover,jdbcType=DOUBLE},
+      </if>
+      <if test="dailyLimitWithdraw != null" >
+        daily_limit_withdraw = #{dailyLimitWithdraw,jdbcType=DOUBLE},
+      </if>
+    </set>
+    where sellerid = #{sellerid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.saas.entity.wallet.Seller" >
+    update t_seller
+    set staffid = #{staffid,jdbcType=INTEGER},
+      jointid = #{jointid,jdbcType=INTEGER},
+      sellername = #{sellername,jdbcType=VARCHAR},
+      province = #{province,jdbcType=VARCHAR},
+      city = #{city,jdbcType=VARCHAR},
+      area = #{area,jdbcType=VARCHAR},
+      zoneid = #{zoneid,jdbcType=INTEGER},
+      category = #{category,jdbcType=VARCHAR},
+      genre = #{genre,jdbcType=VARCHAR},
+      bewrite = #{bewrite,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      tel = #{tel,jdbcType=VARCHAR},
+      fullname = #{fullname,jdbcType=VARCHAR},
+      identity = #{identity,jdbcType=VARCHAR},
+      phoneid = #{phoneid,jdbcType=VARCHAR},
+      orgid = #{orgid,jdbcType=VARCHAR},
+      licenseid = #{licenseid,jdbcType=VARCHAR},
+      licenseurl = #{licenseurl,jdbcType=VARCHAR},
+      sdate = #{sdate,jdbcType=VARCHAR},
+      sexplain = #{sexplain,jdbcType=VARCHAR},
+      svalidity = #{svalidity,jdbcType=TIMESTAMP},
+      evalidity = #{evalidity,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=INTEGER},
+      examineinfo = #{examineinfo,jdbcType=VARCHAR},
+      signdate = #{signdate,jdbcType=TIMESTAMP},
+      udate = #{udate,jdbcType=TIMESTAMP},
+      give = #{give,jdbcType=INTEGER},
+      fatherid = #{fatherid,jdbcType=INTEGER},
+      remarks = #{remarks,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      identityzurl = #{identityzurl,jdbcType=VARCHAR},
+      identityfurl = #{identityfurl,jdbcType=VARCHAR},
+      licensefurl = #{licensefurl,jdbcType=VARCHAR},
+      agreement = #{agreement,jdbcType=VARCHAR},
+      lssellername = #{lssellername,jdbcType=VARCHAR},
+      typename = #{typename,jdbcType=VARCHAR},
+      tradename = #{tradename,jdbcType=VARCHAR},
+      isprotocol = #{isprotocol,jdbcType=INTEGER},
+      agio_type = #{agioType,jdbcType=TINYINT},
+      agio = #{agio,jdbcType=DOUBLE},
+      yledger = #{yledger,jdbcType=REAL},
+      agio_time = #{agioTime,jdbcType=TIMESTAMP},
+      entry = #{entry,jdbcType=REAL},
+      is_virtual = #{isVirtual,jdbcType=INTEGER},
+      flat_agio = #{flatAgio,jdbcType=DOUBLE},
+      isforce = #{isforce,jdbcType=INTEGER},
+      isonline = #{isonline,jdbcType=INTEGER},
+      agio_agio = #{agioAgio,jdbcType=INTEGER},
+      agio_instruction = #{agioInstruction,jdbcType=VARCHAR},
+      ismultiple = #{ismultiple,jdbcType=INTEGER},
+      recommend = #{recommend,jdbcType=BIT},
+      recom_num = #{recomNum,jdbcType=INTEGER},
+      data_source = #{dataSource,jdbcType=INTEGER},
+      offline_reason = #{offlineReason,jdbcType=VARCHAR},
+      date_operate = #{dateOperate,jdbcType=TIMESTAMP},
+      xmn_service = #{xmnService,jdbcType=INTEGER},
+      islock = #{islock,jdbcType=INTEGER},
+      ratio = #{ratio,jdbcType=DOUBLE},
+      isfees = #{isfees,jdbcType=INTEGER},
+      debit = #{debit,jdbcType=DOUBLE},
+      agreement2 = #{agreement2,jdbcType=VARCHAR},
+      agreement3 = #{agreement3,jdbcType=VARCHAR},
+      agreement4 = #{agreement4,jdbcType=VARCHAR},
+      label = #{label,jdbcType=INTEGER},
+      order = #{order,jdbcType=INTEGER},
+      real_order = #{realOrder,jdbcType=INTEGER},
+      agio_agio_num = #{agioAgioNum,jdbcType=DECIMAL},
+      is_ka = #{isKa,jdbcType=INTEGER},
+      brand_id = #{brandId,jdbcType=INTEGER},
+      save_money = #{saveMoney,jdbcType=DECIMAL},
+      uid = #{uid,jdbcType=INTEGER},
+      identitynurl = #{identitynurl,jdbcType=VARCHAR},
+      ledger_mode = #{ledgerMode,jdbcType=INTEGER},
+      live_coin_pay = #{liveCoinPay,jdbcType=INTEGER},
+      is_public = #{isPublic,jdbcType=INTEGER},
+      is_paid = #{isPaid,jdbcType=INTEGER},
+      join_dividend = #{joinDividend,jdbcType=INTEGER},
+      total_limit_turnover = #{totalLimitTurnover,jdbcType=DOUBLE},
+      daily_limit_turnover = #{dailyLimitTurnover,jdbcType=DOUBLE},
+      daily_limit_withdraw = #{dailyLimitWithdraw,jdbcType=DOUBLE}
+    where sellerid = #{sellerid,jdbcType=INTEGER}
+  </update>
+</mapper>

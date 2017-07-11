@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.celebrity.CelebrityAriticleDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.saas.entity.celebrity.CelebrityAriticle" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="celebrity_id" property="celebrityId" jdbcType="BIGINT" />
+    <result column="image" property="image" jdbcType="VARCHAR" />
+    <result column="seller_id" property="sellerId" jdbcType="BIGINT" />
+    <result column="views" property="views" jdbcType="INTEGER" />
+    <result column="describe" property="describe" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="seller_name" property="sellerName" jdbcType="VARCHAR"/>
+    <result column="zone_name" property="zoneName" jdbcType="VARCHAR"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, `name`, type, `status`, celebrity_id, image, seller_id, views, `describe`, create_time,
+    seller_name,zone_name
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_celebrity_ariticle
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <!--查询观看次数最高的文章-->
+  <select id="selectByMaxViewAriticel" resultMap="BaseResultMap" parameterType="Long">
+    select
+    <include refid="Base_Column_List"/>
+    from t_celebrity_ariticle
+    where celebrity_id = #{reviewerId}
+    and type = 1
+    order by views desc
+    limit 0,1
+  </select>
+  <select id="querySelective" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/>
+    from t_celebrity_ariticle
+    where 1=1
+    <trim suffixOverrides="," >
+    <if test="record.name != null" >
+      AND name = #{record.name,jdbcType=VARCHAR},
+    </if>
+    <if test="record.type != null" >
+      AND type = #{record.type,jdbcType=INTEGER},
+    </if>
+    <if test="record.status != null" >
+      AND status = #{record.status,jdbcType=INTEGER},
+    </if>
+    <if test="record.celebrityId != null" >
+      AND celebrity_id = #{record.celebrityId,jdbcType=BIGINT},
+    </if>
+    <if test="record.image != null" >
+      AND image = #{record.image,jdbcType=VARCHAR},
+    </if>
+    <if test="record.sellerId != null" >
+      AND seller_id = #{record.sellerId,jdbcType=BIGINT},
+    </if>
+    <if test="record.views != null" >
+      AND views = #{record.views,jdbcType=INTEGER},
+    </if>
+    <if test="record.describe != null" >
+      AND describe = #{record.describe,jdbcType=VARCHAR},
+    </if>
+    <if test="record.createTime != null" >
+      AND create_time = #{record.createTime,jdbcType=TIMESTAMP},
+    </if>
+      </trim>
+
+    limit ${page.start},#{page.pageSize}
+
+  </select>
+  <select id="countAriticelBySellerId" resultType="java.lang.Integer">
+    SELECT count(1)
+    from t_celebrity_ariticle
+    WHERE seller_id = #{sellerid}
+  </select>
+  <select id="selectHtmlContentById" resultType="java.lang.String">
+    SELECT html_content FROM t_celebrity_ariticle WHERE id = #{articleId}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_celebrity_ariticle
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmn.saas.entity.celebrity.CelebrityAriticle" >
+    insert into t_celebrity_ariticle (id, name, type, 
+      status, celebrity_id, image, 
+      seller_id, views, describe, 
+      create_time)
+    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, 
+      #{status,jdbcType=INTEGER}, #{celebrityId,jdbcType=BIGINT}, #{image,jdbcType=VARCHAR}, 
+      #{sellerId,jdbcType=BIGINT}, #{views,jdbcType=INTEGER}, #{describe,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmn.saas.entity.celebrity.CelebrityAriticle" >
+    insert into t_celebrity_ariticle
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="celebrityId != null" >
+        celebrity_id,
+      </if>
+      <if test="image != null" >
+        image,
+      </if>
+      <if test="sellerId != null" >
+        seller_id,
+      </if>
+      <if test="views != null" >
+        views,
+      </if>
+      <if test="describe != null" >
+        describe,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="celebrityId != null" >
+        #{celebrityId,jdbcType=BIGINT},
+      </if>
+      <if test="image != null" >
+        #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="sellerId != null" >
+        #{sellerId,jdbcType=BIGINT},
+      </if>
+      <if test="views != null" >
+        #{views,jdbcType=INTEGER},
+      </if>
+      <if test="describe != null" >
+        #{describe,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.saas.entity.celebrity.CelebrityAriticle" >
+    update t_celebrity_ariticle
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="celebrityId != null" >
+        celebrity_id = #{celebrityId,jdbcType=BIGINT},
+      </if>
+      <if test="image != null" >
+        image = #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="sellerId != null" >
+        seller_id = #{sellerId,jdbcType=BIGINT},
+      </if>
+      <if test="views != null" >
+        views = #{views,jdbcType=INTEGER},
+      </if>
+      <if test="describe != null" >
+        describe = #{describe,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.saas.entity.celebrity.CelebrityAriticle" >
+    update t_celebrity_ariticle
+    set name = #{name,jdbcType=VARCHAR},
+      type = #{type,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      celebrity_id = #{celebrityId,jdbcType=BIGINT},
+      image = #{image,jdbcType=VARCHAR},
+      seller_id = #{sellerId,jdbcType=BIGINT},
+      views = #{views,jdbcType=INTEGER},
+      describe = #{describe,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+
+</mapper>

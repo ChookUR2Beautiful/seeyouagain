@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.celebrity.CelebrityOrderDao">
+    <resultMap id="BaseResultMap" type="com.xmn.saas.entity.celebrity.CelebrityOrder">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="order_no" property="orderNo" jdbcType="VARCHAR"/>
+        <result column="seller_id" property="sellerId" jdbcType="BIGINT"/>
+        <result column="celebrity_id" property="celebrityId" jdbcType="BIGINT"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="price" property="price" jdbcType="DECIMAL"/>
+        <result column="arrival_time" property="arrivalTime" jdbcType="TIMESTAMP"/>
+        <result column="type" property="type" jdbcType="INTEGER"/>
+        <result column="emphasis" property="emphasis" jdbcType="INTEGER"/>
+        <result column="crowd" property="crowd" jdbcType="INTEGER"/>
+        <result column="demand" property="demand" jdbcType="VARCHAR"/>
+        <result column="detail_demand" property="detailDemand" jdbcType="VARCHAR"/>
+        <result column="pay_status" property="payStatus" jdbcType="INTEGER"/>
+        <result column="pay_type" property="payType" jdbcType="INTEGER"/>
+        <result column="version_lock" property="versionLock" jdbcType="BIGINT"/>
+        <result column="third_serial" property="thirdSerial" jdbcType="VARCHAR"/>
+        <result column="pay_time" property="payTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, order_no, seller_id, celebrity_id, create_time, status, price, arrival_time,
+        type, emphasis, crowd, demand, detail_demand, pay_status, pay_type, version_lock,
+        third_serial, pay_time
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from t_celebrity_order
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="selectReviewerOrderBySellerId" resultMap="BaseResultMap">
+        SELECT *
+        FROM t_celebrity_order
+        WHERE type = 1
+            AND seller_id = #{sellerAccount.sellerid}
+            AND pay_status = 2
+        ORDER BY create_time DESC
+        LIMIT #{page.start}, #{page.pageSize}
+
+    </select>
+    <select id="selectCountOrderBySellerId" resultType="java.lang.Integer">
+        SELECT count(1)
+        FROM t_celebrity_order
+        WHERE type = 1
+              AND seller_id = #{selleri}
+        and pay_status = 2
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        DELETE FROM t_celebrity_order
+        WHERE id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.xmn.saas.entity.celebrity.CelebrityOrder">
+        INSERT INTO t_celebrity_order (id, order_no, seller_id,
+                                       celebrity_id, create_time, status,
+                                       price, arrival_time, type,
+                                       emphasis, crowd, demand,
+                                       detail_demand, pay_status, pay_type,
+                                       version_lock, third_serial, pay_time
+        )
+        VALUES (#{id,jdbcType=BIGINT}, #{orderNo,jdbcType=VARCHAR}, #{sellerId,jdbcType=BIGINT},
+                                       #{celebrityId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER},
+                                       #{price,jdbcType=DECIMAL}, #{arrivalTime,jdbcType=TIMESTAMP}, #{type,jdbcType=INTEGER},
+                                       #{emphasis,jdbcType=INTEGER}, #{crowd,jdbcType=INTEGER}, #{demand,jdbcType=VARCHAR},
+                #{detailDemand,jdbcType=VARCHAR}, #{payStatus,jdbcType=INTEGER}, #{payType,jdbcType=INTEGER},
+                #{versionLock,jdbcType=BIGINT}, #{thirdSerial,jdbcType=VARCHAR}, #{payTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="com.xmn.saas.entity.celebrity.CelebrityOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into t_celebrity_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="orderNo != null">
+                order_no,
+            </if>
+            <if test="sellerId != null">
+                seller_id,
+            </if>
+            <if test="celebrityId != null">
+                celebrity_id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="price != null">
+                price,
+            </if>
+            <if test="arrivalTime != null">
+                arrival_time,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="emphasis != null">
+                emphasis,
+            </if>
+            <if test="crowd != null">
+                crowd,
+            </if>
+            <if test="demand != null">
+                demand,
+            </if>
+            <if test="detailDemand != null">
+                detail_demand,
+            </if>
+            <if test="payStatus != null">
+                pay_status,
+            </if>
+            <if test="payType != null">
+                pay_type,
+            </if>
+            <if test="versionLock != null">
+                version_lock,
+            </if>
+            <if test="thirdSerial != null">
+                third_serial,
+            </if>
+            <if test="payTime != null">
+                pay_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="orderNo != null">
+                #{orderNo,jdbcType=VARCHAR},
+            </if>
+            <if test="sellerId != null">
+                #{sellerId,jdbcType=BIGINT},
+            </if>
+            <if test="celebrityId != null">
+                #{celebrityId,jdbcType=BIGINT},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=INTEGER},
+            </if>
+            <if test="price != null">
+                #{price,jdbcType=DECIMAL},
+            </if>
+            <if test="arrivalTime != null">
+                #{arrivalTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=INTEGER},
+            </if>
+            <if test="emphasis != null">
+                #{emphasis,jdbcType=INTEGER},
+            </if>
+            <if test="crowd != null">
+                #{crowd,jdbcType=INTEGER},
+            </if>
+            <if test="demand != null">
+                #{demand,jdbcType=VARCHAR},
+            </if>
+            <if test="detailDemand != null">
+                #{detailDemand,jdbcType=VARCHAR},
+            </if>
+            <if test="payStatus != null">
+                #{payStatus,jdbcType=INTEGER},
+            </if>
+            <if test="payType != null">
+                #{payType,jdbcType=INTEGER},
+            </if>
+            <if test="versionLock != null">
+                #{versionLock,jdbcType=BIGINT},
+            </if>
+            <if test="thirdSerial != null">
+                #{thirdSerial,jdbcType=VARCHAR},
+            </if>
+            <if test="payTime != null">
+                #{payTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.xmn.saas.entity.celebrity.CelebrityOrder">
+        update t_celebrity_order
+        <set>
+            <if test="orderNo != null">
+                order_no = #{orderNo,jdbcType=VARCHAR},
+            </if>
+            <if test="sellerId != null">
+                seller_id = #{sellerId,jdbcType=BIGINT},
+            </if>
+            <if test="celebrityId != null">
+                celebrity_id = #{celebrityId,jdbcType=BIGINT},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="price != null">
+                price = #{price,jdbcType=DECIMAL},
+            </if>
+            <if test="arrivalTime != null">
+                arrival_time = #{arrivalTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=INTEGER},
+            </if>
+            <if test="emphasis != null">
+                emphasis = #{emphasis,jdbcType=INTEGER},
+            </if>
+            <if test="crowd != null">
+                crowd = #{crowd,jdbcType=INTEGER},
+            </if>
+            <if test="demand != null">
+                demand = #{demand,jdbcType=VARCHAR},
+            </if>
+            <if test="detailDemand != null">
+                detail_demand = #{detailDemand,jdbcType=VARCHAR},
+            </if>
+            <if test="payStatus != null">
+                pay_status = #{payStatus,jdbcType=INTEGER},
+            </if>
+            <if test="payType != null">
+                pay_type = #{payType,jdbcType=INTEGER},
+            </if>
+            <if test="versionLock != null">
+                version_lock = #{versionLock,jdbcType=BIGINT},
+            </if>
+            <if test="thirdSerial != null">
+                third_serial = #{thirdSerial,jdbcType=VARCHAR},
+            </if>
+            <if test="payTime != null">
+                pay_time = #{payTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.xmn.saas.entity.celebrity.CelebrityOrder">
+        UPDATE t_celebrity_order
+        SET order_no      = #{orderNo,jdbcType=VARCHAR},
+            seller_id     = #{sellerId,jdbcType=BIGINT},
+            celebrity_id  = #{celebrityId,jdbcType=BIGINT},
+            create_time   = #{createTime,jdbcType=TIMESTAMP},
+            status        = #{status,jdbcType=INTEGER},
+            price         = #{price,jdbcType=DECIMAL},
+            arrival_time  = #{arrivalTime,jdbcType=TIMESTAMP},
+            type          = #{type,jdbcType=INTEGER},
+            emphasis      = #{emphasis,jdbcType=INTEGER},
+            crowd         = #{crowd,jdbcType=INTEGER},
+            demand        = #{demand,jdbcType=VARCHAR},
+            detail_demand = #{detailDemand,jdbcType=VARCHAR},
+            pay_status    = #{payStatus,jdbcType=INTEGER},
+            pay_type      = #{payType,jdbcType=INTEGER},
+            version_lock  = #{versionLock,jdbcType=BIGINT},
+            third_serial  = #{thirdSerial,jdbcType=VARCHAR},
+            pay_time      = #{payTime,jdbcType=TIMESTAMP}
+        WHERE id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateVersionLock">
+        UPDATE t_celebrity_order
+        SET
+            version_lock = #{versionLock,jdbcType=INTEGER} + 1,
+            pay_type     = #{payType,jdbcType=VARCHAR}
+        WHERE id = #{id,jdbcType=BIGINT}
+              AND version_lock = #{versionLock}
+
+    </update>
+</mapper>

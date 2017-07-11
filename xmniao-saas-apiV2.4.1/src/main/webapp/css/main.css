@@ -1,0 +1,267 @@
+@charset "UTF-8";
+/*公共样式*/
+address,article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}
+html{font-size:62.5%;}
+*{-webkit-touch-callout:none;user-select:none;-webkit-tap-highlight-color:rgba(255,255,255,0);overflow-scrolling:touch;margin:0;padding:0;outline:0;font-style:normal;border:none;background:0 0}
+input,label,select{vertical-align:middle;}
+h1,h2,h3,h4,h5,h6{font-family:normal;}
+input[type=checkbox],input[type=radio]{box-sizing:border-box;}
+input[type=search]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}
+body{min-width:320px;word-wrap:break-word;line-height:1;cursor:default;-ms-content-zooming:none;-webkit-text-size-adjust:none;-moz-text-size-adjust:none;-ms-text-size-adjust:none;text-size-adjust:none}
+table{border-collapse:collapse;border-spacing:0;}
+caption,th{text-align:left;font-weight:400;}
+dl,li,ol,ul{list-style:none;}
+textarea{resize:none;overflow:auto;vertical-align:top;}
+del{text-decoration:line-through;}
+a,button{cursor:pointer;}
+a,a:hover{text-decoration:none;-webkit-tap-highlight-color:transparent;}
+a:active{blr:expression(this.onFocus=this.blur());outline:0;}
+a:focus{outline:0;-moz-outline:none;}
+img{border:0;vertical-align:middle;-ms-interpolation-mode:bicubic;-webkit-tap-highlight-color:transparent;}
+body{font-family:Microsoft Yahei;}
+.logo{
+    width: 30%;
+    display: block;
+    margin: 40px auto;
+}
+.login-box{
+    margin: 0 35px;
+    border: 1px solid #dddddd;
+}
+.login-box .account-box{
+    height: 50px;
+    line-height: 50px;
+    overflow: hidden;
+}
+.login-box .account-box .account{
+    margin: 10px;
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    float: left;
+    background: url("../imgs/login/Account_number@2x.png") no-repeat;
+    background-size: 30px;
+}
+.login-box .account-box .password{
+    margin: 10px;
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    background: url("../imgs/login/Password@2x.png") no-repeat;
+    background-size: 30px;
+    float: left;
+}
+.login-box .account-box input{
+    height: 100%;
+    border-bottom: 1px solid #dddddd;
+    font-size: 16px;
+    width: 100%;
+    margin-left: -50px;
+    padding-left: 50px;
+    box-sizing: border-box;
+}
+.login-btn{
+    display: block;
+    cursor: pointer;
+    margin: 0 35px;
+    height: 45px;
+    line-height: 45px;
+    background: #365dc9;
+    color: #fff;
+    text-align: center;
+    font-size: 16px;
+    margin-top: 20px;
+}
+.remember{
+    margin: 0 35px;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #999;
+    height: 20px;
+    line-height: 20px;
+    padding-left: 24px;
+    background: url("../imgs/login/unselected@2x.png") no-repeat center left;
+    background-size: 20px;
+}
+.remember.check{
+    background: url("../imgs/login/Checkmark@2x.png") no-repeat center left;
+    background-size: 20px;
+}
+.total-box{
+    background: #fff;
+    width: 100%;
+}
+.total-box{
+    text-align: center;
+    padding-bottom: 10px;
+}
+.total-box p.money{
+    font-size: 40px;
+    color: #24c789;
+    font-weight: bold;
+    padding-top: 20px;
+}
+.total-box p.num{
+    font-size: 14px;
+    color: #777777;
+    padding-top: 10px;
+}
+.gray{
+    background: #f2f2f2;
+}
+.title-box{
+    position: relative;
+    width: 100%;
+    border-top: 1px solid #dddddd;
+    margin-top: 20px;
+}
+.title-box span{
+    display: inline-block;
+    font-size: 12px;
+    height: 20px;
+    line-height: 20px;
+    width: 60px;
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    margin-left: -30px;
+    text-align: center;
+    color: #777777;
+}
+.list-box{
+    margin-top: 6px;
+    -webkit-overflow-scrolling: touch;
+}
+.list-box .title{
+    padding: 0 15px;
+    font-size: 12px;
+    color: #777777;
+    height: 30px;
+    line-height: 30px;
+}
+.list-box .title span{
+    float: right;
+}
+.list-box ul{
+    padding: 0 15px;
+    background: #fff;
+}
+.list-box ul li{
+    border-bottom: 1px solid #dddddd;
+    padding: 15px 0;
+    overflow: hidden;
+}
+.list-box ul li:last-child{
+    border-bottom: 0;
+}
+.list-box ul li p{
+    padding-left: 40px;
+}
+.list-box ul li p.list-title{
+    font-size: 16px;
+    color: #333;
+}
+.list-box ul li p.list-title span em{
+    font-size: 12px;
+    color: #999;
+
+}
+.list-box ul li p.list-title span.money{
+    float: right;
+    text-align:center;
+}
+.list-box ul li p.list-time{
+    font-size: 12px;
+    color: #777;
+    margin-top: 5px;
+    height: 18px;
+    line-height: 18px;
+}
+.list-box ul li p.list-time span{
+    float: right;
+    line-height: 12px;
+}
+.list-box ul li p.list-time span.no{
+    padding: 3px 10px;
+    background: #d2d2d2;
+    border-radius: 3px;
+    color: #fff;
+}
+.list-box ul li p.list-time span.yes{
+    padding: 3px 10px;
+    background: #24c789;
+    border-radius: 3px;
+    color: #fff;
+}
+.list-box ul li img{
+    width: 30px;
+    float: left;
+    margin-top: 3.5px;
+}
+.listend{
+	width:100%;
+	padding:17px 0;
+	text-align:center;
+	color:#777777;
+	font-size:14px;
+	font-family:Microsoft Yahei;
+}
+
+.loadingimg{
+	width: 100%;
+	height:40px;
+	background-position:center;
+	background-size:50%;
+	background-image:url(../imgs/login/loading.gif);
+	background-repeat:no-repeat;
+	margin:0 auto;
+	background-color:#fff;
+}
+
+.fanstips{
+	font-size:14px;
+	color:#666;
+}
+
+.list-nav{
+	margin:0;
+	padding:0 30px;
+	width:100%;
+	text-align:center;
+	box-sizing:border-box;
+	height:35px;
+	background:#fff;
+}
+
+.list-nav li{
+	width:50%;
+	float:left;
+	height:35px;
+	position:relative;
+}
+
+.list-nav li a{
+	display:block;
+	width:100%;
+	height:100%;
+	font-size:14px;
+	color:#666;
+	line-height:35px;
+}
+
+.list-nav li.list-nav-active:before{
+	content:"";
+	position:absolute;
+	bottom:0;
+	width:40%;
+	left:30%;
+	height:2px;
+	background:#24c789;
+}
+
+.usefanscoupon{
+    font-size: 12px;
+    display: block;
+    color:#999;
+    line-height:1.5em;
+}

@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.common.SellerAccountDao">
+    <resultMap id="BaseResultMap" type="com.xmn.saas.entity.common.SellerAccount">
+        <id column="aid" property="aid" jdbcType="INTEGER"/>
+        <result column="sellerid" property="sellerid" jdbcType="INTEGER"/>
+        <result column="account" property="account" jdbcType="VARCHAR"/>
+        <result column="nname" property="nname" jdbcType="VARCHAR"/>
+        <result column="fullname" property="fullname" jdbcType="VARCHAR"/>
+        <result column="password" property="password" jdbcType="VARCHAR"/>
+        <result column="levelpass" property="levelpass" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="INTEGER"/>
+        <result column="sdate" property="sdate" jdbcType="TIMESTAMP"/>
+        <result column="remarks" property="remarks" jdbcType="VARCHAR"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="iostoken" property="iostoken" jdbcType="VARCHAR"/>
+        <result column="edate" property="edate" jdbcType="TIMESTAMP"/>
+        <result column="workno" property="workno" jdbcType="VARCHAR"/>
+        <result column="uid" property="uid" jdbcType="INTEGER"/>
+        <result column="paystatus" property="paystatus" jdbcType="INTEGER"/>
+        <result column="newstatus" property="newstatus" jdbcType="INTEGER"/>
+        <result column="nonewstime" property="nonewstime" jdbcType="VARCHAR"/>
+        <result column="userstatus" property="userstatus" jdbcType="INTEGER"/>
+        <result column="resource_id" property="resourceId" jdbcType="VARCHAR"/>
+        <result column="par_account" property="parAccount" jdbcType="VARCHAR"/>
+        <result column="receive_message" property="receiveMessage" jdbcType="INTEGER"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        aid, sellerid, account, nname, fullname, password, levelpass, type, sdate, remarks,
+        phone, iostoken,edate , workno, uid, paystatus, newstatus, nonewstime, userstatus,
+        resource_id, par_account,receive_message
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from t_seller_account
+        where aid = #{aid,jdbcType=INTEGER}
+    </select>
+    <select id="login" resultType="com.xmn.saas.entity.common.SellerAccount">
+        SELECT
+            sa.aid              aid,
+            sa.sellerid         sellerid,
+            sa.account          account,
+            sa.nname            nname,
+            sa.fullname         fullname,
+            sa.password         password,
+            sa.levelpass        levelpass,
+            sa.type             type,
+            sa.sdate            sdate,
+            sa.remarks          remarks,
+            sa.phone            phone,
+            sa.iostoken         iostoken,
+            sa.edate            edate,
+            sa.workno           workno,
+            sa.uid              uid,
+            sa.paystatus        paystatus,
+            sa.newstatus        newstatus,
+            sa.nonewstime       nonewstime,
+            sa.userstatus       userstatus,
+            sa.resource_id      resource_id,
+            sa.par_account      parAccount,
+            sa.receive_message  receiveMessage
+        FROM t_seller_account sa
+        WHERE sa.account=#{account}
+        AND sa.password=#{password}
+        <if test="sellerid != null">
+            AND sa.sellerid = #{sellerid}
+        </if>
+        order by sa.type = 1 DESC
+        limit 1
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        DELETE FROM t_seller_account
+        WHERE aid = #{aid,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.xmn.saas.entity.common.SellerAccount">
+        INSERT INTO t_seller_account (aid, sellerid, account,
+                                      nname, fullname, password,
+                                      levelpass, type, sdate,
+                                      remarks, phone, iostoken,
+                                      edate, workno, uid,
+                                      paystatus, newstatus, nonewstime,
+                                      userstatus, resource_id, par_account
+        )
+        VALUES (#{aid,jdbcType=INTEGER}, #{sellerid,jdbcType=INTEGER}, #{account,jdbcType=VARCHAR},
+                                         #{nname,jdbcType=VARCHAR}, #{fullname,jdbcType=VARCHAR},
+                                         #{password,jdbcType=VARCHAR},
+                                         #{levelpass,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER},
+                                         #{sdate,jdbcType=TIMESTAMP},
+                                         #{remarks,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR},
+            #{iostoken,jdbcType=VARCHAR},
+            #{edate,jdbcType=TIMESTAMP}, #{workno,jdbcType=VARCHAR}, #{uid,jdbcType=INTEGER},
+            #{paystatus,jdbcType=INTEGER}, #{newstatus,jdbcType=INTEGER}, #{nonewstime,jdbcType=VARCHAR},
+            #{userstatus,jdbcType=INTEGER}, #{resourceId,jdbcType=VARCHAR}, #{parAccount,jdbcType=VARCHAR}
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="com.xmn.saas.entity.common.SellerAccount">
+        insert into t_seller_account
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="aid != null">
+                aid,
+            </if>
+            <if test="sellerid != null">
+                sellerid,
+            </if>
+            <if test="account != null">
+                account,
+            </if>
+            <if test="nname != null">
+                nname,
+            </if>
+            <if test="fullname != null">
+                fullname,
+            </if>
+            <if test="password != null">
+                password,
+            </if>
+            <if test="levelpass != null">
+                levelpass,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="sdate != null">
+                sdate,
+            </if>
+            <if test="remarks != null">
+                remarks,
+            </if>
+            <if test="phone != null">
+                phone,
+            </if>
+            <if test="iostoken != null">
+                iostoken,
+            </if>
+            <if test="edate != null">
+                edate,
+            </if>
+            <if test="workno != null">
+                workno,
+            </if>
+            <if test="uid != null">
+                uid,
+            </if>
+            <if test="paystatus != null">
+                paystatus,
+            </if>
+            <if test="newstatus != null">
+                newstatus,
+            </if>
+            <if test="nonewstime != null">
+                nonewstime,
+            </if>
+            <if test="userstatus != null">
+                userstatus,
+            </if>
+            <if test="resourceId != null">
+                resource_id,
+            </if>
+            <if test="parAccount != null">
+                par_account,
+            </if>
+            <if test="receiveMessage != null" >
+                receive_message,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="aid != null">
+                #{aid,jdbcType=INTEGER},
+            </if>
+            <if test="sellerid != null">
+                #{sellerid,jdbcType=INTEGER},
+            </if>
+            <if test="account != null">
+                #{account,jdbcType=VARCHAR},
+            </if>
+            <if test="nname != null">
+                #{nname,jdbcType=VARCHAR},
+            </if>
+            <if test="fullname != null">
+                #{fullname,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="levelpass != null">
+                #{levelpass,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=INTEGER},
+            </if>
+            <if test="sdate != null">
+                #{sdate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="remarks != null">
+                #{remarks,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null">
+                #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="iostoken != null">
+                #{iostoken,jdbcType=VARCHAR},
+            </if>
+            <if test="edate != null">
+                #{edate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="workno != null">
+                #{workno,jdbcType=VARCHAR},
+            </if>
+            <if test="uid != null">
+                #{uid,jdbcType=INTEGER},
+            </if>
+            <if test="paystatus != null">
+                #{paystatus,jdbcType=INTEGER},
+            </if>
+            <if test="newstatus != null">
+                #{newstatus,jdbcType=INTEGER},
+            </if>
+            <if test="nonewstime != null">
+                #{nonewstime,jdbcType=VARCHAR},
+            </if>
+            <if test="userstatus != null">
+                #{userstatus,jdbcType=INTEGER},
+            </if>
+            <if test="resourceId != null">
+                #{resourceId,jdbcType=VARCHAR},
+            </if>
+            <if test="parAccount != null">
+                #{parAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="receiveMessage != null">
+                #{receiveMessage,jdbcType=INTEGER}
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.xmn.saas.entity.common.SellerAccount">
+        update t_seller_account
+        <set>
+            <if test="sellerid != null">
+                sellerid = #{sellerid,jdbcType=INTEGER},
+            </if>
+            <if test="account != null">
+                account = #{account,jdbcType=VARCHAR},
+            </if>
+            <if test="nname != null">
+                nname = #{nname,jdbcType=VARCHAR},
+            </if>
+            <if test="fullname != null">
+                fullname = #{fullname,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                password = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="levelpass != null">
+                levelpass = #{levelpass,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=INTEGER},
+            </if>
+            <if test="sdate != null">
+                sdate = #{sdate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="remarks != null">
+                remarks = #{remarks,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null">
+                phone = #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="iostoken != null">
+                iostoken = #{iostoken,jdbcType=VARCHAR},
+            </if>
+            <if test="edate != null">
+                edate = #{edate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="workno != null">
+                workno = #{workno,jdbcType=VARCHAR},
+            </if>
+            <if test="uid != null">
+                uid = #{uid,jdbcType=INTEGER},
+            </if>
+            <if test="paystatus != null">
+                paystatus = #{paystatus,jdbcType=INTEGER},
+            </if>
+            <if test="newstatus != null">
+                newstatus = #{newstatus,jdbcType=INTEGER},
+            </if>
+            <if test="nonewstime != null">
+                nonewstime = #{nonewstime,jdbcType=VARCHAR},
+            </if>
+            <if test="userstatus != null">
+                userstatus = #{userstatus,jdbcType=INTEGER},
+            </if>
+            <if test="resourceId != null">
+                resource_id = #{resourceId,jdbcType=VARCHAR},
+            </if>
+            <if test="parAccount != null">
+                par_account = #{parAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="receiveMessage != null">
+                receive_message = #{receiveMessage},
+            </if>
+        </set>
+        where aid = #{aid,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.xmn.saas.entity.common.SellerAccount">
+        UPDATE t_seller_account
+        SET sellerid    = #{sellerid,jdbcType=INTEGER},
+            account     = #{account,jdbcType=VARCHAR},
+            nname       = #{nname,jdbcType=VARCHAR},
+            fullname    = #{fullname,jdbcType=VARCHAR},
+            password    = #{password,jdbcType=VARCHAR},
+            levelpass   = #{levelpass,jdbcType=VARCHAR},
+            type        = #{type,jdbcType=INTEGER},
+            sdate       = #{sdate,jdbcType=TIMESTAMP},
+            remarks     = #{remarks,jdbcType=VARCHAR},
+            phone       = #{phone,jdbcType=VARCHAR},
+            iostoken    = #{iostoken,jdbcType=VARCHAR},
+            edate       = #{edate,jdbcType=TIMESTAMP},
+            workno      = #{workno,jdbcType=VARCHAR},
+            uid         = #{uid,jdbcType=INTEGER},
+            paystatus   = #{paystatus,jdbcType=INTEGER},
+            newstatus   = #{newstatus,jdbcType=INTEGER},
+            nonewstime  = #{nonewstime,jdbcType=VARCHAR},
+            userstatus  = #{userstatus,jdbcType=INTEGER},
+            resource_id = #{resourceId,jdbcType=VARCHAR},
+            par_account = #{parAccount,jdbcType=VARCHAR}
+        WHERE aid = #{aid,jdbcType=INTEGER}
+    </update>
+
+    <!--修改密码-->
+    <update id="updatePassword">
+        UPDATE t_seller_account
+        SET password = #{password}
+        WHERE aid = #{aid}
+    </update>
+
+
+    <update id="updatePasswordByAccount">
+        UPDATE t_seller_account
+        SET password = #{password}
+        WHERE account = #{account}
+    </update>
+
+    <!--根据主键和密码统计账户数量-->
+    <select id="countAccountByAidAndPassword" resultType="java.lang.Integer">
+        SELECT count(*)
+        from t_seller_account
+        WHERE aid = #{aid} AND `password` = #{password}
+    </select>
+
+    <!--根据手机号码查询账号-->
+    <select id="countAccountByPhone" resultType="java.lang.Integer">
+        SELECT count(*)
+        FROM t_seller_account
+        WHERE account = #{phone}
+    </select>
+
+    <!--根据父id查询子账号-->
+    <select id="selectSubAccountByParent" resultType="com.xmn.saas.entity.common.SellerAccount">
+        SELECT *
+        FROM t_seller_account
+        WHERE par_account = #{aid}
+        ORDER BY sdate asc
+    </select>
+
+    <!--查询账户详情-->
+    <select id="selectAccountDetail" resultType="java.util.Map">
+        SELECT
+            s.fullname,
+            s.phoneid,
+            s.identity,
+            s.agio*10 agio,
+            sa.sdate,
+            sa.edate,
+            sd.is_chain isChain,
+            sd.operating_out operationOut
+        FROM
+            t_seller_account sa,
+            t_seller_detailed sd
+            ,t_seller s
+        WHERE
+            sa.aid = #{aid}
+            AND sa.sellerid = sd.sellerid
+            AND sd.sellerid = s.sellerid
+    </select>
+    <select id="countAccountByAccount" resultType="java.lang.Integer">
+        SELECT count(*)
+        FROM t_seller_account
+        WHERE account = #{phone}
+    </select>
+
+<!--    查询子账号列表, 根据sellerid查询, 不包含自己本身
+    老板账户(type=1)可以查询1,2,3   店长账户(type=2)可以查询 3-->
+    <select id="selectSubAccountBySellerId" resultType="com.xmn.saas.entity.common.SellerAccount">
+        SELECT *
+        FROM t_seller_account
+        WHERE sellerid = #{sellerid}
+        <if test="type == 1">
+            and type in (1,2,3)
+        </if>
+        <if test="type == 2">
+            and  type in (3)
+        </if>
+
+        ORDER BY type asc,sdate desc
+    </select>
+    <select id="selectByAccount" resultType="Integer">
+        SELECT aid from test_data4.t_seller_account WHERE account = #{account}
+    </select>
+
+</mapper>

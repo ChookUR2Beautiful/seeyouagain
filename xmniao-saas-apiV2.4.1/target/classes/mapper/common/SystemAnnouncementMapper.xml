@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.saas.dao.common.SystemAnnouncementDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.saas.entity.common.SystemAnnouncement" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="sdate" property="sdate" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="app" property="app" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.xmn.saas.entity.common.SystemAnnouncement" extends="BaseResultMap" >
+    <result column="content" property="content" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, sdate, status, app
+  </sql>
+  <sql id="Blob_Column_List" >
+    content
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_system_announcement
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectOne" resultMap="ResultMapWithBLOBs"  >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_system_announcement where status = 1 order by sdate desc limit 1
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_system_announcement
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmn.saas.entity.common.SystemAnnouncement" >
+    insert into t_system_announcement (id, sdate, status, 
+      app, content)
+    values (#{id,jdbcType=INTEGER}, #{sdate,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}, 
+      #{app,jdbcType=INTEGER}, #{content,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmn.saas.entity.common.SystemAnnouncement" >
+    insert into t_system_announcement
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="sdate != null" >
+        sdate,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="app != null" >
+        app,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="sdate != null" >
+        #{sdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="app != null" >
+        #{app,jdbcType=INTEGER},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.saas.entity.common.SystemAnnouncement" >
+    update t_system_announcement
+    <set >
+      <if test="sdate != null" >
+        sdate = #{sdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="app != null" >
+        app = #{app,jdbcType=INTEGER},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.xmn.saas.entity.common.SystemAnnouncement" >
+    update t_system_announcement
+    set sdate = #{sdate,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=INTEGER},
+      app = #{app,jdbcType=INTEGER},
+      content = #{content,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.saas.entity.common.SystemAnnouncement" >
+    update t_system_announcement
+    set sdate = #{sdate,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=INTEGER},
+      app = #{app,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
