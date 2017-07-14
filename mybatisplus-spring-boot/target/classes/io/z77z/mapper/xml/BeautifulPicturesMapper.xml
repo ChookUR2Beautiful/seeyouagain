@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.z77z.mapper.BeautifulPicturesMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="io.z77z.entity.BeautifulPictures">
+		<id column="id" property="id" />
+		<result column="title" property="title" />
+		<result column="url" property="url" />
+		<result column="pictureurls_num" property="pictureurlsNum" />
+		<result column="zan" property="zan" />
+		<result column="biaoqian" property="biaoqian" />
+		<result column="keywords" property="keywords" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+    id, title, url, pictureurls_num, zan, biaoqian, keywords
+  </sql>
+  
+  <select id="selectWhere" resultMap="BaseResultMap" parameterType="java.util.Map" >
+  	 select <include refid="Base_Column_List" /> from beautiful_pictures where id = #{id}
+  </select>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from beautiful_pictures
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from beautiful_pictures
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="io.z77z.entity.BeautifulPictures">
+    insert into beautiful_pictures (id, title, url, 
+      pictureurls_num, zan, biaoqian, 
+      keywords)
+    values (#{id,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, 
+      #{pictureurlsNum,jdbcType=INTEGER}, #{zan,jdbcType=INTEGER}, #{biaoqian,jdbcType=VARCHAR}, 
+      #{keywords,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="io.z77z.entity.BeautifulPictures">
+    insert into beautiful_pictures
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="url != null">
+        url,
+      </if>
+      <if test="pictureurlsNum != null">
+        pictureurls_num,
+      </if>
+      <if test="zan != null">
+        zan,
+      </if>
+      <if test="biaoqian != null">
+        biaoqian,
+      </if>
+      <if test="keywords != null">
+        keywords,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null">
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="pictureurlsNum != null">
+        #{pictureurlsNum,jdbcType=INTEGER},
+      </if>
+      <if test="zan != null">
+        #{zan,jdbcType=INTEGER},
+      </if>
+      <if test="biaoqian != null">
+        #{biaoqian,jdbcType=VARCHAR},
+      </if>
+      <if test="keywords != null">
+        #{keywords,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="io.z77z.entity.BeautifulPictures">
+    update beautiful_pictures
+    <set>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null">
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="pictureurlsNum != null">
+        pictureurls_num = #{pictureurlsNum,jdbcType=INTEGER},
+      </if>
+      <if test="zan != null">
+        zan = #{zan,jdbcType=INTEGER},
+      </if>
+      <if test="biaoqian != null">
+        biaoqian = #{biaoqian,jdbcType=VARCHAR},
+      </if>
+      <if test="keywords != null">
+        keywords = #{keywords,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="io.z77z.entity.BeautifulPictures">
+    update beautiful_pictures
+    set title = #{title,jdbcType=VARCHAR},
+      url = #{url,jdbcType=VARCHAR},
+      pictureurls_num = #{pictureurlsNum,jdbcType=INTEGER},
+      zan = #{zan,jdbcType=INTEGER},
+      biaoqian = #{biaoqian,jdbcType=VARCHAR},
+      keywords = #{keywords,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>
