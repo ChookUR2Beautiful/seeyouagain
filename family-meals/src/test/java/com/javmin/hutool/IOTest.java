@@ -16,6 +16,8 @@ public class IOTest {
 		BufferedInputStream in = FileUtil.getInputStream("d:/test.txt");
 		BufferedOutputStream out = FileUtil.getOutputStream("d:/test2.txt");
 		long copySize = IoUtil.copy(in, out, IoUtil.DEFAULT_BUFFER_SIZE);
+		IoUtil.close(in);
+		IoUtil.close(out);
 	}
 	
 	

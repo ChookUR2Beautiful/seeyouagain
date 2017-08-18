@@ -2,6 +2,9 @@ package com.javmin.entity;
 
 public class User {
 	
+	/**
+	 * id
+	 */
 	private Integer id;
 	private String userName;
 	private String password;
