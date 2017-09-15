@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.seller.dao.FoodDao">
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.seller.entity.Food">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="fid" jdbcType="BIGINT" property="fid" />
+    <result column="sellerid" jdbcType="BIGINT" property="sellerid" />
+    <result column="foodname" jdbcType="VARCHAR" property="foodname" />
+    <result column="cprice" jdbcType="DECIMAL" property="cprice" />
+    <result column="oprice" jdbcType="DECIMAL" property="oprice" />
+    <result column="atag" jdbcType="INTEGER" property="atag" />
+    <result column="num" jdbcType="INTEGER" property="num" />
+    <result column="bigpic" jdbcType="VARCHAR" property="bigpic" />
+    <result column="smallpic" jdbcType="VARCHAR" property="smallpic" />
+    <result column="bannum" jdbcType="INTEGER" property="bannum" />
+    <result column="sellnum" jdbcType="INTEGER" property="sellnum" />
+    <result column="sdate" jdbcType="VARCHAR" property="sdate" />
+    <result column="pdate" jdbcType="VARCHAR" property="pdate" />
+    <result column="source" jdbcType="INTEGER" property="source" />
+    <result column="datastatus" jdbcType="INTEGER" property="datastatus" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    id, fid, sellerid, foodname, cprice, oprice, atag, num, bigpic, smallpic, bannum, 
+    sellnum, sdate, pdate, source, datastatus, remark
+  </sql>
+  
+  <!-- 查询商家推荐菜列表 -->
+  <select id="queryFoodBySellerid" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_food
+    where sellerid = #{sellerid} and datastatus =1
+  </select>
+ 
+</mapper>

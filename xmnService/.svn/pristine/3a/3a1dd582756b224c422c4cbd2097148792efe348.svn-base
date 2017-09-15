@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.recruit.dao.UserDao">
+	<!-- 用户填写简历信息资料 -->
+	<insert id="InseetUserCVInfo" parameterType="map">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">  
+         SELECT LAST_INSERT_ID() AS ID    
+   		</selectKey> 
+		INSERT INTO b_user_cv (uid,name,sex,age,phoneid,degrees,experie,salary,work_city,is_hide,shield_shop,sdate,headpic)
+		VALUES(#{uid},#{name},#{sex},#{age},#{phoneid},#{degrees},#{experie},#{salary},#{workcity},#{ishide},#{shieldshop},#{sdate},#{headpic})
+	</insert>
+	
+	<!-- 编辑简历信息基本资料 -->
+	<update id="editUserCVInfo" parameterType="map">
+		UPDATE b_user_cv 
+		SET name=#{name},sex=#{sex},age=#{age},phoneid=#{phoneid},degrees=#{degrees},experie=#{experie},salary=#{salary},work_city=#{workcity},headpic=#{headpic},
+		<if test="is_hide != null">
+		is_hide=#{ishide},
+		</if>
+		<if test="shieldshop">
+		shield_shop=#{shieldshop},
+		</if>
+		update_time=#{sdate}
+		WHERE id=#{id}
+	</update>
+	
+	<!-- 添加用户工作，经历，培训等标签 -->
+	<insert id="insertUserTagInfo" useGeneratedKeys="true" parameterType="java.util.List">
+		insert into b_tag_entity (pojo_id,tag_id,entity_type,update_date) values
+		<foreach collection="list" item="users"  separator=",">
+		(#{users.id},#{users.tagid},#{users.type},#{users.sdate})
+		</foreach>
+	</insert>
+	
+	<!-- 删除所有的标签 -->
+	<delete id="deleteUserTagInfo" parameterType="int">
+		DELETE FROM b_tag_entity WHERE pojo_id=#{id}
+	</delete>
+	
+	<!-- 查看个人简历（用户自己） -->
+	<select id="queryUserInfo" resultType="map" parameterType="int">
+		SELECT c.id,c.name,c.sex,c.age,c.phoneid,c.degrees,c.experie,c.salary,c.is_hide as ishide,c.shield_shop as shieldshopid,u.avatar 
+		FROM b_user_cv c LEFT JOIN b_urs_info u ON u.uid=c.uid 
+		WHERE c.uid=#{uid}
+	</select>
+	
+	<!-- 查询屏蔽商户名称 -->
+	<select id="querySellerName" resultType="string" parameterType="int">
+		SELECT sellername FROM t_seller WHERE sellerid=#{sellerid}
+	</select>
+	
+	<!-- 查询简历标签 -->
+	<select id="queryUserTagInfo" resultType="map" parameterType="map">
+		SELECT t.id,t.tagname FROM b_recruit_tag t LEFT JOIN b_tag_entity e ON e.tag_id=t.id WHERE e.pojo_id=#{id} AND e.entity_type=#{type}
+	</select>
+	
+	<!-- 查询邀请人姓名 -->
+	<select id="selectUsrName" resultType="map" parameterType="int">
+		select
+		ifNull(phone,'') phone,
+		ifNull(name,'') name from b_urs_info where uid=#{uid}
+	</select>
+</mapper>

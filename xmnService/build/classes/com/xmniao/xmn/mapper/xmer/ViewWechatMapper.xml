@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.xmer.dao.ViewWechatMapper" >
+<insert id="insertSelective" parameterType="com.xmniao.xmn.core.xmer.entity.ViewWechat" >
+    insert into b_view_wechat
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ordersn != null" >
+        ordersn,
+      </if>
+      <if test="buyUid != null" >
+        buy_uid,
+      </if>
+      <if test="soldUid != null" >
+        sold_uid,
+      </if>
+      <if test="integral != null" >
+        integral,
+      </if>
+      <if test="viewDate != null" >
+        view_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ordersn != null" >
+        #{ordersn,jdbcType=VARCHAR},
+      </if>
+      <if test="buyUid != null" >
+        #{buyUid,jdbcType=INTEGER},
+      </if>
+      <if test="soldUid != null" >
+        #{soldUid,jdbcType=INTEGER},
+      </if>
+      <if test="integral != null" >
+        #{integral,jdbcType=DECIMAL},
+      </if>
+      <if test="viewDate != null" >
+        #{viewDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+</mapper>

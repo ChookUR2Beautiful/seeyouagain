@@ -1,0 +1,318 @@
+##\u52a8\u6001\u5e93\u8def\u5f84
+jniLib=/usr/local/tomcat/webapps/xmnService/WEB-INF/lib/
+
+##\u7fa4\u7ec4id\u524d\u7f00
+groupPrefix=@xmniao#
+
+##\u7fa4\u7ec4\u5f62\u6001:Public\uff08\u516c\u5f00\u7fa4\uff09\uff0cPrivate\uff08\u79c1\u5bc6\u7fa4\uff09\uff0cChatRoom\uff08\u804a\u5929\u5ba4\uff09\uff0cAVChatRoom\uff08\u4e92\u52a8\u76f4\u64ad\u804a\u5929\u5ba4\uff09
+groupType=AVChatRoom
+
+##\u53d1\u9001\u5f39\u5e55\u6263\u9664\u9e1f\u5e01
+sendbarrgeBirdCoin=2
+##
+sendBarrgerank_no=20
+
+##\u53d1\u9001\u79c1\u4fe1\u6263\u9664\u9e1f\u5e01
+privateMessgeBirdCoin=200
+
+sendSecretMark_no=20
+
+##\u53d1\u79c1\u4fe1\u589e\u52a02000\u7ecf\u9a8c
+privateMessaerank_no=2000
+
+##\u5e73\u53f0\u4e0e\u4e3b\u64ad\u5206\u6210\u6bd4\u4f8b
+devidescale_context=\u5e73\u53f0\u4e0e\u4e3b\u64ad\u5206\u6210\u6bd4\u4f8b
+
+##\u5e73\u53f0\u4e0e\u4e3b\u64ad\u5206\u6210\u6bd4\u4f8b
+#live_tips=\u76f4\u64ad\u6d88\u606f\uff1a\u6b22\u8fce\u6765\u5230\u9e1f\u4eba\u76f4\u64ad\uff0c\u9e1f\u4eba\u76f4\u64ad\u5021\u5bfc\u7eff\u8272\u76f4\u64ad\uff0c\u5bf9\u76f4\u64ad\u5185\u5bb924\u5c0f\u65f6\u5728\u7ebf\u5de1\u67e5\u3002\u4efb\u4f55\u6d89\u53ca\u8272\u60c5\u3001\u8fdd\u6cd5\u3001\u8fdd\u89c4\u3001\u4f4e\u4fd7\u3001\u66b4\u529b\u7b49\u4e0d\u826f\u4fe1\u606f\u5747\u5c5e\u8fdd\u89c4\uff0c\u6587\u660e\u76f4\u64ad\u4ece\u6211\u505a\u8d77
+live_tips=\u8d2d\u4e70\u9e1f\u8c46\u6253\u8d4f\u793c\u7269\uff0c\u7f8e\u5973\u4e3b\u64ad\u5e26\u4f60\u55e8\u7ffb\u5929\uff01\u60a8\u53ef\u4ee5\u5728\u5bfb\u871c\u9e1f\u5e73\u53f0\uff0c\u4f9d\u6b21\u70b9\u51fb[\u6211][\u9e1f\u8c46]\u6309\u94ae\u5145\u503c\uff0c\u8fd8\u53ef\u4ee5\u5173\u6ce8\u201c\u5bfb\u871c\u9e1f\u201d\u516c\u4f17\u53f7\u83b7\u53d6\u66f4\u591a\u5145\u503c\u4fe1\u606f\u3002
+
+## \u4e3b\u64ad\u5fae\u4fe1\u4e8c\u7ef4\u7801\u63d0\u793a
+live_anchor_wechat_tips=\u4fdd\u5b58\u5230\u76f8\u518c\u7528\u5fae\u4fe1\u626b\u4e00\u626b\u8bc6\u522b\u4e8c\u7ef4\u7801\uff0c\u52a0\u5165\u4e3b\u64ad\u7c89\u4e1d\u7fa4
+
+## \u76f4\u64ad\u89c2\u4f17\u9000\u51fa\u623f\u95f4\u63d0\u793a
+live_exit_room_tips=\u53ef\u4ee5\u5728\u4e2a\u4eba\u4e2d\u5fc3-\u9e1f\u7c89\u5361\u4e2d\u67e5\u770b\n\u53ef\u4ee5\u8d2d\u4e70\u9884\u552e\u7c89\u4e1d\u5238\uff01
+
+## \u8bf7\u4e3b\u64ad\u8bfb\u51fa\u63d0\u793a
+live_anchor_read_tips=\u8bf7\u4e3b\u64ad\u8bfb\u51fa\u5546\u6237\u4fe1\u606f
+
+##\u4e3b\u64ad\u5206\u62100.3 
+anthordevidescale=0.3
+
+#\u9001\u9e1f\u8c46 \u8fd4\u5229 \u9e1f\u5e01\u6bd4\u4f8b\u8bbe\u7f6e \u76ee\u524d 1\u9e1f\u86cb\u7b49\u4e8e0.1\u9e1f\u5e01  \u6bd4\u4f8b\u8bbe\u7f6e\u4e3a10
+live_return_birdCoin=10
+
+##\u5145\u503c\u9e1f\u5e01\u8c03\u7528\u652f\u4ed8\u63a5\u53e3key
+payBirdKey=5RDkevmhd9vVyXmBnvpE5o/u60otfdXxCxxOKY2Uxf7vMLGy9F7d6JgAsoaKQCMc5224/nHMlPnoBbMkiG2q0A==
+
+##\u5145\u503c\u9e1f\u5e01\u8c03\u7528\u63a5\u53e3url
+#payBirdurl=http://onlinepaytest.xmniao.com/xmnpay/unified_order/prepare
+payBirdurl=http://pay.xmniao.com/xmnpay/unified_order/prepare
+payBirdurl2=http://pay.xmniao.com/xmnpay/unified_order/prepare2
+#payBirdurl2=http://onlinepaytest.xmniao.com/xmnpay/unified_order/prepare2
+##\u8ba2\u5355\u9000\u51fa
+cancleFansOrderUrl=http://onlinepaytest.xmniao.com/xmnpay/unified_order/cancel
+#cancleFansOrderUrl=http://pay.xmniao.com/xmnpay/unified_order/cancel
+
+unifiedOrderQuery=http://onlinepaytest.xmniao.com/xmnpay/unified_order/query
+#unifiedOrderQuery=http://pay.xmniao.com/xmnpay/unified_order/query
+
+#\u662f\u5426\u5f00\u542f\u517c\u5bb9\u5fae\u4fe1WAP\u7248\u8c03\u7528  \u6d4b\u8bd5\u670d\u52a1\u9ed8\u8ba4\u5f00\u542f
+#open /   colse
+payBirdurl_weixinWap_switch=colse
+
+##\u5bfb\u871c\u9e1f\u5e73\u53f0\u4e70\u5355\u7b7e\u540dkey
+payFoodKey=http\://pay.xmniao.com/xmnpay/bill/payment
+#payFoodKey=http://onlinepaytest.xmniao.com/xmnpay/bill/payment
+
+##\u5145\u503c\u9e1f\u5e01\u8c03\u7528\u63a5\u53e3url IOS\u5185\u8d2d\u63a5\u53e3
+#\u6c99\u76d2\u6d4b\u8bd5\u63a5\u53e3
+IOSAppStore_sandbox=https://sandbox.itunes.apple.com/verifyReceipt
+#\u6b63\u5f0f\u5185\u8d2d\u63a5\u53e3
+IOSAppStore_itunes=https://buy.itunes.apple.com/verifyReceipt
+#\u5185\u8d2d\u7684\u5e95\u56fe\u94fe\u63a5
+IOSAppStore_receiptUrl=http://img.xmniao.com/img/M00/04/1E/wKgBEFgqv-OAIZZtAAB5XDCN-I8227_big.jpg
+
+#IOS\u5185\u8d2d\u9a8c\u8bc1\u7968\u636e\u662f\u5426\u6b63\u5f0f |\u6c99\u76d2\u90fd\u9a8c\u8bc1  true \u4e3a\u5168\u90e8\u9a8c\u8bc1
+IOSAppStore_verify_all=true
+
+#SdkAppid
+SdkAppid=1400013873
+
+#identifier
+identifier=admin
+
+##\u8c03\u7528\u652f\u4ed8\u63a5\u53e3IP  \u6b63\u5f0f
+ip_number=192.168.1.11
+#ip_number=192.168.1.89
+
+##\u8c03\u7528\u652f\u4ed8\u63a5\u53e3\u7aef\u53e3\u53f7  \u6b63\u5f0f
+port = 7913
+
+##\u8c03\u7528\u652f\u4ed8\u63a5\u53e3IP \u6d4b\u8bd5
+ip_number_business=192.168.1.11
+#ip_number_business=192.168.1.93
+
+##\u8c03\u7528\u652f\u4ed8\u63a5\u53e3\u7aef\u53e3\u53f7 \u6d4b\u8bd5
+port_business = 7911
+
+##Distance began broadcasting live time(second)
+begin_live_time = 7200000
+
+##one day time
+one_day_time = 86400000
+
+
+#\u63a8\u9001\u65f6\u95f4(\u5c0f\u65f6)
+push_time=2
+#\u5b89\u5353accessid
+andorid_accessid=2100219303
+#\u5b89\u5353secretkey
+andorid_secretkey=3ef89f469d0c1c1b48e1e87033aab3da
+#\u9e1f\u4eba\u76f4\u64adapp\u63a8\u9001\u79d8\u94a5
+bird_andorid_accessid=2100250185
+bird_andorid_secretkey=20f8e76b40ec56c3b04747a3616d0ad6
+#IOS accessid
+ios_accessid=2200219020
+#IOSsecretkey
+ios_secretkey=a6f046a0f3a09a37026c18c620009e1c
+#\u9e1f\u4eba\u76f4\u64adios\u79d8\u94a5
+bird_ios_accessid=2200249736
+bird_ios_secretkey=154b20fd52e7fec42732a14125ae9ae4
+## ARS  key
+edKey=xunminiaozhibo11
+edIv=xmnlive1xmnlive1
+
+##IOS \u5185\u8d2d\u5ba1\u6838\u914d\u7f6e\u4f59\u989d\u63d0\u73b0\u9650\u5236  0 \u9650\u5236 1\u4e0d\u9650\u5236
+is_iospay=1
+#\u662f\u5426\u4e5f\u9650\u5236Android \u63d0\u73b0   0 \u662f  1 \u5426   \u5982\u679c\u9650\u5236\u63d0\u73b0 ,\u4fee\u6539\u6b64\u5904\u540e\u9700\u540c\u6b65\u4fee\u6539 conf_common.properties \u6587\u4ef6 \u9650\u5236\u91d1\u989dbalanceLimit=100000000
+isGetBalance=1
+
+#\u662f\u5426\u5f00\u542f\u8df3\u8f6cH5 \u5145\u503c  0\u5426  1 \u662f
+buyComboRedirectStatus=0
+# test \u7528\u4e8eIOS \u8df3\u8f6c\u5230H5
+#buyComboRedirecSellertUrl=http://testyw.xmniao.com/bill/valuecard
+#buyComboRedirectUrl=http://testyw.xmniao.com/member/mebird
+# production
+buyComboRedirecSellertUrl=http://wxapi.xmniao.com/bill/valuecard
+buyComboRedirectUrl=http://wxapi.xmniao.com/member/mebird
+
+redis_channel_expire=20
+
+redis_radio_expire=60
+
+redis_annunciate_expire=60
+
+redis_viewCount_expire=60
+
+##rebate condition
+rebate_condition_one_min=0
+rebate_condition_one_max=50
+rebate_condition_two_max=100
+rebate_condition_three_max=200
+rebate_condition_four_max=500
+rebate_condition_five_max=1000
+
+##rebate ratio
+rebate_ratio_one=1.00
+rebate_ratio_two=1.05
+rebate_ratio_three=1.10
+rebate_ratio_four=1.15
+rebate_ratio_five=1.20
+
+#php Annunciate Info  H5  url
+annunciate_info_url=http://wxapi.xmniao.com/hlive/advancedetail.html
+
+#robot show view count
+robot_show_view_count=100
+
+#manager max  number
+maxManagerNums=5
+
+#\u76f4\u64ad\u95f4\u7ea2\u5305\u56fa\u5b9a\u9e1f\u86cb\u503c
+live_redpacket_fixed=100
+
+#\u76f4\u64ad\u95f4\u7ea2\u5305\u4e2a\u6570\u6700\u5927\u503c
+max_live_redpacket_number=999
+
+#\u8d2d\u4e70\u9e1f\u5e01\u5957\u9910\u6700\u5c0f\u8d77\u552e\u6570\u91cf
+minBirdCoinCombo=1
+
+#\u8d2d\u4e70\u9e1f\u5e01\u5355\u6b21\u6700\u5927\u9500\u552e\u6570\u91cf
+maxBirdCoinCombo=10
+
+#\u5f00\u59cb\u9650\u5236\u9e1f\u5e01\u5957\u9910\u7b49\u7ea7\u8d2d\u4e70\u65e5\u671f
+buyBirdCoinOpeningDate=2017-01-05
+#\u5f00\u542f\u8d2d\u4e70\u9e1f\u5e01\u5957\u9910\u662f\u5426\u6839\u636e\u7b49\u7ea7\u9650\u5236\u663e\u793a 0\u5173\u95ed 1 \u5f00\u542f 
+isBuyBirdCoinOpeningDate=0
+#\u662f\u5426\u5f00\u542f\u9009\u62e9\u9e1f\u5e01\u5957\u9910\u6570\u91cf\u5f00\u5173 0\u5173\u95ed 1 \u5f00\u542f
+isChooseQuantity=0
+#\u5145\u503c\u9e1f\u8c46\u662f\u5426\u542f\u7528\u4f59\u989d  0\u5426  1 \u662f
+useBalanceStatus=1
+
+#\u5fae\u4fe1\u76f4\u64ad\u5206\u4eab\u6807\u9898\u96c6\u5408
+live_wechat_share_title_list=[{"type"\:1,title\:"\u53c8\u5f00\u64ad\u4e86\uff01\u5973\u795e\u8fd9\u6b21\u8981\u8d70\u840c\u5e05\u8def\u7ebf\uff01\u653b\u529b\u5341\u8db3\uff01"},{"type"\:2,title\:"\u53c8\u5f00\u64ad\u4e86\uff01\u52a8\u60c5\u6311\u6218\u5473\u857e\u6781\u9650\uff01\u8d76\u7d27\u56f4\u89c2\uff01"},{"type"\:3,title\:"\u6700\u7d22\u4e3b\u64ad\u76f4\u64ad\u5403\u996d\uff0c\u611f\u89c9\u8fd9\u53ea\u9e1f\u8981\u70b8\u4e86~"},{"type"\:4,title\:"\u5f00\u64ad\u4e86\uff01\u80fd\u8bf4\u4f1a\u5403\u7231\u641e\u4e8b\uff0c\u5c31\u662f\u4e0d\u9759\u9759\u505a\u4e2a\u7f8e\u5973\u5b50\uff01"},{"type"\:5,title\:"\u5973\u795e\u4e0a\u7ebf\u64a9\u4eba\u4e86\uff01\u8bf7\u770b\u597d\u4f60\u7684\u7537\u76d8\u53cb\u2026\u2026"}]
+
+#\u5fae\u4fe1\u76f4\u64ad\u5206\u4eab\u6807\u9898\u96c6\u5408
+live_wechat_share_text=\u989c\u503c\u9006\u5929\u4e86\uff0c\u8fd9\u753b\u98ce\u592a\u64a9\u4eba\u4e86\uff0c\u901f\u6765\u56f4\u89c2\u76f4\u64ad\uff01
+
+#\u76f4\u64ad\u5206\u4eab\u6807\u9898(\u7537\u4e3b\u64ad) xxx\u8868\u793a\u4e3b\u64ad\uff0cyyy\u8868\u793a\u7528\u6237
+live_shareTitle_man=[{title:"\u9ad8\u989c\u503c\u5374\u504f\u504f\u9760\u624d\u534e\u7684xxx\u5f00\u64ad\u5566"},{title:"xxx\u4e0a\u7ebf\u4e86\uff0c\u597d\u5403\u5230\u8868\u60c5\u5931\u63a7\u7684\u7f8e\u5473"},{title:"xxx\u76f4\u64ad\u91cc\u5403\u4e86\uff01\u5feb\u8fc7\u6765\u4e00\u8d77\u554a!"},{title:"xxx\u5f00\u64ad\u5566\uff01\u5634\u4e0a\u529f\u592b\u7b80\u76f4\u4e86\u4e0d\u5f97\uff01"},{title:"xxx\u51fa\u53d1\u5566\uff01\u70ab\u9177\u7f8e\u98df\u90fd\u5728\u8fd9\u91cc"}]
+#\u76f4\u64ad\u5206\u4eab\u6807\u9898(\u5973\u4e3b\u64ad)
+live_shareTitle_woman=[{title:"yyy\u5df2\u7ecf\u5165\u5e2d\uff01xxx\u5728\u76f4\u64ad\u95f4\u7b49\u4f60\uff01"},{title:"\u6211\u6765\u4e86\u4f60\u5728\u54ea\uff1f"},{title:"\u70b9\u6211\uff0cget\u4eca\u65e5\u5927\u9910\u7684\u6253\u5f00\u79d8\u7c4d"},{title:"\u597d\u5403\u5230\u54ed\u7684\u7f8e\u98df\uff0c\u4e3b\u64ad\u6ca6\u9677\u7b49\u4f60\u6765\u6551\u573a"},{title:"xxx\u5f00\u64ad\u4e86\uff0cyyy\u611f\u89c9\u8eab\u4f53\u88ab\u638f\u7a7a\uff01"},{title:"xxx\u5728\u627e\u4f60\uff0c\u8fd9\u573a\u76f4\u64ad\u5168\u9760\u4f60\u6491\u573a\u4e86\uff01"},{title:"xxx\u8138\u840c\u53ef\u7231\u989c\u503c\u9ad8\uff0c\u67b6\u4e0d\u4f4f\u4f60\u7684\u5957\u8def\uff01"},{title:" xxx\u5728\u76f4\u64ad\u91cc\u5f00\u5403\u4e86\uff01\u4f60\u4eec\u8fd8\u4e0d\u6765\u5417\uff1f"},{title:" xxx\u5f00\u64ad\u4e86\uff0c\u6211\u7684\u9f3b\u8840\u600e\u4e48\u90fd\u6b62\u4e0d\u4f4f"},{title:" xxx\u8fd9\u4e2a\u5751yyy\u8df3\u5f97\u5fc3\u7518\u60c5\u613f\uff0c\u4f60\u6765\u5417\uff1f"},{title:"xxx\u5728\u6df1\u60c5\u547c\u5524\u4f60\uff01\u8fd8\u4e0d\u8d76\u7d27\u6765"},{title:" xxx\u7684\u6bcf\u4e00\u9053\u83dc\u90fd\u6233\u4e2d\u4f60\u7684\u820c\u5c16"},{title:" xxx\u5f00\u64ad\uff01\u5e26\u4f60\u627e\u5230\u6700\u706b\u7684\u7f8e\u98df\u6f6e\u5e97"},{title:"xxx\u5f00\u5403\uff01\u4f60\u627e\u4e0d\u5230\u7684\u7f8e\u98df\u90fd\u5728\u8fd9\u91cc"},{title:"xxx\u5e26\u4f60\u4e0a\u8def\uff0c\u5728\u76f4\u64ad\u95f4\u5403\u904d\u5168\u4e16\u754c\uff01"}]
+#\u76f4\u64ad\u5206\u4eab\u8bed(\u7537\u4e3b\u64ad)
+live_shareText_man=[{title:"\u5feb\u6765\u548c\u597d\u53cbyyy\u4e00\u8d77\u56f4\u89c2\u76f4\u64ad\u641e\u4e8b\u60c5"},{title:"\u9ad8\u989c\u503c\u6709\u98ce\u5ea6\u592a\u80fd\u73a9\u4e86\uff01"},{title:"\u6765\u8fdf\u4e24\u6b65\u7684\u6211\u5df2\u7ecf\u6ca1\u6709\u597d\u4f4d\u7f6e\u4e86\uff01"},{title:"\u59d0\u59d0\u7c89\u4eec\u5df2\u7ecf\u75af\u72c2\u5566\uff01"},{title:"\u6211\u7684\u5929\uff0c\u5c45\u7136\u8fde\u8fd9\u4e2a\u4e5f\u6562\u5403\uff1f\uff1f"}]
+#\u76f4\u64ad\u5206\u4eab\u8bed(\u5973\u4e3b\u64ad)
+live_shareText_woman=[{title:"\u4e0d\u60f3\u5403\u996d\u5c31\u60f3\u5403\u4f60\uff0c\u6414\u9996\u5f04\u59ff\u7b49\u4f60\u6765\u64a9"},{title:"\u7f8e\u98df\u7f8e\u8272\u4e0a\u9910\u684c\uff0c\u5ba2\u5b98\u4eca\u5929\u60f3\u5403\u5565\uff1f"},{title:"\u770b\u76f4\u64ad get\u514d\u8d39\u5403\u5927\u9910\u6280\u80fd"},{title:"\u5df2\u6709n\u4f4d\u82f1\u96c4\u5728\u6551\u7f8e\uff0cyyy\u63d2\u961f\u9080\u4f60\u4e00\u8d77"},{title:"\u522b\u7b49\u4e86\uff01\u5feb\u53bb\u628a\u4f60\u7684\u597d\u53cb\u6551\u51fa\u6765\uff01"},{title:"\u505a\u4e3b\u64ad\u7684VIP\uff0c \u7b49\u4f60\u54df\uff01"},{title:"\u5403\u4e2a\u996d\u90fd\u5356\u840c\uff0c\u592a\u53ef\u803b\u4e86\uff01"},{title:"yyy\u5148\u4e0a\u4e86\uff01\u5feb\u6765\uff0c\u4e0d\u7136\u6e23\u90fd\u4e0d\u5269"},{title:"\u4e3a\u4ec0\u4e48\u4e0d\u662f\u6211\u5750\u5728\u65c1\u8fb9\uff01"},{title:"\u662f\u8c01\u57cb\u7684\u5403\u8d27\u5751\uff1f\u597d\u6df1\u597d\u6df1\uff01"},{title:"\u554a\uff0c\u539f\u6765\u662f\u7f8e\u98df\u4e0e\u7f8e\u5973\u5728\u53ec\u5524"},{title:"\u76f4\u64ad\u822c\u201c\u820c\u5c16\u201d\u64a9\u62e8\u4f60\u7684\u5473\u857e"},{title:"\u5168\u7a0b\u9ad8\u80fd\uff0c\u5929\u9ed1\u4e5f\u522b\u95ed\u773c\uff01"},{title:"\u6ca1\u6709\u5979\u5403\u4e0d\u5230\u53ea\u6709\u4f60\u60f3\u4e0d\u5230\uff01"},{title:"yyy\u5df2\u7ecf\u4e0a\u8f66\uff0c\u4f60\u5728\u7b49\u795e\u9a6c\uff01"}]
+#\u5206\u4eab\u76f4\u64ad\u540e \u76f4\u64ad\u95f4\u663e\u793a\u5206\u4eab\u8bed
+liveRoom_shareText=[{text:"\u5206\u4eab\u4e86\u4e3b\u64ad\uff0c\u4e3b\u64ad\u80fd\u91cf\u6ee1\u6ee1"},{text:"\u5206\u4eab\u4e86\u4e3b\u64ad\uff0c\u7231\u5206\u4eab\u7684\u4eba\u8fd0\u6c14\u90fd\u4e0d\u4f1a\u592a\u5dee"},{text:"\u5206\u4eab\u4e86\u4e3b\u64ad\uff0c\u4e3b\u64ad\u7231\u6b7b\u4f60\u5566"},{text:"\u88ab\u4e3b\u64ad\u8ff7\u5012\u4e86\u6240\u4ee5\u5206\u4eab\u4e86\u4e3b\u64ad"},{text:"\u5206\u4eab\u4e86\u4e3b\u64ad\uff0c\u4eb2\u670b\u597d\u53cb\u90fd\u6765\u5566"}]
+
+#\u673a\u5668\u4eba\u514d\u8d39\u9001\u793c\u7269  \u9ec4\u74dc
+isliveRobotSendGifts=0
+#\u662f\u5426\u5f00\u542f\u53d1\u5b57\u5e55\u804a\u5929\u4fe1\u606f 0\u5173\u95ed1\u5f00\u542f
+isliveRobotSendMsg=1
+liveRobotSendGiftName=\u9ec4\u74dc
+liveRobotSendGiftImg=http://img.xmniao.com/img/M00/02/17/wKgyMlf6DSCEFELGAAAAAIHIsZI405.png
+liveRobotNum=1
+liveRobotSendMaxNum=3
+liveRobotSendMinNum=1
+#\u673a\u5668\u4eba\u53d1\u793c\u7269\u662f\u5426\u53ef\u7528\u8fde\u51fb 1 \u662f 0 \u5426
+liveRobotSendISDoubleHit=1
+
+#\u63a8\u8350\u7c89\u4e1d\u5238\u6570\u91cf
+recommend_fans_coupon_nums=6
+
+#\u81ea\u5b9a\u4e49\u65f6\u95f4\u9650\u5236
+customLiveTimeLimit=85
+
+#\u5151\u6362\u9e1f\u7c89\u4e13\u4eab\u5361\u6d3b\u52a8banner\u56fe
+debitcardBannerImgUrl=http://img.xmniao.com/img/M00/05/1E/wKgBEVjklk6APlvuAAB7hc63LOg910.png
+
+#\u4e2a\u4eba\u4e3b\u9875\u7684  \u94b1\u5305\u63cf\u8ff0    \u4e4b\u524d\u7684"\u58d5\u8d5a" \u6539\u4e3a "\u94b1\u5305"
+personalLiveWalletRemark=\u6211\u7684\u94b1\u5305
+personalLiveWalletVkeRemark=\u6211\u7684V\u5ba2
+
+#\u70b9\u51fb\u6211\u7684\u94b1\u5305   \u8df3\u8f6c\u5230 \u8d26\u5355 \u6216\u8005 V\u5ba2\u4e3b\u9875
+#personalLiveWalletRecordUrl=http://testyw.xmniao.com/member/getuserbill
+#personalLiveWalletRecordUrl=http://wxapi.xmniao.com/member/getuserbill
+#personalVUrl=http://testyw.xmniao.com/vcustomer
+#personalVUrl=http://testfz.xmniao.com/accredit
+#personalVAction=action=app-visitor-index
+#\u70b9\u51fb\u4f59\u989d\u8df3\u8f6cURL
+#personalWalletRecordUrl=http://testyw.xmniao.com/member/mybalance
+#personalWalletRecordUrl=http://testfz.xmniao.com/accredit
+#personalWalletRecordAction=action=app-wechat-mybalance
+
+#\u70b9\u51fb\u9e1f\u5e01\u8df3\u8f6cH5 \u8def\u5f84
+#personalBirdCoinRecordUrl=http://testyw.xmniao.com/member/getuserbirdcoin
+#personalBirdCoinRecordUrl=http://wxapi.xmniao.com/member/getuserbirdcoin
+
+#\u7f8e\u98df\u4f53\u9a8c\u5361\u5165\u53e3
+#personalExperienceEnrty=http://testfz.xmniao.com/accredit
+#personalExperienceAction=action=app-officer-card
+
+#\u70b9\u51fb\u6211\u7684\u94b1\u5305   \u8df3\u8f6c\u5230 \u8d26\u5355 \u6216\u8005 V\u5ba2\u4e3b\u9875
+#V3.6.0\u53ca\u4ee5\u524d\u7248\u672c\u8c03\u5fae\u4fe1\u670d\u52a1
+personalLiveWalletRecordUrl1=http://wxapi.xmniao.com/member/getuserbill
+personalLiveWalletRecordUrl=http://micro.xmniao.com/accredit
+personalLiveWalletRecordAction=action=app-bill
+
+personalVUrl1=http://wxapi.xmniao.com/vcustomer
+personalVUrl=http://micro.xmniao.com/accredit
+personalVAction=action=app-visitor-index
+#\u70b9\u51fb\u4f59\u989d\u8df3\u8f6cURL
+personalWalletRecordUrl1=http://testyw.xmniao.com/member/mybalance
+personalWalletRecordUrl=http://micro.xmniao.com/accredit
+personalWalletRecordAction=action=app-wechat-mybalance
+
+#\u70b9\u51fb\u9e1f\u5e01\u8df3\u8f6cH5 \u8def\u5f84
+personalBirdCoinRecordUrl=http://wxapi.xmniao.com/member/getuserbirdcoin
+#\u7f8e\u98df\u4f53\u9a8c\u5361\u5165\u53e3
+personalExperienceEnrty=http://micro.xmniao.com/accredit
+personalExperienceAction=action=app-officer-card
+
+#\u662f\u5426\u5f00\u542f\u94b1\u5305\u8df3\u8f6cH5-\u5f00\u5173  \u9ed8\u8ba40 \u4e0d\u5f00\u542f  1\u5f00\u542f
+personalOriginalLiveWalletSwitch=1
+personalOriginalWalletSwitch=1
+
+#\u661f\u98df\u5c1a\u5927\u8d5b \u4e3b\u64ad\u67e5\u8be2 \u5165\u53e3
+personalCompetitionEntryUrl=http://micro.xmniao.com/accredit
+personalCompetitionEntryAction=action=app_vstar_activity
+#\u661f\u98df\u5c1a\u5927\u8d5b\u67e5\u8be2\u5165\u53e3\u662f\u5426\u5f00\u542f  0 \u5426 1 \u662f
+personalCompetitionEntrySwitch=1
+personalCompetitionEntryImage=http://img.xmniao.com/img/M00/00/18/wKgBGFk8DS-ARWkzAABqIrSedY8687.png
+
+#\u4e3b\u64ad\u5b9e\u540d\u8ba4\u8bc1  \u4e3b\u64ad\u67e5\u8be2 \u5165\u53e3
+personalRealNameEntryUrl=http://micro.xmniao.com/accredit
+personalRealNameEntryAction=action=app_vstar_apply
+personalRealNameRemark=\u4f60\u62a5\u540d\u4e86\u4e2d\u56fd\u661f\u98df\u5c1a\u5927\u8d5b\n\u5b8c\u5584\u5b9e\u540d\u8ba4\u8bc1\u624d\u80fd\u83b7\u5f97\u53c2\u8d5b\u8d44\u683c
+#\u4e3b\u64ad\u5b9e\u540d\u8ba4\u8bc1 \u662f\u5426\u5f00\u542f  0 \u5426 1 \u662f
+personalRealNameEntrySwitch=1
+
+appleApprovalUid=['421395','391072']
+#\u82f9\u679c\u5ba1\u6838\u671f\u95f4 \u9690\u85cf\u76f4\u64ad\u95f4 \u5546\u54c1\u793c\u7269  \u5957\u9910\u793c\u7269,\u9001\u793c\u7269\u9e1f\u5e01\u8fd4\u8fd8\u64cd\u4f5c  \u9ed8\u8ba40\u4e0d\u9650\u5236,1\u9650\u5236
+hiddenMark=0
+#\u8fdb\u5165\u76f4\u64ad\u95f4 \u662f\u5426\u5c55\u793a\u793c\u7269\u5f15\u5bfc\u56fe\u7247,  \u662f\u5426\u544a\u77e5\u4e3b\u64ad\u6ca1\u6709\u6536\u8d27\u5730\u5740 \u5f00\u5173   1\u5f00\u542f 0\u4e0d\u5f00\u542f
+livePointMark=1
+#\u662f\u5426\u5f00\u542f\u590d\u8d5b\u65b0\u624b\u6559\u7a0b\u5f00\u5173 0\u4e0d\u5f00\u542f 1 \u5f00\u542f
+personalMatchRetestSwitch=1
+personalMatchRetestRemark=\u767e\u57ce\u4e2d\u56fd\u661f\u98df\u5c1a\u5927\u8d5b\u8fdb\u5165\u6d77\u9009\u590d\u8d5b\u4e86,\n\u5feb\u5230\u9910\u5385\u8fdb\u884c\u76f4\u64ad\u5427!
+#\u662f\u5426\u5f00\u542f\u661f\u65f6\u5c1a\u5927\u8d5b\u5feb\u901f\u5165\u53e3 0\u4e0d\u5f00\u542f 1 \u5f00\u542f
+personalMatchFastEntrySwitch=1
+personalMatchFastEntryAction=action=app-vstar-entry
+#\u662f\u5426\u5f00\u542f\u4e3b\u64ad\u5b66\u5802\u5165\u53e3  0\u4e0d\u5f00\u542f 1 \u5f00\u542f
+personalAnchorSchoolSwitch=1
+personalAnchorSchoolUrl=http://xmnService.xmniao.com/xmnService/xmniao/match/newhand
+personalAnchorSchoolAction=
+personalAcnhorSchoolRemark=\u73a9\u8f6c\u9e1f\u4eba\u76f4\u64ad
+
+#\u662f\u5426\u5f00\u542f \u673a\u5668\u4eba\u5165\u573a\u63d0\u793a\uff0c0\u5173\u95ed\uff0c1\u5f00\u542f
+showRobotEnterRoom=1
+#\u663e\u793a\u6807\u7b7e,\u6700\u5c11\u9700\u8981\u7684\u76f4\u64ad\u6570\u91cf
+minLiveToShowTag=10
+#\u662f\u5426\u5f00\u542f\u4e2a\u4eba\u4e2d\u5fc3 \u7f8e\u98df\u4f53\u9a8c\u9986\u5165\u53e3 0 \u5173\u95ed 1 \u5f00\u542f
+experienceSwitch=0
+#\u65b0\u65f6\u5c1a\u5927\u8d5b\uff0c\u63a8\u8350\u4eba\u5956\u52b1\u5f00\u5173  0\u5173\u95ed  1\u5f00\u542f
+vstarRewardIssue=1
+#\u9996\u9875\u641c\u7d22\u662f\u5426\u663e\u793a\u70ed\u641c\u5173\u952e\u5b57  0\u4e0d\u663e\u793a(\u53ea\u663e\u793a\u540e\u53f0\u914d\u7f6e)  1\u663e\u793a
+showHotSearch=0

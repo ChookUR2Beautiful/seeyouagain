@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.catehome.dao.SpecilTopicConfigDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.catehome.entity.SpecilTopicConfig" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="video_url" property="videoUrl" jdbcType="VARCHAR" />
+    <result column="topic_type" property="topicType" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="is_nationwide" property="isNationwide" jdbcType="INTEGER" />
+    <result column="province_id" property="provinceId" jdbcType="INTEGER" />
+    <result column="city_id" property="cityId" jdbcType="INTEGER" />
+    <result column="home_sort" property="homeSort" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, title, description, content, video_url, topic_type, update_time,is_nationwide,province_id,city_id,home_sort
+  </sql>
+  <!-- 查询 -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_special_topic_config
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <!-- 删除 -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_special_topic_config
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <!-- 插入 -->
+  <insert id="insert" parameterType="com.xmniao.xmn.core.catehome.entity.SpecilTopicConfig" >
+    insert into t_special_topic_config (id, title, description, 
+      video_url, topic_type, update_time,content,is_nationwide,province_id,city_id,home_sort)
+    values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
+      #{videoUrl,jdbcType=VARCHAR}, #{topicType,jdbcType=INTEGER}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{content,jdbcType=LONGVARCHAR},#{isNationwide},#{provinceId},#{cityId},#{homeSort})
+  </insert>
+  <!-- 插入 -->
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.catehome.entity.SpecilTopicConfig" >
+    insert into t_special_topic_config
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="videoUrl != null" >
+        video_url,
+      </if>
+      <if test="topicType != null" >
+        topic_type,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+      <if test="isNationwide != null" >
+        is_nationwide,
+      </if>
+      <if test="provinceId != null" >
+        province_id,
+      </if>
+      <if test="cityId != null" >
+        city_id,
+      </if>
+      <if test="sort != null" >
+        sort,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="videoUrl != null" >
+        #{videoUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="topicType != null" >
+        #{topicType,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="isNationwide != null" >
+        #{isNationwide},
+      </if>
+      <if test="provinceId != null" >
+        #{provinceId},
+      </if>
+      <if test="cityId != null" >
+        #{cityId},
+      </if>
+      <if test="home_sort != null" >
+        #{homeSort},
+      </if>
+    </trim>
+  </insert>
+  <!-- 更新 -->
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.catehome.entity.SpecilTopicConfig" >
+    update t_special_topic_config
+    <set >
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="videoUrl != null" >
+        video_url = #{videoUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="topicType != null" >
+        topic_type = #{topicType,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="isNationwide != null">
+      is_nationwide=#{isNationwide},
+      </if>
+      <if test="provinceId != null">
+      province_id=#{provinceId},
+      </if>
+      <if test="cityId != null">
+      city_id=#{cityId},
+      </if>
+      <if test="homeSort != null">
+      home_sort=#{homeSort},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 更新 -->
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.catehome.entity.SpecilTopicConfig" >
+    update t_special_topic_config
+    set title = #{title,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      content = #{content,jdbcType=LONGVARCHAR},
+      video_url = #{videoUrl,jdbcType=VARCHAR},
+      topic_type = #{topicType,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      is_nationwide=#{isNationwide},
+      province_id=#{provinceId},
+      city_id=#{cityId},
+      home_sort=#{homeSort}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+</mapper>

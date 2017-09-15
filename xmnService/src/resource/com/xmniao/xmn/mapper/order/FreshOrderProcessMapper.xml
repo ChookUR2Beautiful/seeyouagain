@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xmniao.xmn.core.order.dao.FreshOrderProcessDao">
+
+	
+	<!-- 	主订单查询返回订单详细   realpayment 为计算实付金额 -->
+ 	<select id="queryOrderView" resultType="freshOrder" parameterType="map"> 
+ 		SELECT 
+ 		 	bid, uid, money as money , status,  integral ,payment, sdate, zdate,  
+ 		 	mobile,  username, address, freight ,max_integral, cuser, cdenom,
+ 		 	<![CDATA[ IF(money-cdenom<=0,freight,(money-integral+freight)) as realpayment ]]>
+ 		FROM 
+ 			t_bill_fresh 
+ 		WHERE 
+ 		    bid = #{bid}
+ 	</select>
+	
+	<!-- 	子订单查询返回详细信息情况  realpayment 为计算实付金额 -->
+  	<select id="queryOrderSubView" resultType="freshOrder" parameterType="map">  
+  	    SELECT  
+  			bfs.sub_order_sn as bid,   
+  			(bfs.total_amount) as money,   
+  			bfs.integral_amount as integral, 
+  			bfs.cash_amount as payment,  
+  			bfs.freight as freight,  
+  			bfs.status as status,  
+  			b.sdate ,  
+  			b.zdate , 
+  			b.username as username, 
+  			b.mobile as mobile,  
+  			b.address as address, 
+  			(bfs.cash_amount + bfs.balance_amount + bfs.freight) as realpayment, 
+  			1 as ordersource,
+  			b.cuser,
+  			b.cdenom
+  			
+			
+  		FROM  
+  			t_bill_fresh_sub bfs  
+  		LEFT JOIN t_bill_fresh b ON b.bid = bfs.order_sn  
+  		where sub_order_sn = #{bid}  
+  	</select>  
+	
+<!-- 	查询订单里的物流公司和单号 -->
+	<select id="queryOrderExpressview" resultType="orderExpress" parameterType="map">
+	    SELECT
+			bfs.courier_number,bfs.courier_type,exp.express_name
+		FROM
+			t_bill_fresh_sub bfs
+			LEFT JOIN t_express exp  ON bfs.courier_type = exp.express_value
+		WHERE 
+			sub_order_sn = #{bid}
+	</select>
+	
+	<!-- 	查询积分订单详情  -->
+	<select id="queryIntegralOrderList" resultType="integralOrder" parameterType="map">
+	    SELECT
+			b.bid, b.codeid, b.status, b.bstatus, b.sdate, b.integral, 
+			b.all_amount, b.sdate, b.sellername , b.sellerid, b.price,
+			(b.price-b.integral) as amounts ,
+			DATE_ADD(b.pay_time,INTERVAL 30 DAY) as endTime
+
+		FROM
+			t_bill_bargain b
+		WHERE
+			  b.bid = #{bid}
+	</select>
+	
+	
+	<!-- 	查询积分订单详情  -->
+	<select id="querySellerLogoUrl" resultType="map" parameterType="Long">
+	    SELECT
+			sp.picurl
+		FROM
+			t_seller_pic sp
+		WHERE
+			sp.islogo = 1
+			AND sp.sellerid = #{sellerid}
+	</select>
+	
+	<update id="editOrderForClose" parameterType="map">
+		UPDATE t_bill_fresh  SET status=#{status}  WHERE bid=#{bid}
+	</update>
+	
+	<!-- 查询积分订单使用的优惠券 -->
+	<select id="queryOrderCouponView" parameterType="map" resultType="map">
+		SELECT id,bid,cdid,cuser,serial,cdenom,ctype  FROM  t_cash_coupon WHERE bid=#{bid}
+	</select>
+	
+	<!-- 取消订单如果有使用优惠券则修未使用 -->
+	<update id="editOrderCouponForClose" parameterType="map">
+		UPDATE t_coupon_detail SET user_status=0 WHERE cdid=#{cdid}
+	</update>
+	
+	<!-- 	查询订单有无存在  -->
+	<select id="queryBillOrderCountByOrderNo" resultType="long" parameterType="String">
+	    SELECT count(1) FROM t_bill bill WHERE  bill.bid = #{bid}
+	</select>
+	
+	
+	<!-- 	查询美食订单积分推荐  -->
+	<select id="queryFreshProductListByIntegral" resultType="map" parameterType="map">
+	   SELECT 
+	   		pid,codeId,pname,goodsName,price,discount,integral,cash,isIntegral,CONCAT(#{fileUrl},breviary) as breviary ,store
+	   FROM t_product_info pro WHERE  dstatus = 0 AND pstatus = 1
+	   <if test="integral!=null and integral!='' or integral == 0 ">
+	   		<![CDATA[ AND integral <= #{integral}]]>
+	   </if>
+	   ORDER BY integral DESC  LIMIT ${(page-1)*limit},#{limit}
+	</select>
+	
+	
+	
+</mapper>

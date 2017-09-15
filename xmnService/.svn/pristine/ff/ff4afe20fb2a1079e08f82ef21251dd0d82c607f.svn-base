@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.xmer.dao.AbnormalDao">
+	
+
+   <!-- 查询是否有有未处理的投诉信息 -->
+  	<select id="queryAbnormalByUidAndSellerid" parameterType="map" resultType="int">
+  		select count(1) from t_abnormal_seller
+  		 where type=#{type} and sellerid=#{sellerid}  and uid=#{uid} and status=0
+  	</select>
+  	
+  	<!--添加报错或投诉信息  -->
+  	<insert id="addabnormal" parameterType="map">
+  	insert t_abnormal_seller(type,sellerid,sellername,uid,uname,phone,sdate,status)
+  	 values(#{type},#{sellerid},#{sellername},#{uid},#{uname},#{phone},#{sdate},#{status})
+  	
+  	</insert>
+   
+</mapper>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.integral.dao.IntegralMallDao">
+	<!-- 查询banenr图片 -->
+	<select id="queryBannerList" resultType="banner" parameterType="map">
+		SELECT * FROM t_banner WHERE position=#{position} AND status=#{status}
+	</select>
+	
+	<!-- 查询查询直播间banner广告:查询美食首页或者直播首页的重点推荐banner -->
+	<select id="queryLiveRoomBanner" resultType="banner">
+		SELECT
+			*
+		FROM
+			t_banner
+		WHERE
+			position IN (1, 4)
+		AND STATUS = 1
+		AND is_emphasis = 1
+	</select>
+
+	<!-- 查询推荐商品 -->
+	<select id="queryProductInfoList" resultType="productInfo" parameterType="map">
+		select * from t_product_info where (pstatus=1 OR pstatus=2) and choice=1  order by choiceSort desc,sales desc LIMIT ${(page-1)*limit},#{limit}
+	</select>
+	
+	<!-- 查询热门商品多少条 -->
+	<select id="getProductInfoCounts" resultType="int">
+		SELECT COUNT(1) FROM t_product_info WHERE pstatus=1 OR pstatus=2
+	</select>
+	
+	<!-- 查询热门分类 -->
+	<select id="queryTradeList" resultType="com.xmniao.xmn.core.seller.entity.Trade">
+		SELECT id tid,fid,show_small_img showSmallImg,name tradename  FROM t_fresh_type WHERE hot=1 AND dstatus=0 and type=2 ORDER BY sort DESC
+	</select>
+	
+	<!-- 根据积分商品id获取积分商品介绍 -->
+	<select id="queryProductInfo" resultType="productInfo" parameterType="String">
+		select * from t_product_info where codeId=#{codeid}
+	</select>
+	
+	<!-- 根据商品编号(codeid)获取积分商品图片 -->
+	<select id="queryProductImgByCodeId" resultType="map" parameterType="String">
+		SELECT ifnull(pic1,'') pic1,ifnull(pic2,'') pic2,ifnull(pic3,'') pic3,ifnull(pic4,'') pic4,ifnull(pic5,'') pic5,
+					ifnull(img1,'') img1,ifnull(img2,'') img2,ifnull(img3,'') img3,ifnull(img4,'') img4,ifnull(img5,'') img5,ifnull(img6,'') img6,
+					ifnull(img7,'') img7,ifnull(img8,'') img8,ifnull(img9,'') img9,ifnull(img10,'') img10,ifnull(img11,'') img11,ifnull(img12,'') img12,
+					ifnull(delivery,'') delivery,ifnull(servicenote,'') servicenote,ifnull(postnote,'') postnote
+		FROM t_product_details WHERE codeId=#{codeid}
+	</select>
+	
+	<!-- 根据用户id获取用户钱包id -->
+	<select id="queryWalletInfo" resultType="map" parameterType="int">
+		SELECT integral,accountid FROM b_wallet WHERE uid=#{uid}
+	</select>
+	
+	<!-- 根据用户钱包id获取用户钱包使用记录 -->
+	<select id="getWalletRecodeList" resultType="map" parameterType="map">
+		SELECT integral,IFNULL(sdate,'') sdate,IFNULL(description,'') description 
+		FROM b_wallet_record 
+		WHERE accountid=#{accountid} AND integral != 0 
+		ORDER BY sdate DESC LIMIT ${(page-1)*limit},#{limit}
+	</select>
+	
+	<!-- 获取积分消费用户记录 -->
+	<select id="getIntegralDynamicList" resultType="map">
+		SELECT sdate,abs(integral) integral,accountid FROM b_wallet_record WHERE rtype = 5 	and integral != 0 ORDER BY sdate DESC LIMIT 0,20
+	</select>
+	
+	<!-- 根据钱包id获取积分消费用户的id -->
+	<select id="getUidList" resultType="map" parameterType="map">
+		select uid,accountid from b_wallet where accountid in
+		<foreach collection="list" index="index" item="list" open="(" separator="," close=")">
+		#{list.accountid}
+		</foreach>
+	</select>
+	
+	<!-- 根据用户id查询用户手机号码 -->
+	<select id="getXmerPhoneByUid" resultType="map" parameterType="map">
+		select uid,ifnull(phone,'') phone from b_urs_info where uid in
+		<foreach collection="list" index="index" item="list" open="(" separator="," close=")">
+		#{list.uid}
+		</foreach>
+	</select>
+	
+	<!-- 查询费模版信息 -->
+	<select id="getPostage" parameterType="int" resultType="map">
+	select 
+	ifNull(b.amount,0) amount,
+	ifNull(b.weight,0) weight from t_postage_template a ,t_postage_free_rule b where a.tid=b.tid and  a.tid=#{tid} order by a.tid desc limit 0,1
+	</select>
+	
+	
+</mapper>

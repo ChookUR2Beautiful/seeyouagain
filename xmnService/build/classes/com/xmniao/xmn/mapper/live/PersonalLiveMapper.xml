@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.personal.dao.PersonalLiveDao">
+
+    <!-- 查询主播的直播动态 -->
+    <!-- v3.6 开始时间降序 -->
+    <select id="queryLiveRecordDynamic" resultType="map" parameterType="map">
+        SELECT
+            <if test="longitude!=null and latitude!=null">
+                ifnull(ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{latitude}*PI()/180-a.latitude*PI()/180)/2),2)+COS(#{latitude}*PI()/180)*COS(a.latitude*PI()/180)*POW(SIN((#{longitude}*PI()/180-a.longitude*PI()/180)/2),2)))*1000),'')
+                as `distance`,
+            </if>
+            a.*
+        FROM
+            (
+                (
+                    SELECT
+                        r.*, f.stock AS preSellStock,
+                        c.cname AS preSellTitle,
+                        c.denomination AS ticketMoney,
+                        0 AS sort
+                    FROM
+                        t_live_record r
+                    LEFT JOIN t_fans_coupon_anchor_ref f ON r.id = f.record_id
+                    LEFT JOIN t_coupon c ON f.cid = c.cid
+                    WHERE
+                        r.anchor_id = #{anchorId}
+                    AND r.zhibo_type IN (0,1)
+                )
+                UNION
+                    (
+                        SELECT
+                            *, 0 AS preSellStock,
+                            '' AS preSellTitle,
+                            0 AS ticketMoney,
+                            1 AS sort
+                        FROM
+                            t_live_record
+                        WHERE
+                            anchor_id = #{anchorId}
+                        AND zhibo_type IN (3, 4, 5)
+                        AND live_start_type = 0
+                    )
+            ) a
+        WHERE 
+            a.status = 1
+            <if test="maxTime!=null">
+                <![CDATA[
+                AND start_date < DATE_FORMAT(#{maxTime}, '%Y-%m-%d %H:%i:%s')
+                ]]>
+            </if>
+        AND 
+            a.id not in  (SELECT id FROM t_live_record  WHERE telphones != '' AND telphones not like '%${phone}%' )
+        ORDER BY
+            start_date desc
+        LIMIT 0, #{limit}
+    </select>
+
+
+    <!-- 查询参加过的直播活动列表(购买过粉丝卷,直播中置顶，直播预售优先排序，回放记录按时间排序) -->
+    <!-- v3.6 开始时间降序 -->
+    <select id="queryAttendLiveRecordList" resultType="map" parameterType="map">
+        SELECT
+            <if test="longitude!=null and latitude!=null">
+                ifnull(ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{latitude}*PI()/180-a.latitude*PI()/180)/2),2)+COS(#{latitude}*PI()/180)*COS(a.latitude*PI()/180)*POW(SIN((#{longitude}*PI()/180-a.longitude*PI()/180)/2),2)))*1000),'')
+                as `distance`,
+            </if>
+            a.*
+        FROM
+            (
+                SELECT
+                    r.*, f.stock AS preSellStock,
+                    c.cname AS preSellTitle,
+                    c.denomination AS ticketMoney,
+                    0 AS sort
+                FROM
+                    t_live_record r
+                LEFT JOIN t_fans_coupon_anchor_ref f ON r.id = f.record_id
+                LEFT JOIN t_coupon c ON f.cid = c.cid
+                WHERE
+                    zhibo_type IN (0, 1)
+                AND id IN (
+                    SELECT DISTINCT
+                        record_id AS liveRecordId
+                    FROM
+                        t_coupon_order
+                    WHERE
+                        uid = #{uid}
+                    AND `status` = 1
+                )
+                UNION
+                    SELECT
+                        *, 0 AS preSellStock,
+                        '' AS preSellTitle,
+                        0 AS ticketMoney,
+                        1 AS sort
+                    FROM
+                        t_live_record
+                    WHERE
+                        zhibo_type IN (3, 4, 5)
+                    AND id IN (
+                        SELECT DISTINCT
+                            record_id AS liveRecordId
+                        FROM
+                            t_coupon_order
+                        WHERE
+                            uid = #{uid}
+                        AND `status` = 1
+                    )
+            ) a
+            WHERE 
+                a.status = 1
+                <if test="maxTime!=null">
+                    <![CDATA[
+                    AND start_date < DATE_FORMAT(#{maxTime}, '%Y-%m-%d %H:%i:%s')
+                    ]]>
+                </if>
+            AND 
+                a.id not in  (SELECT id FROM t_live_record  WHERE telphones != '' AND telphones not like '%${phone}%' )
+            ORDER BY
+                start_date desc
+            LIMIT 0, #{limit}
+    </select>
+
+    <!-- 获取点评记录 -->
+    <select id="getCommentRecord" parameterType="map" resultType="map">
+        select 
+        id, sellerid, sellername, content, create_time,record_type
+        from t_experience_comment 
+        where uid = #{uid} and review_state = 1
+        <if test="maxTime!=null">
+            <![CDATA[
+            and create_time < DATE_FORMAT(#{maxTime}, '%Y-%m-%d %H:%i:%s')
+            ]]>
+        </if>
+        order by create_time desc
+        LIMIT 0, #{limit}
+    </select>
+
+    <!-- 统计点评图片 -->
+    <select id="getCommentPicNumber" parameterType="map" resultType="map">
+        SELECT COUNT(id) as number, comment_id FROM t_experience_comment_media WHERE media_type = 1 
+        <if test="idList != null">
+            and comment_id in 
+            <foreach collection="idList" item="id" open="(" close=")" separator=",">
+            #{id}
+            </foreach>
+        </if> 
+        GROUP BY comment_id
+    </select>
+
+    <!-- 获取点评图片 -->
+    <select id="getCommentPicByIdList" parameterType="map" resultType="map">
+        SELECT id, comment_id, media_url, media_type, create_time, sort FROM t_experience_comment_media WHERE
+        comment_id in 
+        <foreach collection="idList" item="id" open="(" close=")" separator=",">
+        #{id}
+        </foreach>
+        order by media_type desc
+    </select>
+
+    <!-- 统计点评数量 -->
+    <select id="selectCommentRecordCount" parameterType="int" resultType="int">
+        select count(1) from t_experience_comment 
+        where uid = #{uid} and review_state = 1 
+    </select>
+
+</mapper>

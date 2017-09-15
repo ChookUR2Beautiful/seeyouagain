@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.market.dao.MarketReceivAddressDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.market.entity.pay.ReceivingAddress" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="region" property="region" jdbcType="INTEGER" />
+    <result column="province" property="province" jdbcType="VARCHAR" />
+    <result column="provinceId" property="provinceid" jdbcType="INTEGER" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="cityId" property="cityid" jdbcType="INTEGER" />
+    <result column="areaname" property="areaname" jdbcType="VARCHAR" />
+    <result column="areaId" property="areaid" jdbcType="INTEGER" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="zipCode" property="zipcode" jdbcType="INTEGER" />
+    <result column="phoneId" property="phoneid" jdbcType="VARCHAR" />
+    <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="dstatus" property="dstatus" jdbcType="INTEGER" />
+    <result column="isDefault" property="isdefault" jdbcType="INTEGER" />
+    <result column="rdate" property="rdate" jdbcType="TIMESTAMP" />
+    <result column="udate" property="udate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, uid, username, region, province, provinceId, city, cityId, areaname, areaId, 
+    address, zipCode, phoneId, tel, dstatus, isDefault, rdate, udate
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_receiving_address
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_receiving_address
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.market.entity.pay.ReceivingAddress" >
+    insert into t_receiving_address (id, uid, username, 
+      region, province, provinceId, 
+      city, cityId, areaname, 
+      areaId, address, zipCode, 
+      phoneId, tel, dstatus, 
+      isDefault, rdate, udate
+      )
+    values (#{id,jdbcType=INTEGER}, #{uid,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, 
+      #{region,jdbcType=INTEGER}, #{province,jdbcType=VARCHAR}, #{provinceid,jdbcType=INTEGER}, 
+      #{city,jdbcType=VARCHAR}, #{cityid,jdbcType=INTEGER}, #{areaname,jdbcType=VARCHAR}, 
+      #{areaid,jdbcType=INTEGER}, #{address,jdbcType=VARCHAR}, #{zipcode,jdbcType=INTEGER}, 
+      #{phoneid,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR}, #{dstatus,jdbcType=INTEGER}, 
+      #{isdefault,jdbcType=INTEGER}, #{rdate,jdbcType=TIMESTAMP}, #{udate,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.market.entity.pay.ReceivingAddress" >
+    insert into t_receiving_address
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="username != null" >
+        username,
+      </if>
+      <if test="region != null" >
+        region,
+      </if>
+      <if test="province != null" >
+        province,
+      </if>
+      <if test="provinceid != null" >
+        provinceId,
+      </if>
+      <if test="city != null" >
+        city,
+      </if>
+      <if test="cityid != null" >
+        cityId,
+      </if>
+      <if test="areaname != null" >
+        areaname,
+      </if>
+      <if test="areaid != null" >
+        areaId,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="zipcode != null" >
+        zipCode,
+      </if>
+      <if test="phoneid != null" >
+        phoneId,
+      </if>
+      <if test="tel != null" >
+        tel,
+      </if>
+      <if test="dstatus != null" >
+        dstatus,
+      </if>
+      <if test="isdefault != null" >
+        isDefault,
+      </if>
+      <if test="rdate != null" >
+        rdate,
+      </if>
+      <if test="udate != null" >
+        udate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="region != null" >
+        #{region,jdbcType=INTEGER},
+      </if>
+      <if test="province != null" >
+        #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="provinceid != null" >
+        #{provinceid,jdbcType=INTEGER},
+      </if>
+      <if test="city != null" >
+        #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="cityid != null" >
+        #{cityid,jdbcType=INTEGER},
+      </if>
+      <if test="areaname != null" >
+        #{areaname,jdbcType=VARCHAR},
+      </if>
+      <if test="areaid != null" >
+        #{areaid,jdbcType=INTEGER},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="zipcode != null" >
+        #{zipcode,jdbcType=INTEGER},
+      </if>
+      <if test="phoneid != null" >
+        #{phoneid,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null" >
+        #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="dstatus != null" >
+        #{dstatus,jdbcType=INTEGER},
+      </if>
+      <if test="isdefault != null" >
+        #{isdefault,jdbcType=INTEGER},
+      </if>
+      <if test="rdate != null" >
+        #{rdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="udate != null" >
+        #{udate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.market.entity.pay.ReceivingAddress" >
+    update t_receiving_address
+    <set >
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="username != null" >
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="region != null" >
+        region = #{region,jdbcType=INTEGER},
+      </if>
+      <if test="province != null" >
+        province = #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="provinceid != null" >
+        provinceId = #{provinceid,jdbcType=INTEGER},
+      </if>
+      <if test="city != null" >
+        city = #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="cityid != null" >
+        cityId = #{cityid,jdbcType=INTEGER},
+      </if>
+      <if test="areaname != null" >
+        areaname = #{areaname,jdbcType=VARCHAR},
+      </if>
+      <if test="areaid != null" >
+        areaId = #{areaid,jdbcType=INTEGER},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="zipcode != null" >
+        zipCode = #{zipcode,jdbcType=INTEGER},
+      </if>
+      <if test="phoneid != null" >
+        phoneId = #{phoneid,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null" >
+        tel = #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="dstatus != null" >
+        dstatus = #{dstatus,jdbcType=INTEGER},
+      </if>
+      <if test="isdefault != null" >
+        isDefault = #{isdefault,jdbcType=INTEGER},
+      </if>
+      <if test="rdate != null" >
+        rdate = #{rdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="udate != null" >
+        udate = #{udate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.market.entity.pay.ReceivingAddress" >
+    update t_receiving_address
+    set uid = #{uid,jdbcType=INTEGER},
+      username = #{username,jdbcType=VARCHAR},
+      region = #{region,jdbcType=INTEGER},
+      province = #{province,jdbcType=VARCHAR},
+      provinceId = #{provinceid,jdbcType=INTEGER},
+      city = #{city,jdbcType=VARCHAR},
+      cityId = #{cityid,jdbcType=INTEGER},
+      areaname = #{areaname,jdbcType=VARCHAR},
+      areaId = #{areaid,jdbcType=INTEGER},
+      address = #{address,jdbcType=VARCHAR},
+      zipCode = #{zipcode,jdbcType=INTEGER},
+      phoneId = #{phoneid,jdbcType=VARCHAR},
+      tel = #{tel,jdbcType=VARCHAR},
+      dstatus = #{dstatus,jdbcType=INTEGER},
+      isDefault = #{isdefault,jdbcType=INTEGER},
+      rdate = #{rdate,jdbcType=TIMESTAMP},
+      udate = #{udate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 通过用户ID查询收货地址列表 -->
+  <select id="findAllByUid" resultMap="BaseResultMap" parameterType="map">
+  	 select 
+   		<include refid="Base_Column_List" />
+    from t_receiving_address
+    where uid=#{uid} and dstatus=#{dstatus}
+  </select>
+  
+  <!-- 通过用户ID查询收货地址信息 -->
+  <select id="findOneByUid" resultMap="BaseResultMap" parameterType="map">
+  	select 
+   		<include refid="Base_Column_List" />
+    from t_receiving_address
+    where uid=#{uid} and dstatus=#{dstatus} and isDefault=#{isDefault}
+  </select>
+  
+  <!-- 统计用户收货地址的数量 -->
+  <select id="sumReceivingAddressCounts" resultType="int" parameterType="map">
+  	select 
+   		count(1)
+    from t_receiving_address
+    where uid=#{uid} and dstatus=#{dstatus}
+  </select>
+  
+  <!-- 查询所有非默认状态的收货地址信息 -->
+  <select id="findAllIsNotDefaultByUid" resultMap="BaseResultMap" parameterType="map">
+  	select 
+   		<include refid="Base_Column_List" />
+    from t_receiving_address
+    where uid=#{uid} and dstatus=#{dstatus} and isDefault=#{isDefault} order by rdate desc
+  </select>
+</mapper>

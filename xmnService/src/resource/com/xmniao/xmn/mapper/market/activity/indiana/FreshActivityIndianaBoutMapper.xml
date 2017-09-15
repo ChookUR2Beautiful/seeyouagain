@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.market.dao.FreshActivityIndianaBoutDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.market.entity.activity.indiana.FreshActivityIndianaBout" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="activity_id" property="activityId" jdbcType="INTEGER" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="term_time" property="termTime" jdbcType="TIMESTAMP" />
+    <result column="codeId" property="codeid" jdbcType="BIGINT" />
+    <result column="bout_th" property="boutTh" jdbcType="INTEGER" />
+    <result column="sale_num" property="saleNum" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="robot_id" property="robotId" jdbcType="INTEGER" />
+    <result column="give_type" property="giveType" jdbcType="INTEGER" />
+    <result column="luckynum" property="luckynum" jdbcType="BIGINT" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, activity_id, end_time, term_time, codeId, bout_th, sale_num, uid, robot_id, give_type, 
+    luckynum, status, create_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_fresh_activity_indiana_bout
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+    <select id="selectByCurrentBout" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM t_fresh_activity_indiana_bout
+        WHERE   activity_id = #{activityId}
+        AND status = 0
+        ORDER BY create_time desc
+        LIMIT 0,1
+    </select>
+    <resultMap id="selectIndianaInfoByBoutResultMap" type="com.xmniao.xmn.core.market.entity.activity.indiana.IndianaRecord">
+        <result column="image"          property="image"       javaType="String"    />
+        <result column="title"          property="title"       javaType="String"    />
+        <result column="point"          property="point"       javaType="Integer"   />
+        <result column="indianaId"      property="indianaId"   javaType="Integer"   />
+        <result column="status"         property="status"      javaType="Integer"   />
+        <result column="winnerName"     property="winnerName"  javaType="String"    />
+        <result column="winnerUid"      property="winnerUid"   javaType="Integer"   />
+        <result column="winnerNum"      property="winnerNum"   javaType="Long"      />
+        <result column="saleNum"        property="saleNum"     javaType="Integer"   />
+        <result column="veces"          property="veces"       javaType="Integer"   />
+        <result column="giveType"       property="giveType"    javaType="Integer"   />
+    </resultMap>
+    <select id="selectIndianaInfoByBout"  resultMap="selectIndianaInfoByBoutResultMap">
+        SELECT
+        p.breviary      image,      <!--商品缩略图 -->
+        indiana.title   title,      <!--夺宝活动标题 -->
+        indiana.point   point,      <!--夺宝总需份数 -->
+        indiana.id      indianaId,  <!--夺宝活动传 -->
+        bout.status     status,     <!--夺宝状态 0:夺宝中 1:已被夺 2:已退还库存(机器人获奖) 3:终止 -->
+        bout.name       winnerName, <!--获奖者名 -->
+        bout.uid        winnerUid,  <!--获奖者id -->
+        bout.luckynum   winnerNum,  <!--获奖夺宝号码 -->
+        bout.sale_num   saleNum,    <!--改期次已售份数 -->
+        bout.veces      veces,      <!--获奖者参数次数 -->
+        bout.give_type  giveType    <!--获奖者类型 0:用户  1:机器人-->
+        FROM t_fresh_activity_indiana_bout bout
+            INNER JOIN t_fresh_activity_indiana  indiana ON bout.activity_id = indiana.id
+            INNER JOIN t_product_info p ON indiana.codeId = p.codeId
+        WHERE bout.id = #{boutId}
+    </select>
+    <select id="selectAliveBout" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM t_fresh_activity_indiana_bout
+        WHERE status = 0
+    </select>
+    <select id="selectSaleoutBout" resultMap="BaseResultMap">
+        SELECT *
+        FROM t_fresh_activity_indiana_bout bout INNER JOIN t_fresh_activity_indiana indiana ON indiana.id = bout.activity_id
+        WHERE bout.sale_num >= indiana.point
+        AND indiana.status = 0
+        AND bout.status = 0
+        AND indiana.bout_residue >= 1
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_fresh_activity_indiana_bout
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.market.entity.activity.indiana.FreshActivityIndianaBout" >
+    insert into t_fresh_activity_indiana_bout (id, activity_id, end_time, 
+      term_time, codeId, bout_th, 
+      sale_num, uid, robot_id, 
+      give_type, luckynum, status, 
+      create_time, update_time)
+    values (#{id,jdbcType=INTEGER}, #{activityId,jdbcType=INTEGER}, #{endTime,jdbcType=TIMESTAMP}, 
+      #{termTime,jdbcType=TIMESTAMP}, #{codeid,jdbcType=BIGINT}, #{boutTh,jdbcType=INTEGER}, 
+      #{saleNum,jdbcType=INTEGER}, #{uid,jdbcType=INTEGER}, #{robotId,jdbcType=INTEGER}, 
+      #{giveType,jdbcType=INTEGER}, #{luckynum,jdbcType=BIGINT}, #{status,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.market.entity.activity.indiana.FreshActivityIndianaBout"
+            useGeneratedKeys="true" keyColumn="id">
+    insert into t_fresh_activity_indiana_bout
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="activityId != null" >
+        activity_id,
+      </if>
+      <if test="endTime != null" >
+        end_time,
+      </if>
+      <if test="termTime != null" >
+        term_time,
+      </if>
+      <if test="codeid != null" >
+        codeId,
+      </if>
+      <if test="boutTh != null" >
+        bout_th,
+      </if>
+      <if test="saleNum != null" >
+        sale_num,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="robotId != null" >
+        robot_id,
+      </if>
+      <if test="giveType != null" >
+        give_type,
+      </if>
+      <if test="luckynum != null" >
+        luckynum,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="activityId != null" >
+        #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="termTime != null" >
+        #{termTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="codeid != null" >
+        #{codeid,jdbcType=BIGINT},
+      </if>
+      <if test="boutTh != null" >
+        #{boutTh,jdbcType=INTEGER},
+      </if>
+      <if test="saleNum != null" >
+        #{saleNum,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="robotId != null" >
+        #{robotId,jdbcType=INTEGER},
+      </if>
+      <if test="giveType != null" >
+        #{giveType,jdbcType=INTEGER},
+      </if>
+      <if test="luckynum != null" >
+        #{luckynum,jdbcType=BIGINT},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.market.entity.activity.indiana.FreshActivityIndianaBout" >
+    update t_fresh_activity_indiana_bout
+    <set >
+      <if test="activityId != null" >
+        activity_id = #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="termTime != null" >
+        term_time = #{termTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="codeid != null" >
+        codeId = #{codeid,jdbcType=BIGINT},
+      </if>
+      <if test="boutTh != null" >
+        bout_th = #{boutTh,jdbcType=INTEGER},
+      </if>
+      <if test="saleNum != null" >
+        sale_num = #{saleNum,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="robotId != null" >
+        robot_id = #{robotId,jdbcType=INTEGER},
+      </if>
+      <if test="giveType != null" >
+        give_type = #{giveType,jdbcType=INTEGER},
+      </if>
+      <if test="luckynum != null" >
+        luckynum = #{luckynum,jdbcType=BIGINT},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.market.entity.activity.indiana.FreshActivityIndianaBout" >
+    update t_fresh_activity_indiana_bout
+    set activity_id = #{activityId,jdbcType=INTEGER},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      term_time = #{termTime,jdbcType=TIMESTAMP},
+      codeId = #{codeid,jdbcType=BIGINT},
+      bout_th = #{boutTh,jdbcType=INTEGER},
+      sale_num = #{saleNum,jdbcType=INTEGER},
+      uid = #{uid,jdbcType=INTEGER},
+      robot_id = #{robotId,jdbcType=INTEGER},
+      give_type = #{giveType,jdbcType=INTEGER},
+      luckynum = #{luckynum,jdbcType=BIGINT},
+      status = #{status,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+    <update id="updatePoint">
+        UPDATE t_fresh_activity_indiana_bout
+        SET sale_num = sale_num + #{point}
+        WHERE id = #{boutId}
+    </update>
+    <update id="updateIndianaAndOldBout">
+        UPDATE t_fresh_activity_indiana_bout bout INNER JOIN t_fresh_activity_indiana indiana
+            ON indiana.id = bout.activity_id
+            SET bout.status = 4, indiana.bout_residue = indiana.bout_residue-1
+        WHERE bout.id = #{bout.id}
+    </update>
+</mapper>

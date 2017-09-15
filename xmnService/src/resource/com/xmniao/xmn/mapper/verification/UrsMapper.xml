@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!-- 用户数据映射 -->
+<mapper namespace="com.xmniao.xmn.core.verification.dao.UrsDao">
+
+	<resultMap id="BaseResultMap" type="com.xmniao.xmn.core.verification.entity.Urs" >
+	    <id column="uid" property="uid" jdbcType="INTEGER" />
+	    <result column="uname" property="uname" jdbcType="VARCHAR" />
+	    <result column="password" property="password" jdbcType="VARCHAR" />
+	    <result column="email" property="email" jdbcType="VARCHAR" />
+	    <result column="sign" property="sign" jdbcType="VARCHAR" />
+	    <result column="nname" property="nname" jdbcType="VARCHAR" />
+	    <result column="regtime" property="regtime" jdbcType="DATE" />
+	    <result column="regip" property="regip" jdbcType="VARCHAR" />
+	    <result column="regcity" property="regcity" jdbcType="INTEGER" />
+	    <result column="regarea" property="regarea" jdbcType="INTEGER" />
+	    <result column="regzoneid" property="regzoneid" jdbcType="INTEGER" />
+<!-- 	    <result column="openid" property="openid" jdbcType="VARCHAR" /> -->
+	    <result column="phone" property="phone" jdbcType="VARCHAR" />
+	    <result column="status" property="status" jdbcType="INTEGER" />
+  </resultMap>
+
+	<!-- 根据uid查询直播观众的信息  PHP登录将全表缓存 兼容旧版接口   -->
+	<select id="queryBursInfoByUid" parameterType="map" resultType="map">
+		SELECT  * FROM b_urs  WHERE uid=#{uid}
+	</select>
+	
+
+	<select id="getUrsByUname" resultMap="BaseResultMap" parameterType="string">
+     <![CDATA[ 
+		SELECT * from b_urs u where u.uname =  #{uname}  limit 0,1
+	 ]]>
+	</select>
+	
+	<!-- 根据用户id查询用户信息 -->
+	<select id="queryUrsByUid" resultMap="BaseResultMap" parameterType="int">
+     <![CDATA[ 
+		SELECT * from b_urs u where u.uid =  #{uid}  limit 0,1
+	 ]]>
+	</select>
+	
+	<!-- 添加用户信息 系统自动注册 -->
+	<insert id="addUrs"  parameterType="map">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="uid">
+			SELECT LAST_INSERT_ID() AS uid
+		</selectKey>
+		<![CDATA[ 
+			insert into b_urs(uname,phone,password,regtime) values(#{uname},#{phone},#{password},#{regtime})
+		 ]]>
+	</insert>
+	
+	<!-- 添加用户信息 系统自动注册 -->
+	<insert id="addUrsByEntity"  parameterType="com.xmniao.xmn.core.verification.entity.Urs">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="uid">
+			SELECT LAST_INSERT_ID() AS ID
+		</selectKey>
+		<![CDATA[ 
+			INSERT INTO
+				 b_urs(uname,phone,password,regtime,regcity,regtype,phone_type,app_version,regzoneid) 
+				 VALUES(#{uname,jdbcType=VARCHAR},#{phone,jdbcType=VARCHAR},#{password,jdbcType=VARCHAR},#{regtime,jdbcType=TIMESTAMP},
+				 	#{regcity,jdbcType=INTEGER},#{regtype,jdbcType=INTEGER},#{phoneType,jdbcType=INTEGER},
+				 	#{appVersion,jdbcType=VARCHAR},#{regzoneid,jdbcType=INTEGER})
+		 ]]>
+	</insert>
+	
+	<!-- 更新用户信息资料 -->
+	<update id="updateUrsByUid" parameterType="map">
+	    update b_urs
+	    <set >
+	      <if test="nname != null">
+	      	nname=#{nname}
+	      </if>
+	      <if test="phone != null" >
+	      	phone=#{phone}
+	      </if>
+	      <if test="sign != null" >
+	      	sign=#{sign}
+	      </if>
+	     <if test="email != null" >
+	      	email=#{email}
+	      </if>
+	      <if test="password != null and password != ''" >
+	      	password=#{password}
+	      </if>
+	    </set>
+	    where uid = #{uid}
+	  </update>
+		<!-- 更新主播资料-->
+	<update id="updateAnchorByUid" parameterType="map">
+	    update b_live_anchor
+	    <set >
+	      <if test="nname != null">
+	      	nickname=#{nname}
+	      </if>
+	        <if test="phone != null" >
+	      	phone=#{phone}
+	      </if>
+	       <if test="age != null" >
+	      	age=#{age}
+	      </if>
+	       <if test="name != null" >
+	      	name=#{name}
+	      </if>
+	       <if test="avatar != null" >
+	      	name=#{avatar}
+	      </if>
+	      <if test="wechatno != null" >
+	      	weixin=#{wechatno}
+	      </if>
+	      <if test="sex != null" >
+	      	sex=#{sex}
+	      </if>
+	        <if test="sign != null" >
+	      	self_signature=#{sign}
+	      </if>
+	    </set>
+	    where uid = #{uid}
+	  </update>
+	  
+ 	<!-- 查询用户是否有收藏改店铺 -->
+ 	<select id="isCollectSeller" parameterType="map" resultType="int">
+ 	select count(1) from  t_urs_collect where uid=#{uid} and sellerid=#{sellerid} and type = 0
+ 	</select>
+ 	
+ 	<!-- 批量查询用户是否收藏过这些店铺 -->
+ 	<select id="queryCollectCountBySellerIdsAndUid" parameterType="map" resultType="map">
+ 	SELECT 
+		sellerid AS sellerId,
+		CASE WHEN count(sellerid) > 0 THEN 1 ELSE 0 END AS isCollect 
+	FROM 
+		t_urs_collect 
+	WHERE 
+		uid=#{uid} 
+	AND 
+		type = 0
+	AND 
+		sellerid IN
+	 <foreach item="sellerId" index="index" collection="sellerIds" open="(" separator="," close=")">
+	         	#{sellerId}
+	 </foreach>
+	 GROUP BY sellerid
+ 	</select>
+ 	
+ 	<!-- 查询用户是否有关注改用户 -->
+ 	<select id="ursCollectUrsCount" parameterType="map" resultType="int">
+ 	select count(1) from  t_live_focus where liver_str_id=#{uid} and liver_end_id=#{cuid} 
+ 	</select>
+ 	
+ 	 	<!-- 用户关注 -->
+ 	<insert id="ursColletUrsInsert" parameterType="map">
+ 		insert into t_live_focus(liver_str_id,liver_end_id,str_uid,end_uid,create_time,update_time) values(#{uid},#{cuid},#{strUid},#{endUid},#{cdate},#{cdate})
+ 	</insert>
+ 	
+ 	  	<!-- 用户收藏店铺 -->
+ 	<insert id="ursCollectSellerInsert" parameterType="map">
+ 		insert into t_urs_collect(uid,sellerid,create_time,update_time,type) values(#{uid},#{sellerid},#{cdate},#{cdate},#{type})
+ 	</insert>
+ 	
+ 	<!-- 查询两个用户是否在同一个店消费过 -->
+ 	<select id="isInSellerCons" parameterType="map" resultType="int">
+ 		select   count(1) from 
+		(select distinct uid,sellerid  from  t_bill where uid=#{uid} ) a
+		join (select distinct uid,sellerid  from  t_bill where uid=#{cuid} ) b on a.sellerid=b.sellerid
+ 	</select>
+ 	
+ 	<!-- 查询两个用户是否在同一关注用户 -->
+ 	<select id="ursColletUrsCount" parameterType="map" resultType="int">
+ 		select   count(1) from 
+		(select  liver_str_id uid,liver_end_id cuid  from  t_live_focus where liver_str_id=#{uid} ) a
+		join (select liver_str_id uid, liver_end_id cuid  from  t_live_focus where liver_str_id=#{cuid} ) b on a.cuid=b.cuid
+ 	</select>
+ 	
+ 	<!-- 查询两个用户是否有同一收藏用户 -->
+ 	<select id="ursCollectSellerCount" parameterType="map" resultType="int">
+ 	select   count(1) from 
+	(select  uid,sellerid  from  t_urs_collect where uid= #{uid} ) a
+	join (select  uid,sellerid  from  t_urs_collect where uid=#{cuid} ) b on a.sellerid=b.sellerid
+ 	</select>
+ 	
+ 	<!-- 查询两个用户是否有同一浏览记录 -->
+ 	<select id="ursBrowsedCount" parameterType="map" resultType="int">
+	select  count(1) from 
+	(select uid,sellerid  from  t_seller_browsed where uid=#{uid} ) a
+	join (select  uid,sellerid  from  t_seller_browsed where uid=#{cuid} ) b on a.sellerid=b.sellerid
+ 	</select>
+ 	
+ 	<!-- 查询浏览记录数量 -->
+ 	<select id="queryBrowsedCountByUidAndSellerid" parameterType="map" resultType="int">
+ 		select count(1) from t_seller_browsed where uid=#{uid} and sellerid=#{sellerid}
+ 	</select>
+ 	
+ 	<!-- 批量查询是否浏览过这些店铺-->
+ 	<select id="queryBrowsedCountBySellerIdsAndUid" parameterType="map" resultType="map">
+ 	SELECT 
+		sellerid AS sellerId,
+		CASE WHEN count(sellerid) > 0 THEN 1 ELSE 0 END AS isBrowsed 
+	FROM 
+		t_seller_browsed 
+	WHERE 
+		uid=#{uid} 
+	AND 
+		sellerid IN
+	 <foreach item="sellerId" index="index" collection="sellerIds" open="(" separator="," close=")">
+	         	#{sellerId}
+	 </foreach>
+	 GROUP BY sellerid
+ 	</select>
+ 	
+ 	<!-- 取消用户收藏 -->
+ 	<delete id="deleteUrsCollectByUidAndSellerid" parameterType="map">
+ 		delete from t_urs_collect where type=0 and sellerid=#{sellerid} and uid=#{uid}
+ 	</delete>
+ 	
+ 	<!-- 取消用户关注 -->
+	<delete id="deleteLiveFocus" parameterType="map">
+	delete from t_live_focus where  liver_str_id=#{uid} and liver_end_id=#{cuid}
+	</delete>
+		
+	<!-- 查询我关注的所有用户信息 -->
+	<select id="findMyFocusByUid" resultType="map" parameterType="int">
+		select liver_str_id as uid,liver_end_id as fuid from t_live_focus where liver_str_id=#{uid}
+	</select>
+	
+	<select id="findUserFollowsByUid" resultType="int">
+		SELECT end_uid FROM t_live_focus WHERE str_uid=#{uid} 
+		ORDER BY create_time DESC 
+		LIMIT ${(page-1)*pageSize},${pageSize}
+	</select>
+	
+	<!-- 批量分页查询用户信息 -->
+	<select id="findUrsByPage" resultMap="BaseResultMap">
+		SELECT * FROM b_urs WHERE STATUS=1 AND nname IS NOT NULL AND nname != '' AND uid in
+		<foreach collection="fuids" index="index" item="fuids" open="(" separator="," close=")">
+			#{fuids}
+		</foreach>
+		LIMIT ${(page-1)*pageSize},${pageSize}
+	</select>
+	
+	<!-- 	查询新用户注册礼包 -->
+	<select id="queryUserRegisterGift" resultType="map">
+		SELECT * FROM t_register_gift WHERE 1=1
+	</select>
+	
+	<!-- 	查询新用户注册礼包 -->
+	<select id="deleteUrsByUid" parameterType="int">
+		delete b_urs where uid = #{uid}
+	</select>
+	
+</mapper>

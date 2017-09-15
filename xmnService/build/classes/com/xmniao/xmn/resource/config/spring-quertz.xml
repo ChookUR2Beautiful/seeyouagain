@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 	
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-3.2.xsd 
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-3.2.xsd 
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+	
+	
+	<!-- 修改赠送礼物 记录表 主播接收鸟币状态 -->
+	<bean id="modifyAnchorGiftBirdEgg" class="com.xmniao.xmn.core.timer.ModifyAnchorGiftBirdEggQuertz"/>
+	<!--  修改赠送礼物 记录表   定时任务执行方法 -->
+	<bean id="giftsToBirdEgg" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="modifyAnchorGiftBirdEgg"></property>
+		<property name="targetMethod" value="modifyGiftsToBirdEgg"></property>
+	</bean>
+	<!-- 检查直播开播记录 定时任务配置 -->
+	<bean id="modifyAnchorGiftBirdEggTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="giftsToBirdEgg"></property>
+		<!--一个小时执行一次 -->
+ 		<property name="cronExpression" value="0 0 * * * ?"></property>
+		<!--  <property name="cronExpression" value="0 0/15 * * * ?"></property> -->
+	</bean>
+			
+	<!-- 清空当天观看累计总时长  -->
+	<bean id="clearViewDurationDay" class="com.xmniao.xmn.core.timer.ClearViewDurationDay"/>
+	<!--  清空当天观看累计时长 定时任务执行方法 -->
+	<bean id="clearJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="clearViewDurationDay"></property>
+		<property name="targetMethod" value="clearViewDurationDay"></property>
+	</bean>
+	<!-- 检查直播开播记录 定时任务配置 -->
+	<bean id="clearViewDurationDayTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="clearJobDetail"></property>
+		<property name="cronExpression" value="59 59 23 * * ?"></property>
+	</bean>
+	
+	<!-- 清理直播通告  -->
+	<bean id="clearAnnunciateQuertz" class="com.xmniao.xmn.core.timer.ClearAnnunciateQuertz"/>
+	<!--  定时任务执行方法 -->
+	<bean id="clearAnnunciateJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="clearAnnunciateQuertz"></property>
+		<property name="targetMethod" value="clearAnnunciate"></property>
+	</bean>
+	<!-- 定时任务配置 -->
+	<bean id="clearAnnunciateTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="clearAnnunciateJobDetail"></property>
+		<property name="cronExpression" value="0 0/1 * * * ?"></property>
+	</bean>
+	
+	<!-- 清理'僵尸直播频道'  -->
+	<bean id="describeLVBChannelQuertz" class="com.xmniao.xmn.core.timer.DescribeLVBChannelQuertz"/>
+	<!--  定时任务执行方法 -->
+	<bean id="describeLVBChannelDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="describeLVBChannelQuertz"></property>
+		<property name="targetMethod" value="describeLVBChannel"></property>
+	</bean>
+	<!-- 定时任务配置 -->
+	<bean id="describeLVBChannelTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="describeLVBChannelDetail"></property>
+		<property name="cronExpression" value="0/20 * * * * ?"></property>
+	</bean>
+	
+	<!-- 统计正在直播的观看人数 -->
+	<bean id="countViewerCountQuertz" class="com.xmniao.xmn.core.timer.CountViewerCountQuertz"/>
+	<!--  定时任务执行方法 -->
+	<bean id="countViewerCountJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="countViewerCountQuertz"></property>
+		<property name="targetMethod" value="countViewerCount"></property>
+	</bean>
+	<!-- 定时任务配置 -->
+	<bean id="countViewerCountTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="countViewerCountJobDetail"></property>
+		<property name="cronExpression" value="0 0/1 * * * ?"></property>
+	</bean>
+	
+	<!-- 直播间广播消息定时任务 -->
+	<bean id="liveRadioQuertz" class="com.xmniao.xmn.core.timer.LiveRadioQuertz"/>
+	<!--  定时任务执行方法 -->
+	<bean id="liveRadioDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="liveRadioQuertz"></property>
+		<property name="targetMethod" value="liveRadio"></property>
+	</bean>
+	<!-- 定时任务配置 -->
+	<bean id="liveRadioTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="liveRadioDetail"></property>
+		<property name="cronExpression" value="0 0/1 * * * ?"></property>
+	</bean>
+	
+	<!-- 更改腾讯云资料信息 -->
+	<bean id="modifyTlsInfoQuertz" class="com.xmniao.xmn.core.timer.ModifyTlsInfoQuertz"/>
+	<!--  定时任务执行方法 -->
+	<bean id="modifyTlsInfoDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="modifyTlsInfoQuertz"></property>
+		<property name="targetMethod" value="modifyTlsInfo"></property>
+	</bean>
+	<!-- 定时任务配置 -->
+	<bean id="modifyTlsInfoTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="modifyTlsInfoDetail"></property>
+		<property name="cronExpression" value="0 55 * * * ?"></property>
+	</bean>
+	
+	<!-- 定时清除积分订单 -->
+	<bean id="clearIntegralOrderQuertz" class="com.xmniao.xmn.core.timer.ClearIntegralOrderQuertz"/>
+	<!-- 定时任务执行方法 -->
+	<bean id="clearIntegralOrderDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="clearIntegralOrderQuertz"></property>
+		<property name="targetMethod" value="clearIntegralOrder"></property>
+		
+	</bean>
+	<!-- 定时任务配置 -->
+	<bean id="clearIntegralOrderTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="clearIntegralOrderDetail"></property>
+		<!-- 两小时执行一次 -->
+		<property name="cronExpression" value="0 0 0/2 * * ?"></property>
+	</bean>
+	
+	<!-- 机器人定时发送礼物  弹幕 -->
+	<bean id="liveRobotSendGiftQuertz" class="com.xmniao.xmn.core.timer.LiveRobotSendGiftQuertz"/>
+	<!--  修改赠送礼物 记录表   定时任务执行方法 -->
+	<bean id="liveRobotSendGiftDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="liveRobotSendGiftQuertz"></property>
+		<property name="targetMethod" value="sendGiftAndInformation"></property>
+	</bean>
+	<!-- 机器人定时发送礼物  弹幕   定时任务配置 -->
+	<bean id="liveRobotSendGiftTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="liveRobotSendGiftDetail"></property>
+		<!-- 1分50秒执行一次 -->
+		<property name="cronExpression" value="0 0/1 * * * ?"></property>
+	</bean>
+	
+	
+	<!-- 排行榜定时更新任务 -->
+	<bean id="updateXmerTopRankQuartz" class="com.xmniao.xmn.core.timer.UpdateXmerTopRankQuartz"/>
+	<!--  定时任务执行方法 -->
+	<bean id="updateXmerTopRankDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="updateXmerTopRankQuartz"></property>
+		<property name="targetMethod" value="updateXmerTopRank"></property>
+	</bean>
+	<!-- 定时任务配置 -->
+	<bean id="updateXmerTopRankTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="updateXmerTopRankDetail"></property>
+		<!-- 凌晨3点执行一次 -->
+ 		<property name="cronExpression" value="59 59 02 * * ?"></property>
+		<!-- 测试环境10分钟更新一次 -->
+		<!-- <property name="cronExpression" value="0 0/10 * * * ?"></property> -->
+		
+	</bean>
+
+	<!-- 金山云直播，心跳定时器  -->
+	<bean id="checkHeartBeatQuert" class="com.xmniao.xmn.core.timer.KSCloudQuertzService"/>
+	<!--  定时任务执行方法 -->
+	<bean id="checkHeartBeatDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="checkHeartBeatQuert"></property>
+		<property name="targetMethod" value="checkHeartbeat"></property>
+	</bean>
+	<!-- 定时任务配置 -->
+	<bean id="checkHeartBeatTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="checkHeartBeatDetail"></property>
+		<property name="cronExpression" value="0/30 * * * * ?"></property>
+	</bean>
+
+
+	<!-- 总管理类 如果将lazy-init='false'那么容器启动就会执行调度程序 -->
+	<bean id="startQuertz" lazy-init="false" autowire="no"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+ 				<ref bean="clearViewDurationDayTrigger" /> 		
+<!--    				<ref bean="modifyAnchorGiftBirdEggTrigger" /> -->
+  				<ref bean="clearAnnunciateTrigger" />
+  				<ref bean="countViewerCountTrigger" />
+   				<ref bean="describeLVBChannelTrigger" />
+  				<ref bean="liveRadioTrigger" />
+  				<ref bean="clearIntegralOrderTrigger"/>
+				<ref bean="liveRobotSendGiftTrigger"/> 				
+				<ref bean="updateXmerTopRankTrigger"/>
+				<ref bean="checkHeartBeatTrigger" />
+			</list>
+		</property>
+	</bean>
+
+</beans>

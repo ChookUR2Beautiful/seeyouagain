@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xmniao.xmn.core.xmer.dao.MaterialDao">
+
+	<!--  查询物料接口 -->
+	<select id="materialList" parameterType="map" resultType="map">
+		select 
+		id,
+		name,
+		CONCAT(#{fileurl},thumbnail) thumbnail,
+		price,
+		ismust,
+		sold_quantity,
+		date_format(create_time,'%y-%m-%d') create_time
+		from t_material where status = 1 limit ${(page-1)*50},50
+	</select>
+	
+	<!-- 购买物料信息（下单） -->
+	<insert id="addMaterOrder" parameterType="map">
+	insert t_material_order(
+		order_sn,
+		uid,mid,
+		create_time,
+		consignee,
+		mobile,
+		address,
+		amount,
+		freight,
+		remark,
+		app_source	
+	)
+	values(
+		#{ordersn},
+		#{uid},#{mid},
+		#{createtime},
+		#{username},
+		#{phone},
+		#{address},
+		#{amount},
+		#{freight},
+		#{remark},
+		#{appSourceStatus}
+	)
+	</insert>
+	
+	<!-- 添加订单物料信息 -->
+	
+	<insert id="addMaterOrderItems" parameterType="map">
+		insert t_material_order_items(order_sn,material_id,material_name,price,quantity)
+		values
+		<foreach collection="list" item="item"  separator=",">
+		(#{item.ordersn},#{item.id},#{item.name},#{item.price},#{item.quantity})
+		</foreach>
+	
+	</insert>
+	
+	<!--删除订单 -->
+	
+	<delete id="delMaterial" parameterType="String">
+		delete from t_material_order where order_sn=#{ordersn}
+	</delete>
+
+		<!--修改订单 -->
+	
+	<delete id="updateMateril" parameterType="map">
+		update t_material_order set consignee=#{name},mobile=#{phone},address=#{address} where order_sn=#{ordersn}
+	</delete>
+
+	<!--删除订单关系 -->
+	<delete id="delMaterialItems" parameterType="String">
+		delete from t_material_order_items where order_sn=#{ordersn}
+	</delete>
+	<!--根据订单号查询-->
+	<select id="findOrderMateral"  resultType="map" parameterType="String">
+		select * from t_material_order where  order_sn=#{ordersn}
+	</select>
+	
+	<!--根据订单号查询物料订单关系表-->
+	<select id="findMaterialItem"  resultType="map" parameterType="String">
+		select * from t_material_order_items where  order_sn=#{ordersn}
+	</select>
+	<!--支付成功更新物料商品销售数量-->
+	<update id="updateMaterialByQutatity" parameterType="map" >	
+		update t_material 
+		<set>
+			 sold_quantity =sold_quantity+#{quantity}
+		</set>
+			 where  id =#{material_id}
+	</update>
+	
+	<!--更新物料备注-->
+	<update id="updateMaterialRemark" parameterType="map">
+		update t_material_order t set t.remark = #{remark}	where order_sn=#{ordersn}
+	</update>
+</mapper>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live.dao.LiveLedgerRecordDao">
+
+	<sql id="liveLedgerRecordCol">
+		 l.id, l.uid,  l.uid_role as uidRole, l.ledger_amount as ledgerAmount, l.real_ledger_amount as realLedgerAmount,
+		 l.status, l.create_date as createDate, l.update_date as updateDate, l.ledger_source as ledgerSource, l.ledger_source_info as ledgerSourceInfo,
+		 l.order_no as orderNo, l.gived_gift_id as givedGiftId, l.redpacket_rocord_date as redpacketRocordDate
+	</sql>
+
+	<select id="queryLiveLedgerRecordByUid" parameterType="map" resultType="liveLedgerRecord">
+		SELECT 
+			<include refid="liveLedgerRecordCol"></include>
+		FROM t_live_ledger_record l
+		WHERE l.ledger_source = 3 AND l.status = 0 AND uid = #{uid} 
+<!-- 		<![CDATA[ -->
+<!-- 			AND date_format(redpacket_rocord_date,'%Y-%m-%d %H:%i')  <= date_format(NOW(),'%Y-%m-%d %H:%i') -->
+<!-- 		]]> -->
+<!--  		AND  redpacket_rocord_date like  '%${currDate}%' -->
+ 		AND  date_format(redpacket_rocord_date,'%Y-%m-%d') = date_format(#{currDate},'%Y-%m-%d')
+	    ORDER BY create_date DESC limit 0,1
+		
+	</select>
+ 	
+ 	<select id="queryLiveLedgerRecordByRedpacketId"  parameterType="int" resultType="liveLedgerRecord" >
+		
+			SELECT 
+			<include refid="liveLedgerRecordCol"></include>
+		FROM t_live_ledger_record l
+		WHERE l.ledger_source = 3 AND l.status = 0 and id = #{id}
+		
+	</select>
+	
+	<select id="queryLiveLedgerRecordOrderList" resultType="liveLedgerRecord">
+		SELECT 
+			<include refid="liveLedgerRecordCol"></include>
+		FROM t_live_ledger_record l
+		WHERE l.status !=3  order by l.create_date desc limit 0,5
+	</select>
+	
+	<!-- 查询用户与他壕友之间的平台分账 -->
+ 	<select id="queryLiveledgerList" parameterType="map" resultType="map">
+ 		select sum(real_ledger_amount)amount,ledger_uid from  t_live_ledger_record  where ledger_source = 2 and ledger_uid is not null and uid =#{uid}
+ 			and ledger_uid in
+ 			<foreach collection="list" index="index" item="ledgerUid" open="(" close=")" separator=",">
+			 #{ledgerUid}
+			</foreach>
+ 		 group by ledger_uid
+	</select>	
+
+	<!-- 统计我的好友的贡献值 -->	
+	<select id="getContributionValue" resultType="double">
+		SELECT
+			SUM(real_ledger_amount) AS amount
+		FROM t_live_ledger_record
+		WHERE ledger_source=2 AND ledger_uid=#{fuid} AND uid=#{uid}
+	</select>
+	
+	
+</mapper>

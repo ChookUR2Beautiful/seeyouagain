@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.sellerPackage.dao.SellerPackageGrantDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.sellerPackage.entity.SellerPackageGrant" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="serial" property="serial" jdbcType="VARCHAR" />
+    <result column="pid" property="pid" jdbcType="INTEGER" />
+    <result column="denomination" property="denomination" jdbcType="DECIMAL" />
+    <result column="use_start_time" property="useStartTime" jdbcType="TIMESTAMP" />
+    <result column="use_end_time" property="useEndTime" jdbcType="TIMESTAMP" />
+    <result column="forbid_start_time" property="forbidStartTime" jdbcType="TIMESTAMP" />
+    <result column="forbid_end_time" property="forbidEndTime" jdbcType="TIMESTAMP" />
+    <result column="get_time" property="getTime" jdbcType="TIMESTAMP" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="user_status" property="userStatus" jdbcType="INTEGER" />
+    <result column="user_time" property="userTime" jdbcType="TIMESTAMP" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="bid" property="bid" jdbcType="BIGINT" />
+    <result column="isTimeOut" property="isTimeOut" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, serial, pid, denomination, use_start_time, use_end_time, forbid_start_time, forbid_end_time, 
+    get_time, uid, phone, user_status, user_time, order_no, sellerid, bid
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_seller_package_grant
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_seller_package_grant
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+	<!--   查询套餐订单的套餐码 -->
+  <select id="querySellerPackageOrderCouponList" resultMap="BaseResultMap" parameterType="string" >
+    select 
+    <include refid="Base_Column_List" />,
+     <![CDATA[
+	  	 IF (date_format(NOW(), '%Y-%m-%d %H:%i') <= date_format(use_end_time, '%Y-%m-%d %H:%i'),0,1) AS isTimeOut
+	 ]]>
+    from t_seller_package_grant
+    where order_no = #{bid}
+  </select>
+  
+	<!--   	获取订单列表 -->
+  <select id="queryBatchSellerPackageOrderCouponList" parameterType="map" resultMap="BaseResultMap">
+  	SELECT 
+  		<include refid="Base_Column_List"></include>
+  	FROM t_seller_package_grant 
+  	WHERE uid = #{uid}
+  	AND bid in
+  	<foreach collection="orderList" index="index" item="list" open="(" separator="," close=")">
+		#{list}
+	</foreach>
+  </select>
+  
+<!--   根据美食订单编号 查询是否使用了套餐券 -->
+  <select id="querySellerPackageGrantByBid" parameterType="string" resultType="map">
+  	SELECT 
+  		id, denomination as grantMoney, user_status as packageStatus, bid, 1 as useNum
+  	FROM t_seller_package_grant 
+  	WHERE bid = #{bid}
+  </select>
+  
+</mapper>

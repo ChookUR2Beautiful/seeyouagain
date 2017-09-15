@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.sellerPackage.dao.SellerPackagePicDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.sellerPackage.entity.SellerPackagePic" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="pid" property="pid" jdbcType="INTEGER" />
+    <result column="pic_url" property="picUrl" jdbcType="VARCHAR" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+    <result column="pic_type" property="picType" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, pid, pic_url, sort, pic_type
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_seller_package_pic
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_seller_package_pic
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <select id="getCoverImage" resultType="String">
+ 	SELECT pic_url FROM t_seller_package_pic WHERE pid=#{pid} AND pic_type=#{type}
+  </select>
+
+  <select id="getCoverImageByIds" resultType="map" parameterType="map">
+    select pid, pic_url FROM t_seller_package_pic where 
+    pid in
+    <foreach collection="ids" index="index" item="id" open="(" separator="," close=")">
+        #{id}
+    </foreach>
+  </select>
+
+</mapper>

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.market.dao.FreshWordDao">
+    <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.market.entity.search.FreshWord" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="type" property="type" jdbcType="INTEGER" />
+        <result column="userid" property="userid" jdbcType="BIGINT" />
+        <result column="word" property="word" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+        id, type, userid, word, create_time, update_time
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+        select
+        <include refid="Base_Column_List" />
+        from t_fresh_word
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+        delete from t_fresh_word
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.xmniao.xmn.core.market.entity.search.FreshWord" >
+        insert into t_fresh_word (id, type, userid,
+        word, create_time, update_time
+        )
+        values (#{id,jdbcType=BIGINT}, #{type,jdbcType=INTEGER}, #{userid,jdbcType=BIGINT},
+        #{word,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="com.xmniao.xmn.core.market.entity.search.FreshWord" >
+        insert into t_fresh_word
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="type != null" >
+                type,
+            </if>
+            <if test="userid != null" >
+                userid,
+            </if>
+            <if test="word != null" >
+                word,
+            </if>
+            <if test="createTime != null" >
+                create_time,
+            </if>
+            <if test="updateTime != null" >
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="type != null" >
+                #{type,jdbcType=INTEGER},
+            </if>
+            <if test="userid != null" >
+                #{userid,jdbcType=BIGINT},
+            </if>
+            <if test="word != null" >
+                #{word,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null" >
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null" >
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.market.entity.search.FreshWord">
+        update t_fresh_word
+        <set >
+            <if test="type != null" >
+                type = #{type,jdbcType=INTEGER},
+            </if>
+            <if test="userid != null" >
+                userid = #{userid,jdbcType=BIGINT},
+            </if>
+            <if test="word != null" >
+                word = #{word,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null" >
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null" >
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.market.entity.search.FreshWord" >
+        update t_fresh_word
+        set type = #{type,jdbcType=INTEGER},
+        userid = #{userid,jdbcType=BIGINT},
+        word = #{word,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateIncrById" parameterType="com.xmniao.xmn.core.market.entity.search.FreshWord" >
+        UPDATE t_fresh_word SET record = record + 1
+        WHERE id = #{freshWord.id}
+    </update>
+
+    <select id="selectHotWord" resultType="java.lang.String">
+        SELECT word
+        FROM t_fresh_word
+        WHERE type = 02
+        ORDER BY sort DESC
+        LIMIT #{records}
+    </select>
+    <select id="selectByUid" resultType="java.lang.String">
+        SELECT word
+        FROM t_fresh_word
+        WHERE userid = #{uid}
+        ORDER BY update_time DESC
+    </select>
+    <select id="selectByWordAndUid" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM t_fresh_word
+        WHERE userid = #{userid}
+        AND word = #{word}
+    </select>
+    <!-- 查询需要删除的搜索历史, 保留 {historys} 条记录-->
+    <select id="selectHistoryIdByUid" resultType="java.lang.Integer">
+        SELECT id
+        FROM t_fresh_word
+        WHERE userid = #{userid}
+        AND type = 1
+        ORDER BY update_time DESC
+        limit #{historys},10
+    </select>
+    <select id="selectDefaultWord" resultType="java.lang.String">
+        SELECT default_word
+        FROM t_fresh_word
+        WHERE word = #{word}
+        and type = 3
+    </select>
+    <select id="selectByRecordWord" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        where word = #{word}
+        and type in (2,4)
+        limit 1
+    </select>
+    <select id="selectByWordAndType" resultType="com.xmniao.xmn.core.market.entity.search.FreshWord">
+        SELECT <include refid="Base_Column_List"/>
+        FROM t_fresh_word
+        WHERE word = #{word}
+        AND type = #{type}
+    </select>
+    <select id="selectHotRecord" resultType="java.lang.String">
+        SELECT word
+        FROM t_fresh_word
+        WHERE type = 4
+        ORDER BY record DESC
+        LIMIT #{records}
+    </select>
+    <select id="selectDefaultWordByType" resultType="java.lang.String">
+        SELECT word
+        FROM  t_fresh_word
+        WHERE type = 3
+    </select>
+    <delete id="deleteByUid">
+        DELETE FROM t_fresh_word
+        WHERE userid = #{uid}
+    </delete>
+    <delete id="deleteByIds">
+        DELETE FROM t_fresh_word
+        WHERE id IN
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

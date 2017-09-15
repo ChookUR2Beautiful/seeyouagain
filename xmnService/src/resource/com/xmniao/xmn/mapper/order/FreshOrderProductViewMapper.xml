@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xmniao.xmn.core.order.dao.FreshOrderProductViewDao">
+	
+	
+	  	<!--查询子订单商品信息 -->
+  	<select id="queryOrderSubProductList" resultType="freshOrderProduct" parameterType="map"> 
+		
+  		SELECT  
+  		    pb.pname,
+  		    pb.codeId,
+  		    (pb.price-pb.integral) as price,
+  		    pb.wareNum,
+  		    pi.breviary,
+  		    pb.goodsName, 
+  		    pb.freight,
+  		    pb.attr_val,
+<!--   		    pi.price as oldprice, -->
+<!--   		    pi.cash, -->
+			pb.integral
+  		FROM  
+  		   t_product_bill pb   
+  		LEFT JOIN t_product_info pi ON pb.codeId = pi.codeId  
+  		WHERE  
+  			pb.sub_bid = #{bid}   
+		
+  	</select>  
+	
+	
+	<!-- 	查询主订单商品信息  -->
+  	<select id="queryOrderProductList" resultType="freshOrderProduct" parameterType="map">  
+  		SELECT  
+  		    pb.pname,  
+  		    pb.codeId,  
+  		    (pb.price-pb.integral) as price,
+  		    pb.wareNum,  
+  		    pi.breviary,  
+  		    pb.goodsName,   
+  		    pb.freight, 
+  		    pb.attr_val,
+<!--   		    pi.price as oldprice, -->
+<!--   		    pi.cash, -->
+			pb.integral 
+  		FROM  
+  		   t_product_bill pb   
+  		LEFT JOIN t_product_info pi ON pb.codeId = pi.codeId  
+  		WHERE  
+  			pb.bid = #{bid}   
+		
+  	</select>  
+	
+</mapper>

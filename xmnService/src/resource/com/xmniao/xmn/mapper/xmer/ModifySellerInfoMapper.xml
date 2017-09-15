@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.xmer.dao.ModifySellerInfoDao">
+	<!-- 
+		修改商铺信息 
+		@修改内容 : 添加返回identitynurl字段
+		@修改时间 : 2016-05-30 12:05
+		@修改人 :	 zhengyaowen
+	-->
+	<update id="modifySellerInfo" parameterType="map">
+		UPDATE t_seller SET 
+		<if test="sellername != null">
+		sellername=#{sellername},
+		</if>
+		<if test="province  != null">
+		province=#{province},
+		</if>
+		<if test="city  != null">
+		city=#{city},
+		</if>
+		<if test="area != null" >
+		area=#{area},
+		</if>
+		<if test="address != null">
+		address=#{address},
+		</if>
+		<if test="fullname != null">
+		fullname=#{fullname},
+		</if>
+		<if test="phoneid != null">
+		phoneid=#{phoneid},
+		</if>
+		<if test="tel  != null">
+		tel=#{tel},
+		</if>
+		<if test="category != null">
+		category=#{category},
+		</if>
+		<if test="genre != null">
+		genre=#{genre},
+		</if>
+		<if test="bewrite != null">
+		bewrite=#{bewrite},
+		</if>
+		<if test="tradename != null">
+		tradename=#{tradename},
+		</if>
+		<if test="typename != null">
+		typename=#{typename},
+		</if>
+		<if test="agio != null">
+		agio=#{agio},
+		</if>
+		<if test="licenseurl != null">
+		licenseurl=#{licenseurl},
+		</if>
+		<if test="sdate != null">
+		sdate=#{sdate},
+		</if>
+		<if test="identityzurl != null">
+		identityzurl=#{identityzurl},
+		</if>
+		<if test="identityfurl != null">
+		identityfurl=#{identityfurl},
+		</if>
+		<if test="identitynurl != null">
+		identitynurl=#{identitynurl},
+		</if>
+		<if test="licensefurl != null">
+		licensefurl=#{licensefurl},
+		</if>
+		<if test="svalidity != null">
+		svalidity=#{svalidity},
+		</if>
+		<if test="evalidity != null">
+		evalidity=#{evalidity},
+		</if>
+		<if test="status  != null">
+		status=#{status},
+		</if>
+		udate=#{udate}
+		WHERE sellerid=#{sellerid}
+	</update>
+	
+	<!-- 更新个人消费 -->
+	<update id="modifySellerInfoToDetail" parameterType="map">
+		UPDATE t_seller_detailed SET consume=#{consume} WHERE sellerid=#{sellerid}
+	</update>
+	
+	<!--  删除所有环境图 -->
+	<delete id="deleteSellerPic" parameterType="map">
+		DELETE FROM t_seller_pic WHERE sellerid=#{sellerid} AND islogo=#{islogo}
+	</delete>
+	
+	<!-- 从图片审核表中删除所有环境图 -->
+	<delete id="delSellerPicByType" parameterType="map">
+		DELETE FROM t_seller_pic_apply WHERE sellerid=#{sellerid} AND type=#{type}
+	</delete>
+	
+	<!-- 插入所有环境图 -->
+	<insert id="insertSellerPic" parameterType="list" useGeneratedKeys="true">
+		INSERT INTO t_seller_pic (sellerid,picurl,islogo,sdate) VALUES 
+		<foreach collection="list"  item="piclist" separator="," index="index">
+		 (#{piclist.sellerid},#{piclist.url},#{piclist.islogo},#{piclist.sdate})
+		</foreach>
+	</insert>
+	
+	<!-- 插入所有环境图到图片审核表中 -->
+	<insert id="addSellerPicApply" parameterType="list" useGeneratedKeys="true">
+		INSERT INTO t_seller_pic_apply (sellerid,said,pic_url,type,update_date) VALUES 
+		<foreach collection="list"  item="piclist" separator="," index="index">
+		 (#{piclist.sellerid},#{piclist.said},#{piclist.url},#{piclist.type},#{piclist.udate})
+		</foreach>
+	</insert>
+	
+	<!-- 插入封面图 -->
+	<insert id="insertCoverPic" parameterType="map" useGeneratedKeys="true">
+		INSERT INTO t_seller_pic (sellerid,picurl,sdate,islogo) VALUES (#{sellerid},#{url},#{sdate},#{islogo})
+	</insert>
+	
+	<!-- 查询商铺资料 -->
+	<select id="querySellerInfo" parameterType="int" resultType="map">
+		SELECT sellername,`status`,isonline FROM t_seller WHERE sellerid=#{sellerid}
+	</select>
+	
+	<!-- 查询商家是否创建过订单 -->
+	<select id="querySellerId" resultType="map"  parameterType="int">
+		select ordersn,sellerid,amount,status,sellername from t_saas_sold_order where sellerid=#{sellerid}
+	</select>
+	
+	<!-- 根据旧的订单号修改成新的订单号 -->
+	<update id="modifyOerderId" parameterType="map">
+		update t_saas_sold_order set ordersn=#{orderid} where sellerid=#{sellerid} and ordersn=#{ordersn}
+	</update>
+	
+	<insert id="insertSellerInfoRecord" parameterType="map">
+		<selectKey resultType="int" order="AFTER"
+				keyProperty="id">
+				SELECT LAST_INSERT_ID() AS ID
+		</selectKey>
+		INSERT INTO t_seller_apply (sellerid,sellername,logo,province,city,area,address,sdate,phone,longitude,latitude) 
+		VALUES(#{sellerid},#{sellername},#{logo},#{province},#{city},#{area},#{address},#{sdate},#{phone},#{longitude},#{latitude})
+	</insert>
+	
+	<!-- 修改商铺折扣 -->
+	<update id="modifySellerAgio" parameterType="map">
+		UPDATE t_seller_agio SET baseagio=#{agio} where sellerid=#{sellerid}
+	</update>
+	
+	<!-- 查询一条商铺修改记录 -->
+	<select id="querySellerInfoRecord" resultType="int" parameterType="int">
+		select id from t_seller_apply where sellerid=#{sellerid} and status=0
+	</select>
+	
+	<!-- 修改折扣记录 -->
+	<update id="modifyAgioReocrd" parameterType="map">
+		update t_agio_record set baseagio = #{agio} ,sdate= now() where id in (SELECT * from ( SELECT max(id) id	FROM t_agio_record	WHERE sellerid =#{sellerid}) as temp)
+	</update>
+	
+</mapper>

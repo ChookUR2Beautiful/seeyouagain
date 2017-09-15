@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!-- mybatis 实体bean别名配置 -->
+	<typeAliases>
+		<!-- 用户 -->
+		<typeAlias alias="urs" type="com.xmniao.xmn.core.verification.dao.UrsDao"/>
+		
+		<!-- 钱包 -->
+		<typeAlias alias="wallet" type="com.xmniao.xmn.core.verification.entity.Wallet"/>
+
+		<!-- 寻蜜客 -->
+		 <typeAlias alias="SaasOrder" type="com.xmniao.xmn.core.xmer.entity.SaasOrder"/>
+		<typeAlias alias="SaasPackage" type="com.xmniao.xmn.core.xmer.entity.SaasPackage"/>
+		<typeAlias alias="xmerLevel" type="com.xmniao.xmn.core.xmer.entity.XmerLevel"/>
+		<!-- 签约请求参数 -->
+		<typeAlias alias="saasSign" type="com.xmniao.xmn.core.common.request.SaasSignRequest"/>
+		<!-- 签约订单 -->
+		<typeAlias alias="saasSignOrder" type="com.xmniao.xmn.core.xmer.entity.SaasSignOrder"/>
+		<!-- banner图片 -->
+		<typeAlias alias="banner" type="com.xmniao.xmn.core.integral.entity.BannerEntity"/>
+		<!-- 产品详情 -->
+		<typeAlias alias="productInfo" type="com.xmniao.xmn.core.integral.entity.ProductInfoEntity"/>
+		<!-- 分类详情 -->
+		<typeAlias alias="trade" type="com.xmniao.xmn.core.integral.entity.TradeEntity"/>
+		<!-- 商铺详情 -->
+		<typeAlias alias="sellerEntity" type="com.xmniao.xmn.core.xmer.entity.SellerEntity"/>
+		<!-- 订单物流信息 -->
+		<typeAlias alias="orderExpress" type="com.xmniao.xmn.core.order.entity.OrderExpress"/>
+		<!-- 订单信息 -->
+		<typeAlias alias="freshOrder" type="com.xmniao.xmn.core.order.entity.FreshOrder"/>
+		<!-- 订单商品列表 -->
+		<typeAlias alias="freshOrderProduct" type="com.xmniao.xmn.core.order.entity.FreshOrderProduct"/>
+		<!-- 积分兑换订单 -->
+		<typeAlias alias="integralOrder" type="com.xmniao.xmn.core.order.entity.IntegralOrder"/>
+		<!-- 商家满赠 -->
+		<typeAlias alias="activityFullreductionInfo" type="com.xmniao.xmn.core.seller.entity.ActivityFullreductionInfo"/>
+		<!-- 商家红包表 -->
+		<typeAlias alias="redpacketInfo" type="com.xmniao.xmn.core.payment.entity.RedpacketInfo"/>
+		
+		
+		<!-- live 直播 start   -->
+		<!-- 		礼物信息表 -->
+		<typeAlias alias="liveGiftsInfo" type="com.xmniao.xmn.core.live.entity.LiveGiftsInfo"/>
+		<!-- 		直播记录表 -->
+		<typeAlias alias="liveRecordInfo" type="com.xmniao.xmn.core.live.entity.LiveRecordInfo"/>
+		<!-- 		主播及观众 信息表 -->
+		<typeAlias alias="liverInfo" type="com.xmniao.xmn.core.live.entity.LiverInfo"/>
+		<!-- 		主播及观众 信息表 -->
+		<typeAlias alias="liveFocusInfo" type="com.xmniao.xmn.core.live.entity.LiveFocusInfo"/>
+		<!-- 		主播管理员 信息表 -->
+		<typeAlias alias="liveManagerInfo" type="com.xmniao.xmn.core.live.entity.LiveManagerInfo"/>
+		<!-- 		直播观看记录 信息表 -->
+		<typeAlias alias="liveViewRecordInfo" type="com.xmniao.xmn.core.live.entity.LiveViewRecordInfo"/>
+		<!-- 		直播用户钱包 信息表 -->
+		<typeAlias alias="liveWalletInfo" type="com.xmniao.xmn.core.live.entity.LiveWalletInfo"/>
+		<!-- 		直播用户 购买鸟币套餐 信息表 -->
+		<typeAlias alias="liveRechargeComboInfo" type="com.xmniao.xmn.core.live.entity.LiveRechargeComboInfo"/>
+		<!-- 		直播用户 购买鸟币套餐订单 信息表 -->
+		<typeAlias alias="livePayOrderInfo" type="com.xmniao.xmn.core.live.entity.LivePayOrderInfo"/>
+		<!-- 		直播用户 发送礼物记录  信息表 -->
+		<typeAlias alias="liveGivedGiftInfo" type="com.xmniao.xmn.core.live.entity.LiveGivedGiftInfo"/>
+		<!-- 		直播用户 个人礼物记录  信息表 -->
+		<typeAlias alias="liveSelfGiftInfo" type="com.xmniao.xmn.core.live.entity.LiveSelfGiftInfo"/>
+		<!-- 		直播  商家销售粉丝券  信息表 -->
+		<typeAlias alias="sellerCouponDetailInfo" type="com.xmniao.xmn.core.live.entity.SellerCouponDetailInfo"/>
+		<!-- 		直播  商家销售粉丝券 赠送抵用券  信息表 -->
+		<typeAlias alias="couponInfo" type="com.xmniao.xmn.core.live.entity.CouponInfo"/>
+		<!-- 		直播  商家预售粉丝券分账  信息表 -->
+		<typeAlias alias="liveSellerLedgerInfo" type="com.xmniao.xmn.core.seller.entity.LiveSellerLedgerInfo"/>
+		<!-- 		直播  商家预售粉丝券分账  信息表 -->
+		<typeAlias alias="liveLedgerRecord" type="com.xmniao.xmn.core.live.entity.LiveLedgerRecord"/>
+		
+			
+			
+		<!-- live 直播 end   -->
+		
+		<!-- 美食点评表 -->
+		<typeAlias type="com.xmniao.xmn.core.seller.entity.ExperienceComment" alias="ExperienceComment"/>
+		<!-- 美食点评视频图片表 -->
+		<typeAlias type="com.xmniao.xmn.core.seller.entity.ExperienceCommentMedia" alias="ExperienceCommentMedia"/>
+		
+		
+		
+	</typeAliases>
+</configuration>

@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.sellerPackage.dao.SellerPackageDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.sellerPackage.entity.SellerPackage" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="selling_price" property="sellingPrice" jdbcType="DECIMAL" />
+    <result column="selling_coin_price" property="sellingCoinPrice" jdbcType="DECIMAL" />
+    <result column="original_price" property="originalPrice" jdbcType="DECIMAL" />
+    <result column="stock" property="stock" jdbcType="INTEGER" />
+    <result column="sales" property="sales" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="ledger_type" property="ledgerType" jdbcType="INTEGER" />
+    <result column="ledger_ratio" property="ledgerRatio" jdbcType="DECIMAL" />
+    <result column="sale_start_time" property="saleStartTime" jdbcType="TIMESTAMP" />
+    <result column="sale_end_time" property="saleEndTime" jdbcType="TIMESTAMP" />
+    <result column="use_start_time" property="useStartTime" jdbcType="TIMESTAMP" />
+    <result column="use_end_time" property="useEndTime" jdbcType="TIMESTAMP" />
+    <result column="forbid_start_time" property="forbidStartTime" jdbcType="TIMESTAMP" />
+    <result column="forbid_end_time" property="forbidEndTime" jdbcType="TIMESTAMP" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="notice" property="notice" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="highly_recommended" property="highlyRecommended" jdbcType="INTEGER" />
+    <result column="home_sort" property="homeSort" jdbcType="INTEGER" />
+    <result column="pic_url" property="picUrl" jdbcType="VARCHAR" />
+    <result column="sellername" property="sellername" jdbcType="VARCHAR" />
+    <result column="orderDesc" property="orderDesc" jdbcType="INTEGER" />
+	    
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, title, sellerid, selling_price, selling_coin_price, original_price, stock, sales, 
+    status, ledger_type, ledger_ratio, sale_start_time, sale_end_time, use_start_time, 
+    use_end_time, forbid_start_time, forbid_end_time, content, notice, update_time,
+    highly_recommended,home_sort
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_seller_package
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_seller_package
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <select id="querySellerPackageInfoById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    SELECT 
+    <include refid="Base_Column_List" />
+    FROM t_seller_package
+    WHERE id = #{id,jdbcType=INTEGER}
+    AND stock > 0 AND status = 1
+    <![CDATA[
+	AND sale_start_time<=NOW() AND sale_end_time>=NOW() 
+	]]>
+  </select>
+  
+  <!-- 查询套餐信息 -->
+  <select id="findAllByRanges" resultType="map">
+  	SELECT
+  		sp.id,s.sellerid,s.sellername,b.title AS zonename,s.tradename,sp.title AS comboname,sp.selling_coin_price AS coinprice,
+  		spic.pic_url AS comboimage,sp.selling_price as comboprice,
+  		<!-- IF(bill.consums IS NULL,0,bill.consums) AS consums, -->
+		ROUND(6378.138*2*ASIN(
+			SQRT(
+			POW(SIN((#{lat}*PI()/180-sl.latitude*PI()/180)/2),2)+
+			COS(#{lat}*PI()/180)*COS(sl.latitude*PI()/180)*POW(SIN((#{lon}*PI()/180-sl.longitude*PI()/180)/2),2)
+			))*1000) AS ranges
+	FROM t_seller_package sp
+	LEFT JOIN t_seller s ON sp.sellerid=s.sellerid 
+	LEFT JOIN t_seller_landmark sl ON s.sellerid=sl.sellerid
+	LEFT JOIN t_business b ON s.zoneid = b.bid 
+	<!-- 
+	去掉此句可大大提高查询效率，但是加上也可以,建议分开操作
+	LEFT JOIN (SELECT sellerid,COUNT(sellerid) AS consums FROM t_bill WHERE status NOT IN (0,5) GROUP BY sellerid) bill
+	ON s.sellerid = bill.sellerid -->
+	LEFT JOIN t_seller_package_pic spic ON sp.id=spic.pid
+	WHERE s.is_public=1 AND s.status=3 AND s.isonline=1 AND s.city=#{cityId}
+	<![CDATA[
+	AND sp.sale_start_time<=NOW() AND sp.sale_end_time>=NOW() 
+	]]>
+	AND sp.status=1 AND spic.pic_type=1
+	<if test="tradeId != null">
+	AND s.genre=#{tradeId}
+	</if>
+	GROUP BY sp.id
+	ORDER BY ranges ASC
+  </select>
+  
+  <!-- 套餐详情套餐推荐 -->
+  <!-- 
+  	1.按后台推荐降序排序
+  	2.按是否有直播通告降序排序 
+  	3.按时当天有直播通告降序排序
+  	4.按是否在当天有套餐降序排序
+  	5.按距离用户距离远近升序排序
+   -->
+  <select id="findRecommendCombo" resultType="map">
+	SELECT 
+		s.sellerid,s.sellername,b.title AS tradename,sp.id,sp.title AS comboname, 
+		sp.selling_coin_price AS coinprice,sp.selling_price AS comboprice,spic.pic_url AS comboimage , 
+		sp.highly_recommended AS rsort, sp.home_sort as homeSort,
+		<![CDATA[
+		(CASE WHEN sp.sale_start_time>=#{startDate} AND sp.sale_end_time<#{endDate} THEN 1 ELSE 0 END) AS isbuy, 
+		]]>
+		ROUND(6378.138*2*ASIN( SQRT(POW (SIN( (#{lat}*PI()/180-sl.latitude*PI()/180)/2),2)+ 
+		COS(#{lat}*PI()/180)*COS(sl.latitude*PI()/180)*POW( SIN((#{lon}*PI()/180-sl.longitude*PI()/180)/2),2)))*1000) AS ranges 
+	FROM t_seller s 
+	LEFT JOIN t_seller_landmark sl ON s.sellerid = sl.sellerid
+	LEFT JOIN t_business b ON s.zoneid = b.bid 
+	LEFT JOIN t_seller_package sp ON 
+	<![CDATA[
+	 (s.sellerid=sp.sellerid AND sp.sale_start_time<=NOW() AND sp.sale_end_time>=NOW())
+	]]>
+	LEFT JOIN t_seller_package_pic spic ON (sp.id=spic.pid AND spic.pic_type=1) 	
+	LEFT JOIN t_live_record r ON 
+	<![CDATA[
+	(s.sellerid = r.sellerid AND r.zhibo_type in (0,1))
+	]]>
+	WHERE s.is_public=1 AND s.status=3 AND s.isonline=1  AND s.city=#{cityId} AND sp.status=1 
+	 GROUP BY s.sellerid
+	ORDER BY homeSort DESC,rsort DESC,isbuy DESC,ranges ASC
+	LIMIT 0,10
+  </select>
+  
+   <!-- 首页套餐推荐 -->
+   <!-- 
+   	不考虑直播状态
+  	1.按后台推荐降序排序
+  	2.按是否有直播通告降序排序 
+  	3.按时当天有直播通告降序排序
+  	4.按是否在当天有套餐降序排序
+  	5.按距离用户距离远近升序排序
+   -->
+  <select id="findHomeRecommendCombo" resultType="map">
+	SELECT 
+		s.sellerid,s.sellername,b.title AS tradename,sp.id,sp.title AS comboname, 
+		sp.selling_coin_price AS coinprice,sp.selling_price AS comboprice,spic.pic_url AS comboimage , 
+		sp.highly_recommended AS rsort, sp.home_sort as homeSort,
+		<![CDATA[
+		(CASE WHEN sp.sale_start_time>=#{startDate} AND sp.sale_end_time<#{endDate} THEN 1 ELSE 0 END) AS isbuy, 
+		]]>
+		ROUND(6378.138*2*ASIN( SQRT(POW (SIN( (#{lat}*PI()/180-sl.latitude*PI()/180)/2),2)+ 
+		COS(#{lat}*PI()/180)*COS(sl.latitude*PI()/180)*POW( SIN((#{lon}*PI()/180-sl.longitude*PI()/180)/2),2)))*1000) AS ranges 
+	FROM t_seller s 
+	LEFT JOIN t_seller_landmark sl ON s.sellerid = sl.sellerid
+	LEFT JOIN t_business b ON s.zoneid = b.bid 
+	LEFT JOIN t_seller_package sp ON s.sellerid=sp.sellerid
+	LEFT JOIN t_seller_package_pic spic ON sp.id=spic.pid
+	LEFT JOIN t_live_record r ON s.sellerid = r.sellerid 
+	WHERE s.is_public=1 AND s.status=3 AND s.isonline=1 AND sp.status=1 AND s.city=#{cityId}
+	<![CDATA[
+	AND sp.sale_start_time<=NOW() AND sp.sale_end_time>=NOW() 
+	AND ((r.status=1 AND r.zhibo_type IN (0,1) AND r.plan_start_date>=#{startDate} AND r.plan_end_date<#{endDate}) 
+	OR sp.home_sort IS NOT NULL)
+	]]>
+	AND spic.pic_type=1 GROUP BY s.sellerid
+	ORDER BY homeSort DESC,rsort DESC,isbuy DESC,ranges ASC
+	LIMIT 0,10
+  </select>
+  
+  <select id="findOneBySellerId" resultType="map">
+  	SELECT 
+		id,title,selling_price AS comboprice,MIN(selling_coin_price) AS combocoin,
+		original_price AS price
+	FROM t_seller_package 
+	WHERE sellerid=#{sellerid} and status=1 
+  	<![CDATA[
+  	and sale_start_time<=now() and sale_end_time>=now()
+  	]]>
+  </select>
+  
+<!--   	修改商家套餐信息 buys 买    / cancel 退 -->
+  <update id="modifySellerPackageInfo" parameterType="map">
+  	UPDATE t_seller_package SET
+  	<if test="buys == 1">
+  		stock = stock-#{nums}, sales = sales+#{nums}
+  	</if>
+  	<if test=" cancel == 1">
+  		stock = stock+#{nums}, sales = sales-#{nums}
+  	</if>
+  	WHERE id = #{id} 
+  	<if test="buys == 1">
+  		AND stock >=#{nums}
+  	</if>
+  </update>
+	  
+  
+  <select id="selectCombosBySellerId" resultType="map">
+  	SELECT 
+	  	p.id,p.title,p.selling_price AS comboprice,p.selling_coin_price AS combocoin,
+		p.original_price AS price,sp.pic_url AS comboimage
+	FROM t_seller_package p
+	LEFT JOIN t_seller_package_pic sp ON p.id=sp.pid
+	WHERE p.status=1 AND sp.pic_type=1 AND p.sellerid=#{sellerid}
+	<![CDATA[
+	AND p.sale_start_time<=NOW() AND p.sale_end_time>= NOW() 
+	]]>
+	ORDER BY update_time DESC
+  </select>
+  
+	<!--   查询商家的套餐列表 -->
+  <select id="querySellerPackageList" parameterType="map" resultType="map">
+  	SELECT
+  		sp.id, sp.title, sp.sellerid, sp.selling_price as sellingPrice,
+  		sp.selling_coin_price as sellingCoinPrice, sp.original_price as originalPrice,
+  		sp.content, pic.pic_url as picUrl
+  	FROM t_seller_package sp  LEFT JOIN t_seller_package_pic pic ON sp.id = pic.pid
+  	WHERE sp.sellerid = #{sellerid} AND pic.pic_type = 1 AND sp.status = 1
+  	<![CDATA[
+  		AND sp.sale_start_time<=NOW() AND sp.sale_end_time>= NOW() AND sp.stock > 0
+  	]]>
+  	<if test=" id!=null and id!='' ">
+  		and sp.id not in (#{id})
+  	</if>
+<!--   	ORDER BY sp.create_time DESC  -->
+	limit ${(page-1)*limit},#{limit}
+  </select>
+  
+  
+  <!--   查询商家的套餐  推荐  列表 -->
+  <select id="queryPackageRecommendList" parameterType="map" resultMap="BaseResultMap">
+  	SELECT
+  		sp.id, sp.title, sp.sellerid, sp.selling_price as sellingPrice,
+  		sp.selling_coin_price as sellingCoinPrice, sp.original_price as originalPrice,
+  		sp.content, pic.pic_url as picUrl,sel.sellername,
+		if(sp.sellerid = #{sellerId} ,1,0) as orderDesc 
+  	FROM t_seller_package sp 
+		LEFT JOIN t_seller_package_pic pic on pic.pid = sp.id and pic.pic_type = 1
+		LEFT JOIN t_seller sel on sel.sellerid = sp.sellerid
+	WHERE 1=1 AND sel.isonline = 1 
+	<if test="position ==0 ">
+		AND sp.sellerid = #{sellerId} 
+	</if>
+  <!-- 直播间是否设置展示其他商家的推荐套餐 0 默认展示 1 不展示 -->
+  <if test="showOtherSeller == 1">
+    AND sp.sellerid = #{sellerId}
+  </if>
+	AND sp.highly_recommended = 1 AND sp.status = 1
+	<![CDATA[
+    AND sp.stock > 0 AND NOW() >= sp.sale_start_time AND  NOW() <= sp.sale_end_time
+	]]>
+	ORDER BY  orderDesc  DESC ,sp.sales DESC, sp.sale_start_time DESC
+  	limit ${(page-1)*limit},#{limit}
+  </select>
+	  
+<!-- 	  查询我周边的套餐 -->
+	<select id="queryMynearbySellerPackage" parameterType="map" resultType="map">
+		SELECT 
+			s.sellerid,
+			s.sellername,
+			b.title AS tradename,
+			sp.id,
+			sp.title AS comboname, 
+			sp.selling_coin_price AS coinprice,
+			sp.selling_price AS comboprice,
+			spic.pic_url AS comboimage ,  
+			ROUND(6378.138*2*ASIN( SQRT(POW (SIN( (#{lat}*PI()/180-sl.latitude*PI()/180)/2),2)+ 
+			COS(#{lat}*PI()/180)*COS(sl.latitude*PI()/180)*POW( SIN((#{lon}*PI()/180-sl.longitude*PI()/180)/2),2)))*1000) AS ranges 
+		FROM t_seller s 
+		LEFT JOIN t_seller_landmark sl ON s.sellerid = sl.sellerid
+		LEFT JOIN t_business b ON s.zoneid = b.bid 
+		LEFT JOIN t_seller_package sp ON s.sellerid=sp.sellerid
+		LEFT JOIN t_seller_package_pic spic ON sp.id=spic.pid
+		WHERE s.is_public=1 AND s.status=3 AND s.isonline=1 AND sp.status=1  AND sp.stock > 0
+		<![CDATA[
+			AND sp.sale_start_time<=NOW() AND sp.sale_end_time>=NOW() 
+		]]>
+		<if test="cityId!=null and cityId!='' and cityId!=0">
+			AND s.city=#{cityId}
+		</if>
+		<if test="list!=null and list!=''">
+			AND sp.id NOT IN 
+			<foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+				#{id}
+			</foreach>
+		</if>
+		AND spic.pic_type=1  
+		ORDER BY  ranges ASC
+		limit ${(page-1)*limit},#{limit}
+	</select>
+	  
+	  
+</mapper>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live.dao.MakeHaoDao">
+ 	
+ 	<select id="getMakeHaoListOrder"  resultType="map" parameterType="list">
+ 		select sum(real_ledger_amount) amount,uid from t_live_ledger_record  where uid_role = 2 and ledger_source = 2 and uid in
+		
+		<foreach collection="list" index="index" item="uid" open="(" separator="," close=")">
+			#{uid.uid}
+		</foreach>
+ 		group by uid order by amount desc
+ 	</select>
+ 	
+ 	<!-- 查询我的壕赚鸟币排行榜 -->
+ 	<select id="makeHaoRank" resultType="map">
+ 		select SUM(real_ledger_amount)amount , uid  from t_live_ledger_record where status = 2  group by uid HAVING amount>=12000 order by amount DESC  limit 0 , 3
+ 	</select>
+ 	<!-- 获取用户充值金额 -->
+ 	<select id="getPayAmount" parameterType="int" resultType="DOUBLE">
+ 		select sum(payment) payment from t_live_pay_order where uid =#{uid}  group by  uid 
+ 	</select>
+ 	<!-- 获取用户打赏总额 -->       
+ 	<select id="getRewardAmount" parameterType="int" resultType="DOUBLE">
+ 		select SUM(b.gift_price) from t_live_gived_gift a
+		left join t_live_gift b on a.gift_id = b.id where a.anchor_id = #{anchorId} GROUP BY a.anchor_id
+ 	</select>
+	<!-- 查询我的嚎友下级下下级 
+		存储的时候是从左往右逐个添加,第一级为自己本身，第二级为自己的上级 第三级为自己的上上级
+		在关系链中,从第四级别之后均为自己的下级
+	-->
+	<select id="getMakeHaoFriendCount" parameterType="int" resultType="int">
+		select count(1) from b_liver where  right(uid_relation_chain,35) like  CONCAT('%',LPAD(#{uid},11,0),'%') and uid not in(#{uid})
+	</select>
+	
+	<select id="getLedgerMakeHaoFriend" parameterType="map" resultType="map">
+		select sum(a.real_ledger_amount)amount,b.uid,a.uid_role from  t_live_ledger_record a
+		left JOIN t_live_pay_order b on a.order_no = b.order_no
+		where ledger_source = 2 and a.uid_role in (2,3) and a.uid=#{uid} group by b.uid order by amount desc
+		limit ${(page-1)*pageSize},#{pageSize}
+	</select>
+	
+	<select id="queryLiverMakeHaoFriend" parameterType="map" resultType="map">
+	select uid,uid_relation_chain from b_liver where  right(uid_relation_chain,35) like CONCAT('%',LPAD(#{uid},11,0),'%') 
+	and uid not in (#{uid})
+	order by uid_relation_chain asc
+	limit ${(pageNo-1)*pageSize},#{pageSize}
+	</select>
+	
+	<!-- 预计可获得鸟币奖励 -->
+	<select id="getGaveAmount" parameterType="int" resultType="map">
+		
+		SELECT SUM(privilege_ledger) privilege_ledger,SUM(current_privilege_ledger) current_privilege_ledger FROM (
+		SELECT * FROM
+			(SELECT * FROM t_live_privilege WHERE uid=#{uid}  AND privilege_ledger>0 AND object_oriented IN (1,3) ORDER BY id DESC LIMIT 1) v1
+		UNION 
+		SELECT * FROM t_live_privilege WHERE uid=#{uid}  AND privilege_ledger>0 AND object_oriented =2 ) v2
+		
+	</select>
+	
+	<!-- 查询用户的直接好友
+		 等级关系:用户的下级即是直接好友
+		 比如:自然人A(即一个没有成为别人下级也没有成为别人上级的人),发展一个下级B那么A的直接好友就是B
+		 关系链:比如 A=12345 B=12346,他们在关系链中只是这样的关系 如 ''',0000000012345,000000001246
+		 比如 自然人A作为登录用户,那么000000001245,后面匹配的字符串均为自然人A的下级,即直接好友
+	 -->
+	<select id="fiadMyDirectFriends" resultType="String">
+		SELECT
+			uid
+		FROM b_liver WHERE RIGHT(uid_relation_chain,23) LIKE CONCAT('%',LPAD(#{uid},11,0),'%') AND uid !=#{uid}
+		ORDER BY uid_relation_chain ASC 
+		LIMIT ${(page-1)*pageSize},#{pageSize}
+	</select>
+	
+	<!-- 统计壕友数量 -->
+	<select id="sumMyFriendCounts" resultType="int">
+		SELECT
+			count(1)
+		FROM b_liver WHERE RIGHT(uid_relation_chain,23) LIKE CONCAT('%',LPAD(#{uid},11,0),'%') AND uid !=#{uid}
+	</select>
+	
+	<!-- 查询壕友的预计贡献比例 -->
+	<select id="selectContributionRatioByRankNo" resultType="map">
+		SELECT 
+			MAX(b.referrer_ratio) AS firstRatio,MAX(b.parent_referrer_ratio) AS secondRatio 
+		FROM b_live_fans_rank a 
+		LEFT JOIN b_live_fans_rank_detail b ON a.id=b.rank_id
+		WHERE a.rank_no=#{rankNo}
+	</select>
+</mapper>

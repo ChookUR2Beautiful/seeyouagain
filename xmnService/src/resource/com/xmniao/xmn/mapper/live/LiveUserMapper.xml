@@ -1,0 +1,1051 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live.dao.LiveUserDao">
+	
+	<!-- 根据uid查询直播观众的信息 -->
+	<select id="queryLiverInfoByUid" parameterType="int" resultType="map">
+<!-- 	urs.openid, -->
+	
+		SELECT 
+			lv.*,urs.uname, urs.nname,info.avatar, info.sex,urs.genussellerid,urs.jointid,
+			urs.genusname,urs.corporate,urs.is_mb,urs.mb_ecno,urs.regtype
+		FROM b_liver lv 
+		LEFT JOIN  b_urs  urs ON urs.uid = lv.uid
+		LEFT JOIN  b_urs_info info ON urs.uid = info.uid
+		WHERE 1=1 AND  lv.uid=#{uid}
+	</select>
+	
+	<!-- 查询所有的直播用户信息 -->
+	<select id="queryliverInfoList" resultType="map">
+		SELECT 
+			lv.*, urs.nname,urs.sign,info.avatar, info.sex,urs.genussellerid,urs.jointid,
+			urs.genusname,urs.corporate,urs.is_mb,urs.mb_ecno
+		FROM b_liver lv 
+		LEFT JOIN  b_urs  urs ON urs.uid = lv.uid
+		LEFT JOIN  b_urs_info info ON urs.uid = info.uid
+	</select>
+	
+	<!-- 根据id查询直播主播/观众的信息 -->
+	<select id="queryLiverInfoById" parameterType="int" resultType="map">
+		SELECT 
+	  		lv.*,urs.uname, urs.nname, info.avatar, info.sex,urs.genussellerid,urs.jointid,
+			urs.genusname,urs.corporate,lv.uid_relation_chain ,urs.is_mb,urs.mb_ecno
+  		FROM b_liver lv  
+  		LEFT JOIN  b_urs  urs ON urs.uid = lv.uid
+  		LEFT JOIN  b_urs_info info ON urs.uid = info.uid
+  		WHERE 1=1 
+		AND id=#{id}
+	</select>
+	
+	<!-- 根据uid查询用户各种客的身份 -->
+	<select id="queryBursEarningsRank" parameterType="map" resultType="map">
+		SELECT  id, uid, rank_source as rankSource, rank_id as rankId FROM b_urs_earnings_rank   WHERE 1=1  AND uid=#{uid}
+		<if test="vperson!=null and vperson!='' or vperson == 0">
+			AND  rank_source = #{vperson}
+		</if>
+	</select>
+	
+	<!-- 根据id查询用户各种客的身份 -->
+	<select id="queryBursEarningsRankInfoById" parameterType="int" resultType="map">
+		SELECT  id, uid, rank_source as rankSource, rank_id as rankId FROM b_urs_earnings_rank   WHERE 1=1  AND id=#{id}
+	</select>
+	
+		<!-- 根据uid查询用户各种客的身份 -->
+	<select id="queryBursEarningsRelationList" parameterType="map" resultType="com.xmniao.xmn.core.live.entity.UrsEarningsRelationInfo">
+		SELECT  
+			id, uid, object_oriented as objectOriented, uid_relation_chain as uidRelationChain,
+  			uid_relation_chain_nname as uidRelationChainNname, uid_relation_chain_level as uidRelationChainLevel,
+  			indirect_uid as indirectUid, referrer_sellerid as referrerSellerid, referrer_sellertype as referrerSellertype 
+  		FROM b_urs_earnings_relation   WHERE 1=1  AND uid=#{uid}
+  		<if test="object_oriented!=null and object_oriented!='' or object_oriented==0">
+  			AND object_oriented = #{object_oriented}
+  		</if>
+	</select>
+	
+	
+	<!-- 根据id查询直播主播/观众的信息 -->
+	<select id="queryLiverInfoByIdList" parameterType="list" resultType="map">
+		SELECT 
+	  		lv.*, urs.nname, info.avatar, info.sex,urs.genussellerid,urs.jointid,
+			urs.genusname,urs.corporate,lv.sign_type as signType,urs.mb_ecno
+  		FROM b_liver lv  
+  		LEFT JOIN  b_urs  urs ON urs.uid = lv.uid
+  		LEFT JOIN  b_urs_info info ON urs.uid = info.uid
+  		WHERE 1=1 AND id IN
+  		<foreach collection="list" index="index" item="id" open="(" close=")" separator=",">
+			#{id}
+		</foreach>
+	</select>
+	
+	<!-- 根据uid查询主播推荐的V客  -->
+	<select id="queryVuidByUid" parameterType="int" resultType="map">
+		SELECT  
+			id, uid, recharge_id, anchor_uid, recommend_status, refuse_reason 
+		FROM b_ver_anchor_relation 
+		WHERE recommend_status = 2 AND anchor_uid = #{uid}
+	</select>
+	
+		<!-- 根据uid查询直播观众的信息 -->
+	<select id="queryLiverInfoByUidList" parameterType="map" resultType="map">
+		SELECT 
+			lv.*, urs.nname, info.avatar, info.sex,urs.genussellerid,urs.jointid,
+			urs.genusname,urs.corporate, lv.sign_type as signType,urs.mb_ecno
+		FROM b_liver lv 
+		LEFT JOIN  b_urs  urs ON urs.uid = lv.uid
+		LEFT JOIN  b_urs_info info ON urs.uid = info.uid
+		WHERE 1=1 AND  lv.uid IN
+		<foreach collection="list" index="index" item="map" open="(" close=")" separator=",">
+			 #{map.anchorUid}
+		</foreach>
+		
+	</select>
+	
+	
+	<!-- 	isInside = 1 && sign_type = 2 的账号排除 -->
+	<select id="queryLiverInfosByIsinside" resultType="LiverInfo">
+		SELECT id,uid  FROM b_liver  WHERE  isInside = 1
+	</select>
+
+	<!-- 	查询土豪榜  查询出内部需要过滤的账号 排除土豪榜 -->
+	<select id="queryLiverInfosByIsinsideAndSignType" resultType="map">
+		SELECT id,uid  FROM b_liver  WHERE  isInside = 0 AND sign_type = 2
+	</select>
+	
+	<!-- 根据id查询直播主播/观众的信息 -->
+	<select id="queryLiverInfoByAnchorId" parameterType="int" resultType="liverInfo">
+		SELECT 
+	  		lv.*, urs.nname, info.avatar, info.sex
+  		FROM b_liver lv  
+  		LEFT JOIN  b_urs  urs ON urs.uid = lv.uid
+  		LEFT JOIN  b_urs_info info ON urs.uid = info.uid
+  		WHERE 1=1 
+		AND id=#{id}
+	</select>
+
+	<!-- 查询寻觅客的关系链 -->
+	<select id="queryRelationByUid" parameterType="int" resultType="map">
+		select * from b_xmer where uid=#{uid}
+	</select>
+	
+	
+    <!-- 插入直播观众信息 -->
+    <insert id="insertLiver" parameterType="map">
+	    INSERT into b_liver(uid,utype,phone,isTlsRegister,register_source,create_time,update_time,uid_relation_chain,uid_relation_chain_nname,fans_rank_no,fans_rank_name,fans_rank_id)
+		VALUES (#{uid},#{utype},#{phone},#{isTlsRegister},#{registerSource},#{createTime},#{updateTime},#{uidRelationChain},#{uidRelationChainNname},#{rankNo},#{rankName},#{rankId})
+    </insert>
+
+    <!-- 根据观众ID 获取关注主播列表 -->
+   <select id="queryAttentionAnchorByViewerId" resultType="liveFocusInfo" parameterType="map">
+   		SELECT * FROM t_live_focus  WHERE 1=1 AND liver_str_id = #{id} ORDER BY create_time DESC LIMIT ${(page-1)*limit},#{limit}
+   </select>
+   
+    <!-- 根据被关注人ID 获取关注的主播详细列表 -->
+   <select id="queryAttentionAnchorByAnchorIds" resultType="liverInfo" parameterType="list">
+   		
+  		SELECT 
+	  		lv.id,lv.uid,lv.utype, lv.rank_id,lv.rank_no, lv.achievement, lv.current_expe,
+	  		urs.nname, info.avatar, info.sex
+  		FROM b_liver lv  
+  		LEFT JOIN  b_urs  urs ON urs.uid = lv.uid
+  		LEFT JOIN  b_urs_info  info ON urs.uid = info.uid
+  		WHERE 1=1 AND  id in 
+   		<foreach collection="list" index="index" item="anchor_id" open="(" close=")" separator=",">
+  			 #{anchor_id}
+   		</foreach>
+   		
+   </select>
+   
+    <!-- 修改观众接收主播开播消息提醒 -->
+   <update id="editLiveViewerMsgStatus"   parameterType="map">
+		UPDATE b_live_viewer SET msg_status = #{msg_status}  WHERE id = #{id}
+   </update>
+   
+    <!-- 修改直播用户信息 -->
+   <update id="modifyLiverByUid" parameterType="map">
+		UPDATE b_liver
+		 <set >
+	      <if test="id != null" >
+	        id = #{id},
+	      </if>
+	      <if test="uid != null" >
+	        uid = #{uid},
+	      </if>
+	      <if test="utype != null" >
+	        utype = #{utype},
+	      </if>
+	      <if test="anchorRoomNo != null" >
+	        anchor_room_no = #{anchorRoomNo},
+	      </if>
+	      <if test="phone != null" >
+	        phone = #{phone},
+	      </if>
+	      <if test="weixin != null" >
+	        weixin = #{weixin},
+	      </if>
+	      <if test="age != null or age==0" >
+	        age = #{age},
+	      </if>
+	      <if test="rankNo != null" >
+	        rank_no = #{rankNo},
+	      </if>
+	      <if test="achievement != null" >
+	        achievement = #{achievement},
+	      </if>
+	      <if test="currentExpe != null" >
+	        current_expe = current_expe + #{currentExpe},
+	      </if>
+	      <if test="concernNums != null" >
+	        concern_nums = concern_nums + #{concernNums},
+	      </if>
+	      <if test="concernedNums != null" >
+	        concerned_nums = concerned_nums + #{concernedNums},
+	      </if>
+	      <if test="giveGiftsNums != null" >
+	        give_gifts_nums = #{giveGiftsNums},
+	      </if>
+	      <if test="givedGiftsNums != null" >
+	        gived_gifts_nums = #{givedGiftsNums},
+	      </if>
+	      <if test="praisedNums != null" >
+	        praised_nums = #{praisedNums},
+	      </if>
+	      <if test="viewDurationDay != null" >
+	        view_duration_day = #{viewDurationDay},
+	      </if>
+	      <if test="liveDurationDay != null" >
+	        live_duration_day = #{liveDurationDay},
+	      </if>
+	      <if test="status != null" >
+	        status = #{status},
+	      </if>
+	      <if test="msgStatus != null" >
+	        msg_status = #{msgStatus},
+	      </if>
+	      <if test="sellerLookStatus != null" >
+	        seller_look_status = #{sellerLookStatus},
+	      </if>
+	      <if test="groupId != null" >
+	        group_id = #{groupId},
+	      </if>
+	      <if test="groupName != null" >
+	        group_name = #{groupName},
+	      </if>
+	      <if test="createTime != null" >
+	        create_time = #{createTime},
+	      </if>
+	      <if test="updateTime != null" >
+	        update_time = #{updateTime},
+	      </if>
+	      <if test="isTlsRegister != null" >
+	        isTlsRegister = #{isTlsRegister},
+	      </if>
+	    </set>
+		WHERE
+			uid = #{uid}
+   </update>
+   
+    <!-- 查询土豪的头像,昵称,性别,等级 -->
+   <select id="queryLiversInfo" resultType="map" parameterType="list">
+		SELECT
+			a.uid,
+			a.rankNO,
+			a.phone,
+			IFNULL(a.nname,'') nname,
+			IFNULL(i.avatar,'') avatar,
+			IFNULL(i.sex,0) sex
+		FROM
+			(
+				SELECT
+					l.uid,
+					l.rank_no AS rankNo,
+					l.phone,
+					u.nname
+				FROM
+					b_liver l
+				LEFT JOIN b_urs u ON l.uid = u.uid
+				WHERE
+					l.uid in
+				<foreach collection="uids" index="index" item="uid" open="(" close=")" separator=",">
+  			 		#{uid}
+   				</foreach>
+			) a
+		LEFT JOIN b_urs_info i ON a.uid = i.uid
+   </select>
+   
+    <!-- 根据直播记录id查询主播的信息 -->
+   <select id="queryAnchorByLiveRecordId" resultType="map" parameterType="int">
+		SELECT
+			*
+		FROM
+			t_live_record r
+		WHERE
+			r.id = #{liveRecordId}
+			
+   </select>
+   
+   <!-- redis 同步 修改直播 主播或观众基础信息 -->
+   <update id="editLiveViewerInfo"   parameterType="list" >
+   		<foreach collection="list" index="index" item="viewer" >
+   			UPDATE b_liver 
+   				<set>
+   					<if test="viewer.rank_id!=null and viewer.rank_id!='' "> 
+   						rank_id = #{viewer.rank_id}, 
+   					</if>
+   					<if test="viewer.current_expe!=null and viewer.current_expe!='' "> 
+   						current_expe = #{viewer.current_expe},
+   					</if>
+   					<if test="viewer.concerned_nums!=null and viewer.concerned_nums!='' "> 
+   						concerned_nums = #{viewer.concerned_nums}, 
+   					</if>
+   					<if test="viewer.give_gifts_nums!=null and viewer.give_gifts_nums!='' "> 
+   						give_gifts_nums = #{viewer.give_gifts_nums}, 
+   					</if>
+   					<if test="viewer.gived_gifts_nums!=null and viewer.gived_gifts_nums!='' "> 
+   						gived_gifts_nums = #{viewer.gived_gifts_nums}, 
+   					</if>
+   					<if test="viewer.rank_no!=null and viewer.rank_no!='' "> 
+   						rank_no = #{viewer.rank_no}, 
+   					</if>
+   					<if test="viewer.achievement!=null and viewer.achievement!='' "> 
+   						achievement = #{viewer.achievement}, 
+   					</if>
+   					<if test="viewer.praised_nums!=null and viewer.praised_nums!='' "> 
+   						praised_nums = #{viewer.praised_nums}, 
+   					</if>
+   					<if test="viewer.view_duration!=null and viewer.view_duration!='' "> 
+   						view_duration = #{viewer.view_duration}, 
+   					</if>
+   					<if test="viewer.view_duration_day!=null and viewer.view_duration_day!='' "> 
+   						view_duration_day = #{viewer.view_duration_day}, 
+   					</if>
+   					<if test="viewer.live_duration_day!=null and viewer.live_duration_day!='' "> 
+   						live_duration_day =  #{viewer.live_duration_day}, 
+   					</if>
+   					<if test="viewer.live_duration!=null and viewer.live_duration!='' "> 
+   						live_duration =  #{viewer.live_duration}, 
+   					</if>
+   					<if test="viewer.update_time!=null and viewer.update_time!='' "> 
+   						update_time = #{viewer.update_time},
+   					</if>
+   				</set> 
+   			WHERE 
+   			id = #{viewer.id}
+   		</foreach>
+   </update>
+   
+    <!-- 更新私信记录 -->
+    <update id="updateSecretMsg" parameterType="map">
+	    UPDATE 
+	    	t_live_private_message m
+		SET 
+			m.messager_txt = #{msgContent},
+			m.mess_send_time = #{msgSendTime},
+			m.mess_status = #{msgStatus},
+			m.update_time = #{updateTime}
+		WHERE
+			m.id = #{msgId}
+    </update>	
+    
+      <!-- 查询最新的私信 -->
+   <select id="querySecretNewMsg" resultType="int" parameterType="map">
+		SELECT
+			m.id AS msgId
+		FROM
+			t_live_private_message m
+		WHERE
+			m.send_liver_uname = #{sendUname}
+		AND m.to_liver_uname = #{toUname}
+		AND m.mess_status = #{msgStatus}
+		ORDER BY
+			m.mess_send_time
+		DESC
+		LIMIT 0,1
+   </select>
+   
+    <!-- 查询用户累加经验后的值 锁对应的等级 -->
+   <select id="queryMemberRankByExp" parameterType="map" resultType="map">
+		SELECT 
+			id,member_rank_name,rank_no,upgrade_experience,rank_start_expe,rank_end_expe,create_time,update_time
+		FROM b_live_member_rank 
+		WHERE 1=1 
+		<![CDATA[   AND  rank_start_expe <= #{current_expe} AND rank_end_expe >= #{current_expe}    ]]>
+		LIMIT 0,1
+   </select>   
+   
+     <!-- 记录聊天室群组信息 -->
+    <insert id="insertPublicMsg" parameterType="map">
+	   INSERT INTO t_live_public_message (
+	   		send_liver_id,
+			send_liver_uname,
+			live_record_id,
+			messager_group_no,
+			messager_txt,
+			mess_send_time,
+			message_type,
+			create_time,
+			update_time
+		)
+		VALUES
+			(
+				#{sendLiverId},#{sendUname},#{liveRecordId},#{groupNo},#{msgContent},#{sendTime},#{msgtype},#{createTime},#{updateTime}
+			)
+    </insert>
+    
+    <!-- 查询时候已关注 -->
+    <select id="queryFocusCount" parameterType="map" resultType="int">
+    	select count(1) from t_live_focus where liver_str_id=#{liver_str_id} and liver_end_id=#{liver_end_id}
+    </select>
+
+	<!-- 查询是否关注 -->
+    <select id="queryFocusCountByUid" parameterType="map" resultType="int">
+    	select count(1) from t_live_focus where str_uid=#{str_uid} and end_uid=#{end_uid}
+    </select>
+	
+    <!-- 查询未结束的直播记录 -->
+   <select id="queryLiveRecord" resultType="liveRecordInfo">
+    	select
+    		id,anchor_id,zhibo_type,start_date,end_date,zhibo_duration,status,create_time,update_time
+    	from t_live_record where  zhibo_type=1
+		    	
+    </select> 
+    
+    <!-- 查询为结束的观看记录 -->
+    <select id="queryViewRecord" resultType="liveViewRecordInfo">
+   		select * from t_live_view_record  where  live_status=1 
+    </select>
+    
+    
+    <!-- 查询用户直播时长 -->
+    <select id="queryLiveDurationDay" parameterType="String" resultType="map">
+    	select live_duration_day,live_duration from b_liver where id=#{_parameter}
+    </select>
+    
+     <!-- 查询是否关注过此主播 -->
+   <select id="queryFocusAnchor" parameterType="map" resultType="int">
+		SELECT
+			COUNT(1)
+		FROM
+			t_live_focus
+		WHERE
+			liver_str_id = #{liverStrId} 
+		AND liver_end_id = #{liverEndId}
+    </select>
+     
+     <!-- 查询是否关注过此主播 -->
+    <delete id="deleteFocusAnchor" parameterType="map">
+		DELETE
+		FROM
+			t_live_focus
+		WHERE
+			liver_str_id = #{liverStrId}
+			AND liver_end_id = #{liverEndId};
+		
+    </delete>
+
+	<!-- 查询关注的直播通告列表-->
+    <select id="queryFocusShowList" parameterType="map" resultType="map">
+		SELECT *  FROM t_live_focus_show WHERE 1=1 AND liver_id = #{liverStrId}
+			AND	live_record_id IN
+			<foreach collection="liveRecordIdList" item="recordId" open="(" separator="," close=")">
+				#{recordId}
+			</foreach>
+		ORDER BY create_time DESC
+		
+    </select>
+    
+    <!-- 查询关注的直播通告列表-->
+    <select id="queryFocusShowListCount" parameterType="map" resultType="map">
+		SELECT count(1) as counts ,live_record_id  FROM t_live_focus_show WHERE 1=1  AND live_record_id = #{liveRecordId} GROUP BY live_record_id
+    </select>
+
+     <!-- 查询是否有想看预告记录-->
+   <select id="queryFocusShow" parameterType="map" resultType="int">
+    	SELECT
+			COUNT(1)
+		FROM
+			t_live_focus_show
+		WHERE
+			isRebot = 0
+		AND
+			liver_id = #{liverId} 
+		AND live_record_id = #{liveRecordId}
+		AND status = #{status}
+		LIMIT 0,1
+    </select> 
+    
+    <!-- 插入关注主播信息 -->
+    <insert id="insertFocusAnchor" parameterType="map">
+		INSERT INTO t_live_focus (
+			liver_str_id,
+			liver_end_id,
+			str_uid,
+			end_uid,
+			create_time,
+			update_time
+		)
+		VALUES
+			(
+				#{liverStrId},
+				#{liverEndId},
+				#{strUid},
+				#{endUid},
+				#{createTime},
+				#{updateTime}
+			)
+    </insert>
+    
+    <!-- 插入想看预告信息 -->
+    <insert id="insertFocusShow" parameterType="map">
+		INSERT INTO t_live_focus_show (
+			liver_id,
+			live_record_id,
+			status,
+			create_time,
+			update_time
+		)
+		VALUES
+			(
+				#{liverId},
+				#{liveRecordId},
+				#{status},
+				#{createTime},
+				#{updateTime}
+			)
+    </insert>
+    <!-- 根据等级No查询所需经验和等级名称 -->
+    <select id="queryLevelByRankNo" parameterType="int" resultType="map">
+    	select 
+    	ifNull(member_rank_name,'') member_rank_name,
+    	ifNull(upgrade_experience,0) upgrade_experience,
+    	ifNull(rank_start_expe,0) rank_start_expe,
+    	ifNull(rank_end_expe,0) rank_end_expe
+    	from b_live_member_rank
+    	where rank_no=#{ranNo}
+    
+    </select>
+    <!-- 根据被关注主播ID查询关注者ID -->
+    <select id="queryUidListByaid" parameterType="int" resultType="int">
+    	select liver_str_id from t_live_focus where liver_end_id=#{aid}
+    </select>
+    
+      <!-- 查询直播用户的会员uid -->
+   <select id="queryLiverUids" resultType="map" parameterType="list">
+		SELECT
+			b.id AS anchorId,
+			b.uid,
+			IFNULL(b.phone,"") account,
+			info.sex
+		FROM
+			b_liver b
+		LEFT JOIN  b_urs_info info ON b.uid = info.uid
+		WHERE
+			b.id in
+		<foreach collection="anchorIds" index="index" item="id" open="(" close=")" separator=",">
+			#{id}
+ 		</foreach>
+   </select>
+    
+    <!-- 根据关注的主播ID查询uid -->
+    <select id="queryLiverUidByaid" resultType="int" parameterType="list">
+    select uid from b_liver where id in
+     	<foreach collection="list" item="id" open="(" close=")" separator=",">
+   	 		#{id}
+    	</foreach>
+    </select>
+    
+    <!-- 查询某一个观众观看某一场直播的观看信息 -->
+    <select id="queryLiveViewRecord" resultType="map" parameterType="int">
+		SELECT
+			*
+		FROM
+			t_live_view_record
+		WHERE
+			live_record_id = #{liveRecordId}
+		AND
+			uid = #{uid}
+		LIMIT 0,1
+    </select>
+    
+    <!-- 修改某一场观众观看直播记录信息-->
+   <update id="modifyLiveViewRecord" parameterType="map">
+		UPDATE t_live_view_record
+		 <set >
+	      <if test="liveStatus != null" >
+	        live_status = #{liveStatus},
+	      </if>
+	      <if test="banSpeakStatus != null" >
+	        ban_speak_status = #{banSpeakStatus},
+	      </if>
+	      <if test="endTime != null" >
+	        end_time = #{endTime},
+	      </if>
+	      <if test="viewDuration != null" >
+	        view_duration = #{viewDuration},
+	      </if>
+	      <if test="updateTime != null" >
+	        update_time = #{updateTime},
+	      </if>
+	    </set>
+		WHERE
+			live_record_id = #{liveRecordId}
+		AND
+			uid = #{uid}
+   </update>
+   
+   <!-- 根据手机号码查询直播用户信息 -->
+    <select id="queryAnchorByPhone" resultType="map">
+    	SELECT 
+			lv.*, urs.nname, info.avatar, info.sex
+		FROM b_liver lv 
+		LEFT JOIN  b_urs  urs ON urs.uid = lv.uid
+		LEFT JOIN  b_urs_info info ON urs.uid = info.uid
+		WHERE 1=1 AND  lv.phone = #{phone}
+    	LIMIT 0,1
+    </select>
+    
+   <!-- 根据群组号查询主播信息 -->
+    <select id="queryAnchorByGroupId" resultType="map">
+		SELECT
+			*
+		FROM
+			b_liver
+		WHERE
+			group_id = #{groupId}
+		AND
+			utype = 1
+		LIMIT 0,1
+    </select>
+    
+   <!-- 根据手机号码(登录账号)直播用户信息 -->
+    <select id="queryLiveByPhone" resultType="map">
+    	SELECT 
+			lv.*, urs.nname, info.avatar, info.sex
+		FROM b_liver lv 
+		LEFT JOIN  b_urs  urs ON urs.uid = lv.uid
+		LEFT JOIN  b_urs_info info ON urs.uid = info.uid
+		WHERE 1=1 AND  urs.uname=#{phone}
+		LIMIT 0,1
+    </select>
+    
+   <!-- 查询直播房间权限 -->
+    <select id="queryPrivilege" resultType="map" parameterType="int">
+		SELECT
+			privilege_name AS privilegeName,
+			privilege_code AS privilegeCode
+		FROM
+			b_live_role_set
+		WHERE
+			role_type = #{type}
+    </select>
+    
+    <!-- 查询想看用户ID -->
+    <select id="queryLiveFocusShowByRid" parameterType="int" resultType="int"> 
+    	select liver_id from t_live_focus_show where live_record_id=#{rid} and status=2
+    </select>
+    
+    <!-- 插入私信信息 -->
+    <insert id="insertSecretMsg" parameterType="map">
+		INSERT INTO t_live_private_message (
+			send_liver_uname,
+			to_liver_uname,
+			messager_txt,
+			mess_send_time,
+			create_time,
+			update_time
+		)
+		VALUES
+			(
+				#{sendUname},
+				#{toUname},
+				#{msgContent},
+				#{msgSendTime},
+				#{createTime},
+				#{updateTime}
+			)
+    </insert>
+    
+      <!-- 修改直播用户当前经验值-->
+   <update id="updateLiverCurrentExpe" parameterType="map">
+		UPDATE b_liver
+		 <set >
+	      <if test="currentExpe != null" >
+	        current_expe = current_expe + #{currentExpe},
+	      </if>
+	      <if test="updateTime != null" >
+	        update_time = #{updateTime}
+	      </if>
+	    </set>
+		WHERE
+			uid = #{uid}
+   </update>
+   
+    <resultMap id="liverMap" type="com.xmniao.xmn.core.live.entity.LiverInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="anchor_room_no" property="anchor_room_no" jdbcType="VARCHAR" />
+ 	 <result column="group_id" property="group_id" jdbcType="VARCHAR" />
+ 	 <result column="group_id" property="group_id" jdbcType="VARCHAR" />
+ 	 <result column="fans_rank_no" property="fans_rank_no" jdbcType="INTEGER" />
+ 	 <result column="fans_rank_name" property="fans_rank_name" jdbcType="VARCHAR" />
+  </resultMap>
+	
+   
+   <!-- 查询直播用户信息 -->
+   <select id="queryLiverByUid" parameterType="long" resultMap="liverMap">
+   select id,anchor_room_no,group_id,utype,fans_rank_no,fans_rank_name from b_liver where uid = #{uid}  
+   </select>
+   
+ 	<!-- 查询关注相同的好友数量 -->
+    <select id="querySameFocusCount" resultType="int" parameterType="map">
+		SELECT
+			COUNT(DISTINCT a.liver_end_id) AS count
+		FROM
+			t_live_focus a
+		LEFT JOIN t_live_focus b ON a.liver_end_id = b.liver_end_id
+		WHERE
+			a.liver_str_id = #{liverId}
+		AND b.liver_str_id = #{toLiverId}
+    </select>
+ 	
+ 	<!-- 批量查询有共同关注的好友数量 -->
+	<select id="querySameFocusListCount" resultType="map" parameterType="map">
+		SELECT
+			COUNT(DISTINCT b.liver_end_id) AS count,
+			b.liver_str_id AS liverStrId
+		FROM
+			t_live_focus a
+		LEFT JOIN t_live_focus b ON a.liver_end_id = b.liver_end_id
+		WHERE
+			a.liver_str_id = #{liverId}
+		AND b.liver_str_id IN
+			<foreach item="toLiverId" index="index" collection="toLiverIds" open="(" separator="," close=")">
+	         	#{toLiverId}
+	        </foreach>
+		GROUP BY b.liver_str_id
+	</select>
+	
+ 	<!-- 查询银行卡信息 -->
+	<select id="queryBankInfoById" resultType="map" parameterType="int">
+		SELECT
+			*
+		FROM
+			t_bank_list
+		WHERE
+			id = #{bankListId}
+		AND status = 0
+	</select>
+	
+ 	<!-- 查询银行卡所属银行列表信息 -->
+	<select id="queryBankList" resultType="map">
+		SELECT
+			*
+		FROM
+			t_bank_list
+		WHERE
+			status = 0
+	</select>
+	
+	<!-- 检查两个用户之间是否关注 -->
+	<select id="checkTwoUidIsFollow" resultType="int" parameterType="map">
+		SELECT COUNT(1) FROM t_live_focus WHERE str_uid=#{uid} and end_uid=#{fuid}
+	</select>
+	
+	<select id="queryLiveInfoByUidList" resultType="map" parameterType="list">
+		SELECT 
+			lv.*, urs.nname, info.avatar, info.sex,urs.genussellerid,urs.jointid,urs.uname,
+			urs.genusname,urs.corporate
+		FROM b_liver lv 
+		LEFT JOIN  b_urs  urs ON urs.uid = lv.uid
+		LEFT JOIN  b_urs_info info ON urs.uid = info.uid
+		WHERE 1=1 AND  lv.uid   in 
+		
+		<foreach collection="list" index="index" item="anchorUid" open="(" separator="," close=")">
+			#{anchorUid}
+		</foreach>
+		
+	</select>
+	
+	<select id="queryMakeHaoFriend" resultType="map" parameterType="String">
+		SELECT 
+			lv.*, urs.nname, info.avatar, info.sex,urs.genussellerid,urs.jointid,
+			urs.genusname,urs.corporate
+		FROM b_liver lv 
+		LEFT JOIN  b_urs  urs ON urs.uid = lv.uid
+		LEFT JOIN  b_urs_info info ON urs.uid = info.uid
+		WHERE lv.uid_relation_chain is not null and lv.uid_relation_chain like '%${uid}%'
+	</select>
+	
+	
+	<!-- 	查询出主播的礼物收入列表 -->
+	<select id="queryLiverIncomeRecord" resultType="LiveGivedGiftInfo" parameterType="map">
+		select 
+			live_record_id as liveRecordId , anchor_id as anchorId , gift_id as giftId ,gift_name as giftName,
+		gift_price as giftPrice , percentAmount, liver_id as liverId, gift_nums as giftNums,create_time as createTime
+		from t_live_gived_gift 
+		where anchor_id = #{anchorId} and wallet_record_id !=0 and advanced_status in (2,3)
+		ORDER BY create_time desc  LIMIT ${(page-1)*limit},#{limit}
+	</select>
+	
+	<!-- 	查询出主播的礼物收入列表 -->
+	<select id="queryLiverIncomeRecordAmount" resultType="LiveGivedGiftInfo" parameterType="map">
+		select 
+			 IFNULL(sum(percentAmount),0)  as percentAmount
+		from t_live_gived_gift 
+		where anchor_id = #{anchorId} and wallet_record_id !=0 and advanced_status in (2,3)
+		ORDER BY create_time desc 
+	</select>
+	
+	<!-- 	查询出主播关注列表  批量 -->
+	<select id="queryLiveAnchorFocusList" resultType="map" parameterType="map">
+		
+		SELECT id,liver_str_id as liverStrId, liver_end_id as liverEndId, create_time as createTime, update_time as updateTime
+		FROM t_live_focus WHERE 1=1 
+		<if test="liverStrId!=null and liverStrId!='' ">
+			AND liver_str_id = #{liverStrId}
+		</if>
+		<if test="list!=null and list!='' ">
+			AND liver_end_id IN
+			<foreach collection="list" index="index" item="anchorId" open="(" separator="," close=")">
+				#{anchorId}
+			</foreach>
+		</if>
+	</select>
+	
+	<!-- 根据用户ID查询用户关注的用户 -->
+	<select id="queryUserFocusListByUid" resultType="map" parameterType="int">
+		SELECT liver_str_id as uid,liver_end_id as fuid FROM t_live_focus WHERE liver_str_id = #{uid}
+	</select>
+	
+	<!-- 根据uid查询主播的相册信息 -->
+	<select id="queryLiveAnchorImageByUid" resultType="map" parameterType="int">
+		SELECT
+			i.*
+		FROM
+			b_live_anchor_image i
+		LEFT JOIN b_liver l ON i.anchor_id = l.id
+		WHERE
+			l.uid = #{uid}
+		AND l.utype = 1
+		LIMIT ${(page-1)*pageSize},#{pageSize}
+	</select>
+	
+	<!-- 查询我关注的好友消费用一家商铺的好友用户ID -->
+	<select id="findFollowUidBySellerId" resultType="int" parameterType="map">
+	SELECT DISTINCT uid FROM t_bill WHERE sellerid = #{sellerid}
+		AND uid IN (
+			SELECT end_uid FROM t_live_focus WHERE str_uid=#{uid}
+		) AND status not in (0,5)
+		ORDER BY zdate DESC LIMIT 0,3
+	</select>
+	
+	<!-- 根据UID查询UID关注的UID消费过的商铺信息 -->
+	<select id="findFollowUidCustomSellerIdByUid" resultType="int" parameterType="int">
+		SELECT DISTINCT sellerid FROM t_bill WHERE uid IN (
+			SELECT end_uid FROM t_live_focus WHERE str_uid=#{uid}) AND STATUS NOT IN (0,5)
+	</select>
+	
+	<!-- 查询等级表,最低等级的数据 -->
+	<select id="queryMinLiveFansRank" resultType="map">
+		SELECT
+			*
+		FROM
+			b_live_fans_rank
+		ORDER BY
+			rank_no ASC
+		LIMIT 1
+	</select>
+	
+	<!-- 通过用户ID查询用户信息 -->
+	<select id="findUserInfoByUid" resultType="map">
+<!-- 	b.openid, -->
+		SELECT 
+			b.uname, b.nname,u.avatar, 
+			<![CDATA[
+			(CASE WHEN u.sex != 2 THEN 1 ELSE 2 END) AS sex 
+			]]>
+		FROM b_urs b
+		LEFT JOIN  b_urs_info u ON b.uid = u.uid
+		WHERE b.uid=#{uid}
+	</select>
+	
+	  <resultMap id="LiveFansRankResultMap" type="com.xmniao.xmn.core.live.entity.LiveFansRank">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="parent_id" jdbcType="BIGINT" property="parentId" />
+    <result column="rank_name" jdbcType="VARCHAR" property="rankName" />
+    <result column="reward_lowest" jdbcType="DECIMAL" property="rewardLowest" />
+    <result column="reward_highest" jdbcType="DECIMAL" property="rewardHighest" />
+    <result column="referrer_ratio" jdbcType="INTEGER" property="referrerRatio" />
+    <result column="parent_referrer_ratio" jdbcType="INTEGER" property="parentReferrerRatio" />
+    <result column="send_bean" jdbcType="VARCHAR" property="sendBean" />
+    <result column="referrer_reward" jdbcType="INTEGER" property="referrerReward" />
+    <result column="consume_ratio" jdbcType="INTEGER" property="consumeRatio" />
+    <result column="red_packet_type" jdbcType="INTEGER" property="redPacketType" />
+    <result column="red_packet_lowest" jdbcType="DECIMAL" property="redPacketLowest" />
+    <result column="red_packet_highest" jdbcType="DECIMAL" property="redPacketHighest" />
+    <result column="rank_no" jdbcType="INTEGER" property="rankNo" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+    <result column="update_time" jdbcType="VARCHAR" property="updateTime" />
+    <result column="pic_url" jdbcType="VARCHAR" property="picUrl" />
+  </resultMap>
+	
+	  <sql id="LiveFansRank_Column_List">
+    id, parent_id, rank_name, reward_lowest, reward_highest, referrer_ratio, parent_referrer_ratio, 
+    send_bean, referrer_reward, consume_ratio, red_packet_type, red_packet_lowest, red_packet_highest, 
+    rank_no, create_time, update_time, pic_url
+  </sql>
+	
+	<!-- 查询等级图标 -->
+	<select id="queryLiveFansRankList" resultMap="LiveFansRankResultMap">
+	 select 
+    <include refid="LiveFansRank_Column_List" />
+    from b_live_fans_rank
+	</select>
+	
+	
+	<!-- 查询用户最大充值金额 -->
+	<select id="queryMaxPamentList" parameterType="map" resultType="map">
+		select MAX(payment)payment,uid from t_live_pay_order where  uid is not null and uid in
+		<foreach collection="list" index="index" item="uid" open="(" close=")" separator=",">
+			 #{uid}
+		</foreach>
+		 group by uid 
+	</select>
+	
+	<!-- 批量查询主播的基本信息 -->
+	<select id="findAllByUid" resultType="map">
+<!-- 	urs.openid, -->
+		SELECT 
+			urs.uname, urs.nname,info.avatar,info.sex,urs.genussellerid,urs.jointid,
+			urs.genusname,urs.corporate,lv.anchor_room_no AS roomno
+		FROM b_liver lv 
+		LEFT JOIN  b_urs  urs ON urs.uid = lv.uid
+		LEFT JOIN  b_urs_info info ON urs.uid = info.uid
+		WHERE lv.utype=1 and lv.status=1 AND urs.uid IN 
+		<foreach collection="uids" index="index" item="uids" open="(" separator="," close=")">
+			#{uids}
+		</foreach>
+	</select>
+	
+	<!-- 查询两个uid之间的关注关系 -->
+	<select id="queryTwoUidIsRelation" resultType="int">
+		SELECT COUNT(1) FROM t_live_focus WHERE str_uid=#{uid} and end_uid=#{fuid}
+	</select>
+	
+	<!-- 批量查询我的壕友信息 -->
+	<select id="findMyFriendsByUid" resultType="map">
+		SELECT 
+			lv.*,urs.nname, info.avatar, info.sex,urs.genussellerid,urs.jointid,urs.uname,
+			urs.genusname,urs.corporate
+		FROM b_liver lv 
+		LEFT JOIN  b_urs  urs ON urs.uid = lv.uid
+		LEFT JOIN  b_urs_info info ON urs.uid = info.uid
+		WHERE 1=1 AND  lv.uid in
+		<foreach collection="uids" index="index" item="uids" open="(" separator="," close=")">
+			#{uids}
+		</foreach>
+	</select>
+	
+	<!-- 查询用户的最大充值金额 -->
+	<select id="findMaxPaymentByUid" resultType="double">
+		SELECT
+			MAX(payment)payment
+		FROM t_live_pay_order WHERE pay_state=1 AND uid=#{uid}
+	</select>
+	<!-- 查询用户 ，城市，商圈，分类查询专项卡商户充值记录 按支付时间排序-->
+	<select id="queryChargeDebitCards"  parameterType="map"  resultType="map">
+	SELECT s.sellerid as entry_sellerid,s.sellername as entry_sellername,d.sellername,d.sellertype,s.city,p.entry_sellerid,p.pay_time,p.pay_state,d.sellerid AS dsellerid,
+	   d.recharge_item,d.sub_sellerid,d.id FROM t_seller s
+   LEFT JOIN t_debitcard_seller d ON s.sellerid = d.sellerid
+   OR d.sub_sellerid LIKE CONCAT('%', s.sellerid, '%')
+   LEFT JOIN t_seller_landmark l ON s.sellerid=l.sellerid
+   LEFT JOIN t_business b ON s.zoneid=b.bid
+   left join t_live_pay_order p on d.sellerid = p.sellerid or d.sub_sellerid like  CONCAT('%', p.entry_sellerid, '%')
+  WHERE
+	p.pay_state=1
+	and d.`status` = 0
+  AND s.`status` = 3
+  AND s.isonline = 1 
+  and p.entry_sellerid is not null
+  and p.uid=#{uid}
+ 	<if test="zoneid != null">
+		  AND s.zoneid=#{zoneid}
+		  </if>
+		  <if test="tradeid != null">
+		  AND s.genre=#{tradeid}
+		  </if>
+	 	  <if test="cityId != null">
+		  AND s.city=#{cityId}
+		  </if>
+  GROUP BY d.id order by pay_time ASC		
+	</select>
+
+	<!-- 通过用户ID列表批量查询用户信息 -->
+	<select id="findAllByIdList" resultType="map">
+<!-- 	urs.openid, -->
+		SELECT 
+			urs.uname, urs.nname,info.avatar,info.sex,urs.genussellerid,urs.jointid,
+			urs.genusname,urs.corporate,lv.anchor_room_no AS roomno,
+			lv.id, lv.uid, lv.sign_type as signType, lv.rank_no AS rankNo,
+			lv.phone
+		FROM b_liver lv 
+		LEFT JOIN  b_urs  urs ON urs.uid = lv.uid
+		LEFT JOIN  b_urs_info info ON urs.uid = info.uid
+		WHERE lv.status=1 
+		<if test="ids != null and ids.size() > 0">
+			AND lv.id IN 
+			<foreach collection="ids" index="index" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+		</if>
+	</select>
+
+		<!-- 查询内部测试主播 -->
+	<select id="findInsideTestAnchors" resultType="map" parameterType="map">
+		SELECT lv.id, lv.uid
+		FROM b_liver lv
+		WHERE lv.isInside = 0 AND sign_type = 2
+		LIMIT ${(page-1)*pageSize},#{pageSize}
+	</select>
+
+	<!--根据主播的id 查询直播基本信息  -->
+	<select id="queryAnchorInfoByAnchorId" resultType="liverInfo">
+		SELECT 
+	  		lv.id, lv.uid,lv.group_id, lv.utype, urs.nname, info.phone, info.avatar, info.sex
+  		FROM b_liver lv  
+  			LEFT JOIN  b_urs  urs ON urs.uid = lv.uid
+  			LEFT JOIN  b_urs_info  info ON info.uid = urs.uid
+		WHERE lv.id=#{anchorId}
+	</select>
+
+	<!-- 查询主播签约类型 -->
+	<select id="querySignType" resultType="Integer">
+		SELECT sign_type FROM b_liver WHERE uid = #{uid}
+	</select>
+
+	<!-- 查询主播信息通过城市Id -->
+	<select id="selectAnchorByCityId" resultType="map" parameterType="int">
+		SELECT
+	  		lv.id, lv.uid
+  		FROM b_liver lv  
+		WHERE lv.city=#{cityId}
+	</select>
+	
+	<!-- 查询主播大赛报名信息 是受限制-->
+	<select id="queryVstarEnrollInfo" parameterType="map" resultType="int">
+		select count(1) as hasCount from t_vstar_enroll where uid = #{uid} and confining = #{confining} 
+	</select>
+
+	<!-- 根据主播id 查询主播的 groupId -->
+	<select id="queryGroupIdByAnchorId" resultType="String">
+		SELECT group_id FROM b_liver WHERE id = #{anchorId}
+	</select>
+	
+	<!-- 修改用户为大赛选手 -->
+	<update id="updateVstarType" parameterType="map">
+	 UPDATE b_liver SET 
+	 is_vstar = #{isVstar}
+	 <if test="singleType!=null">
+	   ,sign_type = #{singleType} 
+	 </if>
+	 WHERE uid = #{uid}
+	</update>
+</mapper>

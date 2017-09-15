@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.xmer.dao.WalletRecordDao" >
+  
+  <!-- 根据寻蜜客id查询寻蜜客钱包记录 -->
+  <select id="queryXmkWalletByRtype" resultType="map" parameterType="map">
+  	SELECT xid,rtype,IFNULL(profit,0.0) profit,IFNULL(qprofit,0.0) qprofit,
+  	IFNULL(hprofit,0.0) hprofit,DATE_FORMAT(sdate,'%Y-%m-%d %H:%s:%i') sdate,IFNULL(remark,'') remark,
+  	IFNULL(description,'') description 
+  	FROM b_xmer_wallet_record
+  	WHERE xid=#{xid} 
+  	<if test=' type == "0" '>
+			AND (sdate BETWEEN DATE_ADD(SYSDATE(),INTERVAL -180 DAY) AND DATE_ADD(SYSDATE(),INTERVAL -90 DAY))
+	</if>
+	<if test=' type == "1" '>
+			AND (sdate BETWEEN DATE_ADD(SYSDATE(),INTERVAL -90 DAY) AND SYSDATE())
+	</if>
+  	ORDER BY sdate DESC
+    <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+</mapper>

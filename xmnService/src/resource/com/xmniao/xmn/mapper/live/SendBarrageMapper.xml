@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live.dao.SendBarrageDao">
+		
+	
+	
+<!-- 	新增私信 -->
+	<insert id="addSendBarrage" parameterType="map">
+		insert into t_live_public_message(
+		send_liver_id,
+  send_liver_uname,
+  live_record_id,
+  messager_group_no,
+  messager_txt,
+  mess_send_time,
+  message_type,
+  create_time,
+  update_time)
+VALUES
+( 
+#{send_liver_id},
+  #{send_liver_uname},
+  #{live_record_id},
+  #{messager_group_no},
+  #{messager_txt},
+  #{mess_send_time},
+  #{message_type},
+  #{create_time},
+  #{update_time}
+)
+
+	</insert>
+	
+<!-- 	查询弹幕消息 -->
+	<select id="queryCommonMsgByRecordId" parameterType="map" resultType="map">
+	select pm.id,
+	ifnull(pm.send_liver_id,'') send_liver_id,
+	ifnull(pm.send_liver_uname,'') send_liver_uname,
+	ifnull(pm.live_record_id,'') live_record_id,	
+	ifnull(pm.messager_group_no,'') messager_group_no,	
+	ifnull(pm.messager_txt,'') messager_txt,
+	ifnull(pm.mess_send_time,'') mess_send_time
+ 	from t_live_public_message pm where pm.live_record_id=#{live_record_id}   
+ 	<!-- and pm.mess_send_time>DATE_SUB(SYSDATE(), INTERVAL  #{minute} MINUTE ) -->
+ 	ORDER BY pm.mess_send_time desc limit  20
+	</select>
+</mapper>

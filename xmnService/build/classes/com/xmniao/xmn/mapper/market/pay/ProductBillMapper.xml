@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.market.dao.ProductBillDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.market.entity.pay.ProductBill" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="codeId" property="codeid" jdbcType="INTEGER" />
+    <result column="activityId" property="activityid" jdbcType="INTEGER" />
+    <result column="breviary" property="breviary" jdbcType="VARCHAR" />
+    <result column="pname" property="pname" jdbcType="VARCHAR" />
+    <result column="bid" property="bid" jdbcType="BIGINT" />
+    <result column="sub_bid" property="subBid" jdbcType="VARCHAR" />
+    <result column="wareNum" property="warenum" jdbcType="INTEGER" />
+    <result column="rdate" property="rdate" jdbcType="TIMESTAMP" />
+    <result column="udate" property="udate" jdbcType="TIMESTAMP" />
+    <result column="price" property="price" jdbcType="DECIMAL" />
+    <result column="goodsName" property="goodsname" jdbcType="VARCHAR" />
+    <result column="suttle" property="suttle" jdbcType="VARCHAR" />
+    <result column="freight" property="freight" jdbcType="DECIMAL" />
+    <result column="supplier_id" property="supplierId" jdbcType="BIGINT" />
+    <result column="integral" property="integral" jdbcType="DECIMAL" />
+    <result column="purchasePrice" property="purchaseprice" jdbcType="DECIMAL" />
+    <result column="attr_val" property="attrVal" jdbcType="VARCHAR" />
+    <result column="attr_id" property="attrId" jdbcType="INTEGER" />
+    <result column="attr_amount" property="attrAmount" jdbcType="DECIMAL" />
+    <result column="attrids" property="attrids" jdbcType="VARCHAR" />
+    <result column="attr_str" property="attrStr" jdbcType="VARCHAR" />
+    <result column="expWeight" property="expweight" jdbcType="DOUBLE" />
+    <result column="expTid" property="exptid" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, codeId, activityId, breviary, pname, bid, sub_bid, wareNum, rdate, udate, price, goodsName, suttle, 
+    freight, supplier_id, integral, purchasePrice, attr_val, attr_id, attr_amount, attrids, attr_str, 
+    expWeight, expTid
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_product_bill
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_product_bill
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.market.entity.pay.ProductBill" >
+    insert into t_product_bill (id, codeId, activityId, pname, breviary,
+      bid, sub_bid, wareNum, 
+      rdate, udate, price, 
+      goodsName, suttle, freight, 
+      supplier_id, integral, purchasePrice, 
+      attr_val, attr_id, attr_amount, 
+      attr_str,attrids, expWeight, expTid
+      )
+    values (#{id,jdbcType=INTEGER}, #{codeid,jdbcType=INTEGER}, #{activityid,jdbcType=INTEGER}, #{pname,jdbcType=VARCHAR}, #{breviary,jdbcType=VARCHAR}, 
+      #{bid,jdbcType=BIGINT}, #{subBid,jdbcType=VARCHAR}, #{warenum,jdbcType=INTEGER}, 
+      #{rdate,jdbcType=TIMESTAMP}, #{udate,jdbcType=TIMESTAMP}, #{price,jdbcType=DECIMAL}, 
+      #{goodsname,jdbcType=VARCHAR}, #{suttle,jdbcType=VARCHAR}, #{freight,jdbcType=DECIMAL}, 
+      #{supplierId,jdbcType=BIGINT}, #{integral,jdbcType=DECIMAL}, #{purchaseprice,jdbcType=DECIMAL}, 
+      #{attrVal,jdbcType=VARCHAR}, #{attrId,jdbcType=INTEGER}, #{attrAmount,jdbcType=DECIMAL}, 
+      #{attrStr,jdbcType=VARCHAR},#{attrids,jdbcType=VARCHAR}, #{expweight,jdbcType=DOUBLE}, #{exptid,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.market.entity.pay.ProductBill" keyProperty="id" useGeneratedKeys="true">
+    insert into t_product_bill
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="codeid != null" >
+        codeId,
+      </if>
+      <if test="activityid != null" >
+        activityId,
+      </if>
+      <if test="pname != null" >
+        pname,
+      </if>
+      <if test="breviary != null" >
+        breviary,
+      </if>
+      <if test="bid != null" >
+        bid,
+      </if>
+      <if test="subBid != null" >
+        sub_bid,
+      </if>
+      <if test="warenum != null" >
+        wareNum,
+      </if>
+      <if test="rdate != null" >
+        rdate,
+      </if>
+      <if test="udate != null" >
+        udate,
+      </if>
+      <if test="price != null" >
+        price,
+      </if>
+      <if test="goodsname != null" >
+        goodsName,
+      </if>
+      <if test="suttle != null" >
+        suttle,
+      </if>
+      <if test="freight != null" >
+        freight,
+      </if>
+      <if test="supplierId != null" >
+        supplier_id,
+      </if>
+      <if test="integral != null" >
+        integral,
+      </if>
+      <if test="purchaseprice != null" >
+        purchasePrice,
+      </if>
+      <if test="attrVal != null" >
+        attr_val,
+      </if>
+      <if test="attrId != null" >
+        attr_id,
+      </if>
+      <if test="attrAmount != null" >
+        attr_amount,
+      </if>
+       <if test="attrids != null" >
+        attrids,
+      </if>
+      <if test="attrStr != null" >
+        attr_str,
+      </if>
+      <if test="expweight != null" >
+        expWeight,
+      </if>
+      <if test="exptid != null" >
+        expTid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="codeid != null" >
+        #{codeid,jdbcType=INTEGER},
+      </if>
+      <if test="activityid != null" >
+        #{activityid,jdbcType=INTEGER},
+      </if>
+      <if test="pname != null" >
+        #{pname,jdbcType=VARCHAR},
+      </if>
+      <if test="breviary != null" >
+        #{breviary},
+      </if>
+      <if test="bid != null" >
+        #{bid,jdbcType=BIGINT},
+      </if>
+      <if test="subBid != null" >
+        #{subBid,jdbcType=VARCHAR},
+      </if>
+      <if test="warenum != null" >
+        #{warenum,jdbcType=INTEGER},
+      </if>
+      <if test="rdate != null" >
+        #{rdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="udate != null" >
+        #{udate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="price != null" >
+        #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="goodsname != null" >
+        #{goodsname,jdbcType=VARCHAR},
+      </if>
+      <if test="suttle != null" >
+        #{suttle,jdbcType=VARCHAR},
+      </if>
+      <if test="freight != null" >
+        #{freight,jdbcType=DECIMAL},
+      </if>
+      <if test="supplierId != null" >
+        #{supplierId,jdbcType=BIGINT},
+      </if>
+      <if test="integral != null" >
+        #{integral,jdbcType=DECIMAL},
+      </if>
+      <if test="purchaseprice != null" >
+        #{purchaseprice,jdbcType=DECIMAL},
+      </if>
+      <if test="attrVal != null" >
+        #{attrVal,jdbcType=VARCHAR},
+      </if>
+      <if test="attrId != null" >
+        #{attrId,jdbcType=INTEGER},
+      </if>
+      <if test="attrAmount != null" >
+        #{attrAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="attrids != null" >
+        #{attrids,jdbcType=VARCHAR},
+      </if>
+      <if test="attrStr != null" >
+        #{attrStr,jdbcType=VARCHAR},
+      </if>
+      <if test="expweight != null" >
+        #{expweight,jdbcType=DOUBLE},
+      </if>
+      <if test="exptid != null" >
+        #{exptid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.market.entity.pay.ProductBill" >
+    update t_product_bill
+    <set >
+      <if test="codeid != null" >
+        codeId = #{codeid,jdbcType=INTEGER},
+      </if>
+      <if test="activityid != null" >
+        activityId = #{activityid,jdbcType=INTEGER},
+      </if>
+      <if test="breviary != null" >
+        breviary = #{breviary},
+      </if>
+      <if test="pname != null" >
+        pname = #{pname,jdbcType=VARCHAR},
+      </if>
+      <if test="bid != null" >
+        bid = #{bid,jdbcType=BIGINT},
+      </if>
+      <if test="subBid != null" >
+        sub_bid = #{subBid,jdbcType=VARCHAR},
+      </if>
+      <if test="warenum != null" >
+        wareNum = #{warenum,jdbcType=INTEGER},
+      </if>
+      <if test="rdate != null" >
+        rdate = #{rdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="udate != null" >
+        udate = #{udate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="price != null" >
+        price = #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="goodsname != null" >
+        goodsName = #{goodsname,jdbcType=VARCHAR},
+      </if>
+      <if test="suttle != null" >
+        suttle = #{suttle,jdbcType=VARCHAR},
+      </if>
+      <if test="freight != null" >
+        freight = #{freight,jdbcType=DECIMAL},
+      </if>
+      <if test="supplierId != null" >
+        supplier_id = #{supplierId,jdbcType=BIGINT},
+      </if>
+      <if test="integral != null" >
+        integral = #{integral,jdbcType=DECIMAL},
+      </if>
+      <if test="purchaseprice != null" >
+        purchasePrice = #{purchaseprice,jdbcType=DECIMAL},
+      </if>
+      <if test="attrVal != null" >
+        attr_val = #{attrVal,jdbcType=VARCHAR},
+      </if>
+      <if test="attrId != null" >
+        attr_id = #{attrId,jdbcType=INTEGER},
+      </if>
+      <if test="attrAmount != null" >
+        attr_amount = #{attrAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="attrids != null" >
+        attrids = #{attrids,jdbcType=VARCHAR},
+      </if>
+      <if test="attrStr != null" >
+        attr_str = #{attrStr,jdbcType=VARCHAR},
+      </if>
+      <if test="expweight != null" >
+        expWeight = #{expweight,jdbcType=DOUBLE},
+      </if>
+      <if test="exptid != null" >
+        expTid = #{exptid,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.market.entity.pay.ProductBill" >
+    update t_product_bill 
+    set codeId = #{codeid,jdbcType=INTEGER},
+      activityId = #{activityid,jdbcType=INTEGER},
+      pname = #{pname,jdbcType=VARCHAR},
+      breviary=#{breviary}
+      bid = #{bid,jdbcType=BIGINT},
+      sub_bid = #{subBid,jdbcType=VARCHAR},
+      wareNum = #{warenum,jdbcType=INTEGER},
+      rdate = #{rdate,jdbcType=TIMESTAMP},
+      udate = #{udate,jdbcType=TIMESTAMP},
+      price = #{price,jdbcType=DECIMAL},
+      goodsName = #{goodsname,jdbcType=VARCHAR},
+      suttle = #{suttle,jdbcType=VARCHAR},
+      freight = #{freight,jdbcType=DECIMAL},
+      supplier_id = #{supplierId,jdbcType=BIGINT},
+      integral = #{integral,jdbcType=DECIMAL},
+      purchasePrice = #{purchaseprice,jdbcType=DECIMAL},
+      attr_val = #{attrVal,jdbcType=VARCHAR},
+      attr_id = #{attrId,jdbcType=INTEGER},
+      attr_amount = #{attrAmount,jdbcType=DECIMAL},
+      attrids = #{attrids,jdbcType=VARCHAR},
+      attr_str = #{attrStr,jdbcType=VARCHAR},
+      expWeight = #{expweight,jdbcType=DOUBLE},
+      expTid = #{exptid,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 通过父订单ID删除订单商品详情 -->
+  <delete id="deleteByBid" parameterType="long">
+  	delete from t_product_bill
+    where bid = #{bid,jdbcType=INTEGER}
+  </delete>
+  
+   <!--  通过父订单ID查询商品订单详情 -->
+  <select id="findAllByBid" resultMap="BaseResultMap">
+  	SELECT 
+  		<include refid="Base_Column_List" />
+  	FROM t_product_bill WHERE bid=#{bid}
+  </select>
+  
+  <select id="findAllBySubBid" resultMap="BaseResultMap">
+  	SELECT 
+  		<include refid="Base_Column_List" />
+  	FROM t_product_bill WHERE sub_bid=#{bid}
+  </select>
+  
+  <resultMap id="OrderProductResult" type="com.xmniao.xmn.core.market.entity.pay.ProductResponse" >
+    <result column="codeId" property="codeId" jdbcType="INTEGER" />
+    <result column="activityId" property="activityId" jdbcType="INTEGER" />
+    <result column="breviary" property="breviary" jdbcType="VARCHAR" />
+    <result column="pname" property="pname" jdbcType="VARCHAR" />
+    <result column="wareNum" property="num" jdbcType="INTEGER" />
+    <result column="price" property="price" jdbcType="DECIMAL" />
+    <result column="goodsName" property="goodsName" jdbcType="VARCHAR" />
+    <result column="freight" property="freight" jdbcType="DECIMAL" />
+    <result column="integral" property="integral" jdbcType="DECIMAL" />
+    <result column="attrids" property="attrIds" jdbcType="VARCHAR" />
+    <result column="attr_amount" property="amount" jdbcType="DECIMAL" />
+    <result column="attr_str" property="attrVals" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <!-- 根据主单ID查询订单商品详情 -->
+  <select id="queryProductBillByBid" resultMap="OrderProductResult">
+	SELECT 
+		codeId,activityId,breviary,pname,wareNum,(price-integral) as price,goodsName,freight,integral,
+		attr_amount,attrids,attr_str 
+	FROM t_product_bill WHERE bid=#{bid} ORDER BY id DESC
+  </select>
+  
+  <select id="queryProductBillBySubBid" resultMap="OrderProductResult">
+	SELECT 
+		codeId,activityId,breviary,pname,wareNum,(price-integral) as price,goodsName,freight,integral,
+		attr_amount,attrids,attr_str 
+	FROM t_product_bill WHERE sub_bid=#{bid} ORDER BY id DESC
+  </select>
+
+  <!-- 统计活动商品购买数量  -->
+  <select id="sumProductCountsByActivityIdAndCodeId" resultType="int">
+  	SELECT
+  		IF(SUM(p.wareNum) IS NULL,0,SUM(p.wareNum)) AS wareNum 
+  	FROM t_product_bill p 
+	LEFT JOIN t_bill_fresh f ON p.bid = f.bid WHERE f.status in (1,3,8)
+	AND p.activityId=#{activityId} AND p.codeId=#{codeId} AND f.uid=#{uid}
+  </select>
+
+</mapper>

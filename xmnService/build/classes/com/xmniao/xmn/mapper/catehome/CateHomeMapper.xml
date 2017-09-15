@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.catehome.dao.CateHomeDao">
+	
+	<sql id="advertisingColumns"> 
+	ifnull(id,"")id,ifnull(adbpic,"")adbpic,ifnull(content,"")content,ifnull(adburl,"")adburl,ifnull(sort,"")sort,ifnull(remarks,"")remarks,ifnull(start_time,"")startTime,
+	ifnull(end_time,"")endTime,ifnull(is_all,"")isAll,ifnull(share_cont,"")shareCont,ifnull(share_img,"")shareImg,ifnull(share_url,"")shareUrl,ifnull(share_title,"")shareTitle,
+	ifnull(pic_low,"")picLow,ifnull(pic_middle,"")picMiddle
+	</sql>
+	
+	<!-- 根据省市区查询发现美食首页的轮播图列表信息 -->
+	<select id="queryCateAdvertisingList" parameterType="int" resultType="map">
+		SELECT  <include refid="advertisingColumns"/> 
+		FROM 
+			t_advertising  
+		WHERE isshow = 0 AND type = 1 AND status = 1
+	    <if test="_parameter != null">
+	        AND city = #{city}
+	    </if>
+	</select>
+	
+	<!-- 查询发现美食首页分类信息(大类) -->
+	<select id="queryCateCategory" resultType="map">
+		SELECT tid id,ifnull(tradename,"")tradeName,ifnull(show_big_img,"")showBigImg,ifnull(order_num,0)orderNum 
+		FROM t_trade WHERE type=2 AND hot=1 AND
+		<![CDATA[
+		status != 1 
+		]]>
+		ORDER BY order_num DESC	LIMIT 0,4
+	</select>
+	
+	<!-- 查询发现美食首页banenr信息 -->
+	<select id="queryBannerList" resultType="banner">
+		SELECT * FROM t_banner WHERE position=1 AND status=1
+	</select>
+	
+	<!-- 根据订单号查询订单评论信息 -->
+	<select id="queryCommentByBid" resultType="map" parameterType="long">
+		SELECT * FROM t_comment WHERE bid = #{bid}
+	</select>
+	
+	<!-- 根据评价id查询订单评论信息 -->
+	<select id="queryCommentByCid" resultType="map" parameterType="int">
+		SELECT * FROM t_comment WHERE cid = #{cid}
+	</select>
+	
+	<!-- 根据评价id删除评价信息 -->
+	<delete id="dedeteCateCommentByCid" parameterType="int">
+		DELETE FROM t_comment WHERE cid = #{cid}
+	</delete>
+	
+	<!-- 查询用户的评价列表 -->
+	<select id="queryCateCommentList" resultType="map" parameterType="map">
+		SELECT s.sellername,c.cid,c.sdate,c.hbranch,c.fbranch,c.kbranch,c.jbranch,c.status,p.picurl FROM t_comment c,t_seller s,t_seller_pic p 
+		WHERE c.sellerid = s.sellerid AND p.sellerid = s.sellerid AND p.islogo = 1 AND c.uid = #{uid} ORDER BY sdate desc
+		LIMIT ${(page-1)*limit},#{limit}
+	</select>
+	
+	<!-- 发表评价 -->
+	<insert id="insertCateComment" parameterType="map">
+		 <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="cid">
+			SELECT LAST_INSERT_ID() AS cid
+		</selectKey>
+		INSERT INTO t_comment(bid,sellerid,uid,nname,avatar,sdate,hbranch,jbranch,kbranch,fbranch,percapita,status) 
+		VALUES(#{bid},#{sellerid},#{uid},#{nname},#{avatar},#{sdate},#{hbranch},#{jbranch},#{kbranch},#{fbranch},#{percapita},0)
+	</insert>
+	<!-- 搜索联想 -->
+	<select id="searchConnectList" parameterType="map" resultType="map">
+	select keyWord  from (
+	select sellername keyWord,1 type from t_seller where sellername like #{keyWord}  and status =3 and isonline=1 and is_public = 1
+	<if test="areaId!=null">
+		and city = #{areaId} 
+	</if>
+	UNION
+	select b.title keyWord,2 type from t_business b left join t_area a on b.area_id = a.area_id 
+	where b.title like #{keyWord}
+	<if test="areaId!=null">
+		and a.pid = #{areaId}
+	</if>
+	UNION
+	select tradename keyWord,3 type from t_trade where tradename like #{keyWord}
+	UNION 
+	select address keyWord,4 type from t_seller where address like CONCAT('%',#{keyWord},'%') and status =3 and isonline=1 and is_public = 1
+	<if test="areaId!=null">
+		and city = #{areaId} 
+	</if>
+	) a order by type limit ${(page-1)*pageSize},#{pageSize}
+	</select>
+</mapper>

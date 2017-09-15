@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.xmer.dao.SaasSoldOrderDao">
+	
+	<resultMap id="BaseResultMap" type="com.xmniao.xmn.core.xmer.entity.SaaSoldOrder">
+		<id column="id" property="id"/>
+		<result column="sellerid" property="sellerid"/>
+		<result column="sellername" property="sellername"/>
+		<result column="uid" property="uid"/>
+		<result column="amount" property="amount"/>
+		<result column="status" property="status"/>
+		<result column="reason" property="reason"/>
+		<result column="pay_type" property="payType"/>
+		<result column="zdate" property="zdate"/>
+		<result column="create_date" property="createDate"/>
+		<result column="ordersn" property="ordersn"/>
+		<result column="saas_ordersn" property="saas_ordersn"/>
+		<result column="saas_source" property="saas_source"/>
+		<result column="saas_channel" property="saas_channel"/>
+	</resultMap>
+
+	<sql id="Base_Column_List" >
+	    id, sellerid, sellername, uid, amount, status, reason, pay_type, zdate, create_date,ordersn,saas_ordersn,saas_source,saas_channel
+	 </sql>
+
+	<!-- 
+		根据用户ID查询签约商铺ID列表
+		@author zhengyaowen
+	-->
+	<select id="querySelleridsByUid" resultType="int" parameterType="java.lang.Integer" >
+		SELECT sellerid FROM t_saas_sold_order WHERE uid = #{uid} AND status = 1
+	</select>
+		<!-- 根据商家ID查询签约订单是否存在和支付成功 -->
+	<select id="getSellerOrder" resultMap="BaseResultMap" parameterType="map">
+		SELECT 
+	    	<include refid="Base_Column_List" />
+	    FROM 
+	    	t_saas_sold_order
+	    WHERE sellerid = #{sellerid}
+	</select>
+	
+	<!-- 查询寻蜜客软件销售总金额 -->
+	<select id="sumSaasAmountByUid" resultType="double" parameterType="map" >
+		SELECT SUM(amount) FROM t_saas_sold_order WHERE uid = #{uid} AND status = 1
+		<if test="sdate !=null and  sdate !='' and edate !='' ">
+		<![CDATA[
+			AND zdate>=#{sdate} AND zdate<#{edate}
+		]]>
+		</if>
+	</select>
+	
+	<!-- 查询寻蜜客软件销售收入明细列表 -->
+	<select id="queryIncomeList" resultType="map" parameterType="map" >
+		SELECT 
+			uid,
+		<![CDATA[
+			case when uid =#{uid} and pay_type = 10000000 then 0 when uid <> #{uid} then #{price}  else amount end as amount,
+			case when  pay_type = 10000000 then 1 else 0 end otherpay,
+			sellername, DATE_FORMAT(zdate,'%y.%m.%d %h:%i') zdate
+		]]>
+		from t_saas_sold_order where `status` = 1 and hstatus = 9 
+		<if test="uids != null">
+			and uid in
+			<foreach collection="uids" index="index" item="id" open="(" separator="," close=")">
+			#{id}
+			</foreach>
+		</if>
+		<if test="sdate !=null and  sdate !='' and edate !='' ">
+		<![CDATA[
+			AND zdate>=#{sdate} AND zdate<#{edate}
+		]]>
+		</if>
+		ORDER BY zdate DESC LIMIT ${(page-1)*limit},#{limit}
+	</select>
+	
+		 <!-- 查询一批寻蜜客的总签约套数 -->
+	<select id="getXmerSellerNums" resultType="int">
+		SELECT count(1) from t_saas_sold_order where `status` =1 and hstatus = 9 and saas_ordersn in
+		<foreach collection="uids" index="index" item="uid" open="(" separator="," close=")">
+		#{uid}
+		</foreach>
+	</select>
+	
+		 <!--寻蜜客软件销售金额 -->
+	<select id="querySaasAmount" resultType="double" parameterType="map">
+		SELECT 
+		<![CDATA[
+			sum(case when uid =#{uid} and pay_type = 10000000 then 0 when uid <> #{uid} then #{price}  else amount end) as amount
+		]]>
+		from t_saas_sold_order where `status` = 1 and hstatus = 9 and uid in
+		<foreach collection="uids" index="index" item="id" open="(" separator="," close=")">
+		#{id}
+		</foreach>
+		<if test="sdate !=null and  sdate !='' and edate !='' ">
+		<![CDATA[
+			AND zdate>=#{sdate} AND zdate<#{edate}
+		]]>
+		</if>
+	</select>
+
+	<!-- 寻蜜客软件销售订单 -->
+	<select id="querySaasOrderIds" resultType="map" parameterType="map">
+		select * 
+		from t_saas_sold_order where `status` = 1 and hstatus = 9 and uid in
+		<foreach collection="uids" index="index" item="id" open="(" separator="," close=")">
+		#{id}
+		</foreach>
+		<if test="sdate !=null and  sdate !='' and edate !='' ">
+		<![CDATA[
+			AND zdate>=#{sdate} AND zdate<#{edate}
+		]]>
+		</if>
+	</select>
+
+
+	<!-- 批量查询订单信息 -->
+	<select id="querySaasOrderInfoByIds" resultType="map" parameterType="map">
+		select sellername, ordersn, uid
+		from t_saas_sold_order 
+		where ordersn in
+		<foreach collection="orderIds" index="index" item="id" open="(" separator="," close=")">
+		#{id}
+		</foreach>
+	</select>
+	
+</mapper>

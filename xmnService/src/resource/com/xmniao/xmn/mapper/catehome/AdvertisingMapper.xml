@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.catehome.dao.AdvertisingDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.catehome.entity.Advertising" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="adbpic" property="adbpic" jdbcType="VARCHAR" />
+    <result column="adburl" property="adburl" jdbcType="VARCHAR" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+    <result column="isshow" property="isshow" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="is_all" property="isAll" jdbcType="INTEGER" />
+    <result column="province" property="province" jdbcType="VARCHAR" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="area" property="area" jdbcType="VARCHAR" />
+    <result column="share_cont" property="shareCont" jdbcType="VARCHAR" />
+    <result column="share_img" property="shareImg" jdbcType="VARCHAR" />
+    <result column="share_url" property="shareUrl" jdbcType="VARCHAR" />
+    <result column="share_title" property="shareTitle" jdbcType="VARCHAR" />
+    <result column="STATUS" property="status" jdbcType="VARCHAR" />
+    <result column="pic_low" property="picLow" jdbcType="VARCHAR" />
+    <result column="pic_middle" property="picMiddle" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, adbpic, adburl, sort, isshow, type, remarks, start_time, end_time, is_all, province, 
+    city, area, share_cont, share_img, share_url, share_title, STATUS, pic_low, pic_middle,content
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_advertising
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_advertising
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.catehome.entity.Advertising" >
+    insert into t_advertising (id, adbpic, adburl, 
+      sort, isshow, type, 
+      remarks, start_time, end_time, 
+      is_all, province, city, 
+      area, share_cont, share_img, 
+      share_url, share_title, STATUS, 
+      pic_low, pic_middle, content
+      )
+    values (#{id,jdbcType=INTEGER}, #{adbpic,jdbcType=VARCHAR}, #{adburl,jdbcType=VARCHAR}, 
+      #{sort,jdbcType=INTEGER}, #{isshow,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, 
+      #{remarks,jdbcType=VARCHAR}, #{startTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, 
+      #{isAll,jdbcType=INTEGER}, #{province,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, 
+      #{area,jdbcType=VARCHAR}, #{shareCont,jdbcType=VARCHAR}, #{shareImg,jdbcType=VARCHAR}, 
+      #{shareUrl,jdbcType=VARCHAR}, #{shareTitle,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, 
+      #{picLow,jdbcType=VARCHAR}, #{picMiddle,jdbcType=VARCHAR}, #{content,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.catehome.entity.Advertising" >
+    insert into t_advertising
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="adbpic != null" >
+        adbpic,
+      </if>
+      <if test="adburl != null" >
+        adburl,
+      </if>
+      <if test="sort != null" >
+        sort,
+      </if>
+      <if test="isshow != null" >
+        isshow,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="remarks != null" >
+        remarks,
+      </if>
+      <if test="startTime != null" >
+        start_time,
+      </if>
+      <if test="endTime != null" >
+        end_time,
+      </if>
+      <if test="isAll != null" >
+        is_all,
+      </if>
+      <if test="province != null" >
+        province,
+      </if>
+      <if test="city != null" >
+        city,
+      </if>
+      <if test="area != null" >
+        area,
+      </if>
+      <if test="shareCont != null" >
+        share_cont,
+      </if>
+      <if test="shareImg != null" >
+        share_img,
+      </if>
+      <if test="shareUrl != null" >
+        share_url,
+      </if>
+      <if test="shareTitle != null" >
+        share_title,
+      </if>
+      <if test="status != null" >
+        STATUS,
+      </if>
+      <if test="picLow != null" >
+        pic_low,
+      </if>
+      <if test="picMiddle != null" >
+        pic_middle,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="adbpic != null" >
+        #{adbpic,jdbcType=VARCHAR},
+      </if>
+      <if test="adburl != null" >
+        #{adburl,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null" >
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="isshow != null" >
+        #{isshow,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="remarks != null" >
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime != null" >
+        #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isAll != null" >
+        #{isAll,jdbcType=INTEGER},
+      </if>
+      <if test="province != null" >
+        #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null" >
+        #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="area != null" >
+        #{area,jdbcType=VARCHAR},
+      </if>
+      <if test="shareCont != null" >
+        #{shareCont,jdbcType=VARCHAR},
+      </if>
+      <if test="shareImg != null" >
+        #{shareImg,jdbcType=VARCHAR},
+      </if>
+      <if test="shareUrl != null" >
+        #{shareUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="shareTitle != null" >
+        #{shareTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="picLow != null" >
+        #{picLow,jdbcType=VARCHAR},
+      </if>
+      <if test="picMiddle != null" >
+        #{picMiddle,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.catehome.entity.Advertising" >
+    update t_advertising
+    <set >
+      <if test="adbpic != null" >
+        adbpic = #{adbpic,jdbcType=VARCHAR},
+      </if>
+      <if test="adburl != null" >
+        adburl = #{adburl,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null" >
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="isshow != null" >
+        isshow = #{isshow,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="remarks != null" >
+        remarks = #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime != null" >
+        start_time = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isAll != null" >
+        is_all = #{isAll,jdbcType=INTEGER},
+      </if>
+      <if test="province != null" >
+        province = #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null" >
+        city = #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="area != null" >
+        area = #{area,jdbcType=VARCHAR},
+      </if>
+      <if test="shareCont != null" >
+        share_cont = #{shareCont,jdbcType=VARCHAR},
+      </if>
+      <if test="shareImg != null" >
+        share_img = #{shareImg,jdbcType=VARCHAR},
+      </if>
+      <if test="shareUrl != null" >
+        share_url = #{shareUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="shareTitle != null" >
+        share_title = #{shareTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        STATUS = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="picLow != null" >
+        pic_low = #{picLow,jdbcType=VARCHAR},
+      </if>
+      <if test="picMiddle != null" >
+        pic_middle = #{picMiddle,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.xmniao.xmn.core.catehome.entity.Advertising" >
+    update t_advertising
+    set adbpic = #{adbpic,jdbcType=VARCHAR},
+      adburl = #{adburl,jdbcType=VARCHAR},
+      sort = #{sort,jdbcType=INTEGER},
+      isshow = #{isshow,jdbcType=INTEGER},
+      type = #{type,jdbcType=INTEGER},
+      remarks = #{remarks,jdbcType=VARCHAR},
+      start_time = #{startTime,jdbcType=TIMESTAMP},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      is_all = #{isAll,jdbcType=INTEGER},
+      province = #{province,jdbcType=VARCHAR},
+      city = #{city,jdbcType=VARCHAR},
+      area = #{area,jdbcType=VARCHAR},
+      share_cont = #{shareCont,jdbcType=VARCHAR},
+      share_img = #{shareImg,jdbcType=VARCHAR},
+      share_url = #{shareUrl,jdbcType=VARCHAR},
+      share_title = #{shareTitle,jdbcType=VARCHAR},
+      STATUS = #{status,jdbcType=VARCHAR},
+      pic_low = #{picLow,jdbcType=VARCHAR},
+      pic_middle = #{picMiddle,jdbcType=VARCHAR},
+      content = #{content,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.catehome.entity.Advertising" >
+    update t_advertising
+    set adbpic = #{adbpic,jdbcType=VARCHAR},
+      adburl = #{adburl,jdbcType=VARCHAR},
+      sort = #{sort,jdbcType=INTEGER},
+      isshow = #{isshow,jdbcType=INTEGER},
+      type = #{type,jdbcType=INTEGER},
+      remarks = #{remarks,jdbcType=VARCHAR},
+      start_time = #{startTime,jdbcType=TIMESTAMP},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      is_all = #{isAll,jdbcType=INTEGER},
+      province = #{province,jdbcType=VARCHAR},
+      city = #{city,jdbcType=VARCHAR},
+      area = #{area,jdbcType=VARCHAR},
+      share_cont = #{shareCont,jdbcType=VARCHAR},
+      share_img = #{shareImg,jdbcType=VARCHAR},
+      share_url = #{shareUrl,jdbcType=VARCHAR},
+      share_title = #{shareTitle,jdbcType=VARCHAR},
+      STATUS = #{status,jdbcType=VARCHAR},
+      pic_low = #{picLow,jdbcType=VARCHAR},
+      pic_middle = #{picMiddle,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 通过城市编号查询广告图片  -->
+  <select id="selectByCity" resultMap="BaseResultMap" parameterType="int">
+  	SELECT 
+  		<include refid="Base_Column_List" />
+  	FROM t_advertising WHERE TYPE=1 AND isshow=0 AND is_all=0 AND city=#{city} 
+  	<![CDATA[ AND  NOW() >= start_time  AND  NOW() <= end_time   ]]>  
+  	ORDER BY start_time LIMIT 0,1
+  </select>
+  
+  <!-- 当通过城市id查询不到的时候则查询全国的图片 -->
+  <select id="findAll" resultMap="BaseResultMap">
+  	SELECT 
+  		<include refid="Base_Column_List" />
+  	FROM t_advertising WHERE type=1 AND isshow=0 AND isshow=0 AND is_all=1 
+  	<![CDATA[ AND  NOW() >= start_time  AND  NOW() <= end_time   ]]>  
+  	ORDER BY start_time LIMIT 0,1
+  </select>
+  
+  
+  
+<!--   首页启动图也放这里  -->
+<!--   通过城市编号查询广告图片 -->
+	<sql id="startImgColm">
+		id, type, atype,status , pic, sdate, edate, remarks, pic_low AS picLow, 
+		pic_middle picMiddle, start_url as startUrl, province_id as provinceId, city_id as cityId 
+	</sql>
+
+	<select id="selectStartImgByCity" parameterType="map" resultType="com.xmniao.xmn.core.catehome.entity.StartImg">
+		SELECT <include refid="startImgColm"></include> FROM t_start_img WHERE type = 2 AND show_local = 1
+		AND city_id=#{city} AND  status = 0  ORDER BY id desc LIMIT 0,1
+	</select>
+    
+<!--   查询全国的 -->
+	<select id="findAllStartImg" parameterType="map" resultType="com.xmniao.xmn.core.catehome.entity.StartImg">
+		SELECT <include refid="startImgColm"></include>  FROM t_start_img WHERE type = 2 AND city_id IS NULL AND  status = 0 AND show_local = 1
+		ORDER BY id desc LIMIT 0,1
+	</select>
+  
+  <select id="selectLiveHomeAdList" resultType="map">
+    select *
+    from t_start_img
+    where status = 0 and show_local = 2
+    <if test="cityId != null" >
+        and city_id = #{cityId}
+    </if>
+  </select>
+
+</mapper>

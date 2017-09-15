@@ -1,0 +1,78 @@
+body{
+    font-family: Microsoft Yahei;
+    padding:0;
+    margin:0;
+    color: #666666;
+    position: relative;
+}
+a{
+    text-decoration: none;
+    color:#333;
+    -webkit-user-select:none;
+    -webkit-tap-highlight-color:transparent;
+}
+
+a:focus{
+    text-decoration: none;
+    color:#333;
+}
+h1,h2,h3,p{
+    margin:0;
+    padding:0;
+}
+
+ul{
+    list-style-type: none;
+    margin:0;
+    padding:0;
+}
+dl,dd,dt{
+    padding: 0;
+    margin: 0;
+}
+.explain-module dl{
+    padding:10px 10px 0 ;
+    background-color: #ffffff;
+}
+.explain-module dl dt{
+    font-size: 16px;
+    color: #2e2e2e;
+    padding: 8px 0;
+    border-bottom: 1px solid #dddddd;
+}
+.explain-module dl dd{
+    padding: 15px 0 20px;
+    color: #999999;
+    font-size: 14px;
+}
+/*关于我们*/
+.aboutout-module{
+    padding:10px 10px 0 ;
+    background-color: #ffffff;
+}
+.aboutout-module .aboutout-title{
+    text-align: center;
+    font-size: 16px;
+    padding: 10px;
+    font-weight: normal;
+}
+.aboutout-module .aboutout-content p{
+    font-size: 14px;
+    text-indent: 2em;
+    margin-bottom: 5px;
+    color: #2e2e2e;
+}
+.rule-module{
+    padding:10px 10px 0 ;
+    background-color: #ffffff;
+}
+.rule-module ul{
+    padding-left: 15px;
+    list-style-type: disc;
+}
+.rule-module ul li{
+    padding: 3px 0;
+    font-size: 14px;
+
+
+}

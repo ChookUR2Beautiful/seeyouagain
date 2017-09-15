@@ -1,0 +1,64 @@
+
+## Monthly consumption can be raised in the amount set
+consAmount=300
+##Monthly consumption can be raised in the sell Number set
+sellNum=2
+
+manmageAmount=50
+
+freight=10
+
+isOpen=0
+
+message=\u4f60\u5df2\u6210\u529f\u6ce8\u518c\u4e3a\u5bfb\u871c\u9e1f\u7528\u6237,\u767b\u5f55\u8d26\u53f7\:{0},\u5bc6\u7801\:{1}\u3002\u8bf7\u5c3d\u5feb\u767b\u5f55\u8bbe\u7f6e\u65b0\u5bc6\u7801\u3002
+
+wfzInfo=\u5f85\u786e\u8ba4\u6536\u5165\u7531\u4ee5\u4e0b\u51e0\u79cd\u60c5\u51b5\u7ec4\u6210\uff1a\r\n1\u3001\u5bfb\u871c\u5ba2\u901a\u8fc7\u7b7e\u7ea6\u5546\u5bb6\uff0c\u5f85\u5ba1\u6838\u4e0a\u7ebf\u540e\u53ef\u83b7\u5f97\u7684\u6536\u76ca\uff1b\r\n2\u3001\u5bfb\u871c\u5ba2\u901a\u8fc7\u5176\u597d\u53cb\u8ba4\u8d2d\u8f6f\u4ef6\u5e76\u7b7e\u7ea6\u5546\u5bb6\uff0c\u5f85\u5ba1\u6838\u4e0a\u7ebf\u540e\u53ef\u83b7\u5f97\u7684\u6536\u76ca\uff1b\r\n3\u3001\u5bfb\u871c\u5ba2\u6240\u6709\u5173\u8054\u5546\u5bb6\u6bcf\u4e00\u7b14\u5f85\u786e\u8ba4\u7684\u6d41\u6c34\u5206\u8d26\u3002
+
+#wz0001={'uid'\: 'wz0001','rownum'\: '1','name'\: '\u77f3\u5c11\u9e9f','phone'\: '13527862529','wechatno'\: 'saishi307','income'\: '16080.00','saasAmount'\: '6480.00','totalflow'\: '960000','signnums'\: '20','partnernums'\: '13','stock'\: '20','nums'\: '40','avatar'\: 'http\: //f.hiphotos.baidu.com/zhidao/wh%3D600%2C800/sign\=51d85d6b95dda144da5c64b48287fc9a/10dfa9ec8a1363273fdf3b4b938fa0ec08fac79c.jpg','achieve'\: '\u50b2\u89c6\u7fa4\u96c4'}
+#wz0002={'uid'\: 'wz0002','rownum'\: '2','name'\: '\u9648\u6d77\u9752','phone'\: '18928800667','wechatno'\: 'haiqing0087','income'\: '15276.00','saasAmount'\: '6156.00','totalflow'\: '912000.00','signnums'\: '19','partnernums'\: '16','stock'\: '11','nums'\: '30','avatar'\: 'http\: //f.hiphotos.baidu.com/zhidao/wh%3D600%2C800/sign\=51d85d6b95dda144da5c64b48287fc9a/10dfa9ec8a1363273fdf3b4b938fa0ec08fac79c.jpg','achieve'\: '\u6240\u5411\u62ab\u9761'}
+#wz0003={'uid'\: 'wz0003','rownum'\: '3','name'\: '\u674e\u695a\u97e9','phone'\: '15018440847','wechatno'\: 'chuhan0811','income'\: '12818.00','saasAmount'\: '5508.00','totalflow'\: '731000.00','signnums'\: '17','partnernums'\: '15','stock'\: '13','nums'\: '30','avatar'\: 'http\: //f.hiphotos.baidu.com/zhidao/wh%3D600%2C800/sign\=51d85d6b95dda144da5c64b48287fc9a/10dfa9ec8a1363273fdf3b4b938fa0ec08fac79c.jpg','achieve'\: '\u6240\u5411\u62ab\u9761'}
+#wz0004={'uid'\: 'wz0004','rownum'\: '4','name'\: '\u4f59\u4f1f\u5065','phone'\: '15802017740','wechatno'\: 'fish-weijian','income'\: '10062.00','saasAmount'\: '4212.00','totalflow'\: '585000.00','signnums'\: '13','partnernums'\: '15','stock'\: '17','nums'\: '40','avatar'\: 'http\: //f.hiphotos.baidu.com/zhidao/wh%3D600%2C800/sign\=51d85d6b95dda144da5c64b48287fc9a/10dfa9ec8a1363273fdf3b4b938fa0ec08fac79c.jpg','achieve'\: '\u6240\u5411\u62ab\u9761'}
+#wz0005={'uid'\: 'wz0005','rownum'\: '5','name'\: '\u90b9\u5efa\u8f89','phone'\: '15626160812','wechatno'\: 'lokchow1128','income'\: '9984.00','saasAmount'\: '5184.00','totalflow'\: '480000.00','signnums'\: '16','partnernums'\: '14','stock'\: '14','nums'\: '30','avatar'\: 'http\: //f.hiphotos.baidu.com/zhidao/wh%3D600%2C800/sign\=51d85d6b95dda144da5c64b48287fc9a/10dfa9ec8a1363273fdf3b4b938fa0ec08fac79c.jpg','achieve'\: '\u6240\u5411\u62ab\u9761'}
+#wz0006={'uid'\: 'wz0006','rownum'\: '6','name'\: '\u8c2d\u4f1f\u5065','phone'\: '13556566318','wechatno'\: 'tanwei','income'\: '9660.00','saasAmount'\: '4860.00','totalflow'\: '480000.00','signnums'\: '15','partnernums'\: '11','stock'\: '15','nums'\: '30','avatar'\: 'http\: //f.hiphotos.baidu.com/zhidao/wh%3D600%2C800/sign\=51d85d6b95dda144da5c64b48287fc9a/10dfa9ec8a1363273fdf3b4b938fa0ec08fac79c.jpg','achieve'\: '\u6240\u5411\u62ab\u9761'}
+#wz0007={'uid'\: 'wz0007','rownum'\: '7','name'\: '\u9f99\u4fca\u6770','phone'\: '13556594446','wechatno'\: 'LongJunj0204','income'\: '9156.00','saasAmount'\: '4536.00','totalflow'\: '462000.00','signnums'\: '14','partnernums'\: '14','stock'\: '6','nums'\: '20','avatar'\: 'http\: //f.hiphotos.baidu.com/zhidao/wh%3D600%2C800/sign\=51d85d6b95dda144da5c64b48287fc9a/10dfa9ec8a1363273fdf3b4b938fa0ec08fac79c.jpg','achieve'\: '\u6240\u5411\u62ab\u9761'}
+#wz0008={'uid'\: 'wz0008','rownum'\: '8','name'\: '\u6c5f\u91d1\u5468','phone'\: '13610122194','wechatno'\: 'jz278564766','income'\: '9064.00','saasAmount'\: '3564.00','totalflow'\: '550000.00','signnums'\: '11','partnernums'\: '14','stock'\: '9','nums'\: '20','avatar'\: 'http\: //f.hiphotos.baidu.com/zhidao/wh%3D600%2C800/sign\=51d85d6b95dda144da5c64b48287fc9a/10dfa9ec8a1363273fdf3b4b938fa0ec08fac79c.jpg','achieve'\: '\u6240\u5411\u62ab\u9761'}
+#wz0009={'uid'\: 'wz0009','rownum'\: '9','name'\: '\u90d1\u8363\u654f','phone'\: '18566639474','wechatno'\: 'zhenfanrong','income'\: '8568.00','saasAmount'\: '3888.00','totalflow'\:'468000.00','signnums'\: '12','partnernums'\: '12','stock'\: '18','nums'\: '30','avatar'\: 'http\://f.hiphotos.baidu.com/zhidao/wh%3D600%2C800/sign\=51d85d6b95dda144da5c64b48287fc9a/10dfa9ec8a1363273fdf3b4b938fa0ec08fac79c.jpg','achieve'\: '\u6240\u5411\u62ab\u9761'}
+#wz00010={'uid'\: 'wz00010','rownum'\: '10','name'\: '\u67f4\u624d','phone'\: '18679183898','wechatno'\: '18679183898','income'\: '7194.00','saasAmount'\: '3564.00','totalflow'\:'363000.00','signnums'\: '11','partnernums'\: '8','stock'\: '9','nums'\: '20','avatar'\: 'http\://f.hiphotos.baidu.com/zhidao/wh%3D600%2C800/sign\=51d85d6b95dda144da5c64b48287fc9a/10dfa9ec8a1363273fdf3b4b938fa0ec08fac79c.jpg','achieve'\: '\u6240\u5411\u62ab\u9761'}
+
+
+
+
+#wz0001={'uid'\: 'wz0001','rownum'\: '1','name'\: '\u9ec4\u5229\u9038','phone'\: '18666089441','wechatno'\: 'Ray_Huangly','income'\: '16080.00','saasAmount'\: '6480.00','totalflow'\: '960000','signnums'\: '20','partnernums'\: '13','stock'\: '10','nums'\: '40','avatar'\: 'http\://gzdev.xmniao.com\:88/img/M00/01/F4/wKgyMlehyayAGPFfAAwqVLe6Das597.jpg','achieve'\: '\u50b2\u89c6\u7fa4\u96c4'}
+#wz0002={'uid'\: 'wz0002','rownum'\: '2','name'\: '\u9648\u6d77\u9752','phone'\: '18928800667','wechatno'\: 'haiqing0087','income'\: '15276.00','saasAmount'\: '6156.00','totalflow'\: '912000.00','signnums'\: '19','partnernums'\: '16','stock'\: '9','nums'\: '30','avatar'\: 'http\://gzdev.xmniao.com\:88/img/M00/01/F4/wKgyMlehyayAD2m_AAI9iOPxHCQ758.jpg','achieve'\: '\u6240\u5411\u62ab\u9761'}
+#wz0003={'uid'\: 'wz0003','rownum'\: '3','name'\: '\u674e\u695a\u97e9','phone'\: '15018440847','wechatno'\: 'chuhan0811','income'\: '12818.00','saasAmount'\: '5508.00','totalflow'\: '731000.00','signnums'\: '17','partnernums'\: '15','stock'\: '8','nums'\: '30','avatar'\: 'http\://gzdev.xmniao.com\:88/img/M00/01/F4/wKgyMlehya2AXxK1AAEFAL92YCQ890.jpg','achieve'\: '\u6240\u5411\u62ab\u9761'}
+wz0004={'uid'\: 'wz0004','rownum'\: '4','name'\: '\u4f59\u4f1f\u5065','phone'\: '15802017740','wechatno'\: 'fish-weijian','income'\: '10062.00','saasAmount'\: '4212.00','totalflow'\: '585000.00','signnums'\: '13','partnernums'\: '15','stock'\: '10','nums'\: '40','avatar'\: 'http\://gzdev.xmniao.com\:88/img/M00/01/F4/wKgyMlehya2AUrWSAABN_m4aXcI849.jpg','achieve'\: '\u6240\u5411\u62ab\u9761'}
+wz0005={'uid'\: 'wz0005','rownum'\: '5','name'\: '\u90b9\u5efa\u8f89','phone'\: '15626160812','wechatno'\: 'lokchow1128','income'\: '9984.00','saasAmount'\: '5184.00','totalflow'\: '480000.00','signnums'\: '16','partnernums'\: '14','stock'\: '10','nums'\: '30','avatar'\: 'http\://gzdev.xmniao.com\:88/img/M00/01/F4/wKgyMlehya2AUTejAAC5OcwFXzY163.jpg','achieve'\: '\u6240\u5411\u62ab\u9761'}
+#wz0006={'uid'\: 'wz0006','rownum'\: '6','name'\: '\u8c2d\u4f1f\u5065','phone'\: '13556566318','wechatno'\: 'tanwei','income'\: '9660.00','saasAmount'\: '4860.00','totalflow'\: '480000.00','signnums'\: '15','partnernums'\: '11','stock'\: '10','nums'\: '30','avatar'\: 'http\://img4.imgtn.bdimg.com/it/u\=731016823,2238050103&fm\=206&gp\=0.jpg','achieve'\: '\u6240\u5411\u62ab\u9761'}
+wz0007={'uid'\: 'wz0007','rownum'\: '7','name'\: '\u9f99\u4fca\u6770','phone'\: '13556594446','wechatno'\: 'LongJunj0204','income'\: '9156.00','saasAmount'\: '4536.00','totalflow'\: '462000.00','signnums'\: '14','partnernums'\: '14','stock'\: '6','nums'\: '20','avatar'\: 'http\://gzdev.xmniao.com\:88/img/M00/01/F4/wKgyMlehya2AY2yaAAFfUsBMrXw339.jpg','achieve'\: '\u6240\u5411\u62ab\u9761'}
+wz0008={'uid'\: 'wz0008','rownum'\: '8','name'\: '\u6c5f\u91d1\u5468','phone'\: '13610122194','wechatno'\: 'jz278564766','income'\: '9064.00','saasAmount'\: '3564.00','totalflow'\: '550000.00','signnums'\: '11','partnernums'\: '14','stock'\: '9','nums'\: '20','avatar'\: 'http\://gzdev.xmniao.com\:88/img/M00/01/F4/wKgyMlehya2ABQGiAACNCz0HUyU910.jpg','achieve'\: '\u6240\u5411\u62ab\u9761'}
+wz0009={'uid'\: 'wz0009','rownum'\: '9','name'\: '\u8d3a\u5229\u5ae6','phone'\: '13556102048','wechatno'\: 'hejiabeing','income'\: '8568.00','saasAmount'\: '3888.00','totalflow'\:'468000.00','signnums'\: '12','partnernums'\: '12','stock'\: '18','nums'\: '30','avatar'\: 'http\://gzdev.xmniao.com\:88/img/M00/01/F4/wKgyMlehyayAbp3bAAIlioISnBM657.jpg','achieve'\: '\u6240\u5411\u62ab\u9761'}
+wz00010={'uid'\: 'wz00010','rownum'\: '10','name'\: '\u725b\u660a','phone'\: '18858174917','wechatno'\: 'Kevin-Niu','income'\: '7194.00','saasAmount'\: '3564.00','totalflow'\:'363000.00','signnums'\: '11','partnernums'\: '8','stock'\: '9','nums'\: '20','avatar'\: 'http\://gzdev.xmniao.com\:88/img/M00/01/F4/wKgyMlehya2AL6CQAAGXA54ys2Q364.jpg','achieve'\: '\u6240\u5411\u62ab\u9761'}
+
+
+#\u5bfb\u871c\u5ba2\u8d2d\u4e70\u7269\u6599\u5ba2\u670d\u7535\u8bdd
+material_service_tel=4007766333
+
+sassType={'4':'V\u5ba2\u8d60\u9001','3':'\u98df\u5c1aV\u5ba2','2':'\u4e2d\u8109','1':'\u5bfb\u871c\u5ba2'}
+
+discount=['3','3.5','4','4.5','5','5.5','6','6.5','7','7.5','8','8.5','8.8']
+
+#\u5bfb\u871c\u5ba2\u9996\u9875\u662f\u5426\u663e\u793a \u9884\u8ba1\u53ef\u4ee5\u518d\u8d5a\u5b57\u6bb5
+showWzfInfo=0
+
+#\u5bfb\u871c\u5ba2saas\u7b7e\u7ea6\u5e97\u94fa \u672a\u901a\u8fc7\u65f6\uff0c\u6e29\u99a8\u63d0\u793a\u8bed
+refuseTips=\u5f53\u524d\u5e97\u94fa\u4e0d\u901a\u8fc7\u5ba1\u6838\uff0c\u53ef\u4ee5\u7f16\u8f91\u539f\u5e97\u94fa\u4fe1\u606f\u6216\u8005\u66f4\u6362\u5176\u4ed6\u5e97\u94fa\u7b7e\u7ea6
+
+#\u5bfb\u871c\u5ba2\u6392\u884c\u699c\u5b9a\u65f6\u66f4\u65b0\u4efb\u52a1key\u7684\u6700\u5927\u6570\u91cf 
+topXmerUpdateKey=7
+
+# android版本号，签约店铺
+modifyStoreAndroid=363
+# IOS版本号，签约店铺
+modifyStoreIOS=363
+# 签约店铺 h5地址
+modifyStoreAgreeUrl=http://testfz.xmniao.com/accredit?action=app-visitor-index

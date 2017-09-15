@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live.dao.PresellOrderDao">
+
+<!-- 增加预售订单 -->
+<insert id="addPresellOrder" parameterType="map"  >
+INSERT  into t_coupon_order (
+	order_sn,anchor_cid,cid_num,uid,phoneid,record_id,sellerid,status,payment_type,third_uid,
+	third_serial,total_amount,cash,balance,commision,zbalance,integral,cuser,cdid,return_integral,create_time,
+	modify_time,nname,order_source,beans,buy_source,app_source
+	)
+VALUES
+	(
+	#{order_sn},#{anchor_cid},#{cid_num},#{uid},#{phoneid},#{record_id},#{sellerid},#{status},#{payment_type},#{third_uid},#{third_serial},#{total_amount},
+	#{cash},#{balance},#{commision},#{zbalance},#{integral},#{cuser},#{cdid},#{return_integral},#{create_time},#{modify_time},#{nname},#{order_source},#{beans},
+	#{buy_source},#{appSourceStatus}
+	)
+</insert>
+
+	<!-- 取消预售订单 -->
+	<update id="modifyPreSellOrder"  parameterType="map">
+		update t_coupon_order
+		<set>
+			<if test="status!=null and status!=''">
+			status=#{status},
+			</if>
+			<if test="modifyTime!=null and modifyTime!=''">
+			modify_time=#{modifyTime},
+			</if>
+		</set>
+		where order_sn=#{orderSn}
+	</update>
+
+
+
+
+	<!-- 锁定或解除,或已使用抵用券 -->
+	<update id="lockAndUnlockCouponTicket" parameterType="map">
+		update t_coupon_detail
+		<set>
+			<if test="userStatus!=null and userStatus!=''">
+				user_status=#{userStatus},
+			</if>
+			<if test="lockTime!=null and lockTime!=''">
+				lock_time=#{lockTime},
+			</if>
+			<if test="bid!=null and bid!=''">
+				bid=#{bid},
+			</if>
+		</set>
+		where  cdid  in
+			<if test="list!=null">
+				<foreach collection="list" item="cdid" open="(" close=")" separator=",">
+					#{cdid}
+				</foreach>
+			</if>
+	</update>
+	
+<!-- 增加抵用券 -->
+	<insert id="giveUseTicket" parameterType="map">
+		INSERT into t_coupon_detail(aid,cid,serial,denomination,get_way,start_date,end_date,get_status,
+		get_time,uid,phone,third_uid,user_status,user_money,lock_time,
+		user_time,issue_id,date_issue,order_no,send_status,sellerid,bid)
+			VALUES(#{aid},#{cid},#{serial},#{denomination},#{get_way},#{start_date},
+			#{end_date},#{get_status},#{get_time},#{uid},#{phone},#{third_uid},#{user_status},#{user_money},
+			#{lock_time},#{user_time},#{issue_id},#{date_issue},#{order_no},#{send_status},#{sellerid},#{bid})
+	</insert>	
+	
+<!-- 	根据cid获取粉丝券信息 -->
+	<select id="queryCouponByCid" parameterType="int" resultType="map">
+		select 
+			cid,
+			ifnull(cname,'') cname ,
+			ifnull(denomination,0.00) denomination,
+			ifnull(validity_desc,'') validity_desc,
+			ifnull(start_date,'') start_date,
+			ifnull(end_date,'') end_date,
+			ifnull(use_num,'') use_num,
+			ifnull(pic,'') pic,
+			ifnull(breviary,'') breviary,
+			ifnull(showall,0) showall,
+			ifnull(is_all_seller,0) is_all_seller,
+			ifnull(day_num,0) day_num,
+			ifnull(rule,'') rule,
+			ifnull(ctype,0) ctype,
+			ifnull(invalid_today,0) invalid_today
+		from t_coupon where cid=#{cid} 
+	</select>	
+	
+<!-- 	获取抵用券信息 -->
+	<select id="queryCouponDetailByCdid" parameterType="int" resultType="map">
+		select cdid,ifnull(user_money,0.00) user_money from  t_coupon_detail where cdid=#{cdid}
+	</select>
+	
+<!-- 	更新粉丝券数量 -->
+	<update id="modifyfansCoupon" parameterType="map">
+<!-- 	update t_fans_coupon_anchor_ref  -->
+<!-- 	<set> -->
+<!-- 	<if test="addNum!=null and addNum!=''"> -->
+<!-- 	stock=stock+#{addNum} -->
+<!-- 	</if> -->
+<!-- 		<if test="subNum!=null and subNum!=''"> -->
+<!-- 	stock=stock-#{subNum} -->
+<!-- 	</if> -->
+<!-- 	</set> -->
+<!-- 	 where  record_id=#{recordId} and anchor_cid=#{cid}  -->
+	 UPDATE t_coupon c 
+		 <set>
+		<if test="addNum!=null and addNum!=''">
+			stock=stock+#{addNum}
+		</if>
+		<if test="subNum!=null and subNum!=''">
+			stock=stock-#{subNum}
+		</if>
+	 </set>
+	 WHERE cid=#{cid} 
+<!-- 	  and uid=#{uid} -->
+	</update>
+	
+<!-- 	获取粉丝券总数 -->
+	<select id="queryFansCouponByOther" parameterType="map" resultType="map">
+		SELECT 
+			ifnull(c.stock,0) stock, c.cid
+		FROM t_fans_coupon_anchor_ref ref 
+		LEFT JOIN t_coupon c ON ref.cid = c.cid
+		WHERE  record_id=#{recordId} and anchor_cid=#{cid}  
+	</select>
+</mapper>

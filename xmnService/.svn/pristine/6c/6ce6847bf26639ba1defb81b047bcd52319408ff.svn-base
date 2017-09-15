@@ -1,0 +1,2247 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live.dao.AnchorLiveRecordDao">
+ 
+	<resultMap id="BaseResultMap" type="com.xmniao.xmn.core.live.entity.LiveRecordInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="anchor_id" property="anchorId" jdbcType="INTEGER" />
+    <result column="nname" property="nname" jdbcType="VARCHAR" />
+    <result column="avatar" property="avatar" jdbcType="VARCHAR" />
+    <result column="anchor_room_no" property="anchorRoomNo" jdbcType="VARCHAR" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="sellername" property="sellername" jdbcType="VARCHAR" />
+    <result column="seller_alias" property="sellerAlias" jdbcType="VARCHAR" />
+    <result column="seller_city" property="sellerCity" jdbcType="VARCHAR" />
+    <result column="longitude" property="longitude" jdbcType="DOUBLE" />
+    <result column="latitude" property="latitude" jdbcType="DOUBLE" />
+    <result column="seller_status" property="sellerStatus" jdbcType="INTEGER" />
+    <result column="zhibo_address" property="zhiboAddress" jdbcType="VARCHAR" />
+    <result column="zhibo_type" property="zhiboType" jdbcType="INTEGER" />
+    <result column="zhibo_playback_url" property="zhiboPlaybackUrl" jdbcType="VARCHAR" />
+    <result column="zhibo_title" property="zhiboTitle" jdbcType="VARCHAR" />
+    <result column="zhibo_cover" property="zhiboCover" jdbcType="VARCHAR" />
+    <result column="video_type" property="videoType" jdbcType="INTEGER" />
+    <result column="video_label" property="videoLabel" jdbcType="VARCHAR" />
+    <result column="plan_start_date" property="planStartDate" jdbcType="TIMESTAMP" />
+    <result column="plan_end_date" property="planEndDate" jdbcType="TIMESTAMP" />
+    <result column="start_date" property="startDate" jdbcType="TIMESTAMP" />
+    <result column="end_date" property="endDate" jdbcType="TIMESTAMP" />
+    <result column="zhibo_duration" property="zhiboDuration" jdbcType="INTEGER" />
+    <result column="concerned_nums" property="concernedNums" jdbcType="INTEGER" />
+    <result column="view_count" property="viewCount" jdbcType="INTEGER" />
+    <result column="show_view_count" property="showViewCount" jdbcType="INTEGER" />
+    <result column="income_egg_nums" property="incomeEggNums" jdbcType="INTEGER" />
+    <result column="sequence_no" property="sequenceNo" jdbcType="INTEGER" />
+    <result column="seller_sequ_no" property="sellerSequNo" jdbcType="INTEGER" />
+    <result column="seq_lock_status" property="seqLockStatus" jdbcType="INTEGER" />
+    <result column="isQianZhi" property="isqianzhi" jdbcType="INTEGER" />
+    <result column="isHorizontalScreen" property="ishorizontalscreen" jdbcType="INTEGER" />
+    <result column="live_start_type" property="liveStartType" jdbcType="INTEGER" />
+    <result column="device_type" property="deviceType" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="vedio_url" property="vedioUrl" jdbcType="VARCHAR" />
+    <result column="channel_id" property="channelId" jdbcType="VARCHAR" />
+    <result column="channel_status" property="channelStatus" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="isAppoint" property="isappoint" jdbcType="INTEGER" />
+    <result column="telphones" property="telphones" jdbcType="VARCHAR" />
+    <result column="introduce" property="introduce" jdbcType="VARCHAR" />
+    <result column="haveCoupon" property="havecoupon" jdbcType="INTEGER" />
+  </resultMap>
+	
+
+	<sql id="liveRecordInfoColumns">
+		id,anchor_id,IFNULL(nname,"") nname,IFNULL(avatar,"") avatar,anchor_room_no,anchor_room_password,sellerid,sellername,seller_alias,seller_city,longitude,latitude,seller_status,
+		IFNULL(zhibo_address,"") zhibo_address,zhibo_type,IFNULL(zhibo_playback_url,"") zhibo_playback_url,view_count,IFNULL(zhibo_title,"") zhibo_title,
+		IFNULL(zhibo_cover,"") zhibo_cover,plan_start_date,plan_end_date,start_date,end_date,zhibo_duration,income_egg_nums,isQianZhi,isHorizontalScreen,live_start_type,device_type,status,vedio_url,channel_id,create_time,update_time
+	</sql>
+
+	<!-- 获取预告列表记录 -->
+	<select id="getTrailerLiveRecordInfo" resultType="liveRecordInfo" parameterType="map">
+	SELECT
+		id,
+		anchor_id,
+		nname,
+		avatar,
+		anchor_room_no,
+		sellerid,
+		sellername,
+		seller_alias,
+		seller_city,
+		seller_status,
+		zhibo_address,
+		zhibo_type,
+		zhibo_title,
+		zhibo_cover,
+		plan_start_date,
+		plan_end_date,
+		STATUS,
+		create_time
+	FROM
+		(
+			(
+				SELECT
+					id,
+					anchor_id,
+					nname,
+					avatar,
+					anchor_room_no,
+					sellerid,
+					sellername,
+					seller_alias,
+					seller_city,
+					seller_status,
+					zhibo_address,
+					zhibo_type,
+					zhibo_title,
+					zhibo_cover,
+					plan_start_date,
+					plan_end_date,
+					STATUS,
+					create_time
+				FROM
+					t_live_record
+				WHERE
+					zhibo_type = 0
+				AND STATUS = 1
+				AND sequence_no = 999
+				<![CDATA[
+				AND id not in  (SELECT id FROM t_live_record  WHERE telphones != '' AND telphones not like '%${phone}%' )
+				]]>
+				<if test="anchorId!=null and anchorId!=''">
+				and anchor_id=#{anchorId}
+				</if>
+				ORDER BY
+						plan_start_date ASC
+			)
+			UNION
+				(
+					SELECT
+						id,
+						anchor_id,
+						nname,
+						avatar,
+						anchor_room_no,
+						sellerid,
+						sellername,
+						seller_alias,
+						seller_city,
+						seller_status,
+						zhibo_address,
+						zhibo_type,
+						zhibo_title,
+						zhibo_cover,
+						plan_start_date,
+						plan_end_date,
+						STATUS,
+						create_time
+					FROM
+						t_live_record
+					WHERE
+						zhibo_type = 0
+					AND STATUS = 1
+					<![CDATA[
+					AND id not in  (SELECT id FROM t_live_record  WHERE telphones != '' AND telphones not like '%${phone}%' )
+					]]>
+					<if test="anchorId!=null and anchorId!=''">
+					and anchor_id=#{anchorId}
+					</if>
+					ORDER BY
+						plan_start_date ASC
+				)
+			)a
+		LIMIT ${(page-1)*limit},#{limit}
+	<!-- 
+		SELECT 
+			id, anchor_id, nname, avatar, anchor_room_no, sellerid, sellername, seller_city,
+	  		seller_status, zhibo_address, zhibo_type,zhibo_title,zhibo_cover, plan_start_date, plan_end_date, status, create_time 
+		FROM  t_live_record   
+		WHERE  zhibo_type  = 0 AND status = 1
+		ORDER BY  plan_start_date  ASC 
+		LIMIT ${(page-1)*limit},#{limit}
+		 -->
+	</select>
+	
+	<!-- 查询观众跟主播的关注情况 -->
+	<select id="queryViewerByUid" resultType="map" parameterType="map">
+		SELECT s.status AS viewStatus,a.attentionStatus 
+		FROM t_live_focus_show s,(SELECT COUNT(1) AS attentionStatus FROM t_live_focus WHERE liver_str_id = #{liveId} AND liver_end_id = #{anchorId})a
+		WHERE s.liver_id = #{liveId} AND s.live_record_id = #{id}
+	</select>
+	
+	<!-- 统计想看预告的观众信息 -->
+	<select id="queryViewerLiveRecord" resultType="map">
+<!-- 		SELECT -->
+<!-- 			s.live_record_id AS liveRecordId, -->
+<!-- 			s.liver_id AS liverId -->
+<!-- 		FROM -->
+<!-- 			t_live_focus_show s -->
+<!-- 		LEFT JOIN t_live_record r ON s.live_record_id = r.id -->
+<!-- 		WHERE -->
+<!-- 			s. STATUS = 2 -->
+<!-- 		AND r.zhibo_type = 0 -->
+<!-- 		ORDER BY -->
+<!-- 			s.create_time DESC -->
+		<![CDATA[
+			SELECT 
+				r.id, s.isRebot,s.live_record_id AS liveRecordId, s.liver_id AS liverId 
+			FROM t_live_focus_show s 
+			LEFT JOIN t_live_record r ON s.live_record_id = r.id AND r.id NOT IN  (SELECT tlr.id FROM t_live_record AS tlr  WHERE tlr.telphones != '' AND tlr.telphones NOT LIKE '%${phone}%' )
+			WHERE s. STATUS = 2 AND s.liver_id IS NOT null AND r.zhibo_type = 0 
+			ORDER BY s.create_time DESC
+		]]>
+			
+	</select>
+	
+	<!-- 统计想去现场预告的观众信息 -->
+	<select id="queryWantGoLiveRecord" resultType="map" parameterType="list">
+		
+			SELECT 
+				r.id, s.live_record_id AS liveRecordId, s.liver_id AS liverId 
+			FROM t_live_focus_show s 
+			<![CDATA[
+			LEFT JOIN t_live_record r ON s.live_record_id = r.id AND r.id NOT IN  (SELECT tlr.id FROM t_live_record AS tlr  WHERE tlr.telphones != '' AND tlr.telphones NOT LIKE '%${phone}%' )
+			]]>
+			WHERE s. STATUS = 2 
+			AND s.live_record_id in
+			<foreach collection="wantgos" item="ids" open="(" close=")" separator=",">
+			#{ids}
+			</foreach>
+			ORDER BY s.create_time DESC 
+		
+			
+	</select>
+	
+	<!-- 获取想看预告的观众的头像信息 -->
+	<select id="queryViewerAvatar" resultType="map">
+		SELECT
+			l.id,
+			l.uid,
+			IFNULL(i.avatar,"") avatar
+		FROM
+			b_liver l
+		LEFT JOIN b_urs_info i ON l.uid = i.uid
+		WHERE
+			l.id IN
+		 <foreach item="item" index="index" collection="viewerList" open="(" separator="," close=")">
+        		#{item.liverId}
+  		</foreach>
+	</select>
+	
+	<!-- 统计想看预告的总人数 -->
+	<select id="queryViewerCount" resultType="map">
+			SELECT
+			count(1) AS viewCount,
+			s.live_record_id AS liveRecordId
+		FROM
+			t_live_focus_show s
+		LEFT JOIN t_live_record r ON s.live_record_id = r.id
+		WHERE
+			s. STATUS = 2
+		AND r.zhibo_type = 0
+		GROUP BY
+			s.live_record_id
+	</select>
+	
+	<!-- 查询主播的通告列表/历史列表-->
+	<select id="queryAnchorAnnunciateList" resultType="liveRecordInfo" parameterType="map">
+		SELECT 
+			<include refid="liveRecordInfoColumns"/>
+		FROM  t_live_record
+		WHERE anchor_id = #{anchorId} AND status = 1 AND live_start_type = 0
+		<choose>
+			<!-- 直播类型 -1 初始 0 预告 1 正在直播  2暂停直播 3 回放  4历史通告 5结束直播 -->
+			<!-- 1:通告列表	2:历史通告 -->
+			<when test="type == 1">
+				AND	
+					<!-- zhibo_type IN(-1,0,1,5) -->
+					zhibo_type IN(0, 5)
+				<!-- 计划开播当天内 -->
+				<![CDATA[
+				AND DATE_ADD(DATE_FORMAT(plan_start_date,'%Y-%m-%d 00:00:00'), INTERVAL 1 day) > #{nowDate}
+				]]>
+			</when>
+			<when test="type == 2">
+				AND	zhibo_type IN (3,4)  
+			</when>
+		</choose>
+		ORDER BY  plan_start_date ASC 
+		LIMIT ${(page-1)*limit},#{limit}
+	</select>
+	
+	<!-- 获取直播/回放列表记录 -->
+	<select id="getCurrentLiveRecordInfo" resultType="liveRecordInfo" parameterType="map">
+		
+			SELECT <include refid="liveRecordInfoColumns"/> FROM (
+				(SELECT <include refid="liveRecordInfoColumns"/> FROM t_live_record 
+				<![CDATA[
+				WHERE status=1 AND zhibo_type = 1  AND id NOT IN  (SELECT id FROM t_live_record  WHERE telphones != '' AND telphones not like '%${phone}%' ) ORDER BY sequence_no DESC,start_date DESC )
+				]]>
+				UNION
+	
+				(SELECT <include refid="liveRecordInfoColumns"/> FROM t_live_record 
+				WHERE status=1 AND zhibo_type = 3 ORDER BY sequence_no DESC,end_date DESC )
+			) a
+			LIMIT ${(page-1)*limit},#{limit}
+		 
+	</select>
+	
+	<!-- 查询商家回放列表 -->
+	<select id="vodListBySellerid" parameterType="map" resultType="liveRecordInfo">
+			SELECT <include refid="liveRecordInfoColumns"/> 
+			FROM t_live_record WHERE sellerid=#{sellerid} and status=1 and zhibo_type=3
+			LIMIT ${(page-1)*pageSize},#{pageSize}
+	</select>
+	
+	<!-- 查询商家正在直播的列表 -->
+	<select id="liveListBySellerid" parameterType="int" resultType="liveRecordInfo">
+	SELECT <include refid="liveRecordInfoColumns"/> 
+			FROM t_live_record WHERE sellerid=#{sellerid} and status=1 and zhibo_type=1 
+	</select>
+	
+	<!-- 查询正在直播的数量 -->
+	<select id="nowLiveCount" parameterType="map" resultType="int">
+	SELECT count(1) 
+			FROM t_live_record WHERE sellerid=#{sellerid} and status=1 
+			<if test="type!=null">
+			and zhibo_type=#{type}
+			</if>
+			 
+	</select>
+	
+	<!-- 获取单个主播的直播/回放列表记录 -->
+	<select id="queryOneLiveRecordInfo" resultType="liveRecordInfo" parameterType="map">
+	
+		SELECT <include refid="liveRecordInfoColumns"/> FROM (
+			(SELECT <include refid="liveRecordInfoColumns"/> FROM t_live_record 
+			<![CDATA[
+			WHERE status=1 AND zhibo_type = 1  AND id NOT IN  (SELECT id FROM t_live_record  WHERE telphones != '' AND telphones not like '%${phone}%' )  
+			]]>
+			<if test="anchorId!=null and anchorId!=''">
+			and anchor_id=#{anchorId}
+			</if>
+			 ORDER BY sequence_no DESC,start_date DESC )
+
+			UNION
+
+			(SELECT <include refid="liveRecordInfoColumns"/> FROM t_live_record WHERE status=1 AND zhibo_type = 3 
+			<if test="anchorId!=null and anchorId!=''">
+			and anchor_id=#{anchorId}
+			</if>
+			ORDER BY sequence_no DESC,end_date DESC )
+		) a 
+		LIMIT ${(page-1)*limit},#{limit}
+	
+	</select>
+	
+	<!-- 获取关注主播的正在直播的列表记录 -->
+	<select id="getLiveRecordsAttentionList" resultType="liveRecordInfo" parameterType="map">
+	<!-- 
+		SELECT
+			r.*
+		FROM
+			t_live_record r
+		LEFT JOIN t_live_focus f ON r.anchor_id = f.liver_end_id
+		WHERE
+			r.zhibo_type = 1
+		AND 
+			status = 1
+		AND f.liver_str_id = #{liverId}
+		ORDER BY
+			r.sequence_no DESC,
+			r.start_date DESC 
+		LIMIT ${(page-1)*limit},#{limit}
+	 -->
+	 <![CDATA[
+		 SELECT
+			a.*
+		FROM
+			(
+				(
+					SELECT
+						r.*
+					FROM
+						t_live_record r
+					LEFT JOIN t_live_focus f ON r.anchor_id = f.liver_end_id
+					WHERE
+						r.zhibo_type = 1
+					AND STATUS = 1
+					AND f.liver_str_id = #{liverId}
+					AND r.id NOT IN (
+						SELECT
+							id
+						FROM
+							t_live_record
+						WHERE
+							telphones != ''
+						AND
+							telphones NOT LIKE '%${phone}%'
+					)
+					ORDER BY
+						r.sequence_no DESC,
+						r.start_date DESC
+				)
+				UNION
+					(
+						SELECT
+							r.*
+						FROM
+							t_live_record r
+						LEFT JOIN t_live_focus f ON r.anchor_id = f.liver_end_id
+						WHERE
+							r.zhibo_type = 3
+						AND STATUS = 1
+						AND f.liver_str_id = #{liverId}
+						AND r.id NOT IN (
+							SELECT
+								id
+							FROM
+								t_live_record
+							WHERE
+								telphones != '' 
+							AND
+								telphones NOT LIKE '%${phone}%'
+						)
+						ORDER BY
+							r.sequence_no DESC,
+							r.start_date DESC
+					)
+			) a
+		LIMIT ${(page-1)*limit},#{limit}
+		]]>
+	</select>
+	
+	<!--修改直播记录状态  -->
+	<update id="editAnchorLiveRecordStatus" parameterType="map">
+		UPDATE t_live_record 
+		<set >
+			<if test="income_egg_nums != null and income_egg_nums != '' or income_egg_nums ==0 ">
+				income_egg_nums = #{income_egg_nums},
+			</if>
+			<if test="zhibo_type != null and zhibo_type != '' ">
+				zhibo_type = #{zhibo_type},
+			</if>
+			<if test="device_type != null and device_type != '' or device_type == 0">
+				device_type = #{device_type},
+			</if>
+			<!--用户进来或除去修改观看人数 -->
+ 			<if test="addnumber != null and addnumber != '' ">
+ 				view_count = (view_count + #{addnumber}),
+ 			</if>
+ 			<if test="removenumber != null and removenumber != '' ">
+<!--  				view_count = (view_count - #{removenumber}), -->
+ 				
+ 				<![CDATA[view_count = if(view_count>0,(view_count - #{removenumber}),0) ]]> ,
+ 				
+<!--  			<![CDATA[ view_count = IF((view_count-#{removenumber,jdbcType=INTEGER}<0),0,(view_count-#{removenumber,jdbcType=INTEGER)), ]]> -->
+ 			</if>
+			<!--如果是主播修改开播时间 加入时间-->
+			<if test="utype == 1 and roomType ==0" >
+				start_date = #{startTime},
+				create_time = #{startTime},
+			</if>
+			<if test="utype == 1 and roomType ==1" >
+				end_date = #{endTime},
+				update_time = #{endTime},
+				zhibo_duration = zhibo_duration+(UNIX_TIMESTAMP(DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')) - UNIX_TIMESTAMP(DATE_FORMAT(start_date, '%Y-%m-%d %H:%i:%s'))),
+<!-- 				concerned_nums = concerned_nums+UNIX_TIMESTAMP(DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s'))-UNIX_TIMESTAMP(DATE_FORMAT(start_date, '%Y-%m-%d %H:%i:%s')) -->
+			</if>
+			<if test="isHorizontalScreen != null and isHorizontalScreen != '' or isHorizontalScreen == 0" >
+				isHorizontalScreen = #{isHorizontalScreen},
+			</if>
+			<if test="isQianZhi != null and isQianZhi != '' or isQianZhi == 0" >
+				isQianZhi = #{isQianZhi},
+			</if>
+			<if test="updateTime != null and updateTime != ''" >
+				update_time = #{updateTime}
+			</if>
+		</set>
+		WHERE id = #{id} 
+	</update>
+	
+	<!--根据记录ID 观众liver_id 查询是否观看过直播记录 -->
+	<select id="queryLiveViewRecordByliverId" resultType="map" parameterType="map">
+		SELECT  * FROM  t_live_view_record  record  WHERE  1=1 AND live_record_id = #{id} AND liver_id = #{liver_id}
+		
+	</select>
+	
+	<!--根据直播记录ID 观众liver_id 查询是否观看过直播记录 -->
+	<select id="queryLiverViewRecord" resultType="liveViewRecordInfo" parameterType="map">
+		SELECT  * FROM  t_live_view_record  record  WHERE  1=1 AND liver_id = #{id} AND live_record_id = #{live_record_id}
+		
+	</select>
+	
+	<!--根据直播记录ID 观众liver_id 查询是否观看过直播记录 -->
+	<select id="queryLiverViewRecordByLiveRecordId" resultType="liveViewRecordInfo" parameterType="map">
+		SELECT  * FROM  t_live_view_record  record  WHERE  1=1 AND anchor_id = #{anchor_id} AND live_record_id = #{live_record_id}
+	</select>
+	
+	<!--修改观众直播观看记录状态 -->
+	<update id="editLiveViewRecordStatus" parameterType="map">
+		UPDATE 
+			t_live_view_record 
+		<set>
+			<if test="live_status !=null and live_status != '' or live_status == 0 ">
+				live_status = #{live_status},
+			</if>
+			<if test="endTime!=null and endTime!='' ">
+				end_time = #{endTime}, 
+			</if>
+			<if test="updateTime!=null and updateTime!='' ">
+				update_time = #{updateTime} ,
+			</if>
+			<if test="view_duration!=null and view_duration!= '' ">
+				view_duration = view_duration + #{view_duration},
+			</if>
+		</set> 
+		WHERE liver_id = #{liver_id}  and live_record_id = #{id}
+	</update>
+	
+	<!--新增直播观看记录 -->
+	<insert id="addLiveViewRecord" parameterType="map" keyProperty="id"> 
+  		insert into t_live_view_record 
+  		(
+  		 liver_id,uid,rank_no,achievement,liver_utype,anchor_id,anchor_room_no,
+  		 live_record_id,live_type,live_status,start_time,create_time
+  		)
+  		VALUES 
+  		(
+  		 #{liver_id},#{uid},#{rank_no},#{achievement},#{liver_utype},#{anchor_id},#{anchor_room_no},
+  		 #{live_record_id},#{live_type},#{live_status},#{start_time},#{start_time}
+  		)
+  		
+  	</insert>
+	
+	<!-- 主播直播记录表字段 -->
+	<sql id="liveRecordInfoCol">
+		id,anchor_id,nname,avatar,anchor_room_no,sellerid,sellername,seller_alias,seller_city,longitude,latitude,seller_status,zhibo_address,
+		zhibo_type,view_count,zhibo_title,zhibo_playback_url,plan_start_date,plan_end_date,start_date,end_date,zhibo_duration,
+		concerned_nums,income_egg_nums,sequence_no,seller_sequ_no,seq_lock_status,isQianZhi,isHorizontalScreen,live_start_type,device_type,status,vedio_url,channel_id,zhibo_cover,create_time,update_time
+	</sql>
+	
+	<!--根据记录ID 查询直播记录 -->
+	<select id="queryAnchorLiveRecordById" resultType="liveRecordInfo" parameterType="map">
+		SELECT
+			r.*,  
+			f.end_date AS fansEndDate,
+			f.sold_out_time AS soldOutTime,
+			c.is_recom AS isRecom,
+			f.send_status AS fansSendStatus,
+			f.stock AS preSellStock,
+			c.cname AS preSellTitle,
+			c.denomination AS ticketMoney
+		FROM
+			t_live_record r
+		LEFT JOIN t_fans_coupon_anchor_ref f ON r.id = f.record_id
+		LEFT JOIN t_coupon c ON f.cid = c.cid
+		WHERE r.id = #{id}
+	</select>
+	
+	<!--修改直播记录状态  -->
+	<update id="editLiveRecordByAnchorId" parameterType="map">
+		UPDATE 
+			t_live_record 
+		SET 
+			zhibo_type = #{zhibo_type}, 
+			end_date = #{endTime},
+			zhibo_duration = UNIX_TIMESTAMP(DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')) - UNIX_TIMESTAMP(DATE_FORMAT(start_date, '%Y-%m-%d %H:%i:%s')),
+			update_time = #{endTime}
+		WHERE 
+			id = #{id}  AND anchor_id = #{anchor_id}
+	</update>
+	
+	<!--根据记录ID 查询直播记录 -->
+	<select id="queryLiverViewRecordViewDuration" resultType="int" parameterType="map">
+		select
+			ifnull(sum(view_duration),0) as view_duration
+		from t_live_view_record  
+		where uid = #{uid}  and DATE_FORMAT(start_time,'%Y-%m-%d')=DATE_FORMAT(#{date}, '%Y-%m-%d') 
+	</select>
+	
+	<!--主播结束直播   根据直播记录ID 修改观看直播用户的记录为 已结束 -->
+	<update id="editLiveViewerRecordByLiveId" parameterType="map">
+		UPDATE t_live_view_record SET live_status= 2,update_time = #{update_time}  where live_status = 1 and live_record_id=#{live_record_id}
+	</update>
+	
+	<!-- 修改观看记录表 “等待开播”的用户状态为 “观看直播” -->
+	<update id="editLiveViewerRecordStart" parameterType="map">
+		UPDATE t_live_view_record SET live_status= 1 ,start_time = #{start_time}  where live_status = 3 and live_record_id=#{live_record_id}
+	</update>
+	<!-- 修改观看结束时间 -->
+	<update id="editAnchorViewRecordStatus">
+		UPDATE T_LIVE_VIEW_RECORD SET end_time=#{endTime} where id=#{rid}
+	</update>
+	
+	<!--查看机器人配置 -->
+	<select id="queryRobotSet" resultType="map">
+		SELECT
+			*
+		FROM
+			t_live_robot_set
+		WHERE
+			status = 1
+		ORDER BY
+			create_time DESC
+		LIMIT 0,1
+	</select>
+	
+	<!--查询该主播的直播的记录 -->
+	<select id="queryLiveRecordIdByAnchorId" resultType="liveRecordInfo" parameterType="map">
+		SELECT
+			*
+		FROM
+			t_live_record
+		WHERE
+			anchor_id = #{anchorId}
+		AND
+			status = 1
+		AND
+			zhibo_type = #{zhiboType}
+		ORDER BY
+			start_date 
+		DESC
+		LIMIT 0,1
+	</select>
+	
+	<!--记录主播正在直播异常退出信息 -->
+	<insert id="insertLiveExitRecord" parameterType="map">
+		INSERT INTO t_live_exit_record
+		(
+			live_record_id,live_id,live_exit_start,exit_reason,create_time,update_time
+		)
+		VALUES
+		(
+			#{liveRecordId},#{liveId},#{liveExitStart},#{exitReason},#{createTime},#{updateTime}
+		)
+	</insert>
+	
+	<!--查询异常退出记录-->
+	<select id="queryLiveExitRecord" resultType="map" parameterType="map">
+		SELECT
+			*
+		FROM
+			t_live_exit_record
+		WHERE
+			live_id = #{liveId}
+		AND
+			live_record_id = #{liveRecordId}
+		ORDER BY
+			live_exit_start 
+		DESC
+		LIMIT 0,1
+	</select>
+	
+	<!--修改主播异常退出记录信息-->
+	<update id="modifyLiveExitRecord" parameterType="map">
+		UPDATE 
+			t_live_exit_record
+		SET 
+			live_exit_end = #{liveExitEnd},
+			live_exit_dura = #{liveExitDura},
+			update_time = #{updateTime}
+		WHERE
+			id = #{id}
+	</update>
+	
+	<!--查询用户观众观看直播记录信息-->
+	<select id="queryCurrentLiveViewRecord" resultType="map" parameterType="map">
+		SELECT
+			*
+		FROM
+			t_live_view_record
+		WHERE
+			liver_id = #{liverId}
+		AND
+			anchor_id = #{anchorId}
+		<![CDATA[
+		AND
+			live_status != 0
+		]]>
+		ORDER BY
+			start_time 
+		DESC
+		LIMIT 0,1
+	</select>
+	
+	<!--查询回放记录-->
+	<select id="queryPlaybackLiveRecord" resultType="liveRecordInfo" parameterType="map">
+		SELECT 
+			<include refid="liveRecordInfoColumns"/> 
+		FROM 
+			t_live_record
+		WHERE
+			zhibo_type = 3
+		AND
+			status = 1
+		<if test="anchorId != null and anchorId != '' and anchorId != 0">
+			AND anchor_id = #{anchorId}
+		</if>
+		<if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+			AND start_date BETWEEN #{startDate} AND #{endDate}
+		</if>
+		ORDER BY 
+			view_count DESC
+		LIMIT ${(page-1)*limit},#{limit}
+	</select>
+   
+   <!--修改暂停直播的直播记录-->
+	<update id="modifyPauseLiveRecord" parameterType="map">
+		UPDATE 
+			t_live_record
+		SET 
+			zhibo_type = 3,
+			update_time = #{updateTime}
+		WHERE
+			TIMESTAMPDIFF(HOUR,start_date,#{endDate}) > 24
+		AND
+			zhibo_type = 2
+	</update>
+	
+	<!--查询观看直播的观看人数-->
+	<select id="queryReadViewerCountByLiveRecordId" resultType="int" parameterType="int">
+		SELECT 
+			count(1)
+		FROM 
+			t_live_view_record
+		WHERE
+			live_status = 1
+		AND
+			live_record_id = #{liveRecordId}
+	</select>
+	
+	
+	<!--查询机器人观看直播的观看人数-->
+	<select id="queryRobotViewNum" resultType="int" parameterType="int">
+		SELECT 
+			count(1)
+		FROM 
+			t_live_robot_view
+		WHERE
+			live_record_id = #{liveRecordId}
+	</select>
+	
+	<!--统计某一条直播记录的看过人数(包含机器人)-->
+	<select id="queryAllLiverNums" resultType="int" parameterType="int">
+		SELECT
+			(
+				SELECT
+					count(1)
+				FROM
+					t_live_view_record
+				WHERE
+					live_record_id = #{liveRecordId}
+			) + (
+				SELECT
+					count(1)
+				FROM
+					t_live_robot_view
+				WHERE
+					live_record_id = #{liveRecordId}
+			) AS nums
+	</select>
+	
+	<!--查询观众直播正在观看记录-->
+	<select id="queryCurrentViewRecord" resultType="map" parameterType="map">
+		SELECT
+			*
+		FROM
+			t_live_view_record
+		WHERE
+			liver_id = #{liverId}
+		AND
+			live_status in
+		<foreach item="item" index="index" collection="liveStatus" open="(" separator="," close=")">
+        		#{item}
+  		</foreach>
+		ORDER BY
+			start_time 
+		DESC
+		LIMIT 0,1
+	</select>
+	
+	<!--查询直播用户正在观看记录信息-->
+	<select id="queryCurrentLiveViewRecordByUid" resultType="map" parameterType="int">
+		SELECT
+			*
+		FROM
+			t_live_view_record
+		WHERE
+			uid = #{uid}
+		AND
+			live_status = 1
+		
+		ORDER BY
+			start_time 
+		DESC
+		LIMIT 0,1
+	</select>
+	
+	<!--查看正在直播的直播记录信息(包含内部测试通告)-->
+	<select id="queryCurrentLiveRecord" resultType="liveRecordInfo">
+		SELECT
+			*
+		FROM
+			t_live_record
+		WHERE
+			status = 1
+		AND
+			zhibo_type = 1
+		ORDER BY
+			view_count DESC
+	</select>
+	
+	<!--查看正在直播的直播记录信息(不包含内部测试通告)-->
+	<select id="queryOnlineCurrentLiveRecord" resultType="liveRecordInfo">
+		SELECT
+			*
+		FROM
+			t_live_record
+		WHERE
+			status = 1
+		AND
+			zhibo_type = 1
+		AND
+			telphones IS NULL
+		ORDER BY
+			view_count DESC
+	</select>
+	 
+   <!--修改超过计划时间当天的未在直播的通告为历史通告-->
+	<update id="modifyCurrentLiveRecord">
+		<![CDATA[ 
+			UPDATE  
+				t_live_record SET  zhibo_type = #{zhiboType}, update_time = #{updateTime} 
+			WHERE DATE_ADD(DATE_FORMAT(plan_start_date,'%Y-%m-%d 00:00:00'), INTERVAL 1 day) < #{endDate}
+			AND status = 1 AND zhibo_type IN (-1,0,5) AND live_start_type = 0
+		]]>
+	</update>
+	
+   <!--修改之前自定义直播未关闭的直播记录-->
+	<update id="modifyCustomLiveRecord">
+		<![CDATA[ 
+			UPDATE t_live_record
+			SET zhibo_type = 5,
+			 update_time = #{updateTime},
+			 end_date = #{endDate}
+			WHERE
+				anchor_id = #{anchorId}
+			AND	STATUS = 1
+			AND zhibo_type = 1
+		]]>
+	</update>
+		 
+   <!--将超过预告时间的变成通告,不在预告列表显示-->
+	<update id="modifyCurrentLiveEndRecord">
+		<![CDATA[ 
+			UPDATE 
+				t_live_record SET  zhibo_type = #{zhiboType}, update_time = #{updateTime}
+			WHERE plan_start_date < #{endDate}
+			AND status = 1 AND zhibo_type = 0
+		]]>
+	</update>
+	
+	<!-- 	获取直播结束24小时内的记录 -->
+	<select id="queryLiveRecordByEnd"  resultType="liveRecordInfo">
+		SELECT 
+			<include refid="liveRecordInfoColumns"/> 
+		FROM t_live_record 
+		WHERE 1=1 AND zhibo_type IN (3,5)
+		<![CDATA[  and hour(timediff(date_format(NOW(),'%Y-%m-%d %H:%i:%s'),date_format(end_date,'%Y-%m-%d %H:%i:%s')))  BETWEEN 0 and 24   ]]>
+		
+	</select>
+	
+	<select id="queryLivePersionSum" resultType="map">
+		SELECT
+			l.id,
+			l.anchor_id,
+			(COUNT(lrv.id) + l.liverNums) AS nums,
+			l.view_count
+		FROM
+			(
+				SELECT
+					lr.id,
+					lr.anchor_id,
+					COUNT(DISTINCT lvr.liver_id) AS liverNums,
+					lr.view_count
+				FROM
+					t_live_record lr
+				LEFT JOIN t_live_view_record lvr ON lr.id = lvr.live_record_id AND lvr.live_status = 1
+				WHERE
+					lr.STATUS = 1
+				AND lr.zhibo_type = 1
+				GROUP BY lr.id
+			) l
+		LEFT JOIN t_live_robot_view lrv ON l.id = lrv.live_record_id
+		GROUP BY
+			l.id
+	</select>
+	
+	<select id="queryPlaybackSum" resultType="int" parameterType="int">
+		SELECT
+			(COUNT(lrv.id) + l.liverNums) AS nums
+		FROM
+			(
+				SELECT
+					lr.id,
+					lr.anchor_id,
+					COUNT(DISTINCT lvr.liver_id) AS liverNums
+				FROM
+					t_live_record lr
+				LEFT JOIN t_live_view_record lvr ON lr.id = lvr.live_record_id
+				WHERE
+					lr.STATUS = 1
+				AND lr.zhibo_type = 3
+				AND lr.id = #{liveRecordId}
+			) l
+		LEFT JOIN t_live_robot_view lrv ON l.id = lrv.live_record_id
+	</select>
+	
+	<!--修改直播记录信息  -->
+	<update id="modifyViewerCount">
+		<![CDATA[
+			UPDATE 
+			  t_live_record r,
+			  (SELECT 
+			    l.id,
+			    l.anchor_id,
+			    (COUNT(lrv.id) + l.liverNums) AS nums,
+			    l.view_count 
+			  FROM
+			    (SELECT 
+			      lr.id,
+			      lr.anchor_id,
+			      COUNT(DISTINCT lvr.liver_id) AS liverNums,
+			      lr.view_count 
+			    FROM
+			      t_live_record lr 
+			      LEFT JOIN t_live_view_record lvr 
+			        ON lr.id = lvr.live_record_id 
+			        AND lvr.live_status = 1 
+			    WHERE lr.STATUS = 1 
+			      AND lr.zhibo_type = 1 
+			    GROUP BY lr.id) l 
+			    LEFT JOIN t_live_robot_view lrv 
+			      ON l.id = lrv.live_record_id 
+			  GROUP BY l.id) a 
+			SET
+			  r.view_count = a.nums,
+			  update_time = NOW() 
+			WHERE r.id = a.id AND r.view_count <> a.nums
+		]]>
+	</update>
+	
+	<!-- 添加自定义直播记录 -->
+	<insert id="insertLiveRecord" parameterType="map">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id"> 
+    		SELECT LAST_INSERT_ID() AS ID   
+    	</selectKey>
+	    INSERT INTO t_live_record
+			(
+				anchor_id,nname,avatar,anchor_room_no,anchor_room_password,zhibo_type,zhibo_title,
+				zhibo_cover,zhibo_address,video_type,start_date,live_start_type,device_type,create_time,
+				update_time,seller_alias,sellername,plan_start_date,sign_type
+			)
+			VALUES
+			(
+				#{anchorId},#{nname},#{avatar},#{anchorRoomNo},#{anchorRoomPassword},#{zhiboType},#{zhiboTitle},
+				#{zhiboCover},#{zhiboAddress},#{videoType},#{startDate},#{liveStartType},#{deviceType},#{createTime},
+				#{updateTime},#{seller_alias},#{sellername},#{planStartDate},#{sign_type}
+			)
+  </insert>
+  
+ 	 <!-- 更新直播视频流地址 -->
+  <update id="modiflyLiveRecordVedioUrl" parameterType="map">
+  	UPDATE t_live_record
+		SET vedio_url = #{videoUrl},
+		channel_id=#{channelId},
+		channel_status=1,
+	 	update_time = #{updateTime} 
+	WHERE
+		id = #{recordId}
+  </update>
+  
+  
+	<!--    根据直播记录ID 粉丝券ID 查询直播粉丝券 -->
+  <select id="queryLiveRecordFansCoupon" parameterType="map" resultType="map">
+  	SELECT 
+		ref.anchor_cid, ref.cid, ref.uid, ref.record_id, cou.start_date, cou.end_date, cou.default_max_num as send_num,cou.sellerid,
+		cou.stock as stock, ref.send_status, cou.cname, cou.denomination, cou.validity_desc, cou.pic, cou.breviary, cou.ctype
+  	FROM t_fans_coupon_anchor_ref ref
+  	LEFT JOIN t_coupon cou ON  cou.cid = ref.cid 
+  	WHERE 1=1 AND ref.record_id = #{liveRecordId} AND ref.anchor_cid = #{cid} and cou.status = 1
+<!--   	必须在销售开始时间内才可以购买 -->
+  	<![CDATA[ AND  NOW() >= cou.sale_start_time  AND  NOW() <= cou.sale_end_time   ]]> 
+  </select>
+  
+  <!--    根据直播记录ID 查询直播 的所有粉丝券 -->
+  <select id="queryLiveRecordFansCouponAll" parameterType="map" resultType="sellerCouponDetailInfo">
+  	select 
+  		*
+  	from t_seller_coupon_detail 
+  	where live_record_id = #{liveRecordId}
+  </select>
+  
+	<!--   查询粉丝抵用券列表 -->
+  <select id="queryFansCouponListByAmount" parameterType="map" resultType="couponInfo">
+  	SELECT 
+  		de.cdid ,cou.cid,cou.cname,de.denomination,cou.condition,cou.day_num as dayNum,cou.breviary,cou.pic,cou.ctype
+  		,de.start_date as startDate,de.end_date as endDate,cou.use_num as useNum ,cou.overlay,
+  		<![CDATA[IF(cou.condition <=#{amount} or cou.condition = 0,0,1) as isAvailable ]]>
+  	FROM t_coupon_detail de
+  	LEFT JOIN t_coupon cou ON cou.cid = de.cid
+  	WHERE 1=1  AND de.get_status = 1 AND de.user_status = 0 and de.uid = #{uid}
+  	AND  date_format(NOW(),'%Y-%m-%d') BETWEEN date_format(de.start_date,'%Y-%m-%d') AND date_format(de.end_date ,'%Y-%m-%d') 
+  	<if test="source == 4">
+  		<if test="version == 1">
+  			AND cou.ctype in (4,5)
+  		</if>
+  		<if test="version == 0">
+  			AND = 4
+  		</if>
+  	</if>
+  	<if test="source == 3">
+  		AND cou.ctype = 3
+  	</if>
+  	<![CDATA[ AND cou.CONDITION <=#{amount}]]>
+  	ORDER BY de.denomination DESC, cou.end_date ASC
+  	<if test="limit !=null and limit !='' or limit == 0 ">
+  		LIMIT ${(page-1)*limit},#{limit}
+  	</if>
+  </select>
+  
+  <!--   查询粉丝抵用券列表 -->
+<!--   <select id="queryFansCouponListByUid" parameterType="map" resultType="couponInfo"> -->
+<!--   	SELECT  -->
+<!--   		de.cdid ,cou.cid,cou.cname,cou.denomination,cou.condition,cou.day_num as dayNum,cou.breviary,cou.pic,cou.ctype -->
+<!--   		,de.start_date as startDate,de.end_date as endDate, -->
+<!--   		<![CDATA[IF(cou.condition <=#{amount} or cou.condition = 0,0,1) as isAvailable ]]> -->
+<!--   	FROM t_coupon_detail de -->
+<!--   	LEFT JOIN t_coupon cou ON cou.cid = de.cid -->
+<!--   	WHERE 1=1 AND cou.ctype = 3 AND de.get_status = 1 AND de.user_status = 0 and de.uid = #{uid} -->
+<!--   	AND date_format(NOW(),'%Y-%m-%d') BETWEEN date_format(de.start_date,'%Y-%m-%d') AND date_format(de.end_date ,'%Y-%m-%d')  -->
+<!--   	ORDER BY de.denomination DESC, cou.end_date ASC -->
+<!--   </select> -->
+  
+  <!--   查询粉丝抵用券字段 -->
+  <sql id="couponInfoColumn">
+  		cid, cname,	denomination,validity_desc as validityDesc, start_date as startDate, end_date as endDate,
+  		condition, use_num as useNum, pic, breviary,showall, is_all_seller as isAllSeller, day_num as dayNum, rule, ctype,
+  </sql>
+  
+  <!-- 根据粉丝券ID  查询粉丝抵用券信息   -->
+  <select id="queryFansCouponInfoByCouponId" parameterType="map" resultType="couponInfo">
+  	SELECT 
+  		de.cdid,c.cid, c.cname,	c.validity_desc as validityDesc, c.start_date as startDate, c.end_date as endDate,de.serial,de.denomination,
+  		c.condition, c.use_num as useNum, c.pic, c.breviary,showall, c.is_all_seller as isAllSeller, c.day_num as dayNum, c.rule, c.ctype
+  	FROM  t_coupon c 
+  	LEFT JOIN t_coupon_detail de ON de.cid = c.cid 
+  	WHERE  user_status = 0 
+  	<if test="list!=null">
+  		AND  de.cdid  in
+  		<foreach collection="list" item="cid" open="(" close=")" separator=",">
+  			#{cid}
+  		</foreach>
+  	</if>
+  </select>
+  
+  <!-- 根据粉丝券ID  查询粉丝抵用券信息   -->
+  <select id="queryFansCouponListByCouponId" parameterType="map" resultType="couponInfo">
+  	SELECT 
+  		de.cdid,c.cid, c.cname,	c.validity_desc as validityDesc, c.start_date as startDate, c.end_date as endDate,de.serial,de.denomination,
+  		c.condition, c.use_num as useNum, c.pic, c.breviary,showall, c.is_all_seller as isAllSeller, c.day_num as dayNum, c.rule, c.ctype,
+  		c.overlay,c.use_num as useNum
+  	FROM  t_coupon c 
+  	LEFT JOIN t_coupon_detail de ON de.cid = c.cid 
+  	WHERE  user_status = 0  
+  	AND  de.cdid  in
+  	<foreach collection="list" item="cid" open="(" close=")" separator=",">
+  		 #{cid}
+  	</foreach>
+  </select>
+  
+  
+  
+   <!-- 根据粉丝券ID  查询粉丝抵用券信息   -->
+  <select id="queryFansCouponInfoTwoByCouponId" parameterType="map" resultType="couponInfo">
+  	SELECT 
+  		de.cdid,c.cid, c.cname,	c.validity_desc as validityDesc, c.start_date as startDate, c.end_date as endDate,de.serial,de.denomination,
+  		c.condition, c.use_num as useNum, c.pic, c.breviary,showall, c.is_all_seller as isAllSeller, c.day_num as dayNum, c.rule, c.ctype
+  	FROM  t_coupon c 
+  	LEFT JOIN t_coupon_detail de ON de.cid = c.cid 
+  	WHERE  user_status = 0
+  	<if test="list!=null ">
+  		AND  de.cdid in 
+  		<foreach collection="list" item="cid" open="(" close=")" separator=",">
+  			 #{cid}
+  		</foreach>
+  		
+  	</if>
+  	
+  	
+  </select>
+  
+  
+  
+  
+   <!-- 根据UID  查询粉丝抵用券信息   -->
+  <select id="queryUseCouponListByCid" parameterType="map" resultType="map">
+  	SELECT  id, cid, gift_cid, num FROM  t_fans_coupon_issue_ref WHERE  cid = #{cid}
+  </select>
+  
+  <!-- 根据粉丝抵用券ID      -->
+  <select id="queryCouponByCidList" parameterType="list" resultType="map">
+  	SELECT  cid,  denomination   FROM  t_coupon WHERE  cid in
+  		<foreach collection="list" item="giveCid" open="(" separator="," close=")">
+  			 #{giveCid}
+  		</foreach>
+  </select>
+  
+  <!-- 根据UID  查询粉丝抵用券信息   -->
+  <select id="queryUseCouponListByUid" parameterType="map" resultType="couponInfo">
+  	SELECT  
+  		d.cdid, d.aid, d.cid, d.serial, d.denomination, d.get_way, d.start_date, d.end_date, d.get_status 
+   	FROM   t_coupon_detail d  
+  	WHERE   d.get_status = 1 and d.user_status = 0 and d.uid = #{uid}  order by denomination desc , get_time asc
+  </select>
+  
+	<!--   查询通告对应的粉丝券 -->
+  <select id="queryLiveRecordFansCouponList" parameterType="map" resultType="map">
+	  	SELECT
+			IFNULL(ref.anchor_cid, "") AS anchorCid,
+			IFNULL(ref.uid, "") AS uid,
+			IFNULL(ref.start_date, "") AS startDate,
+			IFNULL(ref.end_date, "") AS endDate,
+			IFNULL(ref.sellerid, "") AS sellerid,
+			IFNULL(co.stock, "") AS stock,
+			IFNULL(ref.send_status, "") AS sendStatus,
+			IFNULL(co.denomination, "") AS denomination,
+			IFNULL(co.pic, "") AS pic,
+			IFNULL(co.breviary, "") AS breviary,
+			IFNULL(co.ctype, "") AS ctype,
+			live.id AS liveRecordId,
+			live.anchor_id AS anchorId,
+			live.zhibo_cover AS zhiboCover,
+			live.zhibo_thumbnail AS zhiboThumbnail,
+			live.zhibo_title AS zhiboTitle,
+			live.zhibo_type AS zhiboType,
+			live.plan_start_date AS planStartDate,
+			longitude,
+			latitude,
+			live.anchor_room_no as roomNo,
+			live.sellername as sellername,
+			live.live_start_type as liveStartType,
+			IF (ref.anchor_cid IS NULL, 0, 1) AS isPreSell,
+		    IF (live.anchor_id = #{anchorId},1,0) as anchorDesc
+		FROM
+			t_fans_coupon_anchor_ref ref 
+		LEFT JOIN t_live_record live ON  ref.record_id = live.id
+		LEFT JOIN t_coupon co ON ref.cid = co.cid
+		WHERE 1=1  
+		AND ref.record_id = live.id 
+		AND co.status = 1
+		<![CDATA[
+			AND co.stock > 0
+		]]>
+<!-- 			查询当前房间主播  包含其他主播有推荐的  列表-->
+			<if test="position!=null and position!='' or position==0  ">
+				AND ( live.anchor_id = #{anchorId} or co.is_recom = 1 )
+			</if>
+<!-- 			查询当前主播的 并且是推荐的  直播间悬浮框-->
+			<if test="position!=null and position!='' and position == 1 ">
+				AND live.anchor_id = #{anchorId}  and  co.is_recom =1
+			</if>
+<!-- 			粉丝券下架时间 -->
+<!-- 			AND (date_format(NOW(),'%Y-%m-%d %H:%i:%s') < date_format(ref.sold_out_time,'%Y-%m-%d %H:%i:%s') or ref.sold_out_time is null ) -->
+		<![CDATA[
+			AND date_format(NOW(),'%Y-%m-%d %H:%i:%s') >= date_format(co.sale_start_time,'%Y-%m-%d %H:%i:%s')
+			AND date_format(NOW(),'%Y-%m-%d %H:%i:%s') <= date_format(co.sale_end_time,'%Y-%m-%d %H:%i:%s')
+		]]>
+		
+<!-- 		如果是当前用户是登录的状态  需要判断是否可用查看内部测试通告 -->
+		<if test="phone != null and phone !='' ">
+			And (live.telphones is null or live.telphones= '' or live.telphones like '%${phone}%' ) 
+		</if>
+		<if test="phone == null or phone =='' ">
+			And (live.telphones is null or live.telphones= '')
+		</if>
+	  	ORDER BY anchorDesc desc, co.is_recom desc, live.zhibo_type desc , planStartDate desc
+	  	LIMIT ${(page-1)*limit},#{limit}
+  </select>
+  
+  
+  <!--   查询主播通告 并且 并且有关联无粉丝券 -->
+  <select id="queryLiveRecordListByAnchorId" parameterType="map" resultType="map">
+	  	SELECT
+			IFNULL(ref.anchor_cid, "") AS anchorCid,
+		  	IFNULL(ref.uid, "") AS uid,
+			IFNULL(ref.start_date, "") AS startDate,
+			IFNULL(ref.end_date, "") AS endDate,
+			IFNULL(ref.sellerid, "") AS sellerid,
+			IFNULL(ref.stock, "") AS stock,
+			IFNULL(ref.send_status, "") AS sendStatus,
+			IFNULL(co.denomination, "") AS denomination,
+			IFNULL(co.pic, "") AS pic,
+			IFNULL(co.breviary, "") AS breviary,
+			IFNULL(co.ctype, "") AS ctype,
+			live.id AS liveRecordId,
+			live.anchor_id AS anchorId,
+			live.zhibo_cover AS zhiboCover,
+			live.zhibo_thumbnail AS zhiboThumbnail,
+			live.zhibo_title AS zhiboTitle,
+			live.zhibo_type AS zhiboType,
+			live.plan_start_date AS planStartDate,
+			live.start_date AS start_date,
+			longitude,
+			latitude,
+			live.anchor_room_no as roomNo,
+			live.live_start_type as liveStartType,
+			live.sellername as sellername,
+			IF (ref.anchor_cid IS NULL, 0, 1) AS isPreSell,
+			live.sign_type
+		FROM
+			t_live_record live 
+		LEFT JOIN t_fans_coupon_anchor_ref ref  ON  ref.record_id = live.id
+		LEFT JOIN t_coupon co ON ref.cid = co.cid
+		WHERE live.zhibo_type IN (0,1)
+		AND   live.anchor_id = #{anchorId}
+		AND   co.status = 1
+<!-- 		下架时间 -->
+<!-- 		<![CDATA[ and (date_format(NOW(),'%Y-%m-%d %H:%i:%s') < date_format(ref.sold_out_time,'%Y-%m-%d %H:%i:%s') or ref.sold_out_time is null ) ]]> -->
+
+		<![CDATA[
+			AND date_format(NOW(),'%Y-%m-%d %H:%i:%s') >= date_format(co.sale_start_time,'%Y-%m-%d %H:%i:%s')
+			AND date_format(NOW(),'%Y-%m-%d %H:%i:%s') <= date_format(co.sale_end_time,'%Y-%m-%d %H:%i:%s')
+		]]>
+	  	ORDER BY zhibo_type desc , planStartDate desc
+	  	LIMIT ${(page-1)*limit},#{limit}
+  </select>
+  
+  
+  <!--   查询主播回放记录 -->
+  <select id="queryLiveRecordPlayList" parameterType="map" resultType="map">
+	  	SELECT
+	  		zhibo_cover AS zhiboCover,
+	  		zhibo_type AS zhiboType,
+	  		zhibo_thumbnail AS zhiboThumbnail,
+	  		plan_start_date AS planStartDate,
+	  		zhibo_type AS zhiboType,
+	  		id AS liveRecordId,
+	  		anchor_id AS anchorId,
+	  		longitude,
+	  		latitude,
+	  		anchor_room_no as roomNo,
+	  		live_start_type as liveStartType,
+	  		sellername
+		FROM
+			t_live_record live
+		WHERE live.zhibo_type = 3
+		AND   live.anchor_id = #{anchorId}
+		ORDER BY  update_time desc
+	  	LIMIT ${(page-1)*limit},#{limit}
+	  	
+  </select>
+  
+  <!-- 批量查询商家的logo图 -->
+	<select id="querySellerLogos" resultType="map">
+		SELECT
+			sellerid AS sellerId,
+			picurl AS sellerLogo
+		FROM
+			t_seller_pic 
+		WHERE
+			islogo = 1
+		AND
+			sellerid IN
+		 <foreach item="sellerId" index="index" collection="sellerIds" open="(" separator="," close=")">
+        	#{sellerId}
+  		</foreach>
+	</select>
+	
+  <!-- 批量查询商家的封面图 -->
+	<select id="querySellerCover" resultType="map">
+		SELECT
+			sellerid AS sellerId,
+			picurl AS sellerCover
+		FROM
+			t_seller_pic 
+		WHERE
+			islogo = 2
+		AND
+			sellerid IN
+		 <foreach item="sellerId" index="index" collection="sellerIds" open="(" separator="," close=")">
+        	#{sellerId}
+  		</foreach>
+	</select>
+	
+	 <!-- 批量查询粉丝卷 -->
+	<select id="queryFansCoupons" resultType="map">
+		SELECT
+			f.record_id AS liveRecordId, c.stock, c.denomination AS ticketMoney
+		FROM t_fans_coupon_anchor_ref f
+		LEFT JOIN t_coupon c ON f.cid =c.cid
+		WHERE c.status = 1 AND c.ctype = 2
+		<![CDATA[ AND  NOW() >= c.sale_start_time  AND  NOW() <= c.sale_end_time   ]]> 
+			AND f.record_id IN
+		 <foreach item="liveRecordId" index="index" collection="liveRecordIds" open="(" separator="," close=")">
+        	#{liveRecordId}
+  		</foreach>
+	</select>
+  
+	<!-- 根据广播id查询广播内容 -->
+	<select id="queryLiveBroadcastById" resultType="map">
+		SELECT
+			*
+		FROM
+			t_live_broadcast 
+		WHERE
+			id=#{radioId}
+	</select>
+	
+	<!-- 批量查询直播间号(群组号)-->
+	<select id="queryGroupIds" resultType="string">
+		SELECT
+			group_id
+		FROM
+			b_liver
+		WHERE
+			id IN
+		 <foreach item="liveRecord" index="index" collection="liveRecordList" open="(" separator="," close=")">
+        	#{liveRecord.anchor_id}
+  		</foreach>
+	</select>
+  
+  	<!-- 查询指定时间的广播消息 -->
+	<select id="queryLiveRadioBySendTime" resultType="map">
+		SELECT
+			*
+		FROM
+			t_live_broadcast 
+		WHERE
+			date_format(send_time,'%Y-%m-%d %H:%i')=date_format(#{sendTime},'%Y-%m-%d %H:%i') 
+	</select>
+	
+	<!-- 根据订单号查询烦死券订单信息 -->
+	<select id="queryCouponFansOrderByNo" resultType="map" parameterType="map">
+		SELECT * FROM t_coupon_order  WHERE order_sn =#{orderNo}
+	</select>
+	
+	<!-- 根据订单号查询购买粉丝券有无赠送抵用券 -->
+	<select id="queryFansOrderUseCouponByNo" resultType="map" parameterType="String">
+		SELECT 
+			de.cdid, de.denomination,cou.cname,cou.condition 
+		FROM t_coupon_detail  de
+		LEFT JOIN t_coupon cou ON de.cid = cou.cid
+		WHERE order_no =#{orderNo} AND de.ctype = 3
+	</select>
+	
+	<!-- 查询直播记录详细信息 -->
+	<select id="queryLiveRecordById" resultType="liveRecordInfo" parameterType="int">
+		SELECT 
+			<include refid="liveRecordInfoColumns"/> 
+		FROM t_live_record 
+		WHERE 1=1 AND id=#{liveRecordId}
+	</select>
+	
+	<!--  根据主播的id查询正在直播的直播记录或者是最近结束的直播记录 -->
+	<select id="queryCurrentLiveRecordByAnchorId" resultType="map" parameterType="int">
+		SELECT
+			<include refid="liveRecordInfoColumns"/>
+		FROM
+			(
+				(
+					SELECT
+						<include refid="liveRecordInfoColumns"/>
+					FROM
+						t_live_record
+					WHERE
+						anchor_id = #{anchorId}
+					AND STATUS = 1
+					AND zhibo_type = 1
+					LIMIT 1
+				)
+				UNION
+					(
+						SELECT
+							<include refid="liveRecordInfoColumns"/>
+						FROM
+							t_live_record
+						WHERE
+							anchor_id = #{anchorId}
+						AND STATUS = 1
+						AND zhibo_type = 5
+						ORDER BY
+							end_date DESC
+						LIMIT 1
+					)
+			) a
+		LIMIT 1
+	</select>
+		<!-- 通过城市名称查询当前城市中正在直播的商铺 -->
+   <select id="findAllByCity" resultType="map" parameterType="map">
+  	SELECT id, anchor_id AS anchorId, nname, avatar, anchor_room_no AS anchorRoomNo, sellerid, sellername, seller_alias AS sellerAlias, 
+    seller_city AS sellerCity, longitude, latitude, seller_status AS sellerStatus, zhibo_address AS zhiboAddress, zhibo_type AS zhiboType, zhibo_playback_url AS zhiboPlaybackUrl, 
+    zhibo_title AS zhiboTitle, zhibo_cover AS zhiboCover, video_type AS videoType, video_label AS videoLabel, plan_start_date AS planStartDate, plan_end_date AS planEndDate, 
+    start_date AS startDate, end_date AS endDate, zhibo_thumbnail AS zhiboThumbnail,ROUND(
+    6378.138 * 2 * ASIN(
+      SQRT(
+        POW(
+          SIN(
+            (
+              #{lat} * PI() / 180- latitude * PI() / 180
+            ) / 2
+          ),
+          2
+        ) + COS(#{lat} * PI() / 180) * COS(latitude * PI() / 180) * POW(
+          SIN(
+            (
+              #{lon} * PI() / 180- longitude * PI() / 180
+            ) / 2
+          ),
+          2
+        )
+      )
+    ) * 1000
+  ) AS ranges,(1000-ROUND(
+    6378.138 * 2 * ASIN(
+      SQRT(
+        POW(
+          SIN(
+            (
+              #{lat} * PI() / 180- latitude * PI() / 180
+            ) / 2
+          ),
+          2
+        ) + COS(#{lat} * PI() / 180) * COS(latitude * PI() / 180) * POW(
+          SIN(
+            (
+              #{lon} * PI() / 180- longitude * PI() / 180
+            ) / 2
+          ),
+          2
+        )
+      )
+    ) * 1000
+  ))/1000 AS rangeRank
+   FROM t_live_record 
+   WHERE STATUS=1 AND seq_lock_status=0 AND zhibo_type IN (0,1,3) AND seller_city LIKE CONCAT('%',#{city},'%') AND latitude IS NOT NULL ORDER BY rangeRank DESC
+  </select>
+  
+  <!-- 根据商铺id和直播状态查询最新的商铺直播记录 -->
+  <select id="findAllBySellerId" resultType="liveRecordInfo" parameterType="map">
+    SELECT
+    	<include refid="liveRecordInfoColumns" />
+    FROM t_live_record 
+    WHERE zhibo_type=#{zhiboType} and status=1 and sellerid = #{sellerid} ORDER BY update_time LIMIT 0,1
+  </select>
+	
+  <!-- 通过粉丝卷发放状态查询直播记录 -->
+  <select id="findLiveRecordByFansSendStatus" resultType="map" parameterType="map">
+  	SELECT
+  		r.id as id,r.anchor_id as anchorId,r.anchor_room_no as anchorRoomNo,r.zhibo_address as zhiboAddress,r.zhibo_type as zhiboType
+  	FROM t_fans_coupon_anchor_ref f 
+  	LEFT JOIN t_live_record r ON f.record_id=r.id 
+  	WHERE r.status=1 AND f.send_status=1 AND r.zhibo_type=#{zhiboType} AND r.sellerid=#{sellerid} ORDER BY r.update_time LIMIT 0,1
+  </select>	
+	
+	<!--批量插入机器人想看记录 -->
+	<insert id="insertRebotLiveFocusShow" parameterType="list">
+		INSERT INTO t_live_focus_show
+		(
+			liver_id,live_record_id,isRebot,status,create_time,update_time
+		)
+		VALUES
+		<foreach collection="rebotList" item="item" index="index" separator="," > 
+		(#{item.liveId},#{item.liveRecordId},#{item.isRebot},#{item.status},#{item.createTime},#{item.updateTime}) 
+		</foreach> 
+	</insert>
+	
+	<!-- 查询主播的直播动态 -->
+  <select id="queryLiveRecordDynamic" resultType="map" parameterType="map">
+		SELECT
+			<if test="longitude!=null and latitude!=null">
+				ifnull(ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{latitude}*PI()/180-a.latitude*PI()/180)/2),2)+COS(#{latitude}*PI()/180)*COS(a.latitude*PI()/180)*POW(SIN((#{longitude}*PI()/180-a.longitude*PI()/180)/2),2)))*1000),'')
+				as `distance`,
+			</if>
+			a.*
+		FROM
+			(
+				(
+					SELECT
+						r.*, f.stock AS preSellStock,
+						c.cname AS preSellTitle,
+						c.denomination AS ticketMoney,
+						0 AS sort
+					FROM
+						t_live_record r
+					LEFT JOIN t_fans_coupon_anchor_ref f ON r.id = f.record_id
+					LEFT JOIN t_coupon c ON f.cid = c.cid
+					WHERE
+						r.anchor_id = #{anchorId}
+					AND r.zhibo_type IN (0,1)
+				)
+				UNION
+					(
+						SELECT
+							*, 0 AS preSellStock,
+							'' AS preSellTitle,
+							0 AS ticketMoney,
+							1 AS sort
+						FROM
+							t_live_record
+						WHERE
+							anchor_id = #{anchorId}
+						AND zhibo_type IN (3, 4, 5)
+						AND live_start_type = 0
+					)
+			) a
+		WHERE 
+			a.status = 1
+		AND 
+			a.id not in  (SELECT id FROM t_live_record  WHERE telphones != '' AND telphones not like '%${phone}%' )
+		ORDER BY
+			sort ASC,
+			zhibo_type DESC,
+			end_date DESC
+		LIMIT ${(page-1)*limit},#{limit}
+  </select>
+  
+	<!--   根据商家ID查询商家分账信息 -->
+  <select id="queryLiveSellerLedgerBySellerId" parameterType="long" resultType="liveSellerLedgerInfo">
+  		SELECT 
+  			id,sellerid,ledger_style as ledgerStyle,ledger_mode as ledgerMode,ledger_ratio as ledgerRatio,
+  			start_date as startDate,end_date as endDate
+  		FROM t_live_seller_ledger WHERE  sellerid = #{sellerId}
+			AND IFNULL(start_date = NULL and end_date = NULL,1=1)
+  			AND IFNULL(start_date !=NULL and end_date !=NULL, NOW() BETWEEN start_date AND end_date ) 
+  </select>
+  
+  
+	<!-- 查询参加过的直播活动列表(购买过粉丝卷,直播中置顶，直播预售优先排序，回放记录按时间排序) -->
+  <select id="queryAttendLiveRecordList" resultType="map" parameterType="map">
+		SELECT
+			<if test="longitude!=null and latitude!=null">
+				ifnull(ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{latitude}*PI()/180-a.latitude*PI()/180)/2),2)+COS(#{latitude}*PI()/180)*COS(a.latitude*PI()/180)*POW(SIN((#{longitude}*PI()/180-a.longitude*PI()/180)/2),2)))*1000),'')
+				as `distance`,
+			</if>
+			a.*
+		FROM
+			(
+				SELECT
+					r.*, f.stock AS preSellStock,
+					c.cname AS preSellTitle,
+					c.denomination AS ticketMoney,
+					0 AS sort
+				FROM
+					t_live_record r
+				LEFT JOIN t_fans_coupon_anchor_ref f ON r.id = f.record_id
+				LEFT JOIN t_coupon c ON f.cid = c.cid
+				WHERE
+					zhibo_type IN (0, 1)
+				AND id IN (
+					SELECT DISTINCT
+						record_id AS liveRecordId
+					FROM
+						t_coupon_order
+					WHERE
+						uid = #{uid}
+					AND `status` = 1
+				)
+				UNION
+					SELECT
+						*, 0 AS preSellStock,
+						'' AS preSellTitle,
+						0 AS ticketMoney,
+						1 AS sort
+					FROM
+						t_live_record
+					WHERE
+						zhibo_type IN (3, 4, 5)
+					AND id IN (
+						SELECT DISTINCT
+							record_id AS liveRecordId
+						FROM
+							t_coupon_order
+						WHERE
+							uid = #{uid}
+						AND `status` = 1
+					)
+			) a
+			WHERE 
+				a.status = 1
+			AND 
+				a.id not in  (SELECT id FROM t_live_record  WHERE telphones != '' AND telphones not like '%${phone}%' )
+			ORDER BY
+				sort ASC,
+				zhibo_type DESC,
+				end_date DESC
+			LIMIT ${(page-1)*limit},#{limit}
+  </select>
+  
+  <!-- 根据商家ID和类型查询直播记录 -->
+  <select id="queryLiveRecordInfoBySellerIdAndType" parameterType="map" resultType="liveRecordInfo">
+  	  SELECT
+    	<include refid="liveRecordInfoColumns"/>
+    	from t_live_record where sellerid=#{sellerid} and zhibo_type = #{type}
+    	limit ${(page-1)*pageSize} ,#{pageSize}
+    	
+  </select>
+  
+  <!-- 批量查询这些用户是否观看过指定主播的直播 -->
+  <select id="queryCheckLiveViewRecord" parameterType="map" resultType="map">
+		SELECT
+			COUNT(1) AS count,
+			uid
+		FROM
+			t_live_view_record
+		WHERE
+			anchor_id = #{anchorId}
+		AND uid IN 
+			<foreach collection="uids" index="index" item="uid" open="(" close=")" separator=",">
+  			 #{uid}
+   			</foreach>
+		GROUP BY
+			uid
+  </select>
+  	<!-- 查询回放列表 -->
+  	<!--优先已关注的主播，然后距离/已消费/已收藏/已浏览店铺  -->
+  	<select id="vodList" parameterType="map" resultType="map">
+  	select * from (
+  		select a.avatar,
+	ifnull(a.zhibo_title,'')zhibo_title,anchor_id anchorId,anchor_room_no roomNo,a.id,
+	a.zhibo_cover,a.zhibo_playback_url vedio_url,DATE_FORMAT(a.start_date,'%Y-%m-%d %H:%i')start_date,DATE_FORMAT(a.end_date,'%Y-%m-%d %H:%i')end_date,a.nname,a.sellername,a.view_count,
+	<if test="longitude!=null and latitude!=null">
+	ifnull(ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{latitude}*PI()/180-a.latitude*PI()/180)/2),2)+COS(#{latitude}*PI()/180)*COS(a.latitude*PI()/180)*POW(SIN((#{longitude}*PI()/180-a.longitude*PI()/180)/2),2)))*1000),999999999)
+		as `range`,
+	</if>	
+	<if test="liver_str_id!=null">
+	if(b.id is null,1,0) as focu_order,
+	</if>
+	<if test="uid!=null">
+    if(b1.sellerid is null,1,0) as bil_s_order,
+    if(b2.sellerid is null,1,0) as urs_s_order,
+    if(b3.sellerid is null,1,0) as bro_s_order,
+    </if>
+    a.sellerid,bs.record_c,ifnull(fs.fansCount,0)fansCount
+	from t_live_record  a
+	<if test="liver_str_id!=null">
+			left join (select id,liver_end_id from t_live_focus where liver_str_id = #{liver_str_id}) b on a.anchor_id = b.liver_end_id
+	</if>
+	<if test="uid!=null">
+		left join  (select  distinct sellerid from t_bill where uid=#{uid} )           b1  on a.sellerid=b1.sellerid
+		left join  (select  distinct sellerid from t_urs_collect where uid=#{uid} )    b2  on a.sellerid=b2.sellerid
+		left join  (select  distinct sellerid from t_seller_browsed where uid=#{uid} ) b3  on a.sellerid=b3.sellerid
+	</if>
+	left join (select live_record_id,count(1) as record_c from t_live_focus_show where  live_record_id is not null group by live_record_id) bs on a.id = bs.live_record_id
+	left join (SELECT r.sellerid,COUNT(1) as fansCount FROM t_live_record r
+		LEFT JOIN t_fans_coupon_anchor_ref f ON r.id = f.record_id
+		WHERE
+			r.zhibo_type IN (0, 1)
+		AND f.send_status = 1 AND r.status=1 <![CDATA[AND (f.end_date >= NOW())]]>
+		GROUP BY r.sellerid)fs on fs.sellerid=a.sellerid
+	where a.zhibo_playback_url is not null and start_date >'2010-11-11' and status=1 and a.isAppoint=0 AND a.id not in  (SELECT id FROM t_live_record  WHERE telphones != '' AND telphones not like '%${phone}%' )
+	<if test="zhiboType != null and zhiboType != '' or zhiboType == 0">
+		and zhibo_type=#{zhiboType}
+	</if>
+		<if test="sdate!=null and sdate!=''">
+			and DATE_FORMAT(a.end_date,'%Y-%m-%d')>=DATE_FORMAT(#{sdate},'%Y-%m-%d')
+		</if>
+		<if test="edate!=null">
+			<![CDATA[and DATE_FORMAT(a.end_date,'%Y-%m-%d')<=DATE_FORMAT(#{edate},'%Y-%m-%d')]]>
+		</if>
+	
+	<!-- order by 
+	<if test="type==4">
+	record_c desc,
+	</if>
+	<if test="liver_str_id!=null">
+	focu_order,
+	</if>
+	<if test="longitude!=null and latitude!=null">
+	`range`, 
+	</if>
+	<if test="uid!=null">
+	bil_s_order,urs_s_order,bro_s_order,
+	</if> -->
+	) t where 1 =1
+	<!-- 已关注 -->
+	<if test="liver_str_id!=null">
+		<if test ="type==1">
+		and	focu_order =0
+		</if>
+	</if>
+	<if test="uid!=null">
+		<!-- 我消费或我浏览 -->
+		<if test ="type==2">
+			and (bil_s_order=0 or urs_s_order=0 or bro_s_order=1)
+		</if>
+	</if>
+	<!-- 我附近 -->
+	<if test="longitude!=null and latitude!=null">
+		<if test ="type==3">
+			<![CDATA[ and `range`<=500 ]]>
+		</if>
+	</if>
+	<!-- 最多人想去 -->
+	order by 
+	<choose>
+		<!-- 查看全部,只按时间排序 -->
+	    <when test="type==0">
+	        start_date desc
+	    </when>
+	    <otherwise>
+	        <if test="type==4">
+			record_c desc,
+			</if>
+			<if test="liver_str_id!=null">
+			focu_order,
+			</if>
+			<if test="longitude!=null and latitude!=null">
+			`range`, 
+			</if>
+			<if test="uid!=null">
+			bil_s_order,urs_s_order,bro_s_order,
+			</if>
+			start_date desc
+	    </otherwise>
+	</choose>
+	limit ${(page-1)*pageSize},#{pageSize}
+  	</select>
+  	
+  	 <!-- 查询精彩预告/直播列表(8条,规则:有预售的预告优先,优已关注的主播) -->
+  <select id="queryLiveRecordList" parameterType="map" resultType="map">
+		SELECT * FROM (
+		SELECT
+			<if test="longitude!=null and latitude!=null">
+				ifnull(ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{latitude}*PI()/180-a.latitude*PI()/180)/2),2)+COS(#{latitude}*PI()/180)*COS(a.latitude*PI()/180)*POW(SIN((#{longitude}*PI()/180-a.longitude*PI()/180)/2),2)))*1000),'')
+				as `distance`,
+			</if>
+			a.*
+			<if test="liver_str_id != null and liver_str_id != '' and liver_str_id != 0">
+				,if(b.id is null,1,0) as focu_order
+			</if>
+			<if test="uid != null and uid !='' and uid != 0">
+			    ,if(b1.sellerid is null,1,0) as bil_s_order
+			    ,if(b2.sellerid is null,1,0) as urs_s_order
+			    ,if(b3.sellerid is null,1,0) as bro_s_order
+		    </if>
+		    <if test ="type == 4">
+		    	,bs.record_c
+			</if>
+			<if test="zhiboType == 1">
+				<if test="zhiboGiftRange != null">
+					<![CDATA[
+						,if(g.zhiboGifts > #{zhiboGiftRange}, 0, 1) as range_order
+					]]>
+				</if>
+			</if>
+		FROM
+			(
+				SELECT
+					r.*, 
+					c.stock AS preSellStock,
+<!-- 					f.sold_out_time AS soldOutTime, -->
+					c.cname AS preSellTitle,
+					c.denomination AS ticketMoney,
+					0 AS sort,
+					<!-- CASE WHEN anchor_id IN (330,450,966,1406,3465,3565,5481,5484,9669,14092) THEN 1 ELSE 0 END AS signType, -->
+					r.sign_type AS signType,
+					CASE WHEN sequence_no = 999 THEN 1 ELSE 0 END AS low
+				FROM
+					t_live_record r
+				LEFT JOIN t_fans_coupon_anchor_ref f ON r.id = f.record_id
+				LEFT JOIN t_coupon c ON f.cid = c.cid
+				WHERE
+					c.status = 1
+				<![CDATA[
+				AND c.sale_start_time <= NOW() AND c.sale_end_time >= NOW()
+				]]>
+				UNION
+					<if test ="liverId != null and liverId != '' and liverId != 0">
+						SELECT
+							r.*,
+							 0 AS preSellStock,
+<!-- 							'' AS soldOutTime, -->
+							'' AS preSellTitle,
+							0 AS ticketMoney,
+							1 AS sort,
+							<!-- CASE WHEN anchor_id IN (330,450,966,1406,3465,3565,5481,5484,9669,14092) THEN 1 ELSE 0 END AS signType, -->
+							r.sign_type AS signType,
+							CASE WHEN sequence_no = 999 THEN 1 ELSE 0 END AS low
+						FROM
+							t_live_record r
+						LEFT JOIN t_live_focus f ON r.anchor_id = f.liver_end_id
+						WHERE
+							f.liver_str_id = #{liverId}
+						UNION
+					</if>
+						SELECT
+							r.*,
+							0 AS preSellStock,
+<!-- 							'' AS soldOutTime, -->
+							'' AS preSellTitle,
+							0 AS ticketMoney,
+							2 AS sort,
+							<!-- CASE WHEN anchor_id IN (330,450,966,1406,3465,3565,5481,5484,9669,14092) THEN 1 ELSE 0 END AS signType, -->
+							r.sign_type AS signType,
+							CASE WHEN sequence_no = 999 THEN 1 ELSE 0 END AS low
+						FROM
+							t_live_record r
+			) a
+			<!-- 直播列表（当场礼物赠送排序） -->
+			<if test="zhiboType == 1">
+				left join (select live_record_id, SUM(percentAmount) as zhiboGifts from t_live_gived_gift where status = 1 GROUP BY live_record_id) g on g.live_record_id = a.id
+			</if>
+			<!-- 我喜欢的主播(关注的主播) -->
+			<if test="liver_str_id != null and liver_str_id != '' and liver_str_id != 0">
+				left join (select id,liver_end_id from t_live_focus where liver_str_id = #{liver_str_id}) b on a.anchor_id = b.liver_end_id
+			</if>
+			<!-- 我感兴趣的店铺(消费过,收藏过,预览过) -->
+			<if test="uid != null and uid !='' and uid != 0">
+				left join  (select  distinct sellerid from t_bill where uid=#{uid} )           b1  on a.sellerid=b1.sellerid
+				left join  (select  distinct sellerid from t_urs_collect where uid=#{uid} )    b2  on a.sellerid=b2.sellerid
+				left join  (select  distinct sellerid from t_seller_browsed where uid=#{uid} ) b3  on a.sellerid=b3.sellerid
+			</if>
+			<!-- 最多人想去的 -->
+			<if test ="type == 4">
+				left join (select live_record_id,count(1) as record_c from t_live_focus_show where  live_record_id is not null group by live_record_id) bs on a.id = bs.live_record_id
+			</if>
+			WHERE 1 = 1  
+				AND a.id not in  (SELECT id FROM t_live_record  WHERE telphones != ''  
+				<choose>
+					<when test="phone != null and phone != ''">
+						AND telphones not like '%${phone}%' )
+					</when>
+					<otherwise>
+						AND telphones is not null)
+					</otherwise>
+				</choose>
+			) t WHERE status = 1
+			<if test="zhiboType != null and zhiboType != '' or zhiboType == 0">
+				and zhibo_type = #{zhiboType}
+			</if>
+			<!-- 我关注 -->
+			<if test ="type == 1">
+				and	focu_order = 0
+			</if>
+			<!-- 我消费或我收藏或我浏览 -->
+			<if test ="type == 2">
+				and (bil_s_order=0 or urs_s_order=0 or bro_s_order=1)
+			</if>
+			<!-- 我附近 -->
+			<if test ="type == 3">
+				<![CDATA[ and `distance`<=3000 ]]>
+			</if>
+			<!-- 主播的预售列表 -->
+			<if test ="type == 5">
+				and sort = 0 and anchor_id = #{anchorId}
+			</if>
+			<!-- 有预售筛选条件 -->
+			<if test ="type == 6">
+				and sort = 0
+				<!-- and (soldOutTime > now() or soldOutTime is null) -->
+			</if>
+			<!-- 日期筛选条件 -->
+			<if test="sdate != null and sdate != ''">
+				<![CDATA[
+					AND DATE_FORMAT(plan_start_date,'%Y-%m-%d') >= DATE_FORMAT(#{sdate},'%Y-%m-%d')
+				]]>
+			</if>
+			<if test="edate != null and edate != ''">
+				<![CDATA[
+					AND DATE_FORMAT(plan_start_date,'%Y-%m-%d') <= DATE_FORMAT(#{edate},'%Y-%m-%d')
+				]]>
+			</if>
+			<!-- 直播精选专题 -->
+			<if test="insideIds != null and insideIds.size() > 0">
+				AND anchor_id IN 
+				<foreach collection="insideIds" index="index" item="insideIds" open="(" separator="," close=")">
+					#{insideIds}
+				</foreach>
+			</if>
+			<!-- testIds和insideIds不会同时出现，在业务逻辑做了处理 -->
+			<!-- 直播精选专题不能出现在首页直播推荐 -->
+			<if test="testIds != null and testIds.size() > 0">
+				AND anchor_id NOT IN 
+				<foreach collection="testIds" index="index" item="testIds" open="(" separator="," close=")">
+					#{testIds}
+				</foreach>
+			</if>
+			<![CDATA[
+			GROUP BY
+				id
+			HAVING
+				min(sort) >= 0
+			]]>
+			ORDER BY 
+			<if test="type == 4">
+				record_c desc,
+			</if>
+			<if test="type == 1">
+				focu_order desc,
+			</if>
+			<if test="type == 3">
+				`distance` desc,
+			</if>
+			<if test="type == 2">
+				bil_s_order desc,
+				urs_s_order desc,
+				bro_s_order desc,
+			</if>
+			<if test ="recommended == 1">
+		    	recommended desc,
+		    	sequence_no desc,
+			</if>
+			<choose>
+				<when test="zhiboType == 0">
+				stick desc,	
+				DATE_FORMAT(plan_start_date,'%y-%m-%d') asc,
+				sort asc,
+				plan_start_date asc,
+				signType desc
+				</when>
+				<!-- 直播列表 -->
+				<!-- 单场直播打赏数量超过25000,自动将直播间置底部,后台排序序号，签约主播优先，根据时间排序，由近到远 -->
+				<when test="zhiboType == 1">
+					<!-- low asc, -->
+					<if test="zhiboGiftRange != null">
+						range_order desc,
+					</if>
+					sequence_no desc,
+					signType desc,
+					start_date desc
+					
+				</when>
+			</choose>
+			LIMIT ${(page-1)*limit},#{limit}
+  </select>
+  
+  	 <!-- 查询热门回放/最新回放列表 -->
+  <select id="queryPlayBackRecord" parameterType="map" resultType="map">
+		SELECT
+			<if test="longitude!=null and latitude!=null">
+				ifnull(ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{latitude}*PI()/180-r.latitude*PI()/180)/2),2)+COS(#{latitude}*PI()/180)*COS(r.latitude*PI()/180)*POW(SIN((#{longitude}*PI()/180-r.longitude*PI()/180)/2),2)))*1000),'')
+				as `distance`,
+			</if>
+			r.*
+		FROM
+			t_live_record r
+		WHERE
+			r.zhibo_type = 3
+		AND r.`status` = 1
+		AND r.id not in  (SELECT id FROM t_live_record  WHERE telphones != ''  
+		<choose>
+			<when test="phone != null and phone != ''">
+				AND telphones not like '%${phone}%' )
+			</when>
+			<otherwise>
+				AND telphones is not null)
+			</otherwise>
+		</choose>
+		ORDER BY
+		<if test ="recommended == 1">
+			r.recommended DESC,
+			r.sequence_no ASC,
+		</if>
+		<!-- 热门回放 -->
+		<if test ="type == 1">
+			r.view_count DESC
+		</if>
+		<!-- 最新更新的精彩视频 -->
+		<if test ="type == 2">
+			r.update_time DESC
+		</if>
+		LIMIT ${(page-1)*limit},#{limit}
+  </select>
+  
+   <!-- 根据商铺id和直播状态查询商铺直播列表-->
+	<select id="queryLivesBySellerIdAndType" parameterType="map" resultType="liveRecordInfo">
+	SELECT <include refid="liveRecordInfoColumns"/> 
+			FROM t_live_record WHERE sellerid=#{sellerid} and status=1 and zhibo_type=#{type}
+	</select>
+  	  <!-- 查询热门主播(4位) -->
+  <select id="queryTopicAnchor" parameterType="map" resultType="map">	
+		SELECT
+			COUNT(1) AS count,
+			anchor_id AS anchorId
+		FROM
+			t_live_record r
+		WHERE
+			r.live_start_type = 0
+		AND r. STATUS = 1
+		<if test="anchorList != null">
+			AND r.anchor_id not in  
+				<foreach collection="anchorList" index="index" item="item" open="(" close=")" separator=",">
+			  		#{item}
+	   			</foreach>	
+		</if>
+		GROUP BY
+			anchor_id
+		ORDER BY
+			COUNT(1) DESC
+		LIMIT ${(page-1)*limit},#{limit}
+  </select>
+  
+  	  <!-- 查询热门主播的直播记录 -->
+  <select id="queryTopicAnchorLiveRecord" parameterType="map" resultType="map">
+		SELECT
+			<if test="longitude != null and latitude != null">
+				ifnull(ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{latitude}*PI()/180-a.latitude*PI()/180)/2),2)+COS(#{latitude}*PI()/180)*COS(a.latitude*PI()/180)*POW(SIN((#{longitude}*PI()/180-a.longitude*PI()/180)/2),2)))*1000),'')
+				as `distance`,
+			</if>
+			a.*
+		FROM
+			(
+				SELECT
+					r.*, f.stock AS preSellStock,
+					c.cname AS preSellTitle,
+					c.denomination AS ticketMoney,
+					0 AS sort
+				FROM
+					t_live_record r
+				LEFT JOIN t_fans_coupon_anchor_ref f ON r.id = f.record_id
+				LEFT JOIN t_coupon c ON f.cid = c.cid
+				WHERE
+					r.zhibo_type = 1
+				AND f.send_status = 1
+				<![CDATA[
+					AND f.end_date >= NOW()
+				]]>				
+				AND anchor_id IN 
+					<foreach collection="anchorIds" index="index" item="item" open="(" close=")" separator=",">
+		  			 	#{item.anchorId}
+		   			</foreach>
+				UNION
+					SELECT
+						r.*, 0 AS preSellStock,
+						'' AS preSellTitle,
+						0 AS ticketMoney,
+						1 AS sort
+					FROM
+						t_live_record r
+					WHERE
+						r.zhibo_type = 1
+					AND anchor_id IN 
+						<foreach collection="anchorIds" index="index" item="item" open="(" close=")" separator=",">
+			  			 	#{item.anchorId}
+			   			</foreach>
+					UNION
+						SELECT
+							r.*, 0 AS preSellStock,
+							'' AS preSellTitle,
+							0 AS ticketMoney,
+							2 AS sort
+						FROM
+							t_live_record r
+						WHERE
+							r.zhibo_type IN (3,4,5)
+						AND r.anchor_id IN 
+							<foreach collection="anchorIds" index="index" item="item" open="(" close=")" separator=",">
+			  			 		#{item.anchorId}
+			   				</foreach>
+			   			GROUP BY
+							anchor_id
+						ORDER BY
+							end_date DESC
+			) a
+			WHERE a.status = 1
+		<![CDATA[
+		GROUP BY
+			anchor_id
+		HAVING
+			min(sort) >= 0
+		ORDER BY
+			end_date DESC
+		]]>
+  </select>
+    
+	<!--   获取直播场次最高的主播  -->
+  <select id="queryAnchorLiveCount" parameterType="map" resultType="map">
+  	SELECT  liveRecord.*,((@rowNO := @rowNo + 1)+${(page-1)*limit}) as  rowNo
+	FROM  (SELECT  count(1) as liveCount ,anchor_id as anchorId 
+		FROM t_live_record  where 1=1 AND live_start_type = 0
+		<if test="list!=null and list!=''">
+			and anchor_id NOT IN
+			<foreach collection="list" index="index" item="id" open="(" close=")" separator=",">
+				#{id}
+			</foreach>
+		</if>
+		GROUP BY anchor_id 
+    ORDER BY liveCount DESC
+	LIMIT ${(page-1)*limit},#{limit}) liveRecord , (SELECT @rowNO := 0) b 
+  </select>
+  
+  <!-- 通过商铺id查询商铺直播信息 -->
+  <select id="findLiveRecordBySellerId" resultType="map" parameterType="map">
+  	SELECT 
+  		id,anchor_id AS anchorid,nname,zhibo_type AS zhiboType,zhibo_title AS zhiboTitle,zhibo_cover AS zhiboCover 
+  	FROM t_live_record 
+	WHERE sellerid=#{sellerid} AND zhibo_type=#{type} GROUP BY sellerid ORDER BY start_date DESC
+  </select>
+  
+  <!-- 查询商家的直播预售数量(预告和直播的记录总数) -->
+  <select id="queryPreLiveRecordCountBySellerId" resultType="int" parameterType="int">
+		SELECT
+			COUNT(1) AS count
+		FROM
+			t_live_record r
+		LEFT JOIN t_fans_coupon_anchor_ref f ON r.id = f.record_id
+		WHERE
+			r.zhibo_type IN (0, 1)
+		AND r.status = 1
+		AND r.id not in  (SELECT id FROM t_live_record  WHERE telphones != ''  
+		<choose>
+			<when test="phone != null and phone != ''">
+				AND telphones not like '%${phone}%' )
+			</when>
+			<otherwise>
+				AND telphones is not null)
+			</otherwise>
+		</choose>
+		AND f.send_status = 1
+		<![CDATA[
+			AND f.end_date >= NOW()
+		]]>		
+		AND r.sellerid = #{sellerId}
+  </select>
+  
+  <!-- 查询所有正在直播的记录总数 -->
+  <select id="queryCurrentLiveRecordAllSum" resultType="int">
+		SELECT
+			COUNT(1) AS count
+		FROM
+			t_live_record
+		WHERE
+			zhibo_type = 1
+		AND status = 1
+		AND id not in  (SELECT id FROM t_live_record  WHERE telphones != ''  
+		<choose>
+			<when test="phone != null and phone != ''">
+				AND telphones not like '%${phone}%' )
+			</when>
+			<otherwise>
+				AND telphones is not null)
+			</otherwise>
+		</choose>
+		<!-- 屏蔽内部测试账号 -->
+		<if test="testIds != null and testIds.size() > 0">
+			AND anchor_id NOT IN 
+			<foreach collection="testIds" index="index" item="testIds" open="(" separator="," close=")">
+				#{testIds}
+			</foreach>
+		</if>
+  </select>
+  
+  <!-- 查询15分钟内的最新一条自定义直播记录信息 -->
+  <select id="queryCustomLiveRecordByAnchorId" resultType="map" parameterType="int">
+		SELECT
+			*
+		FROM
+			t_live_record
+		WHERE
+			anchor_id = #{anchorId}
+		AND 
+			status = 1
+		AND
+			live_start_type = 1
+		AND 
+			DATE_ADD(start_date,INTERVAL "15:0" MINUTE_SECOND)> NOW()
+		ORDER BY
+			id DESC
+		LIMIT 1
+  </select>
+  
+  
+  <select id="findAllByType" resultType="map">
+  	SELECT 
+		id,zhibo_title AS zhiboTitle,zhibo_cover AS zhiboCover,sellername,nname,anchor_room_no AS roomno,
+		DATE_FORMAT(plan_start_date,'%y-%m-%d') AS startDate,seller_alias AS selleralias
+	FROM t_live_record 
+	WHERE status=1 AND zhibo_type=0 AND id IN
+	<foreach collection="ids" index="index" item="ids" open="(" separator="," close=")">
+		#{ids}
+	</foreach>
+  </select>
+  
+  <select id="findOneBySellerId" resultType="int">
+  	SELECT COUNT(1) FROM t_live_record WHERE sellerid=#{sellerid} AND zhibo_type=#{type} AND status=1 
+  </select>
+  
+  <!-- 根据店铺ID分页查询店铺直播记录 -->
+  <select id="selectLiveRecordListBySellerId" resultType="liveRecordInfo">
+  	SELECT
+  		<include refid="liveRecordInfoColumns"/>
+  	FROM t_live_record WHERE sellerid=#{sellerid} AND status=1 ORDER BY zhibo_type ASC 
+  	LIMIT ${(page-1)*pageSize},#{pageSize}
+  </select>
+  
+  <!-- 根据店铺ID和直播状态查询一条直播记录 -->
+  <select id="selectOneBySellerId" resultType="liveRecordInfo">
+  	SELECT
+  		<include refid="liveRecordInfoColumns"/>
+  	FROM t_live_record WHERE sellerid=#{sellerid} AND zhibo_type=#{type} AND status=1 LIMIT 0,1
+  </select>
+  
+  <!-- 批量统计正在直播的店铺的数量 -->
+  <select id="sumSellerCountsIsLive" resultType="int">
+	SELECT
+		COUNT(1)
+	FROM t_live_record WHERE zhibo_type=1 AND status=1 AND sellerid IN 
+	<foreach collection="ids" index="index" item="ids" open="(" separator="," close=")">
+		#{ids}
+	</foreach>
+  </select>
+
+  <!-- 直播间是否设置展示其他商家的推荐套餐 -->
+  <select id="queryShowOtherSellerByLiveRecordId" resultType="int">
+  	SELECT show_other_seller
+  	FROM t_live_record WHERE id=#{liveRecordId} AND status=1 LIMIT 0,1;
+  </select>
+  
+<!--   记录主播累计鸟蛋失败的记录 便于查询主播失败后累计鸟蛋 -->
+  <insert id="inserLiveExitRoomFailedRecord" parameterType="map">
+  	INSERT INTO  t_live_failed_birdegg (uid, anchor_id, live_record_id, balance, state, create_time)
+	VALUES (#{uid,jdbcType=INTEGER},#{anchor_id,jdbcType=INTEGER},#{liveRecordId,jdbcType=INTEGER},#{balance,jdbcType=DOUBLE},
+			#{state,jdbcType=INTEGER},#{create_time,jdbcType=TIMESTAMP}  )
+  </insert>
+ 
+   <!-- 根据id查询直播记录信息 -->
+  <select id="queryLiveRecordInfoById" resultType="map">
+ 	SELECT * FROM t_live_record WHERE id = #{recordId} 
+  </select> 
+<!-- 根据商家id查询直播状态：
+   有直播中1优先返回，
+  有预告的0优先返回，
+  有回放的3优先返回， 	 
+ 有历史通告4的优先返回
+ 只返回第一条
+-->
+  <select id="findSellerLive" parameterType="Integer" resultType="map">
+   SELECT
+			d.id,d.anchor_id anchorId,d.avatar avetar,d.live_start_type liveType,d.nname,d.zhibo_title title,d.anchor_room_no roomNo,
+			case when d.zhibo_type=0 then 0 when d.zhibo_type=1 then 1 when zhibo_type=3 then 3 when zhibo_type=4 then 4 else 5 end as zhiboType		
+		FROM
+			t_live_record d
+		WHERE
+		d.sellerid =#{sellerid} and
+		(d.zhibo_type between 1 and 4 or (d.zhibo_type=0 and d.plan_start_date >NOW() and d.plan_end_date>NOW()))
+		ORDER BY
+			CASE
+		WHEN d.zhibo_type = 1 THEN
+			1
+		WHEN d.zhibo_type = 0 THEN
+			2
+		WHEN d.zhibo_type = 3 THEN
+			3
+		WHEN d.zhibo_type = 4 THEN
+			4
+		ELSE
+			5
+		END ASC
+  limit 0,1
+  </select> 
+  <!-- 修改直播显示观看人数 -->
+  <update id="modifyLiveViewCount" parameterType="map">
+   UPDATE t_live_record SET view_count = #{viewCount},update_time = #{updateTime} WHERE id = #{id}
+  </update>
+</mapper>

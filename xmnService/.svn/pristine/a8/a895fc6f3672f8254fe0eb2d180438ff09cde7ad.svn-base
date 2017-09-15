@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.xmer.dao.RegisterDao">
+	<!-- 向寻蜜客用户表插入一条注册信息 -->
+	<insert id="insertRegisterInfoToBurs" parameterType="map" useGeneratedKeys="true">
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID() AS ID
+		</selectKey>
+		INSERT INTO b_urs (uname,password,phone,regtime,regtype,phone_type,usertype)
+		VALUES(#{uname},#{password},#{phone},#{regtime},#{regtype},#{phonetype},#{usertype})
+	</insert>
+	
+	<!-- 向寻蜜客用户详情表插入一条注册信息 -->
+	<insert id="insertRegisterInfoToBursInfo" parameterType="map">
+		INSERT INTO b_urs_info (uid,phone,uname,referrer_member_id) VALUES(#{id},#{phone},#{uname},#{referrer_member_id})
+	</insert>
+	
+	<!-- 向钱包表插入一条注册信息 -->
+	<insert id="insertRegisterInfoToWallet" parameterType="map">
+		INSERT INTO b_wallet (uid,sign,sign_type,apply_date,last_date)
+		VALUES(#{id},#{sign},#{signtype},#{applydate},#{lastdate})
+	</insert>
+</mapper>

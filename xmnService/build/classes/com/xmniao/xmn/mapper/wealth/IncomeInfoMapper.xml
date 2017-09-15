@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.wealth.dao.IncomeInfoDao">
+	<!-- 查询用户钱包id-->
+ 	<select id="queryAccountidByUid" resultType="int" parameterType="int">
+	 	SELECT accountid FROM b_wallet WHERE uid=#{uid}
+	 </select>
+	 <!-- 统计寻蜜客总收入 -->
+	<select id="sumIncome" resultType="double" parameterType="int">
+		SELECT SUM(profit+trunout) FROM b_xmer_wallet WHERE uid = #{uid} AND status = 1		
+	</select>
+	 <!-- 查询未分账收入明细列表 -->
+	 <select id="queryMikeAmountByuid" resultType="map" parameterType="map">
+	 	SELECT commission,date_format(sdate,'%y-%m-%d %h:%i') sdate,sellername
+		FROM t_bill 
+		WHERE xmer_uid=#{uid}
+		and status = 1 
+	 </select>
+	 
+	 <!-- 查询saas未到账 -->
+	 <select id="querySaasMount" resultType="map" parameterType="int">
+	 	SELECT ordersn,sellerid,sellername,uid,amount,pay_type,zdate,create_date,commission 
+	 	FROM t_saas_sold_order WHERE STATUS = 1
+	 	<![CDATA[
+	 	 and  ( hstatus <> 9  or hstatus is null) and pay_type <> '10000000'
+	 	]]>
+	 	 AND uid=#{uid}
+	 </select>
+</mapper>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live.dao.AnchorManagerDao">
+	
+	<!-- 获取主播管理员列表 -->
+	<select id="queryAnchorManagerList" parameterType="map" resultType="liveManagerInfo">
+		SELECT
+			mg.id as managerId, mg.manager_id, mg.anchor_id, mg.status, 
+			lv.uid,lv.utype, lv.rank_id, lv.rank_no, lv.achievement, lv.current_expe, lv.phone,
+			i.avatar, i.sex,
+			u.nname
+		FROM b_liver lv  
+		LEFT JOIN  b_live_manager mg  ON lv.id = mg.manager_id 
+		LEFT JOIN  b_urs_info  i  ON i.uid = lv.uid
+		LEFT JOIN  b_urs u ON u.uid = lv.uid
+		WHERE mg.status = 1  AND mg.anchor_id = #{id}
+		ORDER BY mg.create_time DESC
+		LIMIT ${(page-1)*limit},#{limit}		 
+	</select>
+	
+	<!-- 查询主播是否已经存在指定的管理员 -->
+	<select id="queryAnchorManager" parameterType="map" resultType="map">
+		SELECT
+			*
+		FROM 
+			b_live_manager
+		WHERE 
+			anchor_id = #{anchor_id}
+		AND 
+			manager_id = #{manager_id} 
+	</select>
+	
+	<!-- 查询主播的管理员的数量 -->
+	<select id="queryAnchorManagerSum" parameterType="int" resultType="int">
+		SELECT
+			COUNT(1)
+		FROM 
+			b_live_manager
+		WHERE 
+			anchor_id = #{anchorId}
+	</select>
+   
+    <!-- 删除指定主播管理员   -->
+   <delete id="deleteAnchorManager" parameterType="map">  
+		DELETE FROM 
+			b_live_manager 
+		WHERE 
+			anchor_id = #{anchor_id}  
+		AND 
+			manager_id = #{manager_id} 
+   </delete>  
+   
+	<!-- 新增主播管理员 -->
+   <insert id="addAnchorManagerInfo" parameterType="map">
+   		INSERT INTO 
+   			b_live_manager (manager_id,anchor_id,status,create_time) 
+   		VALUES
+   			(#{manager_id},#{anchor_id},#{status},#{create_time});
+   </insert>
+   
+</mapper>

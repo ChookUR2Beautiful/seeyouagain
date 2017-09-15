@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xmniao.xmn.core.order.dao.ExperienceActivityDao">
+	
+<!-- 体验卡推荐活动 ：
+	1、可报名：体验时间(直播开始时间)前名额未抢完的活动
+	2、可设置提醒：未到开抢时间，未设置过提醒的活动
+	3、已设置提醒：未到开抢时间，已设置过提醒的活动
+	4、已抢完：已过开抢时间，未到体验时间（直播开始时间），名额被抢完的活动
+	5、已结束：已到体验时间（直播开始时间）的活动
+-->
+<select id="findRecommendAcitivities" resultType="map" parameterType="map">
+	SELECT a.id,a.sellerid,a.sellername,a.remainder_num,a.enroll_time,r.plan_start_date,
+	p.uid,p.activity_state,	b.title as tradname,r.avatar,t.picurl,r.zhibo_cover,r.live_topic,
+	<![CDATA[
+	CASE  WHEN a.enroll_time < NOW() and r.plan_start_date > NOW() then 1 else 0 end as iscurrentActi,
+	CASE  WHEN a.enroll_time > NOW() and r.plan_start_date > now() and r.plan_end_date > now() then 1 else 0 end as isnextActi,
+	]]>
+	ROUND(6378.138*2*ASIN( SQRT(POW (SIN( (#{lat}*PI()/180-IFNULL(sl.latitude,0)*PI()/180)/2),2)+ 
+	COS(#{lat}*PI()/180)*COS(IFNULL(sl.latitude,0)*PI()/180)*POW( SIN((#{lon}*PI()/180-IFNULL(sl.longitude,0)*PI()/180)/2),2)))*1000) AS ranges 
+	FROM t_experienceofficer_activity  a 
+	LEFT JOIN t_live_record r on r.id = a.record_id
+	LEFT JOIN t_seller_landmark sl on sl.sellerid = a.sellerid
+	LEFT JOIN t_experienceofficer_push p on (p.activity_id =a.id and p.uid=#{uid})
+	LEFT JOIN t_seller s on s.sellerid = a.sellerid
+	LEFT JOIN t_business b ON s.zoneid = b.bid
+	LEFT JOIN t_seller_pic t on (s.sellerid = t.sellerid and t.islogo =2) 
+	WHERE a.activity_state = 1  
+	<![CDATA[
+	and a.enroll_time >0  and (
+	]]>
+	<![CDATA[
+	 (r.plan_start_date>NOW() and a.remainder_num>0) 
+	]]>
+	<![CDATA[
+	or (a.enroll_time>now() and r.plan_start_date>now() and r.plan_end_date>now())
+	]]>
+	)
+	order by iscurrentActi desc,isnextActi desc,a.remainder_num DESC,ranges asc,r.plan_start_date asc,a.create_time desc
+</select>
+
+<!-- 插入用户提醒表 -->	  	
+<insert id="insertExperiencePush" parameterType="map">
+ <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID() AS id
+</selectKey>
+  INSERT INTO t_experienceofficer_push (activity_id,uid,activity_state,create_time)
+     VALUES (#{activityId},#{uid},#{activityState},#{createTime})
+</insert>	
+<!-- 查询活动 -->	
+<select id="findExperenceActivityById" resultType="map" parameterType="int">
+   select t.id,t.record_id,t.sellerid,date_format(t.enroll_time,'%Y-%m-%d %H:%i:%s') as enroll_time,t.limit_num,t.remainder_num,
+   t.activity_state,t.create_time,t.sellername,
+   r.plan_start_date,r.seller_alias,r.live_topic,r.zhibo_address as address from t_experienceofficer_activity t 
+   inner join t_live_record r on t.record_id = r.id 
+   left join t_seller s on s.sellerid=t.sellerid
+   where t.id=#{activityId} limit 0,1
+</select>
+<!-- 查询提醒uid集合-->
+<select id="findExperiencePushUid" resultType="map" parameterType="int">
+ select p.uid from _t_experienceofficer_push p where p.activity_id=#{activityId} and p.uid is not null
+</select>
+<!-- 查询体验官参与活动 -->
+<select id="findExperenceEntrollerRecord" resultType="map" parameterType="map">
+ select p.verification_code from t_experienceofficer_enroll_record p where p.activity_id=#{activityId} and p.uid=#{uid} and p.enroll_state=1 limit 0,1
+</select>
+
+<!--查询是否提醒过我-->
+<select id="countExperenceActivityPushByUid" resultType="Integer" parameterType="map">
+ select count(p.id) from t_experienceofficer_push p where p.activity_id=#{activityId} and p.uid =#{uid} and p.activity_state=2
+</select>
+</mapper>

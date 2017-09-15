@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.seller.dao.TradeDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.seller.entity.Trade" >
+    <id column="tid" property="tid" jdbcType="INTEGER" />
+    <result column="tradename" property="tradename" jdbcType="VARCHAR" />
+    <result column="pid" property="pid" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="sdate" property="sdate" jdbcType="TIMESTAMP" />
+    <result column="number" property="number" jdbcType="INTEGER" />
+    <result column="order_num" property="orderNum" jdbcType="INTEGER" />
+    <result column="show_big_img" property="showBigImg" jdbcType="VARCHAR" />
+    <result column="show_small_img" property="showSmallImg" jdbcType="VARCHAR" />
+    <result column="hot" property="hot" jdbcType="BIT" />
+    <result column="type" property="type" jdbcType="TINYINT" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    tid, tradename, pid, status, sdate, number, order_num, show_big_img, show_small_img, 
+    hot, type, url
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_trade
+    where tid = #{tid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_trade
+    where tid = #{tid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.seller.entity.Trade" >
+    insert into t_trade (tid, tradename, pid, 
+      status, sdate, number, 
+      order_num, show_big_img, show_small_img, 
+      hot, type, url)
+    values (#{tid,jdbcType=INTEGER}, #{tradename,jdbcType=VARCHAR}, #{pid,jdbcType=INTEGER}, 
+      #{status,jdbcType=INTEGER}, #{sdate,jdbcType=TIMESTAMP}, #{number,jdbcType=INTEGER}, 
+      #{orderNum,jdbcType=INTEGER}, #{showBigImg,jdbcType=VARCHAR}, #{showSmallImg,jdbcType=VARCHAR}, 
+      #{hot,jdbcType=BIT}, #{type,jdbcType=TINYINT}, #{url,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.seller.entity.Trade" >
+    insert into t_trade
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="tid != null" >
+        tid,
+      </if>
+      <if test="tradename != null" >
+        tradename,
+      </if>
+      <if test="pid != null" >
+        pid,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="sdate != null" >
+        sdate,
+      </if>
+      <if test="number != null" >
+        number,
+      </if>
+      <if test="orderNum != null" >
+        order_num,
+      </if>
+      <if test="showBigImg != null" >
+        show_big_img,
+      </if>
+      <if test="showSmallImg != null" >
+        show_small_img,
+      </if>
+      <if test="hot != null" >
+        hot,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="url != null" >
+        url,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="tid != null" >
+        #{tid,jdbcType=INTEGER},
+      </if>
+      <if test="tradename != null" >
+        #{tradename,jdbcType=VARCHAR},
+      </if>
+      <if test="pid != null" >
+        #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="sdate != null" >
+        #{sdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="number != null" >
+        #{number,jdbcType=INTEGER},
+      </if>
+      <if test="orderNum != null" >
+        #{orderNum,jdbcType=INTEGER},
+      </if>
+      <if test="showBigImg != null" >
+        #{showBigImg,jdbcType=VARCHAR},
+      </if>
+      <if test="showSmallImg != null" >
+        #{showSmallImg,jdbcType=VARCHAR},
+      </if>
+      <if test="hot != null" >
+        #{hot,jdbcType=BIT},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=TINYINT},
+      </if>
+      <if test="url != null" >
+        #{url,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.seller.entity.Trade" >
+    update t_trade
+    <set >
+      <if test="tradename != null" >
+        tradename = #{tradename,jdbcType=VARCHAR},
+      </if>
+      <if test="pid != null" >
+        pid = #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="sdate != null" >
+        sdate = #{sdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="number != null" >
+        number = #{number,jdbcType=INTEGER},
+      </if>
+      <if test="orderNum != null" >
+        order_num = #{orderNum,jdbcType=INTEGER},
+      </if>
+      <if test="showBigImg != null" >
+        show_big_img = #{showBigImg,jdbcType=VARCHAR},
+      </if>
+      <if test="showSmallImg != null" >
+        show_small_img = #{showSmallImg,jdbcType=VARCHAR},
+      </if>
+      <if test="hot != null" >
+        hot = #{hot,jdbcType=BIT},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=TINYINT},
+      </if>
+      <if test="url != null" >
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where tid = #{tid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.seller.entity.Trade" >
+    update t_trade
+    set tradename = #{tradename,jdbcType=VARCHAR},
+      pid = #{pid,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      sdate = #{sdate,jdbcType=TIMESTAMP},
+      number = #{number,jdbcType=INTEGER},
+      order_num = #{orderNum,jdbcType=INTEGER},
+      show_big_img = #{showBigImg,jdbcType=VARCHAR},
+      show_small_img = #{showSmallImg,jdbcType=VARCHAR},
+      hot = #{hot,jdbcType=BIT},
+      type = #{type,jdbcType=TINYINT},
+      url = #{url,jdbcType=VARCHAR}
+    where tid = #{tid,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 通过分类名称查询分类信息 -->
+  <select id="selectByTradename" resultMap="BaseResultMap" parameterType="map" >
+    SELECT 
+    	<include refid="Base_Column_List" />
+    FROM t_trade WHERE STATUS=0 AND pid=#{pid} AND tradename=#{tradename}
+  </select>
+  
+  <!-- 查询所有二级分类 -->
+  <select id="findAllTradeByDeliciousFood" resultType="map">
+  	SELECT 
+  		tid,tradename,pid 
+  	FROM t_trade 
+  	WHERE status=0 AND pid=1 ORDER BY tid ASC
+  </select>
+  
+  <!-- 通过父id查询所有商铺分类 -->
+  <select id="findAllByPid" resultType="map" parameterType="java.lang.Integer">
+  	SELECT tid,tradename,pid FROM t_trade WHERE pid=#{pid} AND STATUS=0 ORDER BY order_num DESC
+  </select>
+
+  <!-- 查询所有 -->
+  <select id="findAll" resultType="map">
+    SELECT tid,tradename,pid FROM t_trade WHERE STATUS=0 ORDER BY order_num DESC
+  </select>
+  
+  <!-- 查询美食二级分类 -->
+  <select id="listFoodCategory" resultType="map">
+  	select tid,tradename from t_trade where pid = 1
+  </select>
+</mapper>

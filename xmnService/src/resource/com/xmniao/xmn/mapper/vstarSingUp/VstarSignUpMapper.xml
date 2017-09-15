@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xmniao.xmn.core.match.dao.VstarSignUpDao">
+<!-- 查询大赛区域表指定省份的所有的城市 -->	
+	<select id="findVstarCitys" resultType="map" parameterType="Integer">
+		 select v.city_id,v.city_name from t_vstar_division_region v 
+	  where v.state=1 and v.province_id=#{proviceId} group by v.city_id
+	</select>
+<!-- 查询大赛区域表所有的省份 -->	
+	<select id="findVstarProvices" resultType="map">
+	  select v.province_id,v.province_name from t_vstar_division_region v 
+	  where v.state=1 group by v.province_id
+	</select>
+<!-- 查询大赛区域表指定城市所有的区域 -->	
+	<select id="findAllAreaByCity" resultType="map" parameterType="Integer">
+	 select v.area_id,v.area_name from t_vstar_division_region v 
+	  where v.state=1 and v.city_id=#{cityId}
+	</select>
+<!-- 根据区域Id查询大赛区域表 -->		
+	<select id="findVstarDivison" resultType="map" parameterType="Integer">
+	  select v.*,d.division_name from t_vstar_division_region v  
+	  left join t_vstar_division d on d.id = v.division_id
+	  where v.state=1 and v.area_id=#{areaId} limit 1
+	</select>
+<!-- 查询大赛参赛设置表-->		
+	<select id="findPlaySetting" resultType="map">
+	   select * from  t_vstar_player_setting limit 1
+	</select>
+<!-- 删除选手大赛图片-->	
+<delete id="deleteVstarEnrollImg" parameterType="Integer">
+	DELETE  FROM t_vstar_enroll_img where pid = (
+	  SELECT id FROM t_vstar_enroll where uid=#{uid}
+	)
+</delete>	
+<!-- 删除选手大赛报名-->		
+<delete id="deleteVstarEnrollByUid" parameterType="Integer">
+  DELETE  FROM t_vstar_enroll where uid=#{uid}
+</delete>	
+<!-- 删除选手大赛报名详情-->		
+<delete id="deleteVstarPlayInfo" parameterType="Integer">
+	DELETE  FROM t_vstar_player_info where uid=#{uid}
+</delete>	
+<!-- 插入选手表t_vstar_enroll-->	
+	<insert id="insertVstarEntroll" parameterType="map">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+               SELECT LAST_INSERT_ID() AS ID   
+         </selectKey>
+         INSERT INTO t_vstar_enroll (
+             nname,
+             phone,
+             province_id,
+             city_id,
+             area_id,
+             status,
+             enroll_time,
+         	 uid  
+         )
+         VALUES(
+             #{nname},
+             #{phone},
+             #{proviceId},
+             #{cityId},
+             #{areaId},
+         	 #{status},
+             #{enroll_time},
+             #{uid}
+         )     
+	</insert>
+<!-- 插入选手图片表t_vstar_enroll_img-->	
+	<insert id="insertVstarImg" parameterType="map">
+		INSERT INTO t_vstar_enroll_img (
+             pid,
+             img_type,
+             img_url,
+             img_sort  
+         )
+         VALUES(
+             #{pid},
+             #{imageType},
+             #{imageUrl},
+             #{sort}
+         )     	
+	</insert>
+<!-- 插入选手详情表t_vstar_player_info-->	
+	<insert id="insertVstarPlayInfo" parameterType="map">
+	    INSERT INTO t_vstar_player_info (
+             enroll_id,
+             liver_id,
+             uid,
+             nname,
+             phone,
+             province_id,
+             province_name,
+             city_id,
+             city_name,
+             area_id,
+             area_name,
+             division_id,
+             division_name,
+             create_time,
+             live_count_init,
+             live_count,
+             live_time_count_init,
+             live_time_count,
+             fans_count_init,
+             fans_count,
+             seller_count,
+             egg_count_init,
+             egg_count,
+             comment_count,
+             like_count,
+             player_type                      
+         )
+         VALUES(
+             #{enrollId},
+             #{liverId},
+             #{uid},
+             #{nname},
+             #{phone},
+             #{provinceId},
+             #{provinceName},
+             #{cityId},
+             #{cityName},
+             #{areaId},
+             #{areaName},
+             #{divisionId},
+             #{divisionName},
+             #{createTime},
+             #{totalLives},
+             #{totalLives},
+             #{totalLiveTimes},
+             #{totalLiveTimes},
+             #{totalFans},
+             #{totalFans},
+             #{totalSaas},
+             #{eggCount},
+             #{eggCount},
+             #{commentCount},
+             #{likeCount},
+             #{playerType}
+         )     	
+	</insert>
+	<!-- 统计直播数量-->
+	<select id="countLiveNum" resultType="Integer" parameterType="Integer">
+		select COUNT(1) FROM t_live_record r where r.zhibo_type in (3,4,5) and r.anchor_id=#{anchorId} and status=1
+	</select>
+	<!-- 统计粉丝数量-->
+	<select id="coutLiveFans" resultType="Integer" parameterType="Integer">
+	   select COUNT(1) FROM t_live_focus f where f.end_uid = #{uid}
+	</select>
+	<!-- 统计sas签约店铺数量-->
+	<select id="countSassSeller" resultType="Integer" parameterType="Integer">
+	  select COUNT(1) FROM t_seller s  WHERE s.isonline=1 and s.status=3 and s.uid=#{uid}
+	</select>
+	<!-- 查询用户是否报名 -->	
+	<select id="countVstarEnroll" resultType="Integer" parameterType="Integer">
+	  select COUNT(1) FROM t_vstar_enroll where uid=#{uid} and status in (1,2,4,5)
+	</select>
+	
+</mapper>

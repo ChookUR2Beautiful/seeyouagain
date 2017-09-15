@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.xmer.dao.StageDao">
+	<!-- 查询寻蜜签约成功商铺区域id -->
+	<select id="querySignSellerAreaId" resultType="int" parameterType="map">
+		SELECT area  FROM t_seller WHERE uid=#{uid} AND STATUS=3 GROUP BY area limit #{page},#{limit}
+	</select>
+	
+	<!-- 查询寻蜜客的驿站信息列表 -->
+	<select id="queryStageInfoList" resultType="map" parameterType="String">
+		SELECT jointid AS stageid,corporate AS stagename,ifnull(logo,'') stagepic 
+		FROM t_joint 
+		WHERE area in
+		<foreach collection="list" index="index" item="list" open="(" close=")" separator=",">
+		#{list}
+		</foreach>
+		and status=1
+	</select>
+	
+	<!-- 查询驿站最新的活动详情 -->
+	<select id="queryActivtyInfo" resultType="map" parameterType="map">
+		SELECT 
+		id,agency_id AS jointid,ifnull(title,'') title,participator_num as joinnums,DATE_FORMAT(start_time,'%Y.%m.%d %h:%i') startdate,
+		DATE_FORMAT(end_time,'%Y.%m.%d %h:%i')enddate,activity_poster as activityposter
+		FROM t_agency_activity 
+		WHERE agency_id in
+		<foreach collection="list" index="index" item="list" open="(" close=")" separator=",">
+		#{list.stageid}
+		</foreach>
+		GROUP BY agency_id ORDER BY create_time DESC
+	</select>
+	
+	<!-- 根据驿站id查询驿站详情 -->
+	<select id="queryStageInfo" resultType="map" parameterType="String">
+		SELECT IFNULL(logo,'') stagepic,IFNULL(phoneid,'') phoneid,ifnull((saasnum-stocknum),0) signsellers 
+		FROM t_joint WHERE jointid=#{jointid} AND STATUS=1
+	</select>
+	
+	<!-- 查询附近驿站 -->
+	
+	<select id="nearbyStageList" parameterType="map" resultType="map">
+	
+	SELECT sellerid,longitude,latitude,
+	ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{latitude}*PI()/180-latitude*PI()/180)/2),2)+COS(#{latitude}*PI()/180)*COS(latitude*PI()/180)*POW(SIN((#{longitude}*PI()/180-longitude*PI()/180)/2),2)))*1000)
+	as `range`
+	FROM t_seller_landmark where seller_type=2
+	<if test="range!=null and range !=0">
+	<![CDATA[
+	 and ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{latitude}*PI()/180-latitude*PI()/180)/2),2)+COS(#{latitude}*PI()/180)*COS(latitude*PI()/180)*POW(SIN((#{longitude}*PI()/180-longitude*PI()/180)/2),2)))*1000)<=#{range}
+	
+	]]>
+	</if>
+	order by `range` asc
+	</select>
+	
+	<!-- 查询驿站头衔 -->
+	<select id="queryStageAchievement" resultType="string" parameterType="int">
+		SELECT level_name FROM t_staff WHERE jointid=#{jointid}
+	</select>
+	
+</mapper>

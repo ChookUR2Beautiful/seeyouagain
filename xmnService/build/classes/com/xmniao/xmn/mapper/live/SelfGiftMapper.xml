@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live.dao.SelfGiftDao">
+	
+<!-- 新增个人礼物信息表-->
+<insert id="insertSelfGift" parameterType="map" >
+INSERT into t_live_self_gift(liver_id,gift_id,gift_nums,create_time,update_time)
+values(#{liver_id},#{gift_id},#{gift_nums},#{create_time},#{update_time})
+</insert>
+
+<!-- 获取抽奖礼物列表 -->
+<select id="querySelfGiftList" parameterType="int" resultType="map">
+select id,ifnull(liver_id,'') liver_id,uid,ifnull(gift_id,'') gift_id,ifnull(gift_name,'') gift_name,
+ifnull(gift_nums,0) gift_nums,ifnull(create_time,'') create_time,ifnull(update_time,'') update_time from t_live_self_gift
+where uid=#{uid}
+</select>
+<!-- 获取抽奖礼物对象信息 -->
+<select id="querySelfGiftToObj" parameterType="map" resultType="map">
+select id,ifnull(liver_id,'') liver_id,ifnull(gift_id,'') gift_id,
+ifnull(gift_nums,0) gift_nums,ifnull(create_time,'') create_time,ifnull(update_time,'') update_time from t_live_self_gift
+where liver_id=#{liver_id} and gift_id=#{gift_id}
+</select>
+
+
+	<!-- 修改用户个人礼物信息表 -->
+	<update id="updateSelfGift" parameterType="map">
+	update t_live_self_gift 
+	set
+	<if test="gift_nums!=null and gift_nums!=''">
+	gift_nums=#{gift_nums},
+	</if>
+	<if test="create_time!=null and create_time!=''">
+	create_time=#{create_time},
+	</if>
+	update_time=#{update_time}
+	where 1=1
+	<if test="liver_id!=null and liver_id!=''">
+	and liver_id=#{liver_id}
+	</if>
+	<if test="gift_id!=null and gift_id!=''">
+	and gift_id=#{gift_id}
+	</if>
+	</update>
+	
+	
+	
+	<!-- 获取礼包中的礼物集合》备用	-->
+	<select id="queryDrawList" resultType="map" parameterType="int">
+		select CONCAT('gift_key',lg.id) prize_key, 
+		ifnull(lg.gift_name,'') gift_name,
+		ifnull(lg.gift_type,2) gift_type ,
+		ifnull(lg.gift_price,0) gift_price,
+		ifnull(gbs.gift_id,'') gift_id ,
+		ifnull(gbs.gift_nums,0) gift_nums,
+		ifnull(gbs.gift_bag_id,0) gift_bag_id,
+		0 current
+		from t_live_gift_bag_set gbs
+		 JOIN t_live_gift lg on gbs.gift_id=lg.id
+		left join t_live_gift_bag lgb on  lgb.id=gbs.gift_bag_id 
+		WHERE lgb.status=1 and gbs.gift_bag_id=#{gift_bag_id} 
+	</select>
+	
+	<!--  获取礼包中的礼物集合
+	<select id="queryDrawList" resultType="map">
+	select CONCAT('gift_key',lg.id) prize_key, 
+	ifnull(lg.gift_name,'') gift_name,
+	ifnull(lg.gift_type,2) gift_type ,
+	ifnull(lg.gift_price,0) gift_price,
+	ifnull(gbs.gift_id,'') gift_id ,
+	ifnull(gbs.gift_nums,0) gift_nums,
+	0 current
+	from t_live_gift_bag_set gbs, t_live_gift lg 
+	where gbs.gift_id=lg.id and lg.is_gift_bag=1
+	</select> -->
+</mapper>

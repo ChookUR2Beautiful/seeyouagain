@@ -1,0 +1,13 @@
+#service  configure
+#支付服务接口（退款，钱包�
+thrift.pay.ip=192.168.50.110
+#thrift.pay.ip=172.16.130.196
+thrift.pay.port=7911
+
+#公用配置
+thrift.public.maxActive=100
+thrift.public.maxIdle=100
+thrift.public.testOnBorrow=true
+thrift.public.testOnReturn=true
+thrift.public.testWhileIdle=true
+thrift.public.conTimeOut=20000

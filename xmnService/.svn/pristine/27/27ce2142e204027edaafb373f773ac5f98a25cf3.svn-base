@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xmniao.xmn.core.vstar.dao.VStarPlayerInfoDao" >
+
+	<!-- 通过uid查询vstar用户信息 -->
+	<select id="selectVStarPlayerInfoByUid" resultType="map" parameterType="int">
+		select id, uid ,status, confining
+		from t_vstar_enroll
+		where uid = #{uid} and status in (2,4,5,7)
+		limit 1
+	</select>
+	
+	<!-- 通过uid查询vstar用户信息 -->
+	<select id="selectVStarInfoByUid" resultType="map" parameterType="int">
+		select id, uid ,status, confining
+		from t_vstar_enroll
+		where uid = #{uid}
+		limit 1
+	</select>
+
+	<!-- 通过uid列表，批量查询vstar用户信息 -->
+	<select id="selectVStarPlayerInfoByUidList" resultType="map" parameterType="list">
+		select id, uid
+		from t_vstar_enroll
+		where status in (2,4,5,7)
+		and uid in
+		<foreach collection="uidList" index="index" item="id" open="(" close=")" separator=",">
+			#{id}
+		</foreach>
+	</select>
+
+	<!-- 通过uid列表，查询选手的实名认证状态-->
+	<select id="queryVStarRealNameState" resultType="int" parameterType="map">
+		SELECT count(1) as currState FROM t_vstar_enroll WHERE uid = #{uid} AND status IN (2,6)
+	</select>
+	
+	<!-- 通过uid列表，查询选手的实名认证状态-->
+	<select id="queryVStarRetestState" resultType="int" parameterType="map">
+		SELECT count(1) as currState FROM t_vstar_enroll WHERE uid = #{uid} AND status = 7
+	</select>
+	
+	<!-- 根据主播id，查询主播大赛选手id，推荐人id -->
+	<select id="queryPlayerAndReferrerByUid" resultType="map" parameterType="string">
+		SELECT 
+			i.id AS playerId,
+			e.uid AS playerUid,
+	  		e.ruid AS referrerUid
+		FROM t_vstar_enroll e 
+	  		LEFT JOIN t_vstar_player_info i ON i.uid = e.uid
+		WHERE e.uid = #{uid}  AND e.confining = 0
+	</select>
+
+</mapper>

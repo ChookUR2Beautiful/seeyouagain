@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.xmer.dao.FriendshipDao">
+	
+	<!-- 根据uid查询该用户的好友的uid -->
+	<select id="queryUidToByUidFrom" parameterType="map" resultType="java.lang.Integer">
+		SELECT 
+			uid_to 
+		FROM 
+			b_friendship 
+		WHERE 
+			uid_from = #{uid}
+		LIMIT ${pageIndex},${pageSize}
+	</select>
+		<!-- 修改朋友申请信息 -->
+	<update id="modifyFriendApplyByid" parameterType="map">
+	update b_friend_apply set apply_result=#{result},opdate=#{opdate} where id=#{id}
+	</update>
+	
+	<!-- 查询好友申请 -->
+	<select id="queryFriendApplyByUid" resultType="map" parameterType="int">
+	select id,send_name name,send_uid senduid from b_friend_apply where receive_uid=#{uid}
+	</select>
+	
+	<!-- 添加到好友申请表-->
+	<insert id="addFriendShip" parameterType="map">
+		insert into b_friendship(uid_from,sdate) values(#{id},#{sdate})
+	</insert>
+	
+	<!-- 批量查询导师昵称（寻蜜客） -->
+	<select id="queryTutorAvatarListByUid" resultType="map" parameterType="int">
+		SELECT uid,name,avatar FROM b_urs_info WHERE uid in
+		<foreach collection="list" item="item" index="index" separator="," open="(" close=")" >
+		#{item}
+		</foreach>
+	</select>
+	
+	<!-- 批量查询导师(寻蜜客)的总收入 -->
+	<select id="queryXmkTutorIncomeListByUid" resultType="map" parameterType="int">
+		SELECT uid,IFNULL(profit,0) profit,IFNULL(trunout,0) trunout FROM b_xmer_wallet WHERE uid IN 
+		<foreach collection="list" item="item" index="index" separator="," open="(" close=")" >
+			#{item}
+		</foreach>
+	</select>
+</mapper>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.xmer.dao.UrsEarningsRelationDao">
+
+	<!-- 查询当前寻蜜客的下级和下下级 uid -->
+	<select id="queryRelationList" resultType="Integer">
+		<![CDATA[
+		SELECT uid FROM b_urs_earnings_relation 
+		WHERE uid_relation_chain LIKE CONCAT('%',#{uid},'%') 
+		AND object_oriented=5
+		AND LENGTH(uid_relation_chain)> 
+  			(SELECT LENGTH(uid_relation_chain) FROM b_urs_earnings_relation WHERE uid=#{uid} LIMIT 0,1)
+		AND LENGTH(uid_relation_chain)<=
+  			(SELECT LENGTH(uid_relation_chain) FROM b_urs_earnings_relation WHERE uid=#{uid} LIMIT 0,1)+24
+	
+		]]>
+	</select>
+	
+	<!-- 查询当前寻蜜客的 直接下级 uid -->
+	<select id="listDirectRelation" resultType="Integer">
+		<![CDATA[
+		SELECT uid FROM b_urs_earnings_relation 
+		WHERE uid_relation_chain LIKE CONCAT('%',#{uid},'%') 
+		AND object_oriented=5
+		AND LENGTH(uid_relation_chain)> 
+  			(SELECT LENGTH(uid_relation_chain) FROM b_urs_earnings_relation WHERE uid=#{uid} LIMIT 0,1)
+		AND LENGTH(uid_relation_chain)<=
+  			(SELECT LENGTH(uid_relation_chain) FROM b_urs_earnings_relation WHERE uid=#{uid} LIMIT 0,1)+12
+		]]>
+	</select>
+	
+	<!-- 查询当前寻蜜客的 关系链 -->
+	<select id="queryRelationChain" resultType="String">
+		select uid_relation_chain from b_urs_earnings_relation where uid=#{uid} and object_oriented=5 ORDER BY create_time DESC LIMIT 0,1
+	</select>
+	
+	
+</mapper>

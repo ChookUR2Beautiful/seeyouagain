@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+	xsi:schemaLocation="http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+		
+	<!-- mongo参数配置--> 		
+ 	<mongo:mongo id="mongo" host="${mongo.host}" port="${mongo.port}"   >  
+        <mongo:options connections-per-host="${mongo.connectionsPerHost}"  
+            threads-allowed-to-block-for-connection-multiplier="${mongo.threadsAllowedToBlockForConnectionMultiplier}"  
+            connect-timeout="${mongo.connectTimeout}" max-wait-time="${mongo.maxWaitTime}" auto-connect-retry="${mongo.autoConnectRetry}"  
+            socket-keep-alive="${mongo.socketKeepAlive}" socket-timeout="${mongo.socketTimeout}" slave-ok="${mongo.slaveOk}"      
+          />  
+    </mongo:mongo> 	 
+    
+	<!-- mongo的工厂--> 	
+	<mongo:db-factory id="mongoDbFactory" mongo-ref="mongo" dbname="${mongo.dbname}" username="${mongo.user}" password="${mongo.pw}" />
+	
+	
+	
+	<!-- 自动扫描以下包的类 -->
+	<mongo:mapping-converter base-package="com.xmniao.xmn.core.**.entity" />
+
+	<bean id="mappingContext" class="org.springframework.data.mongodb.core.mapping.MongoMappingContext" />
+	<!-- 配置mongodb映射类型 -->
+	<bean id="mappingMongoConverter" class="org.springframework.data.mongodb.core.convert.MappingMongoConverter">
+		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
+		<constructor-arg name="mappingContext" ref="mappingContext" />
+		<property name="typeMapper" ref="defaultMongoTypeMapper" />
+	</bean>
+
+	<!-- 默认Mongodb类型映射 设置为空,可以把 spring data mongodb 多余保存的_class字段去掉-->
+	<bean id="defaultMongoTypeMapper" class="org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper">
+		<constructor-arg name="typeKey"><null /></constructor-arg>
+	</bean>
+		
+	<!-- mongodb的操作对象，处理所有对mongodb的增删改查操作 -->  
+	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+		<constructor-arg  ref="mongoDbFactory" />
+		<constructor-arg ref="mappingMongoConverter" />
+	</bean>
+	
+	<!-- mongodb的公用操作封装 对象-->  
+	<!-- <bean id="mongoBaseService" class="com.xmniao.xmn.core.base.MongoBaseService">
+		<property name="mongoTemplate" ref="mongoTemplate"></property>
+	</bean> -->
+ 
+	
+</beans>

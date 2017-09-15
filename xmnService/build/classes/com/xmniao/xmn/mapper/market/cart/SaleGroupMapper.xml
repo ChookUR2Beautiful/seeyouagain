@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.market.dao.SaleGroupDao">
+	<resultMap id="BaseResultMap"
+		type="com.xmniao.xmn.core.market.entity.cart.SaleGroup">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="codeId" property="codeid" jdbcType="BIGINT" />
+		<result column="pv_ids" property="pvIds" jdbcType="VARCHAR" />
+		<result column="pv_ids_sort" property="pvIdsSort" jdbcType="VARCHAR" />
+		<result column="amount" property="amount" jdbcType="DECIMAL" />
+		<result column="stock" property="stock" jdbcType="INTEGER" />
+		<result column="sort" property="sort" jdbcType="INTEGER" />
+		<result column="sales" property="sales" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, codeId, pv_ids, pv_ids_sort, amount, stock, sort, sales
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_sale_group
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="selectByCodeId" resultMap="BaseResultMap" >
+		select
+		<include refid="Base_Column_List" />
+		from t_sale_group
+		where codeId = #{codeid}
+	</select>
+
+	<select id="selectByAttr" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_sale_group
+		where codeId = #{codeid,jdbcType=INTEGER} and pv_ids =#{pvIds}
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from t_sale_group
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.xmniao.xmn.core.market.entity.cart.SaleGroup">
+		insert into t_sale_group (id, codeId, pv_ids,
+		pv_ids_sort, amount, stock,
+		sort, sales)
+		values (#{id,jdbcType=INTEGER}, #{codeid,jdbcType=BIGINT},
+		#{pvIds,jdbcType=VARCHAR},
+		#{pvIdsSort,jdbcType=VARCHAR}, #{amount,jdbcType=DECIMAL}, #{stock,jdbcType=INTEGER},
+		#{sort,jdbcType=INTEGER}, #{sales,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective" parameterType="com.xmniao.xmn.core.market.entity.cart.SaleGroup">
+		insert into t_sale_group
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="codeid != null">
+				codeId,
+			</if>
+			<if test="pvIds != null">
+				pv_ids,
+			</if>
+			<if test="pvIdsSort != null">
+				pv_ids_sort,
+			</if>
+			<if test="amount != null">
+				amount,
+			</if>
+			<if test="stock != null">
+				stock,
+			</if>
+			<if test="sort != null">
+				sort,
+			</if>
+			<if test="sales != null">
+				sales,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="codeid != null">
+				#{codeid,jdbcType=BIGINT},
+			</if>
+			<if test="pvIds != null">
+				#{pvIds,jdbcType=VARCHAR},
+			</if>
+			<if test="pvIdsSort != null">
+				#{pvIdsSort,jdbcType=VARCHAR},
+			</if>
+			<if test="amount != null">
+				#{amount,jdbcType=DECIMAL},
+			</if>
+			<if test="stock != null">
+				#{stock,jdbcType=INTEGER},
+			</if>
+			<if test="sort != null">
+				#{sort,jdbcType=INTEGER},
+			</if>
+			<if test="sales != null">
+				#{sales,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="updateStock">
+		update t_sale_group set stock = stock - #{num} where codeId =
+		#{codeid,jdbcType=BIGINT} and pv_ids = #{attrIds}
+	</update>
+	
+	<update id="updateExceptionStock">
+		update t_sale_group set stock = stock + #{num} where codeId =
+		#{codeid,jdbcType=BIGINT} and pv_ids = #{attrIds}
+	</update>
+	<update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.market.entity.cart.SaleGroup">
+		update t_sale_group
+		<set>
+			<if test="codeid != null">
+				codeId = #{codeid,jdbcType=BIGINT},
+			</if>
+			<if test="pvIds != null">
+				pv_ids = #{pvIds,jdbcType=VARCHAR},
+			</if>
+			<if test="pvIdsSort != null">
+				pv_ids_sort = #{pvIdsSort,jdbcType=VARCHAR},
+			</if>
+			<if test="amount != null">
+				amount = #{amount,jdbcType=DECIMAL},
+			</if>
+			<if test="stock != null">
+				stock = #{stock,jdbcType=INTEGER},
+			</if>
+			<if test="sort != null">
+				sort = #{sort,jdbcType=INTEGER},
+			</if>
+			<if test="sales != null">
+				sales = #{sales,jdbcType=INTEGER},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.market.entity.cart.SaleGroup">
+		update t_sale_group
+		set codeId = #{codeid,jdbcType=BIGINT},
+		pv_ids = #{pvIds,jdbcType=VARCHAR},
+		pv_ids_sort = #{pvIdsSort,jdbcType=VARCHAR},
+		amount = #{amount,jdbcType=DECIMAL},
+		stock = #{stock,jdbcType=INTEGER},
+		sort = #{sort,jdbcType=INTEGER},
+		sales = #{sales,jdbcType=INTEGER}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<!-- 查询库存 -->
+	
+	<select id="selectStockByCoodeIdAndPvIds" resultType="int">
+		SELECT stock FROM t_sale_group WHERE codeId=#{codeid} AND pv_ids=#{attrIds}
+	</select>
+    <select id="sumProductStoreByCodeId" resultType="java.lang.Integer">
+        SELECT sum(stock) from t_sale_group where codeId = #{codeid}
+    </select>
+</mapper>

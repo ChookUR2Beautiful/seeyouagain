@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.market.dao.MarketBillFreshSubDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.market.entity.pay.BillFreshSub" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="order_sn" property="orderSn" jdbcType="VARCHAR" />
+    <result column="sub_order_sn" property="subOrderSn" jdbcType="VARCHAR" />
+    <result column="supplier_id" property="supplierId" jdbcType="BIGINT" />
+    <result column="uid" property="uid" jdbcType="BIGINT" />
+    <result column="total_amount" property="totalAmount" jdbcType="DECIMAL" />
+    <result column="preferential" property="preferential" jdbcType="DECIMAL" />
+    <result column="cash_amount" property="cashAmount" jdbcType="DECIMAL" />
+    <result column="balance_amount" property="balanceAmount" jdbcType="DECIMAL" />
+    <result column="integral_amount" property="integralAmount" jdbcType="DECIMAL" />
+    <result column="freight" property="freight" jdbcType="DECIMAL" />
+    <result column="status" property="status" jdbcType="BIT" />
+    <result column="courier_number" property="courierNumber" jdbcType="VARCHAR" />
+    <result column="courier_type" property="courierType" jdbcType="VARCHAR" />
+    <result column="delivery_time" property="deliveryTime" jdbcType="TIMESTAMP" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP" />
+    <result column="memo" property="memo" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="consignee" property="consignee" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="operator" property="operator" jdbcType="VARCHAR" />
+    <result column="commission" property="commission" jdbcType="VARCHAR" />
+    <result column="hstatus" property="hstatus" jdbcType="INTEGER" />
+    <result column="remind_express" property="remindExpress" jdbcType="INTEGER" />
+    <result column="rid" property="rid" jdbcType="INTEGER" />
+    <result column="wareNum" property="wareNum" jdbcType="INTEGER" />
+    <result column="expTid" property="expTid" jdbcType="INTEGER" />
+    
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, order_sn, sub_order_sn, supplier_id, uid, total_amount, preferential, cash_amount, 
+    balance_amount, integral_amount, freight, status, courier_number, courier_type, delivery_time, 
+    create_time, modify_time, memo, address, mobile, consignee, version, operator, commission, 
+    hstatus,remind_express,rid,wareNum,expTid
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_bill_fresh_sub
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_bill_fresh_sub
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.market.entity.pay.BillFreshSub" >
+    insert into t_bill_fresh_sub (id, order_sn, sub_order_sn, 
+      supplier_id, uid, total_amount, 
+      preferential, cash_amount, balance_amount, 
+      integral_amount, freight, status, 
+      courier_number, courier_type, delivery_time, 
+      create_time, modify_time, memo, 
+      address, mobile, consignee, 
+      version, operator, commission, 
+      hstatus,remind_express,rid,wareNum,expTid)
+    values (#{id,jdbcType=BIGINT}, #{orderSn,jdbcType=VARCHAR}, #{subOrderSn,jdbcType=VARCHAR}, 
+      #{supplierId,jdbcType=BIGINT}, #{uid,jdbcType=BIGINT}, #{totalAmount,jdbcType=DECIMAL}, 
+      #{preferential,jdbcType=DECIMAL}, #{cashAmount,jdbcType=DECIMAL}, #{balanceAmount,jdbcType=DECIMAL}, 
+      #{integralAmount,jdbcType=DECIMAL}, #{freight,jdbcType=DECIMAL}, #{status,jdbcType=BIT}, 
+      #{courierNumber,jdbcType=VARCHAR}, #{courierType,jdbcType=VARCHAR}, #{deliveryTime,jdbcType=TIMESTAMP}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{modifyTime,jdbcType=TIMESTAMP}, #{memo,jdbcType=VARCHAR}, 
+      #{address,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, #{consignee,jdbcType=VARCHAR}, 
+      #{version,jdbcType=INTEGER}, #{operator,jdbcType=VARCHAR}, #{commission,jdbcType=VARCHAR}, 
+      #{hstatus,jdbcType=INTEGER},#{remindExpress},#{rid},#{wareNum},#{expTid})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.market.entity.pay.BillFreshSub" >
+    insert into t_bill_fresh_sub
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="orderSn != null" >
+        order_sn,
+      </if>
+      <if test="subOrderSn != null" >
+        sub_order_sn,
+      </if>
+      <if test="supplierId != null" >
+        supplier_id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="totalAmount != null" >
+        total_amount,
+      </if>
+      <if test="preferential != null" >
+        preferential,
+      </if>
+      <if test="cashAmount != null" >
+        cash_amount,
+      </if>
+      <if test="balanceAmount != null" >
+        balance_amount,
+      </if>
+      <if test="integralAmount != null" >
+        integral_amount,
+      </if>
+      <if test="freight != null" >
+        freight,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="courierNumber != null" >
+        courier_number,
+      </if>
+      <if test="courierType != null" >
+        courier_type,
+      </if>
+      <if test="deliveryTime != null" >
+        delivery_time,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="modifyTime != null" >
+        modify_time,
+      </if>
+      <if test="memo != null" >
+        memo,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="consignee != null" >
+        consignee,
+      </if>
+      <if test="version != null" >
+        version,
+      </if>
+      <if test="operator != null" >
+        operator,
+      </if>
+      <if test="commission != null" >
+        commission,
+      </if>
+      <if test="hstatus != null" >
+        hstatus,
+      </if>
+      <if test="remindExpress != null" >
+        remind_express,
+      </if>
+      <if test="rid != null" >
+        rid,
+      </if>
+      <if test="wareNum != null" >
+        wareNum,
+      </if>
+      <if test="expTid != null" >
+        expTid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="orderSn != null" >
+        #{orderSn,jdbcType=VARCHAR},
+      </if>
+      <if test="subOrderSn != null" >
+        #{subOrderSn,jdbcType=VARCHAR},
+      </if>
+      <if test="supplierId != null" >
+        #{supplierId,jdbcType=BIGINT},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=BIGINT},
+      </if>
+      <if test="totalAmount != null" >
+        #{totalAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="preferential != null" >
+        #{preferential,jdbcType=DECIMAL},
+      </if>
+      <if test="cashAmount != null" >
+        #{cashAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="balanceAmount != null" >
+        #{balanceAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="integralAmount != null" >
+        #{integralAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="freight != null" >
+        #{freight,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=BIT},
+      </if>
+      <if test="courierNumber != null" >
+        #{courierNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="courierType != null" >
+        #{courierType,jdbcType=VARCHAR},
+      </if>
+      <if test="deliveryTime != null" >
+        #{deliveryTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyTime != null" >
+        #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="memo != null" >
+        #{memo,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="consignee != null" >
+        #{consignee,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null" >
+        #{version,jdbcType=INTEGER},
+      </if>
+      <if test="operator != null" >
+        #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="commission != null" >
+        #{commission,jdbcType=VARCHAR},
+      </if>
+      <if test="hstatus != null" >
+        #{hstatus,jdbcType=INTEGER},
+      </if>
+      <if test="remindExpress != null" >
+        #{remindExpress},
+      </if>
+      <if test="rid != null" >
+        #{rid},
+      </if>
+      <if test="wareNum != null" >
+        #{wareNum},
+      </if>
+      <if test="expTid != null" >
+        #{expTid},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.market.entity.pay.BillFreshSub" >
+    update t_bill_fresh_sub
+    <set >
+      <if test="orderSn != null" >
+        order_sn = #{orderSn,jdbcType=VARCHAR},
+      </if>
+      <if test="subOrderSn != null" >
+        sub_order_sn = #{subOrderSn,jdbcType=VARCHAR},
+      </if>
+      <if test="supplierId != null" >
+        supplier_id = #{supplierId,jdbcType=BIGINT},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=BIGINT},
+      </if>
+      <if test="totalAmount != null" >
+        total_amount = #{totalAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="preferential != null" >
+        preferential = #{preferential,jdbcType=DECIMAL},
+      </if>
+      <if test="cashAmount != null" >
+        cash_amount = #{cashAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="balanceAmount != null" >
+        balance_amount = #{balanceAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="integralAmount != null" >
+        integral_amount = #{integralAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="freight != null" >
+        freight = #{freight,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=BIT},
+      </if>
+      <if test="courierNumber != null" >
+        courier_number = #{courierNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="courierType != null" >
+        courier_type = #{courierType,jdbcType=VARCHAR},
+      </if>
+      <if test="deliveryTime != null" >
+        delivery_time = #{deliveryTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyTime != null" >
+        modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="memo != null" >
+        memo = #{memo,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="consignee != null" >
+        consignee = #{consignee,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null" >
+        version = #{version,jdbcType=INTEGER},
+      </if>
+      <if test="operator != null" >
+        operator = #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="commission != null" >
+        commission = #{commission,jdbcType=VARCHAR},
+      </if>
+      <if test="hstatus != null" >
+        hstatus = #{hstatus,jdbcType=INTEGER},
+      </if>
+      <if test="remindExpress != null" >
+        remind_express=#{remindExpress},
+      </if>
+      <if test="rid != null" >
+        rid=#{rid},
+      </if>
+      <if test="wareNum != null" >
+        wareNum = #{wareNum,jdbcType=INTEGER},
+      </if>
+      <if test="expTid != null" >
+        expTid = #{expTid,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.market.entity.pay.BillFreshSub" >
+    update t_bill_fresh_sub
+    set order_sn = #{orderSn,jdbcType=VARCHAR},
+      sub_order_sn = #{subOrderSn,jdbcType=VARCHAR},
+      supplier_id = #{supplierId,jdbcType=BIGINT},
+      uid = #{uid,jdbcType=BIGINT},
+      total_amount = #{totalAmount,jdbcType=DECIMAL},
+      preferential = #{preferential,jdbcType=DECIMAL},
+      cash_amount = #{cashAmount,jdbcType=DECIMAL},
+      balance_amount = #{balanceAmount,jdbcType=DECIMAL},
+      integral_amount = #{integralAmount,jdbcType=DECIMAL},
+      freight = #{freight,jdbcType=DECIMAL},
+      status = #{status,jdbcType=BIT},
+      courier_number = #{courierNumber,jdbcType=VARCHAR},
+      courier_type = #{courierType,jdbcType=VARCHAR},
+      delivery_time = #{deliveryTime,jdbcType=TIMESTAMP},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+      memo = #{memo,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      consignee = #{consignee,jdbcType=VARCHAR},
+      version = #{version,jdbcType=INTEGER},
+      operator = #{operator,jdbcType=VARCHAR},
+      commission = #{commission,jdbcType=VARCHAR},
+      hstatus = #{hstatus,jdbcType=INTEGER},
+      remind_express=#{remindExpress},
+      rid=#{rid},
+      wareNum=#{wareNum},
+      expTid=#{expTid}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="findOneByGroupBidAanUid" resultMap="BaseResultMap">
+  	SELECT 
+  		<include refid="Base_Column_List" />
+  	FROM t_bill_fresh_sub WHERE order_sn=#{bid} AND uid=#{uid} and group by bid order by created_time 
+  </select>
+  
+  <select id="findOneSubOrderSnAanUid" resultMap="BaseResultMap">
+  	SELECT 
+  		<include refid="Base_Column_List" />
+  	FROM t_bill_fresh_sub WHERE sub_order_sn=#{bid} AND uid=#{uid}
+  </select>
+  
+  <select id="sumOrderIntegral" resultType="Double">
+  	SELECT SUM(integral*wareNum) AS integral FROM t_product_bill WHERE sub_bid=#{bid}
+  </select>
+</mapper>

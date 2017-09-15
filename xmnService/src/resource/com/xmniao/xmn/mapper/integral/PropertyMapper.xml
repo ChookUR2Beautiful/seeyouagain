@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.integral.dao.PropertyDao">
+		<!-- 查询属性名称 -->
+		<select id="queryPropertyList" parameterType="java.math.BigInteger" resultType="map"> 
+		select id,property from t_sale_property 
+		where codeId=#{codeId}
+		</select>
+		<!-- 查询属性值 -->
+		<select id="queryPropertyValueList" parameterType="String" resultType="map">
+		select id,property_id pid,value from t_sale_property_value where property_id=#{id}
+		</select>
+		
+</mapper>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xmniao.xmn.core.xmer.dao.ActivityDao">
+
+		<!-- 查询活动详情 -->
+		
+		<select id="activityInfo" parameterType="int" resultType="map">
+		<![CDATA[
+			select id activityid,title activityname,
+			DATE_FORMAT(start_time,'%Y-%m-%d %H:%i') start_time,
+			DATE_FORMAT(end_time,'%Y-%m-%d %H:%i') end_time,
+			DATE_FORMAT(registration_deadline,'%Y-%m-%d %H:%i') registration_deadline,
+			activity_cost,activity_details,activity_poster,participator_num,
+			case when registration_deadline>#{sdate} and #{sdate}<start_time then 1 
+		when start_time<=#{sdate} and end_time>#{sdate} then 2 	
+		when end_time<#{sdate}  then 3 else 4    end `status`
+			 from t_agency_activity where id=#{id}
+			 	]]>
+		</select>
+
+		<!-- 添加报名信息 -->
+		<insert id="addAgencyActivityEntry" parameterType="map">
+			insert into t_agency_activity_entry(activity_id,uid,participator_name,participator_phone,entry_time)
+			values(#{activity_id},#{uid},#{nname},#{phoneid},#{date})
+		</insert>
+		<!-- 修改报名人数 -->
+		<update id="addActivityCount" parameterType="int">
+		update t_agency_activity set participator_num=participator_num+1 where id=#{id}
+		</update>
+		
+		<!-- 查询该用户是否已经报名 0报名1 已报名 -->
+		<select id="queryActivityEntryCount" parameterType="map" resultType="int">
+		select count(1) from t_agency_activity_entry  where activity_id=#{activity_id} and uid=#{uid} 
+		</select>
+		
+		<!-- 查询更多活动 -->
+		<select id="moreActivity" parameterType="map" resultType="map">
+		<![CDATA[
+			
+		select id activityid,title activityname,
+			DATE_FORMAT(start_time,'%Y-%m-%d') start_time,
+			DATE_FORMAT(end_time,'%Y-%m-%d') end_time,
+			DATE_FORMAT(registration_deadline,'%Y-%m-%d') registration_deadline,
+		participator_num ,activity_poster,
+		case when registration_deadline>#{date} and #{date}<start_time then 1 
+		when start_time<=#{date} and end_time>#{date} then 2 	
+		when end_time<#{date}   then 3 else 4    end `status`  
+		 from t_agency_activity where agency_id=#{id}
+		]]>
+		<!-- 报名中 -->
+		 <if test="type==1">
+		<![CDATA[ and registration_deadline>#{date} and #{date}<start_time]]>
+		 </if>
+		  <!-- 活动中 -->
+		 <if test="type==2">
+		 <![CDATA[ and start_time<=#{date} and end_time>#{date}]]>
+		 </if>
+		 <!-- 活动结束 -->
+		  <if test="type==3">
+		<![CDATA[ and end_time<#{date}]]>
+		 </if>
+		order by start_time desc
+		</select> 
+		
+		
+		
+		
+</mapper>

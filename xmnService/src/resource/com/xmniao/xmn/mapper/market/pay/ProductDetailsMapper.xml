@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.market.dao.ProductDetailsDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.market.entity.pay.ProductDetails" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="codeId" property="codeid" jdbcType="BIGINT" />
+    <result column="pic1" property="pic1" jdbcType="VARCHAR" />
+    <result column="pic2" property="pic2" jdbcType="VARCHAR" />
+    <result column="pic3" property="pic3" jdbcType="VARCHAR" />
+    <result column="pic4" property="pic4" jdbcType="VARCHAR" />
+    <result column="pic5" property="pic5" jdbcType="VARCHAR" />
+    <result column="delivery" property="delivery" jdbcType="VARCHAR" />
+    <result column="postnote" property="postnote" jdbcType="VARCHAR" />
+    <result column="servicenote" property="servicenote" jdbcType="VARCHAR" />
+    <result column="img1" property="img1" jdbcType="VARCHAR" />
+    <result column="img2" property="img2" jdbcType="VARCHAR" />
+    <result column="img3" property="img3" jdbcType="VARCHAR" />
+    <result column="img4" property="img4" jdbcType="VARCHAR" />
+    <result column="img5" property="img5" jdbcType="VARCHAR" />
+    <result column="img6" property="img6" jdbcType="VARCHAR" />
+    <result column="img7" property="img7" jdbcType="VARCHAR" />
+    <result column="img8" property="img8" jdbcType="VARCHAR" />
+    <result column="img9" property="img9" jdbcType="VARCHAR" />
+    <result column="img10" property="img10" jdbcType="VARCHAR" />
+    <result column="img11" property="img11" jdbcType="VARCHAR" />
+    <result column="img12" property="img12" jdbcType="VARCHAR" />
+    <result column="rdate" property="rdate" jdbcType="TIMESTAMP" />
+    <result column="udate" property="udate" jdbcType="TIMESTAMP" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+    <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+    <result column="html" property="html" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    fid, codeId, pic1, pic2, pic3, pic4, pic5, delivery, postnote, servicenote, img1, 
+    img2, img3, img4, img5, img6, img7, img8, img9, img10, img11, img12, rdate, udate, 
+    sort, remarks,html
+  </sql>
+  <sql id="Blob_Column_List" >
+    html
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_product_details
+    where fid = #{fid,jdbcType=INTEGER}
+  </select>
+  
+   <select id="selectByCodeId" resultMap="BaseResultMap"  >
+    select 
+    <include refid="Base_Column_List" />
+    from t_product_details
+    where codeId = #{codeid}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_product_details
+    where fid = #{fid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.market.entity.pay.ProductDetails" >
+    insert into t_product_details (fid, codeId, pic1, 
+      pic2, pic3, pic4, pic5, 
+      delivery, postnote, servicenote, 
+      img1, img2, img3, img4, 
+      img5, img6, img7, img8, 
+      img9, img10, img11, 
+      img12, rdate, udate, 
+      sort, remarks, html
+      )
+    values (#{fid,jdbcType=INTEGER}, #{codeid,jdbcType=BIGINT}, #{pic1,jdbcType=VARCHAR}, 
+      #{pic2,jdbcType=VARCHAR}, #{pic3,jdbcType=VARCHAR}, #{pic4,jdbcType=VARCHAR}, #{pic5,jdbcType=VARCHAR}, 
+      #{delivery,jdbcType=VARCHAR}, #{postnote,jdbcType=VARCHAR}, #{servicenote,jdbcType=VARCHAR}, 
+      #{img1,jdbcType=VARCHAR}, #{img2,jdbcType=VARCHAR}, #{img3,jdbcType=VARCHAR}, #{img4,jdbcType=VARCHAR}, 
+      #{img5,jdbcType=VARCHAR}, #{img6,jdbcType=VARCHAR}, #{img7,jdbcType=VARCHAR}, #{img8,jdbcType=VARCHAR}, 
+      #{img9,jdbcType=VARCHAR}, #{img10,jdbcType=VARCHAR}, #{img11,jdbcType=VARCHAR}, 
+      #{img12,jdbcType=VARCHAR}, #{rdate,jdbcType=TIMESTAMP}, #{udate,jdbcType=TIMESTAMP}, 
+      #{sort,jdbcType=INTEGER}, #{remarks,jdbcType=VARCHAR}, #{html,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.market.entity.pay.ProductDetails" >
+    insert into t_product_details
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        fid,
+      </if>
+      <if test="codeid != null" >
+        codeId,
+      </if>
+      <if test="pic1 != null" >
+        pic1,
+      </if>
+      <if test="pic2 != null" >
+        pic2,
+      </if>
+      <if test="pic3 != null" >
+        pic3,
+      </if>
+      <if test="pic4 != null" >
+        pic4,
+      </if>
+      <if test="pic5 != null" >
+        pic5,
+      </if>
+      <if test="delivery != null" >
+        delivery,
+      </if>
+      <if test="postnote != null" >
+        postnote,
+      </if>
+      <if test="servicenote != null" >
+        servicenote,
+      </if>
+      <if test="img1 != null" >
+        img1,
+      </if>
+      <if test="img2 != null" >
+        img2,
+      </if>
+      <if test="img3 != null" >
+        img3,
+      </if>
+      <if test="img4 != null" >
+        img4,
+      </if>
+      <if test="img5 != null" >
+        img5,
+      </if>
+      <if test="img6 != null" >
+        img6,
+      </if>
+      <if test="img7 != null" >
+        img7,
+      </if>
+      <if test="img8 != null" >
+        img8,
+      </if>
+      <if test="img9 != null" >
+        img9,
+      </if>
+      <if test="img10 != null" >
+        img10,
+      </if>
+      <if test="img11 != null" >
+        img11,
+      </if>
+      <if test="img12 != null" >
+        img12,
+      </if>
+      <if test="rdate != null" >
+        rdate,
+      </if>
+      <if test="udate != null" >
+        udate,
+      </if>
+      <if test="sort != null" >
+        sort,
+      </if>
+      <if test="remarks != null" >
+        remarks,
+      </if>
+      <if test="html != null" >
+        html,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        #{fid,jdbcType=INTEGER},
+      </if>
+      <if test="codeid != null" >
+        #{codeid,jdbcType=BIGINT},
+      </if>
+      <if test="pic1 != null" >
+        #{pic1,jdbcType=VARCHAR},
+      </if>
+      <if test="pic2 != null" >
+        #{pic2,jdbcType=VARCHAR},
+      </if>
+      <if test="pic3 != null" >
+        #{pic3,jdbcType=VARCHAR},
+      </if>
+      <if test="pic4 != null" >
+        #{pic4,jdbcType=VARCHAR},
+      </if>
+      <if test="pic5 != null" >
+        #{pic5,jdbcType=VARCHAR},
+      </if>
+      <if test="delivery != null" >
+        #{delivery,jdbcType=VARCHAR},
+      </if>
+      <if test="postnote != null" >
+        #{postnote,jdbcType=VARCHAR},
+      </if>
+      <if test="servicenote != null" >
+        #{servicenote,jdbcType=VARCHAR},
+      </if>
+      <if test="img1 != null" >
+        #{img1,jdbcType=VARCHAR},
+      </if>
+      <if test="img2 != null" >
+        #{img2,jdbcType=VARCHAR},
+      </if>
+      <if test="img3 != null" >
+        #{img3,jdbcType=VARCHAR},
+      </if>
+      <if test="img4 != null" >
+        #{img4,jdbcType=VARCHAR},
+      </if>
+      <if test="img5 != null" >
+        #{img5,jdbcType=VARCHAR},
+      </if>
+      <if test="img6 != null" >
+        #{img6,jdbcType=VARCHAR},
+      </if>
+      <if test="img7 != null" >
+        #{img7,jdbcType=VARCHAR},
+      </if>
+      <if test="img8 != null" >
+        #{img8,jdbcType=VARCHAR},
+      </if>
+      <if test="img9 != null" >
+        #{img9,jdbcType=VARCHAR},
+      </if>
+      <if test="img10 != null" >
+        #{img10,jdbcType=VARCHAR},
+      </if>
+      <if test="img11 != null" >
+        #{img11,jdbcType=VARCHAR},
+      </if>
+      <if test="img12 != null" >
+        #{img12,jdbcType=VARCHAR},
+      </if>
+      <if test="rdate != null" >
+        #{rdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="udate != null" >
+        #{udate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sort != null" >
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="remarks != null" >
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="html != null" >
+        #{html,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.market.entity.pay.ProductDetails" >
+    update t_product_details
+    <set >
+      <if test="codeid != null" >
+        codeId = #{codeid,jdbcType=BIGINT},
+      </if>
+      <if test="pic1 != null" >
+        pic1 = #{pic1,jdbcType=VARCHAR},
+      </if>
+      <if test="pic2 != null" >
+        pic2 = #{pic2,jdbcType=VARCHAR},
+      </if>
+      <if test="pic3 != null" >
+        pic3 = #{pic3,jdbcType=VARCHAR},
+      </if>
+      <if test="pic4 != null" >
+        pic4 = #{pic4,jdbcType=VARCHAR},
+      </if>
+      <if test="pic5 != null" >
+        pic5 = #{pic5,jdbcType=VARCHAR},
+      </if>
+      <if test="delivery != null" >
+        delivery = #{delivery,jdbcType=VARCHAR},
+      </if>
+      <if test="postnote != null" >
+        postnote = #{postnote,jdbcType=VARCHAR},
+      </if>
+      <if test="servicenote != null" >
+        servicenote = #{servicenote,jdbcType=VARCHAR},
+      </if>
+      <if test="img1 != null" >
+        img1 = #{img1,jdbcType=VARCHAR},
+      </if>
+      <if test="img2 != null" >
+        img2 = #{img2,jdbcType=VARCHAR},
+      </if>
+      <if test="img3 != null" >
+        img3 = #{img3,jdbcType=VARCHAR},
+      </if>
+      <if test="img4 != null" >
+        img4 = #{img4,jdbcType=VARCHAR},
+      </if>
+      <if test="img5 != null" >
+        img5 = #{img5,jdbcType=VARCHAR},
+      </if>
+      <if test="img6 != null" >
+        img6 = #{img6,jdbcType=VARCHAR},
+      </if>
+      <if test="img7 != null" >
+        img7 = #{img7,jdbcType=VARCHAR},
+      </if>
+      <if test="img8 != null" >
+        img8 = #{img8,jdbcType=VARCHAR},
+      </if>
+      <if test="img9 != null" >
+        img9 = #{img9,jdbcType=VARCHAR},
+      </if>
+      <if test="img10 != null" >
+        img10 = #{img10,jdbcType=VARCHAR},
+      </if>
+      <if test="img11 != null" >
+        img11 = #{img11,jdbcType=VARCHAR},
+      </if>
+      <if test="img12 != null" >
+        img12 = #{img12,jdbcType=VARCHAR},
+      </if>
+      <if test="rdate != null" >
+        rdate = #{rdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="udate != null" >
+        udate = #{udate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sort != null" >
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="remarks != null" >
+        remarks = #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="html != null" >
+        html = #{html,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.market.entity.pay.ProductDetails" >
+    update t_product_details
+    set codeId = #{codeid,jdbcType=BIGINT},
+      pic1 = #{pic1,jdbcType=VARCHAR},
+      pic2 = #{pic2,jdbcType=VARCHAR},
+      pic3 = #{pic3,jdbcType=VARCHAR},
+      pic4 = #{pic4,jdbcType=VARCHAR},
+      pic5 = #{pic5,jdbcType=VARCHAR},
+      delivery = #{delivery,jdbcType=VARCHAR},
+      postnote = #{postnote,jdbcType=VARCHAR},
+      servicenote = #{servicenote,jdbcType=VARCHAR},
+      img1 = #{img1,jdbcType=VARCHAR},
+      img2 = #{img2,jdbcType=VARCHAR},
+      img3 = #{img3,jdbcType=VARCHAR},
+      img4 = #{img4,jdbcType=VARCHAR},
+      img5 = #{img5,jdbcType=VARCHAR},
+      img6 = #{img6,jdbcType=VARCHAR},
+      img7 = #{img7,jdbcType=VARCHAR},
+      img8 = #{img8,jdbcType=VARCHAR},
+      img9 = #{img9,jdbcType=VARCHAR},
+      img10 = #{img10,jdbcType=VARCHAR},
+      img11 = #{img11,jdbcType=VARCHAR},
+      img12 = #{img12,jdbcType=VARCHAR},
+      rdate = #{rdate,jdbcType=TIMESTAMP},
+      udate = #{udate,jdbcType=TIMESTAMP},
+      sort = #{sort,jdbcType=INTEGER},
+      remarks = #{remarks,jdbcType=VARCHAR}
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,128 @@
+.login-box{
+	padding: 0 0.4rem;
+	padding-top: 0.05rem;
+    margin-top: 0.3rem;
+}
+.login-box li{
+	border-bottom: 1px solid #dddddd;
+	/*margin-left: 0.72rem;*/
+	position: relative;
+    font-size: 0.32rem;
+    color: #bd9e70;
+    height: 1.25rem;
+	line-height: 1.25rem;
+	overflow: hidden;
+    /*margin-top: 0.5rem;*/
+}
+.login-box li label{
+	font-size: 0.427rem;
+	color: #999;
+}
+.login-box li:last-child{
+	border-bottom: 0;
+}
+.login-box li img{
+	position: absolute;
+    width: 0.55rem;
+    top: 0.2rem;
+    left: -0.75rem;
+}
+.login-box li a{
+    width: 1.867rem;
+    height: 0.8rem;
+    line-height: 0.8rem;
+    text-align: center;
+    border: 1px solid #bd9e70;
+    color: #bd9e70;
+    position: absolute;
+    bottom: 0.213rem;
+    right: 0;
+    border-radius: 0.08rem;
+    font-size: 0.32rem;
+}
+.login-box li input{
+	width: 7rem;
+	height: 1.25rem;
+	line-height: 1.25rem;
+	padding-right: 2.133rem;
+	text-align: right;
+	font-size: 0.427rem;
+	color: #2e2e2e;
+	float: right;
+}
+.login-box li input.no-pd{
+	padding-right: 0;
+}
+.login-box li input::-webkit-input-placeholder{
+    color: #d2d2d2;
+}
+.login-box li img.code-img{
+	width: 1.733rem;
+	height: 0.8rem;
+	position: absolute;
+	right: 0;
+    left: inherit;
+    top: 0;
+}
+.next-btn{
+	display: block;
+	width: 9.173rem;
+	height: 1.173rem;
+	text-align: center;
+	line-height: 1.173rem;
+	color: #fff;
+	background: #d2d2d2;
+	font-size: 0.427rem;
+	border-radius: 0.2rem;
+	margin: 0.4rem auto;
+}
+.next-btn.pass{
+	background:#ffdb53;
+	color: #2e2e2e;
+}
+p.hint{
+	font-size: 0.32rem;
+	color: #999999;
+	height: 1rem;
+	line-height:1rem;
+	text-align: center;
+}
+.invite-login{
+	padding-top: 0.8rem;
+	padding-bottom: 0.667rem;
+}
+.invite-login p{
+	text-align: center;
+	font-size: 0.373rem;
+	color: #2e2e2e;
+	line-height: 0.6rem;
+}
+.invite-login p.hint{
+	color: #999;
+}
+.invite-login p.yellow{
+	color: #bd9e70;
+	line-height: 0.373rem;
+	margin-top: 0.3rem;
+}
+#inviteLogin .login-box{
+	margin-top: 0.267rem;
+}
+#inviteLogin .login-box li{
+	margin: 0;
+	height: 1.333rem;
+	line-height: 1.333rem;
+	border-bottom: 1px solid #dddddd;
+	color: #999999;
+	font-size: 0.373rem;
+}
+#inviteLogin .login-box li:last-child{
+	border-bottom: 0;
+}
+#inviteLogin .login-box li input{
+	width: 80%;
+	float: right;
+}
+#inviteLogin .next-btn{
+	margin-top: 1.067rem;
+}

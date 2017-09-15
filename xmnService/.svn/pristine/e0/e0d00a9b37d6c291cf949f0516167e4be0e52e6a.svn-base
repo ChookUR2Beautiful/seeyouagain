@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.xmer.dao.BeViewCvDao">
+	<!-- 查询谁开过我id -->
+	<select id="queryRecruitView" resultType="map" parameterType="int">
+		select suid,date_format(view_date,'%y-%m-%d %h:%i:%s') as viewtime from b_recruit_view where cvid=#{cvid} and type=2
+	</select>
+	
+	<!-- 查询用户简历id -->
+	<select id="queryUserCvId" resultType="int" parameterType="int">
+		select id from b_user_cv where uid=#{uid}
+	</select>
+	
+	<!-- 查询谁看过我的详细信息 -->
+	 <select id="sellerInfoList" resultType="map" parameterType="map">
+	 	select sellerid,sellername from b_recruit_info where sellerid in
+	 		<foreach collection="list" item="list" index="index" open="(" separator="," close=")">
+	 			#{list.suid}
+	 		</foreach>
+	 </select>
+	 
+	 <!-- 查询商铺的招聘信息 -->
+	 <select id="beViewCvList" resultType="map" parameterType="map">
+	 	select sellerid,stationname,salary,city,experie from b_recruit_station where status=0 and  sellerid in
+	 	<foreach collection="list" item="list" index="index"  open="(" separator="," close=")">
+	 		#{list.suid}
+	 	</foreach>
+	 </select>
+	 
+	 <!-- 查询商铺的封面图 -->
+	 <select id="querySellerLogoList" resultType="map" parameterType="map">
+	 	select sellerid,picurl from t_seller_pic where islogo=2 and sellerid in
+	 	<foreach collection="list" item="list" index="index"  open="(" separator="," close=")">
+	 		#{list.suid}
+	 	</foreach>
+	 </select>
+	 
+	 <!-- 查询市名称 -->
+	 <select id="queryCityName" resultType="String" parameterType="int">
+	 	select title from t_area where area_id=#{city}
+	 </select>
+</mapper>

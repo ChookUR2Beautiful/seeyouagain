@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.xmer.dao.SaasPackageDao">
+
+	<!-- 查询押金(SAAS)套餐列表（只查询状态正常的押金套餐） -->
+	<!-- CAST(price*agio as SIGNED) as price, -->
+    <select id="querySaasPackage" parameterType="map" resultType="map">
+    	SELECT 
+			id,nums,price mprice,agio*10 agio,
+			ROUND(price*agio,2) as price,
+			point
+		from 
+			t_saas_package 
+		where 
+			status=#{status}
+		and 
+			apply_type in (0,2)
+		order by nums asc
+		limit 0,3
+    </select>
+    
+	<resultMap type="SaasPackage" id="saasPackage">
+		<result column="id" property="id" />
+        <result column="nums" property="nums" />
+        <result column="price" property="price" />
+        <result column="agio" property="agio" />
+        <result column="sold_nums" property="soldNums" />
+        <result column="return_nums" property="returnNums" />
+        <result column="status" property="status" />
+        <result column="update_date" property="updateDate" />
+    </resultMap>
+    
+	<!-- 根据套餐id查询套餐详情 -->
+    <select id="selectSaasPackage" resultMap="saasPackage" parameterType="Integer">
+        SELECT * FROM t_saas_package where id =  #{0} 
+    </select>
+    
+</mapper>

@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
+	http://www.springframework.org/schema/mvc 
+	http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd 
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
+		p:location="classpath:conf_config.properties"
+		p:fileEncoding="utf-8" />
+		
+   	<!-- JSON转换器 -->
+	<bean id="fastJsonHttpMessageConverter" class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+		<property name="supportedMediaTypes">
+			<list>
+				<value>application/json;charset=UTF-8</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<ref bean="fastJsonHttpMessageConverter" /> <!-- json转换器 -->
+			</list>
+		</property>
+	</bean>
+	
+	
+	<bean id="sessionInterceptor" class="com.xmniao.xmn.core.util.interceptor.SessionInterceptor">  
+         <property name="excludedUrls">
+              <list>
+              	<value>/xmniao/match/newhand</value>
+              	<value>/xmniao/validate/token</value>
+              	<value>/user/reset/pwd</value>
+              	<value>/user/send/msg</value>
+             	<value>/user/validate/code</value>
+              	<value>/user/register</value>
+              	<value>/user/login</value>
+              	<value>/user/logout</value>
+				<value>/login</value>
+				<value>appUpdate</value>
+				<value>/sendCode</value>
+				<value>/register</value>
+				<value>/hello</value>
+				<value>/xmkintro</value>
+				<value>queryWorksInfo</value>
+				<value>excellentXmk</value>
+				<value>relieveRelative</value>
+				<value>pay/paySaasOrder</value>
+				<value>perfectInformation</value>
+				<value>validephone</value>
+				<value>xmerGetPhoneCode</value>
+				<value>invitefriend</value>
+				<value>payConfirm</value>
+				<value>agreement</value>
+				<value>weixin/authz/authorize</value>
+				<value>weixin/authz/callback</value>
+				<value>weixin/authz/after_callback</value>
+				<value>payment/do_saas_sold</value>
+				<value>toPaySuccess</value>
+				<value>toPayFail</value>
+				<value>toSignSuccess</value>
+				<value>toSignPayFail</value>
+				<value>pay/payType</value>
+				<value>signpayfail</value>
+				<value>xmkintrotwo</value>
+				<value>appLoad/queryLoadUrl</value>
+				<value>/cateHome</value>
+				<value>integralProductInfo</value>
+				<value>/integralMallHome</value>
+				<value>xmerHomeTest</value>
+				<value>sellerListTest</value>
+				<value>flowInfoTest</value>
+				<value>sellerPressureTest</value>
+				<value>whatisYz</value>
+				<value>integralRule</value>
+				<value>/xmkguide</value>
+				<value>/xmkdev</value>
+				<value>/xmkfindconsumer</value>
+				<value>/xmkhowsignconsumer</value>
+				<value>/xmksignprogress</value>
+				<value>/xmkyunying</value>
+				<value>xmerIndex</value>
+				<value>/express/view</value>
+				<value>languageCode</value>
+				<value>xmkmovie</value>
+				<value>booklib</value>
+				<value>feedback</value>
+				<value>feedBackInfo</value>
+				<value>/serviceagreement</value>
+				<value>/live/getReferList</value>
+				<value>/live/anchor/richList</value>
+				<value>/live/tls/callback</value>
+				<value>/live/web/liveRadio</value>
+				<value>/live/web/sendGroupMsg</value>
+				<value>/live/web/closeLive</value>
+				<value>/live/anchor/liveRecordList</value>
+				<value>/live/gifts/list</value>
+				<value>/live/room/liverInfo</value>
+				<value>/live/buyBirdCoin/IOScombo</value>
+				<value>/notifyInfo</value>
+				<value>/exclusiveicon</value>
+				<value>/live/pushUrs</value>
+				<value>/live/pushAnchor</value>
+				<value>/getBanner</value>
+                <value>/tlscallback</value>
+                <value>/movieOne</value>
+                <value>/movieTwo</value>
+                <value>/movieThree</value>
+                <value>/helplist</value>
+                <value>/queryhelpinfo</value>
+                <value>/getVerify</value>
+                <value>/validateCode</value>
+                <value>/getPhoneCodeNums</value>
+                <value>/placePayOrder</value>
+                <value>/placePay</value>
+                <value>/toOtherPay</value>
+                <value>/otherPayPhone</value>
+                <value>/live/PushSingle</value>
+                <value>/live/liveUpLoad</value>
+                <value>/live/shareInit</value>
+                <value>/live/alert/modal</value>
+                <value>/live/alert/welfare</value>
+                <value>/seller/recommendList</value>
+                <value>/live/package/recommend</value>
+                 
+                 <!-- 首页 -->
+                 <value>app/start/advertisement</value>
+                 <value>/home/banner/list</value>
+                 <value>/home/live/list</value>
+                 <value>/home/seller/list</value>
+                 <value>/home/taste/list</value>
+                 <value>same/taste/list</value>
+                 <value>/getLocation</value>
+                 <value>/searchLocation</value>
+                 <value>/switchPosition</value>
+                 <value>/switchCity</value>
+                 <value>search/hotWords/list</value>
+                 <value>search/connect/list</value>
+                 <value>/customised/business/list</value>
+                 <value>/customisedForm</value>
+                 <!-- 店铺 -->
+                 <value>/recom/seller/list</value>
+                 <value>search/hotWords/list</value>
+                 <value>seller/activity/all</value>
+                 <value>search/connect/list</value>
+                 <value>/search</value>
+                 <value>/user/aboutus</value>
+                 <value>/customise/list</value>
+           		 <value>/customisedForm</value>
+                 <!-- 店铺推介 -->
+                 <!-- 
+           		 <value>/browse/list</value>
+           		 <value>/browse/delete</value>
+           		 <value>/collect/list</value>
+           		 <value>/collect/delete</value>
+           		  -->
+           		 <!-- 我的优惠卷 -->
+           		 <!-- <value>/user/coupon/list</value>
+           		 <value>/user/coupon/delete</value> -->
+           		 
+           		  <value>/trade/list</value>
+           		  <value>/live/list</value>
+           		  <value>/recom/seller/list</value>
+                 <!-- 商家管理 -->
+                 <value>seller/activity/list</value>
+                  <value>seller/coupon/list</value>
+                  <value>seller/detail</value>
+                  <value>seller/detail/actity</value>
+                  <value>seller/nowLive</value>
+                  <value>seller/vod/list</value>
+                  <value>seller/consumer</value>
+                  <value>search/keyWords/list</value>
+                  <value>seller/near/list</value>
+                  <value>vod/list</value>
+                   <value>seller/food/list</value>
+                   <value>live/seller/detail</value>
+                  <!-- 贡献榜 -->
+                  <value>/live/anchor/contributeList</value>
+                  <!--直播间广告-->
+                  <value>/live/room/adList</value>
+				<!-- 微信直播分享聊天弹幕 -->
+                     <value>/live/getBarrage</value>
+                 <!-- 用户/主播详情 -->
+                  <value>/personal/personalInfo</value>
+                 <!-- 用户/主播详情 活动行为 -->
+                  <value>/personal/personalInfoDetail</value>
+                  <value>/getXmerMark</value>
+                  <value>/storeTrade/list</value>
+
+                  
+                   <!-- 积分商城H5页面 -->
+                   <value>/api/v1/market/pay/activity</value>
+                   <value>/api/v1/market/pay/other/acivity/list</value>
+                  <!-- 直播首页 -->
+                  <value>/live/liveHome</value>
+                  <value>/live/liveHomeRecommend</value>
+                  <value>/live/recommendLiveRecordList</value>
+                  <value>/area/list</value>
+                  <value>/live/anchor/ranking</value>
+                  <value>/live/anchor/list</value>
+                  <value>/live/anchor/contributeList</value>
+                  <value>/live/redpacket/branch</value>
+                  <!--直播首页v2-->
+                  <value>/v2/live/home/recordList</value>
+                  <value>/v2/live/home/advList</value>
+                  <value>/v2/live/home/playBackList</value>
+                  <value>/v2/live/home/tags</value>
+                  <value>/v2/live/home/tvShow</value>
+                  <value>/v2/live/home/banner</value>
+                  <value>/v2/live/home/activity</value>
+                  <value>/v2/live/home/tabnames</value>
+                  <!--开关-->
+                  <value>/live/switch</value>
+                  <!--V客-->
+                  <value>/seller/brand</value>
+                  <value>/sellerInfo</value>
+                  <value>/addShopPic</value>
+                  <value>/store/update</value>
+
+                  <!-- 直播游客模式 -->
+                  <value>/live/login/getVisitorTlsSig</value>
+                  
+                  <!-- 客户端日志记录 -->
+                  <value>/app/client/errorLog</value>
+                  
+                  <!-- 直播间 -->
+                  <value>/live/room/liveRoomPrivilege</value>
+                  <value>/live/anchor/entryRoom</value>
+                  <value>/live/anchor/exitRoom</value>
+                  <value>/live/enterRoomLoading</value>
+                  <value>/live/room/liverInfo</value>
+                  <value>/live/liveShare</value>
+                  <value>/live/anchor/lvbChannelInfo</value>
+                  <value>/live/anchor/liveRecordInfo</value>
+                  <value>/live/anchor/viewerList</value>
+                  <value>/live/record/fansCoupon</value>
+                  <value>/live/liveRoomBanner</value>
+                  <value>/live/room/checkRoomPwd</value>
+                  <!--直播首页-->
+                  <value>/live/recommend/special</value>
+                  <value>/live/recommend/topic</value>
+
+                  <!--精彩时刻-->
+                  <value>/live/liveShare/video</value>
+                  <value>/live/shareVideoInit</value>
+                  <value>/live/room/userInfo</value>
+                  <value>/live/wonderful/video</value>
+                  <value>/live/wonderful/videoUpdate</value>
+
+                 <!-- 说明 -->
+				 <value>/caption/about</value>
+				 <value>/caption/agreement</value>
+				 <value>/caption/explain</value>	
+				 <value>/caption/rule</value>	
+				 <value>/bird/help</value>
+
+                  <!--折扣-->
+                  <value>/discount</value>
+
+                  <!--商圈-->
+                  <value>/zoneList</value>
+
+                  <!--积分超市-->
+                  <value>/api/v1/market/home/type_list</value>
+                  <value>/api/v1/market/home/banner_list</value>
+                  <value>/api/v1/market/home/icon_list</value>
+                  <value>/api/v1/market/home/hot_brand_list</value>
+                  <value>/api/v1/market/home/activity_list</value>
+                  <value>/api/v1/market/home/activity_product_list</value>
+                  <value>/api/v1/market/home/module</value>
+                  <value>/api/v1/market/product/list</value>
+                  <value>/api/v1/market/product/detail</value>
+                  <value>/api/v1/market/product/attr</value>
+                  <value>/api/v1/market/search/list</value>
+                  <value>/api/v1/market/search/default_word</value>
+                  <value>/api/v1/market/search/hot_word_list</value>
+                  <value>/api/v1/market/home/brand_info</value>
+                  <value>/api/v1/market/home/activity_banner</value>
+                  <value>/api/v1/market/activity/spike/info</value>
+                  <value>/api/v1/market/activity/spike/product_list</value>
+                  <value>/api/v1/market/activity/indiana/rule</value>
+                  <value>/api/v1/market/activity/indiana/product_list</value>
+                  <value>/api/v1/market/activity/indiana/product_info</value>
+                  <value>/api/v1/market/activity/indiana/recently_record</value>
+                  <value>/api/v1/market/activity/indiana/banner</value>
+                  <value>/api/v1/market/activity/auction/list</value>
+                  <value>/api/v1/market/activity/auction/detail</value>
+                  <value>/api/v1/market/activity/auction/bid_list</value>
+                  <value>/api/v1/market/activity/auction/auction_text</value>
+                  <value>/api/v1/market/activity/auction/banner</value>
+                  <value>/api/v1/market/common/label_list</value>
+                  <value>/api/v1/market/activity/auction/price</value>
+                  <value>/api/v1/market/activity/system_time</value>
+                  <!--积分超市-->
+                  
+                  <!-- 专题详情H5 -->
+                  <value>/specil/topic/info</value>
+                  <!-- 套餐 -->
+                  <value>/combo/recommend</value>
+                  <value>/combo/list</value>
+                  <value>/home/search/list</value>
+                  <!-- 支付系统调用url -->
+                  <value>/ledger/system/xmerListInfo</value>
+                  
+                  <!-- 支付系统调用url -->
+                  <value>/ledger/system/xmerListInfo</value>
+				  
+				  
+				  <!-- 专享卡BannerH5-->
+				  <value>/sellerCard/debitBanner</value>
+				  <value>/seller/currenSellerDebitcard</value>
+				  
+                  <!-- 寻蜜客H5 -->
+                  <value>xmkCollege</value>
+                  <value>xmkIntroduction</value>
+                  <value>invitedJoinXMER</value>
+
+                  <value>/discountConf</value>
+                  <value>/xmerSaasType</value>
+                  <value>/sellerList</value>
+                  <value>/store/modify</value>
+
+                  
+                  <!-- 专享卡BannerH5-->
+				  <value>/sellerCard/debitBanner</value>
+                  <value>/seller/currenSellerDebitcard</value>
+                  
+				  <!-- 美食点评 -->
+				  <value>sellerCommentList</value><!-- 店铺详情中的美食点评 -->
+				  <value>sellerPhotos</value><!-- 非签约店铺的相册 -->
+
+				<value>/live/sendSellerPackage/list</value>
+                <value>/live/sendProduct/list</value>
+                  
+                 <!-- 美食首页 -->
+				<value>/home/bestForyouTitle</value>
+				<value>/home/mustBuy</value>
+				<value>/home/comment</value>
+				<value>/home/bestForYou</value>
+				<value>/xmniao/anchor/match</value>
+				
+				<value>/experience/remind</value>
+				<value>/experience/pushActivity</value>
+				<value>/newerWelfare</value>
+				<value>/sellerWelfare</value>
+				
+				 <!-- 推送消息-->
+				<value>/pushXingeMessage</value>
+				<value>/sendMatchMsg</value>
+
+                  <!-- 金山云-->
+                  <value>/live/kscloud/liveConf</value>
+              </list>
+          </property>
+    </bean>  
+	<!-- 过滤器 -->
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"> 
+		<property name="interceptors">
+			<list>
+				<ref bean="sessionInterceptor"/> 
+			</list>
+		</property>
+	</bean>	
+	
+	
+	<!-- 自动注入Controller层 -->
+	<context:component-scan base-package="com.xmniao.xmn.core.**" >
+  		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service" /> 
+	</context:component-scan>
+	
+		<!-- 自动注册的SimpleUrlHandlerMapping 获取资源部分 -->
+	<!-- servlet在找页面时，走的是dispatcherServlet路线。找不到的时候会报404
+		加上这个默认的servlet时候，servlet在找不到的时候会去找静态的内容。 -->
+	<mvc:default-servlet-handler />
+	<mvc:resources location="/js/*" mapping="/js/**" />  
+	<mvc:resources location="/img/*" mapping="/img/*" />  
+	<mvc:resources location="/css/*" mapping="/css/*" />  
+
+	<!-- 配置视图解析器，将ModelAndView及字符串解析为具体的页面 -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+		p:viewClass="org.springframework.web.servlet.view.JstlView" p:prefix="/WEB-INF/view/"
+		p:suffix=".jsp" />
+	
+	<!-- 文件上传 -->
+	<bean id="multipartResolver"
+        class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="1100000000" />
+        <property name="defaultEncoding" value="UTF-8"></property>  
+    </bean>
+    
+    	<!-- 数据验证 -->	
+	<bean name="validator" class="net.sf.oval.Validator"/>
+	
+	<!-- 上传异常处理 -->
+    <bean id="exceptionResolver"  
+        class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">  
+        <property name="exceptionMappings">  
+            <props>  
+                <prop key="org.springframework.web.multipart.MaxUploadSizeExceededException">error_fileupload</prop>  
+           		<prop key="java.sql.SQLException">error/500</prop>
+                <prop key="java.io.IOException">error/500</prop>                
+                <prop key="com.alibaba.fastjson.JSONException">error/500</prop> 
+                <prop key="java.lang.exception">error/500</prop>
+            </props>  
+        </property>  
+    </bean>
+</beans>

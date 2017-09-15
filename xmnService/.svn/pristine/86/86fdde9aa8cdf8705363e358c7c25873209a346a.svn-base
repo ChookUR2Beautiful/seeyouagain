@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.xmer.dao.XmerDao">
+
+	<resultMap id="BaseResultMap" type="com.xmniao.xmn.core.xmer.entity.Xmer">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="uid" property="uid" jdbcType="INTEGER" />
+		<result column="rtype" property="rtype" jdbcType="TINYINT" />
+		<result column="phoneid" property="phoneid" jdbcType="VARCHAR" />
+		<result column="email" property="email" jdbcType="VARCHAR" />
+		<result column="weixinid" property="weixinid" jdbcType="VARCHAR" />
+		<result column="achievement" property="achievement" jdbcType="VARCHAR" />
+		<result column="partner_nums" property="partnerNums" jdbcType="INTEGER" />
+		<result column="parentid" property="parentid" jdbcType="INTEGER" />
+		<result column="levels" property="levels" jdbcType="INTEGER" />
+		<result column="level_swap" property="levelSwap" jdbcType="VARCHAR" />
+		<result column="sold_nums" property="soldNums" jdbcType="INTEGER" />
+		<result column="sdate" property="sdate" jdbcType="TIMESTAMP" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="age" property="age" jdbcType="INTEGER" />
+	</resultMap>
+	
+	<sql id="Base_Column_List" >
+	    id, uid, rtype, phoneid, email, weixinid, achievement, partner_nums, parentid, levels, 
+	    level_swap, sold_nums, sdate, status, age
+	 </sql>
+	 
+	 <select id="selectByUid" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+	    select 
+	    	IFNULL(i.sex,1) sex,
+	    	x.*
+	    from b_xmer x
+	    	left join b_urs_info i on i.uid=x.uid
+	    where x.uid = #{uid,jdbcType=INTEGER} AND x.status = 0
+	    limit 0,1
+	 </select>
+	 
+	 <!-- 根据uid查询已经解除的寻蜜客信息 -->
+	  <select id="queryByUidAndStatus" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+	    select 
+	    	<include refid="Base_Column_List" />
+	    from b_xmer
+	    where uid = #{uid,jdbcType=INTEGER} AND status = 1
+	    limit 0,1
+	 </select>
+
+	<insert id="insertSelective" parameterType="com.xmniao.xmn.core.xmer.entity.Xmer">
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID() AS ID
+		</selectKey>
+		insert into b_xmer(id,uid,rtype,phoneid,email,weixinid,achievement,partner_nums,parentid,levels,level_swap,sold_nums,sdate,status,age,update_date)
+		values(#{id,jdbcType=INTEGER},#{uid,jdbcType=INTEGER},#{rtype,jdbcType=TINYINT},#{phoneid,jdbcType=VARCHAR},#{email,jdbcType=VARCHAR},#{weixinid,jdbcType=VARCHAR},
+		#{achievement,jdbcType=VARCHAR},#{partnerNums,jdbcType=INTEGER},#{parentid,jdbcType=INTEGER},#{levels,jdbcType=INTEGER},#{levelSwap,jdbcType=VARCHAR},
+		#{soldNums,jdbcType=INTEGER},#{sdate,jdbcType=TIMESTAMP},#{status,jdbcType=INTEGER},#{age,jdbcType=INTEGER},#{update_date,jdbcType=TIMESTAMP})
+	</insert>
+	
+	<update id="updateByUid" parameterType="com.xmniao.xmn.core.xmer.entity.Xmer" >
+	    update b_xmer
+	    <set >
+	      <if test="uid != null" >
+	        uid = #{uid,jdbcType=INTEGER},
+	      </if>
+	      <if test="rtype != null" >
+	        rtype = #{rtype,jdbcType=TINYINT},
+	      </if>
+	      <if test="phoneid != null" >
+	        phoneid = #{phoneid,jdbcType=VARCHAR},
+	      </if>
+	      <if test="email != null" >
+	        email = #{email,jdbcType=VARCHAR},
+	      </if>
+	      <if test="weixinid != null" >
+	        weixinid = #{weixinid,jdbcType=VARCHAR},
+	      </if>
+	      <if test="achievement != null" >
+	        achievement = #{achievement,jdbcType=VARCHAR},
+	      </if>
+	      <if test="partnerNums != null" >
+	        partner_nums = #{partnerNums,jdbcType=INTEGER},
+	      </if>
+	      <if test="parentid != null" >
+	        parentid = #{parentid,jdbcType=INTEGER},
+	      </if>
+	      <if test="levels != null" >
+	        levels = #{levels,jdbcType=INTEGER},
+	      </if>
+	      <if test="levelSwap != null" >
+	        level_swap = #{levelSwap,jdbcType=VARCHAR},
+	      </if>
+	      <if test="soldNums != null" >
+	        sold_nums = #{soldNums,jdbcType=INTEGER},
+	      </if>
+	      <if test="sdate != null" >
+	        sdate = #{sdate,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="update_date != null" >
+	        update_date = #{update_date,jdbcType=INTEGER},
+	      </if>
+	      <if test="status != null" >
+	        status = #{status,jdbcType=INTEGER},
+	      </if>
+	      <if test="age != null" >
+	        age = #{age,jdbcType=INTEGER},
+	      </if>
+	    </set>
+	    where uid = #{uid,jdbcType=INTEGER}
+	  </update>
+	<!-- 根据uid查询寻蜜客的id，rtype,levels -->
+	<select id="selectEnXmerByUid" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+	    select 
+	    	uid,
+	    	ifNull(rtype,0) rtype,
+	    	ifNull(achievement,'') achievement,
+	    	ifNull(sold_nums,0) sold_nums
+	    	
+	    from b_xmer
+	    where uid = #{uid,jdbcType=INTEGER}
+	 </select>
+	
+	<!-- 
+		查询寻寻蜜客信息
+		@author zhengyaowen
+	-->
+	<select id="queryXmerByUid" resultMap="BaseResultMap" parameterType="java.util.HashMap" >
+	    SELECT 
+	    	IFNULL(i.sex,1) sex,
+	    	IFNULL(i.name,"") name,
+	    	b_xmer.*
+	    FROM 
+	    	b_xmer
+	    left join b_urs_info i on i.uid=b_xmer.uid
+	    WHERE 
+	    	b_xmer.uid = #{uid,jdbcType=INTEGER}
+	    LIMIT 0,1
+	 </select>
+	 
+	 <!-- 
+		查询下级寻蜜客uid
+		@author zhengyaowen
+	-->
+	<select id="queryUidListByParentid" resultType="int" parameterType="int">
+		SELECT uid FROM b_xmer WHERE status = 0 AND parentid = #{uid}
+	 </select>
+	 
+	 <!-- 
+		查询下级与下下级寻蜜客信息
+		@author zhengyaowen
+	-->
+	<select id="queryXmerByParentid" resultMap="BaseResultMap" parameterType="map">
+		SELECT 
+			t.*,IFNULL(i.sex,1) sex
+		FROM 
+	    	(SELECT  
+	    		'1' AS level,<include refid="Base_Column_List" />
+			FROM 
+	    		b_xmer
+			WHERE 
+	    		status = 0 AND parentid = #{uid}
+			UNION ALL SELECT  
+	    		'2' AS level,<include refid="Base_Column_List" />
+			FROM 
+	    		b_xmer
+			WHERE  
+				status = 0 AND parentid IN (SELECT uid FROM b_xmer WHERE parentid = #{uid})) t
+		left join b_urs_info i on i.uid=t.uid
+		 LIMIT ${pageIndex},${pageSize} 
+	 </select>
+	 
+	 
+	 <select id="listFriendsInfoByIds" resultMap="BaseResultMap" parameterType="map">
+	 	SELECT 
+	 		x.*,
+	 		IFNULL(i.avatar,'') avatar,
+	 		IFNULL(u.nname,'') name,
+	 		x.achievement,
+	 		IFNULL(i.sex,1) sex,
+	 		IFNULL(u.uname,'') uname
+		FROM b_xmer x
+		LEFT JOIN b_urs_info i ON i.uid=x.uid
+		LEFT JOIN b_urs u ON u.uid=x.uid
+		WHERE x.uid IN
+			<foreach collection="ids" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+	 	ORDER BY sdate DESC
+	 	LIMIT ${pageIndex},${pageSize}
+	 </select>
+	 
+	 
+	 <select id="queryFriendInfoById" resultMap="BaseResultMap">
+	 	SELECT 
+	 		x.*,
+	 		IFNULL(i.avatar,'') avatar,
+	 		IFNULL(u.nname,'') name,
+	 		x.achievement,
+	 		IFNULL(i.sex,1) sex,
+	 		IFNULL(u.uname,'') uname
+		FROM b_xmer x
+		LEFT JOIN b_urs_info i ON i.uid=x.uid
+		LEFT JOIN b_urs u ON u.uid=x.uid
+		WHERE x.uid = #{uid}
+	 
+	 </select>
+	<!-- 
+		根据uid列表查询寻蜜客的id，rtype,levels
+		@author zhengyaowen
+	-->
+	<select id="selectEnXmerByUids" resultMap="BaseResultMap">
+	    SELECT 
+	    	x.uid,
+	    	IFNULL(x.rtype,0) rtype,
+	    	IFNULL(x.achievement,'') AS achievement,
+	    	IFNULL(x.sold_nums,0)  AS sold_nums,
+	    	IFNULL(i.sex,1)  AS sex
+	    FROM 
+	    	b_xmer x
+	    	LEFT JOIN b_urs_info i ON i.uid=x.uid
+	    WHERE 
+	    	uid IN
+	    	<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+        		#{item}
+        	</foreach>
+	 </select>
+	 
+	 <!-- 
+	 	查询微信查看支付信息 
+	 	@author zhengyaowen
+	 -->
+	<select id="queryViewWechat" resultType="int" parameterType="java.util.HashMap" >
+ 	    SELECT COUNT(1) FROM b_view_wechat WHERE buy_uid = #{buyUid} AND sold_uid = #{soldUid}
+	 </select>
+	 
+	 <!-- 根据手机号吗 查询是否有这个寻蜜客 -->
+	 <select id="queryXmerByphone" parameterType="map" resultType="map">
+	 	select a.uid uid,IFNULL(b.nname,'') nname,a.phoneid from b_xmer a LEFT JOIN b_urs b on a.uid =b.uid where a.phoneid=#{phone} and a.rtype=2  LIMIT 1
+	 </select>
+	  <!-- 根据手机号吗 查询是否有这个寻蜜客 -->
+	 <select id="queryISQ" parameterType="int" resultType="int">
+	 	select count(1) from b_xmer where uid=#{uid} and rtype=2
+	 </select>
+	 
+	 
+	   <!-- 插入朋友消息 -->
+  <insert id="addFriendApply" parameterType="map">
+  <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">  
+         SELECT LAST_INSERT_ID() AS ID    
+   	</selectKey>
+  insert into b_friend_apply(send_uid,send_name,receive_uid,receive_name,apply_result,apply_date) values(#{sendUid},#{sendName},#{uid},#{nname},0,#{applydate})
+  </insert>
+	 	
+	 	<!-- 查询时候有审核中的申请 -->
+	 	<select id="queryFriendApply" parameterType="map" resultType="int">
+	 	select count(1) from b_friend_apply where send_uid=#{sendid} and receive_uid=#{uid} and apply_result=0
+	 	</select>
+
+	<!-- 查询是否是好友 -->
+	<select id="queryFriendship" parameterType="map" resultType="int">
+		select count(1) from b_friendship where uid_from=#{sendid} and uid_to=#{uid}
+	</select>
+	 <!-- 获取寻蜜客用户头像 -->
+	<select id="queryXmerAvatar" resultType="String" parameterType="int">
+		SELECT avatar FROM b_urs_info WHERE uid=#{uid}
+	</select>
+	
+	<!-- 获取寻蜜客用户资料信息 -->
+	<select id="queryXmerInfo" resultType="map" parameterType="int">
+		SELECT id,IFNULL(email,'') email,IFNULL(weixinid,'') wechatno,IFNULL(age,'') age,IFNULL(sdate,'') sdate FROM b_xmer
+		WHERE uid=#{uid} and status=0
+	</select>
+	<select id="queryUserInfo" resultType="map" parameterType="int">
+		select IFNULL(a.name,'') name,
+		IFNULL(b.nname,'') nname,
+		IFNULL(a.phone,'') phone,
+		IFNULL(a.sex,'') sex,
+		IFNULL(a.avatar,'') avatar,
+		IFNULL(a.birthday,'') birthday,
+		IFNULL(b.email,'') email
+		 from b_urs_info a RIGHT JOIN b_urs b ON a.uid=b.uid
+		 where b.uid=#{uid}	
+		</select>
+	<!--  分页查询销量前500 -->
+	<select id="queryXmerPageList" resultType="map" >
+	<![CDATA[
+	select 
+		@rownum:=@rownum+1 AS rankno, 
+		ifNull(a.id,0) id,
+		ifNull(a.uid,0) uid,
+		ifNull(a.sold_nums,0) soldnums,
+		ifNull(a.partner_nums,0) partnernums,
+		ifNull(a.achievement,'') achievement,
+		ifNull(u.nname,'') username,
+		ifNull(b.avatar,'') userpic,
+		ifNull(b.sex,1) sex
+	from  (SELECT @rownum:=0) r, b_xmer a 
+		left join b_urs_info b on a.uid=b.uid 
+		left join b_urs u on a.uid=u.uid
+	order by a.sold_nums desc LIMIT 0,500
+	]]>
+	</select>
+	
+	<select id="queryXmerList" resultType="map" parameterType="map">
+	<![CDATA[
+	select @rownum:=@rownum+1 AS rankno, 
+	ifNull(a.uid,0) uid,
+	ifNull(a.sold_nums,0) sold_nums
+
+	from  (SELECT @rownum:=0) r, burs.b_xmer a  order by sold_nums desc LIMIT 0,500
+	]]>
+	</select>
+	
+	<!-- 修改伙伴数量 -->
+	<update id="modifyXmerPartnernums" parameterType="map">
+	update b_xmer set partner_nums=IFNULL(partner_nums,0)+1 where uid=#{uid} or uid=#{sendid}
+	</update>
+	
+	<!-- 寻蜜客解除，更新寻蜜客状态 -->
+	<update id="updateXmerStatus" parameterType="int">
+		UPDATE b_xmer SET status=1 WHERE uid=#{uid}
+	</update>
+	
+	<!-- 
+		查询用户银行卡号，已失效，旧版本使用的是绑定一张银行卡，新版本可绑定多张银行卡 
+	<select id="queryBankAccountByUid" resultType="String" parameterType="int">
+		select account from t_mention_account where uid=#{uid} and type=2
+	</select>
+	-->
+	
+	<!-- 伙伴人数新增1 -->
+	<update id="addpartner" parameterType="int">
+		update b_xmer set partner_nums=partner_nums+1 where  uid=#{uid}
+	</update>
+	
+	<!-- 签约店铺数量新增1 -->
+	<update id="addSignNum" parameterType="int">
+		update b_xmer set sold_nums=sold_nums+1 where  uid=#{uid}
+	</update>
+	 
+	 
+	<!-- 查询用户名称，寻蜜客手机号码 -->
+	<select id="selecXmerAndUrstByUid" parameterType="int" resultType="map">
+	select b.nname,a.phoneid,a.uid from b_xmer a ,b_urs b where a.uid=b.uid  and  a.uid=#{uid};	
+	</select>
+	<!--  -->
+	<select id="queryXmerWalletByUid" parameterType="int" resultType="map">
+	select 
+	id,
+	uid,
+	ifNull(profit,0) profit,
+	ifNull(trunout,0) trunout
+	from b_xmer_wallet
+	where uid=#{uid}
+	
+	</select>
+	
+	
+	<!-- 插入一条反馈意见信息 -->
+	<insert id="addFeedBack" parameterType="map">
+	INSERT INTO t_feedback (staffid,content,sdate,source,version,tel,status) 
+	VALUES(#{staffid},#{content},#{sdate},#{source},#{version},#{tel},0)
+	</insert>
+	<!-- 查询广告 -->
+	<select id="queryBannerList" resultType="map" >
+	<![CDATA[
+			SELECT obj_json objjson,id from t_banner where position = 3 and banner_style = 2 and status = 1  order by sort desc
+		]]>
+	</select>
+	
+	<!-- 查询寻蜜客信息已伙伴数量降序排列并且给结果集生成序列号 -->
+	<select id="queryXmkInfoListByPaternerNum"  resultType="map" parameterType="map">
+		SELECT t.rownum AS rownum,t.uid AS uid,t.partner_nums AS partnernum,t.sold_nums AS soldnums 
+		FROM (SELECT (@rownum:=IFNULL(@rownum,0)+1) AS rownum,b.* 
+		FROM b_xmer b,(SELECT @rownum:=0) AS it 
+		WHERE status=0 AND rtype=1 ORDER BY b.partner_nums DESC) t LIMIT ${(page-1)*limit},#{limit}
+	</select>
+	
+	<!-- 根据电话号码查询用户是否存在 -->
+	<select id="checkPhone" resultType="int" parameterType="String">
+		SELECT COUNT(1) FROM b_urs WHERE uname=#{uname}
+	</select>
+	<!-- 根据认购套数排序查询uid -->
+	<select id="querySaasOrderByOrderbyNums" parameterType="map" resultType="map">
+	select sum(nums) nums,uid from t_saas_order where  status=1  GROUP BY uid order by nums desc LIMIT ${(page-1)*limit},#{limit}
+	</select>
+	<!-- 根据uid查询认购套数 -->
+	<select id="queryXmerByuid" parameterType="map" resultType="map">
+		SELECT uid AS uid,partner_nums AS partnernum,sold_nums AS soldnums 
+		FROM b_xmer 
+		WHERE status=0 AND rtype=1 where uid=#{uid}
+	</select>
+		
+	<!-- 查询寻蜜客下级以及下下级的总人数 -->
+	<select id="countPartnerNums" resultType="int" parameterType="int">
+		SELECT 
+			count(1)
+		FROM 
+	    	(SELECT  
+	    		*
+			FROM 
+	    		b_xmer
+			WHERE 
+	    		status = 0 AND parentid = #{uid}
+			UNION ALL SELECT  
+	    		*
+			FROM 
+	    		b_xmer
+			WHERE  
+				status = 0 AND parentid IN (SELECT uid FROM b_xmer WHERE parentid = #{uid})) t
+	</select>
+	
+	<!--查询主播信息  -->
+	<select id="queryAnchorByuid" parameterType="int" resultType="map">
+	select 
+	IFNULL(name,'') name,
+	IFNULL(nickname,'') nickname,
+	IFNULL(avatar,'') avatar,
+	IFNULL(sex,'') sex,
+	IFNULL(phone,'')phone,
+	IFNULL(birthday,'') birthday,
+	IFNULL(self_signature,'')sign,
+	IFNULL(age,'') age
+	 from b_live_anchor
+	 where uid=#{uid}
+	</select>
+	<!-- 修改下级寻蜜客父ID为空 -->
+	<update id="updateParentidByUid" parameterType="int">
+		update b_xmer set parentid=null ,levels=levels+1 where parentid=#{uid}
+	</update>
+	
+	<!-- 支付系统查询寻蜜客列表信息 -->
+	<select id="queryXmerListInfo" resultType="map" parameterType="map">
+		SELECT
+			*
+		FROM
+			b_xmer x
+		LEFT JOIN b_urs u ON x.uid = u.uid
+		LEFT JOIN b_urs_info ui ON x.uid = ui.uid
+		WHERE
+			x.status = 0
+		AND	
+			u.uid is not null
+		AND	
+			ui.uid is not null
+		<if test="uid != null and uid != '' and uid != 0">
+			<foreach item="uid" index="index" collection="uids" open="(" separator="," close=")">
+        		AND x.uid = #{uid}
+        	</foreach>
+		</if>
+		<if test="phone != null and phone != ''">
+			AND x.phoneid = #{phone}
+		</if>
+		<if test="nname != null and nname != ''">
+			AND u.nname = #{nname}
+		</if>
+		<if test="type == 1">
+			LIMIT ${(page-1)*pageSize},#{pageSize}
+		</if>
+	</select>
+	
+	<!-- 查询所有寻蜜客基本信息 -->
+	<select id="listXmerRank" resultType="com.xmniao.xmn.core.xmer.entity.TopRankXmer">
+		SELECT 
+			x.id,
+			x.uid,
+			x.achievement,
+			IFNULL(u.nname,'') name,
+			IFNULL(i.sex,1) sex,
+			IFNULL(i.avatar,'') avatar,
+			IFNULL(u.uname,'') uname,
+			x.update_date
+		FROM b_xmer x
+		
+			LEFT JOIN b_urs u ON u.uid = x.uid
+			LEFT JOIN b_urs_info i ON i.uid = x.uid
+	
+	</select>
+</mapper>

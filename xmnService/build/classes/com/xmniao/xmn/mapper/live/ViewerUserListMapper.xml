@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live.dao.ViewerUserListDao">
+	
+<!-- 查看主播房间观众列表 -->
+
+<!-- 	<select id="queryViewerUserListByAhId" parameterType="map" resultType="map">
+		select ifnull(lvr.anchor_room_no,'') anchor_room_no,ifnull(lvr.anchor_id,'') anchor_id,ifnull(lvr.liver_id,'') viewer_id,
+		ifnull(lvr.live_record_id,'') zhibo_record_id,ifnull(lvr.liver_utype,'') liver_utype,ifnull(lvr.live_type ,'') live_type,ifnull(lvr.live_status,'') live_status,
+		ifnull(lvr.view_duration,'') view_duration ,ifnull(lvr.start_time,'') start_time,ifnull(lvr.end_time,'') end_time,ifnull(lvr.create_time,'') create_time,
+		ifnull(lvr.update_time,'') update_time,lvr.id id,ifnull(lvr.rank_no,0) rank_no
+	 	from t_live_view_record lvr
+	 	where  lvr.live_status=1 and lvr.anchor_id=#{anchor_id} and lvr.live_record_id=#{live_record_id} order by lvr.rank_no desc
+	 	 LIMIT ${(page-1)*limit},#{limit}  
+	</select> -->
+	
+	
+		<select id="queryViewerUserListByAhId" parameterType="map" resultType="map">
+		select * from (
+		(select ifnull(lvr.anchor_room_no,'') anchor_room_no,ifnull(lvr.anchor_id,'') anchor_id,ifnull(lvr.liver_id,'') viewer_id,
+		ifnull(lvr.live_record_id,'') zhibo_record_id,ifnull(lvr.liver_utype,'') liver_utype,ifnull(lvr.live_type ,'') live_type,ifnull(lvr.live_status,'') live_status,
+		ifnull(lvr.view_duration,'') view_duration ,ifnull(lvr.start_time,'') start_time,ifnull(lvr.end_time,'') end_time,ifnull(lvr.create_time,'') create_time,
+		ifnull(lvr.update_time,'') update_time,lvr.id id,ifnull(lvr.rank_no,0) rank_no,2 utype
+	 	from t_live_view_record lvr
+	 	where  lvr.live_status=1 and lvr.anchor_id=#{anchor_id} and lvr.live_record_id=#{live_record_id} ORDER BY lvr.rank_no desc)
+ 		UNION all
+		(select ifnull(lrv.anchor_room_no,'') anchor_room_no,ifnull(lrv.anchor_id,'') anchor_id,ifnull(lrv.robot_id,'') viewer_id,ifnull(lrv.live_record_id,'') zhibo_record_id,
+		1 liver_utype,1 live_type,1 live_status,0 view_duration,
+		ifnull(lrv.create_time,'') start_time,ifnull(lrv.create_time,'') end_time,ifnull(lrv.create_time,'') create_time,ifnull(lrv.update_time,'') update_time,
+		lrv.id id, ifnull(lrv.rank_no,0) rank_no,0 utype
+		from t_live_robot_view lrv where lrv.anchor_id=#{anchor_id} and lrv.live_record_id=#{live_record_id} ORDER BY lrv.rank_no desc) ) l 
+	 	 LIMIT ${(page-1)*limit},#{limit}  
+	</select>
+	
+</mapper>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.xmer.dao.WithDrawCashDao">
+	
+	<!-- 查询寻蜜客钱包表信息 -->
+	<select id="queryXmerWalletId" resultType="map" parameterType="int">
+		SELECT id,uid,apply_date AS adate,cancel_date AS cdate,status,profit,trunout,sign,last_date AS ldate,father_id AS fatherid,uname 
+		FROM b_xmer_wallet WHERE uid=#{uid} 
+	</select>
+	
+	<!-- 添加转出记录 -->
+	<insert id="insertXmerWalletRecord" parameterType="map">
+			insert b_xmer_wallet_record(xid,rtype,profit,qprofit,hprofit,sdate,remark)
+			values(#{xid},#{rtype},#{profit},#{qprofit},#{hprofit},#{sdate},#{remark})
+	</insert>
+</mapper>

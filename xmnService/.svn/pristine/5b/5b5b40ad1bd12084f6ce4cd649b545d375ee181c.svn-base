@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live.dao.EggToBirdMoneyDao">
+	
+	<select id="queryBirdEggByUid" parameterType="int" resultType="map">
+	select lw.balance,lw.status,ifnull(lw.commision,0) commision from b_live_wallet lw where lw.uid=#{uid}
+	</select>
+	
+	<!-- 鸟蛋转换成鸟币余额减去鸟蛋-->
+	<update id="updateEggToBirdMoney" parameterType="map" >
+	update b_live_wallet bw  set bw.commision=bw.commision+#{commision},bw.balance=#{balance} 
+	where  bw.uid=#{uid}
+	</update>
+</mapper>

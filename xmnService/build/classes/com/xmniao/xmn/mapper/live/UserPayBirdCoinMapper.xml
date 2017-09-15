@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live.dao.UserPayBirdCoinDao">
+	
+	<!-- 客户钱包充值 -->
+
+	<insert id="addUserPayBirdCoin" parameterType="map">
+	insert into t_live_pay_order
+		(
+			order_no,pay_no,pay_code,combo_id,uid,payment,
+			free_coin,real_coin,pay_type,pay_state,pay_time,
+			create_time,update_time,quantity,uid_relation_chain,
+			quota,q_quota,sellerid,sellertype,sellername,object_oriented,
+			is_to_pay,pay_uid,debitcard_id,entry_sellerid,entry_selleragio,
+			indirect_uid,excitation_project,app_source
+		)
+	values(
+			#{order_no,jdbcType=VARCHAR},#{pay_no,jdbcType=VARCHAR},#{pay_code,jdbcType=VARCHAR},#{combo_id,jdbcType=INTEGER},#{uid,jdbcType=INTEGER},#{payment,jdbcType=DOUBLE},
+			#{free_coin,jdbcType=DOUBLE},#{real_coin,jdbcType=DOUBLE},#{pay_type,jdbcType=VARCHAR},#{pay_state,jdbcType=INTEGER},#{pay_time,jdbcType=TIMESTAMP},
+			#{create_time,jdbcType=TIMESTAMP},#{update_time,jdbcType=TIMESTAMP},#{quantity,jdbcType=INTEGER},#{uid_relation_chain,jdbcType=VARCHAR},
+			#{quota,jdbcType=DOUBLE},#{q_quota,jdbcType=DOUBLE},#{sellerid,jdbcType=INTEGER},#{sellertype,jdbcType=INTEGER},#{sellername,jdbcType=VARCHAR},#{object_oriented,jdbcType=INTEGER},
+			#{is_to_pay,jdbcType=INTEGER},#{pay_uid,jdbcType=INTEGER},#{debitcard_id,jdbcType=INTEGER},#{entry_sellerid,jdbcType=INTEGER},#{entry_selleragio,jdbcType=DOUBLE},
+			#{indirect_uid,jdbcType=INTEGER},#{excitation_project,jdbcType=VARCHAR},
+			#{appSourceStatus,jdbcType=INTEGER}
+		  )
+	</insert>
+	
+<!-- 	查询直播鸟币套餐 -->
+	<select id="getRechargeComboById" parameterType="Long" resultType="map">
+		select 
+			lrc.id id ,ifnull(lrc.rech_amount,0.0) rech_amount ,
+			ifnull(lrc.rech_norm_coin,0) rech_norm_coin ,ifnull(lrc.rech_free_coin,0) rech_free_coin,
+			ifnull(lrc.rech_real_coin,0) rech_real_coin,ifnull(lrc.status,0) status,
+			ifnull(lrc.update_date,'') update_date,object_oriented,fans_rank_id
+	 	from t_live_recharge_combo lrc where lrc.status=1 and lrc.id=#{id}
+	</select>
+	
+	
+	<!-- 查询用户充值记录 -->
+	<select id="queryUserPayBirdList" resultType="map" parameterType="map">
+	select 
+		id,ifnull(order_no,'') order_no,ifnull(pay_no,'') pay_no,
+		ifnull(combo_id,'') combo_id,ifnull(uid,'') uid,ifnull(payment,0) payment,
+		ifnull(free_coin,0) free_coin,ifnull(real_coin,0) real_coin,
+		ifnull(pay_type,0) pay_type,ifnull(pay_state,'') pay_state,
+		ifnull(pay_time,'') pay_time,ifnull(create_time,'') create_time,
+		ifnull(update_time,'') update_time,ifnull(pay_code,'') pay_code  
+	FROM t_live_pay_order WHERE uid=#{uid} AND pay_state=1 ORDER BY create_time DESC
+	LIMIT ${(page-1)*limit},#{limit} 
+	</select>
+	
+	<update id="updatUserPayBirdCoin" parameterType="map" >
+		update t_live_pay_order set 
+		<if test="pay_no!=null and pay_no!=''">
+		pay_no=#{pay_no},
+		</if>
+		<if test="pay_state!=null  and pay_state!=''">
+		pay_state=#{pay_state},
+		</if>
+		<if test="pay_time!=null  and pay_time!=''">
+		pay_time=#{pay_time},
+		</if>
+		
+		<if test="pay_code!=null and pay_code!=''">
+		pay_code=#{pay_code},
+		</if>
+		update_time=#{update_time}
+		 where uid=#{uid} and id=#{id}
+	</update>
+	
+<!-- 	鸟币套餐字段 -->
+	<sql id="birdCoinComboCol">
+			id,rech_amount as rechAmount,rech_norm_coin as rechNormCoin,
+			rech_free_coin as rechFreeCoin,rech_real_coin as rechRealCoin,
+			recharge_type as rechargeType ,status, product_id as productId,
+			object_oriented as objectOriented
+			<if test="objectOriented!=null and  objectOriented ==1 "> , "" as fansRankName </if>
+			<if test="objectOriented!=null and objectOriented==0 "> , fans_rank_name as fansRankName	 </if>
+	</sql>
+<!-- 	根据套餐对应的客户端类型获取列表 -->
+	<select id="queryBirdCoinComboList" parameterType="map" resultType="liveRechargeComboInfo">
+		SELECT
+			<include refid="birdCoinComboCol"></include>
+		FROM t_live_recharge_combo WHERE status = 1 
+		<if test="amount!=null and amount!='' or amount==0 ">
+			AND rech_amount >= #{amount}
+		</if>
+		<!-- 		'面向平台  2.商家  -->
+		<if test="object!=null and object!=''">
+			AND object_oriented like '%${object}%'
+		</if>
+<!-- 		'面向平台 0常规 1.VIP 2.商家 3.直销 4.v客', -->
+		<if test="objectOriented ==1 ">
+			AND object_oriented = 0  
+<!-- 			( or object_oriented = 4) -->
+		</if>
+		<if test="list!=null and list!=''">
+			AND id IN 
+			<foreach collection="list" index="index" item="list" open="(" close=")" separator=",">
+				#{list}
+			</foreach>
+		</if>
+<!-- 		AND is_public_combo = #{isPublicCombo} -->
+		AND combo_source = #{source}
+		AND recharge_type = #{systemType}
+		ORDER BY rech_norm_coin ASC
+	</select>
+	
+	<!-- 	根据套餐对应的客户端类型获取列表 -->
+	<select id="queryBirdCoinBuyRecords" parameterType="Long" resultType="map">
+		SELECT
+			id, order_no, pay_no, pay_code, combo_id, uid, payment, free_coin, real_coin, pay_type, pay_state, pay_time, receipt, version,
+  			create_time, total_ledger_amount, consume_ledger, privilege_ledger, ledger_level, current_consume_ledger, current_privilege_ledger
+		FROM t_live_pay_order WHERE pay_state = 1 AND uid = #{uid}
+		<if test="isBuyBirdCoinOpeningDate!=null and isBuyBirdCoinOpeningDate!='' ">
+			 AND date_format(pay_time,'%Y-%m-%d') >= #{buyBirdCoinOpeningDate}
+		</if>
+		ORDER BY payment desc LIMIT ${(page-1)*limit},#{limit} 
+		
+	</select>
+	
+<!-- 	根据IOS product_id 查询鸟币套餐 -->
+	<select id="queryLiveRechargeComboInfo" parameterType="map" resultType="liveRechargeComboInfo">
+		select
+			<include refid="birdCoinComboCol"></include>
+		from t_live_recharge_combo where status = 1 and product_id = #{product_id}
+	</select>
+	
+<!-- 	根据订单编号查询订单信息 -->
+	<select id="queryLivePayOrderInfoByOrderNo" parameterType="String" resultType="livePayOrderInfo">
+		SELECT * FROM t_live_pay_order WHERE 1=1 and order_no = #{orderNo}
+	</select>
+	
+	<!--  	修改订单信息 -->
+	<update id="modifyLivePayOrderInfoByOrderNo" parameterType="map">
+		update t_live_pay_order
+		<set>
+			<if test="pay_no!=null and pay_no!='' ">
+				pay_no = #{pay_no},
+			</if>
+			<if test="pay_code!=null and pay_code!='' ">
+				pay_code = #{pay_code},
+			</if>
+			<if test="payment!=null and payment!='' ">
+				 payment = #{payment},
+			</if>
+			<if test="pay_type!=null and pay_type!='' ">
+				pay_type = #{pay_type},
+			</if>
+			<if test="pay_state!=null and pay_state!='' or pay_state==0">
+				pay_state = #{pay_state},
+			</if>
+			<if test="pay_time!=null and pay_time!='' ">
+				pay_time = #{pay_time},
+			</if>
+			<if test="receipt!=null and receipt!='' ">
+				receipt = #{receipt},
+			</if>
+			<if test="update_time!=null and update_time!='' ">
+				update_time = #{update_time},
+			</if>
+		</set>
+		WHERE 1=1 AND order_no = #{order_no}
+	</update>
+	
+	<!-- 	根据IOS字符流判断该流是否被其他订单验证过 返回个数-->
+	<select id="queryLivePayOrderInfoByReciptStr" parameterType="map" resultType="int">
+		SELECT count(1) FROM t_live_pay_order WHERE 1=1 AND order_no = #{order_no} AND receipt =#{receipt}
+	</select>
+	
+	<!-- 根据套餐id数组，查询相应的 鸟粉专享卡套餐 集合 -->
+	<select id="queryDebitcardRechargeComboListByIds" resultType="int">
+		select
+			count(1)
+		from t_live_recharge_combo where status = 1 AND object_oriented LIKE '%2%' AND id IN
+			<foreach collection="array" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+	</select>
+</mapper>

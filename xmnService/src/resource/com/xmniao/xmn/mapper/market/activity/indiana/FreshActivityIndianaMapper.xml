@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.market.dao.FreshActivityIndianaDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.market.entity.activity.indiana.FreshActivityIndiana" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="begin_time" property="beginTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="term_time" property="termTime" jdbcType="TIMESTAMP" />
+    <result column="codeId" property="codeid" jdbcType="BIGINT" />
+    <result column="pv_ids" property="pvIds" jdbcType="VARCHAR" />
+    <result column="pv_value" property="pvValue" jdbcType="VARCHAR" />
+    <result column="base_price" property="basePrice" jdbcType="DECIMAL" />
+    <result column="point" property="point" jdbcType="INTEGER" />
+    <result column="point_price" property="pointPrice" jdbcType="DECIMAL" />
+    <result column="bout_num" property="boutNum" jdbcType="INTEGER" />
+    <result column="bout_residue" property="boutResidue" jdbcType="INTEGER" />
+    <result column="is_real" property="isReal" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, title, status, begin_time, end_time, term_time, codeId, pv_ids, pv_value, base_price, 
+    point, point_price, bout_num, bout_residue, is_real, create_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_fresh_activity_indiana
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+    <select id="selectVaildActivity" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM t_fresh_activity_indiana
+        WHERE status IN (0)
+        AND now() > begin_time
+        AND end_time > now()
+        ORDER BY create_time DESC
+        LIMIT #{page.start},#{page.pageSize}
+    </select>
+    <select id="selectByBoutId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM t_fresh_activity_indiana
+        WHERE id = (SELECT activity_id FROM t_fresh_activity_indiana_bout WHERE id = #{boutId})
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_fresh_activity_indiana
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.market.entity.activity.indiana.FreshActivityIndiana" >
+    insert into t_fresh_activity_indiana (id, title, status, 
+      begin_time, end_time, term_time, 
+      codeId, pv_ids, pv_value, 
+      base_price, point, point_price, 
+      bout_num, bout_residue, is_real, 
+      create_time, update_time)
+    values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, 
+      #{beginTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, #{termTime,jdbcType=TIMESTAMP}, 
+      #{codeid,jdbcType=BIGINT}, #{pvIds,jdbcType=VARCHAR}, #{pvValue,jdbcType=VARCHAR}, 
+      #{basePrice,jdbcType=DECIMAL}, #{point,jdbcType=INTEGER}, #{pointPrice,jdbcType=DECIMAL}, 
+      #{boutNum,jdbcType=INTEGER}, #{boutResidue,jdbcType=INTEGER}, #{isReal,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.market.entity.activity.indiana.FreshActivityIndiana" >
+    insert into t_fresh_activity_indiana
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="beginTime != null" >
+        begin_time,
+      </if>
+      <if test="endTime != null" >
+        end_time,
+      </if>
+      <if test="termTime != null" >
+        term_time,
+      </if>
+      <if test="codeid != null" >
+        codeId,
+      </if>
+      <if test="pvIds != null" >
+        pv_ids,
+      </if>
+      <if test="pvValue != null" >
+        pv_value,
+      </if>
+      <if test="basePrice != null" >
+        base_price,
+      </if>
+      <if test="point != null" >
+        point,
+      </if>
+      <if test="pointPrice != null" >
+        point_price,
+      </if>
+      <if test="boutNum != null" >
+        bout_num,
+      </if>
+      <if test="boutResidue != null" >
+        bout_residue,
+      </if>
+      <if test="isReal != null" >
+        is_real,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="beginTime != null" >
+        #{beginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="termTime != null" >
+        #{termTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="codeid != null" >
+        #{codeid,jdbcType=BIGINT},
+      </if>
+      <if test="pvIds != null" >
+        #{pvIds,jdbcType=VARCHAR},
+      </if>
+      <if test="pvValue != null" >
+        #{pvValue,jdbcType=VARCHAR},
+      </if>
+      <if test="basePrice != null" >
+        #{basePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="point != null" >
+        #{point,jdbcType=INTEGER},
+      </if>
+      <if test="pointPrice != null" >
+        #{pointPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="boutNum != null" >
+        #{boutNum,jdbcType=INTEGER},
+      </if>
+      <if test="boutResidue != null" >
+        #{boutResidue,jdbcType=INTEGER},
+      </if>
+      <if test="isReal != null" >
+        #{isReal,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.market.entity.activity.indiana.FreshActivityIndiana" >
+    update t_fresh_activity_indiana
+    <set >
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="beginTime != null" >
+        begin_time = #{beginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="termTime != null" >
+        term_time = #{termTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="codeid != null" >
+        codeId = #{codeid,jdbcType=BIGINT},
+      </if>
+      <if test="pvIds != null" >
+        pv_ids = #{pvIds,jdbcType=VARCHAR},
+      </if>
+      <if test="pvValue != null" >
+        pv_value = #{pvValue,jdbcType=VARCHAR},
+      </if>
+      <if test="basePrice != null" >
+        base_price = #{basePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="point != null" >
+        point = #{point,jdbcType=INTEGER},
+      </if>
+      <if test="pointPrice != null" >
+        point_price = #{pointPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="boutNum != null" >
+        bout_num = #{boutNum,jdbcType=INTEGER},
+      </if>
+      <if test="boutResidue != null" >
+        bout_residue = #{boutResidue,jdbcType=INTEGER},
+      </if>
+      <if test="isReal != null" >
+        is_real = #{isReal,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.market.entity.activity.indiana.FreshActivityIndiana" >
+    update t_fresh_activity_indiana
+    set title = #{title,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      begin_time = #{beginTime,jdbcType=TIMESTAMP},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      term_time = #{termTime,jdbcType=TIMESTAMP},
+      codeId = #{codeid,jdbcType=BIGINT},
+      pv_ids = #{pvIds,jdbcType=VARCHAR},
+      pv_value = #{pvValue,jdbcType=VARCHAR},
+      base_price = #{basePrice,jdbcType=DECIMAL},
+      point = #{point,jdbcType=INTEGER},
+      point_price = #{pointPrice,jdbcType=DECIMAL},
+      bout_num = #{boutNum,jdbcType=INTEGER},
+      bout_residue = #{boutResidue,jdbcType=INTEGER},
+      is_real = #{isReal,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

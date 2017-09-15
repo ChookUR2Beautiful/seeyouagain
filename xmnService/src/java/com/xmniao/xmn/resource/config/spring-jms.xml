@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 	
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-3.2.xsd 
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-3.2.xsd 
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+	
+	<!-- JMS消息服务器地址 -->
+	<bean id="namesrvAddr" class="java.lang.String">
+		<constructor-arg value="192.168.50.123:9876"/>
+<!-- 	 <constructor-arg value="192.168.1.30:9876"/>  线上-->
+	<!-- <constructor-arg value="172.16.130.222:9876"/> -->
+	</bean>
+
+	<!-- 观众当天首次进入直播间观看  送三个黄瓜 -->
+	<bean id="topicSendBirdEgg" class="com.xmniao.xmn.core.common.rocketmq.model.TopicInfo">
+		<!-- broker地址 -->
+		<property name="namesrvAddr" ref="namesrvAddr"/>
+		<!-- 订阅的消息主题 -->
+		<property name="topicName" value="live_gift_topic"/>
+		<!-- 消息二级分类 -->
+		<property name="topicTag" value="send_birdEgg_tag"/>
+		<!-- 消息者组 -->
+		<property name="topicGroup" value="live_gift_producer"/>
+	</bean>
+	
+	<!-- 直播 领取礼物 消息队列连接信息 -->
+	<bean id="topicInfo" class="com.xmniao.xmn.core.common.rocketmq.model.TopicInfo">
+		<!-- broker地址 -->
+		<property name="namesrvAddr" ref="namesrvAddr"/>
+		<!-- 订阅的消息主题 -->
+		<property name="topicName" value="live_gift_topic"/>
+		<!-- 消息二级分类 -->
+		<property name="topicTag" value="gift_tag"/>
+		<!-- 消息者组 -->
+		<property name="topicGroup" value="live_gift_producer"/>
+	</bean>
+
+	<!-- 直播主播 开始进入房间 消息队列连接信息 -->
+	<bean id="topicStartLiveInfo" class="com.xmniao.xmn.core.common.rocketmq.model.TopicInfo">
+		<!-- broker地址 -->
+		<property name="namesrvAddr" ref="namesrvAddr"/>
+		<!-- 订阅的消息主题 -->
+		<property name="topicName" value="live_gift_topic"/>
+		<!-- 消息二级分类 -->
+		<property name="topicTag" value="StartRoom_tag"/>
+		<!-- 消息者组 -->
+		<property name="topicGroup" value="live_gift_producer"/>
+	</bean>
+
+
+	<!-- 直播 领取礼物  队列消费监听 -->
+	<bean id="ConsumerServiceImpe" class="com.xmniao.xmn.core.common.rocketmq.ConsumerServiceImpl" init-method="init" destroy-method="shutdown">
+		<!-- broker地址 -->
+		<property name="namesrvAddr" ref="namesrvAddr" />
+		<!-- 订阅的消息主题 -->
+		<property name="topicName" value="live_gift_topic" />
+		<!-- 消息二级分类 -->
+		<property name="topicTag" value="gift_tag" />
+		<!-- 消息者组 -->
+		<property name="consumerGroup" value="live_gift_consumer" />
+	</bean>
+	
+	
+	<!-- =================================我是分割线============================== -->
+	
+	<!-- 直播主播 开始进入房间 消息队列连接信息 -->
+	<bean id="userRegisterInfo" class="com.xmniao.xmn.core.common.rocketmq.model.TopicInfo">
+		<!-- broker地址 -->
+		<property name="namesrvAddr" ref="namesrvAddr"/>
+		<!-- 订阅的消息主题 -->
+		<property name="topicName" value="saas_topic"/>
+		<!-- 消息二级分类 -->
+		<property name="topicTag" value="userRegister_tag"/>
+		<!-- 消息者组 -->
+		<property name="topicGroup" value="saas_producer"/>
+	</bean>
+	
+	<!-- 本地生活服务  队列消费监听 -->
+	<bean id="ConsumerSaasServiceImpe" class="com.xmniao.xmn.core.common.rocketmq.ConsumerSaasServiceImpl" init-method="init" destroy-method="shutdown">
+		<!-- broker地址 -->
+		<property name="namesrvAddr" ref="namesrvAddr" />
+		<!-- 订阅的消息主题 -->
+		<property name="topicName" value="saas_topic" />
+		<!-- 消息二级分类 -->
+		<property name="topicTag" value="saas_tag" />
+		<!-- 消息者组 -->
+		<property name="consumerSaasGroup" value="saas_consumer" />
+	</bean>
+	
+	
+	<!-- =================================机器人 发消息和礼物   start============================== -->
+	
+	<!-- 机器人发送礼物和消息  队列连接信息 -->
+	<bean id="robotActionInfo" class="com.xmniao.xmn.core.common.rocketmq.model.TopicInfo">
+		<!-- broker地址 -->
+		<property name="namesrvAddr" ref="namesrvAddr"/>
+		<!-- 订阅的消息主题 -->
+		<property name="topicName" value="live_robot_topic"/>
+		<!-- 消息二级分类 -->
+		<property name="topicTag" value="robotAction_tag"/>
+		<!-- 消息者组 -->
+		<property name="topicGroup" value="live_robot_producer"/>
+	</bean>
+	
+	<!-- 机器人进入房间提示  队列连接信息 -->
+	<bean id="robotEntryRoomMsgInfo" class="com.xmniao.xmn.core.common.rocketmq.model.TopicInfo">
+		<!-- broker地址 -->
+		<property name="namesrvAddr" ref="namesrvAddr"/>
+		<!-- 订阅的消息主题 -->
+		<property name="topicName" value="live_robot_topic"/>
+		<!-- 消息二级分类 -->
+		<property name="topicTag" value="robotEntryRoomMsg_tag"/>
+		<!-- 消息者组 -->
+		<property name="topicGroup" value="live_robot_producer"/>
+	</bean>
+	
+	<!-- 机器人发送礼物和消息  消费监听-->
+	<bean id="ConsumerRobotServiceImpl" class="com.xmniao.xmn.core.common.rocketmq.ConsumerRobotServiceImpl" init-method="init" destroy-method="shutdown">
+		<!-- broker地址 -->
+		<property name="namesrvAddr" ref="namesrvAddr" />
+		<!-- 订阅的消息主题 -->
+		<property name="topicName" value="live_robot_topic" />
+		<!-- 消息二级分类 -->
+		<property name="topicTag" value="robotAction_tag" />
+		<!-- 消息者组 -->
+		<property name="consumerGroup" value="live_robot_consumer" />
+	</bean>
+	
+	<!-- =================================机器人 发消息和礼物  end ============================== -->
+	
+	<!-- 机器人插入观看表中 -->
+	<bean id="robotInsertLiveViewInfo" class="com.xmniao.xmn.core.common.rocketmq.model.TopicInfo">
+		<!-- broker地址 -->
+		<property name="namesrvAddr" ref="namesrvAddr"/>
+		<!-- 订阅的消息主题 -->
+		<property name="topicName" value="live_robot_view_insert"/>
+		<!-- 消息二级分类 -->
+		<property name="topicTag" value="robotInsert_tag"/>
+		<!-- 消息者组 -->
+		<property name="topicGroup" value="live_robotview_producer"/>
+	</bean>
+	
+	<!-- 用户退出直播间累计经验和修改观看人数 -->
+	<bean id="userExitRoomExperienceInfo" class="com.xmniao.xmn.core.common.rocketmq.model.TopicInfo">
+		<!-- broker地址 -->
+		<property name="namesrvAddr" ref="namesrvAddr"/>
+		<!-- 订阅的消息主题 -->
+		<property name="topicName" value="live_robot_view_insert"/>
+		<!-- 消息二级分类 -->
+		<property name="topicTag" value="user_exit_tag"/>
+		<!-- 消息者组 -->
+		<property name="topicGroup" value="live_robotview_producer"/>
+	</bean>
+	
+	<bean id="ConsumerRobotInsertServiceImpl" class="com.xmniao.xmn.core.common.rocketmq.ConsumerRobotInsertServiceImpl" init-method="init" destroy-method="shutdown">
+		<!-- broker地址 -->
+		<property name="namesrvAddr" ref="namesrvAddr" />
+		<!-- 订阅的消息主题 -->
+		<property name="topicName" value="live_robot_view_insert" />
+		<!-- 消息二级分类 -->
+		<property name="topicTag" value="robot_insert_tag" />
+		<!-- 消息者组 -->
+		<property name="consumerGroup" value="live_robotview_consumer" />
+	</bean>
+	
+	
+	<!-- ============ 直播相关  MQ   start =================================== -->
+	
+	<!-- 插入经验记录信息  队列连接信息 -->
+	<bean id="insertExpericeRecordInfo" class="com.xmniao.xmn.core.common.rocketmq.model.TopicInfo">
+		<!-- broker地址 -->
+		<property name="namesrvAddr" ref="namesrvAddr"/>
+		<!-- 订阅的消息主题 -->
+		<property name="topicName" value="live_room_topic"/>
+		<!-- 消息二级分类 -->
+		<property name="topicTag" value="insertExpericeRecord_tag"/>
+		<!-- 消息者组 -->
+		<property name="topicGroup" value="live_room_producer"/>
+	</bean>
+	
+	<!-- 修改直播观众观看记录，直播记录信息  队列连接信息 -->
+	<bean id="editLiveViewerRecordInfo" class="com.xmniao.xmn.core.common.rocketmq.model.TopicInfo">
+		<!-- broker地址 -->
+		<property name="namesrvAddr" ref="namesrvAddr"/>
+		<!-- 订阅的消息主题 -->
+		<property name="topicName" value="live_room_topic"/>
+		<!-- 消息二级分类 -->
+		<property name="topicTag" value="editLiveViewerRecord_tag"/>
+		<!-- 消息者组 -->
+		<property name="topicGroup" value="live_room_producer"/>
+	</bean>
+	
+	<!-- 修改同步主播/观众 信息 -->
+	<bean id="editLiveViewerInfo" class="com.xmniao.xmn.core.common.rocketmq.model.TopicInfo">
+		<!-- broker地址 -->
+		<property name="namesrvAddr" ref="namesrvAddr"/>
+		<!-- 订阅的消息主题 -->
+		<property name="topicName" value="live_room_topic"/>
+		<!-- 消息二级分类 -->
+		<property name="topicTag" value="editLiveViewerInfo_tag"/>
+		<!-- 消息者组 -->
+		<property name="topicGroup" value="live_room_producer"/>
+	</bean>
+	
+	<!-- 直播间 消费监听-->
+	<bean id="ConsumerLiveRoomServiceImpl" class="com.xmniao.xmn.core.common.rocketmq.ConsumerLiveRoomServiceImpl" init-method="init" destroy-method="shutdown">
+		<!-- broker地址 -->
+		<property name="namesrvAddr" ref="namesrvAddr" />
+		<!-- 订阅的消息主题 -->
+		<property name="topicName" value="live_room_topic" />
+		<!-- 消息二级分类 -->
+		<property name="topicTag" value="live_room_tag" />
+		<!-- 消息者组 -->
+		<property name="consumerGroup" value="live_room_consumer" />
+	</bean>
+	
+	
+	<!-- 修改直播记录的观看人数-->
+	<bean id="editLiveRecordViewCountInfo" class="com.xmniao.xmn.core.common.rocketmq.model.TopicInfo">
+		<!-- broker地址 -->
+		<property name="namesrvAddr" ref="namesrvAddr"/>
+		<!-- 订阅的消息主题 -->
+		<property name="topicName" value="live_room_topic"/>
+		<!-- 消息二级分类 -->
+		<property name="topicTag" value="editLiveRecordViewCount_tag"/>
+		<!-- 消息者组 -->
+		<property name="topicGroup" value="live_room_producer"/>
+	</bean>
+	
+	<!-- 新时尚大赛结束后，推荐人奖励-->
+	<bean id="vstarRewardIssueInfo" class="com.xmniao.xmn.core.common.rocketmq.model.TopicInfo">
+		<!-- broker地址 -->
+		<property name="namesrvAddr" ref="namesrvAddr"/>
+		<!-- 订阅的消息主题 -->
+		<property name="topicName" value="live_room_topic"/>
+		<!-- 消息二级分类 -->
+		<property name="topicTag" value="vstarRewardIssue_tag"/>
+		<!-- 消息者组 -->
+		<property name="topicGroup" value="live_room_producer"/>
+	</bean>
+	<!-- ============ 直播相关 MQ   end =================================== -->
+</beans>

@@ -1,0 +1,837 @@
+@charset "UTF-8";
+html{
+	margin:0;
+	padding:0;
+	width: 100%;
+	height: 100%;
+}
+body{
+	font-family: Microsoft Yahei;
+	padding:0;
+	margin:0;
+	
+}
+
+a{
+	text-decoration: none;
+	color:#333;
+}
+
+a:focus{
+	text-decoration: none;
+	color:#333;
+}
+
+p{
+	margin:0;
+	padding:0;
+}
+
+ul{
+	list-style-type: none;
+	margin:0;
+	padding:0;
+}
+
+/*签约成功*/
+.paysuccess-img{
+	width: 100%;
+	height: 100px;
+	text-align: center;
+	margin-top:50px;
+}
+
+.paysuccess-img img{
+	height: 100px;
+	width: auto;
+}
+
+.paysuccess-tips{
+	text-align: center;
+	height: 40px;
+	line-height: 40px;
+	color:#333;
+	font-size: 16px;
+
+}
+
+.paysuccess-cc{
+	font-size: 14px;
+	color:#999;padding:10px 20px;
+}
+
+.paysuccess-text-center{
+	text-align: center;
+
+}
+
+
+/*end*/
+
+
+/*支付方式*/
+.paytype{
+	background: #f6f6f6;
+}
+
+
+.paytype-row{
+	width: 100%;
+	height: 60px;
+	line-height: 60px;
+	padding:0 20px;
+	box-sizing: border-box;
+	background:#fff;
+}
+
+.paytype-money{
+	width: 100%;
+	text-align:left;
+}
+
+.paytype-money-title{
+	color:#333;
+	font-size: 16px;
+}
+
+.paytype-money-val{
+	font-size: 22px;
+	color:#f6ab00;
+}
+
+.paytype-button{
+	width: 100%;
+	margin-top:20px;
+	height: 110px;
+	background:#fff;
+	padding-top: 20px;
+	text-align: center;
+}
+
+.paytype-button a{
+	display: block;
+	width: 80px;
+	height: 70px;
+	border:1px solid #e8e8e8;
+	margin:0 auto;
+	border-radius: 5px;
+	padding-top: 10px;
+}
+
+.paytype-button a span{
+	width: 40px;
+	height: 40px;
+	text-align: center;
+	display: block;
+	margin:0 auto;
+	background-image: url(../img/sign_weixin_pay.png);
+	background-repeat: no-repeat;
+	background-size: contain;
+}
+
+.paytype-button a p{
+	width: 100%;
+	text-align: center;font-size: 14px;
+	height: 30px;
+	line-height: 30px;
+}
+
+/*支付确认*/
+
+.payconfirm{
+	background: #f6f6f6;
+	padding-bottom: 150px;
+}
+
+.payconfirm-val{
+	width: 100%;
+	height: 80px;
+	background: #f7b734;
+	padding-top: 23px;
+	box-sizing: border-box;
+}
+
+.payconfirm-p{
+	width: 100%;
+	text-align: center;
+	color:#fff;
+	font-size: 14px;
+}
+
+.payconfirm-p span{
+	font-size: 25px;
+	margin-left: 5px;
+}
+
+.payconfirm-tips{
+	padding:12px 15px;
+	text-align: center;
+	background: #fff;
+
+}
+
+.payconfirm-tips p{
+	font-size: 15px;
+	line-height: 1.5em;
+	color:#666;
+}
+
+.payconfirm-info-list{
+	margin-top:20px;
+}
+
+.payconfirm-info-list li{
+	display: block;
+	/*width: 100%;*/
+	/*height: 60px;*/
+	padding:20px 15px;
+	/*box-sizing: border-box;*/
+	background: #fff;
+	/*line-height: 60px;*/
+	border-bottom: 1px solid #f2f2f2;
+}
+
+.payconfirm-info-list li i{
+	display: inline-block;
+	width: 15px;
+	height: 15px;
+	background-repeat: no-repeat;
+	background-position:center;
+	background-size: contain;
+	vertical-align: middle;
+	margin-right: 5px;
+}
+
+.payconfirm-info-list li .payconfirm-info-shopsname{
+	background-image: url(../img/shops_sign_shopname.png);
+}
+
+.payconfirm-info-list li .payconfirm-info-address{
+	background-image: url(../img/shopi_shop_place.png);
+}
+
+.payconfirm-info-list li .payconfirm-info-principal{
+	background-image: url(../img/shopi_shop_principal.png);
+}
+
+.payconfirm-info-list li .payconfirm-info-leadingofficial{
+	background-image: url(../img/shops_sign_leadingofficial.png);
+}
+
+.payconfirm-info-list li .payconfirm-info-discountset{
+	background-image: url(../img/shops_sign_settingdiscount.png);
+}
+
+.payconfirm-info-list li .payconfirm-info-signtime{
+	background-image: url(../img/shopi_shop_openinghours.png);
+}
+
+
+
+
+
+.payconfirm-info-list span{
+	font-size: 15px;
+	/*display: inline-block;*/
+}
+
+.payconfirm-info-list span.payconfirm-info-title{
+	color:#666;
+}
+
+.payconfirm-info-list span.payconfirm-info-val{
+	color:#999;
+}
+
+
+/**/
+
+.bottomfixbtn{
+	width: 100%;
+	height: 60px;
+	background: #f6ab00;
+	display: block;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	z-index: 99;
+	text-align: center;
+	line-height: 60px;
+	color:#fff;
+	font-size: 17px;
+}
+
+.bottomfixbtn:focus{
+	color:#fff;
+}
+
+/*签约支付成功*/
+
+.signsuccess-img{
+	width: 100%;
+	height: 100px;
+	margin-top:50px;
+	text-align: center;
+}
+
+.signsuccess-img img{
+	width: auto;
+	height: 100px;
+}
+
+.signsuccess-tips{
+	text-align: center;
+	height: 40px;
+	line-height: 40px;
+	color:#333;
+	font-size: 16px;
+}
+
+.signsuccess-tipsc{
+	text-align: center;
+	height: 30px;
+	line-height: 30px;
+	margin-top:15px;
+	font-size: 14px;
+	color:#999;
+}
+
+/*支付失败*/
+
+.signfail-tips{
+	text-align: left;
+	padding:0 15px;
+	font-size: 14px;
+	color:#999;
+}
+
+.signfail-tips-c{
+	text-align: center;
+	padding:0 15px;
+	font-size: 14px;
+	color:#999;
+	margin-top:15px;
+}
+
+.doublefixbtn{
+	width: 100%;
+	font-size: 0px;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	height: 60px;
+	background: #fff;
+
+}
+
+.doublefixbtn .doublefixbtn-firstbtn{
+	display: inline-block;
+	width: 50%;
+	height: 100%;
+	background: #f5f6f8;
+	font-size: 17px;
+	text-align: center;line-height: 60px;
+	color:#999;
+}
+
+.doublefixbtn .doublefixbtn-secondbtn{
+	display: inline-block;
+	width: 50%;
+	height: 100%;
+	background: #f6ab00;
+	font-size: 17px;
+	text-align: center;line-height: 60px;
+	color:#fff;
+}
+
+/*完善资料*/
+.perfectinfo{
+	padding-bottom: 150px;
+}
+
+.perfectinfo-hrep{
+	width: 100%;
+	height: 150px;
+	border-bottom: 1px solid #f2f2f2;
+	padding-top:30px;
+	box-sizing: border-box;
+}
+
+.perfectinfo-hrep .uploadimage{
+	display: block;
+	width: 80px;
+	height: 80px;
+	margin:0 auto;
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: center;
+	border-radius: 50%;
+	line-height: 80px;
+	text-align: center;
+	font-size: 14px;
+	color:#666;
+	position: relative;
+}
+.perfectinfo-hrep .uploadimage #imgelector{
+	display: block;
+	position: absolute;
+	bottom: -30px;
+	left: 0;
+	width: 100%;
+	text-align: center;
+	color: #333;
+}
+
+/*.perfectinfo-hrep-img{
+	display: block;
+	width: 80px;
+	height: 80px;
+	margin:0 auto;
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: center;
+	border-radius: 50%;
+	line-height: 80px;
+	text-align: center;
+	font-size: 14px;
+	color:#666;
+}*/
+
+.perfectinfo-list{
+	width: 100%;
+	padding:0 15px;
+	box-sizing: border-box;
+}
+
+.perfectinfo-list li{
+	width: 100%;
+	border-bottom: 1px solid #f2f2f2;
+	padding:20px 0;
+}
+
+.perfectinfo-list li i{
+	display: inline-block;
+	width: 18px;
+	height: 18px;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: contain;
+	vertical-align: middle;
+	margin-right: 3px;
+}
+
+.perfectinfo-list li .perfectinfo-name{
+	background-image: url(../img/sign_user_name.png);
+}
+.perfectinfo-list li .perfectinfo-email{
+	background-image: url(../img/sign_e_mail.png);
+}
+.perfectinfo-list li .perfectinfo-wx{
+	background-image: url(../img/sign_weixin_name.png);
+}
+
+.perfectinfo-list li span{
+	display: inline-block;
+	vertical-align: middle;
+	font-size: 15px;
+	color:#333;
+}
+
+.perfectinfo-list li .perfectinfo-formtext{
+	display: inline-block;
+	vertical-align: middle;
+	border-radius: 5px;
+	background: #fff;
+	outline: none;
+	border:1px solid #ccc;
+	height: 30px;
+	line-height: 30px;
+	font-size: 14px;
+	padding:0 10px;
+}
+
+.perfectinfo-list li .perfectinfo-formtext:focus{
+	border:1px solid #f6ab00;
+}
+
+/*支付选择页面*/
+.sign-pay-title{
+	height: 40px;
+	line-height: 40px;
+	padding:0 20px;
+	color:#999;
+}
+
+.sign-type-list{
+	width: 100%;
+	height: auto;
+	box-sizing: border-box;
+	padding:0px 10px 0;
+	font-size: 0px;
+	
+}
+
+.sign-type-list li{
+	display: inline-block;
+	width: 33.33333%;
+	height: auto;
+	padding-bottom: 22px;
+	text-align: center;
+	border-bottom: 1px solid #efefef;
+}
+
+.sign-type-list li .sign-type-num{
+	padding:0 5px;
+	height: 50px;
+	min-width: 50px;
+	display: inline-block;
+	background: #dddddd;
+	font-size: 14px;
+	border-radius: 12px;
+	margin:0 auto;
+	vertical-align: top;
+}
+
+.sign-type-list li a{
+	
+} 
+
+
+
+.sign-type-list li .sign-type-num .sign-type-val{
+	font-size:30px;
+	display: inline-block;
+	margin-top:5px;
+	vertical-align: middle;
+	color:#fff;
+}
+
+.sign-type-list li .sign-type-num .sign-type-unit{
+	font-size: 14px;
+	display: inline-block;
+	vertical-align: middle;
+	color:#fff;
+}
+
+.sign-type-list li .sign-type-money{
+	width: 100%;
+	margin-top:5px;
+	line-height: 1.5em;
+	font-size: 15px;
+	color:#ddd;
+}
+
+.sign-type-list li .sign-type-soucemoney{
+	color:#4a4a4a;
+	font-size: 14px;
+	margin-top:5px;
+}
+
+.sign-type-list li .sign-type-perselect{
+	color:#ddd;
+	font-size: 14px;
+	margin-top: 3px;
+}
+
+.sign-type-list li .sign-type-perselect span{
+	color:#4a4a4a;
+}
+
+.sign-type-list .active .sign-type-num{
+	background: #f7ab00;
+}
+
+.sign-type-list .active .sign-type-money{
+	color:#f7ab00;
+}
+
+.sign-type-chec{
+	padding:40px 0;
+}
+
+.sign-type-chec .sign-type-chec-local{
+	text-align: center;
+	font-size: 15px;
+	color:#333;
+	line-height: 1.5em;
+}
+
+.sign-type-chec .sign-type-chec-total , .sign-type-chec .sign-type-chec-discount{
+	text-align: center;
+	font-size: 15px;
+	color:#ddd;
+	line-height: 1.5em;
+}
+
+.sign-type-line{
+	display: block;width: 100%;
+	height: 20px;
+	background: #f6f6f6;
+}
+
+.sign-type-pay{
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+.sign-type-pay .sign-type-paybtn{
+	width: 100px;
+	height: 100px;
+	margin:10px auto;
+	border-radius: 9px;
+	display: block;
+	padding-top: 10px;
+}
+
+.sign-type-wx{
+	display: block;
+	width: 50px;
+	height: 50px;
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: center;
+	background-image: url(../img/sign_weixin_pay.png);
+	margin:10px auto;
+}
+
+.sign-type-pay .sign-type-paybtn p{
+	text-align: center;
+	font-size: 16px;
+	color:#999;
+}
+
+
+/*邀请好友加入*/
+.invitef-title{
+text-align: center;
+height: 40px;
+line-height: 40px;
+color:#333;
+margin-top:15px;
+font-size: 18px;
+}
+.invitef-img{
+	height: 80px;
+	margin-top:10px;
+	width: 100%;
+	text-align: center;
+}
+
+.invitef-img img{
+	height: 100%;
+	width: auto;
+}
+
+.invitef-p{
+	color:#f6ab00;
+	text-align: center;
+	margin-top: 10px;
+}
+
+.invitef-info-list{
+	word-break: break-all;
+	padding:10px 20px 0 40px;
+	color:#999;
+	font-size: 15px;
+	line-height: 1.5em;
+}
+
+.addcreateman-p{
+	width: 100%;
+	color:#4f96dc;
+	word-break: break-all;
+	text-align: center;
+	margin-top: 10px;
+}
+
+.addcreateman-intro{
+	text-indent: 2em;
+	padding:0 15px;
+	box-sizing: border-box;
+	word-break: break-all;
+	color:#999;
+	line-height: 1.7em;
+	margin-top:10px;
+}
+
+.addcreateman-form-text{
+	display: block;
+	width: 80%;
+	height: 50px;
+	line-height: 50px;
+	/*margin-top: 30px;*/
+	margin:60px auto 0;
+	color:#333;
+	border:1px solid #c9caca;
+	box-sizing: border-box;
+	border-radius: 6px;
+	padding:0 15px;
+	outline: none;
+}
+
+.addcreateman-form-text:focus{
+	border:1px solid #4f96dc;
+}
+
+
+/*验证手机*/
+.valphone-box{
+	width: 100%;
+	height: auto;
+	padding:0 15px;
+	box-sizing: border-box;
+	position: relative;
+	padding-top: 30px;
+}
+
+.valphone-row{
+	margin-top:10px;
+	position: relative;
+	height: 60px;
+}
+
+.valphone-label{
+	display: inline-block;
+	width:60px;
+	text-align: center;
+	vertical-align: middle;
+	margin-top:13px;
+	color:#4a4a4a;
+}
+
+.valphone-input-box{
+	position: absolute;
+	left: 0;
+	top:0;
+	width: 100%;
+	padding-left: 80px;
+	padding-right: 10px;
+	box-sizing: border-box;
+	font-size: 0px;
+}
+
+.valphone-input-box .valphone-phone{
+	width: 100%;
+	height: 50px;
+	border:1px solid #c9caca;
+	border-radius: 8px;
+	box-sizing: border-box;
+	padding-left: 60px;
+	padding-right: 15px;
+	outline: none;
+	font-size: 14px;
+}
+.valphone-input-box.valphone-img{
+	padding-left: 10px;
+	text-align:center;
+}
+
+.valphone-input-box  .valphone-vcode{
+	width: 50%;
+	height: 50px;
+	border:1px solid #c9caca;
+	border-radius: 8px;
+	box-sizing: border-box;
+	padding-left: 15px;
+	padding-right: 15px;
+	outline: none;
+	font-size: 13px;
+}
+
+.valphone-img #validevcode{
+	display:inline-block;
+	vertical-align: top;
+}
+
+.valphone-img .valphone-input-codeimg{
+	display:inline-block;
+	vertical-align: top;
+}
+
+.valphone-input-box .valphone-getvcode{
+	width:40%;
+	margin-left: 5%;
+	display: inline-block;
+	font-size: 12px;
+	border:1px solid #f6ab00;
+	box-sizing: border-box;
+	height: 50px;
+	vertical-align: top;
+	text-align: center;
+	line-height: 50px;
+	color:#f6ab00;
+	border-radius: 8px;
+}
+
+.valphone-input-box .valphone-phone:focus{
+	border:1px solid #f6ab00;
+}
+
+
+.valphone-input-box .valphone-vcode:focus{
+	border:1px solid #f6ab00;
+}
+.valphone-input-box span{
+	position: absolute;
+	left:90px;
+	top:15px;
+	color:#c9caca;
+	display: block;
+	width: 40px;
+	border-right: 1px solid #ddd;
+	font-size: 16px;
+}
+
+.valphone-nextstep{
+	width: 100%;
+	height: 40px;
+	line-height: 40px;
+	text-align: center;
+	display: block;
+	background: #f6ab00;
+	margin-top:20px;
+	color:#fff;
+	border-radius: 5px;
+}
+
+.valphone-nextstep:focus{
+	color:#fff;
+}
+.getlancode-box{
+	width:100%;
+	height:30px;
+	text-align:right;
+}
+.getlancode{
+	height:30px;
+	line-height:30px;
+	display:inline-block;
+	text-align:right;
+	border:1px solid #f6ab00;
+	padding:0 5px;
+	border-radius:4px;
+	vertical-align:middle;
+}
+
+.getlancode-box  .getlancode-tips{
+	vertical-align:middle;
+	color:#666;
+}
+
+.getlancode i{
+	display:inline-block;
+	width:20px;
+	height:20px;
+	background-image:url(../img/phonecall.png);
+	background-size:contain;
+	background-repeat:no-repeat;
+	backgroind-position:center;
+	vertical-align:middle;
+}
+
+.getlancode span{
+	display:inline-block;
+	vertical-align:middle;
+	color:#f6ab00;
+}

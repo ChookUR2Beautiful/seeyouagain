@@ -1,0 +1,612 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!-- 订单表SQL -->
+<mapper namespace="com.xmniao.xmn.core.verification.dao.BillDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.verification.entity.VerifyResponseBean" >
+    <id column="bid" property="bid" jdbcType="BIGINT" />
+    <result column="codeid" property="codeid" jdbcType="INTEGER" />
+    <result column="sellername" property="sellername" jdbcType="VARCHAR" />
+    <result column="nname" property="nname" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="sdate" property="sdate" jdbcType="VARCHAR" />
+    <result column="ydate" property="ydate" jdbcType="VARCHAR" />
+    <result column="ldate" property="ldate" jdbcType="VARCHAR" />
+    <result column="money" property="money" jdbcType="DECIMAL" />
+    <result column="rebate" property="rebate" jdbcType="DECIMAL" />
+    <result column="isverify" property="isverify" jdbcType="INTEGER" />
+    <result column="ismember" property="ismember" jdbcType="INTEGER" />
+    <result column="commission" property="commission" jdbcType="VARCHAR" />
+    <result column="bfirst" property="bfirst" jdbcType="INTEGER" />
+    <result column="phoneid" property="phoneid" jdbcType="VARCHAR" />
+  </resultMap>
+
+  	<!-- 根据订单号获取对象 -->
+   <select id="getBillById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    bid, codeid, sellername, nname, status,  date_format(sdate,'%Y-%m-%d %H:%i:%s') as sdate, date_format(ydate,'%Y-%m-%d %H:%i:%s') as ydate , money
+ 	,isverify   from t_bill
+    where bid = #{bid,jdbcType=BIGINT} 
+    <!-- and source!=2  -->
+  </select>
+  
+  <!-- 订单列表 -->
+   <select id="getList" resultMap="BaseResultMap" >
+    select 
+    bid, codeid, sellername, nname, status,  date_format(sdate,'%Y-%m-%d %H:%i:%s') as sdate, date_format(ydate,'%Y-%m-%d %H:%i:%s') as ydate , money
+ 	,isverify   from t_bill
+  </select>
+  <!-- 查询总流水 -->
+  <select id="queryTotalflow" parameterType="int" resultType="double">
+   <![CDATA[
+  	select ifNull(sum(money),0) totalflow from t_bill where sellerid=#{sellerid} and  `status` <> 0 and `status` <> 5
+  ]]>
+  </select>
+  <!-- 查询寻蜜客总交易流水金额 -->
+  <select id="queryFlowAmount" parameterType="int" resultType="double">
+   <![CDATA[
+  	select ifNull(sum(money),0) flowAmount from t_bill where xmer_uid=#{xmer_uid} and  `status` <> 0 and `status` <> 5
+  ]]>
+  </select>
+  <!-- 查询月流水 -->
+  <select id="queryMonthflow" parameterType="int" resultType="double">
+	<![CDATA[
+	  	select ifNull(sum(money),0) queryMonthflow from t_bill 
+	  	where sellerid=#{sellerid} and  `status` <> 0 and `status` <> 5 and date_format(zdate,'%Y-%m')= date_format(now(),'%Y-%m') 
+	  ]]>
+    </select>
+  
+	
+	<!-- 统计订单表商户的所有订单消费额 -->
+	<select id="sumSellerOrder" resultType="double" parameterType="map">
+		SELECT SUM(money) AS money FROM t_bill WHERE xmer_uid=#{xmeruid} 
+		AND STATUS != 0 AND STATUS != 5
+		<if test="sdate !=null and  sdate !='' and edate !='' ">
+		<![CDATA[
+		AND zdate>=#{sdate} AND zdate<#{edate}
+		]]>
+		</if>
+	</select>
+
+	<!-- 批量统计商家的流水 -->
+	<select id="sumSellerOrderBySellerIds" resultType="double" parameterType="map">
+		SELECT SUM(money) AS money FROM t_bill WHERE
+		STATUS != 0 AND STATUS != 5
+		AND sellerid in
+		<foreach collection="sellerIds" index="index" item="tsid" open="(" close=")" separator=",">
+		 	#{tsid}
+		</foreach>
+		<if test="sdate !=null and  sdate !='' and edate !='' ">
+			<![CDATA[
+			AND zdate>=#{sdate} AND zdate<#{edate}
+			]]>
+		</if>
+	</select>
+	
+	<!-- 查询所有签约商家的流水 -->
+	<select id="queryAllSellersFlow" resultType="map" parameterType="map">
+		SELECT xmer_uid, sellername,date_format(zdate,'%Y-%m-%d %H:%i') as sdate,money as amount, sellerid
+		FROM t_bill 
+		WHERE sellerid in
+		<foreach collection="sellerIds" index="index" item="tsid" open="(" close=")" separator=",">
+		 	#{tsid}
+		</foreach>
+		AND STATUS!=0 AND STATUS!=5 
+		<if test="sdate !=null and  sdate !='' and edate !='' ">
+			<![CDATA[
+			AND zdate>=#{sdate} AND zdate<#{edate}
+			]]>
+		</if>
+		ORDER BY zdate DESC 
+		<if test="page != null and page != '' and limit != null and limit != ''">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+  
+  <!-- 
+  	   根据商铺ID查询月流水 
+  	  @author zhengyaowen
+  -->
+  <select id="queryMonthflowBySellerids" resultType="double">
+	  	SELECT 
+	  		IFNULL(sum(money),0) AS queryMonthflow 
+	  	FROM 
+	  		t_bill 
+	  	WHERE 
+	  		status &lt;&gt; 0 AND status &lt;&gt; 5 AND date_format(zdate,'%Y-%m') = date_format(now(),'%Y-%m') AND sellerid IN 
+			<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+	         	#{item}
+	        </foreach>
+    </select>
+    
+
+	<update id="updateStatusByBid" parameterType="int">
+	update t_bill_bargain set status=2 where bid=#{bid}
+	</update>
+	
+	<!-- 修改订单的评价状态为已修改 -->
+	<update id="modifyCommentStatus" parameterType="long">
+	update t_bill set comm_status=1 where bid=#{bid}
+	</update>
+	
+	<!-- 查询积分订单 -->
+	<select id="getBillBargainById" parameterType="map" resultType="int">
+		select status from  t_bill_bargain where bid=#{bid} and sellerid=#{sellerid}
+	</select>
+		
+	<!-- 查询月消费金额 -->
+	<select id="queryBillAllMoney" parameterType="map" resultType="double">
+		select ifNull(sum(money),0) money from t_bill where status!=0 and status!=5 and  uid=#{uid}  and DATE_FORMAT(zdate,'%Y-%m')=#{datetime}
+	</select>
+	<!-- 查询积分订单月消费总额 -->
+	<select id="queryBillBargainAllMoney" parameterType="map" resultType="double">
+		select ifNull(sum(amount+balance),0) money from t_bill_bargain where uid=#{uid} and status=1 and DATE_FORMAT(pay_time,'%Y-%m')=#{datetime}
+	</select>
+	
+	<!-- 查询商家的用户最近消费记录 -->
+	<select id="queryUidBySellerid" parameterType="map" resultType="map">
+	select uid,
+	case when DATE_FORMAT(MAX(zdate),'%Y')=DATE_FORMAT(NOW(),'%Y') then  DATE_FORMAT(MAX(zdate),'%m月%d日') else DATE_FORMAT(MAX(zdate),'%Y年%m月%d日') end zdate
+	from t_bill where zdate>'2001-10-10' and sellerid=#{sellerid} and status!=0 and status!=5 group by uid  order by zdate desc
+	limit ${(page-1)*pageSize},#{pageSize}
+	</select>
+	
+	<!-- 根据用户id查询所有用户消费过的商铺id -->
+	<select id="queryBillByUid" resultType="map" parameterType="int">
+		SELECT 
+			b.sellerid AS sellerid,b.bill AS bill ,b.bill/a.bills*2.8 AS billRank
+		FROM 
+		(SELECT  COUNT(sellerid) AS bills FROM t_bill WHERE STATUS IN (1,2,3,6,9) AND uid=#{uid}) a 
+		,( SELECT sellerid,COUNT(sellerid) AS bill FROM t_bill WHERE STATUS IN (1,2,3,6,9) AND uid=#{uid} GROUP BY sellerid ) b 
+		WHERE 1=1 ORDER BY billRank DESC
+	</select>
+
+	<!-- 统计商铺的所有成功订单数量 -->
+	<select id="sumAllOrdersBySellerId" resultType="int" parameterType="int">
+		SELECT COUNT(1) FROM t_bill WHERE sellerid=#{sellerid} AND STATUS NOT IN(0,5)
+	</select>
+
+	<!-- 查询商家消费人数 -->
+	<select id="consumeCount" parameterType="int" resultType="int"> 
+	select count(1) from t_bill where sellerid=#{sellerid} and status !=0
+	</select>
+	
+	
+	<!-- 查询去过相同消费的店铺数量 -->
+	<select id="querySameConsumerSellerCount" parameterType="map" resultType="int">
+		SELECT
+			COUNT(DISTINCT a.sellerid) AS count
+		FROM
+			t_bill a
+		LEFT JOIN t_bill b ON a.sellerid = b.sellerid
+		WHERE
+			a.uid = #{uid}
+		AND b.uid = #{toUid}
+		<![CDATA[
+			AND a.status != 0 AND a.status != 5
+			AND b.status != 0 AND b.status != 5
+		]]>
+	</select>
+	
+	<!-- 查询去过的店铺总数 -->
+	<select id="queryConsumerSellerCount" parameterType="int" resultType="int">
+<!-- 		SELECT -->
+<!-- 			COUNT(DISTINCT a.sellerid) AS count -->
+<!-- 		FROM -->
+<!-- 			t_bill a -->
+<!-- 		WHERE -->
+<!-- 			a.uid = #{uid} -->
+<!-- 		<![CDATA[ -->
+<!-- 			AND a.status != 0 AND a.status != 5 -->
+<!-- 		]]> -->
+		
+		SELECT
+			COUNT(DISTINCT b.sellerid) AS count
+		FROM
+			t_bill b
+		LEFT JOIN t_seller s ON b.sellerid=s.sellerid
+		WHERE
+			b.uid = #{uid}
+		AND
+			s.status =3 and s.isonline=1
+		<![CDATA[
+			AND b.status != 0 AND b.status != 5
+		]]>
+		
+		
+	</select>
+	
+	<!-- 查询购买预售粉丝卷的次数 -->
+	<select id="queryCouponOrderCount" parameterType="int" resultType="int">
+		SELECT
+			COUNT(DISTINCT c.record_id) AS count
+		FROM
+			t_coupon_order c
+		WHERE
+			c.uid = #{uid}
+		AND c.status = 1
+	</select>
+	
+	<!-- 查询消费过的店铺信息 -->
+	<select id="queryCustomerSellers" parameterType="map" resultType="map">
+		SELECT
+			b.sellerid AS sellerId,
+			max(b.zdate) AS customerDate,
+			max(b.sdate) AS orderDate
+		FROM
+			t_bill b
+		LEFT JOIN t_seller s ON b.sellerid=s.sellerid
+		WHERE
+			b.uid = #{uid}
+		AND
+			s.status =3 and s.isonline=1
+		<![CDATA[
+			AND b.status != 0 AND b.status != 5
+		]]>
+		GROUP BY
+			b.sellerid
+		ORDER BY
+			b.zdate DESC
+		LIMIT ${(page-1)*limit},#{limit}
+	</select>
+	
+	<!-- 查询用户在商家消费的数量 -->
+	<select id="billCountBySelleridAndUid" parameterType="map" resultType="int">
+	select count(1) from t_bill where uid=#{uid} and sellerid = #{sellerid} and status!=0 and status!=5
+	</select>
+	
+	<!-- 批量查询用户是否在这些商家消费过 -->
+	<select id="queryBillCountBySellerIdsAndUid" parameterType="map" resultType="map">
+	SELECT 
+		sellerid AS sellerId,
+		CASE WHEN count(sellerid) > 0 THEN 1 ELSE 0 END AS isConsumer 
+	FROM 
+		t_bill 
+	WHERE 
+		uid=#{uid} 
+	AND 
+		sellerid IN
+	 <foreach item="sellerId" index="index" collection="sellerIds" open="(" separator="," close=")">
+	         	#{sellerId}
+	 </foreach>
+	 <![CDATA[
+	 	AND status != 0 AND status != 5
+	 ]]>
+	 GROUP BY sellerid
+	</select>
+	
+	<!-- 批量查询去过相同店铺消费的数量 -->
+	<select id="querySameConsumerSellerListCount" parameterType="map" resultType="map">
+		SELECT
+			COUNT(DISTINCT b.sellerid) AS count,
+			b.uid
+		FROM
+			t_bill a
+		LEFT JOIN t_bill b ON a.sellerid = b.sellerid
+		WHERE
+			a.uid = #{uid}
+		AND b.uid IN
+			<foreach item="toUid" index="index" collection="toUids" open="(" separator="," close=")">
+	         	#{toUid}
+	        </foreach>
+		<![CDATA[
+			AND a.status != 0 AND a.status != 5
+			AND b.status != 0 AND b.status != 5
+		]]>
+		GROUP BY b.uid
+	</select>
+	
+	
+		<!-- 新增美食订单 -->
+	<insert id="insertBillOrderInfo" parameterType="map">
+		INSERT INTO 
+		t_bill(
+			   bid,codeid,sellerid,sellername,
+			   nname,money,aid,fullname,
+			   phoneid,status,sdate,baseagio,
+			   jointid,uid,zoneid,cuser,cdenom,
+			   phone_type,version,version_id,
+			   app_serial,imei,integral,xmer_uid,
+			   mikeid,mikename,coupon_type,r_phone,
+			   r_user_id,full_reduction,full_reduction_id,
+			   ledger_mode,live_ledger,
+			   live_ledger_style,live_ledger_mode,
+			   live_ledger_ratio,reduction,area,
+			   genussellerid,genusname,corporate,consume_corporate,
+			   uid_relation_chain,saas_channel,uid_mb_ecno,
+			   app_source
+			   )
+		VALUES(
+			   #{bid,jdbcType=INTEGER},#{codeid,jdbcType=INTEGER},#{sellerid,jdbcType=INTEGER},#{sellername,jdbcType=VARCHAR},
+			   #{nname,jdbcType=VARCHAR},#{money,jdbcType=DOUBLE},#{aid,jdbcType=INTEGER},#{fullname,jdbcType=VARCHAR},
+			   #{phoneid,jdbcType=VARCHAR},#{status,jdbcType=INTEGER},#{sdate,jdbcType=TIMESTAMP},#{baseagio,jdbcType=DOUBLE},
+			   #{jointid,jdbcType=INTEGER},#{uid,jdbcType=INTEGER},#{zoneid,jdbcType=INTEGER},#{cuser,jdbcType=DOUBLE},#{cdenom,jdbcType=DOUBLE},
+			   #{phone_type,jdbcType=INTEGER},#{version,jdbcType=VARCHAR},#{version_id,jdbcType=INTEGER},
+			   #{app_serial,jdbcType=INTEGER},#{imei,jdbcType=VARCHAR},#{integral,jdbcType=DOUBLE},#{xmer_uid,jdbcType=INTEGER},
+			   #{mikeid,jdbcType=INTEGER},#{mikename,jdbcType=VARCHAR},#{coupon_type,jdbcType=INTEGER},#{r_phone,jdbcType=VARCHAR},
+			   #{r_user_id,jdbcType=INTEGER},#{full_reduction},#{full_reduction_id,jdbcType=INTEGER},
+			   #{ledger_mode,jdbcType=INTEGER},#{live_ledger,jdbcType=INTEGER},
+			   #{live_ledger_style,jdbcType=INTEGER},#{live_ledger_mode,jdbcType=INTEGER},
+			   #{live_ledger_ratio,jdbcType=DOUBLE},#{reduction,jdbcType=DOUBLE},#{area,jdbcType=INTEGER},
+			   #{genussellerid,jdbcType=INTEGER},#{genusname,jdbcType=VARCHAR},#{corporate,jdbcType=VARCHAR},#{consume_corporate,jdbcType=VARCHAR},
+			   #{uid_relation_chain,jdbcType=VARCHAR},#{saas_channel,jdbcType=INTEGER},#{uid_mb_ecno,jdbcType=VARCHAR},
+			   #{appSourceStatus,jdbcType=INTEGER}
+			   )
+	</insert>
+	
+	<!-- 订单表基本字段列 -->
+	<sql id="billOrderInfoCol">
+		b.bid, b.codeid, b.sellerid,  b.sellername,  b.consume_jointid, b.nname, b.money, b.profit, b.commision, b.payment,
+		b.rebate,  b.aid, b.fullname,  b.phoneid , b.bfirst , b.status , b.sdate , b.zdate , b.ydate, b.number,  b.paytype, b.isaccount,
+		b.baseagio,  b.type, b.hstatus, b.consume_corporate,  b.genussellerid, b.genusname, b.jointid,  b.corporate, b.mike_type,
+		b.uid,  b.commission, b.area, b.zoneid,b. payid, b.isverify, b.ldate, b.fdate, b.edate, b.comm_status,b.estimate,b.is_virtual,
+		b.flat_agio, b.entry_status, b.give_money, b.flat_money, b.max_history, b.cuser, b.cdenom, b.third_uid,b.normal, b.is_activity,
+		b.prize_num, b.activity_conent, b.activity_rest, b.source, b.phone_type, b.version, b.version_id, b.app_serial, b.ratio, 
+		b.ratio_money, b.integral, b. xmer_uid,  b.mikeid, b.mikename, b.reduction, b.coupon_type, b.r_phone, b.r_user_id, b.full_reduction,
+		b.full_reduction_id,b.ledger_mode,b.cannel_status,b.live_ledger,b.live_ledger_style,b.live_ledger_mode,b.live_ledger_ratio
+	</sql>
+	
+	<!-- 根据订单号 UID获取当前订单基本信息 -->
+	<select id="queryBillInfoByOrderNo" resultType="map" parameterType="map">
+		SELECT 
+			<include refid="billOrderInfoCol"></include>
+ 		FROM t_bill b WHERE 1=1 
+		<if test="bid !=null and bid !=''">
+			AND bid = #{bid} 
+		</if>
+		<if test="uid !=null and uid !=''">
+			AND uid = #{uid}
+		</if>
+	</select>
+	
+	<!-- 根据订单号 UID获取当前订单基本信息 -->
+	<select id="queryBillInfoSubByOrderNo" resultType="map" parameterType="map">
+		SELECT 
+			<include refid="billOrderInfoCol"></include>
+ 		FROM t_bill b WHERE 1=1 
+		<if test="bid !=null and bid !=''">
+			AND bid = #{bid} 
+		</if>
+		<if test="uid !=null and uid !=''">
+			AND uid = #{uid}
+		</if>
+	</select>
+	
+	<!-- 根据UID获取订单列表 -->
+	<select id="queryBillListByUid" resultType="map" parameterType="map">
+		SELECT  
+			<include refid="billOrderInfoCol"/> ,
+			p.picurl, de.seats, de.denomination, de.cdid,
+		  	IFNULL(pg.user_status,0) as packageStatus, 
+			IF(pg.user_status=2,1,0) AS useNum,
+			pg.denomination as grantMoney
+		FROM t_bill b
+		LEFT JOIN t_seller_pic p ON b.sellerid = p.sellerid 
+		LEFT JOIN t_coupon_detail de ON de.bid = b.bid
+		LEFT JOIN t_seller_package_grant pg ON pg.bid = b.bid 
+ 		WHERE 1=1 AND p.islogo = 1 AND b.uid = #{uid} AND status != 0
+ 		ORDER BY b.sdate DESC 
+ 		LIMIT ${(page-1)*limit},#{limit}
+ 		
+<!-- 		FROM t_bill b -->
+<!-- 		LEFT JOIN t_seller_pic p ON b.sellerid = p.sellerid  -->
+<!-- 		LEFT JOIN t_coupon_detail de ON de.bid = b.bid -->
+<!--  		WHERE 1=1 AND p.islogo = 1 AND b.uid = #{uid} AND status != 0 -->
+<!--  		ORDER BY b.sdate DESC  -->
+ 		
+	</select>
+	
+	<update id="updateOrderCouponStatus" parameterType="map">
+		<if test="couponType == 0 or couponType == 5 or couponType == 1 ">
+			update t_coupon_detail set user_status =1 , bid = #{bid} ,lock_time = #{lock_time} where 1=1 
+			<if test="list!=null">
+				AND  cdid IN 
+				<foreach collection="list" item="cdid" open="(" close=")" separator=",">
+					#{cdid}
+				</foreach>
+			</if>
+		</if>
+		
+		<if test="couponType ==3 ">
+			update t_coupon_detail set user_status =1 , bid = #{bid} ,lock_time = #{lock_time}  where cdid = #{cdid}
+		</if>
+		
+		<if test="couponType ==2">
+			update t_user_coupon  set use_status =1 , bid = #{bid}, lock_time = #{lock_time}  where cuid = #{cdid}
+		</if>
+		
+	</update>
+	
+	<!-- 新增美食订单 优惠券使用记录 -->
+	<insert id="insertBillCouponRecord" parameterType="map">
+		<if test="list!=null">
+			INSERT INTO  t_coupon_relation(bid,cdenom,cuser,ctype,cdid,serial,order_type)
+				VALUES
+			<foreach collection="list" item="item"  separator=",">
+				(#{item.bid,jdbcType=INTEGER},#{item.cdenom,jdbcType=DOUBLE},#{item.cuser,jdbcType=DOUBLE},
+				#{item.ctype,jdbcType=INTEGER},#{item.cdid,jdbcType=INTEGER},#{item.serial,jdbcType=VARCHAR},
+				#{order_type,jdbcType=VARCHAR})
+			</foreach>
+		</if>
+	
+	</insert>
+	
+	
+	<!-- 查询最喜欢消费的店铺信息 -->
+	<select id="queryFavoriteSellerByUid" parameterType="int" resultType="map">
+		SELECT
+			a.*, p.picurl AS sellerCover
+		FROM
+			(
+				SELECT
+					COUNT(1) AS customerCount,
+					b.sellerid AS sellerId,
+					b.sellername AS sellerName
+				FROM
+					t_bill b
+				WHERE
+					b.uid = #{uid}
+				<![CDATA[
+					AND b. STATUS != 0 AND b. STATUS != 5
+				]]>
+				GROUP BY
+					b.sellerid
+				ORDER BY
+					COUNT(1) DESC
+				LIMIT 1
+			) a
+		LEFT JOIN t_seller_pic p ON a.sellerid = p.sellerid
+		WHERE
+			p.islogo = 2
+	</select>
+	
+	<!-- 查询最喜欢外出消费时间段 -->
+	<select id="queryCustomerTimeByUid" parameterType="int" resultType="map">
+		<![CDATA[
+			SELECT
+			CASE
+			WHEN HOUR (zdate) >= 11
+			AND HOUR (zdate) < 14 THEN
+				'11:00-13:59'
+			WHEN HOUR (zdate) >= 14
+			AND HOUR (zdate) < 17 THEN
+				'14:00-16:59'
+			WHEN HOUR (zdate) >= 17
+			AND HOUR (zdate) < 20 THEN
+				'17:00-19:59'
+			WHEN HOUR (zdate) >= 20
+			AND HOUR (zdate) < 24 THEN
+				'20:00-24:00'
+			END AS zdate,
+			 count(1) AS customerCount
+			FROM
+				t_bill b
+			WHERE
+				b.uid = #{uid}
+			AND b. STATUS != 0
+			AND b. STATUS != 5
+			AND HOUR (zdate) >= 11
+			GROUP BY
+				1
+			ORDER BY
+				count(1) DESC
+			LIMIT 1
+		]]>
+	</select>
+	
+	<!-- 查询最喜欢外出的消费时间周 -->
+	<select id="queryCustomerWeekByUid" parameterType="int" resultType="map">
+		<![CDATA[
+			SELECT
+				CASE
+			WHEN WEEKDAY(zdate) = 0 THEN
+				'周一'
+			WHEN WEEKDAY(zdate) = 1 THEN
+				'周二'
+			WHEN WEEKDAY(zdate) = 2 THEN
+				'周三'
+			WHEN WEEKDAY(zdate) = 3 THEN
+				'周四'
+			WHEN WEEKDAY(zdate) = 4 THEN
+				'周五'
+			WHEN WEEKDAY(zdate) = 5 THEN
+				'周六'
+			WHEN WEEKDAY(zdate) = 6 THEN
+				'周日'
+			END AS weekDay,
+			 count(1) AS weekCustomerCount
+			FROM
+				t_bill b
+			WHERE
+				b.uid = #{uid}
+			AND b. STATUS != 0
+			AND b. STATUS != 5 #and HOUR(zdate)>=11
+			GROUP BY
+				1
+			ORDER BY
+				count(1) DESC
+			LIMIT 1
+		]]>
+	</select>
+	
+	<!-- 通过商铺id查询所有去过该商铺消费过的用户id -->
+	<select id="queryConsumerbySelleridList" resultType="map" parameterType="list">
+		SELECT uid,DATE_FORMAT(zdate,'%m.%d') AS zdate
+		<!-- case when DATE_FORMAT(MAX(zdate),'%Y')=DATE_FORMAT(NOW(),'%Y') 
+		then  DATE_FORMAT(MAX(zdate),'%m-%d %H:%i:%m') 
+		else DATE_FORMAT(MAX(zdate),'%Y-%m-%d %H:%i:%m') end zdate -->
+		FROM t_bill WHERE zdate>'2001-10-10' AND STATUS NOT IN (0,5) AND sellerid IN 
+		<if test="list != null">
+			<foreach collection="list" item="list" index="index" open="(" separator="," close=")">
+				#{list}
+			</foreach>
+		</if>
+		GROUP BY uid  ORDER BY zdate DESC
+		
+	</select>
+	
+	<!-- 通过用户id和商铺id查询用户是否在该商铺消费过 -->
+	<select id="queryBillBySellerIdAndUid" resultType="map" parameterType="map">
+		SELECT sellerid,uid,DATE_FORMAT(zdate,'%m.%d') AS zdate 
+		FROM t_bill WHERE uid=#{uid} AND sellerid = #{sellerid} AND STATUS NOT IN(0,5) 
+		ORDER BY zdate DESC LIMIT 0,1
+	</select>
+	
+	<!-- 测试查询所有数据 -->
+	<select id="findAll" resultType="map">
+		SELECT DISTINCT uid FROM t_bill WHERE STATUS NOT IN (0,5)
+	</select>
+	
+	<select id="findAllSellers" resultType="map" parameterType="String">
+		SELECT DISTINCT zoneid FROM t_seller WHERE sellerid IN (
+		SELECT DISTINCT sellerid FROM t_bill WHERE uid=#{uid} AND STATUS NOT IN(0,5))
+	</select>
+	<select id="queryZdateByUidAndSellerId" resultType="string" parameterType="map">
+		SELECT DATE_FORMAT(zdate,'%m.%d') zdate FROM t_bill 
+		WHERE uid = #{uid} AND sellerid=#{sellerid} ORDER BY zdate DESC LIMIT 0,1
+	</select>
+	
+	<!-- 通过用户ID查询用户消费过的商铺ID -->
+	<select id="querySellersByUid" resultType="int" parameterType="map">
+		SELECT DISTINCT sellerid FROM t_seller WHERE sellerid IN 
+			(SELECT DISTINCT sellerid FROM t_bill WHERE uid=#{uid} ORDER BY zdate DESC )
+		AND STATUS=3 AND isonline=1 
+		<if test="zoneid != null">
+		AND zoneid=#{zoneid}
+		</if>
+		<if test="zoneid != null">
+		 AND genre=#{tradeid}
+		</if>
+		limit ${(pageNo-1)*pageSize},#{pageSize}
+	</select>
+	
+	
+	<!-- 通过sellerID查询店家每日下单总量 -->
+	<select id="queryDayOrderAmountBySellerId" resultType="map" parameterType="long">
+		SELECT  IFNULL(sum(money),0) as dayMoney FROM t_bill WHERE sellerid =#{sellerId} 
+		AND status NOT IN (0,5,15) and DATE_FORMAT(zdate,'%Y.%m.%d') = DATE_FORMAT(NOW(),'%Y.%m.%d') 
+			
+	</select>
+	
+	<!-- 通过sellerID查询店家每日下单总量 -->
+	<select id="queryTotalOrderAmountBySellerId" resultType="map" parameterType="long">
+		SELECT  IFNULL(sum(money),0) as totalMoney FROM t_bill WHERE sellerid =#{sellerId} AND status NOT IN (0,5,15)
+	</select>
+	
+	<!-- 批量查询店铺信息 -->
+	<select id="queryBillByBids" resultType="map" parameterType="map">
+		select 
+		b.bid, b.sellername, b.uid,
+		s.uid as signUid
+		from t_bill b
+		left join t_saas_sold_order s on s.sellerid = b.sellerid
+		where b.bid in
+		<foreach collection="bids" index="index" item="bid" open="(" close=")" separator=",">
+		 	#{bid}
+		</foreach>
+	</select>
+
+
+
+</mapper>

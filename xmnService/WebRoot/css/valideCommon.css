@@ -1,0 +1,531 @@
+@charset "UTF-8";
+/*公共样式*/
+address,article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}
+html{font-size:62.5%;}
+*{font-family: "微软雅黑";box-sizing: border-box;-webkit-touch-callout:none;user-select:none;-webkit-tap-highlight-color:rgba(255,255,255,0);overflow-scrolling:touch;margin:0;padding:0;outline:0;font-style:normal;border:none;background:0 0}
+input,label,select{vertical-align:middle;}
+h1,h2,h3,h4,h5,h6{font-family:normal;}
+input[type=checkbox],input[type=radio]{box-sizing:border-box;}
+input[type=search]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}
+body{font-family: "microsoft yahei";min-width:320px;word-wrap:break-word;line-height:1;cursor:default;-ms-content-zooming:none;-webkit-text-size-adjust:none;-moz-text-size-adjust:none;-ms-text-size-adjust:none;text-size-adjust:none}
+table{border-collapse:collapse;border-spacing:0;}
+caption,th{text-align:left;font-weight:400;}
+dl,li,ol,ul{list-style:none;}
+textarea{resize:none;overflow:auto;vertical-align:top;}
+del{text-decoration:line-through;}
+a,button{cursor:pointer;}
+a,a:hover{text-decoration:none;-webkit-tap-highlight-color:transparent;}
+a:visited{color: #2e2e2e;}
+a{color: #2e2e2e;}
+a:focus{outline:0;-moz-outline:none;}
+img{border:0;vertical-align:middle;-ms-interpolation-mode:bicubic;-webkit-tap-highlight-color:transparent;}
+.flex{display:-webkit-box;display:-moz-box;display:-ms-flexbox;display:flex;}
+.flex-fixed{width:auto;display:block;}
+.flex-auto{-webkit-box-flex:1;-moz-box-flex:1;-webkit-flex:1;-ms-flex:1;flex:1;}
+.bg-fff{
+    background: #fff;
+}
+.gray{
+    background: #f3f3f3;
+}
+
+.clearfix{
+  zoom: 1;
+  
+}
+.clearfix:after {
+    content: " ";
+    display: block;
+    height: 0;
+    clear: both;
+}
+/*悬浮下载广告*/
+.fixed-fill-loading{
+	padding-bottom:1.867rem;
+}
+.fixed-fill-loading-100{
+	padding-bottom:2.667rem;
+}
+a.download-app{
+	display: block;
+	width: 100%;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	z-index: 5;
+	height: 1.467rem;
+	background: url("../images/live/live_banner_download.png") no-repeat center;
+	background-size: 100%;
+}
+a.close-ad{
+	display: block;
+	width: 0.48rem;
+	position: fixed;
+	bottom: 0.853rem;
+	right: 0.267rem;
+	z-index: 6;
+	height: 0.48rem;
+	background: url("../images/live/live_ad_close.png") no-repeat center;
+	background-size: 100%;
+}
+/*页尾*/
+.footer-nav{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+    height: 1.28rem;
+    font-size: 0;
+}
+.footer-nav div.recommend{
+    width: 3.333rem;
+    font-size: 0.32rem;
+    display: inline-block;
+    padding-top: 0.747rem;
+    text-align: center;
+}
+.footer-nav div span{
+	color: #999;
+}
+.footer-nav div.active span{
+    color: #2e2e2e;
+}
+.footer-nav div.recommend span{
+    padding-top: 0.6rem;
+    background: url(../images/footer_recommend.png) no-repeat center top;
+    background-size: 0.533rem;
+}
+.footer-nav div.recommend.active span{
+    background: url(../images/footer_recommend_check.png) no-repeat center top;
+    background-size: 0.533rem;
+}
+.footer-nav div.beans span{
+    background: url(../images/footer_beans.png) no-repeat center top;
+    background-size: 0.533rem;
+}
+.footer-nav div.beans.active span{
+    background: url(../images/footer_beans_check.png) no-repeat center top;
+    background-size: 0.533rem;
+}
+.footer-nav div.my-coupons span{
+    background: url(../images/footer_coupons.png) no-repeat center top;
+    background-size: 0.533rem;
+}
+.footer-nav div.my-coupons.active span{
+    background: url(../images/footer_coupons_check.png) no-repeat center top;
+    background-size: 0.533rem;
+}
+.footer-nav div.live span{
+    background: url(../images/footer_play.png) no-repeat center top;
+    background-size: 0.533rem;
+}
+.footer-nav div.live.active span{
+    background: url(../images/footer_play_checked.png) no-repeat center top;
+    background-size: 0.533rem;
+}
+.footer-nav div.my span{
+    background: url(../images/footer_my.png) no-repeat center top;
+    background-size: 0.533rem;
+}
+.footer-nav div.my.active span{
+    background: url(../images/footer_my_checked.png) no-repeat center top;
+    background-size: 0.533rem;
+}
+.swiper-slide img{
+    width: 100%;
+    height: 4.0rem;
+}
+.swiper-pagination{
+    bottom: 0.267rem;
+    right: 0.4rem;
+}
+.swiper-pagination-bullet{
+    background: #fff;
+    opacity: 0.5;
+}
+.swiper-pagination-bullet-active{
+    background: #feda50;
+}
+.more-loading{
+	display: block;
+	width: 1rem;
+	margin: 0 auto;    
+	margin-top: 0.4rem;
+    margin-bottom: 0.4rem;
+}
+.loading-shade{
+	position: fixed;
+	width:100%;
+	height:100%;
+	top: 0;
+	left: 0;
+	background:rgba(0,0,0,0.5);
+	z-index:20;
+}
+.loading-shade img{
+	width: 4.5rem;
+	display:block;
+	margin:0 auto;
+	margin-top:3rem;
+}
+.end{
+	    margin: 0 auto;
+    font-size: 0.4rem;
+    text-align: center;
+}
+.red{
+	color: red;
+}
+p.sawtooth{
+    width: 100%;
+    height: 0.107rem;
+    background:url("../images/live_sawtooth.png") no-repeat center;
+    background-size: 100%;
+}
+.fl-r{
+    float: right;
+}
+.fl-l{float: left;}
+/*等级*/
+.grade-1{
+    display: inline-block;
+    background: url("../images/grade/grade_01.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-2{
+    display: inline-block;
+    background: url("../images/grade/grade_02.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-3{
+    display: inline-block;
+    background: url("../images/grade/grade_03.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-4{
+    display: inline-block;
+    background: url("../images/grade/grade_04.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-05{
+    display: inline-block;
+    background: url("../images/grade/grade_05.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-6{
+    display: inline-block;
+    background: url("../images/grade/grade_06.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-7{
+    display: inline-block;
+    background: url("../images/grade/grade_07.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-8{
+    display: inline-block;
+    background: url("../images/grade/grade_08.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-9{
+    display: inline-block;
+    background: url("../images/grade/grade_09.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-10{
+    display: inline-block;
+    background: url("../images/grade/grade_10.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-11{
+    display: inline-block;
+    background: url("../images/grade/grade_11.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-12{
+    display: inline-block;
+    background: url("../images/grade/grade_12.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-13{
+    display: inline-block;
+    background: url("../images/grade/grade_13.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-14{
+    display: inline-block;
+    background: url("../images/grade/grade_14.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-15{
+    display: inline-block;
+    background: url("../images/grade/grade_15.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-16{
+    display: inline-block;;
+    background: url("../images/grade/grade_16.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-17{
+    display: inline-block;
+    background: url("../images/grade/grade_17.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-18{
+    display: inline-block;
+    background: url("../images/grade/grade_18.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-19{
+    display: inline-block;
+    background: url("../images/grade/grade_19.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-20{
+    display: inline-block;
+    background: url("../images/grade/grade_20.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-21{
+    display: inline-block;
+    background: url("../images/grade/grade_21.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-22{
+    display: inline-block;
+    background: url("../images/grade/grade_22.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-23{
+    display: inline-block;
+    background: url("../images/grade/grade_23.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-24{
+    display: inline-block;
+    background: url("../images/grade/grade_24.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-25{
+    display: inline-block;
+    background: url("../images/grade/grade_25.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-26{
+    display: inline-block;
+    background: url("../images/grade/grade_26.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-27{
+    display: inline-block;
+    background: url("../images/grade/grade_27.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-28{
+    display: inline-block;
+    background: url("../images/grade/grade_28.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-29{
+    display: inline-block;
+    background: url("../images/grade/grade_29.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-30{
+    display: inline-block;
+    background: url("../images/grade/grade_30.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-30{
+    display: inline-block;
+    background: url("../images/grade/grade_30.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-31{
+    display: inline-block;
+    background: url("../images/grade/grade_31.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-32{
+    display: inline-block;
+    background: url("../images/grade/grade_32.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-33{
+    display: inline-block;
+    background: url("../images/grade/grade_33.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-34{
+    display: inline-block;
+    background: url("../images/grade/grade_34.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-35{
+    display: inline-block;
+    background: url("../images/grade/grade_35.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-36{
+    display: inline-block;
+    background: url("../images/grade/grade_36.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-37{
+    display: inline-block;
+    background: url("../images/grade/grade_37.png") no-repeat center;
+    background-size: 1.1rem;
+}
+.grade-38{
+    display: inline-block;
+    background: url("../images/grade/grade_38.png") no-repeat center;
+    background-size: 1.1rem;
+}
+
+/*验证手机*/
+
+
+.valphone-row{
+	margin-top:10px;
+	position: relative;
+	height: 60px;
+}
+
+
+.valphone-input-box{
+	position: absolute;
+	left: 0;
+	top:0;
+	width: 100%;
+	padding-left: 80px;
+	padding-right: 10px;
+	box-sizing: border-box;
+	font-size: 0px;
+}
+
+.valphone-input-box .valphone-phone{
+	width: 100%;
+	height: 50px;
+	border:1px solid #c9caca;
+	border-radius: 8px;
+	box-sizing: border-box;
+	padding-left: 60px;
+	padding-right: 15px;
+	outline: none;
+	font-size: 14px;
+}
+.valphone-input-box.valphone-img{
+	padding-left: 10px;
+	text-align:center;
+}
+
+.valphone-input-box  .valphone-vcode{
+	width: 50%;
+	height: 50px;
+	border:1px solid #c9caca;
+	border-radius: 8px;
+	box-sizing: border-box;
+	padding-left: 15px;
+	padding-right: 15px;
+	outline: none;
+	font-size: 13px;
+}
+
+.valphone-img #validevcode{
+	display:inline-block;
+	vertical-align: top;
+}
+
+.valphone-img .valphone-input-codeimg{
+	display:inline-block;
+	vertical-align: top;
+}
+
+.valphone-input-box .valphone-getvcode{
+	width:40%;
+	margin-left: 5%;
+	display: inline-block;
+	font-size: 12px;
+	border:1px solid #f6ab00;
+	box-sizing: border-box;
+	height: 50px;
+	vertical-align: top;
+	text-align: center;
+	line-height: 50px;
+	color:#f6ab00;
+	border-radius: 8px;
+}
+
+.valphone-input-box .valphone-phone:focus{
+	border:1px solid #f6ab00;
+}
+
+
+.valphone-input-box .valphone-vcode:focus{
+	border:1px solid #f6ab00;
+}
+.valphone-input-box span{
+	position: absolute;
+	left:90px;
+	top:15px;
+	color:#c9caca;
+	display: block;
+	width: 40px;
+	border-right: 1px solid #ddd;
+	font-size: 16px;
+}
+
+.valphone-nextstep{
+	width: 100%;
+	height: 40px;
+	line-height: 40px;
+	text-align: center;
+	display: block;
+	background: #f6ab00;
+	margin-top:20px;
+	color:#fff;
+	border-radius: 5px;
+}
+
+.valphone-nextstep:focus{
+	color:#fff;
+}
+.getlancode-box{
+	width:100%;
+	height:30px;
+	text-align:right;
+}
+.getlancode{
+	height:30px;
+	line-height:30px;
+	display:inline-block;
+	text-align:right;
+	border:1px solid #f6ab00;
+	padding:0 5px;
+	border-radius:4px;
+	vertical-align:middle;
+}
+
+.getlancode-box  .getlancode-tips{
+	vertical-align:middle;
+	color:#666;
+}
+
+.getlancode i{
+	display:inline-block;
+	width:20px;
+	height:20px;
+	background-image:url(../img/phonecall.png);
+	background-size:contain;
+	background-repeat:no-repeat;
+	backgroind-position:center;
+	vertical-align:middle;
+}
+
+.getlancode span{
+	display:inline-block;
+	vertical-align:middle;
+	color:#f6ab00;
+}

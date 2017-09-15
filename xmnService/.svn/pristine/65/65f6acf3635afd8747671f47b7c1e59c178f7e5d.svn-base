@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live.dao.LiveAnchorVideoDao">
+
+
+	<select id="getAnchorVideoById" parameterType="java.lang.Integer" resultType="map">
+		select id, title, anchor_id,anchor_name,cover_url,video_url,view_count
+		from t_live_anchor_video
+		where id = #{id} and status = '001'
+	</select>
+
+	<select id="getLiveHomeRecommendVideo" parameterType="map" resultType="map">
+		select id, title, anchor_id,anchor_name,cover_url,video_url,view_count
+		from t_live_anchor_video
+		where status = '001'
+		order by recommended desc, sort desc, create_time desc
+		limit ${(page-1)*pageSize},#{pageSize}
+	</select>
+
+	<update id="updateVnchorVideoViewCount" parameterType="map" >
+		update t_live_anchor_video
+		set view_count = (view_count + 1)
+		where id = #{id}
+	</update>
+
+
+	<!-- 精选直播，精彩时刻 -->
+	<select id="getLiveHomeRecommendVideoV2" parameterType="map" resultType="map">
+		select id, title, anchor_id,anchor_name,cover_url,video_url,view_count
+		from t_live_anchor_video
+		where status = '001' and recommended = 1
+		order by sort desc, create_time desc
+		limit ${(page-1)*pageSize},#{pageSize}
+	</select>
+
+	<!-- 新人推荐，精彩时刻 -->
+	<select id="getRecommendVideoByNoneSign" parameterType="map" resultType="map">
+		SELECT l.id, l.title, l.anchor_id, l.anchor_name, l.cover_url, l.video_url, l.view_count
+		FROM t_live_recommend_record r
+		INNER JOIN t_live_anchor_video l ON  l.id = r.rid
+		WHERE 1 = 1 AND r.rtype = 4 AND r.module_type = 1 and l.status = '001'
+		ORDER BY r.home_sort DESC, r.create_time DESC
+		LIMIT ${(page-1)*pageSize},#{pageSize}
+	</select>
+
+
+</mapper>

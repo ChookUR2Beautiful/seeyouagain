@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:util="http://www.springframework.org/schema/util"	
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-3.2.xsd 
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-3.2.xsd 
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+	http://www.springframework.org/schema/util
+    http://www.springframework.org/schema/util/spring-util-3.2.xsd">
+	
+	<!-- 支付服务连接池 -->
+	<bean id="payConnectionSpringfactory" class="com.xmniao.xmn.core.thrift.client.common.factory.ThriftConnectionSpringFactory">
+		<property name="ip" value="${thrift.pay.ip}" />
+		<property name="port" value="${thrift.pay.port}" />
+		<property name="maxActive" value="${thrift.public.maxActive}" />
+		<property name="maxIdle" value="${thrift.public.maxIdle}" />
+		<property name="testOnBorrow" value="${thrift.public.testOnBorrow}" />
+		<property name="testOnReturn" value="${thrift.public.testOnReturn}" />
+		<property name="testWhileIdle" value="${thrift.public.testWhileIdle}" />
+		<property name="conTimeOut" value="${thrift.public.conTimeOut}" />
+		<!-- <property name="maxWait" value="50"></property> -->
+	</bean>
+
+
+	<bean id="payConnectionManager" class="com.xmniao.xmn.core.thrift.client.common.ConnectionManager">
+		<property name="thriftConnectionProvider" ref="payConnectionSpringfactory" />
+	</bean>
+	<!-- 支付服务接口 -->
+	<bean id="synthesizeServiceClient" class="com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy">
+		<property name="service" value="com.xmniao.xmn.core.thrift.SynthesizeService" />
+		<property name="connectionManager" ref="payConnectionManager" />	
+		<property name="serviceName" value="SynthesizeService"></property>	
+	</bean>
+	
+		<!--寻蜜客钱包 支付服务接口 -->
+	<bean id="xmerWalletServiceClient" class="com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy">
+		<property name="service" value="com.xmniao.xmn.core.thrift.XmerWalletService" />
+		<property name="connectionManager" ref="payConnectionManager" />	
+		<property name="serviceName" value="XmerWalletService"></property>	
+	</bean>
+	
+		<!--支付钱包 支付服务接口 -->
+	<bean id="liveWalletServiceClient" class="com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy">
+		<property name="service" value="com.xmniao.xmn.core.thrift.LiveWalletService" />
+		<property name="connectionManager" ref="payConnectionManager" />	
+		<property name="serviceName" value="LiveWalletService"></property>	
+	</bean>
+
+	<bean id="walletExpansionService" class="com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy">
+		<property name="service" value="com.xmniao.xmn.core.thrift.WalletExpansionService" />
+		<property name="connectionManager" ref="payConnectionManager" />
+		<property name="serviceName" value="WalletExpansionService"></property>
+	</bean>
+
+
+</beans>

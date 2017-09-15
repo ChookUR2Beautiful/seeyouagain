@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.seller.dao.BannerDao" >
+ 
+ <!-- 查询城市banner图 -->
+ <select id="findAllByCity" resultType="map" parameterType="map">
+ 	SELECT id,position,banner_style AS bannerStyle,obj_json AS objJson,remarks,sort 
+ 	FROM t_banner 
+	WHERE position=#{position} AND city=#{city} AND status=1 AND banner_style=2 
+	AND is_all=0 AND is_emphasis=1
+	ORDER BY sort DESC
+ </select>
+ 
+ <!-- 查询全国通用的banner图 -->
+<select id="findAll" resultType="map" parameterType="String">
+	SELECT id,position,banner_style AS bannerStyle,obj_json AS objJson,remarks,sort 
+	FROM t_banner 
+	WHERE position=#{position} AND is_all=1 AND status=1 
+	AND banner_style=2 AND is_emphasis=1
+	ORDER BY sort DESC
+</select>
+<!-- 根据城市ID查询非推荐的banner图 -->
+<select id="findBannersByIsNotEmphasis" resultType="map">
+	SELECT id,position,banner_style AS bannerStyle,obj_json AS objJson,remarks,sort 
+	FROM t_banner 
+	WHERE position=7 AND is_all=0 AND status=1 
+	AND banner_style=2 AND city=#{city}
+	ORDER BY sort DESC
+</select>
+
+<!-- 竞拍banner图 -->
+<select id="findBidBanner" resultType="map">
+	SELECT id,position,banner_style AS bannerStyle,obj_json AS objJson,remarks,sort 
+	FROM t_banner 
+	WHERE position=5 AND is_all=0 AND status=1 
+	AND banner_style=2 AND is_emphasis=0 
+	ORDER BY sort DESC
+</select>
+    <select id="findBidBannerByType" resultType="java.util.Map">
+        SELECT id,position,banner_style AS bannerStyle,obj_json AS objJson,remarks,sort
+        FROM t_banner
+        WHERE position=#{type} AND is_all=0 AND status=1
+              AND banner_style=2 AND is_emphasis=0
+        ORDER BY sort DESC
+    </select>
+    
+    
+<!-- 查询首页活动模块
+	排序：显示本城市活动    
+	         排序字段降序排序
+	 取数量为3
+ -->    
+<select id="findHomeActivity" parameterType="Integer" resultType="map">
+	SELECT s.id,s.title,s.image_url as imageUrl,s.location,
+	s.jump_url as jumpUrl 
+	from t_catehome_activity s where s.city_id =#{cityid} and s.state = 1 order by s.sort DESC limit 0,3
+</select>  
+   
+</mapper>

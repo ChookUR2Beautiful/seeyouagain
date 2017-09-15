@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.catehome.dao.HotWordsDao">
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.catehome.entity.HotWords">
+    <id column="hid" jdbcType="INTEGER" property="hid" />
+    <result column="area_id" jdbcType="INTEGER" property="areaId" />
+    <result column="hot_words" jdbcType="VARCHAR" property="hotWords" />
+    <result column="hot_order" jdbcType="INTEGER" property="hotOrder" />
+    <result column="hot_status" jdbcType="TINYINT" property="hotStatus" />
+    <result column="hot_type" jdbcType="TINYINT" property="hotType" />
+    <result column="hot_num" jdbcType="INTEGER" property="hotNum" />
+    <result column="creator_id" jdbcType="INTEGER" property="creatorId" />
+    <result column="created_time" jdbcType="VARCHAR" property="createdTime" />
+    <result column="update_user_id" jdbcType="INTEGER" property="updateUserId" />
+    <result column="update_time" jdbcType="VARCHAR" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    hid, area_id, hot_words, hot_order, hot_status, hot_type, hot_num, creator_id, created_time, 
+    update_user_id, update_time
+  </sql>
+  <select id="queryHotWordsOrder" parameterType="map" resultMap="BaseResultMap">
+   select
+    hot_words 
+    from t_hot_words where 1 = 1 
+    <if test="areaId!=null">
+    and  area_id=#{areaId} 
+    </if>
+    <if test="type==1">
+    and  hot_type=#{type} order by hot_order desc
+    </if>
+     <if test="type==2">
+    and  hot_type=#{type} order by hot_num desc
+    </if>
+    
+    limit ${(page-1)*pageSize},#{pageSize}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_hot_words
+    where hid = #{hid,jdbcType=INTEGER}
+  </delete>
+
+	<!-- 根据关键字查询 -->
+	<select id = "queryKeyWordByKeyWord" parameterType="map" resultMap="BaseResultMap">
+		select hid,hot_words,hot_type,hot_num,hot_order from t_hot_words
+		where hot_words = #{keyWord}
+		<if test="areaId!=null">
+			and area_id =#{areaId}
+		</if>
+		limit 0,1
+	</select>
+	
+  <insert id="insertSelective" parameterType="map">
+    insert into t_hot_words
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="hid != null">
+        hid,
+      </if>
+      <if test="areaId != null">
+        area_id,
+      </if>
+      <if test="hotWords != null">
+        hot_words,
+      </if>
+      <if test="hotOrder != null">
+        hot_order,
+      </if>
+      <if test="hotStatus != null">
+        hot_status,
+      </if>
+      <if test="hotType != null">
+        hot_type,
+      </if>
+      <if test="hotNum != null">
+        hot_num,
+      </if>
+      <if test="creatorId != null">
+        creator_id,
+      </if>
+      <if test="createdTime != null">
+        created_time,
+      </if>
+      <if test="updateUserId != null">
+        update_user_id,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="hid != null">
+        #{hid,jdbcType=INTEGER},
+      </if>
+      <if test="areaId != null">
+        #{areaId,jdbcType=INTEGER},
+      </if>
+      <if test="hotWords != null">
+        #{hotWords,jdbcType=VARCHAR},
+      </if>
+      <if test="hotOrder != null">
+        #{hotOrder,jdbcType=INTEGER},
+      </if>
+      <if test="hotStatus != null">
+        #{hotStatus,jdbcType=TINYINT},
+      </if>
+      <if test="hotType != null">
+        #{hotType,jdbcType=TINYINT},
+      </if>
+      <if test="hotNum != null">
+        #{hotNum,jdbcType=INTEGER},
+      </if>
+      <if test="creatorId != null">
+        #{creatorId,jdbcType=INTEGER},
+      </if>
+      <if test="createdTime != null">
+        #{createdTime,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null">
+        #{updateUserId,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="map">
+    update t_hot_words
+    <set>
+      <if test="areaId != null">
+        area_id = #{areaId,jdbcType=INTEGER},
+      </if>
+      <if test="hotWords != null">
+        hot_words = #{hotWords,jdbcType=VARCHAR},
+      </if>
+      <if test="hotOrder != null">
+        hot_order = #{hotOrder,jdbcType=INTEGER},
+      </if>
+      <if test="hotStatus != null">
+        hot_status = #{hotStatus,jdbcType=TINYINT},
+      </if>
+      <if test="hotType != null">
+        hot_type = #{hotType,jdbcType=TINYINT},
+      </if>
+      <if test="hotNum != null">
+        hot_num = #{hotNum,jdbcType=INTEGER},
+      </if>
+      <if test="creatorId != null">
+        creator_id = #{creatorId,jdbcType=INTEGER},
+      </if>
+      <if test="createdTime != null">
+        created_time = #{createdTime,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null">
+        update_user_id = #{updateUserId,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where hid = #{hid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="map">
+    update t_hot_words
+    set area_id = #{areaId,jdbcType=INTEGER},
+      hot_words = #{hotWords,jdbcType=VARCHAR},
+      hot_order = #{hotOrder,jdbcType=INTEGER},
+      hot_status = #{hotStatus,jdbcType=TINYINT},
+      hot_type = #{hotType,jdbcType=TINYINT},
+      hot_num = #{hotNum,jdbcType=INTEGER},
+      creator_id = #{creatorId,jdbcType=INTEGER},
+      created_time = #{createdTime,jdbcType=VARCHAR},
+      update_user_id = #{updateUserId,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=VARCHAR}
+    where hid = #{hid,jdbcType=INTEGER}
+  </update>
+  
+  
+</mapper>

@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xmniao.xmn.core.order.dao.CouponFansOrderDao">
+
+	
+	<sql id="couponFansOrderCol">
+		  co.order_sn, co.anchor_cid,  co.cid_num,  co.uid,  co.record_id,  co.sellerid,
+		  co.status,  co.payment_type,  co.total_amount,  co.cash,  co.balance,  co.commision,  co.zbalance,
+		  co.beans,	co.integral,  co.cuser,  co.return_integral,  co.retrun_coupon_amount,  co.create_time 
+	</sql>
+	
+	<!-- 查询预售粉丝券订单详情 -->
+ 	<select id="queryCouponFansOrderView" resultType="map" parameterType="map"> 
+		SELECT 
+		  cou.cname ,li.zhibo_thumbnail,li.zhibo_cover,
+		  <include refid="couponFansOrderCol"/>
+		FROM t_coupon_order co 
+		LEFT JOIN t_fans_coupon_anchor_ref ref on ref.anchor_cid = co.anchor_cid
+		LEFT JOIN t_coupon cou on cou.cid = ref.cid
+		LEFT JOIN t_live_record li on li.id = ref.record_id
+		WHERE co.order_sn = #{order_sn} AND co.uid = #{uid}	 and cou.ctype = 2 	
+ 	</select>
+	
+	<!-- 查询预预售粉丝券订单列表 -->
+  	<select id="queryCouponFansOrderList" resultType="map" parameterType="map">
+		select 
+		   de.denomination,	de.seats , de.serial,de.start_date, de.end_date,de.user_status,
+		   li.id,li.sellername,li.zhibo_thumbnail,co.record_id ,de.user_time,pon.cname,de.seats,
+		   <![CDATA[
+		  	 IF (date_format(NOW(), '%Y-%m-%d %H:%i') <= date_format(de.end_date, '%Y-%m-%d %H:%i'),0,1) AS isTimeOut,
+		   ]]>
+		   <include refid="couponFansOrderCol"/>
+		FROM
+			t_coupon_order co
+		LEFT JOIN t_fans_coupon_anchor_ref ref ON ref.record_id = co.record_id
+		LEFT JOIN t_live_record li ON li.id = ref.record_id
+		LEFT JOIN t_coupon_detail de ON de.order_no = co.order_sn
+		LEFT JOIN t_coupon pon ON de.cid = pon.cid
+		WHERE co.uid = #{uid} AND de.ctype = 2 AND co.status!= 0
+		<if test="maxTime!=null">
+            <![CDATA[
+            AND co.create_time < DATE_FORMAT(#{maxTime}, '%Y-%m-%d %H:%i:%s')
+            ]]>
+        </if>
+        <if test="status != null">
+        	and co.status = #{status}
+        </if>
+		ORDER BY co.create_time DESC 
+		limit ${(page-1)*limit},#{limit}
+  	</select>  
+  	
+  	
+  	<!-- 查询预预售粉丝券 粉丝券详情 -->
+  	<select id="queryCouponDetailInfoByBid" resultType="couponInfo" parameterType="map">  
+		select 
+			cdid,cid, denomination, seats , serial, start_date as startDate, end_date as endDate, user_status as userStatus,
+			<![CDATA[
+			IF (date_format(NOW(), '%Y-%m-%d %H:%i') <= date_format(end_date, '%Y-%m-%d %H:%i'),0,1) AS isTimeOut
+			]]>
+		FROM t_coupon_detail WHERE  uid = #{uid} 
+		<if test="orderNo !=null and orderNo !='' ">
+			and order_no=#{orderNo} 
+		</if>
+		<if test="bid !=null and bid !='' ">
+			and bid=#{bid} 
+		</if>
+		and ctype = 2 
+  	</select>
+  	
+  	<!-- 批量查询这些用户是否购买过粉丝卷-->
+  	<select id="queryCheckCouponFansOrder" resultType="map" parameterType="map">  
+		SELECT
+			COUNT(1) AS count,
+			o.uid
+		FROM
+			t_coupon_order o
+			LEFT JOIN t_live_record r ON o.record_id = r.id
+		WHERE
+			o.status = 1
+		AND 
+			r.status = 1
+		AND
+			r.anchor_id = #{anchorId}
+		AND o.uid IN 
+			<foreach collection="uids" index="index" item="uid" open="(" close=")" separator=",">
+  			 #{uid}
+   			</foreach>
+		GROUP BY
+			o.uid
+  	</select>
+  	
+  	
+  	 	<!-- 查询我购买过粉丝券的主播信息  正在开播的  且人气最高的   -->
+  	<select id="queryCouponFansOrderAnchorUidList" resultType="map" parameterType="map">  
+		select  
+			DISTINCT ref.uid as anchorUid , li.zhibo_type as  zhiboType,  sel.sellername,li.anchor_id as anchorId,
+			li.id as liveRecordId,li.anchor_room_no as roomNo,li.live_start_type as liveStartType
+		FROM
+			t_coupon_order co
+		LEFT JOIN t_fans_coupon_anchor_ref ref ON ref.record_id = co.record_id
+		LEFT JOIN t_live_record li ON li.id = ref.record_id
+		LEFT JOIN t_coupon_detail de ON de.anchor_cid = co.anchor_cid
+		LEFT JOIN t_coupon pon ON de.cid = pon.cid
+		LEFT JOIN t_seller sel ON li.sellerid = sel.sellerid
+		WHERE   co.uid = #{uid}  and li.zhibo_type =1
+		ORDER BY view_count DESC 
+  	</select>  
+  	
+  		<!-- 根据相关添加查询直播有预售的 主播      -->
+  	<select id="queryliveingFansRecordList" resultType="map" parameterType="map">  
+		select  
+			DISTINCT ref.uid AS anchorUid, li.zhibo_type as zhiboType, sel.sellername,li.anchor_id as anchorId,
+			li.id as liveRecordId,li.anchor_room_no as roomNo,li.live_start_type as liveStartType
+		FROM
+			t_coupon_order co
+		LEFT JOIN t_fans_coupon_anchor_ref ref ON ref.record_id = co.record_id
+		LEFT JOIN t_live_record li ON li.id = ref.record_id
+		LEFT JOIN t_seller sel ON li.sellerid = sel.sellerid
+		WHERE 1=1 
+		<if test="zhiboType !=null and zhiboType != ''">
+			AND  li.zhibo_type =#{zhiboType}
+		</if>
+		<if test="isFans == 0">
+			AND  li.zhibo_type =#{isFans}
+		</if>
+		<if test=" list != null and list!='' ">
+			AND  ref.uid NOT IN
+			<foreach collection="list" index="index" item="map" open="(" close=")" separator=",">
+ 			 #{map.anchorUid}
+  			</foreach>
+		</if>
+	ORDER BY view_count DESC 
+  	</select> 
+  	
+  	<!-- 根据相关批量订单编号 查询 粉丝券信息    -->
+  	<select id="queryFansCouponInfoByOrderNoList" resultType="map" parameterType="map">  
+		select   
+			de.cid,de.serial,de.denomination,de.seats,pon.cname,de.order_no
+		FROM t_coupon_detail de 
+		LEFT JOIN t_coupon pon ON de.cid = pon.cid  WHERE 1=1 and de.ctype = 2
+		<if test=" list != null and list!='' ">
+			AND  de.order_no IN
+			<foreach collection="list" index="index" item="orderNo" open="(" close=")" separator=",">
+ 			 #{orderNo}
+  			</foreach>
+		</if>
+  	</select>   
+  	
+  	<!-- 根据相关批量订单编号 查询 粉丝券信息    -->
+  	<select id="queryFansCouponSeatsCount" resultType="int" parameterType="map">  
+		select  
+			IFNULL(sum(de.seats),0)  AS seats
+		FROM t_fans_coupon_anchor_ref ref 
+		LEFT JOIN t_coupon_detail de ON de.anchor_cid = ref.anchor_cid
+		WHERE   ref.uid = #{uid}  and de.ctype =2 AND co.status = 1
+		<if test="isUse !=null and isUse !='' ">
+			AND de.user_status = 2
+		</if>
+  	</select>   
+  	
+	<!--   	查询出主播售出 或者 粉丝使用的优惠券总位数 -->
+  	<select id="queryAnchorFansSellSeatsCount" parameterType="map" resultType="int">
+  		SELECT
+  			IFNULL(sum(de.seats),0)  as seats 
+  		FROM t_fans_coupon_anchor_ref ref 
+		LEFT JOIN t_coupon_order  co ON ref.anchor_cid = co.anchor_cid
+		LEFT JOIN t_coupon_detail de ON  co.order_sn = de.order_no
+		WHERE ref.uid = #{uid}  AND de.ctype = 2 
+		AND co.status = 1
+		<if test="isUse == 2">
+			AND de.user_status = 2
+		</if>
+  	</select>
+  	
+	
+</mapper>

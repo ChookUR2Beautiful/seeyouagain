@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!-- 钱包数据映射 -->
+<mapper namespace="com.xmniao.xmn.core.verification.dao.WalletDao">
+
+	<resultMap id="BaseResultMap" type="com.xmniao.xmn.core.verification.entity.Wallet">
+		<id column="accountid" property="accountid"/>
+		<result column="uid" property="uid"/>
+		<result column="sellerid" property="sellerid"/>
+		<result column="jointid" property="jointid"/>
+		<result column="p_pwd" property="pPwd"/>
+		<result column="apply_date" property="applyDate"/>
+		<result column="effect_date" property="effectDate"/>
+		<result column="cancel_date" property="cancelDate"/>
+		<result column="status" property="status"/>
+		<result column="amount" property="amount"/>
+		<result column="balance" property="balance"/>
+		<result column="commision" property="commision"/>
+		<result column="zbalance" property="zbalance"/>
+		<result column="integral" property="integral"/>
+		<result column="seller_amount" property="sellerAmount"/>
+		<result column="quota" property="quota"/>
+		<result column="sign" property="sign"/>
+		<result column="sign_type" property="signType"/>
+		<result column="last_date" property="lastDate"/>
+		<result column="father_id" property="fatherId"/>
+		<result column="sellername" property="sellername"/>
+		<result column="account" property="account"/>
+		<result column="deposit" property="deposit"/>
+		<result column="return_deposit" property="returnDeposit"/>
+		<result column="ktx_deposit" property="ktxDeposit"/>
+	</resultMap>
+
+	<sql id="Base_Column_List" >
+		accountid,uid,sellerid,jointid,p_pwd,apply_date,effect_date,cancel_date,status,amount,balance,commision,zbalance,
+		integral,seller_amount,quota,sign,sign_type,last_date,father_id,sellername,account,deposit,return_deposit,ktx_deposit
+	</sql>
+
+	<select id="getWalletByUid" resultMap="BaseResultMap" parameterType="int">
+     <![CDATA[ 
+		SELECT * from b_wallet w where w.uid =  #{uid} limit 0,1
+	 ]]>
+	</select>
+	
+	
+	<!-- 插入钱包表 -->
+	<insert id="addUserWallert" parameterType="map">
+		INSERT INTO b_wallet  (uid,sign,apply_date,effect_date,last_date,sign_type) 
+		VALUES(#{uid},#{sign},#{adate},#{edate},#{ldate},1)
+	</insert>
+	
+	<!-- 获取寻蜜客钱包 -->
+	<select id="getXmerWallet" parameterType="int" resultType="map">
+		SELECT id,apply_date,profit,trunout,father_id,uname from b_xmer_wallet  where uid = #{uid}
+	</select>
+	
+</mapper>

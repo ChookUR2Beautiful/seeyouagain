@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live.dao.LiveHomeV2Dao">
+
+	<!--8.30 直播首页改版添加sql  ======================================================= -->
+
+	<!--获取直播栏目-->
+	<select id="getLiveTab" resultType="map" parameterType="map">
+		SELECT * FROM t_live_tab WHERE STATUS = 1
+		<if test="mtype != null">
+			and mtype = #{mtype}
+		</if>
+		limit 1
+	</select>
+
+	<!--获取直播栏目列表-->
+	<select id="getLiveTabList" resultType="map" parameterType="map">
+		SELECT * FROM t_live_tab WHERE STATUS = 1 and position in (1,2,3,4)
+	</select>
+
+	<!--统计直播数量-->
+	<select id="sumLiveRecord" resultType="Integer" parameterType="map">
+		select count(id) from t_live_record where 1 = 1 and zhibo_type = 1 and status = 1
+		<!-- 过滤指定用户观看直播间 -->
+		AND id not in  (SELECT id FROM t_live_record  WHERE telphones != '' AND telphones not like '%${phone}%' )
+		<if test="isFilterKSL != null">
+			and vedio_url not like 'rtmp://%'
+		</if>
+	</select>
+
+	<!--获取所有直播-->
+	<select id="getLiveRecordList" resultType="map" parameterType="map">
+		select
+		<if test="longitude!=null and latitude!=null">
+			ifnull(ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{latitude}*PI()/180-l.latitude*PI()/180)/2),2)+COS(#{latitude}*PI()/180)*COS(l.latitude*PI()/180)*POW(SIN((#{longitude}*PI()/180-l.longitude*PI()/180)/2),2)))*1000),'')
+			as `distance`,
+		</if>
+		l.*,
+		<if test="zhiboGiftRange != null">
+			<![CDATA[
+				if(g.zhiboGifts > #{zhiboGiftRange}, 0, 1) as range_order,
+			]]>
+		</if>
+		if(l.live_topic = 2, 1, 0) AS topic_order,
+		if(l.sign_type = 1, 1, 0) as signtype_order
+		from t_live_record l
+		left join (select live_record_id, SUM(percentAmount) as zhiboGifts from t_live_gived_gift where status = 1 GROUP BY live_record_id) g on g.live_record_id = l.id
+		where 1 = 1 and l.zhibo_type = 1 and l.status = 1
+		<!-- 过滤指定用户观看直播间 -->
+		AND l.id not in  (SELECT id FROM t_live_record  WHERE telphones != '' AND telphones not like '%${phone}%' )
+		<if test="isFilterKSL != null">
+			and vedio_url not like 'rtmp://%'
+		</if>
+		order by signtype_order desc, range_order desc, l.recommended desc, topic_order desc, l.stick desc, l.start_date desc
+		limit ${(page-1)*pageSize},#{pageSize}
+	</select>
+
+
+	<!-- 精彩预告 不区分签约类型-->
+	<select id="getPreList" resultType="map" parameterType="map">
+		select
+		<if test="longitude!=null and latitude!=null">
+			ifnull(ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{latitude}*PI()/180-l.latitude*PI()/180)/2),2)+COS(#{latitude}*PI()/180)*COS(l.latitude*PI()/180)*POW(SIN((#{longitude}*PI()/180-l.longitude*PI()/180)/2),2)))*1000),'')
+			as `distance`,
+		</if>
+		l.*
+		from t_live_record l
+		where l.zhibo_type = 0 and l.status = 1
+		<![CDATA[ AND  NOW() < plan_end_date]]>
+		<!-- 过滤指定用户观看直播间 -->
+		AND l.id not in  (SELECT id FROM t_live_record  WHERE telphones != '' AND telphones not like '%${phone}%')
+		order by l.recommended DESC, l.stick desc, l.plan_start_date asc
+		limit ${(page-1)*pageSize},#{pageSize}
+	</select>
+
+	<!-- 回放视频 明星活动 -->
+	<select id="getStarsVideo" resultType="map" parameterType="map">
+		SELECT
+		l.*
+		<if test="longitude!=null and latitude!=null">
+			,ifnull(ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{latitude}*PI()/180-l.latitude*PI()/180)/2),2)+COS(#{latitude}*PI()/180)*COS(l.latitude*PI()/180)*POW(SIN((#{longitude}*PI()/180-l.longitude*PI()/180)/2),2)))*1000),'')
+			as `distance`
+		</if>
+		FROM t_live_recommend_record r
+		INNER JOIN t_live_record l ON l.id = r.rid
+		WHERE 1 = 1 AND r.rtype = 5 and r.module_type = 3 AND l.zhibo_type = 3
+		ORDER BY r.home_sort DESC , r.update_time DESC
+		limit ${(page-1)*pageSize},#{pageSize}
+	</select>
+
+	<!--8.30 直播首页改版添加sql  ======================================================= -->
+
+	<!-- 统计签约直播记录 -->
+	<select id="sumSignLiveRecord" resultType="Integer" parameterType="map">
+		select count(id) from t_live_record where 1 = 1 and zhibo_type = 1 and status = 1 and sign_type = 1
+		<!-- 过滤指定用户观看直播间 -->
+		AND id not in  (SELECT id FROM t_live_record  WHERE telphones != '' AND telphones not like '%${phone}%' )
+		<if test="isFilterKSL != null">
+			and vedio_url not like 'rtmp://%'
+		</if>
+	</select>
+
+	<!-- 统计非签约直播记录 -->
+	<select id="sumNoneSignLiveRecord" resultType="Integer" parameterType="map">
+		select count(id) from t_live_record where 1 = 1 and zhibo_type = 1 and status = 1 and sign_type != 1
+		<!-- 过滤指定用户观看直播间 -->
+		AND id not in  (SELECT id FROM t_live_record  WHERE telphones != '' AND telphones not like '%${phone}%' )
+		<if test="isFilterKSL != null">
+			and vedio_url not like 'rtmp://%'
+		</if>
+	</select>
+
+
+	<!-- 统计签约或者非签约直播记录 -->
+	<select id="sumLiveRecordBySigntype" resultType="Integer" parameterType="map">
+		select count(id) from t_live_record where 1 = 1 and zhibo_type = 1 and status = 1 and sign_type = #{signType}
+		<!-- 过滤指定用户观看直播间 -->
+		AND id not in  (SELECT id FROM t_live_record  WHERE telphones != '' AND telphones not like '%${phone}%' )
+		<if test="isFilterKSL != null">
+			and vedio_url not like 'rtmp://%'
+		</if>
+	</select>
+
+	<!-- 统计活跃或不活跃直播记录 -->
+	<select id="sumLiveRecordByActivity" resultType="Integer" parameterType="map">
+		select count(id) from t_live_record
+		where 1 = 1 and zhibo_type = 1 and status = 1
+		<choose>
+			<!-- 活动直播 -->
+			<when test="isActivity != null">
+				and live_topic = 2
+			</when>
+			<otherwise>
+				and live_topic != 2
+			</otherwise>
+		</choose>
+		<!-- 过滤指定用户观看直播间 -->
+		AND id not in  (SELECT id FROM t_live_record  WHERE telphones != '' AND telphones not like '%${phone}%' )
+		<if test="isFilterKSL != null">
+			and vedio_url not like 'rtmp://%'
+		</if>
+	</select>
+
+	<!-- 签约-直播记录 -->
+	<select id="getLiveRecordListBySign" resultType="map" parameterType="map">
+		select
+		<if test="longitude!=null and latitude!=null">
+			ifnull(ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{latitude}*PI()/180-l.latitude*PI()/180)/2),2)+COS(#{latitude}*PI()/180)*COS(l.latitude*PI()/180)*POW(SIN((#{longitude}*PI()/180-l.longitude*PI()/180)/2),2)))*1000),'')
+			as `distance`,
+		</if>
+		l.*,
+		<if test="zhiboGiftRange != null">
+			<![CDATA[
+				if(g.zhiboGifts > #{zhiboGiftRange}, 0, 1) as range_order,
+			]]>
+		</if>
+		if(l.live_topic = 2, 1, 0) AS topic_order
+		from t_live_record l
+		left join (select live_record_id, SUM(percentAmount) as zhiboGifts from t_live_gived_gift where status = 1 GROUP BY live_record_id) g on g.live_record_id = l.id
+		where 1 = 1 and l.zhibo_type = 1 and l.status = 1 and l.sign_type = 1
+		<!-- 过滤指定用户观看直播间 -->
+		AND l.id not in  (SELECT id FROM t_live_record  WHERE telphones != '' AND telphones not like '%${phone}%' )
+		<if test="isFilterKSL != null">
+			and l.vedio_url not like 'rtmp://%'
+		</if>
+		order by range_order desc, l.recommended desc, topic_order desc, l.stick desc, l.start_date desc
+		limit ${(page-1)*pageSize},#{pageSize}
+	</select>
+
+	<!-- 非签约-直播记录 -->
+	<select id="getLiveRecordListByNotSign" resultType="map" parameterType="map">
+		select
+		<if test="longitude!=null and latitude!=null">
+			ifnull(ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{latitude}*PI()/180-l.latitude*PI()/180)/2),2)+COS(#{latitude}*PI()/180)*COS(l.latitude*PI()/180)*POW(SIN((#{longitude}*PI()/180-l.longitude*PI()/180)/2),2)))*1000),'')
+			as `distance`,
+		</if>
+		l.*,
+		<if test="zhiboGiftRange != null">
+			<![CDATA[
+				if(g.zhiboGifts > #{zhiboGiftRange}, 0, 1) as range_order,
+			]]>
+		</if>
+		if(l.live_topic = 2, 1, 0) AS topic_order,
+		if(r.rid != '' and r.rid != null, 1, 0) as recommended
+		from t_live_record l
+		left join (select rid from t_live_recommend_record where rtype = 2) r on r.rid = l.id
+		left join (select live_record_id, SUM(percentAmount) as zhiboGifts from t_live_gived_gift where status = 1 GROUP BY live_record_id) g on g.live_record_id = l.id
+		<!-- 标签刷选 -->
+		<if test="tagId != null">
+			left join t_live_record_tag_conf c on c.record_id = l.id
+		</if>
+		where 1 = 1 and l.zhibo_type = 1 and l.status = 1 and l.sign_type != 1
+		<!-- 过滤指定用户观看直播间 -->
+		AND l.id not in  (SELECT id FROM t_live_record  WHERE telphones != '' AND telphones not like '%${phone}%' )
+		<!-- 标签刷选 -->
+		<if test="tagId != null">
+			and c.tag_id = #{tagId}
+		</if>
+		<!-- 通过城市Id，过滤后的主播Id -->
+		<if test="anchorList != null">
+			and l.anchor_id in 
+			<foreach collection="anchorList" index="index" item="id" open="(" close=")" separator=",">
+				#{id}
+			</foreach>
+		</if>
+		<if test="isFilterKSL != null">
+			and l.vedio_url not like 'rtmp://%'
+		</if>
+		order by range_order desc, recommended desc, topic_order desc, l.stick desc, l.start_date desc
+		limit ${(page-1)*pageSize},#{pageSize}
+	</select>
+
+	<!-- 活动/非活动-直播记录 -->
+	<select id="getLiveRecordListByActivity" resultType="map" parameterType="map">
+		select
+		<if test="longitude!=null and latitude!=null">
+			ifnull(ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{latitude}*PI()/180-l.latitude*PI()/180)/2),2)+COS(#{latitude}*PI()/180)*COS(l.latitude*PI()/180)*POW(SIN((#{longitude}*PI()/180-l.longitude*PI()/180)/2),2)))*1000),'')
+			as `distance`,
+		</if>
+		l.*,
+		<if test="zhiboGiftRange != null">
+			<![CDATA[
+				if(g.zhiboGifts > #{zhiboGiftRange}, 0, 1) as range_order,
+			]]>
+		</if>
+		if(l.sign_type = 1, 1, 0) AS signType_order
+		from t_live_record l
+		left join (select live_record_id, SUM(percentAmount) as zhiboGifts from t_live_gived_gift where status = 1 GROUP BY live_record_id) g on g.live_record_id = l.id
+		<!-- 标签刷选 -->
+		<if test="tagId != null">
+			left join t_live_record_tag_conf c on c.record_id = l.id
+		</if>
+		where 1 = 1 and l.zhibo_type = 1 and l.status = 1 
+		<choose>
+			<!-- 活动直播 -->
+		    <when test="isActivity != null">
+				and l.live_topic = 2
+		    </when>
+		    <otherwise>
+				and l.live_topic != 2
+		    </otherwise>
+		</choose>
+		<!-- 过滤指定用户观看直播间 -->
+		AND l.id not in  (SELECT id FROM t_live_record  WHERE telphones != '' AND telphones not like '%${phone}%' )
+		<!-- 标签刷选 -->
+		<if test="tagId != null">
+			and c.tag_id = #{tagId}
+		</if>
+		<!-- 通过城市Id，过滤后的主播Id -->
+		<if test="anchorList != null">
+			and l.anchor_id in 
+			<foreach collection="anchorList" index="index" item="id" open="(" close=")" separator=",">
+				#{id}
+			</foreach>
+		</if>
+		<if test="isFilterKSL != null">
+			and l.vedio_url not like 'rtmp://%'
+		</if>
+		order by range_order desc, l.recommended desc, l.stick desc, signType_order desc, l.start_date desc
+		limit ${(page-1)*pageSize},#{pageSize}
+	</select>
+
+	<!-- 签约主播-精彩预告 -->
+	<select id="getPreListBySign" resultType="map" parameterType="map">
+		select 
+		<if test="longitude!=null and latitude!=null">
+			ifnull(ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{latitude}*PI()/180-l.latitude*PI()/180)/2),2)+COS(#{latitude}*PI()/180)*COS(l.latitude*PI()/180)*POW(SIN((#{longitude}*PI()/180-l.longitude*PI()/180)/2),2)))*1000),'')
+			as `distance`,
+		</if>
+		l.*
+		from t_live_record l
+		where l.zhibo_type = 0 and l.sign_type = 1 and l.status = 1
+		<![CDATA[ AND  NOW() < plan_end_date]]>
+		<!-- 过滤指定用户观看直播间 -->
+		AND l.id not in  (SELECT id FROM t_live_record  WHERE telphones != '' AND telphones not like '%${phone}%')
+		order by l.recommended DESC, l.stick desc, l.plan_start_date asc
+		limit ${(page-1)*pageSize},#{pageSize}
+	</select>
+
+	<!-- 非签约主播-精彩预告 -->
+	<select id="getPreListByNoneSign" resultType="map" parameterType="map">
+		select 
+		<if test="longitude!=null and latitude!=null">
+			ifnull(ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{latitude}*PI()/180-l.latitude*PI()/180)/2),2)+COS(#{latitude}*PI()/180)*COS(l.latitude*PI()/180)*POW(SIN((#{longitude}*PI()/180-l.longitude*PI()/180)/2),2)))*1000),'')
+			as `distance`,
+		</if>
+		l.*,
+		if(r.rid != '', 1, 0) as stick
+		from t_live_record l
+		left join (select rid from t_live_recommend_record where rtype = 3) r on r.rid = l.id
+		where l.zhibo_type = 0 and l.sign_type != 1 and l.status = 1
+		<![CDATA[ AND  NOW() < plan_end_date]]>
+		<!-- 过滤指定用户观看直播间 -->
+		AND l.id not in  (SELECT id FROM t_live_record  WHERE telphones != '' AND telphones not like '%${phone}%' )
+		order by stick desc, l.plan_start_date asc
+		limit ${(page-1)*pageSize},#{pageSize}
+	</select>
+
+
+	<!-- 回放记录 -->
+	<select id="getPlaybackList" resultType="map" parameterType="map">
+		SELECT 
+		l.*
+		<if test="longitude!=null and latitude!=null">
+			,ifnull(ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{latitude}*PI()/180-l.latitude*PI()/180)/2),2)+COS(#{latitude}*PI()/180)*COS(l.latitude*PI()/180)*POW(SIN((#{longitude}*PI()/180-l.longitude*PI()/180)/2),2)))*1000),'')
+			as `distance`
+		</if>
+		FROM t_live_recommend_record r 
+		LEFT JOIN t_live_record l ON l.id = r.rid
+		WHERE 1 = 1 AND r.rtype = 5 AND l.zhibo_type = 3 AND l.status = 1
+		<!-- 过滤指定用户观看直播间 -->
+		AND l.id not in  (SELECT id FROM t_live_record  WHERE telphones != '' AND telphones not like '%${phone}%' )
+		and module_type = #{moduleType}
+		ORDER BY r.home_sort asc, r.create_time DESC
+		limit ${(page-1)*pageSize},#{pageSize}
+	</select>
+
+
+	<!-- 直播标签 -->
+	<select id="getLiveTagList" resultType="map" parameterType="map">
+		<!-- 		SELECT d.tag_id, t.tag_name FROM t_live_delicious d
+                LEFT JOIN t_live_classify_tag t ON t.id = d.tag_id
+                WHERE d.rtype = #{rtype}
+                GROUP BY d.tag_id
+                ORDER BY d.sort asc -->
+		<!-- 没有在直播的标签不能显示 -->
+		SELECT d.tag_id, t.tag_name FROM t_live_delicious d
+		LEFT JOIN t_live_classify_tag t ON t.id = d.tag_id
+		LEFT JOIN t_live_record_tag_conf c ON c.tag_id = d.tag_id
+		INNER JOIN (
+		SELECT id FROM t_live_record WHERE zhibo_type = 1
+		<!-- 新人推荐-->
+		<if test="tabType !=null and tabType == 2">
+			and sign_type != 1
+		</if>
+		<!-- 美食聊味-->
+		<if test="tabType !=null and tabType == 4">
+			and live_topic != 2
+		</if>
+		) a ON c.record_id = a.id
+		WHERE 1 = 1 AND d.rtype = 2
+		GROUP BY d.tag_id
+		ORDER BY d.sort ASC
+	</select>
+
+	<!-- 缤纷娱乐 抢先报名 -->
+	<select id="getActivityList" resultType="map" parameterType="map">
+		select image_url, url from t_live_entertainment where type = 1 order by sort asc
+	</select>
+
+	<!-- 缤纷娱乐 节目频道 -->
+	<select id="getTvShowList" resultType="map" parameterType="map">
+		select title, sub_title, image_url, url, number from t_live_entertainment where type = 2 order by sort asc, create_time desc
+	</select>
+
+
+</mapper>

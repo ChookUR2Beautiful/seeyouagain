@@ -1,0 +1,68 @@
+body,p,ul{
+	margin:0;
+	padding:0;
+	font-family: Microsoft Yahei;
+}
+
+body{
+	width: 100%;
+	height: 100%;
+	box-sizing: border-box;
+}
+
+.modal-bg{
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top:0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 3;
+	background:#000;
+	opacity: .2;
+}
+
+.modal{
+	width: 80%;
+	top:15%;
+	height: auto;
+	position: absolute;
+	left: 10%;
+	z-index: 4;
+}
+
+.modal img{
+	width: 100%;
+	height: auto;
+	vertical-align: middle;
+}
+
+.modal .modalbtn{
+	position: absolute;
+	bottom:6%;
+	left: 20%;
+	display: block;
+	width: 60%;
+	padding:12px 0;
+	background: #ffdb53;
+	color:#a000b1;
+	text-align: center;
+	text-decoration: none;
+	border-radius: 7px;
+	font-weight: bold;
+}
+
+.modal .modalclostbtn{
+	position: absolute;
+	bottom: -50px;
+	display: block;
+	width: 30px;
+	height: 30px;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: contain;
+	background-image: url(../images/window_btn_close@2x.png);
+	left: 50%;
+	margin-left: -15px;
+}

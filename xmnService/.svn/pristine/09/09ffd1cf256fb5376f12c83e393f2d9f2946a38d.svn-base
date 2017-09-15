@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live.dao.LiveRobotDao">
+	
+<!-- 查看机器人观众列表 -->
+<select id="queryRebotListByids" resultType="map">
+	select lr.id anchorid,ifnull(lr.robot_name,'') nname,ifnull(lr.avatar,'') avatar,0 rank_id,ifnull(lr.rank_no,'') rank_no,'' achievement
+    from t_live_robot lr where lr.id in
+    <foreach collection="list" index="index" item="id" open="(" close=")" separator=",">
+    #{id}
+    </foreach>
+</select>
+
+<!-- 查看机器人信息-->
+<select id="queryRebotById" resultType="map" parameterType="int">
+	select lr.id id,ifnull(lr.robot_name,'') robot_name,ifnull(lr.avatar,'') avatar,ifnull(lr.rank_no,'') rank_no,ifnull(sex,0) sex,ifnull(concern_nums,0) concern_nums,
+	ifnull(give_gifts_nums,0) give_gifts_nums,ifnull(status,1) status
+    from t_live_robot lr where lr.id =#{id}
+</select>
+
+	<!-- 批量查看机器人头像信息-->
+	<select id="queryRobotAvatar" resultType="map" parameterType="list">
+		select lr.id id,ifnull(lr.robot_name,'') robot_name,ifnull(lr.avatar,'') avatar,ifnull(lr.rank_no,'') rank_no,ifnull(sex,0) sex,ifnull(concern_nums,0) concern_nums,
+		ifnull(give_gifts_nums,0) give_gifts_nums,ifnull(status,1) status
+	    from t_live_robot lr where lr.id in
+	    <foreach collection="robotList" index="index" item="robot" open="(" close=")" separator=",">
+	    #{robot.liverId}
+	    </foreach>
+	    group by id
+	</select>
+	
+	<!-- 批量查看机器人头像信息-->
+	<select id="queryRobotInfomation" resultType="map" parameterType="map">
+<!-- 		ORDER BY RAND() limit #{limit} -->
+		select * from t_live_robot_content ORDER BY RAND() limit 1;
+
+	</select>
+	
+<!-- 随机取出5条机器人 -->
+<select id="queryRebotListByObj" resultType="map" parameterType="map">
+select lr.id viewer_id,ifnull(lr.robot_name,'') nname,ifnull(lr.avatar,'') avatar,ifnull(lr.rank_no,'') rank_no,ifnull(lr.status,'') status ,0 as utype from t_live_robot lr 
+where not EXISTS (select 1 from t_live_robot_view lrv where lr.id=lrv.robot_id and lrv.live_record_id=#{live_record_id} and lrv.anchor_id=#{anchor_id})
+ORDER BY RAND() limit #{limit}
+</select>
+
+	<!-- 随机取出5条机器人 观众 用于发礼物 发弹幕 -->
+	<select id="queryLiveRebotViewerList" resultType="map" parameterType="map">
+		SELECT 
+			robot.id id,
+			ifnull(robot.robot_name,'') nname,
+			ifnull(robot.avatar,'') avatar,
+		  	ifnull(robot.rank_no,'') rank_no,
+			ifnull(robot.status,'') status, 
+			viewer.anchor_id anchorId
+		from 
+		(
+			SELECT 
+				robot_id, anchor_id,anchor_room_no 
+			FROM t_live_robot_view 
+			WHERE live_record_id =#{live_record_id} AND anchor_id =#{anchor_id}  AND  ban_speak_status =0
+		) as viewer 
+		INNER JOIN t_live_robot  robot ON robot.id = viewer.robot_id
+		ORDER BY RAND() limit #{limit}
+		
+	
+	</select>
+
+<!-- 机器人进入直播间 -->
+<insert id="addRebotRecord" parameterType="list">
+INSERT into t_live_robot_view(robot_id,robot_avatar,rank_no,anchor_id,anchor_room_no,live_record_id,ban_speak_status,create_time,update_time)
+VALUES
+<foreach collection="list" index="index" item="rb" separator=",">
+ (#{rb.robot_id},#{rb.robot_avatar},#{rb.rank_no},#{rb.anchor_id},#{rb.anchor_room_no},#{rb.live_record_id},#{rb.ban_speak_status},#{rb.create_time},#{rb.update_time})
+</foreach>
+
+</insert>
+
+<!-- 获取机器人配置信息 -->
+<select id="queryRobetSet" resultType="map">
+select id,
+ifnull(robot_set_mix_nums,0) robot_set_mix_nums,
+ifnull(robot_set_max_nums,0) robot_set_max_nums,
+ifnull(robot_min_nums,0) robot_min_nums,
+ifnull(robot_max_nums,0) robot_max_nums,
+ifnull(robot_max_nums,0) robot_max_nums,
+ifnull(status,0) status,
+ifnull(create_time,0) create_time,
+ifnull(update_time,0) update_time,
+ifnull(multiple,1) multiple
+from t_live_robot_set where status=1 and is_common=1 limit 1
+</select>
+
+<select id="queryLiveRecordRobetSet" parameterType="java.lang.Integer" resultType="map">
+ SELECT id,
+    IFNULL(robot_set_mix_nums,0) robot_set_mix_nums,
+    IFNULL(robot_set_max_nums,0) robot_set_max_nums,
+    IFNULL(robot_min_nums,0) robot_min_nums,
+    IFNULL(robot_max_nums,0) robot_max_nums,
+    IFNULL(robot_max_nums,0) robot_max_nums,
+    IFNULL(status,0) status,
+    IFNULL(create_time,0) create_time,
+    IFNULL(update_time,0) update_time,
+    ifnull(multiple,1) multiple
+FROM t_live_robot_set 
+WHERE status=1  AND record_id=#{liveRecordId}
+
+</select>
+</mapper>

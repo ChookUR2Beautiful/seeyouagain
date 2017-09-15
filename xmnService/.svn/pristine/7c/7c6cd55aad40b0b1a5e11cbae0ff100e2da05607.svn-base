@@ -1,0 +1,529 @@
+body{
+	font-family: Microsoft Yahei;
+	font-size: 14px;
+}
+
+p{
+	margin:0;
+	padding:0;
+}
+
+ul{
+	list-style-type: none;
+}
+
+.xmk-headtitle{
+	width: 100%;
+	line-height: 1.8em;
+	text-align: center;
+	font-size: 15px;
+	margin-top:30px;
+	color:#999;
+}
+
+.xmk-img{
+	height: 160px;
+	width: 100%;
+	text-align: center;
+	margin: 15px 0 5px;
+}
+
+.xmk-img img{
+	height: 100%;
+	width: auto;
+}
+
+.xmk-pcontent{
+	margin-top: 10px;
+}
+
+.xmk-betips{
+	display: block;
+	margin:0 auto;
+	text-align: center;
+	padding:0 10px;
+	width:210px;
+	height: 36px;
+	background: #f7ab00;
+	line-height: 36px;
+	color:#fff;
+	border-radius: 18px;
+}
+
+.xmk-betips-list{
+	width: 100%;
+	height: auto;
+	padding:0 15px;
+	box-sizing: border-box;
+}
+
+.xmk-betips-list li{
+	width: 100%;
+	height:auto;
+	border-bottom: 1px solid #f2f2f2;
+}
+
+.xmk-betips-link{
+	display: block;
+	width: 100%;
+	height: auto;
+	position: relative;
+	text-decoration: none;
+}
+
+.xmk-betips-link:after{
+	content: "";
+	position: absolute;
+	width: 10px;
+	height: 18px;
+	background-size: contain;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-image: url(../img/right_allow.png);
+	top:15px;
+	right: 0;
+}
+
+.xmk-betips-link .xmk-betips-itxt{
+	padding:14px 0;
+	box-sizing: border-box;
+	padding-left: 40px;
+	font-size: 16px;
+	color:#999;
+
+}
+
+.xmk-betips-link .xmk-betips-icons{
+	width: 30px;
+	height: 30px;
+	display: block;
+	position: absolute;
+	top:10px;
+	left: 0px;
+	background-size: 100% auto;
+	background-image: url(../img/xmk_icons.png);
+}
+
+.xmk-betips-link .xmk-betips-icons.xmk-betips-iconmovie{
+	background-image: url(../img/iconmovie.png);
+}
+.xmk-betips-link .xmk-betips-icons.xmk-betips-studylib{
+	background-image: url(../img/stu_lib.png);
+}
+
+
+.xmk-betips-link .xmk-betips-icons.xmk-betips-messagere{
+	background-image: url(../img/message_rebuid.png);
+}
+
+.xmk-betips-link .xmk-betips-icons.xmk-betips-xieyi{
+	background-image: url(../img/xmk_kefu.png);
+}
+
+
+.xmk-betips-link .xmk-betips-icons.xmk-betips-iconfind{
+	background-position:0 30px;
+}
+
+.xmk-betips-link .xmk-betips-icons.xmk-betips-howsigncum{
+	background-position:0 0;
+}
+
+.xmk-betips-link .xmk-betips-icons.xmk-betips-signprogress{
+	background-position:0 120px;
+}
+
+.xmk-betips-link .xmk-betips-icons.xmk-betips-yunying{
+	background-position:0 90px;
+}
+
+.xmk-betips-link .xmk-betips-icons.xmk-betips-dev{
+	background-position:0 60px;
+}
+
+.xmk-maxwidth{
+	width: 100%;
+	height: auto;
+	/*padding:0 15px;*/
+	box-sizing: border-box;
+}
+
+.xmk-maxwidth img{
+	width: 100%;
+	height: auto;
+}
+
+.xmkhowsign-normaltxt{
+	padding:3px 0px;
+	font-size: 15px;
+	color:#999;
+	line-height: 1.8em;
+}
+.marginTop10{
+	margin-top:15px;
+}
+
+.xmkhowsign-normaltxt span{
+	font-weight: bold;
+	color:#f7ab00;
+}
+
+.xmkhowsign-titletxt{
+	width: 100%;
+	padding:3px 20px;
+	font-size: 15px;
+	margin:2px 0;
+	color:#4a4a4a;
+	box-sizing: border-box;
+}
+
+.xmkhowsign-titletxt span{
+	color: #f7ab00;
+	margin-left: 2px;
+}
+
+.xmk-checklink{
+	width: 85%;
+	margin:10px auto;
+	height: 36px;
+	display: block;
+	background: #61c5f4;
+	text-align: center;
+	line-height: 36px;
+	color:#fff;
+	text-decoration: none;
+	border-radius: 5px;
+}
+
+.xmklist{
+	list-style-type: disc;
+	color:#f7ab00;
+	margin:0;
+}
+
+.xmklist li span{
+	font-size: 15px;
+	color:#999;
+	line-height: 1.8em;
+}
+
+.fontcolorblack{
+	color:#333;
+}
+
+.xmk-yunyingtitle{
+	font-size: 16px;
+	color: #626262;
+	text-align: center;
+	margin:3px 0;
+}
+
+.textcenter{
+	text-align: center;
+}
+
+.textleftindent{
+	text-align: left;
+	text-indent: 2em;
+}
+
+.xmk-dev-link{
+	text-align: center;
+	display: block;
+	margin-top: 20px;
+	color: #61c5f4;
+	font-size: 14px;
+	text-decoration: none;
+}
+
+.xmk-spe-link{
+	display: block;
+	width: 100%;
+	height: 18px;
+	background: #efefef;
+}
+
+.xmk-xueyuan-qa{
+	width: 100%;
+	height: auto;
+	padding:0 15px;
+	box-sizing: border-box;
+}
+
+
+.xmk-xueyuan-qa .xmk-xueyuan-q{
+	border-bottom:1px solid #efefef;
+	padding:10px 16px 10px 0;
+	color:#666;
+	position: relative;
+	font-size: 15px;
+	
+}
+
+.xmk-xueyuan-qa .xmk-xueyuan-q span{
+	color:#f7ab00;
+}
+
+.xmk-xueyuan-qa .xmk-xueyuan-q i{
+	display: block;
+	position: absolute;
+	right: 10px;
+	top:10px;
+	width: 15px;
+	height: 15px;
+	background-position: center;
+	background-size: contain;
+	background-image: url(../img/right_allow.png);
+	background-repeat: no-repeat;
+	-webkit-transform:rotate(90deg);
+	transform: rotate(90deg);
+	transition:transform .5s;
+	-webkit-transition:transform .5s;
+}
+
+.xmk-xueyuan-qa .xmk-xueyuan-q i.xmk-allowup{
+	-webkit-transform:rotate(270deg);
+	transform: rotate(270deg);
+}
+
+.xmk-slidbtn{
+	position: absolute;
+	z-index: 99;
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top:0;
+}
+
+.xmk-xueyuan-a{
+	width: 100%;
+	height: auto;
+}
+
+.xmk-xueyuan-acontent{
+	width: 100%;
+	height: auto;
+}
+
+.xmk-xueyuan-titxt{
+	width: 100%;
+	height: auto;
+	color:#999;
+	font-size: 15px;
+	padding:3px 0 10px 0;
+	line-height: 1.5em;
+}
+
+.xmk-xueyuan-titxt span{
+	color:#f7ab00;
+}
+
+
+/*意见反馈*/
+.feedback-img{
+	padding-top:30px;
+	height: 130px;
+	text-align: center;
+
+}
+
+.feedback-img img{
+	height: 100%;
+	width: auto;
+}
+
+.feedback-txtarea{
+	width: 100%;
+	height: 260px;
+	padding:15px;
+	box-sizing: border-box;
+}
+
+.feedback-txtarea textarea{
+	width: 100%;
+	height: 100%;
+	padding:10px;
+	box-sizing: border-box;
+	outline: none;
+	font-size: 16px;
+	color:#333;
+	border:1px solid #999;
+	border-radius: 4px;
+}
+
+.feedback-btn{
+	width: 100%;
+	height: 36px;
+	background: #f7ab00;
+	color:#fff;
+	outline: none;
+	border:none;
+	border-radius: 4px;
+}
+
+/*学习图书馆*/
+
+.booklib-listbox{
+	width: 100%;
+	height: auto;
+	text-align: center;
+	padding: 0;
+	margin: 0;
+}
+
+.booklib-listbox li{
+	display: inline-block;
+	width: 30%;	
+	border:1px solid #f3f3f3;
+	margin-bottom: 10px;
+	vertical-align: top;
+}
+
+.booklib-listbox li:nth-child(3n+2){
+	margin:0 1%;
+}
+
+
+.booklib-listbox li .booklib-link{
+	display: block;
+	width: 100%;
+	height: 125px;
+	background-position: center;
+	background-size: contain;
+	background-repeat: no-repeat;
+}
+
+/*视频中心*/
+.xmkmovie-listbox{
+	width: 100%;
+	margin:0;
+	padding: 0;
+}
+
+.xmkmovie-listbox li{
+	width: 100%;
+	margin-top:18px;
+	background: #fff;
+	position: relative;
+}
+
+
+.xmk-movie-img{
+	position: absolute;
+	left: 15px;
+	top:15px;
+	width: 86px;
+	height: 86px;
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: center;
+	z-index: 98;
+}
+.xmk-movie-modal{
+	position: absolute;
+	left: 15px;
+	top:15px;
+	width: 86px;
+	height: 86px;
+	background: #000;
+	opacity: 0.5;
+	z-index: 99;
+}
+.xmk-movie-playmodal{
+	position: absolute;
+	left: 15px;
+	top:15px;
+	width: 86px;
+	height: 86px;
+	z-index: 100;
+	text-align: center;
+	padding-top: 23px;
+}
+.xmk-movie-txt{
+	width: 100%;
+	padding-left: 120px;
+	min-height: 120px;
+	padding-top:15px;
+	box-sizing: border-box;
+	color:#333;
+	font-size: 16px;
+	padding-right: 15px;
+}
+
+.xmk-movie-teacher{
+	margin-top:10px;
+	color: #666;
+}
+.xmk-movie-title{
+	width: 100%;
+}
+
+
+.xmk-xueyuan-qashow{
+	width: 100%;
+	height: auto;
+	display: none;
+}
+
+
+
+/*协议*/
+.servicecontent{
+	width: 100%;
+	padding: 0 15px;
+	box-sizing: border-box;
+}
+
+.servagg-title{
+	text-align: center;
+}
+
+
+
+.servagg-desc{
+	font-family:"楷体";
+	text-indent: 2em;
+	line-height: 1.5em;
+	font-weight: bold;
+}
+
+.servagg-normaltxt{
+	margin:15px 0;
+	line-height: 1.5em;
+	/*color:#333;*/
+	text-indent: 2em;
+	font-size: 16px;
+}
+
+
+
+
+.servagg-ltitle{
+	font-size: 16px;
+	padding-left:2em;
+
+}
+
+.servagg-list{
+	/*padding-left:2em;*/
+	padding:0;
+}
+
+.servagg-list li{
+	line-height: 1.5em;
+	margin:8px 0;
+	text-indent: 2em;
+	font-size: 16px;
+}
+
+span.cccbackbg{
+	display: inline-block;vertical-align: middle;
+	background: #e5e5e5;
+	padding:0;
+	margin: 0;
+	text-indent: 0px;
+}
+
+span.fontweightbold{
+	font-weight: bold;
+}

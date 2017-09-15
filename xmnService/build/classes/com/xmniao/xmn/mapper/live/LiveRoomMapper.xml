@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live.dao.LiveRoomDao">
+
+	<!-- 查询所有正在直播的记录总数 -->
+	<select id="queryLiveRecordById" resultType="map" parameterType="map">
+		SELECT 
+			<if test="longitude != null and longitude != 0 and latitude != null and latitude != 0">
+				ifnull(ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{latitude}*PI()/180-latitude*PI()/180)/2),2)+COS(#{latitude}*PI()/180)*COS(latitude*PI()/180)*POW(SIN((#{longitude}*PI()/180-longitude*PI()/180)/2),2)))*1000),'')
+				as distance,
+			</if>
+			r.*
+		FROM t_live_record r
+		WHERE 
+			r.status = 1
+		AND
+			r.id=#{liveRecordId}
+	</select>
+	
+	<!-- 插入红包信息 -->
+	<insert id="insertLiveRedpacket" parameterType="map">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+               SELECT LAST_INSERT_ID() AS ID   
+         </selectKey>
+		INSERT INTO t_live_redpacket (
+			uid,
+			live_record_id,
+			amount_type,
+			total_amount,
+			redpacket_number,
+			single_amount,
+			version_lock,
+			remain_amount,
+			create_time,
+			receiveUid
+		)
+		VALUES
+			(
+				#{uid},
+				#{liveRecordId},
+				#{amountType},
+				#{totalAmount},
+				#{redpacketNumber},
+				#{singleAmount},
+				#{versionLock},
+				#{remainAmount},
+				#{createTime},
+				#{receiveUid}
+			)
+	</insert>
+	
+	<!-- 查询红包信息 -->
+	<select id="queryLiveRedpacketById" parameterType="int" resultType="map">
+		SELECT
+			*
+		FROM
+			t_live_redpacket 
+		WHERE
+			id = #{liveRedpacketId}
+		AND
+			status = 1
+	</select>
+	
+	<!-- 查询红包信息 -->
+	<select id="queryLiveRedpacketRecord" parameterType="map" resultType="map">
+		SELECT
+			*
+		FROM
+			t_live_redpacket_record 
+		WHERE
+			live_redpacket_id = #{liveRedpacketId}
+		AND
+			uid = #{uid}
+	</select>
+	
+	<!-- 更新红包信息 -->
+	<update id="updateLiveRedpacketById" parameterType="map">
+		UPDATE t_live_redpacket
+		<set>
+			<if test="singleAmount != null">
+				get_redpacket_amount = get_redpacket_amount + #{singleAmount},
+				get_redpacket_number = get_redpacket_number + 1,
+				remain_amount = remain_amount - #{singleAmount},
+			</if>
+			<!-- 退还红包,更改退还状态 -->
+			<if test="remainRefundType != null and remainRefundType !='' or remainRefundType == 0">
+				remain_refund_type=#{remainRefundType},
+			</if>
+				version_lock = version_lock + 1,
+			<if test="updateTime != null">
+				update_time=#{updateTime}
+			</if>
+		</set>
+		WHERE
+			id = #{liveRedpacketId}
+		AND	
+			version_lock = #{versionLock}
+		AND
+			status = 1
+	</update>
+	
+	<!-- 插入红包信息 -->
+	<insert id="insertLiveRedpacketRecord" parameterType="map">
+		INSERT INTO t_live_redpacket_record (
+			live_redpacket_id,
+			uid,
+			live_record_id,
+			get_redpacket_amount,
+			create_time,
+			update_time
+		)
+		VALUES
+			(
+				#{liveRedpacketId},
+				#{uid},
+				#{liveRecordId},
+				#{getRedpacketAmount},
+				#{createTime},
+				#{updateTime}
+			)
+	</insert>
+	
+	<!-- 查询是否存在未被领取完的红包 -->
+	<select id="queryLiveRedpacketByUid" parameterType="map" resultType="map">
+		SELECT
+			*
+		FROM
+			t_live_redpacket
+		WHERE
+			uid = #{uid}
+		AND
+			live_record_id = #{liveRecordId}
+		AND
+			status = 1
+		AND
+			remain_refund_type = 0
+		AND
+			remain_amount > 0
+		LIMIT 1;
+	</select>
+	
+	<!-- 查询该场直播,发送的所有红包总鸟蛋数-->
+	<select id="queryLiveRedpacketByLiveRecordId" parameterType="map" resultType="int">
+		SELECT
+			sum(total_amount)
+		FROM
+			t_live_redpacket
+		WHERE
+			uid = #{uid}
+		AND
+			live_record_id = #{liveRecordId}
+		AND
+			status = 1
+		AND
+			create_time > #{startDate}
+	</select>
+	
+	<!-- 查询历史红包退还金额-->
+	<select id="queryRefundLiveRedpacketAmount" parameterType="map" resultType="int">
+		SELECT
+			remain_amount
+		FROM
+			t_live_redpacket
+		WHERE
+			uid = #{uid}
+		AND
+			live_record_id = #{liveRecordId}
+		AND
+			status = 1
+		AND
+			remain_refund_type = 1
+		AND
+			create_time > #{startDate}
+	</select>
+	
+	<!-- 查询直播标签的分类标签-->
+	<select id="queryLiveClassify" resultType="map" parameterType="int">
+		SELECT
+			id AS classifyId,
+			classify_name AS classifyName
+		FROM
+			t_live_classify
+		WHERE
+			classify_type = #{classifyType}
+	</select>
+	
+	<!--  查询直播标签分类下的所有标签-->
+	<select id="queryLiveClassifyTagByClassifyId" resultType="map" parameterType="int">
+		SELECT
+			id AS tagId,
+			tag_name AS tagName
+		FROM
+			t_live_classify_tag
+		WHERE
+			classify_id = #{classifyId}
+	</select>
+	
+	<!-- 查询标签信息 -->
+	<select id="queryLiveClassifyTagById" resultType="map" parameterType="int">
+		SELECT
+			c.id AS classifyId,
+			c.classify_name AS classifyName,
+			t.id AS tagId,
+			t.tag_name AS tagName
+		FROM
+			t_live_classify_tag t
+		LEFT JOIN t_live_classify c ON t.classify_id = c.id
+		WHERE
+			t.id = #{tagId}
+	</select>
+	
+	<!-- 批量插入通告标签 -->
+	<insert id="insertLiveRecordTagConf" parameterType="map">
+		insert into 
+			t_live_record_tag_conf(record_id,classify_id,tag_id,tag_name,create_time,update_time)   
+   		values  
+	    <foreach collection="tagList" item="item" index="index" separator="," >  
+	        (#{item.liveRecordId},#{item.classifyId},#{item.tagId},#{item.tagName},now(),now())  
+	    </foreach> 
+	</insert>
+	
+	<!-- 批量查询直播内容标签信息 -->
+	<select id="queryLiveRecordTagConf" resultType="map" parameterType="list">
+		SELECT
+			record_id AS liveRecordId,
+			classify_id AS classifyId,
+			tag_id AS tagId,
+			tag_name AS tagName
+		FROM
+			t_live_record_tag_conf
+		WHERE
+			record_id in
+	    <foreach collection="liveRecordIds" item="liveRecordId" index="index" separator="," open="(" close=")">
+	    	#{liveRecordId}
+	    </foreach> 
+	</select>
+</mapper>

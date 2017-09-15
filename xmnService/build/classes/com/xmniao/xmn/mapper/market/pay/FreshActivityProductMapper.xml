@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.market.dao.FreshActivityProductDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.market.entity.pay.FreshActivityProduct" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="activity_id" property="activityId" jdbcType="INTEGER" />
+    <result column="product_id" property="productId" jdbcType="INTEGER" />
+    <result column="group_id" property="groupId" jdbcType="INTEGER" />
+    <result column="codeId" property="codeid" jdbcType="BIGINT" />
+    <result column="activity_type" property="activityType" jdbcType="INTEGER" />
+    <result column="before_store" property="beforeStore" jdbcType="INTEGER" />
+    <result column="sell_store" property="sellStore" jdbcType="INTEGER" />
+    <result column="sell_integral" property="sellIntegral" jdbcType="DECIMAL" />
+    <result column="base_price" property="basePrice" jdbcType="DECIMAL" />
+    <result column="sale_price" property="salePrice" jdbcType="DECIMAL" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, activity_id, product_id, group_id, codeId, activity_type, before_store, sell_store, 
+    sell_integral, base_price, sale_price, sort, status, create_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_fresh_activity_product
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_fresh_activity_product
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.market.entity.pay.FreshActivityProduct" >
+    insert into t_fresh_activity_product (id, activity_id, product_id, 
+      group_id, codeId, activity_type, 
+      before_store, sell_store, sell_integral, 
+      base_price, sale_price, sort, 
+      status, create_time, update_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{activityId,jdbcType=INTEGER}, #{productId,jdbcType=INTEGER}, 
+      #{groupId,jdbcType=INTEGER}, #{codeid,jdbcType=BIGINT}, #{activityType,jdbcType=INTEGER}, 
+      #{beforeStore,jdbcType=INTEGER}, #{sellStore,jdbcType=INTEGER}, #{sellIntegral,jdbcType=DECIMAL}, 
+      #{basePrice,jdbcType=DECIMAL}, #{salePrice,jdbcType=DECIMAL}, #{sort,jdbcType=INTEGER}, 
+      #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.market.entity.pay.FreshActivityProduct" >
+    insert into t_fresh_activity_product
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="activityId != null" >
+        activity_id,
+      </if>
+      <if test="productId != null" >
+        product_id,
+      </if>
+      <if test="groupId != null" >
+        group_id,
+      </if>
+      <if test="codeid != null" >
+        codeId,
+      </if>
+      <if test="activityType != null" >
+        activity_type,
+      </if>
+      <if test="beforeStore != null" >
+        before_store,
+      </if>
+      <if test="sellStore != null" >
+        sell_store,
+      </if>
+      <if test="sellIntegral != null" >
+        sell_integral,
+      </if>
+      <if test="basePrice != null" >
+        base_price,
+      </if>
+      <if test="salePrice != null" >
+        sale_price,
+      </if>
+      <if test="sort != null" >
+        sort,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="activityId != null" >
+        #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="productId != null" >
+        #{productId,jdbcType=INTEGER},
+      </if>
+      <if test="groupId != null" >
+        #{groupId,jdbcType=INTEGER},
+      </if>
+      <if test="codeid != null" >
+        #{codeid,jdbcType=BIGINT},
+      </if>
+      <if test="activityType != null" >
+        #{activityType,jdbcType=INTEGER},
+      </if>
+      <if test="beforeStore != null" >
+        #{beforeStore,jdbcType=INTEGER},
+      </if>
+      <if test="sellStore != null" >
+        #{sellStore,jdbcType=INTEGER},
+      </if>
+      <if test="sellIntegral != null" >
+        #{sellIntegral,jdbcType=DECIMAL},
+      </if>
+      <if test="basePrice != null" >
+        #{basePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="salePrice != null" >
+        #{salePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="sort != null" >
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.market.entity.pay.FreshActivityProduct" >
+    update t_fresh_activity_product
+    <set >
+      <if test="activityId != null" >
+        activity_id = #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="productId != null" >
+        product_id = #{productId,jdbcType=INTEGER},
+      </if>
+      <if test="groupId != null" >
+        group_id = #{groupId,jdbcType=INTEGER},
+      </if>
+      <if test="codeid != null" >
+        codeId = #{codeid,jdbcType=BIGINT},
+      </if>
+      <if test="activityType != null" >
+        activity_type = #{activityType,jdbcType=INTEGER},
+      </if>
+      <if test="beforeStore != null" >
+        before_store = #{beforeStore,jdbcType=INTEGER},
+      </if>
+      <if test="sellStore != null" >
+        sell_store = #{sellStore,jdbcType=INTEGER},
+      </if>
+      <if test="sellIntegral != null" >
+        sell_integral = #{sellIntegral,jdbcType=DECIMAL},
+      </if>
+      <if test="basePrice != null" >
+        base_price = #{basePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="salePrice != null" >
+        sale_price = #{salePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="sort != null" >
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.market.entity.pay.FreshActivityProduct" >
+    update t_fresh_activity_product
+    set activity_id = #{activityId,jdbcType=INTEGER},
+      product_id = #{productId,jdbcType=INTEGER},
+      group_id = #{groupId,jdbcType=INTEGER},
+      codeId = #{codeid,jdbcType=BIGINT},
+      activity_type = #{activityType,jdbcType=INTEGER},
+      before_store = #{beforeStore,jdbcType=INTEGER},
+      sell_store = #{sellStore,jdbcType=INTEGER},
+      sell_integral = #{sellIntegral,jdbcType=DECIMAL},
+      base_price = #{basePrice,jdbcType=DECIMAL},
+      sale_price = #{salePrice,jdbcType=DECIMAL},
+      sort = #{sort,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="findAllByActivityIdAndType" resultMap="BaseResultMap" parameterType="map">
+  	SELECT 
+  		<include refid="Base_Column_List" />
+  	FROM t_fresh_activity_product 
+  	WHERE activity_id=#{id} AND activity_type=1 ORDER BY sort DESC LIMIT ${(pageNo-1)*pageSize},#{pageSize}
+  </select>
+  
+  <select id="sumActivityProducts" resultType="int" parameterType="int">
+  	SELECT 
+  		count(1)
+  	FROM t_fresh_activity_product 
+  	WHERE activity_id=#{id} AND activity_type=1 ORDER BY sort DESC
+  </select>
+  
+  <select id="findByActivityIdAndCodeId" resultMap="BaseResultMap" >
+  	SELECT 
+  		<include refid="Base_Column_List" />
+  	FROM t_fresh_activity_product 
+  	WHERE activity_id=#{id} AND codeId =#{codeid}
+  </select>
+  
+  <!-- 更新活动商品总库存 -->
+  <update id="updateFreshActivityProductStore">
+  	update t_fresh_activity_product set sell_store = sell_store - #{num} where codeId =#{codeid} and activity_id=#{activityid}
+  </update>
+  
+</mapper>

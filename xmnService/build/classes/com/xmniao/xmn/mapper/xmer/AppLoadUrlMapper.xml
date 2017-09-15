@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.xmer.dao.AppLoadUrlDao">
+	<!-- 获取app客户端下载地址 -->
+	<select id="queryLoadUrlByVtype" resultType="map" parameterType="int">
+		SELECT 
+		  version,
+		  url 
+		FROM
+		  t_app_version 
+		WHERE vtype = #{vtype} AND apptype=3 AND status = 1 
+		ORDER BY sdate DESC 
+		LIMIT 0, 1 
+	</select>
+</mapper>

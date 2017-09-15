@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.catehome.dao.SpecilTopicPicDao" >
+
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.catehome.entity.SpecilTopicPic" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="pic_url" property="picUrl" jdbcType="VARCHAR" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="topicType" property="topicType" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, fid, pic_url, sort, update_time
+  </sql>
+  
+  <!-- 查看 -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_special_topic_pic
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 删除 -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_special_topic_pic
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 插入 -->
+  <insert id="insert" parameterType="com.xmniao.xmn.core.catehome.entity.SpecilTopicPic" >
+    insert into t_special_topic_pic (id, fid, pic_url, 
+      sort, update_time)
+    values (#{id,jdbcType=INTEGER}, #{fid,jdbcType=INTEGER}, #{picUrl,jdbcType=INTEGER}, 
+      #{sort,jdbcType=INTEGER}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  
+  <!-- 插入 -->
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.catehome.entity.SpecilTopicPic" >
+    insert into t_special_topic_pic
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="fid != null" >
+        fid,
+      </if>
+      <if test="picUrl != null" >
+        pic_url,
+      </if>
+      <if test="sort != null" >
+        sort,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="fid != null" >
+        #{fid,jdbcType=INTEGER},
+      </if>
+      <if test="picUrl != null" >
+        #{picUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null" >
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  <!-- 更新 -->
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.catehome.entity.SpecilTopicPic" >
+    update t_special_topic_pic
+    <set >
+      <if test="fid != null" >
+        fid = #{fid,jdbcType=INTEGER},
+      </if>
+      <if test="picUrl != null" >
+        pic_url = #{picUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null" >
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 更新 -->
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.catehome.entity.SpecilTopicPic" >
+    update t_special_topic_pic
+    set fid = #{fid,jdbcType=INTEGER},
+      pic_url = #{picUrl,jdbcType=VARCHAR},
+      sort = #{sort,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="findAllByFid" resultMap="BaseResultMap">
+  	select
+  		<include refid="Base_Column_List"/>
+  	from t_special_topic_pic where fid=#{fid} order by sort desc
+  </select>
+  
+  
+  <select id="findRecommendActivityPic" resultMap="BaseResultMap">
+  	SELECT
+  		p.* ,s.title,s.description
+  	FROM t_special_topic_pic p
+	LEFT JOIN  t_special_topic_config s ON p.fid=s.id
+	WHERE s.is_nationwide =0 AND s.city_id=#{cityId}
+	ORDER BY s.home_sort DESC LIMIT ${(page-1)*pageSize},#{pageSize}
+  </select >
+  
+  <select id="findTopicAndNumSellerPackage" resultMap="BaseResultMap" parameterType="map">
+  	SELECT
+  		s.topic_type as topicType,p.* ,s.title,s.description as context,count(r.id) as sellerNum
+  	FROM t_special_topic_pic p
+	LEFT JOIN  t_special_topic_config s ON p.fid=s.id
+	LEFT JOIN t_special_topic_relation r on r.fid = s.id
+	<if test="cityId!=null">
+		WHERE s.is_nationwide =0 AND s.city_id=#{cityId} group by s.id
+	</if>
+	<if test="cityId==null">
+		WHERE s.is_nationwide =1 group by s.id
+	</if>
+	ORDER BY s.home_sort DESC LIMIT ${(page-1)*pageSize},#{pageSize}
+  </select>
+  
+  <select id="findRecommendActivityPicByUncity" resultMap="BaseResultMap">
+  	SELECT
+  		p.* ,s.title,s.description,s.content as specialContent
+  	FROM t_special_topic_pic p
+	LEFT JOIN  t_special_topic_config s ON p.fid=s.id
+	WHERE s.is_nationwide=1
+	ORDER BY s.home_sort DESC LIMIT ${(page-1)*pageSize},#{pageSize}
+  </select>
+
+  <!-- 直播好看专题推荐 -->
+  <select id="findRecommendActivityPicByCondition" resultType="map">
+    SELECT
+      r.home_sort, p.fid, p.pic_url, p.update_time
+    FROM t_live_recommend_record r
+    left join t_special_topic_config c on c.id = r.rid
+    left join t_special_topic_pic p on c.id = p.fid
+    WHERE r.rtype = 1
+    <choose>
+        <when test="cityId != null and cityId != '' and cityId != '0'.toString()">
+            AND r.is_nationwide = 0 AND r.city_id=#{cityId}
+        </when>
+        <otherwise>
+            AND r.is_nationwide = 1
+        </otherwise>
+    </choose>
+    ORDER BY r.home_sort DESC LIMIT ${(page-1)*pageSize},#{pageSize}
+    </select>
+  
+</mapper>

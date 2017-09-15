@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.xmer.dao.UnsignedSellerDao">
+	
+  	<select id="querySellerName" resultType="String">
+  		SELECT sellername FROM t_unsigned_seller WHERE unsigned_sellerid = #{sellerId}
+  	</select>
+  	
+  	<!-- 根据关键字，商圈id查询通过审核的 未签约店铺列表 -->
+  	<select id="listSellerbyKeyword" resultType="map" parameterType="map">
+	  	SELECT	
+			IFNULL(s.address,'') address,
+			IFNULL(s.sellername,'') sellername,
+			s.unsigned_sellerid sellerid,
+			IFNULL(a.title,'') province,
+			IFNULL(b.title,'') city,
+			IFNULL(c.title,'') area,
+			IFNULL(s.address,'') address,
+			IFNULL(s.tradename,'') tradename,
+			(SELECT m.media_url FROM t_experience_comment c
+				LEFT JOIN t_experience_comment_media m ON m.comment_id=c.id  AND m.media_type=1
+				WHERE c.review_state=1  AND c.seller_type=2 AND c.sellerid = sellerid
+				ORDER BY m.create_time DESC LIMIT 0,1) picUrl
+			
+		FROM t_unsigned_seller s 
+			LEFT JOIN t_area a ON s.province=a.area_id
+			LEFT JOIN t_area b ON s.city=b.area_id
+			LEFT JOIN t_area c ON s.area=c.area_id
+		WHERE s.zoneid=#{zoneid} AND s.isonline=1
+		<if test="keyword != null">
+			AND sellername LIKE concat('%',#{keyword},'%')
+		</if>
+  	</select>
+  	
+  	<insert id="addUnsignedSeller" parameterType="com.xmniao.xmn.core.seller.entity.UnsignedSeller">
+  		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="unsigned_sellerid">
+    		 SELECT LAST_INSERT_ID() AS unsigned_sellerid   
+		</selectKey>
+  		INSERT INTO t_unsigned_seller 
+  			VALUES(
+  				#{unsigned_sellerid},#{sellername},#{province},#{city},#{area},#{zoneid},
+  				#{category},#{genre},#{bewrite},#{address},
+  				#{tel},#{consume},#{isonline},#{examineinfo},#{create_time},#{update_time},#{remarks},#{typename},#{tradename},#{anchor_uid}
+  			)
+  	</insert>
+  	
+  	<select id="querySellerById" resultType="com.xmniao.xmn.core.seller.entity.UnsignedSeller" parameterType="Integer">
+  		SELECT	
+			s.*,
+			IFNULL(a.title,'') provinceName,
+			IFNULL(b.title,'') cityName,
+			IFNULL(c.title,'') areaName
+			
+		FROM t_unsigned_seller s 
+			LEFT JOIN t_area a ON s.province=a.area_id
+			LEFT JOIN t_area b ON s.city=b.area_id
+			LEFT JOIN t_area c ON s.area=c.area_id
+		WHERE s.unsigned_sellerid=#{sellerid} AND s.isonline=1
+  	</select>
+  	
+  	<select id="findSellerbyIds" resultType="map" >
+  	   select s.unsigned_sellerid as sellerid,s.sellername from t_unsigned_seller s where s.unsigned_sellerid in 
+  	  <foreach collection="list" item="sellerid" open="(" separator="," close=")">
+		#{sellerid}
+	  </foreach>
+  	</select>
+  	
+  	<!--  -->
+  	<select id="queryCommentSellerInfoById" resultType="map">
+  		 SELECT s.unsigned_sellerid AS sellerId,s.sellername AS sellerName,s.address,s.tradename AS treadeName,b.title AS zoneName,m.media_url AS picUrl
+		 FROM t_unsigned_seller s
+		 LEFT JOIN  t_business b ON s.zoneid=b.bid
+		 LEFT JOIN t_experience_comment c ON c.sellerid=s.unsigned_sellerid AND c.review_state=1 AND c.seller_type=2
+		 LEFT JOIN t_experience_comment_media m ON m.comment_id=c.id AND m.media_type=1
+		 WHERE s.unsigned_sellerid = #{sellerId}
+		 ORDER BY m.create_time DESC
+		 LIMIT 0,1
+  	</select>
+</mapper>

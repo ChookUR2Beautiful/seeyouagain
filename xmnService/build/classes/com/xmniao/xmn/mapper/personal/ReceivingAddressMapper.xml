@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.personal.dao.ReceivingAddressDao">
+
+	<!--  根据uid获取收货地址列表 -->
+	<select id="queryReceivingAddressListByUid" resultType="com.xmniao.xmn.core.market.entity.pay.ReceivingAddress" parameterType="map">
+		SELECT * FROM t_receiving_address 
+		WHERE uid = #{uid} AND dstatus = 0 
+		<if test="isdefault!=null and isdefault!='' and isdefault == 1">
+			and isDefault = 1
+		</if>
+		ORDER BY isDefault DESC
+	</select>
+	
+	<!-- 取消用户的默认收货地址 -->
+	<update id="updateReceivingAddressByUid" parameterType="int">
+		UPDATE t_receiving_address SET isDefault = 0 WHERE uid = #{uid} AND dstatus = 0 AND isDefault = 1
+	</update>
+
+	<!-- 新添收货地址 -->
+	<insert id="insertReceivingAddress" parameterType="map">
+	INSERT INTO t_receiving_address (uid,username,region,province,provinceId,city,cityId,areaname,areaId,address,phoneId,dstatus,isDefault,rdate,udate)
+	VALUES
+	(#{uid},#{username},#{region},#{province},#{provinceId},#{city},#{cityId},#{areaname},#{areaId},#{address},#{phoneId},#{dstatus},#{isDefault},#{rdate},#{udate})
+	</insert>
+	
+	<!--  查询id,收货地址信息 -->
+	<select id="queryReceivingAddressById" resultType="map" parameterType="int">
+		SELECT * FROM t_receiving_address WHERE id = #{receivingAddressId} AND dstatus = 0
+	</select>
+	
+    <select id="selectUserDefaultAddress" resultType="com.xmniao.xmn.core.market.entity.pay.ReceivingAddress">
+        SELECT *
+        FROM t_receiving_address
+        WHERE uid = #{uid}
+            AND dstatus = 0
+        AND isDefault = 1
+    </select>
+
+    <!-- 根据id，更新收货地址信息 -->
+	<update id="updateReceivingAddressById" parameterType="map">
+		UPDATE t_receiving_address
+		<set >
+		      <if test="username != null and username != ''" >
+		        username = #{username},
+		      </if>
+		      <if test="province != null and province != ''" >
+		        province = #{province},
+		      </if>
+		      <if test="provinceId != null and provinceId != '' or provinceId == 0" >
+		        provinceId = #{provinceId},
+		      </if>
+		      <if test="city != null and city != ''" >
+		        city = #{city},
+		      </if>
+		      <if test="cityId != null and cityId != '' or cityId == 0" >
+		        cityId = #{cityId},
+		      </if>
+		      <if test="areaname != null" >
+		        areaname = #{areaname},
+		      </if>
+		      <if test="areaId != null and areaId != '' or areaId == 0" >
+		        areaId = #{areaId},
+		      </if>
+		      <if test="address != null" >
+		        address = #{address},
+		      </if>
+		      <if test="phoneId != null and phoneId != ''" >
+		        phoneId = #{phoneId},
+		      </if>
+		      <if test="isDefault != null and isDefault != '' or isDefault == 0" >
+		        isDefault = #{isDefault},
+		      </if>
+		      <if test="rdate != null and rdate != ''" >
+		        rdate = #{rdate},
+		      </if>
+		      <if test="udate != null and udate != ''" >
+		        udate = #{udate},
+		      </if>
+		      <if test="dstatus != null and dstatus != '' or dstatus == 0" >
+		        dstatus = #{dstatus},
+		      </if>
+		 </set>
+		WHERE
+			id = #{receivingAddressId}
+		AND
+			dstatus = 0
+	</update>
+	
+</mapper>

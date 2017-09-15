@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.integral.dao.BillFreshDao">
+	<!-- 查询积分订单信息 -->
+	 <resultMap id="billFreshListMap" type="com.xmniao.xmn.core.integral.response.IntegralBillListResponse" >
+    <result column="bid" property="bid" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="money" property="money" jdbcType="DECIMAL" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+     <result column="sdate" property="sdate" jdbcType="VARCHAR" />
+     <result column="freight" property="freight" jdbcType="DECIMAL" />
+     <result column="integral" property="integral" jdbcType="DECIMAL" />
+      <result column="cuser" property="cuser" jdbcType="DECIMAL" />
+  	</resultMap>
+	<!-- 待处理 （待付款、待发货、待收货） -->
+	<select id="queryBillFreshByUid" parameterType="map" resultMap="billFreshListMap">
+	select * from (
+	select bid,money,status,DATE_FORMAT(sdate,'%Y.%m.%d %H:%i')sdate,1 type,freight,integral from
+	t_bill_fresh where uid =#{uid} 
+	<if test="type==0">
+	and status in (0,2)
+	</if>
+	<if test="type==1">
+	and status = 0
+	</if>
+	UNION All
+	select sub_order_sn bid,total_amount
+	money,a.status,DATE_FORMAT(b.sdate,'%Y.%m.%d %H:%i')sdate,2 type,a.freight,a.integral_amount integral from
+	t_bill_fresh_sub a left JOIN t_bill_fresh b on a.order_sn = b.bid where
+	b.uid = #{uid}
+	<if test="type==1">
+	and a.status in (0,1)
+	</if>
+	
+	)t order by sdate desc limit ${(page-1)*pageSize},#{pageSize}
+	</select>
+	  <resultMap id="BillProducttMap" type="com.xmniao.xmn.core.integral.entity.ProductBill">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="codeId" jdbcType="INTEGER" property="codeid" />
+    <result column="pname" jdbcType="VARCHAR" property="pname" />
+    <result column="bid" jdbcType="BIGINT" property="bid" />
+    <result column="sub_bid" jdbcType="VARCHAR" property="subBid" />
+    <result column="wareNum" jdbcType="INTEGER" property="warenum" />
+    <result column="rdate" jdbcType="TIMESTAMP" property="rdate" />
+    <result column="udate" jdbcType="TIMESTAMP" property="udate" />
+    <result column="price" jdbcType="DECIMAL" property="price" />
+    <result column="goodsName" jdbcType="VARCHAR" property="goodsname" />
+    <result column="suttle" jdbcType="VARCHAR" property="suttle" />
+    <result column="freight" jdbcType="DECIMAL" property="freight" />
+    <result column="supplier_id" jdbcType="BIGINT" property="supplierId" />
+    <result column="integral" jdbcType="DECIMAL" property="integral" />
+    <result column="purchasePrice" jdbcType="DECIMAL" property="purchaseprice" />
+    <result column="attr_val" jdbcType="VARCHAR" property="attrVal" />
+    <result column="attr_id" jdbcType="INTEGER" property="attrId" />
+    <result column="attr_amount" jdbcType="DECIMAL" property="attrAmount" />
+    <result column="attr_str" jdbcType="VARCHAR" property="attrStr" />
+    <result column="expWeight" jdbcType="DOUBLE" property="expweight" />
+    <result column="expTid" jdbcType="INTEGER" property="exptid" />
+     <result column="img1" jdbcType="VARCHAR" property="img1" />
+  </resultMap>
+	
+	
+	<!-- 查询订单商品 -->
+	<select id="queryBillProductByBid" parameterType="map" resultMap="BillProducttMap">
+		select 
+		wareNum,
+		price,
+		goodsName,
+		ifNull(attr_str,'')attr_str,
+		ifnull(concat(#{fileUrl},b.img1),'')img1,
+		ifNull(integral,0)integral
+		 from t_product_bill a left join t_product_details b on a.codeId = b.codeId
+		<if test="type==1">
+			where bid=#{bid}
+		</if>
+		<if test="type==2">
+			where sub_bid=#{bid}
+		</if>
+	</select>
+</mapper>

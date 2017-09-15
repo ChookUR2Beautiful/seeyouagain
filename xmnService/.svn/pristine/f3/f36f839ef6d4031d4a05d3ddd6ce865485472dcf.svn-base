@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live.dao.LiveGiftsInfoDao">
+	
+	<!--礼物信息列表 -->
+	<select id="getGiftsInfoList" parameterType="map" resultType="liveGiftsInfo" >
+ 		
+ 		<if test="giftPrice==null or giftPrice=='' ">
+	 		SELECT  
+				 gift.id, gift.gift_name,  gift.gift_price,  gift.gift_experience, gift.gift_avatar, 
+				 gift.free_status,  gift.status,  ifnull(seft.gift_nums,0) as gift_nums, 
+				 is_series as isSeries, IF(gift_kind=1,gift.gift_type, gift_kind+1) as  gift_type,
+				 gift_kind
+			FROM t_live_gift  gift 
+			LEFT JOIN t_live_self_gift seft ON seft.gift_id = gift.id AND liver_id = #{liver_id}
+			WHERE gift.status = 1  
+			<!-- 小于等于3.5.8 版本的拉取条件-->
+			<if test="giftKind==1 ">
+				AND gift_kind = #{giftKind}
+			</if>
+			ORDER BY gift_kind desc, gift.sort_val ASC,gift.id ASC 
+		</if>
+		
+		<if test="giftPrice!=null and giftPrice!='' ">
+			SELECT  
+				 gift.id, gift.gift_name, gift.gift_type, gift.gift_price, gift.gift_experience, gift.gift_avatar, 
+			     gift.free_status,  gift.status, is_series as isSeries
+			FROM t_live_gift  gift 
+			WHERE gift.status = 1  AND gift_kind = 1 <![CDATA[ AND gift_price < #{giftPrice} ]]> 
+			AND gift_kind =1
+			ORDER BY gift.sort_val ASC,gift.id ASC
+			
+		</if>
+		
+	</select>
+	
+	
+<!-- 	查询当前有无配置直播间发送 商城实体礼物 -->
+	<select id="queryLiveMarketProducts" parameterType="map" resultType="map">
+		SELECT 
+			 gf.id,de.pv_value as pvValue, de.id as pid,inf.codeId ,inf.pname, CONCAT(#{fileUrl},inf.breviary) as breviary ,
+			 (gf.freight+inf.cash+inf.integral+gr.amount) as birdCoin ,
+			 (gr.stock-IFNULL(gr.sales,0)) as stockNum
+			FROM  
+				t_live_gift_detail de
+			LEFT JOIN t_live_gift gf  ON de.gid = gf.id
+			LEFT JOIN t_sale_group gr on de.codeId = gr.codeId AND de.pv_ids = gr.pv_ids
+			LEFT JOIN t_product_info inf ON inf.codeId = de.codeId
+			WHERE gf.gift_kind = 2 AND status = 1 AND gr.stock > IFNULL(gr.sales,0)  AND gf.id = #{giftId}
+			<if test="coinMoney!=null and coinMoney!='' and coinMoney>0">
+				AND birdCoin >= #{coinMoney}
+			</if>
+			<if test="codeId!=null and codeId!=''">
+				AND de.codeId >= #{codeId}
+			</if>
+			AND inf.pstatus = 1 
+			AND inf.store>0
+			AND gr.stock>0
+			ORDER BY birdCoin ASC
+			LIMIT ${(page-1)*limit},#{limit}
+	</select>
+	
+	
+	<!--根据礼物Id获取礼物基本信息 -->
+	<select id="getGiftsInfoByGiftId" parameterType="int" resultType="liveGiftsInfo">
+		select 
+		      id, gift_name, gift_type, gift_price, gift_experience, gift_avatar, freight, free_status, is_gift_bag, 
+		     status, create_time, update_time, gift_bag_id ,is_radio as isRadio ,msg_priority as msgPriority
+		FROM  t_live_gift WHERE 1=1 AND id = #{id} AND status = 1
+	</select>
+	
+	<!--根据主播/直播 记录 查询本次获取的礼物-->
+	<select id="queryAnchorGiftNums" parameterType="map" resultType="map">
+	
+		SELECT lg.id as giftId,lg.gift_name,lg.gift_avatar, IFNULL(sum(gg.gift_nums),0) as gift_nums
+		FROM 
+			t_live_gift  lg
+		LEFT JOIN t_live_gived_gift  gg ON gg.gift_id=lg.id AND  gg.anchor_id = #{anchor_id} AND gg.live_record_id = #{live_record_id}
+		WHERE lg.gift_type = 2
+		GROUP BY gg.anchor_id, lg.id  ORDER BY lg.gift_price desc;
+	
+	</select>
+	
+	<!--查询礼物列表  同步返回自有礼物数量-->
+	<select id="queryLiverGiftNums" parameterType="map" resultType="map">
+			select 
+				gift.id ,gift.gift_name,gift.gift_avatar, gift.gift_type, gift.gift_price, sum(ifnull(gift_nums,0))  as  gift_nums 
+			from t_live_gift gift 
+			left join t_live_self_gift self on gift.id=self.gift_id   and self.liver_id =#{liver_id}
+			where  gift.status = 1
+			GROUP BY gift.gift_name  ORDER BY gift.gift_price 
+	</select>
+		
+	<!-- 描述: 查询观众/主播 接收/发送礼物记录   未接收 或 预接收状态 -->
+	<select id="queryLiveGivedGiftByAdvancedStatus"  resultType="liveGivedGiftInfo">
+		SELECT 
+			 gg.id, gg.gived_gift_key as givedGiftKey, gg.live_record_id as liveRecordId, gg.liver_id as liverId,  gg.wallet_record_id walletRecordId, 
+			 gg.liver_utype liverUtype, gg.anchor_id as anchorId,gg.anchor_room_no as anchorRoomNo, gg.gift_id as giftId, gg.gift_name as giftName, 
+			 gg.gift_nums as giftNums, gg.gift_price as giftPrice, gg.gift_experience as giftExperience, gg.status, gg.advanced_status as advancedStatus,
+			 gg.isfailed as isfailed
+		FROM t_live_gived_gift gg 
+		LEFT JOIN t_live_gift  lg  ON gg.gift_id = lg.id 
+		WHERE gg.advanced_status IN (1,2) AND lg.gift_type = 2
+		AND anchor_id = #{anchor_id} AND live_record_id = #{live_record_id}
+		
+	</select>
+	
+	<!--新增观众发送礼物记录 -->
+	<insert id="addLiveGivedGiftRecord" parameterType="map" useGeneratedKeys="true" keyProperty="id">
+<!-- 		INSERT INTO  t_live_gived_gift  -->
+<!-- 			( gived_gift_key,live_record_id, liver_id, wallet_record_id, liver_utype, anchor_id,  -->
+<!-- 			  anchor_room_no, gift_id, gift_name, gift_nums, gift_price, gift_experience, status,  -->
+<!-- 			  create_time,advanced_status,percentAmount,uid_relation_chain,return_coin,uid,gift_source)  -->
+<!-- 		VALUES  -->
+<!-- 			(#{gived_gift_key}, #{live_record_id}, #{liver_id}, #{wallet_record_id}, #{liver_utype}, #{anchor_id},  -->
+<!-- 			 #{anchor_room_no}, #{gift_id}, #{gift_name}, #{gift_nums}, #{gift_price}, #{vgift_experience}, #{status},  -->
+<!-- 			 #{create_time},#{advanced_status},#{percentAmount},#{uid_relation_chain},#{return_coin},#{uid},#{gift_source}) -->
+		
+		
+		INSERT INTO  t_live_gived_gift 
+			( gived_gift_key,live_record_id, liver_id, wallet_record_id, liver_utype, anchor_id, 
+			  anchor_room_no, gift_id, gift_name, gift_nums, gift_price, gift_experience, status, gift_ratio,
+			  create_time,advanced_status,percentAmount,uid_relation_chain,return_coin,uid,gift_source,sale_product_id) 
+		VALUES 
+			(#{gived_gift_key}, #{live_record_id}, #{liver_id}, #{wallet_record_id}, #{liver_utype}, #{anchor_id}, 
+			 #{anchor_room_no}, #{gift_id}, #{gift_name}, #{gift_nums}, #{gift_price}, #{vgift_experience}, #{status},#{gift_ratio},
+			 #{create_time},#{advanced_status},#{percentAmount},#{uid_relation_chain},#{return_coin},#{uid},#{gift_source},#{sale_product_id})
+		
+	</insert>
+	
+	<!-- 新增V客获得礼物分成记录 -->
+	<insert id="insertVkeRatioRecord" parameterType="map" >
+		INSERT INTO  t_live_gived_gift_vke 
+		( gived_id, anchor_uid, anchor_phone, anchor_nname, vke_uid, vke_phone, 
+		 vke_nname, vke_rankid, vke_rankname, vke_ratio ) 
+		VALUES 
+		( #{givedId}, #{anchorUid}, #{anchorPhone}, #{anchorNname}, #{vkeUid}, #{vkePhone}, 
+		 #{vkeNname}, #{vkeRankid}, #{vkeRankname}, #{vkeRatio} )
+	</insert>
+	
+	
+	<update id="modifyLiveGivedGiftRecord" parameterType="map">
+		update t_live_gived_gift set
+		
+		<if test="gived_gift_key!=null and gived_gift_key!=''">
+			gived_gift_key=#{gived_gift_key},
+		</if>
+		<if test="live_record_id!=null and live_record_id!=''">
+			live_record_id=#{live_record_id},
+		</if>
+		<if test="liver_id!=null and liver_id!=''">
+			liver_id=#{liver_id},
+		</if>
+		<if test="wallet_record_id!=null and wallet_record_id!=''">
+			wallet_record_id=#{gived_gift_key},
+		</if>
+		<if test="liver_utype!=null and liver_utype!=''">
+			liver_utype=#{liver_utype},
+		</if>
+		<if test="anchor_id!=null and anchor_id!=''">
+			anchor_id=#{anchor_id},
+		</if>
+		<if test="anchor_room_no!=null and anchor_room_no!=''">
+			anchor_room_no=#{anchor_room_no},
+		</if>
+			<if test="gift_id!=null and gift_id!=''">
+			gift_id=#{gift_id},
+		</if>
+			<if test="gift_name!=null and gift_name!=''">
+			gift_name=#{gift_name},
+		</if>
+			<if test="gift_nums!=null and gift_nums!=''">
+			gift_nums=#{gift_nums},
+		</if>
+		<if test="gift_price!=null and gift_price!=''">
+			gift_price=#{gift_price},
+		</if>
+		<if test="gift_experience!=null and gift_experience!=''">
+			gift_experience=#{gift_experience},
+		</if>
+		<if test="status!=null and status!=''">
+			status=#{status},
+		</if>
+		<if test="advanced_status!=null and advanced_status!=''">
+			advanced_status=#{advanced_status},
+		</if>
+		<if test="isfailed!=null and isfailed!=''">
+			isfailed=#{isfailed},
+		</if>
+			update_time=#{update_time}
+		 	where id=#{id}
+	</update>
+	
+	<!-- 	批量修改赠送礼物记录表 -->
+	<update id="modifyBatchLiveGivedGiftById" parameterType="list">
+		<foreach collection="list" index="index" item="item" separator=";">
+			UPDATE 
+				t_live_gived_gift 
+			SET 
+				advanced_status=#{item.advanced_status},
+				update_time=#{item.update_time} 
+			WHERE id = #{item.id}
+		</foreach>
+	</update>
+	
+   
+<!--    增加经验记录 -->
+   <insert id="insertExpericeRecord" parameterType="map" keyProperty="id" useGeneratedKeys="true">
+   insert into t_live_experience_record(liver_id,uid,liver_utype,anchor_room_no,live_record_id,
+   get_experience,get_experience_type,create_time,update_time)
+	VALUES(#{liver_id},#{uid},#{liver_utype},#{anchor_room_no},#{live_record_id},
+	#{get_experience},#{get_experience_type},#{create_time},#{update_time})
+   </insert>
+   
+   <!-- 	根据观众ID 和 礼物ID查询 观众是否有礼物 -->
+	<select id="queryLiveSelfGifts" parameterType="map" resultType="liveSelfGiftInfo">
+		SELECT 
+			id,liver_id as liverId,gift_id as giftId,gift_nums as giftNums,
+			create_time as createTime ,update_time as updateTime,messageKey
+		FROM
+			t_live_self_gift
+		WHERE liver_id = #{liver_id} AND gift_id = #{gift_id}
+	</select>
+	
+	<!-- 	根据礼物ID 和 直播观众用户ID 修改自有礼物数量 -->
+	<update id="modifyLiveSelfGiftNum" parameterType="map">
+		UPDATE t_live_self_gift SET gift_nums = #{giftNums} WHERE liver_id = #{liver_id} AND gift_id = #{gift_id}
+	</update>
+   
+     <!-- 查询送给最多礼物的一个主播 -->
+	<select id="queryFavoriteAnchorByLiverId" parameterType="int" resultType="map">
+		SELECT
+			sum(gift_nums * gift_price) AS sendGiftPrice,
+			anchor_id AS anchorId
+		FROM
+			t_live_gived_gift
+		WHERE
+			liver_id = #{liverId}
+		AND STATUS = 1
+		GROUP BY
+			anchor_id
+		ORDER BY
+			COUNT(gift_nums * gift_price) DESC LIMIT 1
+	</select>
+	
+     <!-- 批量查询这些用户是否送过礼物给主播-->
+	<select id="queryCheckGivedGifts" parameterType="map" resultType="map">
+		SELECT
+			sum(gift_nums * gift_price) AS sendGiftPrice,
+			liver_id AS liverId
+		FROM
+			t_live_gived_gift
+		WHERE
+			anchor_id = #{anchorId}
+		AND STATUS = 1
+		AND
+			liver_id IN
+			<foreach collection="liverIds" index="index" item="liverId" open="(" close=")" separator=",">
+  			 #{liverId}
+   			</foreach>
+   		GROUP BY
+			liver_id
+	</select>
+
+		<!-- 查询主播的最近接收到的实体礼物 -->
+	<select id="queryLiveAnchorGifts" parameterType="map" resultType="map">
+		SELECT liveGift.*, ((@rowNO := @rowNo + 1)+(1-1)*10) AS  rowNo
+		FROM (
+			SELECT
+				l.gived_gift_key AS giftKey,
+				l.liver_id AS uid,
+				l.gift_source AS giftSource,
+				l.create_time AS sendTime,
+				l.order_no AS giftOrder,
+				l.gift_nums AS giftNums,
+				g.gift_avatar AS giftAvatar
+			FROM t_live_gived_gift l
+			LEFT JOIN t_live_gift g ON g.id = l.gift_id
+			WHERE l.anchor_id = #{anchorId}
+			AND l.status = 1
+			AND l.gift_source in (1, 2)
+			ORDER BY l.create_time DESC
+			LIMIT ${(page-1)*pageSize}, #{pageSize}
+		) liveGift, (SELECT @rowNO := 0) b
+		
+	</select>
+
+	<!-- 获取主播收到实体礼物总数 -->
+	<select id="getLiveAnchorGiftCounts" parameterType="java.lang.Integer" resultType="int">
+		SELECT 
+			sum(gift_nums)
+		FROM t_live_gived_gift 
+		WHERE anchor_id = #{anchorId} 
+		AND status = 1
+		AND gift_source in (1, 2) 
+	</select>
+
+	<!-- 查询单个主播接收实体礼物列表（按数量排序） -->
+	<select id="queryLiveAnchorsGiftListByAnchorId" parameterType="map" resultType="map">
+		SELECT
+			SUM(gift_nums) AS giftNums,
+			liver_id AS liverId
+		FROM t_live_gived_gift
+		WHERE STATUS = 1 AND gift_source IN (1, 2) AND anchor_id = #{anchorId}
+		GROUP BY liver_id
+		ORDER BY giftNums DESC
+		LIMIT ${(page-1)*pageSize}, #{pageSize}
+	</select>
+
+
+	<!--  查询所有主播接收实体礼物列表（按数量排序） -->
+	<select id="queryLiveAnchorsGiftList" parameterType="map" resultType="map">
+		SELECT liveGift.*, ((@rowNO := @rowNo + 1)+(1-1)*10) AS  rowNo
+		FROM (
+			SELECT
+				SUM(gift_nums) AS giftNums,
+				anchor_id AS anchorId
+			FROM t_live_gived_gift
+			WHERE STATUS = 1 AND gift_source IN (1, 2)
+			<!-- 排除内部主播ID -->
+			<if test="anchorList != null">
+				AND anchor_id not in  
+				<foreach collection="anchorList" index="index" item="item" open="(" close=")" separator=",">
+					#{item}
+				</foreach>	
+			</if>
+			GROUP BY anchor_id
+			ORDER BY giftNums DESC
+			LIMIT ${(page-1)*pageSize}, #{pageSize}
+		) liveGift, (SELECT @rowNO := 0) b
+	</select>
+
+	<!-- 查询每个用户赠送实体礼物列表 -->
+	<select id="queryLiverGiveGiftList" parameterType="map" resultType="map">
+		select liveGift.*, ((@rowNO := @rowNo + 1)+(1-1)*10) AS  rowNo
+		from (
+			SELECT
+				SUM(gift_nums) AS giftNums,
+				liver_id AS liverId
+			FROM t_live_gived_gift
+			WHERE anchor_id = #{anchorId} AND STATUS = 1 AND gift_source IN (1, 2)
+			GROUP BY liverId
+			ORDER BY giftNums DESC
+			LIMIT ${(page-1)*pageSize}, #{pageSize}
+		) liveGift, (SELECT @rowNO := 0) b
+	</select>
+   
+<!--    获取商品实体礼物配置基础信息 -->
+   <select id="queryLiveGiftDetailInfo" parameterType="map" resultType="map">
+   		SELECT id, gid, gift_kind as giftKind, codeId, pv_ids as pvIds, pv_value as pvValue, category, genre FROM  t_live_gift_detail WHERE  id = #{pid}
+   </select>
+   
+   
+   
+</mapper>

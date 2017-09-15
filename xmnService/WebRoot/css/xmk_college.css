@@ -1,0 +1,80 @@
+@charset "UTF-8";
+/*公共样式*/
+address,article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}
+html{font-size:62.5%;}
+*{font-family: "微软雅黑";box-sizing: border-box;-webkit-touch-callout:none;user-select:none;-webkit-tap-highlight-color:rgba(255,255,255,0);overflow-scrolling:touch;margin:0;padding:0;outline:0;font-style:normal;border:none;background:0 0}
+input,label,select{vertical-align:middle;}
+h1,h2,h3,h4,h5,h6{font-family:normal;}
+input[type=checkbox],input[type=radio]{box-sizing:border-box;}
+input[type=search]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}
+body{font-family: "microsoft yahei";min-width:320px;word-wrap:break-word;line-height:1;cursor:default;-ms-content-zooming:none;-webkit-text-size-adjust:none;-moz-text-size-adjust:none;-ms-text-size-adjust:none;text-size-adjust:none}
+table{border-collapse:collapse;border-spacing:0;}
+caption,th{text-align:left;font-weight:400;}
+dl,li,ol,ul{list-style:none;}
+textarea{resize:none;overflow:auto;vertical-align:top;}
+del{text-decoration:line-through;}
+a,button{cursor:pointer;}
+a,a:hover{text-decoration:none;-webkit-tap-highlight-color:transparent;}
+a:visited{color: #2e2e2e;}
+a{color: #2e2e2e;}
+a:focus{outline:0;-moz-outline:none;}
+img{border:0;vertical-align:middle;-ms-interpolation-mode:bicubic;-webkit-tap-highlight-color:transparent;}
+.flex{display:-webkit-box;display:-moz-box;display:-ms-flexbox;display:flex;}
+.flex-fixed{width:auto;display:block;}
+.flex-auto{-webkit-box-flex:1;-moz-box-flex:1;-webkit-flex:1;-ms-flex:1;flex:1;}
+.bg-fff{
+    background: #fff;
+}
+.gray{
+    background: #f3f3f3;
+}
+
+.clearfix{
+  zoom: 1;
+  
+}
+.clearfix:after {
+    content: " ";
+    display: block;
+    height: 0;
+    clear: both;
+}
+.link-list{
+	padding: 0 0.4rem;
+}
+.link-list li{
+	height: 1.333rem;
+	line-height: 1.333rem;
+	border-bottom: 1px solid #dddddd;
+}
+.link-list li:last-child{
+	border-bottom: 0;
+}
+.link-list li a{
+	display: block;
+	width: 100%;
+	height: 100%;
+	font-size: 0.373rem;
+	color: #2e2e2e;
+}
+.link-list li img{
+	width: 0.4rem;
+	margin-right: 0.107rem;
+	vertical-align: middle;
+}
+.link-list li label{
+	vertical-align: middle;
+}
+.ad-box{
+	margin-top: 0.267rem;
+	padding: 0.267rem 0;
+	text-align: center;
+}
+.ad-box img{
+	width: 4.133rem;
+}
+.ad-box p{
+	font-size: 0.373rem;
+	color: #999;
+	line-height: 0.68rem;
+}

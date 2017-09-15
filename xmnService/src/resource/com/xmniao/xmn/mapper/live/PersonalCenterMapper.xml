@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live.dao.PersonalCenterDao">
+	
+	<sql id="queryLiveSql">
+<!-- 	ifnull(u.openid,'') openid, -->
+		w.id,w.uid,ifnull(u.uname,'') uname, ifnull(u.nname,'') nname, ifnull(ui.avatar,'') avatar, ifnull(w.achievement,'') achievement,ifnull(w.rank_id,0) levels_id,ifnull(m.member_rank_name,'')  member_rank_name,
+		ifnull(w.weixin,'') weixin ,ifnull(w.concern_nums,0) follow ,ifnull(w.give_gifts_nums,0) givegifts,ifnull(w.concerned_nums,0) fans,w.id anchorid,ifnull(w.utype,2) utype,ifnull(ui.sex,'') sex,
+		ifnull(w.rank_no,1) rank_no,ifnull(w.phone,'') phone,ifnull(w.current_expe,0) current_expe,ifnull(w.group_id,'') group_id,ifnull(w.ledger_ratio,0) ledger_ratio,ifnull(w.anchor_room_no,'') anchor_room_no
+		,ifnull(u.sign,'') sign, w.status,
+		w.sign_type as signType,
+		w.sign_type, w.root_role
+	</sql>
+	
+		<!-- 根据uid查询直播观众及主播的个人信息 -->
+	<select id="queryLiverPersonByUid" parameterType="int" resultType="map">
+			select 
+			<include refid="queryLiveSql"></include>
+		from  b_liver w
+		left JOIN b_urs u on w.uid=u.uid
+		left join b_urs_info ui on u.uid=ui.uid
+		left join b_live_member_rank m on m.id=w.rank_id   
+		where u.uid=#{uid}
+	</select>
+	
+	
+			<!-- 根据id查询直播观众及主播的个人信息 -->
+	<select id="queryLiverPersonById" parameterType="int" resultType="map">
+			select 
+			<include refid="queryLiveSql"></include>
+		from  b_liver w
+		left JOIN b_urs u on w.uid=u.uid
+		left join b_urs_info ui on u.uid=ui.uid
+		left join b_live_member_rank m on m.id=w.rank_id   
+		where w.id=#{id}
+	</select>
+	
+	<!-- 根据集合id查询直播观众及主播的个人信息 -->
+	<select id="queryLiverPersonByListId"  resultType="map">
+			select 
+			<include refid="queryLiveSql"></include>
+		from  b_liver w
+		left JOIN b_urs u on w.uid=u.uid
+		left join b_urs_info ui on u.uid=ui.uid
+		left join b_live_member_rank m on m.id=w.rank_id   
+		where   w.id in
+		<foreach collection="list" index="index" item="id" open="(" close=")" separator=",">
+		 #{id}
+		</foreach>
+	</select>
+	
+	<!-- 根据集合id查询直播观众及主播的个人信息 -->
+	<select id="queryLiverPersonByListUid"  resultType="map">
+		select 
+			<include refid="queryLiveSql"></include>
+		from  b_liver w
+		left JOIN b_urs u on w.uid=u.uid
+		left join b_urs_info ui on u.uid=ui.uid
+		left join b_live_member_rank m on m.id=w.rank_id   
+		where   w.uid in
+		<foreach collection="list" index="index" item="id" open="(" close=")" separator=",">
+		 #{id}
+		</foreach>
+	</select>
+	
+	<!-- 搜索主播的个人信息列表 -->
+	<select id="queryLivePersonByListName"  resultType="map" parameterType="map">
+			select 
+			<include refid="queryLiveSql"></include>
+		from  b_liver w
+		left JOIN b_urs u on w.uid=u.uid
+		left join b_urs_info ui on u.uid=ui.uid
+		left join b_live_member_rank m on m.id=w.rank_id   
+		where  w.utype=1   
+		<if test="parameterText!=null and parameterText!=''">
+		and u.nname like '%${parameterText}%' OR w.anchor_room_no like '%${parameterText}%'
+		</if>
+		limit ${(page-1)*limit},#{limit}
+	</select>
+
+	
+	<!-- 根据uid查询直播用户的财产信息 -->
+   	<select id="queryLiveWalletInfo" parameterType="int" resultType="map">
+   		select ifnull(bw.amount,0) amount,ifnull(w.balance,0) balance,ifnull(w.commision,0) commision from b_live_wallet w 
+   		LEFT JOIN b_wallet bw on bw.uid=w.uid
+   		where w.uid=#{uid}
+   	</select>
+   	
+   	<!-- 根据用户id查看直播记录数跟通告条数 -->
+   	<select id="queryLiveRecordNum" parameterType="int" resultType="map">
+	   	SELECT
+			count(
+				CASE
+				WHEN r.zhibo_type IN (1,3, 4, 5) THEN
+					1
+				ELSE
+					NULL
+				END
+			) AS liveRecordSum,
+			count(
+				CASE
+				WHEN r.zhibo_type IN (0, 5) THEN
+					1
+				ELSE
+					NULL
+				END
+			) AS annunciateSum,
+			count(
+				CASE
+				WHEN r.zhibo_type IN (- 1, 0,1,3,4,5) THEN
+					1
+				ELSE
+					NULL
+				END
+			) AS liveRecordAllSum
+		FROM
+			t_live_record r
+		WHERE
+			r.live_start_type = 0
+		AND
+			r.status = 1
+		AND	
+			r.anchor_id = #{anchorId}
+   	</select>
+   	
+  <!-- 根据用户uid查询积分对象 -->
+   	<select id="queryliveIntegral" parameterType="int" resultType="map">
+   	select * from b_integral_order i where i.user_id=#{uid}
+   	</select>
+   	
+   	<!-- 根据用户uid查询优惠券总数 -->
+   	<select id="queryCouponNum" parameterType="int" resultType="int">
+	   	SELECT
+		(
+			SELECT
+				COUNT(1)
+			FROM
+				t_coupon_detail d
+			WHERE
+				d.user_status = 0
+			AND d.uid = #{uid}
+			<![CDATA[
+				AND d.end_date >= NOW()
+			]]>
+		) + (
+			SELECT
+				count(1)
+			FROM
+				t_user_coupon c
+			WHERE
+				c.use_status = 0
+			AND c.uid = #{uid}
+			<![CDATA[
+				AND c.end_date >= NOW()
+			]]>
+		) AS count
+<!--    	select count(1) from t_coupon_detail d where d.get_status=1 and d.uid=#{uid} -->
+   	</select>
+   	
+   	
+  <!--  	查询黑名单人员 集合-->
+  <select id="queryBlackPerson" parameterType="map" resultType="map">
+  select b.id,ifnull(b.liver_str_id,'') liver_str_id,ifnull(b.liver_end_id,'') liver_end_id,ifnull(b.create_time,'') create_time,ifnull(b.update_time,'') update_time from t_live_blacklist b
+ 	where b.liver_str_id=#{liver_str_id}
+ 	ORDER BY b.create_time desc
+  	LIMIT ${(page-1)*limit},#{limit}
+  </select>
+   	
+   	<!-- 查询黑名单人员对象信息 -->
+   <select id="queryBlackInfoBasic" parameterType="map" resultType="map">
+   select b.id,ifnull(b.liver_str_id,'') liver_str_id,ifnull(b.liver_end_id,'') liver_end_id,ifnull(b.create_time,'') create_time,ifnull(b.update_time,'') update_time from t_live_blacklist b
+ 	where b.liver_str_id=#{liver_str_id} and b.liver_end_id=#{liver_end_id}
+   </select>	
+   	
+   	<!-- 删除取消黑名单 -->
+   	<delete id="deleteBlackInfo" parameterType="map">
+   	delete b from t_live_blacklist b where b.liver_str_id=#{liver_str_id} and b.liver_end_id=#{liver_end_id}
+   	</delete>
+   <!-- 	根据uid查询关注人员 -->
+   
+   <select id="queryAttentionAnchor" parameterType="map" resultType="map">
+  	select a.id,ifnull(a.viewer_id,'') viewer_id,a.anchor_id,CAST(a.`status` as int) status ,ifnull(a.create_time,'') create_time ,ifnull(a.update_time,'') update_time from t_live_attention_anchor a where a.anchor_id=#{anchorid} 
+  	<if test="status!=0">
+		and status=#{status}  	
+  	</if>
+  	 LIMIT ${(page-1)*limit},#{limit}
+   </select>
+   
+   	<insert id="addBlackInfo" parameterType="map">
+   	insert into   t_live_blacklist(liver_str_id,liver_end_id,create_time,update_time)
+	VALUES(#{liver_str_id},#{liver_end_id},#{create_time},#{update_time})
+   	</insert>
+   	
+   	<!-- 查询是否存在直播拉黑记录 -->
+   	<select id="queryLiveBlack" parameterType="map" resultType="int">
+   	SELECT
+   		COUNT(1)
+   	FROM
+   		t_live_blacklist
+   	WHERE
+   		liver_str_id=#{liver_str_id}
+   	AND
+   		liver_end_id=#{liver_end_id}
+   	</select>
+   	
+   	
+   	
+	<!--  获取用户的优惠券信息 -->
+   	<select id="queryUserCouponList" resultType="couponInfo" parameterType="map">
+			SELECT 
+				 cdid, anchorCid, denomination, conditions, startDate, endDate, couponType, sellerId,cname,sellername,serial,useNum,overlay
+			 FROM (
+				SELECT 
+					de.cdid ,0 as anchorCid ,de.denomination, cou.condition as conditions, 
+					de.start_date as startDate, de.end_date as  endDate, 
+					
+					<if test="version == 1"><!-- 兼容3.5.9及以前版本 -->
+						IF(de.ctype = 0,1,de.ctype)  as couponType ,
+					</if>
+					<if test="version == 0">
+						de.ctype as couponType ,
+					</if>
+					0 as sellerId,cou.cname,cou.overlay,
+					IF(seller.sellername !="",seller.sellername,"") as sellername ,de.serial,cou.use_num as useNum
+				FROM t_coupon_detail de 
+				LEFT JOIN t_coupon cou on cou.cid = de.cid  
+				LEFT JOIN t_seller seller ON seller.sellerid = de.sellerid
+	 			WHERE  de.ctype in (0,5) 
+	 			AND de.uid =  #{uid} 
+	 			AND de.get_status = 1
+	 			<if test="useStatus != null and useStatus != '' or useStatus == 0 ">
+	 				<if test="useStatus == 0">
+	 					AND de.user_status = #{useStatus}
+	 					<![CDATA[ AND (NOW() >= de.start_date AND NOW() <= de.end_date  or ( de.start_date is null and de.end_date is null ) ) ]]>
+	 				</if>
+	 				<if test="useStatus ==1">
+	 					AND de.user_status = #{useStatus}
+	 				</if>
+	 				<if test="useStatus == 2">
+	 					<![CDATA[ AND (NOW() >= de.start_date AND NOW() <= de.end_date  or ( de.start_date is null and de.end_date is null ) )  ]]>
+	 				</if>
+				</if>
+	 			<if test="payAmount != null and payAmount != '' or payAmount == 0 ">
+	 				<![CDATA[ AND cou.condition <= #{payAmount}  ]]>
+	 			</if>
+			UNION
+				SELECT 
+					cou.cuid as cdid ,0 as anchorCid, cou.denomination,de.conditions as conditions, cou.start_date as startDate, 
+					cou.end_date as endDate, 2 as couponType ,de.sellerid as sellerId,de.cname,cou.serial_no as serial,
+					IF(seller.sellername !="",seller.sellername,"") as sellername ,de.use_num as useNum, 0 as overlay
+				FROM t_user_coupon cou 
+				LEFT JOIN t_seller_coupon_detail de ON cou.cid = de.cid
+				LEFT JOIN t_seller seller ON seller.sellerid = cou.sellerid
+	  			WHERE cou.uid =  #{uid} 
+	  			<if test="useStatus != null and useStatus != '' or useStatus == 0 ">
+	  				<if test="useStatus == 0 ">
+	 					AND use_status = #{useStatus}
+	 					<![CDATA[ AND NOW() >= cou.start_date AND NOW() <= cou.end_date  ]]>
+	 				</if>
+	 				<if test="useStatus ==1 ">
+	 					AND use_status = #{useStatus}
+	 				</if>
+	 				<if test="useStatus == 2">
+	 					<![CDATA[ AND NOW() >= cou.start_date AND NOW() <= cou.end_date  ]]>
+	 				</if>
+				</if>
+				<if test="sellerId != null and sellerId != '' or sellerId == 0 ">
+	  				 AND de.sellerid = #{sellerId}  
+	  			</if>
+	  			<if test="payAmount != null and payAmount != '' or payAmount == 0 ">
+	  				<![CDATA[ AND de.conditions <= #{payAmount}  ]]>
+	  			</if>
+			) coupon
+			ORDER BY denomination DESC ,endDate DESC
+			limit ${(page-1)*limit},#{limit}
+		   	
+   	</select>
+   	
+   	<!--  获取用户的粉丝券券列表 -->
+   	<select id="queryUserFansCouponList" resultType="couponInfo" parameterType="map">
+		SELECT 
+			de.cdid , de.sellerid as sellerId, de.anchor_cid as anchorCid ,de.denomination, cou.condition as conditions, 
+			de.start_date as startDate, de.end_date as  endDate, 3 as couponType, seats, cou.cname,
+			IF(seller.sellername !="",seller.sellername,"") as sellername , de.serial, cou.use_num as useNum, cou.overlay
+		FROM  t_coupon_detail de 
+		LEFT JOIN t_fans_coupon_anchor_ref ref ON de.anchor_cid = ref.anchor_cid
+		LEFT JOIN t_coupon cou on de.cid = cou.cid 
+		LEFT JOIN t_seller seller ON seller.sellerid = de.sellerid
+		WHERE de.ctype = 2 AND de.uid = #{uid} 
+		<if test="useStatus != null and useStatus != '' or useStatus == 0 ">
+			<if test="useStatus == 0 ">
+				AND  de.user_status = #{useStatus}
+				<![CDATA[ AND NOW() >= de.start_date AND NOW() <= de.end_date 	 ]]>
+			</if>
+			<if test="useStatus ==1 ">
+				AND  de.user_status = #{useStatus}
+			</if>
+			<if test="useStatus == 2">
+				<![CDATA[ AND NOW() >= de.start_date AND NOW() <= de.end_date  ]]>
+			</if>
+		</if>
+		<if  test="sellerId != null and sellerId != '' or sellerId == 0 ">
+			AND de.sellerid = #{sellerId}
+		</if>
+		ORDER BY denomination DESC ,endDate DESC
+		limit ${(page-1)*limit},#{limit}
+   	</select>
+   	
+	<!--    	获取用户商家的优惠券 基本信息 -->
+   	<select id="queryUserCoponByCuid" parameterType="long" resultType="couponInfo">
+   		SELECT  
+   		user.cuid as cdid, user.cid, user.denomination, user.uid, user.serial_no as serial ,de.conditions as conditions
+   		FROM t_user_coupon  user
+   		LEFT JOIN t_seller_coupon_detail de ON user.cid = de.cid
+   		WHERE user.use_status = 0 AND user.cuid = #{cuid}
+   	</select>
+   	
+   	<!--    	获取用户购买的商家的粉丝券 基本信息 -->
+   	<select id="queryFansCoponByCdid" parameterType="long" resultType="couponInfo">
+   		SELECT  cuid as cdid, cid, denomination, uid FROM t_user_coupon  WHERE use_status = 0 AND cdid = #{cdid}
+   	</select>
+   	
+   	
+   	<!-- 查询主播与查看用户的粉丝列表 -->
+   	<select id="queryFansList" parameterType="map" resultType="map">
+		(
+			SELECT
+				f.liver_str_id AS liverStrId, 1 AS sameFocus
+			FROM
+				t_live_focus f
+			WHERE
+				f.liver_end_id = #{toLiverId}
+			AND f.liver_str_id IN (
+				SELECT
+					a.liver_end_id
+				FROM
+					t_live_focus a
+				WHERE
+					a.liver_str_id = #{liverId}
+			)
+		)
+		UNION
+		(
+			SELECT
+			f.liver_str_id AS liverStrId,0 as sameFocus
+		FROM
+			t_live_focus f
+		WHERE
+			f.liver_end_id = #{toLiverId}
+		AND f.liver_str_id NOT IN (
+				SELECT
+					a.liver_end_id
+				FROM
+					t_live_focus a
+				WHERE
+					a.liver_str_id = #{liverId}
+			)
+		)
+		ORDER BY sameFocus DESC 
+		LIMIT ${(page-1)*limit},#{limit}
+   	</select>
+   	
+   	<!-- 查询主播与查看用户的关注列表 -->
+   	<select id="queryFocusList" parameterType="map" resultType="map">
+		(
+			SELECT
+				f.liver_end_id AS liverEndId, 1 AS sameFocus
+			FROM
+				t_live_focus f
+			WHERE
+				f.liver_str_id = #{toLiverId}
+			AND f.liver_end_id IN (
+				SELECT
+					a.liver_end_id
+				FROM
+					t_live_focus a
+				WHERE
+					a.liver_str_id = #{liverId}
+			)
+		)
+		UNION
+		(
+			SELECT
+			f.liver_end_id AS liverEndId,0 as sameFocus
+		FROM
+			t_live_focus f
+		WHERE
+			f.liver_str_id = #{toLiverId}
+		AND f.liver_end_id NOT IN (
+				SELECT
+					a.liver_end_id
+				FROM
+					t_live_focus a
+				WHERE
+					a.liver_str_id = #{liverId}
+			)
+		)
+		ORDER BY sameFocus DESC 
+		LIMIT ${(page-1)*limit},#{limit}
+   	</select>
+   	
+   	<!-- 查询用户购买的未使用的粉丝卷 -->
+   	<select id="queryUnusedFansCouponByUid" parameterType="int" resultType="map">
+		SELECT 
+			DISTINCT r.record_id AS recordId,r.start_date AS startDate
+		FROM
+			t_coupon_detail d LEFT JOIN t_fans_coupon_anchor_ref r ON d.anchor_cid = r.anchor_cid
+		WHERE
+			d.uid = #{uid}
+		AND d.user_status = 0
+		AND d.ctype = 2
+   	</select>
+   	
+   	<!-- 查询主播直播过跟消费过的店铺信息(按照消费时间排序) -->
+   	<select id="queryLiveAndCustomerSeller" parameterType="map" resultType="map">
+		SELECT
+			a.sellerId,
+			a.sellerName,
+			max(a.customerDate) as customerDate1,
+			MONTH (max(a.customerDate)) AS customerMonth,
+			DAY (max(a.customerDate)) AS customerDay,
+			p.picurl AS sellerCover
+		FROM
+			(
+				(
+					SELECT
+						sellerid AS sellerId,
+						sellername AS sellerName,
+						start_date AS customerDate
+					FROM
+						t_live_record
+					WHERE
+						anchor_id = #{liverId}
+					AND live_start_type = 0
+					AND STATUS = 1
+					AND zhibo_type IN (1, 3, 4, 5)
+				)
+				UNION
+					(
+						SELECT
+							sellerid AS sellerId,
+							sellername AS sellerName,
+							zdate AS customerDate
+						FROM
+							t_bill
+						WHERE
+							uid = #{uid}
+					<![CDATA[
+						AND STATUS != 0
+						AND STATUS != 5
+					]]>
+					)
+			) a
+		LEFT JOIN t_seller_pic p ON a.sellerId = p.sellerid
+		LEFT JOIN t_seller s ON a.sellerId=s.sellerid
+		WHERE
+			p.islogo = 2
+		AND
+			s.status =3 and s.isonline=1
+		AND
+			a.customerDate IS NOT NULL
+		GROUP BY 
+			a.sellerId
+		ORDER BY
+			customerDate1 DESC
+		LIMIT #{limit}
+   	</select>
+   	
+   	<!-- 查询用户的消费店铺信息 -->
+   	<select id="queryCustomerSellerList" parameterType="map" resultType="map">
+		SELECT
+			b.sellerid AS sellerId,
+			b.sellername AS sellerName,
+			max(b.zdate) as customerDate1,
+			MONTH (max(b.zdate)) AS customerMonth,
+			DAY (max(b.zdate)) AS customerDay,
+			p.picurl AS sellerCover
+		FROM
+			t_bill b
+		LEFT JOIN t_seller_pic p ON b.sellerid = p.sellerid
+		LEFT JOIN t_seller s ON b.sellerid=s.sellerid
+		WHERE
+			b.uid = #{uid}
+		AND
+			s.status =3 and s.isonline=1
+	<![CDATA[
+		AND b. STATUS != 0
+		AND b. STATUS != 5
+	]]>
+		AND p.islogo = 2
+		GROUP BY 
+			b.sellerId
+		ORDER BY
+			b.zdate DESC
+		LIMIT #{limit}
+   	</select>
+</mapper>

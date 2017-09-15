@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!-- 回放 -->
+<mapper namespace="com.xmniao.xmn.core.vod.dao.LiveVodDao" >
+ 	<!-- 回放绑定直播记录 -->
+	<insert id="insertLiveVideo" parameterType="map">
+		insert into t_live_video(file_id,record_id,fileName,duration,imageUrl,status,create_time,update_time)
+		values(#{fileId},#{recordId},#{fileName},#{duration},#{imageUrl},#{status},#{createTime},#{updateTime})
+	</insert>
+	
+	<select id="queryAnchorVedio" parameterType="map" resultType="map">
+		select a.file_id fileId,
+		DATE_FORMAT(b.start_date,'%Y-%m-%d') start_date,CONCAT(#{fileUrl},b.avatar) avatar,b.view_count,
+		 CONCAT(#{fileUrl},zhibo_cover) zhibo_cover,seller_city,sellername
+		 from t_live_video a LEFT JOIN t_live_record b on a.record_id = b.id 
+		where b.anchor_id = #{id}
+		<if test="startDate!=null">
+		<![CDATA[and b.start_date>=#{startDate}	]]>
+		</if>
+		<if test="endDate!=null">
+		<![CDATA[
+		and b.start_date<= #{endDate}
+		]]>
+		</if>
+		order by b.start_date desc LIMIT ${(pageNo-1)*pageSize},#{pageSize}
+	</select>
+</mapper>

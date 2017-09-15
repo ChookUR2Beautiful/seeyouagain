@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.xmer.dao.SaasOrderDao">
+	<parameterMap type="SaasOrder" id="saasOrder"></parameterMap>
+	<!-- 新增SaaS软件套餐订单 -->
+	<insert id="addSaasOrder" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterMap="saasOrder" >
+        INSERT INTO t_saas_order(ordersn, dpid, uid,nums, amount, status,zdate,sdate,pay_type,
+        <if test="parentid != null">
+      	  parentid,
+        </if>
+        <if test="otherPay != null">
+      	  otherPay,
+        </if>
+         <if test="otherTel != null">
+      	  otherTel,
+        </if>
+        <if test="openid != null">
+      	  openid,
+        </if>
+        <if test="uidRelationChain != null">
+      	  uid_relation_chain,
+        </if>
+        <if test="appSourceStatus != null">
+        	app_source,
+        </if>
+        soldnums,stock,agio,price) values
+        ( #{ordersn}, #{dpid},#{xmerid},#{num}, #{amount}, #{status}, #{zdate},#{sdate},#{payType},
+        <if test="parentid != null">
+      	  #{parentid},
+        </if>
+        <if test="otherPay != null">
+      	  #{otherPay},
+        </if>
+        <if test="otherTel != null">
+      	  #{otherTel},
+        </if>
+        <if test="openid != null">
+      	  #{openid},
+        </if>
+        <if test="uidRelationChain != null">
+      	  #{uidRelationChain},
+        </if>
+        <if test="appSourceStatus != null">
+          #{appSourceStatus},
+        </if>
+        #{soldnums},#{stock},#{agio},#{price})
+    </insert>
+    
+    
+    <!-- 寻蜜客签约商户创建订单 -->
+    <insert id="addSaasSignOrder"  useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="saasSignOrder">
+    	insert into t_saas_sold_order(ordersn,sellerid,sellername,uid,amount,status,zdate,create_date,saas_ordersn,saas_source, saas_channel) values
+    	 (#{id},#{sellerid},#{sellername},#{uid},#{amount},#{status},#{zdate},#{createDate},#{saasOrdersn},#{saasSource},#{saasChannel})
+    </insert>
+    
+    <!-- 查询此订单号是否存在-->
+    <select id="queryOrderByOrdersn" resultType="map" parameterType="string">
+    	SELECT status,zdate,pay_type,sellerid,saas_ordersn FROM t_saas_sold_order WHERE ordersn=#{orderid};
+    </select>
+    
+    <!-- 查询签约订单的支付情况-->
+    <select id="querySaasOrder" resultType="int" parameterType="map">
+    	SELECT status FROM t_saas_sold_order WHERE sellerid = #{sellerid} AND uid = #{uid} ORDER BY zdate LIMIT 0,1
+    </select>
+    
+	 <!-- 查询用户套餐剩余信息 -->
+	 <select id="queryOrderNums" resultType="map" parameterType="int">
+	 		<!-- 
+		 	SELECT ordersn,soldnums,stock,parentid,version FROM t_saas_order WHERE uid=#{uid} 
+		 	<![CDATA[
+		 	AND stock!=0  AND status=1 
+		 	]]>
+	 	 -->
+	 	<![CDATA[
+			SELECT ordersn,soldnums,stock,parentid,version,returnnums
+			FROM
+				(
+					(
+						SELECT ordersn,soldnums,stock,parentid,version,returnnums
+						FROM
+							t_saas_order
+						WHERE
+							uid = #{uid}
+						AND returnnums != 0
+						AND STATUS = 1
+						ORDER BY
+							zdate ASC
+					)
+					UNION
+					(
+						SELECT ordersn,soldnums,stock,parentid,version,returnnums
+						FROM
+							t_saas_order
+						WHERE
+							uid = #{uid}
+						AND stock != 0
+						AND STATUS = 1
+						ORDER BY
+							zdate ASC
+					)
+				) a 
+			LIMIT 0,1
+		]]>
+	 </select>
+
+	 <select id="queryOrderNumsV2" resultType="map" parameterType="int">
+	 	<![CDATA[
+			SELECT ordersn,soldnums,stock,parentid,version,returnnums,saas_channel
+			FROM
+				(
+					(
+						SELECT ordersn,soldnums,stock,parentid,version,returnnums,saas_channel
+						FROM
+							t_saas_order
+						WHERE
+							uid = #{uid}
+						AND returnnums != 0
+						AND STATUS = 1
+						ORDER BY
+							zdate ASC
+					)
+					UNION
+					(
+						SELECT ordersn,soldnums,stock,parentid,version,returnnums,saas_channel
+						FROM
+							t_saas_order
+						WHERE
+							uid = #{uid}
+						AND stock != 0
+						AND STATUS = 1
+						ORDER BY
+							zdate ASC
+					)
+				) a 
+		]]>
+	 </select>
+	 
+	 <!-- 根据订单id更新订单信息 -->
+	 <update id="updateOrderNums" parameterType="map">
+	 	update t_saas_order set soldnums=#{soldnums},stock=#{stock},returnnums=#{returnnums},version=version+1 where ordersn=#{ordersn} and version=#{version}
+	 </update>
+	 
+	  <!-- 根据订单号查询用户购买saas套餐的信息-->
+    <select id="querySaasOrderInfoByOrdersn" resultType="map" parameterType="string">
+    	SELECT nums,amount,agio,status,dpid,parentid,uid,ifNull(openid,'') openid,ifNull(otherPay,0) otherPay,
+    	DATE_FORMAT(sdate,'%Y-%m-%d %H:%i') sdate,otherTel,ordersn,soldnums,stock,returnnums,version
+    	FROM t_saas_order WHERE ordersn=#{ordersn};
+    </select>
+    
+    <!-- 根据寻蜜客id查询购买的套餐总数跟库存数量-->
+    <select id="sumNumsAndStockByUid" resultType="map" parameterType="int">
+    	SELECT SUM(nums) nums,SUM(stock+returnnums) stock FROM t_saas_order WHERE uid=#{uid} AND status=1
+    </select>
+    
+   <!-- 更新寻蜜客头衔 -->
+	<update id="modifyXmer" parameterType="map">
+		update b_xmer set achievement=#{achievement} where uid=#{uid}
+	</update>
+	
+   <!-- 寻蜜客签约店铺修改代付信息 -->
+	<update id="modifySaasOrder" parameterType="string">
+		update t_saas_sold_order set pay_type=#{paytype},samount=#{samount},status=#{status},zdate=#{zdate} where ordersn=#{ordersn}
+	</update>
+	
+   <!-- 更新签约店铺订单的来源 -->
+	<update id="updateSaasSoldOrder" parameterType="saasSignOrder">
+		update t_saas_sold_order set saas_source=#{saasSource} where ordersn=#{id}
+	</update>
+
+	<!-- 售完，则更新签约店铺订单和saas套餐 -->
+	<update id="updateNewSaasSoldOrder" parameterType="map">
+		update t_saas_sold_order set ordersn=#{new_ordersn}, saas_ordersn=#{saas_ordersn}, saas_channel=#{saas_channel} 
+		where ordersn=#{old_ordersn}
+	</update>
+	
+	<!-- 查询所有寻蜜客等级 -->
+	<select id="queryXmerLevelList" resultType="map">
+		select sign_num as signnum,level_name as levelname from b_level order by sign_num desc
+	</select>
+	
+	<!-- 根据商铺名称，手机号码，详细地址查询是否存在重复信息 -->
+	<select id="checkSellerInfoIsRepeat" resultType="int" parameterType="map">
+		select count(1) from t_seller where sellername=#{sellername} and phoneid=#{phoneid} and address=#{address} and ismultiple != 1
+	</select>
+	
+	
+	<!-- 查询寻蜜客签约的套数 -->
+	<select id="getSignCount" parameterType="int" resultType="int">
+		SELECT count(1) from t_seller where uid=#{uid} and status = 3
+	</select>
+	 
+	 <select id="querySaasOrderList" resultType="map" parameterType="int">
+	 	SELECT ordersn,soldnums,stock,parentid FROM t_saas_order WHERE uid=#{uid} 
+	 	AND status=1 
+	 </select>
+	 
+	 
+	 <!-- 查询一批寻蜜客的总签约套数 -->
+		<select id="getXmerSaasNums" resultType="java.lang.Integer" parameterType="map">
+		
+		SELECT sum(nums) from t_saas_order where status =1
+		<if test="type==0">
+			<![CDATA[ and zdate<#{wfzDate} and uid in]]>
+		</if>
+		
+		<if test="type==1">
+			<![CDATA[ and zdate>=#{wfzDate} and uid in]]>
+		</if>
+		<foreach collection="uids" index="index" item="uid" open="(" separator="," close=")">
+		#{uid}
+		</foreach>
+		
+	</select>
+	
+		 
+	 <!-- 查询订单号 -->
+		<select id="getXmerSaasOrdersns" resultType="String" parameterType="map">
+		
+		SELECT ordersn from t_saas_order where status =1 
+		
+		<if test="type==0">
+			<![CDATA[ and zdate<#{wfzDate} and uid in]]>
+		</if>
+		
+		<if test="type==1">
+			<![CDATA[ and zdate>=#{wfzDate} and uid in]]>
+		</if>
+		
+		<foreach collection="uids" index="index" item="uid" open="(" separator="," close=")">
+		#{uid}
+		</foreach>
+		order by ordersn
+	</select>
+	
+	<!-- 根据uid获取剩余押金金额 -->
+	<select id="getSaasaStockAmount" parameterType="int" resultType="java.lang.Double">
+		select IFNULL(sum(stock*price),0) stockprice  from t_saas_order where status=1 and uid=#{uid}
+	</select>
+	<!-- 修改saas的订单为已退款状态，剩余套餐数量为0 -->
+	<update id="udpateXmerOrderStatusAndsoldnums" parameterType="int">
+	update t_saas_order set status=4,stock=0 where uid=#{uid}
+		
+	</update>
+	 
+	 <!-- 修改代付手机号码 -->
+	 <update id="updateOrderOtherTel" parameterType="map">
+	 	update t_saas_order set otherTel=#{phone} where ordersn=#{orderid}
+	 
+	 </update>
+
+	 <!-- 删除软件签约的店铺订单 -->
+    <delete id="deleteSaasOrder" parameterType="map">
+         delete * from t_saas_sold_order where sellerid = #{sellerid}
+    </delete>
+
+    <!-- 查询一批用户签约的店铺 -->
+    <select id="getSignSellerByUidList" parameterType="map" resultType="map">
+		select id,uid,sellerid, saas_channel from t_saas_sold_order where status=1 
+		and uid in
+		<foreach collection="uids" index="index" item="uid" open="(" separator="," close=")">
+			#{uid}
+		</foreach>
+	</select>
+
+	<!-- 批量查询订单信息 -->
+	<select id="querySaasOrderInfoByOrdersnList" parameterType="map" resultType="map">
+		select ordersn, nums, uid from t_saas_order where ordersn in
+		<foreach collection="ordersnList" index="index" item="ordersn" open="(" separator="," close=")">
+			#{ordersn}
+		</foreach>
+	</select>
+
+</mapper>

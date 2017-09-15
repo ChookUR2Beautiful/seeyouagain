@@ -1,0 +1,1095 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.xmer.dao.SellerDao">
+	
+	<!-- 
+		查询用户签约的店铺列表 
+		@修改内容 : 添加返回examineinfo字段
+		@修改时间 : 2016-05-30 10:40
+		@修改人 :	 zhengyaowen
+	-->
+	<select id="querySellerList" parameterType="map" resultType="map">
+		SELECT  
+			sellerid, sellername, date_format(signdate,'%Y.%m.%d') AS signdate,isonline, agio, status, examineinfo AS reason 
+		FROM 
+			t_seller s 
+		WHERE 
+			s.uid = #{uid}
+			and ismultiple != 1
+		<choose>
+			<when test="status == 4">
+				AND (status = 4 OR status = 0 )
+			</when>
+			<otherwise>
+				AND status = #{status}
+			</otherwise>
+		</choose>
+		order  by  udate desc 
+		LIMIT ${(page-1)*limit},#{limit}
+	</select>
+	
+	<!-- V3.6.0 版本查询签约店铺列表 -->
+	<select id="queryNewSellerList" parameterType="map" resultType="map">
+		SELECT  
+			sellerid, sellername,uid, 
+			IFNULL(DATE_FORMAT(signdate,'%Y.%m.%d %H:%i'),'') AS signdate,
+			IFNULL(DATE_FORMAT(udate,'%Y.%m.%d %H:%i'),'') AS udate,
+			IFNULL(DATE_FORMAT(date_operate,'%Y.%m.%d %H:%i'),'') AS date_operate,
+			IFNULL(isonline,0) isonline, agio,IFNULL(status,0) status, examineinfo AS reason ,IFNULL(saas_type,0) saasType
+		FROM 
+			t_seller s 
+		WHERE 
+		<choose>
+			<when test="type==1">
+				(
+				<if test="uidList != null and uidList.size() > 0">
+				(s.uid IN 
+				<foreach collection="uidList" item="id" open="(" separator="," close=")">
+					#{id}
+				</foreach>
+				AND saas_type=1) OR 
+				</if>
+				s.uid = #{uid})
+			</when>
+			<otherwise>
+				s.uid = #{uid} 
+			</otherwise>
+		</choose>
+		AND s.ismultiple != 1
+		<choose>
+			<when test="type == 1">
+           		AND (isonline=1 AND status=3)
+           		ORDER BY date_operate DESC
+        	</when>
+        	<when test="type == 3">
+            	AND (status = 4 OR status = 0 )
+            	ORDER BY udate DESC
+        	</when>
+       	 	<otherwise>
+            	AND (status=1 OR status=2 OR (status=3 AND isonline!=1))
+            	ORDER BY signdate DESC
+        	</otherwise>
+		</choose>
+		LIMIT ${(page-1)*limit},#{limit}
+	</select>
+	<!-- 查询寻蜜客签约店铺数量 -->
+	<select id="queryXmerSellerNums" parameterType="int" resultType="int">
+		select count(1) nums from t_seller where status=3 and uid=#{uid}
+	</select>
+	
+	<!-- 	商家字段列表 -->
+	<resultMap id="seller" type="com.xmniao.xmn.core.seller.entity.Seller" >
+	    <id column="sellerid" property="sellerid" jdbcType="INTEGER" />
+	    <result column="zoneid" property="zoneid" jdbcType="INTEGER" />
+	    <result column="jointid" property="jointid" jdbcType="INTEGER" />
+	    <result column="sellername" property="sellername" jdbcType="VARCHAR" />
+	    <result column="province" property="province" jdbcType="INTEGER" />
+	    <result column="city" property="city" jdbcType="INTEGER" />
+	    <result column="area" property="area" jdbcType="INTEGER" />
+	    <result column="address" property="address" jdbcType="VARCHAR" />
+	    <result column="agio" property="agio" jdbcType="DOUBLE" />
+	    <result column="flatAgio" property="flatAgio" jdbcType="DOUBLE" />
+	    <result column="typename" property="typename" jdbcType="VARCHAR" />
+	    <result column="tradename" property="tradename" jdbcType="VARCHAR" />
+	    <result column="sdate" property="sdate" jdbcType="VARCHAR" />
+	    <result column="tel" property="tel" jdbcType="VARCHAR" />
+	    <result column="uid" property="uid" jdbcType="INTEGER" />
+	    <result column="phoneid" property="phoneid" jdbcType="VARCHAR" />
+	    <result column="fullname" property="fullname" jdbcType="VARCHAR" />
+	    <result column="aid" property="aid" jdbcType="INTEGER" />
+	    <result column="nname" property="nname" jdbcType="VARCHAR" />
+	    <result column="account" property="account" jdbcType="VARCHAR" />
+	    <result column="xmerUid" property="xmerUid" jdbcType="INTEGER" />
+	    <result column="ledgerMode" property="ledgerMode" jdbcType="INTEGER" />
+	    <result column="corporate" property="corporate" jdbcType="VARCHAR" />
+	    <result column="genre" property="genre" jdbcType="INTEGER" />
+	    <result column="liveCoinPay" property="liveCoinPay" jdbcType="INTEGER" />
+	    <result column="totalLimitTurnover" property="totalLimitTurnover" jdbcType="DOUBLE" />
+	    <result column="dailyLimitTurnover" property="dailyLimitTurnover" jdbcType="DOUBLE" />
+	    <result column="fatherid" property="fatherid" jdbcType="INTEGER" />
+	    <result column="allianceId" property="allianceId" jdbcType="INTEGER" />
+	    <result column="allianceName" property="allianceName" jdbcType="VARCHAR" />
+	    <result column="fatherName" property="fatherName" jdbcType="VARCHAR" />
+	    <result column="tag_ids" property="tagIds" jdbcType="VARCHAR" />
+	    <result column="saasType" property="saasType" jdbcType="VARCHAR" />
+	    
+	    
+    </resultMap>
+	
+	<!-- 查询正在进行的优惠卷信息 -->
+	<select id="querySellerCoupon" parameterType="map" resultMap="sellerCouponDetailMap">
+		select cid,cname,
+		DATE_FORMAT(start_date,'%Y-%m-%d %H:%i')start_date,
+		DATE_FORMAT(end_date,'%Y-%m-%d %H:%i')end_date,sellerid,
+		coupon_type from t_seller_coupon_detail where status=0 and sellerid=#{sellerid}
+		<if test="type!=null">
+			and coupon_type = #{type}
+		</if>
+		<![CDATA[
+		and DATE_FORMAT(start_date,'%Y-%m-%d %H:%i')<=DATE_FORMAT(now(),'%Y-%m-%d %H:%i')]]>
+		and DATE_FORMAT(end_date,'%Y-%m-%d %H:%i')>=DATE_FORMAT(now(),'%Y-%m-%d %H:%i')
+		order by create_date desc
+		<if test="page!=null and pageSize!=null">
+			limit ${(page-1)*pageSize},#{pageSize}
+		</if>
+	</select>
+	
+	<!-- 查询正在进行的秒杀活动信息 -->
+	<select id="queryActivityKill" parameterType="map" resultMap="sellerCouponDetailMap">
+		select id cid ,name cname,
+		DATE_FORMAT(begin_date,'%Y-%m-%d %H:%i')start_date,0 coupon_type,
+		DATE_FORMAT(end_date,'%Y-%m-%d %H:%i')end_date,sellerid from t_activity_kill where status=0 and sellerid=#{sellerid}
+		<![CDATA[
+		and DATE_FORMAT(begin_date,'%Y-%m-%d %H:%i')<=DATE_FORMAT(now(),'%Y-%m-%d %H:%i')
+		and DATE_FORMAT(begin_time,'%H:%i')<=DATE_FORMAT(now(),'%H:%i')
+		]]>
+		and DATE_FORMAT(end_date,'%Y-%m-%d %H:%i')>=DATE_FORMAT(now(),'%Y-%m-%d %H:%i')
+		and DATE_FORMAT(end_time,'%H:%i')>=DATE_FORMAT(now(),'%H:%i')
+		order by create_time desc
+		<if test="page!=null and pageSize!=null">
+			limit ${(page-1)*pageSize},#{pageSize}
+		</if>
+	</select>
+	
+	<!-- 	根据商家ID查询商家 -->
+	<select id="querySellerBySellerid" parameterType="long" resultMap="seller">
+		SELECT 
+			sel.sellerid,sel.zoneid,sel.jointid,sel.sellername,sel.province,sel.city,sel.area ,
+			sel.address,sel.agio, sel.flat_agio as  flatAgio ,sel.typename, sel.tradename,
+			sel.sdate,sel.tel,sel.uid,sel.phoneid,sel.uid as xmerUid,sel.ledger_mode as ledgerMode,
+			j.corporate,sel.jointid,sel.genre,sel.live_coin_pay as liveCoinPay,
+			IFNULL(sel.total_limit_turnover,0) as totalLimitTurnover, 
+			IFNULL(sel.daily_limit_turnover,0)  as dailyLimitTurnover,
+			sel.isonline, sel.fatherid, alli.id as allianceId, alli.alliance_name as allianceName,
+			IF(sel.fatherid=0,'',(select sellername from t_seller where sellerId = sel.fatherid)) as fatherName,tag_ids as tagIds,
+			sel.sdate as sdate,sel.saas_type as saasType,ifnull(d.tips,'') as tips
+		FROM t_seller sel 
+		LEFT JOIN t_joint j ON sel.jointid = j.jointid
+		LEFT JOIN t_alliance_relation ar ON ar.sellerid = sel.sellerid
+		LEFT JOIN t_alliance alli ON alli.id = ar.id
+		left join t_seller_detailed d on d.sellerid=sel.sellerid
+		WHERE sel.sellerid =  #{sellerid} 
+		AND sel.isonline = 1 
+		group by sel.sellerid
+	</select>
+
+	<!-- 	根据商家ID查询商家 -->
+	<select id="querySellerInfoBySellerid" parameterType="long" resultMap="seller">
+		SELECT 
+			sel.sellerid,sel.zoneid,sel.jointid,sel.sellername,sel.province,sel.city,sel.area ,
+			sel.address,sel.agio, sel.flat_agio as  flatAgio ,sel.typename, sel.tradename,
+			sel.sdate,sel.tel,sel.uid,sel.phoneid,sel.uid as xmerUid,sel.ledger_mode as ledgerMode,
+			j.corporate,sel.jointid,sel.genre,sel.live_coin_pay as liveCoinPay,
+			IFNULL(sel.total_limit_turnover,0) as totalLimitTurnover, 
+			IFNULL(sel.daily_limit_turnover,0)  as dailyLimitTurnover,
+			sel.isonline, sel.fatherid, alli.id as allianceId, alli.alliance_name as allianceName,
+			IF(sel.fatherid=0,'',(select sellername from t_seller where sellerId = sel.fatherid)) as fatherName,tag_ids as tagIds,
+			sel.sdate as sdate,sel.saas_type as saasType
+		FROM t_seller sel 
+		LEFT JOIN t_joint j ON sel.jointid = j.jointid
+		LEFT JOIN t_alliance_relation ar ON ar.sellerid = sel.sellerid
+		LEFT JOIN t_alliance alli ON alli.id = ar.id
+		WHERE sel.sellerid =  #{sellerid} 
+		group by sel.sellerid
+	</select>
+	
+	<resultMap id="PicResultMap" type="com.xmniao.xmn.core.seller.entity.SellerPic" >
+		<id column="picid" property="id" jdbcType="INTEGER" />
+		<result column="picurl" property="url" jdbcType="VARCHAR" />
+		<result column="islogo" property="type" jdbcType="INTEGER" />
+	</resultMap>
+  
+  <!-- 查询商家图片列表 -->
+	<select id="querySellerPicBySelleridAndType" resultMap="PicResultMap" parameterType="map">
+		select picid,  CONCAT(#{fileUrl},picurl) as picurl ,islogo
+		from t_seller_pic where sellerid=#{sellerid} and picurl is not null
+		<if test="type != null">
+			and islogo=#{type}
+		</if>
+		order by islogo desc
+	</select>
+	<!-- 批量查询店铺所在的商圈 -->
+	<select id="querySellerBusiness" resultType="map" parameterType="list">
+		SELECT
+			b.title,
+			s.sellerid AS sellerId
+		FROM
+			t_seller s
+		LEFT JOIN t_business b ON b.bid = s.zoneid
+		WHERE
+			s.sellerid IN
+		<foreach collection="sellerIds" item="sellerId" open="(" close=")" separator=",">
+			#{sellerId}
+		</foreach>
+	</select>
+	
+  	<!-- 批量查询店铺信息-->
+	<select id="querySellerInfo" resultType="map" parameterType="list">
+		SELECT
+			sellerid AS sellerId,
+			sellername AS sellerName,
+			tradename AS tradeName
+		FROM
+			t_seller
+		WHERE
+			sellerid IN
+		<foreach collection="sellerIds" item="sellerId" open="(" close=")" separator=",">
+			#{sellerId}
+		</foreach>
+	</select>
+	
+	 <resultMap id="SellerDetailedMap" type="com.xmniao.xmn.core.seller.entity.SellerDetailed" >
+    <id column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="consume" property="consume" jdbcType="DOUBLE" />
+    <result column="iswifi" property="isWifi" jdbcType="INTEGER" />
+    <result column="isParking" property="isParking" jdbcType="INTEGER" />
+    <result column="landMark" property="landMark" jdbcType="VARCHAR" />
+  	</resultMap>
+	
+	<!-- 查询商家详细信息 -->
+	<select id="querySellerDetailBySellerid" parameterType="int" resultMap="SellerDetailedMap">
+		 select sellerid,
+		 ifNull(consume,0)consume,
+		 ifNull(iswifi,0)iswifi,
+		 ifNull(isparking,0)isparking,
+		 ifNull(landMark,'')landMark 
+		 from t_seller_detailed
+  		  where sellerid=#{sellerid}
+	</select>
+	<!-- 	商家满减活动基本字段 -->
+	<sql id="activityFullreductionInfoCol">
+		full.id, full.sellerid, full.name,  
+		full.begin_date as beginDate, 
+		full.end_date as endDate,
+		full.consume_and_pay as  consumeAndPay,
+		full.offset_amount as  offsetAmount,
+		full.limit_number  as limitNumber,
+		full.is_derate  as isDerate,
+		full.derate_level1_amount as  derateLevel1Amount,
+		full.consume_and_pay1  as consumeAndPay1,
+		full.derate_level2_amount  as derateLevel2Amount,
+		full.consume_and_pay2  as consumeAndPay2,
+		full.derate_level3_amount  as derateLevel3Amount,
+		full.consume_and_pay3  as consumeAndPay3,
+		full.status
+	</sql>
+	
+	<!-- 查询商家满减活动表 -->
+	<select id="querySellerSaleBySellerId" resultType="activityFullreductionInfo" parameterType="map">
+		SELECT 
+			<include refid="activityFullreductionInfoCol"/>
+		FROM t_activity_fullreduction full
+		WHERE 1=1 AND status = 0 AND sellerid = #{sellerId}
+		<![CDATA[ 
+			AND consume_and_pay <= #{payAmount}
+			AND NOW() >= begin_date and NOW() <= end_date
+		]]>
+	</select>
+	
+	 <resultMap id="SellerLandMarkMap" type="com.xmniao.xmn.core.seller.entity.SellerLandMark" >
+    <id column="lid" property="lid" jdbcType="INTEGER" />
+    <result column="longitude" property="longitude" jdbcType="DOUBLE" />
+    <result column="latitude" property="latitude" jdbcType="DOUBLE" />
+    <result column="gg_lat" property="ggLat" jdbcType="DOUBLE" />
+    <result column="gg_lng" property="ggLng" jdbcType="DOUBLE" />
+  	</resultMap>
+   <sql id="LandMark_Column_List" >
+    lid,longitude,latitude,gg_lat,gg_lng
+  	</sql>
+ 
+ <!-- 查询商家坐标信息-->
+ <select id="querySellerLandMarkBySellerid" resultMap="SellerLandMarkMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="LandMark_Column_List" />
+    from t_seller_landmark
+    where sellerid=#{sellerid}
+  </select>
+		<!-- 批量查询有共同收藏的店铺数量 -->
+	<select id="queryCollectSellerCount" resultType="map" parameterType="map">
+		SELECT
+			COUNT(DISTINCT b.sellerid) AS count,
+			b.uid
+		FROM
+			t_urs_collect a
+		LEFT JOIN t_urs_collect b ON a.sellerid = b.sellerid
+		WHERE
+			a.uid = #{uid}
+		AND b.uid IN
+			<foreach item="toUid" index="index" collection="toUids" open="(" separator="," close=")">
+	         	#{toUid}
+	        </foreach>
+		GROUP BY b.uid
+	</select>
+	<!-- 查询某个用户是否有浏览某个店铺的记录数量 -->
+	<select id="querySellerBrowsedCount" parameterType="map" resultType="int">
+		select count(1) from t_seller_browsed where uid=#{uid} and sellerid =#{sellerid}		
+	</select>
+	<!-- 修改用户浏览店铺次数加1 -->
+	<update id="updateSellerBrowSed" parameterType="map">
+		update t_seller_browsed set counts=counts+1,update_time=#{cdate} where uid=#{uid} and sellerid=#{sellerid}
+	</update>
+		<!-- 批量查询有共同预览的店铺数量 -->
+	<select id="queryViewSellerCount" resultType="map" parameterType="map">
+		SELECT
+			COUNT(DISTINCT b.sellerid) AS count,
+			b.uid
+		FROM
+			t_seller_browsed a
+		LEFT JOIN t_seller_browsed b ON a.sellerid = b.sellerid
+		WHERE
+			a.uid = #{uid}
+		AND b.uid IN
+			<foreach item="toUid" index="index" collection="toUids" open="(" separator="," close=")">
+	         	#{toUid}
+	        </foreach>
+		GROUP BY b.uid
+	</select>
+	<!-- 添加用户浏览记录 -->
+	<insert id="insertSellerBrowsed" parameterType="map">
+	insert into t_seller_browsed(uid,sellerid,counts,create_time,update_time) values(#{uid},#{sellerid},1,#{cdate},#{cdate})
+	</insert>
+	
+	<resultMap id="sellerCouponDetailMap" type="com.xmniao.xmn.core.seller.entity.SellerCouponDetail" >
+    <id column="cid" property="cid" jdbcType="INTEGER" />
+    <result column="cname" property="cname" jdbcType="VARCHAR" />
+    <result column="start_date" property="startDate" jdbcType="VARCHAR" />
+    <result column="end_date" property="endDate" jdbcType="VARCHAR" />
+    <result column="coupon_type" property="type" jdbcType="INTEGER" />
+  	</resultMap>
+	
+	
+		<!-- 查询商家满减活动表 -->
+	<select id="querySellerRedPacketBySellerId" resultType="int" parameterType="long">
+		SELECT 
+			count(1)
+		FROM t_redpacket red
+		WHERE 1=1 and redpacket_type = 3 and status = 1 AND sellerid = #{sellerId}
+		AND date_format(NOW(),'%Y-%m-%d') BETWEEN date_format(begin_date,'%Y-%m-%d') AND date_format(end_date ,'%Y-%m-%d') 
+		AND STATUS=1
+		
+	</select>
+	
+	<!-- 查询商家满减活动表 -->
+	<select id="querySellerRedPacketInfo" resultMap="SellerRedpacketMap" parameterType="map">
+		SELECT 
+			id,sellerid,redpacket_type as redpacketType, single_amount as singleAmount, redpacket_name as redpacketName,amount_type as amountType
+		FROM t_redpacket red
+		WHERE 1=1 and status = 1 AND pay_status = 2
+		<if test="type!=null and type!='' or type == 0">
+			AND redpacket_type = #{type}
+		</if>
+		<if test="sellerid!=null and sellerid!='' or sellerid == 0">
+			AND sellerid = #{sellerid}
+		</if>
+		<if test="type==2">
+		<![CDATA[ AND receive_condition <= #{amount}AND (red.redpacket_number-red.get_redpacket_number)>0 ]]>
+		</if>
+		<if test="type==3">
+		 	AND (red.total_amount-red.get_redpacket)>0 
+		</if>
+		AND date_format(NOW(),'%Y-%m-%d')  BETWEEN  red.begin_date AND  red.end_date 
+		AND TIME_FORMAT(NOW(),'%H:%i') BETWEEN TIME_FORMAT(red.begin_time,'%H:%i') AND TIME_FORMAT(red.end_time,'%H:%i') 
+	</select>
+	
+	<!-- 查询商家推荐|满赠领取的红包-->
+	<select id="queryUserRedPacketRecord" resultType="map" parameterType="String">
+		SELECT  
+			r.id,r.redpacket_id as redpacketId,r.denomination,r.user_id as userId,r.phone, r.order_no as orderNo ,
+			t.redpacket_name as redpacketName , t.redpacket_type as redpacketType, t.sellerid
+		FROM t_redpacket_record  r
+		left join t_redpacket  t ON r.redpacket_id = t.id
+		WHERE r.order_no = #{orderNo}
+	</select>
+	
+	 <resultMap id="SellerRedpacketMap" type="com.xmniao.xmn.core.seller.entity.Redpacket">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="sellerid" property="sellerid" jdbcType="INTEGER"/>
+        <result column="redpacket_type" property="redpacketType" jdbcType="INTEGER"/>
+        <result column="amount_type" property="amountType" jdbcType="INTEGER"/>
+        <result column="redpacket_name" property="redpacketName" jdbcType="VARCHAR"/>
+        <result column="begin_date" property="beginDate" jdbcType="VARCHAR"/>
+        <result column="end_date" property="endDate" jdbcType="VARCHAR"/>
+        <result column="begin_time" property="beginTime" jdbcType="VARCHAR"/>
+        <result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+        <result column="total_amount" property="totalAmount" jdbcType="DECIMAL"/>
+        <result column="random_amount_mini" property="randomAmountMini" jdbcType="DECIMAL"/>
+        <result column="random_amount_max" property="randomAmountMax" jdbcType="DECIMAL"/>
+        <result column="redpacket_number" property="redpacketNumber" jdbcType="INTEGER"/>
+        <result column="single_amount" property="singleAmount" jdbcType="DECIMAL"/>
+        <result column="new_user_amount" property="newUserAmount" jdbcType="DECIMAL"/>
+        <result column="old_user_amount" property="oldUserAmount" jdbcType="DECIMAL"/>
+        <result column="share_awards_proportion" property="shareAwardsProportion" jdbcType="VARCHAR"/>
+        <result column="longitude" property="longitude" jdbcType="VARCHAR"/>
+        <result column="latitude" property="latitude" jdbcType="VARCHAR"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="receive_condition" property="receiveCondition" jdbcType="DECIMAL"/>
+        <result column="deductible_amount" property="deductibleAmount" jdbcType="DECIMAL"/>
+        <result column="views" property="views" jdbcType="BIGINT"/>
+        <result column="real_spending" property="realSpending" jdbcType="DECIMAL"/>
+        <result column="pay_status" property="payStatus" jdbcType="INTEGER"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="pay_type" property="payType" jdbcType="INTEGER"/>
+        <result column="zbalance" property="zbalance" jdbcType="DECIMAL"/>
+        <result column="amount" property="amount" jdbcType="DECIMAL"/>
+        <result column="balance" property="balance" jdbcType="DECIMAL"/>
+        <result column="commision" property="commision" jdbcType="DECIMAL"/>
+        <result column="integral" property="integral" jdbcType="DECIMAL"/>
+        <result column="profit" property="profit" jdbcType="DECIMAL"/>
+        <result column="payid" property="payid" jdbcType="VARCHAR"/>
+        <result column="order_no" property="orderNo" jdbcType="VARCHAR"/>
+        <result column="third_serial" property="thirdSerial" jdbcType="VARCHAR"/>
+        <result column="version_lock" property="versionLock" jdbcType="BIGINT"/>
+        <result column="refund_amount" property="refundAmount" jdbcType="DECIMAL"/>
+        <result column="get_redpacket" property="getRedpacket" jdbcType="DECIMAL"/>
+        <result column="newuser_num" property="newUserNumber" jdbcType="INTEGER"/>
+        <result column="amountType" property="amountType" jdbcType="INTEGER"/>
+        
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, redpacket_type,redpacket_name, begin_date, end_date, begin_time,
+        end_time
+    </sql>
+	<!-- 查询红包信息 -->	
+	<select id="querySellerRedPacket" parameterType="map" resultMap="SellerRedpacketMap">
+		select
+        <include refid="Base_Column_List"/>
+        from t_redpacket where status = 1 and sellerid =#{sellerid}
+        <if test="type!=null">
+		and redpacket_type = #{type}
+		</if>
+		<if test="flag!=null and flag==1">
+		and redpacket_type !=1
+		</if>
+	<![CDATA[and  DATE_FORMAT(CONCAT(begin_date,' ',begin_time),'%Y-%m-%d %H:%i')<=DATE_FORMAT(now(),'%Y-%m-%d %H:%i')]]>
+	and  DATE_FORMAT(CONCAT(end_date,' ',end_time),'%Y-%m-%d %H:%i')>=DATE_FORMAT(now(),'%Y-%m-%d %H:%i')
+		
+		order by create_time
+		<if test="page!=null and pageSize!=null">
+			limit ${(page-1)*pageSize},#{pageSize}
+		</if>
+		
+	</select>
+	<!-- 查询第一次收藏的商户封面图 -->	
+	<select id="queryFirstCollectSellerByUid" parameterType="int" resultType="map">
+		SELECT
+			c.create_time AS collectTime,
+			c.sellerid AS sellerId,
+			s.sellername AS sellerName,
+			p.picurl AS sellerCover
+		FROM
+			t_urs_collect c
+		LEFT JOIN t_seller s ON c.sellerid = s.sellerid
+		LEFT JOIN t_seller_pic p ON c.sellerid = p.sellerid
+		WHERE
+			c.uid = #{uid}
+		AND p.islogo = 2
+		ORDER BY
+			c.create_time ASC
+		LIMIT 1
+	</select>
+	
+	<!-- 查询优惠卷信息 -->
+	<select id="queryCouponBySellerid" parameterType="map" resultType="map">
+	SELECT 
+		a.cid,a.cname,a.denomination,c.zhibo_cover AS pic,c.id, 
+		DATE_FORMAT(c.plan_start_date,'%Y-%m-%d %H:%i')sdate,b.anchor_cid acid,c.anchor_id anchorId
+	FROM t_coupon a 
+	LEFT JOIN t_fans_coupon_anchor_ref b ON a.cid = b.cid  
+	LEFT JOIN t_live_record c ON b.record_id = c.id
+	WHERE a.stock!=0 AND c.zhibo_type IN (-1,0,1)
+	<![CDATA[
+	AND a.status=1 AND a.sale_start_time<=NOW() AND a.sale_end_time>=NOW()
+	]]> 
+	<!-- 查询商家预售卷 -->
+	<if test="sellerid!=null">
+		and  c.sellerid = #{sellerid}
+	</if>
+	<!-- 查询正在直播预售卷 -->
+	<if test="recordId">
+		and c.id = #{recordId}
+	</if>
+	order by c.plan_start_date desc
+	limit ${(page-1)*pageSize},#{pageSize}
+	</select>
+	
+	<!-- 查询商家所有活动 -->
+	<select id="queryActivityList" parameterType="int" resultType="map">
+	select id,cname
+	,DATE_FORMAT(start_date,'%Y-%m-%d') sdate,DATE_FORMAT(end_date,'%Y-%m-%d')edate,type,sellerid,flag
+	from (
+	select id,redpacket_name cname,CONCAT(begin_date,'
+	',begin_time)start_date,CONCAT(end_date,' ',end_time)end_date,0
+	type,sellerid,0 flag from t_redpacket where status = 1 and sellerid = #{sellerid}
+	UNION ALL
+	select cid id,cname,start_date ,end_date,1 type,sellerid,coupon_type flag from
+	t_seller_coupon_detail where status=0 and sellerid = #{sellerid}
+	UNION ALL
+	select id,name cname,begin_date start_date,end_date,2 type,sellerid,0 flag from
+	t_activity_freetry where status=0 and sellerid = #{sellerid}
+	UNION ALL
+	select id,name cname,begin_date start_date ,end_date,3 type,sellerid,0 flag from
+	t_activity_roullete where status = 0 and sellerid = #{sellerid}
+	UNION ALL
+	select id,name cname,begin_date start_date,end_date ,4 type,sellerid,0 falg  from
+    t_activity_fcouspoints where status=0  and sellerid = #{sellerid}
+    UNION ALL
+	select a.id ,a.name cname,a.begin_date start_date,a.end_date ,5 type ,a.sellerid,0 falg from
+	 t_activity_kill a
+	left join (select count(1) as count,activity_id as id from t_activity_award_relation where status = 0  group by activity_id ) b on a.id = b.id
+	 where a.sellerid = #{sellerid} and a.status=0 and  b.count>0
+	UNION ALL 
+	select id,name cname,begin_date start_date,end_date,6 type ,sellerid ,0 falg from 
+	t_activity_fullreduction where sellerid = #{sellerid} and status=0
+	) a where <![CDATA[ start_date <=now()]]> and end_date>=NOW() and sellerid = #{sellerid}
+	order by start_date 
+	</select>
+		
+	<resultMap id="SearchResponseMap" type="com.xmniao.xmn.core.catehome.response.SearchResponse">
+        <result column="sellerid" property="sellerid" jdbcType="INTEGER"/>
+        <result column="sellerName" property="sellerName" jdbcType="VARCHAR"/>
+        <result column="range" property="range" jdbcType="BIGINT"/>
+    </resultMap>
+		
+		<!-- 有结果的排序
+	1、优先显示直播中店铺、有预售或预告店铺
+	2、有与我有相关标签的店铺（权重：已消费、已收藏、已浏览、我附近）
+	3、SAAS有发布店铺活动店铺
+	4、最后店铺按消费人次排序-->
+	<select id="search" parameterType="map" resultType="map">
+	select  a.sellerid, if(b.sellerid is null,1,0) as live_s_order , 
+			<if test="uid!=null">
+			    if(b1.sellerid is null,1,0) as bil_s_order,
+			    if(b2.sellerid is null,1,0) as urs_s_order,
+			    if(b3.sellerid is null,1,0) as bro_s_order,
+	   		 </if>
+	    if(c.sellerid is null,1,0) as cou_s_order,
+	    if(d.sellerid is null,1,0) as red_s_order,
+	    if(e.sellerid is null,1,0) as fre_s_order,
+	    if(f.sellerid is null,1,0) as rou_s_order,
+	    g.count,
+	    <if test="latitude!=null and longitude!=null">
+		ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{latitude}*PI()/180-j.latitude*PI()/180)/2),2)+COS(#{latitude}*PI()/180)*COS(j.latitude*PI()/180)*POW(SIN((#{longitude}*PI()/180-j.longitude*PI()/180)/2),2)))*1000)
+		as `range`,
+		</if>
+		a.sellerName,
+		a.typename,
+		a.tradename,
+		h.title zoneName
+	 from  t_seller  a
+	<![CDATA[left join  (select sellerid,sellername,  max(zhibo_type) from t_live_record where  zhibo_type in (0,1,3) group by sellerid) b on  a.sellerid=b.sellerid]]>
+	<if test="uid!=null">
+	left join  (select  distinct sellerid from t_bill where uid=#{uid} )           b1  on a.sellerid=b1.sellerid
+	left join  (select  distinct sellerid from t_urs_collect where uid=#{uid} )    b2  on a.sellerid=b2.sellerid
+	left join  (select  distinct sellerid from t_seller_browsed where uid=#{uid} ) b3  on a.sellerid=b3.sellerid
+	</if>
+	left join (select DISTINCT sellerid from t_seller_coupon_detail ) c on
+	a.sellerid=c.sellerid
+	left join (select DISTINCT sellerid from t_redpacket ) d on a.sellerid=d.sellerid
+	left join (select DISTINCT sellerid from t_activity_freetry ) e on a.sellerid=e.sellerid
+	left join (select DISTINCT sellerid from t_activity_roullete ) f on
+	a.sellerid=f.sellerid
+	left join 
+	(select a.sellerid,count(1) as count from t_seller a
+		left join t_bill b on a.sellerid=b.sellerid
+	where (a.sellername like #{keyWord} or a.typename like #{keyWord} or
+	a.tradename like #{keyWord} )  and b.status !=0 and b.status !=5 
+	<if test="areaId!=null">
+		and (a.province=#{areaId} or a.city=#{areaId} or a.area =#{areaId})
+	</if>
+	               group by a.sellerid ) g on a.sellerid=g.sellerid
+	left join t_business h on a.zoneid = h.bid
+	<if test="latitude!=null and longitude!=null">
+	left join t_seller_landmark j on a.sellerid = j.sellerid
+	</if>
+	where   (a.sellername like #{keyWord} or a.typename like #{keyWord} or a.tradename like #{keyWord} or h.title like #{keyWord})
+	and a.status =3 and a.isonline=1 and a.is_public=1
+	<if test="areaId!=null">
+		and (a.province=#{areaId} or a.city=#{areaId} or a.area = #{areaId})
+	</if>
+	<if test="latitude!=null and longitude!=null">
+	and j.latitude is NOT null and  j.longitude is not null
+	</if>
+	order by 
+	live_s_order,
+	<if test="uid!=null">
+	bil_s_order,urs_s_order,bro_s_order,
+	</if>
+	<if test="latitude!=null and longitude!=null">
+	`range`,
+	</if>
+	cou_s_order,red_s_order,fre_s_order,
+	rou_s_order,g.count desc
+	
+	limit ${(page-1)*pageSize},${pageSize} 
+	</select>
+	
+	<!-- 查询附近商家 -->
+	<select id="querySellerNearList" parameterType="map" resultType="map">
+	select  
+	if((select distinct sellerid from t_fans_coupon_anchor_ref  fans_cou where end_date>now() and fans_cou.sellerid = a.sellerid) is null ,1,0)  as fans_order,
+	ifnull((select min(CASE 
+	 when zhibo_type = 1 then 0 
+	 when zhibo_type = 0 then 1
+	 when zhibo_type = 3 then 2 end )   from t_live_record  where  zhibo_type in(0,1,3)  and  a.sellerid  = sellerid and  isAppoint=0 group by sellerid),3) as zhibo_type,
+	ifnull((select  count(distinct bill.uid) conCount from t_bill bill where bill.status not in (0,5) and a.sellerid = bill.sellerid  group by bill.sellerid ),0) as conCount,
+	ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{latitude}*PI()/180-l.gg_lat*PI()/180)/2),2)+COS(#{latitude}*PI()/180)*COS(l.gg_lat*PI()/180)
+	*POW(SIN((#{longitude}*PI()/180-l.gg_lng*PI()/180)/2),2)))*1000) as `range`,
+	a.sellername,a.sellerid,a.zoneid
+	 from t_seller a
+	 JOIN t_seller_landmark l on a.sellerid = l.sellerid 
+	where a.status =3 and a.isonline=1 and a.is_public=1
+	<![CDATA[ and ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{latitude}*PI()/180-l.gg_lat*PI()/180)/2),2)+COS(#{latitude}*PI()/180)*COS(l.gg_lat*PI()/180)*POW(SIN((#{longitude}*PI()/180-l.gg_lng*PI()/180)/2),2)))*1000)<#{range}]]> 
+	<if test="zoneid!=null">
+	and a.zoneid=#{zoneid}
+	</if>
+	<if test="category!=null">
+	and a.category=#{category}
+	</if>
+	<if test="genre!=null">
+	and a.genre=#{genre}
+	</if>
+	order by zhibo_type,fans_order,conCount desc
+	limit ${(page-1)*pageSize},${pageSize} 
+	</select>
+	
+	<!-- 获取商家有无独立设置储值卡 -->
+	<select id="queryCardSellerBySellerId" parameterType="int" resultType="map">
+		SELECT * FROM t_debitcard_seller WHERE (sellerid = #{sellerid} or FIND_IN_SET(#{sellerid},sub_sellerid)) AND status = 0
+	</select>
+	
+	<!-- 获取商家有无独立设置储值卡 -->
+	<select id="queryUserCardSellerInfo" parameterType="map" resultType="map">
+		SELECT 
+			id,uid,phone,sellerid,sellertype,quota,cumulative_quota as cumulativeQuota 
+		FROM b_card_seller_quota 
+		WHERE sellerid = #{sellerid} OR  uid = #{uid}
+	</select>
+	
+	<!-- 搜索店铺信息 -->
+	<select id="searchSellersByKeyword" resultType="map">
+		SELECT 
+			s.sellerid,s.sellername,s.tradename,h.title AS zonename,
+			IF(p.id IS NULL,0,p.id) AS comboid,
+			IF(p.selling_price IS NULL,0.0,p.selling_price) AS comboprice,
+			IF(p.selling_coin_price IS NULL,0.0,p.selling_coin_price) AS combocoin,
+			IF(p.highly_recommended IS NULL,0,p.highly_recommended) AS psort,
+			IF(p.title IS NULL,'',p.title) AS comboname, 
+			(CASE WHEN r.zhibo_type=0 THEN 0 WHEN r.zhibo_type=1 THEN 1 WHEN r.zhibo_type=3 THEN 3 when r.zhibo_type=4 THEN 4 else 5 END) AS rsort,
+			<if test="uid != null">
+			IF(a.sellerid IS NULL,0,1) AS bsort,
+			IF(b.sellerid IS NULL,0,1) AS csort,
+			IF(c.sellerid IS NULL,0,1) AS vsort,
+			</if>
+			IF(d.sellerid IS NULL,0,1) AS dsort,
+			IF(f.sellerid IS NULL,0,1) AS fsort,
+			ROUND(6378.138*2*ASIN(
+			SQRT(
+			POW(SIN((#{lat}*PI()/180-g.latitude*PI()/180)/2),2)+
+			COS(#{lat}*PI()/180)*COS(g.latitude*PI()/180)*POW(SIN((#{lon}*PI()/180-g.longitude*PI()/180)/2),2)
+			))*1000) AS ranges
+		FROM t_seller s
+		LEFT JOIN 
+		t_live_record  r ON (s.sellerid = r.sellerid
+		AND r.id = (
+		SELECT
+			d.id
+		FROM
+			t_live_record d
+		WHERE
+			d.sellerid = s.sellerid
+		AND (
+			d.zhibo_type BETWEEN 1
+			AND 4
+			OR (d.zhibo_type = 0)
+		)
+		ORDER BY
+			CASE
+		WHEN d.zhibo_type = 1 THEN
+			1
+		WHEN d.zhibo_type = 0 THEN
+			2
+		WHEN d.zhibo_type = 3 THEN
+			3
+		WHEN d.zhibo_type = 4 THEN
+			4
+		ELSE
+			5
+		END ASC
+	LIMIT 0,1
+	)
+)
+		<if test="uid != null">
+		LEFT JOIN (SELECT DISTINCT sellerid FROM t_bill WHERE status NOT IN (0,5) AND uid=#{uid}) a
+		ON s.sellerid=a.sellerid
+		LEFT JOIN (SELECT DISTINCT sellerid FROM t_urs_collect WHERE type=0 AND uid=#{uid}) b
+		ON s.sellerid=b.sellerid
+		LEFT JOIN (SELECT DISTINCT sellerid FROM t_seller_browsed WHERE type=0 AND uid=#{uid}) c
+		ON s.sellerid=c.sellerid
+		</if>
+		LEFT JOIN (SELECT DISTINCT sellerid FROM t_seller_coupon_detail WHERE status=0 AND send_status=1) d
+		ON s.sellerid=d.sellerid
+		LEFT JOIN (SELECT DISTINCT sellerid FROM t_activity_fullreduction WHERE status=0) f 
+		ON s.sellerid=f.sellerid
+		LEFT JOIN t_seller_landmark g ON s.sellerid=g.sellerid
+		LEFT JOIN t_business h ON s.zoneid=h.bid
+		LEFT JOIN 
+		(SELECT * FROM t_seller_package WHERE status=1 
+		<![CDATA[
+		AND sale_start_time<=NOW() AND sale_end_time>=NOW()
+		]]>
+		) p ON s.sellerid=p.sellerid
+		WHERE s.status=3 AND s.is_public=1 AND s.isonline=1 
+		AND (s.sellername LIKE #{keyword} OR s.tradename LIKE #{keyword} OR s.typename LIKE #{keyword} 
+			OR h.title LIKE #{keyword} OR p.title LIKE #{keyword} OR s.address LIKE CONCAT ('%',#{keyword},'%')) AND s.city=#{cityId}
+		ORDER BY psort DESC, rsort DESC ,
+		<if test="uid != null">
+		bsort DESC, csort DESC, vsort DESC, 
+		</if>
+		ranges ASC, dsort DESC, fsort DESC
+		LIMIT ${(page-1)*pageSize},${pageSize} 
+	</select>
+	
+	<!-- 按照关键词查询没结果时补充的数据 -->
+	<select id="replenSellersIsNotCombo" resultType="map">
+		SELECT 
+			s.sellerid,IF(a.zhiboType IS NULL,0,a.zhiboType) AS asort,IF(b.sellerid IS NULL,0,1) AS bsort,
+			IF(c.sellerid IS NULL,0,1) AS csort,IF(e.sort IS NULL,0,e.sort) AS esort
+			<!-- IF(f.consums IS NULL,0,f.consums) AS fsort -->
+		FROM t_seller s
+		LEFT JOIN (SELECT sellerid,MAX(zhibo_type) AS zhiboType FROM t_live_record WHERE zhibo_type IN (0,1) AND status=1) a ON s.sellerid=a.sellerid
+		LEFT JOIN (SELECT DISTINCT sellerid FROM t_seller_coupon_detail WHERE status=0 AND send_status=1) b ON s.sellerid=b.sellerid
+		LEFT JOIN (SELECT DISTINCT sellerid FROM t_activity_fullreduction WHERE status=0) c ON s.sellerid=c.sellerid
+		LEFT JOIN t_seller_package d ON s.sellerid=d.sellerid
+		LEFT JOIN t_recommend e ON d.id=e.recommend_id
+		<!-- LEFT JOIN (SELECT sellerid,COUNT(1) AS consums FROM t_bill WHERE status NOT IN (0,5) GROUP BY sellerid)f ON s.sellerid=f.sellerid -->
+		WHERE s.status=3 AND s.is_public=1 AND s.isonline=1 AND d.status=1 AND e.recommend_type=1 
+		<![CDATA[
+		AND d.sale_start_time <=#{nowDate} AND d.sale_end_time >=#{nowDate}
+		]]>
+		ORDER BY esort DESC, asort DESC, bsort DESC, csort DESC, fsort DESC
+		LIMIT 0,10
+	</select>
+	
+	<!-- 根据店铺ID查询店铺标签 -->
+	<select id="findSellerTagNameBySellerId" resultType="String">
+		SELECT tag_name AS tagName FROM t_live_classify_tag WHERE id IN 
+		<foreach collection="tags" item="tags" open="(" close=")" separator=",">
+			#{tags}
+		</foreach>
+	</select>
+	
+	<select id="selectSellerInfoBySellerIds" resultType="map">
+		SELECT 
+			s.sellerid,s.sellername,s.tradename,h.title AS zonename,
+			(CASE WHEN r.zhiboType=0 THEN 2 WHEN r.zhiboType=1 THEN 3 WHEN r.zhiboType=3 THEN 1 ELSE 0 END) AS rsort,
+			IF(a.sellerid IS NULL,0,1) AS bsort,
+			IF(b.sellerid IS NULL,0,1) AS csort,
+			IF(c.sellerid IS NULL,0,1) AS vsort,
+			IF(d.sellerid IS NULL,0,1) AS dsort,
+			IF(f.sellerid IS NULL,0,1) AS fsort,
+			ROUND(6378.138*2*ASIN(
+			SQRT(
+			POW(SIN((#{lat}*PI()/180-g.latitude*PI()/180)/2),2)+
+			COS(#{lat}*PI()/180)*COS(g.latitude*PI()/180)*POW(SIN((#{lon}*PI()/180-g.longitude*PI()/180)/2),2)
+			))*1000) AS ranges
+		FROM t_seller s
+		LEFT JOIN 
+		(SELECT sellerid,MAX(zhibo_type) AS zhiboType FROM t_live_record WHERE status=1 AND zhibo_type IN (0,1,3) GROUP BY sellerid) r
+		ON s.sellerid=r.sellerid
+		LEFT JOIN (SELECT DISTINCT sellerid FROM t_bill WHERE status NOT IN (0,5) AND uid=#{uid}) a
+		ON s.sellerid=a.sellerid
+		LEFT JOIN (SELECT DISTINCT sellerid FROM t_urs_collect WHERE type=0 AND uid=#{uid}) b
+		ON s.sellerid=b.sellerid
+		LEFT JOIN (SELECT DISTINCT sellerid FROM t_seller_browsed WHERE type=0 AND uid=#{uid}) c
+		ON s.sellerid=c.sellerid
+		LEFT JOIN (SELECT DISTINCT sellerid FROM t_seller_coupon_detail WHERE status=0 AND send_status=1) d
+		ON s.sellerid=d.sellerid
+		LEFT JOIN (SELECT DISTINCT sellerid FROM t_activity_fullreduction WHERE status=0) f 
+		ON s.sellerid=f.sellerid
+		LEFT JOIN t_seller_landmark g ON s.sellerid=g.sellerid
+		LEFT JOIN t_business h ON s.zoneid=h.bid
+		WHERE s.status=3 AND s.is_public=1 AND s.isonline=1 and s.sellerid in
+		<foreach item="sellerids" index="index" collection="sellerids" open="(" separator="," close=")">
+		#{sellerids}
+		</foreach>
+		ORDER BY rsort DESC ,bsort DESC, csort DESC, vsort DESC, ranges ASC, dsort DESC, fsort DESC
+		LIMIT ${(page-1)*pageSize},${pageSize} 
+	</select>
+
+	<!-- 通过店铺ID查询相关的店铺ID -->
+	<select id="selectSubSellersBySellerId" resultType="String">
+  		SELECT
+			sub_sellerid AS sellerids 
+		FROM t_debitcard_seller WHERE STATUS=0 
+		AND sellertype=#{sellerType} AND (sellerid=#{sellerid} OR sub_sellerid LIKE CONCAT ('%',#{sellerid},'%'))
+  	</select>
+  	
+  	<!-- 查询店铺图片 -->
+  	<select id="selectSellerPicBySellerId" resultType="map">
+  		SELECT
+  			picId,sellerid,pid,breviary,picurl,bewrite,islogo 
+  		FROM t_seller_pic WHERE sellerid=#{sellerid} AND islogo=#{type}
+  	</select>
+  	
+  	<select id="selectByPrimaryKey" resultType="map">
+  		SELECT * FROM t_seller WHERE status=3 AND is_public=1 AND isonline=1 AND sellerid=#{sellerid}
+  	</select>
+  	
+  	<!-- 根据uid集合 查询已上线的签约店铺数量 -->
+  	<select id="queryReadyNumByUids" parameterType="list" resultType="Integer">
+  		select count(1) from t_seller s 
+  		where (
+  		<if test="uidList != null and uidList.size() > 0">
+  		(s.uid in 
+  			<foreach collection="uidList" item="id" open="(" separator="," close=")">
+  				#{id}
+  			</foreach>
+  			and saas_type=1) OR 
+  		</if>
+  		uid=#{uid})
+  		and (status=3 and isonline=1)
+		and ismultiple != 1
+  	</select>
+  	
+  	<select id="queryWaitNumByUid" resultType="Integer">
+  		select count(1) from t_seller s 
+  		where s.uid = #{uid} 
+  		and (status=1 OR status=2 OR (status=3 AND isonline!=1))
+  		and ismultiple != 1
+  	</select>
+  	
+  	<select id="queryDraftNumByUid" resultType="Integer">
+  		select count(1) from t_seller s
+  		where s.uid = #{uid}
+  		and (status = 4 OR status = 0)
+  		and ismultiple != 1
+  	</select>
+  	
+  	<select id="querySellerName" resultType="String">
+  		SELECT sellername FROM t_seller WHERE sellerid = #{sellerId}
+  	</select>
+  	<!--精选： 首页为你优选查询当前城市店铺：
+  	1.优先显示当前时间有效套餐
+  	2.优先显示 直播中，预告，历史通告，回放
+  	3.优先显示 本地商圈店铺(人气从高到低)
+  	4.优先显示 距离从近到远
+  	 -->
+ <select id="queryHomeSeller" parameterType="map" resultType="map">
+ SELECT  sellersort.*,COUNT(bill.sellerid) as num  
+ 			FROM
+ 	(SELECT 
+		s.sellerid,p.picurl,s.tag_ids,r.nname,s.zoneid ,s.genre,t.tradename as genrename,r.id as liveRecordId,
+		r.anchor_id as anchorId,r.live_start_type as liveType,r.anchor_room_no as liveRoom,
+		r.zhibo_type ,s.sellername,b.title AS zonename,sp.id,sp.title AS comboname,sp.id as comboId, 
+		sp.selling_coin_price AS coinprice,sp.selling_price AS comboprice,spic.pic_url AS comboimage,
+		sp.highly_recommended,
+		<if test="zoneid!=null">
+			CASE WHEN s.zoneid=#{zoneid} THEN 1 ELSE 0 END AS localZone,
+		</if>
+		
+   		CASE WHEN sp.id is null THEN 0 ELSE 1 END as iscombo,
+		CASE WHEN  r.zhibo_type=4 OR r.zhibo_type =3 THEN 1  WHEN r.zhibo_type =0 THEN 2 WHEN r.zhibo_type=1 THEN 3  ELSE 0 END as islive,
+		ROUND(6378.138*2*ASIN( SQRT(POW (SIN( (#{lat}*PI()/180-sl.latitude*PI()/180)/2),2)+ 
+		COS(#{lat}*PI()/180)*COS(sl.latitude*PI()/180)*POW( SIN((#{lon}*PI()/180-sl.longitude*PI()/180)/2),2)))*1000) AS ranges 
+	FROM t_seller s 
+	LEFT JOIN t_seller_pic p ON (s.sellerid = p.sellerid and p.islogo=2)
+	LEFT JOIN t_seller_landmark sl ON s.sellerid = sl.sellerid
+	LEFT JOIN t_trade t ON s.genre = t.tid
+	LEFT JOIN t_business b ON s.zoneid = b.bid 
+	<![CDATA[
+	LEFT JOIN t_seller_package sp ON (s.sellerid=sp.sellerid AND sp.status=1 AND sp.sale_start_time <= NOW() AND sp.sale_end_time>=NOW() AND sp.use_end_time>=now())
+	]]>
+	LEFT JOIN t_seller_package_pic spic ON (sp.id=spic.pid AND spic.pic_type=1 )
+  	LEFT JOIN t_live_record r on (r.sellerid = s.sellerid AND r.id =(SELECT d.id FROM t_live_record d WHERE d.sellerid =s.sellerid 
+   	     <![CDATA[
+            AND (d.zhibo_type BETWEEN 1 and 4 or (d.zhibo_type=0 and d.plan_start_date > NOW()))
+          ]]>
+     	ORDER BY
+	 	CASE 
+      		WHEN d.zhibo_type=1 THEN 1
+      		WHEN d.zhibo_type=0 THEN 2
+      		WHEN d.zhibo_type=3 THEN 3
+	  		WHEN d.zhibo_type=4 THEN 4	
+      		ELSE 5 END asc ,d.create_time DESC LIMIT 0,1))
+	WHERE s.is_public=1 AND s.status=3 AND s.isonline=1  AND s.city=#{cityid}  and sl.sellerid is not null GROUP  BY s.sellerid
+	) AS sellersort		
+LEFT JOIN t_bill bill ON (sellersort.sellerid = bill.sellerid and bill.status !=0 and bill.status !=5)
+	GROUP BY sellersort.sellerid ,sellersort.genre 
+	ORDER BY 
+	islive DESC, 
+	sellersort.highly_recommended DESC,
+	num DESC,
+	iscombo DESC,
+	<if test="zoneid!=null">
+	localZone DESC,
+	</if> 
+	ranges ASC
+	LIMIT ${(page-1)*pageSize},#{pageSize}
+ </select>
+ 
+<!--分类： 首页为你优选查询当前城市店铺：
+  	1、筛选显示分类关联标签的店铺数据
+	2、正在直播的店铺
+	3、有预告或历史预告店铺
+	4、有套餐的店铺
+	5、与我距离与我最近套餐/店铺
+--> 	
+<select id="queryHomeSellerByClassify" parameterType="map" resultType="map">
+	select  sellersort.* ,
+ 		count(bill.sellerid)as num  FROM
+ 	(SELECT 
+		s.sellerid,p.picurl,r.nname,s.zoneid ,s.tag_ids,s.genre,t.tradename as genrename,r.id as liveRecordId,
+		r.anchor_id as anchorId,r.live_start_type as liveType,r.anchor_room_no as liveRoom,
+		r.zhibo_type ,s.sellername,b.title AS zonename,sp.id,sp.title AS comboname,sp.id as comboId,  
+		sp.selling_coin_price AS coinprice,sp.selling_price AS comboprice,spic.pic_url AS comboimage, 
+		sp.highly_recommended,
+   		case when sp.id is null then 0 else 1 end as iscombo,
+		case when r.zhibo_type=4 or r.zhibo_type =3 then 1  when r.zhibo_type =0 then 2 when r.zhibo_type=1 then 3  else 0 end as islive,
+		ROUND(6378.138*2*ASIN( SQRT(POW (SIN( (#{lat}*PI()/180-sl.latitude*PI()/180)/2),2)+ 
+		COS(#{lat}*PI()/180)*COS(sl.latitude*PI()/180)*POW( SIN((#{lon}*PI()/180-sl.longitude*PI()/180)/2),2)))*1000) AS ranges 
+	FROM t_seller s 
+	LEFT JOIN t_seller_pic p ON (s.sellerid = p.sellerid and p.islogo=2)
+	LEFT JOIN t_seller_landmark sl ON s.sellerid = sl.sellerid
+	LEFT JOIN t_trade t ON s.genre = t.tid
+	LEFT JOIN t_business b ON s.zoneid = b.bid 
+	<![CDATA[
+	LEFT JOIN t_seller_package sp ON (s.sellerid=sp.sellerid AND sp.status=1 AND sp.sale_start_time <= NOW() AND sp.sale_end_time>=NOW() AND sp.use_end_time>=now())
+	]]>
+	LEFT JOIN t_seller_package_pic spic ON (sp.id=spic.pid AND spic.pic_type=1 )
+    LEFT JOIN t_live_record r on (r.sellerid = s.sellerid 
+    AND r.id =
+   (select d.id from t_live_record d where d.sellerid =s.sellerid 
+   <![CDATA[
+     AND (d.zhibo_type BETWEEN 1 and 4 or (d.zhibo_type=0 and d.plan_start_date > NOW()))
+    ]]>
+    ORDER BY
+	 case 
+      when d.zhibo_type=1 then 1
+      when d.zhibo_type=0 then 2
+      when d.zhibo_type=3 then 3
+	  when d.zhibo_type=4 then 4	
+      else 5
+    end 
+asc ,d.create_time desc limit 0,1
+)   
+    )
+	WHERE s.is_public=1 AND s.status=3 AND s.isonline=1  AND s.city=#{cityid}  and sl.sellerid is not null
+	<if test="tagids!=null">
+	  and (
+	<foreach collection="tagids" index="index" item="tagId"
+    separator="or" >
+		FIND_IN_SET(#{tagId},s.tag_ids)
+	</foreach>
+	 )
+	</if>
+	group by s.sellerid
+	) as sellersort
+	left join t_bill bill on (sellersort.sellerid = bill.sellerid and bill.status !=0 and bill.status !=5)
+	GROUP BY sellersort.sellerid ,sellersort.genre ORDER BY islive Desc, iscombo DESC,ranges ASC  LIMIT ${(page-1)*pageSize},#{pageSize}
+</select>  	
+  	
+  	
+<!-- 查询当前城市店铺消费人数 降序 --> 	
+  	<select id="queryConsumNumberByLocalCity" parameterType="map" resultType="map">
+  		SELECT sellerBill.sellerid FROM
+(SELECT b.sellerid,s.genre,count(b.sellerid) as num FROM t_bill b
+INNER JOIN t_seller s ON s.sellerid = b.sellerid
+INNER JOIN t_seller_landmark sl ON sl.sellerid = s.sellerid
+INNER JOIN t_business u ON u.bid = s.zoneid
+WHERE s.`status` =3 and s.city=#{cityid} and s.isonline=1 and is_public=1 <!-- and s.zoneid=#{zoneid} --> 
+and b.`status` !=0 and b.`status` !=5
+GROUP BY  b.sellerid
+ORDER BY num
+) as sellerBill
+LEFT JOIN t_trade t ON t.tid = sellerBill.genre
+GROUP BY t.tid
+  	</select>
+ 
+ <!-- 查询当前城市签约商家人数 --> 	
+ <select id="countLocalSeller" parameterType="map" resultType="java.lang.Integer">
+  select count(*)  from t_seller s 
+ 	inner JOIN t_seller_landmark sl ON s.sellerid = sl.sellerid
+	inner JOIN t_business bi ON s.zoneid = bi.bid 
+	where s.city=#{cityid} and  s.is_public=1 AND s.status=3 AND s.isonline=1 and bi.bid is not null
+ </select> 	
+  
+   <!-- 查询首页 网红点评商铺 --> 	
+  <select id="findTopCommentSellers" parameterType="map" resultType="map">
+  	SELECT
+		*
+	FROM
+	t_catehome_comment cate 
+	left join t_seller s on (s.sellerid = cate.sellerid )
+	left join t_unsigned_seller unseller on (cate.sellerid = unseller.unsigned_sellerid )
+	<![CDATA[
+	where (
+		SELECT
+			count(1)
+		FROM
+			t_experience_comment COMMENT
+		WHERE
+			cate.sellerid = COMMENT .sellerid
+		AND cate.seller_type = COMMENT .seller_type
+	 AND review_state =1
+	)  > 0  AND cate.state=1 AND (s.city=#{cityid} or unseller.city=#{cityid})
+	]]>
+  </select>	
+   <!-- 查询首页 网红点评商铺 --> 	
+  <select id="findHomeCommentBySignSelelrids"  resultType="map">
+  	  	SELECT s.sellerid,s.sellername,p.picurl,r.zhibo_type,count(r.id) as anchorNum 
+  		 FROM  t_seller s 
+  		 LEFT JOIN t_live_record r on (r.sellerid = s.sellerid and r.zhibo_type in(0,1,3,4)) 
+  		 LEFT JOIN t_seller_pic p ON (s.sellerid = p.sellerid and p.islogo=2) where s.sellerid in 
+  		 <foreach collection="list" item="id" index="index" open="(" separator="," close=")">
+        		#{id}
+    	</foreach>	group by s.sellerid
+  		 order by anchorNum desc limit 0,3
+  </select>
+   <!-- 根据网红店铺的sellerid查询主播的头像 --> 
+  <select id="findLiverBysellerid" parameterType="Integer" resultType="String">
+    SELECT r.avatar from t_live_record r where r.sellerid = #{sellerid} and  r.zhibo_type in (0,1,3,4) group by r.anchor_id limit 0,3
+  </select>	
+  	<!-- 查询首页必买清单Title分类 --> 	
+  <select id="findMustBuyTitle" resultType="Integer">
+   select c.type from t_catehome_mustbuy c where c.state =1 order by c.sort desc
+  </select>	
+  <!-- 根据类型查询 商品分类集合 --> 	
+   <select id="findMustBuyCode" parameterType="map" resultType="Integer">
+  	select 
+   		t.id  
+		from t_catehome_mustbuy b 
+	  left join t_fresh_type t on (b.type_id = t.id or t.fid=b.type_id )
+	  where t.id is not null and b.state=1
+   <if test="type!=null">
+     and b.type=#{type}
+   </if>
+   group by t.id
+   order by b.sort desc
+  </select>	
+  <!-- 查询当前城市设置的为你优选分类-->
+  <select id="findBestForYouTitle" parameterType="map" resultType="map">
+    SELECT s.id,s.logo_url,s.topic_name,s.tag_ids from t_seller_topic s
+       WHERE s.city_id=#{cityid} and s.state=1 order by s.sort desc
+  </select>
+  
+   <!-- 查询标签名字-->
+  <select id="findClassifyByIDs" parameterType="map" resultType="map">
+    SELECT c.id,c.tag_name from t_live_classify_tag c
+       WHERE c.id in 
+      <foreach collection="array" item="id" index="index" open="(" separator="," close=")">
+        #{id}
+    </foreach>
+  </select>
+  
+ <select id="findHomeMustBuyTitle" resultType="Integer">
+   SELECT b.type FROM t_catehome_mustbuy b where b.state=1  group by b.type order by b.type asc
+ </select>
+
+	<!--查询所有连锁商店-->
+	<select id="findAllMultipleSeller" resultType="map">
+		SELECT sellerid, sellername, lssellername FROM t_seller WHERE ismultiple = 1 AND sellername IS NOT NULL
+	</select>
+
+  
+</mapper>

@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+	http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-3.2.xsd
+	http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.2.xsd"
+	default-lazy-init="true">
+
+	<!-- 加载配置文件 -->
+	<context:property-placeholder location="classpath:/conf_*.properties" 
+	ignore-resource-not-found="true" ignore-unresolvable="true" /> 
+	
+	<!--  <bean id="propertyConfigurer"  
+        class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">  
+        <property name="location" value="classpath:/conf_*.properties" />  
+    </bean>   -->
+
+	<!-- 业务数据库配置 -->
+	<bean id="jointDataSource" class="com.alibaba.druid.pool.DruidDataSource"
+		init-method="init" destroy-method="close">
+		<property name="driverClassName" value="${jointDriver}" />
+		<property name="url" value="${jointUrl}" />
+		<property name="username" value="${jointUser}" />
+		<property name="password" value="${jointPassword}" />
+		<!-- 配置过滤 -->
+		<property name="filters" value="stat" />
+		<!-- 配置初始化大小、最小、最大 -->
+		<property name="initialSize" value="1" />
+		<property name="minIdle" value="1" />
+		<property name="maxActive" value="50" />
+		<!-- 配置获取连接等待超时的时间 -->
+		<property name="maxWait" value="60000" />
+		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+		<!-- 检测连接是否有效的SQL -->
+		<property name="validationQuery" value="SELECT 'x'" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<!-- <property name="poolPreparedStatements" value="false" /> <property 
+			name="maxPoolPreparedStatementPerConnectionSize" value="20" /> -->
+	</bean>
+	
+	<!-- 用户数据库配置 -->
+	<bean id="bursDataSource" class="com.alibaba.druid.pool.DruidDataSource"
+		init-method="init" destroy-method="close">
+		<property name="driverClassName" value="${bursDriver}" />
+		<property name="url" value="${bursUrl}" />
+		<property name="username" value="${bursUser}" />
+		<property name="password" value="${bursPassword}" />
+		<!-- 配置过滤 -->
+		<property name="filters" value="stat" />
+		<!-- 配置初始化大小、最小、最大 -->
+		<property name="initialSize" value="1" />
+		<property name="minIdle" value="1" />
+		<property name="maxActive" value="50" />
+		<!-- 配置获取连接等待超时的时间 -->
+		<property name="maxWait" value="60000" />
+		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+		<!-- 检测连接是否有效的SQL -->
+		<property name="validationQuery" value="SELECT 'x'" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<!-- <property name="poolPreparedStatements" value="false" /> <property 
+			name="maxPoolPreparedStatementPerConnectionSize" value="20" /> -->
+	</bean>
+	
+	<!-- 支付数据库配置 -->
+	<bean id="xmnpayDataSource" class="com.alibaba.druid.pool.DruidDataSource"
+		init-method="init" destroy-method="close">
+		<property name="driverClassName" value="${xmnpayDriver}" />
+		<property name="url" value="${xmnpayUrl}" />
+		<property name="username" value="${xmnpayUser}" />
+		<property name="password" value="${xmnpayPassword}" />
+		<!-- 配置过滤 -->
+		<property name="filters" value="stat" />
+		<!-- 配置初始化大小、最小、最大 -->
+		<property name="initialSize" value="1" />
+		<property name="minIdle" value="1" />
+		<property name="maxActive" value="50" />
+		<!-- 配置获取连接等待超时的时间 -->
+		<property name="maxWait" value="60000" />
+		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+		<!-- 检测连接是否有效的SQL -->
+		<property name="validationQuery" value="SELECT 'x'" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<!-- <property name="poolPreparedStatements" value="false" /> <property 
+			name="maxPoolPreparedStatementPerConnectionSize" value="20" /> -->
+	</bean>
+	<!-- 动态数据源 -->
+	<bean id="dataSource" class="com.xmniao.xmn.core.util.dataSource.DynamicDataSource">
+		<property name="targetDataSources">
+			<map key-type="java.lang.String">
+				<entry key="joint" value-ref="jointDataSource"/>
+				<entry key="burs" value-ref="bursDataSource"/>
+				<entry key="xmnpay" value-ref="xmnpayDataSource"/>
+			</map>
+		</property>
+		<property name="defaultTargetDataSource" ref="jointDataSource"></property>
+	</bean>
+
+	<!-- 配置Mybatis SqlSessionFactoryBean 自动装配映射文件 -->
+	<bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="mapperLocations" value="classpath*:com/xmniao/xmn/mapper/**/*.xml" /> 
+		<property name="configLocation" value="classpath:com/xmniao/xmn/resource/config/sql-map-config.xml" />
+		
+		<property name="plugins">
+			<array>
+				<bean class="cat.CatMybatisPlugin"></bean>
+			</array>
+		</property>
+		
+	</bean>
+	
+	<!-- 自动 映射DAO层 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.xmniao.xmn.core.*.dao.**" />
+	</bean>
+	
+    <!-- 配置数据库注解aop  -->
+    <bean id="manyDataSourceAspect" class="com.xmniao.xmn.core.util.dataSource.DataSourceAspect" />
+    <aop:config>
+        <aop:aspect id="c" ref="manyDataSourceAspect">
+            <aop:pointcut id="tx" expression="execution(* com.xmniao.xmn.core.*.dao.*.*(..))"/>
+            <aop:before pointcut-ref="tx" method="before"/>
+        </aop:aspect>
+    </aop:config>
+
+	<!-- 自动注入SERVICE层 -->
+	<context:component-scan base-package="com.xmniao.xmn.core">
+		<context:exclude-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+	 
+	<!-- 事务处理 -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!-- 使用annotation定义事务 -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	
+	<!-- 激活注册过的bean -->
+	<context:annotation-config/>
+	
+	<!-- spring session配置 -->
+	<bean class="org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration">
+		<!-- 设置session失效时间为2小时 单位为秒 -->
+		<property name="maxInactiveIntervalInSeconds" value="72000"/>
+	</bean>
+	
+		<!-- fastdfs客户端配置 -->
+	<bean id="argMap" class="java.util.HashMap">
+		<constructor-arg>
+			<map>
+				<entry key="ip" value="${file.upload.fastDFS.tracker.server}:${file.upload.fastDFS.tracker.server.port}" /><!-- 多个服务IP用逗号分割 -->
+				<entry key="connectionPoolSize" value="50" /><!-- 连接池大小 -->
+				<entry key="g_connect_timeout" value="4000" />
+				<entry key="g_network_timeout" value="60000" />
+				<entry key="g_anti_steal_token" value="false" />
+				<entry key="g_charset" value="UTF-8" />
+				<entry key="g_secret_key" value="11" />
+			</map>
+		</constructor-arg>
+	</bean>
+	<!-- 客户端工厂类 -->
+	<bean id="uploadClientFactory" class="com.xmniao.xmn.core.base.UploadClientFactory">
+		<constructor-arg name="hashMap" ref="argMap"></constructor-arg>
+	</bean>
+	
+	<!-- 短信服务URL地址 -->
+	<bean id="smsUrl" class="java.lang.String">
+		<constructor-arg value="${common.smsUrl}" />
+	</bean>
+	
+	<!-- 文件服务URL地址 -->
+	<bean id="fileUrl" class="java.lang.String">
+		<constructor-arg value="${file.upload.fastDFS.http}" />
+	</bean>
+	
+	<bean id="weixinAppid" class="java.lang.String">
+		<constructor-arg value="${weixin.appid}" />
+	</bean>
+	
+	<bean id="weixinSecret" class="java.lang.String">
+		<constructor-arg value="${weixin.secret}" />
+	</bean>
+	
+	<bean id="weixinLoginCallback" class="java.lang.String">
+		<constructor-arg value="${weixin.login.callback}" />
+	</bean>
+	
+	<bean id="localDomain" class="java.lang.String">
+		<constructor-arg value="${local.domain}" />
+	</bean>
+	
+	<bean id="payDomain" class="java.lang.String">
+		<constructor-arg value="${pay.domain}" />
+	</bean>
+	
+	<bean id="paySecret" class="java.lang.String">
+		<constructor-arg value="${pay.secret}" />
+	</bean>
+	
+	<bean id="orderExpressApi" class="java.lang.String">
+		<constructor-arg value="${order.express.api.url}" />
+	</bean>
+	
+	<bean id="weChatPrice" class="java.lang.String">
+		<constructor-arg value="${wechat.price}" />
+	</bean>
+	
+	<bean id="wfzInfo" class="java.lang.String">
+		<constructor-arg value="${wfzInfo}" />
+	</bean>
+	
+	<bean id="ip_number_business" class="java.lang.String">
+		<constructor-arg value="${ip_number_business}" />
+	</bean>
+	<bean id="port_business" class="java.lang.String">
+		<constructor-arg value="${port_business}" />
+	</bean>
+	
+	<bean id="ip_number_pay" class="java.lang.String">
+		<constructor-arg value="${ip_number}" />
+	</bean>
+	<bean id="port_pay" class="java.lang.String">
+		<constructor-arg value="${port}" />
+	</bean>
+    <bean class="com.xmniao.xmn.core.market.entity.activity.indiana.Rule">
+        <property name="activityRule" value="${market.indiana.activity.rule}"></property>
+        <property name="lotterRule" value="${market.indiana.lottery.rule}"></property>
+    </bean>
+	
+<!-- 	cat实时监控 -->
+	<bean id="catAspect" class="cat.CatPageURIRewriteAspect" />
+    <aop:config>
+          <aop:aspect id="d" ref="catAspect">
+        	<aop:pointcut id="cat"  expression="@annotation(org.springframework.web.bind.annotation.RequestMapping)"/>
+            <aop:around pointcut-ref="cat" method="catPageURIRewrite"/>
+        </aop:aspect>
+    </aop:config>
+	
+	<!-- <import resource="ledger-thrift.xml"/>-->
+	<import resource="mongo.xml"/>
+	<import resource="spring-redis.xml"/> 
+	<import resource="spring-jms.xml"/>
+	<import resource="spring-thrift.xml"/>
+	<import resource="spring-quertz.xml"/>
+</beans>	

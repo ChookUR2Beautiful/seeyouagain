@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live.dao.BusinessDao">
+
+	<resultMap id="BaseResultMap" type="com.xmniao.xmn.core.catehome.entity.Business" >
+    <id column="bid" property="bid" jdbcType="INTEGER" />
+    <result column="area_id" property="areaId" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="sdate" property="sdate" jdbcType="TIMESTAMP" />
+    <result column="picurl" property="picurl" jdbcType="VARCHAR" />
+    <result column="longitude" property="longitude" jdbcType="DOUBLE" />
+    <result column="latitude" property="latitude" jdbcType="DOUBLE" />
+    <result column="geohash" property="geohash" jdbcType="VARCHAR" />
+    <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+    <result column="number" property="number" jdbcType="INTEGER" />
+    <result column="gg_lat" property="ggLat" jdbcType="DOUBLE" />
+    <result column="gg_lng" property="ggLng" jdbcType="DOUBLE" />
+    <result column="gg_geohash" property="ggGeohash" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    bid, area_id, title, sdate, picurl, longitude, latitude, geohash, remarks, number, 
+    gg_lat, gg_lng, gg_geohash
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_business
+    where bid = #{bid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_business
+    where bid = #{bid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.catehome.entity.Business" >
+    insert into t_business (bid, area_id, title, 
+      sdate, picurl, longitude, 
+      latitude, geohash, remarks, 
+      number, gg_lat, gg_lng, 
+      gg_geohash)
+    values (#{bid,jdbcType=INTEGER}, #{areaId,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, 
+      #{sdate,jdbcType=TIMESTAMP}, #{picurl,jdbcType=VARCHAR}, #{longitude,jdbcType=DOUBLE}, 
+      #{latitude,jdbcType=DOUBLE}, #{geohash,jdbcType=VARCHAR}, #{remarks,jdbcType=VARCHAR}, 
+      #{number,jdbcType=INTEGER}, #{ggLat,jdbcType=DOUBLE}, #{ggLng,jdbcType=DOUBLE}, 
+      #{ggGeohash,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.catehome.entity.Business" >
+    insert into t_business
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="bid != null" >
+        bid,
+      </if>
+      <if test="areaId != null" >
+        area_id,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="sdate != null" >
+        sdate,
+      </if>
+      <if test="picurl != null" >
+        picurl,
+      </if>
+      <if test="longitude != null" >
+        longitude,
+      </if>
+      <if test="latitude != null" >
+        latitude,
+      </if>
+      <if test="geohash != null" >
+        geohash,
+      </if>
+      <if test="remarks != null" >
+        remarks,
+      </if>
+      <if test="number != null" >
+        number,
+      </if>
+      <if test="ggLat != null" >
+        gg_lat,
+      </if>
+      <if test="ggLng != null" >
+        gg_lng,
+      </if>
+      <if test="ggGeohash != null" >
+        gg_geohash,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="bid != null" >
+        #{bid,jdbcType=INTEGER},
+      </if>
+      <if test="areaId != null" >
+        #{areaId,jdbcType=INTEGER},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="sdate != null" >
+        #{sdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="picurl != null" >
+        #{picurl,jdbcType=VARCHAR},
+      </if>
+      <if test="longitude != null" >
+        #{longitude,jdbcType=DOUBLE},
+      </if>
+      <if test="latitude != null" >
+        #{latitude,jdbcType=DOUBLE},
+      </if>
+      <if test="geohash != null" >
+        #{geohash,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="number != null" >
+        #{number,jdbcType=INTEGER},
+      </if>
+      <if test="ggLat != null" >
+        #{ggLat,jdbcType=DOUBLE},
+      </if>
+      <if test="ggLng != null" >
+        #{ggLng,jdbcType=DOUBLE},
+      </if>
+      <if test="ggGeohash != null" >
+        #{ggGeohash,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.catehome.entity.Business" >
+    update t_business
+    <set >
+      <if test="areaId != null" >
+        area_id = #{areaId,jdbcType=INTEGER},
+      </if>
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="sdate != null" >
+        sdate = #{sdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="picurl != null" >
+        picurl = #{picurl,jdbcType=VARCHAR},
+      </if>
+      <if test="longitude != null" >
+        longitude = #{longitude,jdbcType=DOUBLE},
+      </if>
+      <if test="latitude != null" >
+        latitude = #{latitude,jdbcType=DOUBLE},
+      </if>
+      <if test="geohash != null" >
+        geohash = #{geohash,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        remarks = #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="number != null" >
+        number = #{number,jdbcType=INTEGER},
+      </if>
+      <if test="ggLat != null" >
+        gg_lat = #{ggLat,jdbcType=DOUBLE},
+      </if>
+      <if test="ggLng != null" >
+        gg_lng = #{ggLng,jdbcType=DOUBLE},
+      </if>
+      <if test="ggGeohash != null" >
+        gg_geohash = #{ggGeohash,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where bid = #{bid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.catehome.entity.Business" >
+    update t_business
+    set area_id = #{areaId,jdbcType=INTEGER},
+      title = #{title,jdbcType=VARCHAR},
+      sdate = #{sdate,jdbcType=TIMESTAMP},
+      picurl = #{picurl,jdbcType=VARCHAR},
+      longitude = #{longitude,jdbcType=DOUBLE},
+      latitude = #{latitude,jdbcType=DOUBLE},
+      geohash = #{geohash,jdbcType=VARCHAR},
+      remarks = #{remarks,jdbcType=VARCHAR},
+      number = #{number,jdbcType=INTEGER},
+      gg_lat = #{ggLat,jdbcType=DOUBLE},
+      gg_lng = #{ggLng,jdbcType=DOUBLE},
+      gg_geohash = #{ggGeohash,jdbcType=VARCHAR}
+    where bid = #{bid,jdbcType=INTEGER}
+  </update>
+
+	<select id="selectBusinessByid" parameterType="int" resultType="map">
+		select 
+		ifNull(title,'')title
+		 from t_business where bid = #{zoneid}
+	</select>
+  
+  <!-- 通过定位hash值查询商圈id -->
+  <select id="selectByLonAndLat" resultType="map" parameterType="map">
+  	SELECT 
+  		b.bid AS zoneId,b.title AS zoneName,b.latitude AS lat,b.longitude AS lon,t.area_id AS areaId,t.title AS areaName,
+  		ta.area_id AS cityId,ta.title AS cityName,ta.pid AS provinceId,
+  		ROUND(
+    		6378.138 * 2 * ASIN(
+      			SQRT(
+        			POW(SIN((#{lat} * PI() / 180- b.latitude * PI() / 180) / 2),2) 
+        			+ 
+        			COS(#{lat} * PI() / 180) * COS(b.latitude * PI() / 180) * POW(
+          			SIN((#{lon} * PI() / 180- b.longitude * PI() / 180) / 2),2)
+      				)) * 1000
+      		) AS ranges
+  	FROM
+  		t_business b 
+	LEFT JOIN t_area t
+   		ON t.area_id = b.area_id
+	LEFT JOIN t_area ta 
+   		ON t.pid = ta.area_id 
+	WHERE b.latitude IS NOT NULL
+	<if test="cityId != null">
+	AND ta.area_id=#{cityId}
+	</if>
+	ORDER BY ranges LIMIT 0,6 
+  </select>
+  
+  <!-- 通过商圈名称 查询商圈id -->
+  <select id="selectByTitle" resultMap="BaseResultMap" parameterType="map">
+  	SELECT
+  		<include refid="Base_Column_List" />
+  	FROM t_business WHERE area_id =#{pid} AND title LIKE CONCAT('%',#{title},'%')
+  </select>
+
+	<!-- 搜索商圈信息 -->
+	<select id="searchLocationByTitle" resultType="map" parameterType="map">
+		SELECT b.bid AS zoneId,b.area_id AS areaId,b.title AS zoneName,b.longitude AS lon,b.latitude AS lat,
+			t.title AS areaName,ta.area_id AS cityId,ta.title AS cityName,ta.pid AS provinceId,
+		
+		ROUND(6378.138 * 2 * ASIN(
+		      SQRT(
+		        POW(
+		          SIN(
+		            (
+		              30.687386293419 * PI() / 180- b.latitude * PI() / 180
+		            ) / 2
+		          ),
+		          2
+		        ) + COS(30.687386293419 * PI() / 180) * COS(b.latitude * PI() / 180) * POW(
+		          SIN(
+		            (
+		              103.842720368500 * PI() / 180- b.longitude * PI() / 180
+		            ) / 2
+		          ),
+		          2
+		        )
+		      )
+		    ) * 1000
+		  )AS ranges 
+		FROM t_business b
+			LEFT JOIN t_area t ON t.area_id = b.area_id
+			LEFT JOIN t_area ta ON t.pid = ta.area_id
+		WHERE b.area_id IN (SELECT area_id FROM t_area WHERE pid=#{pid}) 
+		AND b.title LIKE CONCAT('%',#{title},'%')
+	</select>
+	
+	<!-- 通过城市id查询所有商圈 -->
+	<select id="findAllBusinessByCityId" resultType="map" parameterType="map">
+		SELECT bid as zoneId,title as zoneName,area_id as areaId,longitude as lon,latitude as lat,ROUND(6378.138 * 2 * ASIN(
+		      SQRT(
+		        POW(
+		          SIN(
+		            (
+		              #{lat} * PI() / 180- latitude * PI() / 180
+		            ) / 2
+		          ),
+		          2
+		        ) + COS(#{lat} * PI() / 180) * COS(latitude * PI() / 180) * POW(
+		          SIN(
+		            (
+		              #{lon} * PI() / 180- longitude * PI() / 180
+		            ) / 2
+		          ),
+		          2
+		        )
+		      )
+		    ) * 1000
+		  )AS ranges
+		FROM t_business WHERE area_id IN (
+		SELECT area_id FROM t_area WHERE pid=#{pid}) ORDER BY ranges ASC 
+	</select>
+	
+	<!-- 根据区域ID 获取该区域下的所有商圈信息 -->
+	<select id="findAllByAreaId" resultType="map" parameterType="map">
+		SELECT bid as zoneId,title as zoneName,area_id as areaId,longitude as lon,latitude as lat,ROUND(6378.138 * 2 * ASIN(
+		      SQRT(
+		        POW(
+		          SIN(
+		            (
+		              #{lat} * PI() / 180- latitude * PI() / 180
+		            ) / 2
+		          ),
+		          2
+		        ) + COS(#{lat} * PI() / 180) * COS(latitude * PI() / 180) * POW(
+		          SIN(
+		            (
+		              #{lon} * PI() / 180- longitude * PI() / 180
+		            ) / 2
+		          ),
+		          2
+		        )
+		      )
+		    ) * 1000
+		  )AS ranges
+		FROM t_business WHERE area_id = #{id} ORDER BY ranges ASC
+	</select>
+
+  <select id="findAreaByAreaId" resultType="map" parameterType="map">
+    select area_id, title from t_area where area_id = #{area_id} limit 1
+  </select>
+
+</mapper>

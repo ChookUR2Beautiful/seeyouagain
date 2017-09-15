@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.wealth.dao.RefundDao">
+		<!-- 添加退款记录 -->
+		<insert id="addRefund" parameterType="map">
+		insert into t_refund(bid,sellerid,sellername,
+		<if test="apply!=null and apply!=''">
+		apply,
+		</if>
+		source,sdate) values(#{bid},#{sellerid},#{sellername},
+		<if test="apply!=null and apply!=''">
+		#{apply},
+		</if>
+		#{source},#{sdate})
+		</insert>
+ 	
+ 		<!-- 查询是否有某个订单的退款记录 -->
+ 		<select id="queryRefundBybid" parameterType="long" resultType="int">
+ 			select count(1) from t_refund where bid=#{bid}
+ 		</select>
+ 		
+</mapper>

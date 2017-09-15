@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.seller.dao.ExperienceCommentDao" >
+
+	<resultMap type="ExperienceComment" id="commentMap">
+		<id property="id" column="id"/>
+		<result property="sellerId" column="sellerid"/>
+		<result property="sellerName" column="sellername"/>
+		<result property="sellerType" column="seller_type"/>
+		<result property="uid" column="uid"/>
+		<result property="userType" column="user_type"/>
+		<result property="recordType" column="record_type"/>
+		<result property="recordId" column="record_id"/>
+		<result property="activityId" column="activity_id"/>
+		<result property="isRecommend" column="is_recommend"/>
+		<result property="reviewTime" column="review_time"/>
+		<result property="reviewState" column="review_state"/>
+		<result property="refuseRemark" column="refuse_remark"/>
+		<result property="content" column="content"/>
+		<result property="createTime" column="create_time"/>
+		<result property="upvote" column="upvote"/>
+		<collection property="mediaList" ofType="ExperienceCommentMedia">
+			<id property="id" column="mid"/>
+			<result property="commentId" column="cid"/>
+			<result property="mediaType" column="mType"/>
+			<result property="mediaUrl" column="mUrl"/>
+			<result property="sort" column="sort"/>
+			<result property="createTime" column="mTime"/>
+		</collection>
+	</resultMap>
+	
+	<resultMap type="ExperienceCommentMedia" id="mediaMap">
+		<id property="id" column="mid"/>
+		<result property="commentId" column="comment_id"/>
+		<result property="mediaType" column="media_type"/>
+		<result property="mediaUrl" column="media_url"/>
+		<result property="sort" column="sort"/>
+		<result property="createTime" column="create_time"/>
+	</resultMap>
+	<!-- 查询店铺网红点评列表 -->
+	<select id="listExperienceCommentBySellerid" resultMap="commentMap">
+		SELECT 
+			c.*,
+			m.id mid,
+			m.comment_id cid,
+			m.media_type mType,
+			m.media_url mUrl,
+			m.sort sort,
+			m.create_time mTime
+		FROM t_experience_comment c
+			LEFT JOIN t_experience_comment_media m ON m.comment_id=c.id
+		WHERE sellerid = #{sellerid} AND seller_type = #{sellerType} AND c.review_state=1
+		ORDER BY c.user_type ,c.create_time DESC,c.is_recommend DESC,m.media_type DESC
+	</select>
+	
+	<select id="listSellerPhotos" resultMap="mediaMap">
+		SELECT  m.*
+		FROM t_experience_comment c
+			LEFT JOIN t_experience_comment_media m ON m.comment_id=c.id
+		WHERE c.sellerid = #{sellerid}  AND m.media_type=1 AND c.review_state=1
+		ORDER BY c.create_time DESC
+		<if test="pageSize != null">
+		LIMIT ${(page-1)*pageSize},#{pageSize}
+		</if>
+	</select>
+	
+	<insert id="addComment" parameterType="com.xmniao.xmn.core.seller.entity.ExperienceComment">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+    		 SELECT LAST_INSERT_ID() AS ID   
+		</selectKey>
+		INSERT INTO 
+			t_experience_comment
+		VALUES(
+			#{id},#{sellerId},#{sellerName},#{sellerType},#{uid},#{userType},#{recordType},#{recordId},#{activityId},#{isRecommend},#{reviewTime},#{reviewState},#{refuseRemark},#{content},#{createTime},#{upvote}
+			)
+	</insert>
+	
+	<insert id="addCommentMediaList" parameterType="com.xmniao.xmn.core.seller.entity.ExperienceCommentMedia">
+		INSERT INTO 
+			t_experience_comment_media
+		VALUES
+			<foreach collection="list" item="media" separator=",">
+				(#{media.id},#{media.commentId},#{media.mediaType},#{media.mediaUrl},#{media.sort},#{media.createTime})
+			</foreach>
+	</insert>
+	
+	<select id="queryCommentInfoById" resultMap="commentMap">
+		SELECT 
+			c.*,
+			m.id mid,
+			m.comment_id cid,
+			m.media_type mType,
+			m.media_url mUrl,
+			m.sort sort,
+			m.create_time mTime
+		FROM t_experience_comment c
+			LEFT JOIN t_experience_comment_media m ON m.comment_id=c.id
+		WHERE c.id=#{commentId} order by m.sort asc
+	</select>
+	
+	<!-- 修改点评 -->
+	<update id="updateComment" parameterType="com.xmniao.xmn.core.seller.entity.ExperienceComment">
+		UPDATE t_experience_comment 
+		SET 
+			content=#{content},
+			is_recommend=#{isRecommend},
+			review_state=#{reviewState},
+			create_time=#{createTime},
+			sellerid=#{sellerId},
+			seller_type=#{sellerType},
+			sellername=#{sellerName},
+			upvote=#{upvote}
+		WHERE id=#{id}
+	</update>
+	
+	<delete id="deleteCommentMedia">
+		DELETE FROM t_experience_comment_media WHERE comment_id = #{id}
+	</delete>
+</mapper>

@@ -1,0 +1,965 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.market.dao.ProductInfoDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.market.entity.pay.ProductInfo" >
+    <id column="pid" property="pid" jdbcType="INTEGER" />
+    <result column="codeId" property="codeid" jdbcType="BIGINT" />
+    <result column="standard" property="standard" jdbcType="VARCHAR" />
+    <result column="pname" property="pname" jdbcType="VARCHAR" />
+    <result column="goodsName" property="goodsname" jdbcType="VARCHAR" />
+    <result column="classa" property="classa" jdbcType="INTEGER" />
+    <result column="secondary" property="secondary" jdbcType="INTEGER" />
+    <result column="price" property="price" jdbcType="DOUBLE" />
+    <result column="discount" property="discount" jdbcType="DOUBLE" />
+    <result column="batching" property="batching" jdbcType="VARCHAR" />
+    <result column="weight" property="weight" jdbcType="VARCHAR" />
+    <result column="suttle" property="suttle" jdbcType="VARCHAR" />
+    <result column="quality" property="quality" jdbcType="INTEGER" />
+    <result column="isAdditives" property="isadditives" jdbcType="INTEGER" />
+    <result column="packing" property="packing" jdbcType="VARCHAR" />
+    <result column="production" property="production" jdbcType="TIMESTAMP" />
+    <result column="brandName" property="brandname" jdbcType="VARCHAR" />
+    <result column="pstatus" property="pstatus" jdbcType="INTEGER" />
+    <result column="crafts" property="crafts" jdbcType="VARCHAR" />
+    <result column="sellType" property="selltype" jdbcType="VARCHAR" />
+    <result column="deal" property="deal" jdbcType="VARCHAR" />
+    <result column="place" property="place" jdbcType="VARCHAR" />
+    <result column="province" property="province" jdbcType="VARCHAR" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="stored" property="stored" jdbcType="VARCHAR" />
+    <result column="store" property="store" jdbcType="INTEGER" />
+    <result column="sales" property="sales" jdbcType="INTEGER" />
+    <result column="choice" property="choice" jdbcType="INTEGER" />
+    <result column="cname" property="cname" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="licenseId" property="licenseid" jdbcType="VARCHAR" />
+    <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="rdate" property="rdate" jdbcType="TIMESTAMP" />
+    <result column="udate" property="udate" jdbcType="TIMESTAMP" />
+    <result column="dstatus" property="dstatus" jdbcType="INTEGER" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+    <result column="supplierId" property="supplierid" jdbcType="INTEGER" />
+    <result column="supplierName" property="suppliername" jdbcType="VARCHAR" />
+    <result column="breviary" property="breviary" jdbcType="VARCHAR" />
+    <result column="salesInfo" property="salesinfo" jdbcType="VARCHAR" />
+    <result column="isIntegral" property="isintegral" jdbcType="INTEGER" />
+    <result column="integral" property="integral" jdbcType="DECIMAL" />
+    <result column="saleType" property="saletype" jdbcType="INTEGER" />
+    <result column="cash" property="cash" jdbcType="DECIMAL" />
+    <result column="purchasePrice" property="purchaseprice" jdbcType="DECIMAL" />
+    <result column="deliveryType" property="deliverytype" jdbcType="INTEGER" />
+    <result column="allowRefund" property="allowrefund" jdbcType="BIT" />
+    <result column="expWeight" property="expweight" jdbcType="DOUBLE" />
+    <result column="expTid" property="exptid" jdbcType="INTEGER" />
+    <result column="goodsSerial" property="goodsserial" jdbcType="VARCHAR" />
+    <result column="barcode" property="barcode" jdbcType="VARCHAR" />
+    <result column="choiceSort" property="choicesort" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    pid, codeId, standard, pname, goodsName, classa, secondary, price, discount, batching, 
+    weight, suttle, quality, isAdditives, packing, production, brandName, pstatus, crafts, 
+    sellType, deal, place, province, city, stored, store, sales, choice, cname, address, 
+    licenseId, tel, rdate, udate, dstatus, sort, supplierId, supplierName, breviary, 
+    salesInfo, isIntegral, integral, saleType, cash, purchasePrice, deliveryType, allowRefund, 
+    expWeight, expTid, goodsSerial, barcode, choiceSort
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_product_info
+    where pid = #{pid,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByPrimaryKeyList" resultMap="BaseResultMap" parameterType="list" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_product_info
+    <if test="pids != null and pids.size() > 0">
+      where pid in
+      <foreach collection="pids" index="index" item="pids" open="(" separator="," close=")">
+        #{pids,jdbcType=INTEGER}
+      </foreach>
+    </if>
+  </select>
+  
+  <select id="selectByCodeId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_product_info
+    where pstatus=1 and codeId = #{codeid,jdbcType=INTEGER}
+  </select>
+
+    <select id="countActivity" resultType="java.lang.Long">
+        SELECT count(1)
+        FROM t_product_info product
+            LEFT JOIN t_fresh_activity_product activity
+                ON product.pid = activity.product_id
+        WHERE activity.activity_id = #{activityId}
+              AND pstatus = 1
+    </select>
+    <select id="selectActivityProduct" resultMap="BaseResultMap">
+        SELECT *
+        FROM t_product_info product
+            LEFT JOIN t_fresh_activity_product activity
+                ON product.pid = activity.product_id
+        WHERE activity.activity_id = #{activityId}
+        AND pstatus = 1
+        ORDER BY store = 0 ASC
+        LIMIT #{page.start},#{page.pageSize}
+    <!-->增加排序规则<-->
+    </select>
+
+
+    <select id="countSelectedProdect" resultType="java.lang.Long">
+        SELECT count(1)
+        FROM t_product_info
+        WHERE choice = 1
+        <if test="typeId !=0">
+            AND classa in (SELECT id FROM t_fresh_type WHERE fid = #{typeId} and dstatus = 0)
+        </if>
+        AND pstatus = 1
+    </select>
+
+    <select id="selectSelectedProduct" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM t_product_info
+        WHERE choice = 1
+        AND pstatus = 1
+        <if test="typeId != 0">
+            AND (classa in (SELECT id FROM t_fresh_type WHERE fid = #{typeId} and dstatus = 0)
+            OR  classa = #{typeId})
+        </if>
+        ORDER BY store=0 ASC,choiceSort DESC
+        LIMIT #{page.start},#{page.pageSize}
+    </select>
+
+    <select id="selectHotSaleProduct" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM t_product_info
+
+        WHERE pstatus = 1
+        <if test="typeId != 0">
+          AND (classa in (SELECT id FROM t_fresh_type WHERE fid = #{typeId} and dstatus = 0)
+            or  classa = #{typeId})
+        </if>
+        ORDER BY store = 0 ASC,sales DESC
+        LIMIT #{page.start},#{page.pageSize}
+    </select>
+    <select id="selectRecommed" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from t_product_info
+        WHERE pstatus = 1
+        <if test="typeId != 0">
+            AND classa = #{typeId}
+        </if>
+        AND
+        ORDER BY sales DESC
+        LIMIT #{page.start},#{page.pageSize}
+
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_product_info
+    where pid = #{pid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.market.entity.pay.ProductInfo" >
+    insert into t_product_info (pid, codeId, standard, 
+      pname, goodsName, classa, 
+      secondary, price, discount, 
+      batching, weight, suttle, 
+      quality, isAdditives, packing, 
+      production, brandName, pstatus, 
+      crafts, sellType, deal, 
+      place, province, city, 
+      stored, store, sales, 
+      choice, cname, address, 
+      licenseId, tel, rdate, 
+      udate, dstatus, sort, 
+      supplierId, supplierName, breviary, 
+      salesInfo, isIntegral, integral, 
+      saleType, cash, purchasePrice, 
+      deliveryType, allowRefund, expWeight, 
+      expTid, goodsSerial, barcode, 
+      choiceSort, deliveryCity, notDeliveryCity, 
+      saleCity, notSaleCity)
+    values (#{pid,jdbcType=INTEGER}, #{codeid,jdbcType=BIGINT}, #{standard,jdbcType=VARCHAR}, 
+      #{pname,jdbcType=VARCHAR}, #{goodsname,jdbcType=VARCHAR}, #{classa,jdbcType=INTEGER}, 
+      #{secondary,jdbcType=INTEGER}, #{price,jdbcType=DOUBLE}, #{discount,jdbcType=DOUBLE}, 
+      #{batching,jdbcType=VARCHAR}, #{weight,jdbcType=VARCHAR}, #{suttle,jdbcType=VARCHAR}, 
+      #{quality,jdbcType=INTEGER}, #{isadditives,jdbcType=INTEGER}, #{packing,jdbcType=VARCHAR}, 
+      #{production,jdbcType=TIMESTAMP}, #{brandname,jdbcType=VARCHAR}, #{pstatus,jdbcType=INTEGER}, 
+      #{crafts,jdbcType=VARCHAR}, #{selltype,jdbcType=VARCHAR}, #{deal,jdbcType=VARCHAR}, 
+      #{place,jdbcType=VARCHAR}, #{province,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, 
+      #{stored,jdbcType=VARCHAR}, #{store,jdbcType=INTEGER}, #{sales,jdbcType=INTEGER}, 
+      #{choice,jdbcType=INTEGER}, #{cname,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
+      #{licenseid,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR}, #{rdate,jdbcType=TIMESTAMP}, 
+      #{udate,jdbcType=TIMESTAMP}, #{dstatus,jdbcType=INTEGER}, #{sort,jdbcType=INTEGER}, 
+      #{supplierid,jdbcType=INTEGER}, #{suppliername,jdbcType=VARCHAR}, #{breviary,jdbcType=VARCHAR}, 
+      #{salesinfo,jdbcType=VARCHAR}, #{isintegral,jdbcType=INTEGER}, #{integral,jdbcType=DECIMAL}, 
+      #{saletype,jdbcType=INTEGER}, #{cash,jdbcType=DECIMAL}, #{purchaseprice,jdbcType=DECIMAL}, 
+      #{deliverytype,jdbcType=INTEGER}, #{allowrefund,jdbcType=BIT}, #{expweight,jdbcType=DOUBLE}, 
+      #{exptid,jdbcType=INTEGER}, #{goodsserial,jdbcType=VARCHAR}, #{barcode,jdbcType=VARCHAR}, 
+      #{choicesort,jdbcType=INTEGER}, #{deliverycity,jdbcType=LONGVARCHAR}, #{notdeliverycity,jdbcType=LONGVARCHAR}, 
+      #{salecity,jdbcType=LONGVARCHAR}, #{notsalecity,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.market.entity.pay.ProductInfo" >
+    insert into t_product_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="pid != null" >
+        pid,
+      </if>
+      <if test="codeid != null" >
+        codeId,
+      </if>
+      <if test="standard != null" >
+        standard,
+      </if>
+      <if test="pname != null" >
+        pname,
+      </if>
+      <if test="goodsname != null" >
+        goodsName,
+      </if>
+      <if test="classa != null" >
+        classa,
+      </if>
+      <if test="secondary != null" >
+        secondary,
+      </if>
+      <if test="price != null" >
+        price,
+      </if>
+      <if test="discount != null" >
+        discount,
+      </if>
+      <if test="batching != null" >
+        batching,
+      </if>
+      <if test="weight != null" >
+        weight,
+      </if>
+      <if test="suttle != null" >
+        suttle,
+      </if>
+      <if test="quality != null" >
+        quality,
+      </if>
+      <if test="isadditives != null" >
+        isAdditives,
+      </if>
+      <if test="packing != null" >
+        packing,
+      </if>
+      <if test="production != null" >
+        production,
+      </if>
+      <if test="brandname != null" >
+        brandName,
+      </if>
+      <if test="pstatus != null" >
+        pstatus,
+      </if>
+      <if test="crafts != null" >
+        crafts,
+      </if>
+      <if test="selltype != null" >
+        sellType,
+      </if>
+      <if test="deal != null" >
+        deal,
+      </if>
+      <if test="place != null" >
+        place,
+      </if>
+      <if test="province != null" >
+        province,
+      </if>
+      <if test="city != null" >
+        city,
+      </if>
+      <if test="stored != null" >
+        stored,
+      </if>
+      <if test="store != null" >
+        store,
+      </if>
+      <if test="sales != null" >
+        sales,
+      </if>
+      <if test="choice != null" >
+        choice,
+      </if>
+      <if test="cname != null" >
+        cname,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="licenseid != null" >
+        licenseId,
+      </if>
+      <if test="tel != null" >
+        tel,
+      </if>
+      <if test="rdate != null" >
+        rdate,
+      </if>
+      <if test="udate != null" >
+        udate,
+      </if>
+      <if test="dstatus != null" >
+        dstatus,
+      </if>
+      <if test="sort != null" >
+        sort,
+      </if>
+      <if test="supplierid != null" >
+        supplierId,
+      </if>
+      <if test="suppliername != null" >
+        supplierName,
+      </if>
+      <if test="breviary != null" >
+        breviary,
+      </if>
+      <if test="salesinfo != null" >
+        salesInfo,
+      </if>
+      <if test="isintegral != null" >
+        isIntegral,
+      </if>
+      <if test="integral != null" >
+        integral,
+      </if>
+      <if test="saletype != null" >
+        saleType,
+      </if>
+      <if test="cash != null" >
+        cash,
+      </if>
+      <if test="purchaseprice != null" >
+        purchasePrice,
+      </if>
+      <if test="deliverytype != null" >
+        deliveryType,
+      </if>
+      <if test="allowrefund != null" >
+        allowRefund,
+      </if>
+      <if test="expweight != null" >
+        expWeight,
+      </if>
+      <if test="exptid != null" >
+        expTid,
+      </if>
+      <if test="goodsserial != null" >
+        goodsSerial,
+      </if>
+      <if test="barcode != null" >
+        barcode,
+      </if>
+      <if test="choicesort != null" >
+        choiceSort,
+      </if>
+      <if test="deliverycity != null" >
+        deliveryCity,
+      </if>
+      <if test="notdeliverycity != null" >
+        notDeliveryCity,
+      </if>
+      <if test="salecity != null" >
+        saleCity,
+      </if>
+      <if test="notsalecity != null" >
+        notSaleCity,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="pid != null" >
+        #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="codeid != null" >
+        #{codeid,jdbcType=BIGINT},
+      </if>
+      <if test="standard != null" >
+        #{standard,jdbcType=VARCHAR},
+      </if>
+      <if test="pname != null" >
+        #{pname,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsname != null" >
+        #{goodsname,jdbcType=VARCHAR},
+      </if>
+      <if test="classa != null" >
+        #{classa,jdbcType=INTEGER},
+      </if>
+      <if test="secondary != null" >
+        #{secondary,jdbcType=INTEGER},
+      </if>
+      <if test="price != null" >
+        #{price,jdbcType=DOUBLE},
+      </if>
+      <if test="discount != null" >
+        #{discount,jdbcType=DOUBLE},
+      </if>
+      <if test="batching != null" >
+        #{batching,jdbcType=VARCHAR},
+      </if>
+      <if test="weight != null" >
+        #{weight,jdbcType=VARCHAR},
+      </if>
+      <if test="suttle != null" >
+        #{suttle,jdbcType=VARCHAR},
+      </if>
+      <if test="quality != null" >
+        #{quality,jdbcType=INTEGER},
+      </if>
+      <if test="isadditives != null" >
+        #{isadditives,jdbcType=INTEGER},
+      </if>
+      <if test="packing != null" >
+        #{packing,jdbcType=VARCHAR},
+      </if>
+      <if test="production != null" >
+        #{production,jdbcType=TIMESTAMP},
+      </if>
+      <if test="brandname != null" >
+        #{brandname,jdbcType=VARCHAR},
+      </if>
+      <if test="pstatus != null" >
+        #{pstatus,jdbcType=INTEGER},
+      </if>
+      <if test="crafts != null" >
+        #{crafts,jdbcType=VARCHAR},
+      </if>
+      <if test="selltype != null" >
+        #{selltype,jdbcType=VARCHAR},
+      </if>
+      <if test="deal != null" >
+        #{deal,jdbcType=VARCHAR},
+      </if>
+      <if test="place != null" >
+        #{place,jdbcType=VARCHAR},
+      </if>
+      <if test="province != null" >
+        #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null" >
+        #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="stored != null" >
+        #{stored,jdbcType=VARCHAR},
+      </if>
+      <if test="store != null" >
+        #{store,jdbcType=INTEGER},
+      </if>
+      <if test="sales != null" >
+        #{sales,jdbcType=INTEGER},
+      </if>
+      <if test="choice != null" >
+        #{choice,jdbcType=INTEGER},
+      </if>
+      <if test="cname != null" >
+        #{cname,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="licenseid != null" >
+        #{licenseid,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null" >
+        #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="rdate != null" >
+        #{rdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="udate != null" >
+        #{udate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="dstatus != null" >
+        #{dstatus,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null" >
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="supplierid != null" >
+        #{supplierid,jdbcType=INTEGER},
+      </if>
+      <if test="suppliername != null" >
+        #{suppliername,jdbcType=VARCHAR},
+      </if>
+      <if test="breviary != null" >
+        #{breviary,jdbcType=VARCHAR},
+      </if>
+      <if test="salesinfo != null" >
+        #{salesinfo,jdbcType=VARCHAR},
+      </if>
+      <if test="isintegral != null" >
+        #{isintegral,jdbcType=INTEGER},
+      </if>
+      <if test="integral != null" >
+        #{integral,jdbcType=DECIMAL},
+      </if>
+      <if test="saletype != null" >
+        #{saletype,jdbcType=INTEGER},
+      </if>
+      <if test="cash != null" >
+        #{cash,jdbcType=DECIMAL},
+      </if>
+      <if test="purchaseprice != null" >
+        #{purchaseprice,jdbcType=DECIMAL},
+      </if>
+      <if test="deliverytype != null" >
+        #{deliverytype,jdbcType=INTEGER},
+      </if>
+      <if test="allowrefund != null" >
+        #{allowrefund,jdbcType=BIT},
+      </if>
+      <if test="expweight != null" >
+        #{expweight,jdbcType=DOUBLE},
+      </if>
+      <if test="exptid != null" >
+        #{exptid,jdbcType=INTEGER},
+      </if>
+      <if test="goodsserial != null" >
+        #{goodsserial,jdbcType=VARCHAR},
+      </if>
+      <if test="barcode != null" >
+        #{barcode,jdbcType=VARCHAR},
+      </if>
+      <if test="choicesort != null" >
+        #{choicesort,jdbcType=INTEGER},
+      </if>
+      <if test="deliverycity != null" >
+        #{deliverycity,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="notdeliverycity != null" >
+        #{notdeliverycity,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="salecity != null" >
+        #{salecity,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="notsalecity != null" >
+        #{notsalecity,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.market.entity.pay.ProductInfo" >
+    update t_product_info
+    <set >
+      <if test="codeid != null" >
+        codeId = #{codeid,jdbcType=BIGINT},
+      </if>
+      <if test="standard != null" >
+        standard = #{standard,jdbcType=VARCHAR},
+      </if>
+      <if test="pname != null" >
+        pname = #{pname,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsname != null" >
+        goodsName = #{goodsname,jdbcType=VARCHAR},
+      </if>
+      <if test="classa != null" >
+        classa = #{classa,jdbcType=INTEGER},
+      </if>
+      <if test="secondary != null" >
+        secondary = #{secondary,jdbcType=INTEGER},
+      </if>
+      <if test="price != null" >
+        price = #{price,jdbcType=DOUBLE},
+      </if>
+      <if test="discount != null" >
+        discount = #{discount,jdbcType=DOUBLE},
+      </if>
+      <if test="batching != null" >
+        batching = #{batching,jdbcType=VARCHAR},
+      </if>
+      <if test="weight != null" >
+        weight = #{weight,jdbcType=VARCHAR},
+      </if>
+      <if test="suttle != null" >
+        suttle = #{suttle,jdbcType=VARCHAR},
+      </if>
+      <if test="quality != null" >
+        quality = #{quality,jdbcType=INTEGER},
+      </if>
+      <if test="isadditives != null" >
+        isAdditives = #{isadditives,jdbcType=INTEGER},
+      </if>
+      <if test="packing != null" >
+        packing = #{packing,jdbcType=VARCHAR},
+      </if>
+      <if test="production != null" >
+        production = #{production,jdbcType=TIMESTAMP},
+      </if>
+      <if test="brandname != null" >
+        brandName = #{brandname,jdbcType=VARCHAR},
+      </if>
+      <if test="pstatus != null" >
+        pstatus = #{pstatus,jdbcType=INTEGER},
+      </if>
+      <if test="crafts != null" >
+        crafts = #{crafts,jdbcType=VARCHAR},
+      </if>
+      <if test="selltype != null" >
+        sellType = #{selltype,jdbcType=VARCHAR},
+      </if>
+      <if test="deal != null" >
+        deal = #{deal,jdbcType=VARCHAR},
+      </if>
+      <if test="place != null" >
+        place = #{place,jdbcType=VARCHAR},
+      </if>
+      <if test="province != null" >
+        province = #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null" >
+        city = #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="stored != null" >
+        stored = #{stored,jdbcType=VARCHAR},
+      </if>
+      <if test="store != null" >
+        store = #{store,jdbcType=INTEGER},
+      </if>
+      <if test="sales != null" >
+        sales = #{sales,jdbcType=INTEGER},
+      </if>
+      <if test="choice != null" >
+        choice = #{choice,jdbcType=INTEGER},
+      </if>
+      <if test="cname != null" >
+        cname = #{cname,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="licenseid != null" >
+        licenseId = #{licenseid,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null" >
+        tel = #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="rdate != null" >
+        rdate = #{rdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="udate != null" >
+        udate = #{udate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="dstatus != null" >
+        dstatus = #{dstatus,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null" >
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="supplierid != null" >
+        supplierId = #{supplierid,jdbcType=INTEGER},
+      </if>
+      <if test="suppliername != null" >
+        supplierName = #{suppliername,jdbcType=VARCHAR},
+      </if>
+      <if test="breviary != null" >
+        breviary = #{breviary,jdbcType=VARCHAR},
+      </if>
+      <if test="salesinfo != null" >
+        salesInfo = #{salesinfo,jdbcType=VARCHAR},
+      </if>
+      <if test="isintegral != null" >
+        isIntegral = #{isintegral,jdbcType=INTEGER},
+      </if>
+      <if test="integral != null" >
+        integral = #{integral,jdbcType=DECIMAL},
+      </if>
+      <if test="saletype != null" >
+        saleType = #{saletype,jdbcType=INTEGER},
+      </if>
+      <if test="cash != null" >
+        cash = #{cash,jdbcType=DECIMAL},
+      </if>
+      <if test="purchaseprice != null" >
+        purchasePrice = #{purchaseprice,jdbcType=DECIMAL},
+      </if>
+      <if test="deliverytype != null" >
+        deliveryType = #{deliverytype,jdbcType=INTEGER},
+      </if>
+      <if test="allowrefund != null" >
+        allowRefund = #{allowrefund,jdbcType=BIT},
+      </if>
+      <if test="expweight != null" >
+        expWeight = #{expweight,jdbcType=DOUBLE},
+      </if>
+      <if test="exptid != null" >
+        expTid = #{exptid,jdbcType=INTEGER},
+      </if>
+      <if test="goodsserial != null" >
+        goodsSerial = #{goodsserial,jdbcType=VARCHAR},
+      </if>
+      <if test="barcode != null" >
+        barcode = #{barcode,jdbcType=VARCHAR},
+      </if>
+      <if test="choicesort != null" >
+        choiceSort = #{choicesort,jdbcType=INTEGER},
+      </if>
+      <if test="deliverycity != null" >
+        deliveryCity = #{deliverycity,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="notdeliverycity != null" >
+        notDeliveryCity = #{notdeliverycity,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="salecity != null" >
+        saleCity = #{salecity,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="notsalecity != null" >
+        notSaleCity = #{notsalecity,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where pid = #{pid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.market.entity.pay.ProductInfo" >
+    update t_product_info
+    set codeId = #{codeid,jdbcType=BIGINT},
+      standard = #{standard,jdbcType=VARCHAR},
+      pname = #{pname,jdbcType=VARCHAR},
+      goodsName = #{goodsname,jdbcType=VARCHAR},
+      classa = #{classa,jdbcType=INTEGER},
+      secondary = #{secondary,jdbcType=INTEGER},
+      price = #{price,jdbcType=DOUBLE},
+      discount = #{discount,jdbcType=DOUBLE},
+      batching = #{batching,jdbcType=VARCHAR},
+      weight = #{weight,jdbcType=VARCHAR},
+      suttle = #{suttle,jdbcType=VARCHAR},
+      quality = #{quality,jdbcType=INTEGER},
+      isAdditives = #{isadditives,jdbcType=INTEGER},
+      packing = #{packing,jdbcType=VARCHAR},
+      production = #{production,jdbcType=TIMESTAMP},
+      brandName = #{brandname,jdbcType=VARCHAR},
+      pstatus = #{pstatus,jdbcType=INTEGER},
+      crafts = #{crafts,jdbcType=VARCHAR},
+      sellType = #{selltype,jdbcType=VARCHAR},
+      deal = #{deal,jdbcType=VARCHAR},
+      place = #{place,jdbcType=VARCHAR},
+      province = #{province,jdbcType=VARCHAR},
+      city = #{city,jdbcType=VARCHAR},
+      stored = #{stored,jdbcType=VARCHAR},
+      store = #{store,jdbcType=INTEGER},
+      sales = #{sales,jdbcType=INTEGER},
+      choice = #{choice,jdbcType=INTEGER},
+      cname = #{cname,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      licenseId = #{licenseid,jdbcType=VARCHAR},
+      tel = #{tel,jdbcType=VARCHAR},
+      rdate = #{rdate,jdbcType=TIMESTAMP},
+      udate = #{udate,jdbcType=TIMESTAMP},
+      dstatus = #{dstatus,jdbcType=INTEGER},
+      sort = #{sort,jdbcType=INTEGER},
+      supplierId = #{supplierid,jdbcType=INTEGER},
+      supplierName = #{suppliername,jdbcType=VARCHAR},
+      breviary = #{breviary,jdbcType=VARCHAR},
+      salesInfo = #{salesinfo,jdbcType=VARCHAR},
+      isIntegral = #{isintegral,jdbcType=INTEGER},
+      integral = #{integral,jdbcType=DECIMAL},
+      saleType = #{saletype,jdbcType=INTEGER},
+      cash = #{cash,jdbcType=DECIMAL},
+      purchasePrice = #{purchaseprice,jdbcType=DECIMAL},
+      deliveryType = #{deliverytype,jdbcType=INTEGER},
+      allowRefund = #{allowrefund,jdbcType=BIT},
+      expWeight = #{expweight,jdbcType=DOUBLE},
+      expTid = #{exptid,jdbcType=INTEGER},
+      goodsSerial = #{goodsserial,jdbcType=VARCHAR},
+      barcode = #{barcode,jdbcType=VARCHAR},
+      choiceSort = #{choicesort,jdbcType=INTEGER}
+    where pid = #{pid,jdbcType=INTEGER}
+  </update>
+ 
+
+
+
+    <!--统计专场商品数量-->
+    <select id="countActivityByType" resultType="java.lang.Long">
+        SELECT count(1)
+        <include refid="activityByTypeCondition"/>
+    </select>
+    <!--查询专场商品列表-->
+    <select id="selectActivityProductByActivityId" resultMap="BaseResultMap">
+        SELECT
+          p.breviary breviary,        <!--商品缩略图-->
+          a.sale_price cash,          <!--商品销售金额-->
+          p.price price,              <!--商品原价-->
+          a.sell_integral integral,   <!--销售积分-->
+          p.choice choice,            <!--是否精选-->
+          p.pid pid,                  <!--商品id-->
+          p.pname pname,              <!--商品名称-->
+          p.codeId codeId,            <!--产品唯一标识编号-->
+          a.sell_store store          <!--商品库存 -->
+        FROM t_product_info p JOIN t_fresh_activity_product a ON p.codeId = a.codeId
+        where p.pstatus = 1
+        AND a.activity_id = #{activityId}
+        ORDER BY a.sell_store = 0 ASC
+        LIMIT #{page.start}, #{page.pageSize}
+    </select>
+    <!--专场商品查询, 商品统计查询 条件-->
+    <sql id="activityByTypeCondition">
+
+    </sql>
+
+
+
+
+    <!--根据条件统计商品数量-->
+    <select id="countProductByCondition" resultType="java.lang.Long">
+        SELECT count(1)
+        <include refid="productByConditions"/>
+    </select>
+    <!--根据条件分页查询商品列表-->
+    <select id="queryProductByCondition" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        <include refid="productByConditions"/>
+        ORDER BY sales DESC
+        LIMIT #{page.start}, #{page.pageSize}
+    </select>
+    <!--商品查询条件-->
+    <sql id="productByConditions">
+        FROM t_product_info
+        WHERE pstatus = 1
+        <if test="typeId != null">
+            AND classa = #{typeId}
+        </if>
+        <if test="brandId != null">
+            AND brand_id = #{brandId}
+        </if>
+        <if test="maxMoney != null">
+            AND cash &lt; #{maxMoney}
+        </if>
+        <if test="minMoney != null">
+            AND cash &gt;= #{minMoney}
+        </if>
+    </sql>
+
+
+    <!-- like 查询商品 -->
+    <select id="selectLikeWord" resultMap="BaseResultMap">
+        SELECT
+            pi.pid pid,
+            pi.pname pname,
+            pi.price price,
+            pi.breviary breviary,
+            pi.choice choice,
+            a.sell_integral integral,
+            a.sale_price cash,
+            pi.codeId codeId,
+            a.sell_store store,
+            a.sell_num sales,
+            pi.classa,
+            pi.rdate,
+            a.activity_id activityId
+        FROM t_fresh_activity_product a LEFT JOIN t_product_info pi  ON pi.codeId = a.codeId LEFT JOIN t_fresh_activity_common activity ON   activity.id = a.activity_id
+        WHERE pi.pname LIKE #{word} AND activity.status = 0 AND now() > activity.begin_date AND activity.end_date > now() AND pi.pstatus = 1
+        UNION
+        SELECT
+            pi.pid,
+            pi.pname,
+            pi.price,
+            pi.breviary,
+            pi.choice,
+            pi.integral,
+            pi.cash,
+            pi.codeid,
+            pi.store,
+            pi.sales,
+            pi.classa,
+            pi.rdate,
+            null activityId
+        FROM t_product_info pi
+        WHERE pi.pname LIKE #{word}  AND pi.pstatus = 1
+        ORDER BY store=0 ASC,sales
+        LIMIT #{page.start},#{page.pageSize}
+    </select>
+    <!--统计查询商品列表-->
+    <select id="countLikeWord" resultType="java.lang.Long">
+        SELECT count(1)
+        <include refid="likeWordCondition"/>
+    </select>
+    <!--查询手动添加的商品-->
+    <select id="selectManualActivityProduct" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM t_product_info
+        WHERE pstatus = 1
+        AND codeId IN (SELECT codeId FROM t_fresh_activity_product WHERE module_id =#{freshModule.id})
+        ORDER BY store = 0 ASC
+        LIMIT #{page.start}, #{page.pageSize}
+    </select>
+    <select id="selectSpikeProductByActivityId" resultMap="BaseResultMap">
+        SELECT
+            p.breviary breviary,        <!--商品缩略图-->
+            a.sale_price cash,          <!--商品销售金额-->
+            p.price price,              <!--商品原价-->
+            a.sell_integral integral,   <!--销售积分-->
+            p.choice choice,            <!--是否精选-->
+            p.pid pid,                  <!--商品id-->
+            p.pname pname,              <!--商品名称-->
+            p.codeId codeId,            <!--产品唯一标识编号-->
+            a.sell_store store,         <!--商品库存 -->
+            p.rdate rdate,               <!--商品创建时间 -->
+            p.classa classa            <!-- 商品分类-->
+
+        FROM t_product_info p INNER JOIN t_fresh_activity_product a on p.codeId = a.codeId
+        WHERE a.activity_id = #{activityId}
+        AND p.pstatus = 1
+        ORDER BY a.sort desc
+        LIMIT #{page.start}, #{page.pageSize}
+    </select>
+    <select id="queryBreviaryByCode" resultType="java.lang.String">
+        SELECT breviary
+        FROM t_product_info
+        WHERE codeId = #{codeId}
+    </select>
+    <select id="selectHotSaleCodeid" resultType="java.lang.String">
+        SELECT codeid
+        FROM t_product_info
+            WHERE pstatus = 1
+            AND classa = #{typeId}
+        ORDER BY sales DESC
+        LIMIT 10
+    </select>
+    <sql id="likeWordCondition">
+        FROM t_product_info
+        WHERE pname LIKE #{word}
+    </sql>
+
+	<!-- 更新商品总库存 -->
+	<update id="updateProductInfoStore">
+		update t_product_info set store = store - #{num} where codeId =#{codeid}
+	</update>
+	
+	<!-- 根据codeid集合查询商品信息 -->
+	<select id="queryProductsByclassaes" parameterType="map" resultType="map">
+	    SELECT
+            p.breviary breviary,            
+            p.price price,                            
+            p.pid pid,                  
+            p.pname pname,  
+            p.cash cash,            
+            p.codeId codeId,
+            p.integral,
+            p.classa,
+            p.choice,
+            date_format(p.rdate,'%Y-%m-%d %H:%i:%s') as rdate,
+            t.name as classname                                   
+ 		FROM t_product_info p 
+ 		LEFT JOIN t_fresh_type t on t.id = p.classa
+ 		where p.pstatus=1	and  	
+ 		 p.classa in		
+ 	<foreach collection="mustBuyTypes" item="item" index="index" open="(" separator="," close=")">
+        #{item}
+    </foreach>  
+    <if test="page!=null and pageSize!=null">
+			limit ${(page-1)*pageSize},#{pageSize}
+		</if>
+	</select>
+	
+	<select id="queryClassaByName" parameterType="String" resultType="map">
+	  select t.name,t.id from t_fresh_type t where t.name =#{typegoodHot} and t.dstatus=0 order  by t.rdate desc limit 0,1
+	</select>
+	
+	
+</mapper>

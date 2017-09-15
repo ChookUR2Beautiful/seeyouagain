@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xmniao.xmn.core.order.dao.FreshOrderBackProdSumDao">
+	
+	
+<!-- 	<update id="orderbackProductSum" parameterType="map"> -->
+<!-- 		UPDATE t_product_info  SET store=#{wareNum}  WHERE codeId=#{codeId} -->
+<!-- 	</update> -->
+	
+	
+	
+<!-- 	根据取消订单号 订单购买商品数量 回退商品库存  -->
+	<update id="orderbackProductSum"  parameterType="java.util.List">
+	 
+	   <foreach collection="list" item="item" index="index" separator=";">
+				update t_product_info 
+				<set>
+				  store=store+${item.wareNum}
+				</set>
+				where codeId = ${item.codeId}
+	   </foreach>
+		 
+    </update>
+    
+    <!-- 根据订单号修改订单号状态为确认收货 -->
+	<update id="mofifyOrderStatusByBid"  parameterType="long">
+	 	UPDATE t_bill_fresh_sub SET status = 6 WHERE sub_order_sn = #{bid}
+    </update>
+	
+	<!-- 根据订单号去查询订单状态 -->
+	<select id="queryOrderByBid" resultType="Byte" parameterType="long">
+		select status from t_bill_fresh_sub where sub_order_sn = #{bid}
+	</select>
+	
+</mapper>

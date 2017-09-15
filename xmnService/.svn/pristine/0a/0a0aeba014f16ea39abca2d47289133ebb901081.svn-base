@@ -1,0 +1,782 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.xmer.dao.SellerInfoDao">
+	<resultMap id="BaseResultMap" type="com.xmniao.xmn.core.xmer.entity.SellerEntity" >
+    <id column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="staffid" property="staffid" jdbcType="INTEGER" />
+    <result column="jointid" property="jointid" jdbcType="INTEGER" />
+    <result column="sellername" property="sellername" jdbcType="VARCHAR" />
+    <result column="province" property="province" jdbcType="VARCHAR" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="area" property="area" jdbcType="VARCHAR" />
+    <result column="zoneid" property="zoneid" jdbcType="INTEGER" />
+    <result column="category" property="category" jdbcType="VARCHAR" />
+    <result column="genre" property="genre" jdbcType="VARCHAR" />
+    <result column="bewrite" property="bewrite" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="fullname" property="fullname" jdbcType="VARCHAR" />
+    <result column="identity" property="identity" jdbcType="VARCHAR" />
+    <result column="phoneid" property="phoneid" jdbcType="VARCHAR" />
+    <result column="orgid" property="orgid" jdbcType="VARCHAR" />
+    <result column="licenseid" property="licenseid" jdbcType="VARCHAR" />
+    <result column="licenseurl" property="licenseurl" jdbcType="VARCHAR" />
+    <result column="sdate" property="sdate" jdbcType="VARCHAR" />
+    <result column="sexplain" property="sexplain" jdbcType="VARCHAR" />
+    <result column="svalidity" property="svalidity" jdbcType="TIMESTAMP" />
+    <result column="evalidity" property="evalidity" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="examineinfo" property="examineinfo" jdbcType="VARCHAR" />
+    <result column="signdate" property="signdate" jdbcType="TIMESTAMP" />
+    <result column="udate" property="udate" jdbcType="TIMESTAMP" />
+    <result column="give" property="give" jdbcType="INTEGER" />
+    <result column="fatherid" property="fatherid" jdbcType="INTEGER" />
+    <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="identityzurl" property="identityzurl" jdbcType="VARCHAR" />
+    <result column="identityfurl" property="identityfurl" jdbcType="VARCHAR" />
+    <result column="licensefurl" property="licensefurl" jdbcType="VARCHAR" />
+    <result column="agreement" property="agreement" jdbcType="VARCHAR" />
+    <result column="lssellername" property="lssellername" jdbcType="VARCHAR" />
+    <result column="typename" property="typename" jdbcType="VARCHAR" />
+    <result column="tradename" property="tradename" jdbcType="VARCHAR" />
+    <result column="isprotocol" property="isprotocol" jdbcType="INTEGER" />
+    <result column="agio_type" property="agioType" jdbcType="TINYINT" />
+    <result column="agio" property="agio" jdbcType="DOUBLE" />
+    <result column="yledger" property="yledger" jdbcType="REAL" />
+    <result column="agio_time" property="agioTime" jdbcType="TIMESTAMP" />
+    <result column="entry" property="entry" jdbcType="REAL" />
+    <result column="is_virtual" property="isVirtual" jdbcType="INTEGER" />
+    <result column="flat_agio" property="flatAgio" jdbcType="DOUBLE" />
+    <result column="isforce" property="isforce" jdbcType="INTEGER" />
+    <result column="isonline" property="isonline" jdbcType="INTEGER" />
+    <result column="agio_agio" property="agioAgio" jdbcType="INTEGER" />
+    <result column="agio_instruction" property="agioInstruction" jdbcType="VARCHAR" />
+    <result column="ismultiple" property="ismultiple" jdbcType="INTEGER" />
+    <result column="recommend" property="recommend" jdbcType="BIT" />
+    <result column="recom_num" property="recomNum" jdbcType="INTEGER" />
+    <result column="data_source" property="dataSource" jdbcType="INTEGER" />
+    <result column="offline_reason" property="offlineReason" jdbcType="VARCHAR" />
+    <result column="date_operate" property="dateOperate" jdbcType="TIMESTAMP" />
+    <result column="xmn_service" property="xmnService" jdbcType="INTEGER" />
+    <result column="islock" property="islock" jdbcType="INTEGER" />
+    <result column="ratio" property="ratio" jdbcType="DOUBLE" />
+    <result column="isfees" property="isfees" jdbcType="INTEGER" />
+    <result column="debit" property="debit" jdbcType="DOUBLE" />
+    <result column="agreement2" property="agreement2" jdbcType="VARCHAR" />
+    <result column="agreement3" property="agreement3" jdbcType="VARCHAR" />
+    <result column="agreement4" property="agreement4" jdbcType="VARCHAR" />
+    <result column="label" property="label" jdbcType="INTEGER" />
+    <result column="order" property="order" jdbcType="INTEGER" />
+    <result column="real_order" property="realOrder" jdbcType="INTEGER" />
+    <result column="agio_agio_num" property="agioAgioNum" jdbcType="DECIMAL" />
+    <result column="is_ka" property="isKa" jdbcType="INTEGER" />
+    <result column="brand_id" property="brandId" jdbcType="INTEGER" />
+    <result column="save_money" property="saveMoney" jdbcType="DECIMAL" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="identitynurl" property="identitynurl" jdbcType="VARCHAR" />
+    <result column="ledger_mode" property="ledgerMode" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    sellerid, staffid, jointid, sellername, province, city, area, zoneid, category, genre, 
+    bewrite, address, tel, fullname, identity, phoneid, orgid, licenseid, licenseurl, 
+    sdate, sexplain, svalidity, evalidity, status, examineinfo, signdate, udate, give, 
+    fatherid, remarks, email, identityzurl, identityfurl, licensefurl, agreement, lssellername, 
+    typename, tradename, isprotocol, agio_type, agio, yledger, agio_time, entry, is_virtual, 
+    flat_agio, isforce, isonline, agio_agio, agio_instruction, ismultiple, recommend, 
+    recom_num, data_source, offline_reason, date_operate, xmn_service, islock, ratio, 
+    isfees, debit, agreement2, agreement3, agreement4, label, order, real_order, agio_agio_num, 
+    is_ka, brand_id, save_money, uid, identitynurl, ledger_mode
+  </sql>
+  
+	<!-- 
+		查询商铺基本信息
+		@修改内容 : 添加返回evalidity、sdate、fullname、identitynurl字段，修改ifNull(sellername,'') sellern为ifNull(sellername,'') sellername
+		@修改时间 : 2016-05-30 12:05
+		@修改人 :	 zhengyaowen
+	-->
+	<select id="querySellerInfoBySellerid" parameterType="int" resultType="map">
+	select 
+	s.sellerid,
+	ifNull(s.sellername,'') sellername,
+	ifNull(s.tel,'') tel,
+	ifNull(s.status,0) status,
+	ifNull(s.category,'0') category,
+	ifNull(s.genre,'0') genre,
+	ifNull(s.typename,'') typename,
+	ifNull(s.tradename,'') tradename,
+	ifNull(s.zoneid,'0') zoneid,
+	ifNull(s.bewrite,'') bewrite,
+	ifNull(s.address,'') address,
+	ifNull(s.phoneid,'') phoneid,
+	ifNull(s.isonline,0) isonline,
+	IFNULL(DATE_FORMAT(s.signdate,'%Y.%m.%d %H:%i'),'') AS signdate,
+	ifNull(s.agio,0) agio,
+	date_format(s.svalidity,'%Y-%m-%d') svalidity,
+	date_format(s.evalidity,'%Y-%m-%d') evalidity,
+	ifNull(s.sdate,'') sdate,
+	ifNull(s.province,0) provincenum,                                                                                         
+	ifNull(s.city,0) citynum,
+	ifNull(s.area,0) areanum,
+	ifNull(s.fullname,'') fullname,
+	ifNull(s.identityzurl,'') identityzurl,
+	ifNull(s.identityfurl,'') identityfurl,
+	ifNull(s.identitynurl,'') identitynurl,
+	ifNull(s.licenseurl,'') licenseurl,
+	ifNull(s.licensefurl,'') licensefurl,
+	ifnull(s.sexplain,'') sexplain,
+	<!-- V3.6.0版本 添加一下返回字段，以匹配寻蜜客签约店铺详情 udate，date_operate，bewrite,reason-->
+	IFNULL(DATE_FORMAT(s.udate,'%Y.%m.%d %H:%i'),'') AS udate,
+	IFNULL(DATE_FORMAT(s.date_operate,'%Y.%m.%d %H:%i'),'') AS date_operate,
+	ifnull(s.examineinfo,'') AS reason,
+	ifnull(d.tips,'') as tips,
+    s.saas_type as saas_type,
+    company_name,
+	hygienic_license_img,
+	business_license_name,
+	lssellername,
+    agreement,
+    agreement2,
+    agreement3,
+    agreement4,
+    agreement5,
+    agreement6,
+	fatherid
+	from t_seller s 
+	left join t_seller_detailed d on d.sellerid=s.sellerid
+	where s.sellerid=#{sellerid}
+	</select>
+	<!-- 查询商铺详情信息 -->
+	<select id="querySellerDetailedBySellerid" parameterType="int" resultType="map">
+	select consume from t_seller_detailed where sellerid=#{sellerid}
+
+	</select>
+	
+	<!-- 查询菜品  -->
+	<select id="queryFoodBySellerid" parameterType="int" resultType="map">
+	select id,bigpic url,foodname name from t_food
+ 	where sellerid=#{sellerid}
+	</select>
+	    <!-- 查询商家图片 -->
+    <select id="querySellerPic" parameterType="int" resultType="map">
+    select picid id,picurl url ,islogo from t_seller_pic where sellerid=#{sellerid}
+    </select>
+    
+	    <!-- 查询已上线商家的环境图 -->
+    <select id="querySellerPicApply" parameterType="int" resultType="map">
+    SELECT picid id,pic_url url FROM t_seller_pic_apply WHERE sellerid=#{sellerid} AND type=1
+    </select>
+    
+    
+    <!-- 插入商家信息表 -->
+    <insert id="insertSeller" parameterType="saasSign">
+	    <selectKey resultType="java.lang.Integer" order="AFTER"
+				keyProperty="id">
+				SELECT LAST_INSERT_ID() AS ID
+		</selectKey>
+	    INSERT into t_seller(sellername,province,city,area,category,genre,bewrite,address,tel,fullname,phoneid,sdate,svalidity,evalidity,status,
+	    agio_type,agio,isonline,data_source,xmn_service,date_operate,uid,signdate,typename,tradename,udate)
+		VALUES (#{sellername},#{province},#{city},#{area},#{category},#{genre},#{bewrite},#{address},#{tel},#{fullname},#{phoneid},#{sdate},#{svalidity},
+		#{evalidity},#{status},#{agio_type},#{agio},#{isonline},#{data_source},#{xmn_service},#{operadate},#{uid},#{signdate},#{typename},#{tradename},#{operadate})
+    </insert>
+
+    <!-- 插入商家信息表 -->
+    <insert id="insertSellerByMap" parameterType="map">
+	    <selectKey resultType="java.lang.Integer" order="AFTER"
+				keyProperty="sellerid">
+				SELECT LAST_INSERT_ID() AS ID
+		</selectKey>
+	    INSERT into t_seller(sellername,province,city,area,saas_type,zoneid,address,fullname,phoneid,licenseurl,agio,status,signdate,udate, uid,svalidity,evalidity,uid_relation_chain,
+		company_name, ismultiple, lssellername, fatherid,isonline)
+		VALUES (#{sellername},#{province},#{city},#{area},#{saas_type},#{zoneid},#{address},#{fullname},#{phoneid},#{licenseurl},#{agio},#{status},#{signdate},#{udate}, #{uid}, #{svalidity}, #{evalidity}, #{uid_relation_chain},
+		#{company_name}, #{ismultiple}, #{lssellername}, #{fatherid}, #{isonline})
+    </insert>
+
+    
+    <!-- 根据名称获取区域ID -->
+    <select id="getAreaIdByName" parameterType="map" resultType="java.lang.Integer">
+    	SELECT area_id from t_area where pid=#{id} AND title like CONCAT('%',#{title},'%')  
+    </select>
+    <!-- 查询积分菜品 -->
+    <select id="queryBargainBySellerid" parameterType="int" resultType="map">
+    select p.bp_id id,p.pname name,p.image url,p.integral,p.cash,p.original_price*s.agio needMoney  from t_bargain_product p,t_seller s 
+    where p.sellerid=s.sellerid AND p.sellerid=#{sellerid} and p.status=1
+    </select>
+    
+    <!-- 添加商家图片 -->
+    <insert id="addSerllerpic" parameterType="map">
+    	insert into t_seller_pic(sellerid,picurl,sdate,islogo) values(#{sellerid},#{pic},#{sdate},#{islogo});
+    </insert>
+
+    <update id="updateSellerPic" parameterType="map">
+        update t_seller_pic set sdate=#{sdate}
+        <if test="pic != null">
+            , picurl=#{pic}
+        </if>
+        where picid = #{picid}
+    </update>
+
+    <!-- 批量更新图片 -->
+    <update id="updateSellerPicList" parameterType="map">
+        update t_seller_pic set sdate=#{sdate}, picurl=''
+        where picid in
+        <foreach collection="picIds" item="pid" index="index" open="(" separator="," close=")">
+            #{pid}
+        </foreach>
+    </update>
+    
+    <!-- 更新商家资料 -->
+    <update id="updateSellerInfoBySellerid" parameterType="map">
+		update t_seller set udate = #{udate}
+        <if test="identityzurl != null" >   <!-- identityzurl-->
+            ,identityzurl=#{identityzurl}
+        </if>
+        <if test="identityfurl != null" >   <!-- identityfurl-->
+            ,identityfurl=#{identityfurl}
+        </if>
+        <if test="identitynurl != null" >   <!-- identitynurl-->
+            ,identitynurl=#{identitynurl}
+        </if>
+        <if test="licenseurl != null" >   <!-- licenseurl-->
+            ,licenseurl=#{licenseurl}
+        </if>
+        <if test="licensefurl != null" >   <!-- hygienic_license_img 卫生许可证-->
+            ,hygienic_license_img=#{licensefurl}
+        </if>
+        <if test="status != null" >   <!-- 状态-->
+            ,status=#{status}
+        </if>
+        <if test="agreement != null" >   <!-- agreement-->
+            ,agreement=#{agreement}
+        </if>
+        <if test="agreement2 != null" >   <!-- agreement2-->
+            ,agreement2=#{agreement2}
+        </if>
+        <if test="agreement3 != null" >   <!-- agreement3-->
+            ,agreement3=#{agreement3}
+        </if>
+        <if test="agreement4 != null" >   <!-- agreement4-->
+            ,agreement4=#{agreement4}
+        </if>
+        <if test="agreement5 != null" >   <!-- agreement5-->
+            ,agreement5=#{agreement5}
+        </if>
+        <if test="agreement6 != null" >   <!-- agreement6-->
+            ,agreement6=#{agreement6}
+        </if>
+		where sellerid=#{sellerid}
+    </update>
+
+    <!-- 更新商家资料 -->
+	<update id="updateSellerBySellerid" parameterType="map">
+		update t_seller 
+        set udate=#{udate}
+		<if test="sellername != null" >   <!-- 商铺名称-->
+			,sellername=#{sellername}
+		</if>
+		<if test="province != null" >  <!-- 省名称-->
+			,province=#{province}
+		</if>
+		<if test="city != null" >  <!-- 市名称-->
+			,city=#{city}
+		</if>
+		<if test="area != null" >   <!-- 区名称-->
+			,area=#{area}
+		</if>
+		<if test="address != null" >   <!-- 详细地址-->
+			,address=#{address}
+		</if>
+		<if test="category != null" >  <!-- 经营类型ID--> 
+			,category=#{category}
+		</if>
+		<if test="genre != null" >  <!-- 二级经营类型ID-->
+			,genre=#{genre}
+		</if>
+        <if test="typename != null" >  <!-- 经营类型名称--> 
+            ,typename=#{typename}
+        </if>
+        <if test="tradename != null" >  <!-- 二级经营类型名称-->
+            ,tradename=#{tradename}
+        </if>
+		<if test="fullname != null" >  <!-- 负责人-->
+			,fullname=#{fullname}
+		</if>
+		<if test="phoneid != null" >  <!-- 负责人手机-->
+			,phoneid=#{phoneid}
+		</if>
+		<if test="tel != null" >  <!-- 店铺电话-->
+			,tel=#{tel}
+		</if>
+		<if test="signdate != null" >  <!-- 店铺签约开始时间-->
+			,signdate=#{signdate}
+		</if>
+		<if test="agio != null" >  <!-- 折扣-->
+			,agio=#{agio}
+		</if>
+		<if test="sdate != null" >  <!-- 开业时间-->
+			,sdate=#{sdate}
+		</if>
+		<if test="svalidity != null" >  <!-- 有效期开始-->
+			,svalidity=#{svalidity}
+		</if>
+		<if test="evalidity != null" >  <!-- 有效期结束-->
+			,evalidity=#{evalidity}
+		</if>
+		<if test="zoneid != null" >  <!-- 商圈编号-->
+			,zoneid=#{zoneid}
+		</if>
+        <if test="status != null" >  <!-- 审核状态-->
+            ,status=#{status}
+        </if>
+        <if test="company != null" >  <!-- 公司名称-->
+            ,company_name=#{company}
+        </if>
+		<if test="business_license_name != null" >  <!-- 营业执照名称-->
+			,business_license_name=#{business_license_name}
+		</if>
+		<if test="ismultiple != null" >  <!-- 是否是连锁-->
+			,ismultiple=#{ismultiple}
+		</if>
+		,lssellername=#{lssellername}
+		,fatherid=#{fatherid}
+		where sellerid=#{sellerid}
+    </update>
+
+    
+    
+    <!-- 修改店铺状态 -->
+    <update id="modifySeller" parameterType="map">
+		update t_seller set status=#{status}
+		where sellerid=#{sellerid}
+    </update>
+    
+    <!-- 添加店铺的人均消费 -->
+    <insert id="insertSellerInfoToDetail" parameterType="map">
+    	insert into t_seller_detailed(sellerid,consume) values(#{sellerid},#{consume});
+    </insert>
+
+        <!-- 更新店铺的人均消费 -->
+    <insert id="updateSellerInfoToDetail" parameterType="map">
+    	update t_seller_detailed set consume=#{consume}
+    	where sellerid=#{sellerid}
+    </insert>
+    
+    <!-- 添加店铺的经度和纬度 -->
+    <insert id="insertSellerLandmark" parameterType="map">
+    	
+    	insert into t_seller_landmark(sellerid,longitude,latitude,sdate) values(#{sellerid},#{longitude},#{latitude},#{sdate});
+    </insert>
+    
+     <!-- 更改商家经纬度 -->
+    <update id="updateSellerLandmark" parameterType="map">
+		UPDATE 
+			t_seller_landmark 
+		SET 
+			longitude=#{longitude},
+			latitude=#{latitude}
+			<if test="sdate != null" >
+				,sdate=#{sdate}
+			</if>
+		WHERE sellerid=#{sellerid}
+    </update>
+    
+    <!-- 插入商铺折扣到折扣表中 -->
+    <insert id="insertSellerAgio" parameterType="map">
+   		<selectKey resultType="java.lang.Integer" order="AFTER"
+				keyProperty="id">
+				SELECT LAST_INSERT_ID() AS ID
+		</selectKey>
+    	INSERT INTO t_seller_agio (sellerid,type,baseagio,status,sdate) VALUES (#{sellerid},1,#{agio},1,#{sdate})
+    </insert>
+    
+      <!-- 插入商铺折扣到折扣记录表中 -->
+    <insert id="insertSellerAgioRecord" parameterType="map">
+    	INSERT INTO t_agio_record (aid,sellerid,operation,uid,baseagio,status,sdate,type) VALUES (#{id},#{sellerid},4,0,#{agio},1,#{sdate},1)
+  	</insert>  
+
+
+    <!-- 删除店铺信息 -->
+    <delete id="deleteSeller" parameterType="map">
+        delete * from t_seller where sellerid = #{sellerid}
+    </delete>
+    <!-- 删除人均消费信息 -->
+    <delete id="deleteSellerInfoToDetail" parameterType="map">
+        delete * from t_seller_detailed where sellerid = #{sellerid}
+    </delete>
+    <!-- 删除店铺经纬度 -->
+    <delete id="deleteLandmark" parameterType="map">
+        delete * from t_seller_landmark where sellerid = #{sellerid}
+    </delete>
+    <!-- 删除商铺折扣 -->
+    <delete id="deleteAgioRecord" parameterType="map">
+         delete * from t_agio_record where sellerid = #{sellerid}
+    </delete>
+
+  	<!-- 查询是否设置商家折扣 -->
+  	<select id="queryAgioCount" parameterType="int" resultType="int">
+  	select count(1) from t_seller_agio where sellerid=#{sellerid} and type=1 and status=1
+  	</select>
+  	
+    <!-- 查询商铺经，纬度 -->
+    <select id="querySellerLandMark" resultType="map" parameterType="int">
+    	select ifnull(longitude,'') longitude,ifnull(latitude,'') latitude from t_seller_landmark where sellerid=#{sellerid}
+    </select>
+    
+    <!-- 查询一批商铺经，纬度 -->
+    <select id="querySellersLandMark" resultType="map">
+    	SELECT 
+    		ifnull(longitude,0) longitude,ifnull(latitude,0) latitude,sellerid AS sellerId
+    	FROM t_seller_landmark
+    	WHERE sellerid	IN
+  		<foreach item="sellerId" index="index" collection="sellerIds" open="(" separator="," close=")">
+        	#{sellerId}
+  		</foreach>
+    </select>
+    
+    <!-- 查询类别名称 -->
+    <select id="queryTradeName" resultType="string" parameterType="map">
+    	SELECT tradename FROM t_trade
+    	<where>
+	    	<if test="tid != null and tid != 0">
+	    		tid=#{tid}
+	    	</if>
+	    	<if test="pid != null and pid != 0">
+	    	 	AND pid=#{pid}
+	    	</if>
+    	</where>
+    </select>
+    
+   <!-- 查询商铺物料发送详情 -->
+   <select id="queryMaterialOrderBySellerId" resultType="map" parameterType="map">
+   		SELECT status,ifnull(remark,'') remark,order_sn FROM t_material_order WHERE mid LIKE CONCAT('%',#{mid},'%') and uid=#{uid} ORDER BY create_time desc LIMIT 0,1
+   </select>
+   <!-- 修改寻蜜客签约店铺的uid -->
+   <update id="updateSellerUidByUid" parameterType="int">
+   	update t_seller set uid=null where uid=#{uid}
+   </update>
+   
+	<!--根据定位坐标查询商铺信息-->
+	<select id="findAllByMap" resultType="map" parameterType="map">
+		SELECT s.sellerid,s.sellername, s.province, s.city, s.area, s.zoneid, s.category, s.genre,
+		 s.address, s.tel,s.sdate,s.sexplain,s.typename,s.tradename,l.latitude AS lat,l.longitude AS lon,
+    		ROUND(
+		    6378.138 * 2 * ASIN(
+		      SQRT(
+		        POW(
+		          SIN(
+		            (
+		              #{lat} * PI() / 180- latitude * PI() / 180
+		            ) / 2
+		          ),
+		          2
+		        ) + COS(#{lat} * PI() / 180) * COS(latitude * PI() / 180) * POW(
+		          SIN(
+		            (
+		              #{lon} * PI() / 180- longitude * PI() / 180
+		            ) / 2
+		          ),
+		          2
+		        )
+		      )
+		    ) * 1000
+		  ) AS ranges
+		FROM t_seller s
+		LEFT JOIN t_seller_landmark l
+		ON s.sellerid=l.sellerid WHERE s.status=3 AND s.isonline=1
+		<if test="provinceid != null">
+		 AND s.province=#{provinceid}
+		</if>
+		<if test="cityid != null">
+		AND s.city=#{cityid}
+		</if>
+		<if test="areaid != null">
+		 AND s.area=#{areaid}
+		</if>
+		<if test="zoneid != null">
+		AND s.zoneid=#{zoneid}
+		</if>
+		<if test="pid != null and tid != null">
+		AND s.category=#{pid} AND s.genre=#{tid}
+		</if>
+		<if test="sellers != null">
+		AND s.sellerid in
+		<foreach collection="sellers" item="sellerid" index="index" open="(" separator="," close=")">
+			#{sellerid}
+		</foreach>
+		</if>
+		AND longitude IS NOT NULL ORDER BY s.signdate DESC,ranges ASC
+	</select>
+	
+	<select id="querySellersByLives" resultType="map" parameterType="map">
+	SELECT s.sellerid,s.sellername, s.province, s.city, s.area, s.zoneid, s.category, s.genre,
+		 s.address, s.tel,s.sdate,s.sexplain,s.typename,s.tradename,l.latitude AS lat,l.longitude AS lon,ROUND(
+		    6378.138 * 2 * ASIN(
+		      SQRT(
+		        POW(
+		          SIN(
+		            (
+		              #{lat} * PI() / 180- l.latitude * PI() / 180
+		            ) / 2
+		          ),
+		          2
+		        ) + COS(#{lat} * PI() / 180) * COS(l.latitude * PI() / 180) * POW(
+		          SIN(
+		            (
+		              #{lon} * PI() / 180- l.longitude * PI() / 180
+		            ) / 2
+		          ),
+		          2
+		        )
+		      )
+		    ) * 1000
+		  ) AS ranges
+	FROM t_live_record r
+	LEFT JOIN t_seller s ON r.sellerid AND s.sellerid
+	LEFT JOIN t_seller_landmark l ON s.sellerid=l.sellerid 
+	WHERE s.status=3 AND s.isonline=1 AND r.zhibo_type IN (0,1,3)
+	<if test="provinceid != null">
+	 AND s.province=#{provinceid}
+	</if>
+	<if test="cityid != null">
+	AND s.city=#{cityid}
+	</if>
+	<if test="areaid != null">
+	 AND s.area=#{areaid}
+	</if>
+	<if test="zoneid != null">
+	AND s.zoneid=#{zoneid}
+	</if>
+	AND l.longitude IS NOT NULL GROUP BY s.sellerid ORDER BY ranges ASC
+	</select>
+	
+	<!-- 通过商铺id查询商圈id -->
+	<select id="findAllZoneIdBySellerId" resultType="map" parameterType="list">
+		SELECT 
+			DISTINCT s.province, s.city, s.area, s.zoneid, s.sellerid, s.tradename,
+            l.latitude, l.longitude,
+            t.title
+		FROM t_seller s
+        left join t_business t on t.bid = s.zoneid
+        left join t_seller_landmark l ON s.sellerid=l.sellerid 
+		WHERE 1=1 AND s.sellerid IN 
+		<if test="list != null">
+			<foreach collection="list" item="list" index="index" open="(" separator="," close=")">
+				#{list}
+			</foreach>
+		</if>
+		AND s.zoneid IS NOT NULL
+	</select>
+	
+	<!-- 通过用户id和商圈 查询用户在该商圈消费过的商铺信息 -->
+	<select id="queryConsumSellerByUid" resultType="map" parameterType="map">
+		SELECT 
+			s.sellerid,s.sellername, s.province, s.city, s.area, s.zoneid, s.category, 
+			s.genre, s.address, s.tel,s.sdate,s.sexplain,s.typename,s.tradename,DATE_FORMAT(b.zdate,'%m.%d') AS zdate
+		FROM t_bill b
+		LEFT JOIN t_seller s ON b.sellerid=s.sellerid 
+		WHERE b.status NOT IN(0,5) AND s.status=3 AND s.isonline=1 
+		<if test="uid != null">
+		AND b.uid=#{uid} 
+		</if>
+		<if test="zoneid != null">
+		AND s.zoneid=#{zoneid}
+		</if>
+		GROUP BY s.sellerid ORDER BY zdate DESC
+	</select>
+	
+	<!-- 通过商铺id查询商铺信息和距离 -->
+	<select id="querySellerAndRangesBySellerId" resultType="map" parameterType="map">
+		SELECT 
+			s.sellerid,s.sellername, s.province, s.city, s.area, s.zoneid, s.category, s.genre,
+			s.address, s.tel,s.sdate,s.sexplain,s.typename,s.tradename,b.title AS zonename,SUM(CASE WHEN r.zhibo_type = 1 THEN 1 ELSE 0 END ) AS liveCount,
+			SUM(CASE WHEN r.zhibo_type = 0 THEN 1 ELSE 0 END ) AS preCount,
+    		ROUND(
+		    6378.138 * 2 * ASIN(
+		      SQRT(
+		        POW(
+		          SIN(
+		            (
+		              #{lat} * PI() / 180- l.latitude * PI() / 180
+		            ) / 2
+		          ),
+		          2
+		        ) + COS(#{lat} * PI() / 180) * COS(l.latitude * PI() / 180) * POW(
+		          SIN(
+		            (
+		              #{lon} * PI() / 180- l.longitude * PI() / 180
+		            ) / 2
+		          ),
+		          2
+		        )
+		      )
+		    ) * 1000
+		  ) AS ranges
+		FROM t_seller s
+		LEFT JOIN t_seller_landmark l ON s.sellerid=l.sellerid
+		LEFT JOIN t_business b ON s.zoneid=b.bid
+		LEFT JOIN t_live_record r ON s.sellerid=r.sellerid AND r.status = 1
+		WHERE s.status=3 AND s.isonline=1
+		<if test="zoneid != null">
+		AND s.zoneid=#{zoneid}
+		</if>
+		<if test="tradeid != null">
+		AND s.genre=#{tradeid}
+		</if>
+	 	AND s.sellerid=#{sellerid}
+	</select>
+	
+	<!-- 通过商圈id获取商圈内商铺的数量 -->
+	<select id="sumSellerCountsByBid" resultType="int" parameterType="map">
+		SELECT COUNT(DISTINCT sellerid) FROM t_seller WHERE STATUS=3 AND isonline=1
+		<if test="id != null">
+		AND (zoneid=#{id} OR area=#{id} OR city=#{id}) 	
+		</if>
+	</select>
+	
+	<!-- 查询数据 -->
+	<select id="findAll" resultType="map">
+		select * from t_seller
+	</select>
+	
+	<!-- 查询直播 -->
+	<select id="findAllVsLive" resultType="map" parameterType="String">
+		SELECT r.anchor_id,r.avatar,r.zhibo_address,r.zhibo_cover,r.zhibo_title,r.zhibo_type,
+		<![CDATA[
+		(CASE 
+		WHEN r.zhibo_type=1 AND f.send_status=1 THEN 4 
+		WHEN r.zhibo_type=0 AND f.send_status=1 THEN 3 
+		WHEN r.zhibo_type=1 AND f.send_status<>1 THEN 3
+		WHEN r.zhibo_type=0 AND f.send_status<>1 THEN 2 ELSE 0 END ) AS liveRank
+		]]>
+		FROM t_live_record  r
+		LEFT JOIN t_fans_coupon_anchor_ref f ON r.id = f.record_id
+		WHERE r.sellerid=#{sellerid} AND r.zhibo_type NOT IN (-1,2,4,5) GROUP BY r.sellerid ORDER BY liveRank DESC 
+	</select>
+	
+	<select id="findAllCitysDistinst" resultType="int">
+		SELECT DISTINCT city FROM t_seller WHERE status=3 AND isonline=1 AND is_public=1
+	</select>
+	
+	<!-- 单纯的批量查询商铺信息 -->
+	<select id="findSellerAndConsumsBySellerId" resultType="map">
+		SELECT 
+			a.sellerid,a.sellername,a.tradename,a.title,a.picurl,b.consums 
+		FROM 
+			(SELECT 
+				s.sellerid,s.sellername,s.tradename,b.title,p.picurl 
+			FROM t_seller s 
+			LEFT JOIN t_business b ON s.zoneid = b.bid
+			LEFT JOIN t_seller_pic p ON s.sellerid = p.sellerid 
+			WHERE s.status=3 AND s.isonline=1 AND s.is_public=1 AND p.islogo=1 AND s.sellerid IN
+			<foreach collection="sellers" index="index" item="sellers" open="(" separator="," close=")">
+				#{sellers}
+			</foreach>
+			) a 
+		LEFT JOIN 
+			(
+			SELECT 
+				COUNT(1) AS consums,sellerid 
+			FROM t_bill 
+			WHERE STATUS NOT IN (0,5) AND sellerid IN 
+			<foreach collection="sellers" index="index" item="sellers" open="(" separator="," close=")">
+				#{sellers}
+			</foreach>
+			) b 
+		ON a.sellerid = b.sellerid 
+		ORDER BY b.consums DESC
+	</select>
+	<!-- 查询专享卡商铺信息距离升序排序 -->
+	<select id="queryDebitCardSellerRanges" resultType="map" parameterType="map">
+		SELECT s.sellerid as entry_sellerid,s.sellername as entry_sellername ,d.sellername,d.sellertype,s.city,d.sellerid AS sellerid,d.recharge_item,d.sub_sellerid,d.id,ROUND(
+		    6378.138 * 2 * ASIN(
+		      SQRT(
+		        POW(
+		          SIN(
+		            (
+		              #{lat} * PI() / 180- l.latitude * PI() / 180
+		            ) / 2
+		          ),
+		          2
+		        ) + COS(#{lat} * PI() / 180) * COS(l.latitude * PI() / 180) * POW(
+		          SIN(
+		            (
+		              #{lon} * PI() / 180- l.longitude * PI() / 180
+		            ) / 2
+		          ),
+		          2
+		        )
+		      )
+		    ) * 1000
+		  ) AS ranges
+FROM
+	t_seller s
+LEFT JOIN t_debitcard_seller d ON s.sellerid = d.sellerid
+OR d.sub_sellerid LIKE CONCAT('%', s.sellerid, '%')
+LEFT JOIN t_seller_landmark l ON s.sellerid=l.sellerid
+LEFT JOIN t_business b ON s.zoneid=b.bid
+WHERE
+d.`status` = 0
+AND s.`status` = 3
+AND s.isonline = 1 
+	<if test="zoneid != null">
+		AND s.zoneid=#{zoneid}
+	</if>
+	<if test="tradeid != null">
+		AND s.genre=#{tradeid}
+	</if>
+	 <if test="cityId != null">
+		AND s.city=#{cityId}
+	</if>
+		GROUP BY d.id order by ranges asc
+	</select>
+	
+<!-- 查询用户已签约店铺 -->
+	<select id="findMaterialSellerRequest" resultType="map" parameterType="map">
+		select 
+			sellerid, sellername,status from t_seller s
+			WHERE 
+			s.uid = #{uid}  and status = #{status}
+	
+	</select>	
+	
+	<select id="querySellerCommission" resultType="String">
+		select commission from t_bill where sellerid = #{sellerid} AND status=2
+	</select>
+	
+	<!-- 根据关键字，商圈id查询店铺信息 -->
+	<select id="listSellerByKeyword" parameterType="map" resultType="map">
+		SELECT	
+			IFNULL(s.address,'') address,
+			IFNULL(s.sellername,'') sellername,
+			s.sellerid,
+			IFNULL(a.title,'') province,
+			IFNULL(b.title,'') city,
+			IFNULL(c.title,'') area,
+			IFNULL(s.address,'') address,
+			IFNULL(s.tradename,'') tradename,
+			p.picurl AS picUrl
+		FROM t_seller s 
+			LEFT JOIN t_area a ON s.province=a.area_id
+			LEFT JOIN t_area b ON s.city=b.area_id
+			LEFT JOIN t_area c ON s.area=c.area_id
+			LEFT JOIN t_seller_pic p ON p.sellerid = s.sellerid AND p.islogo=2
+		WHERE s.zoneid=#{zoneid} AND s.STATUS=3 AND s.isonline=1
+		<if test="keyword != null">
+			AND sellername LIKE concat('%',#{keyword},'%')
+		</if>
+		GROUP BY s.`sellerid`
+	</select>
+	
+	<select id="queryCommentSellerInfoById" resultType="map">
+		select s.sellerid AS sellerId,s.sellername AS sellerName,s.address,s.tradename AS treadeName,b.title AS zoneName,p.picurl AS picUrl
+ 		from t_seller s
+ 		left join  t_business b on s.zoneid=b.bid
+ 		left join t_seller_pic p on p.sellerid=s.sellerid and p.islogo=2
+ 		where s.sellerid = #{sellerId}
+	</select>
+
+	<select id="selectLsSellerByName" resultType="map" parameterType="map">
+		select * from t_seller where sellername = #{sellername} and ismultiple = 1 limit 1
+	</select>
+
+</mapper>

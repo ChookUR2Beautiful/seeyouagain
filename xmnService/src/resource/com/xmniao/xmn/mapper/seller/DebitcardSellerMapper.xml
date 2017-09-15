@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.seller.dao.DebitcardSellerDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.seller.entity.DebitcardSeller" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="sellertype" property="sellertype" jdbcType="INTEGER" />
+    <result column="sellername" property="sellername" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="sub_sellerid" property="subSellerid" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="total_limit_recharge" property="totalLimitRecharge" jdbcType="DOUBLE" />
+    <result column="recharge_item" property="rechargeItem" jdbcType="VARCHAR" />
+    <result column="referrer_ratio" property="referrerRatio" jdbcType="DOUBLE" />
+    <result column="parent_referrer_ratio" property="upparenReferrerRatio" jdbcType="DOUBLE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, sellerid, sellertype, sellername, status, sub_sellerid, update_time,total_limit_recharge,recharge_item,referrer_ratio,parent_referrer_ratio
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_debitcard_seller
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectDebitcardByid" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+  	 select 
+    <include refid="Base_Column_List" />
+    from t_debitcard_seller
+    where id = #{id,jdbcType=INTEGER} and status=0
+  </select>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.seller.entity.DebitcardSeller" >
+    update t_debitcard_seller
+    <set >
+      <if test="sellerid != null" >
+        sellerid = #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="sellertype != null" >
+        sellertype = #{sellertype,jdbcType=INTEGER},
+      </if>
+      <if test="sellername != null" >
+        sellername = #{sellername,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="subSellerid != null" >
+        sub_sellerid = #{subSellerid,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.seller.entity.DebitcardSeller" >
+    update t_debitcard_seller
+    set sellerid = #{sellerid,jdbcType=INTEGER},
+      sellertype = #{sellertype,jdbcType=INTEGER},
+      sellername = #{sellername,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      sub_sellerid = #{subSellerid,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="findBySellerId" resultMap="BaseResultMap">
+  	SELECT
+  		<include refid="Base_Column_List" />
+  	FROM t_debitcard_seller WHERE (sellerid=#{sellerid} OR FIND_IN_SET(#{sellerid},sub_sellerid)) AND status=0
+  </select>
+  
+  <!-- 根据商家id和 用户uid查询 用户充值该商家专享卡订单记录 -->
+  <select id="queryDebitcardPayOrder" resultType="int">
+  	SELECT COUNT(id) FROM t_live_pay_order WHERE entry_sellerid=#{sellerid} AND uid=#{uid} AND pay_state=1 AND object_oriented=2
+  </select>
+  <!-- 查询专享卡商家充值套餐 -->
+    <select id="findSellerAllCharge" resultType="liveRechargeComboInfo">
+  	SELECT
+  		id,rech_amount as rechAmount,rech_norm_coin as rechNormCoin,
+			rech_free_coin as rechFreeCoin,rech_real_coin as rechRealCoin,
+			recharge_type as rechargeType ,fans_rank_id as fansRankId
+  	FROM t_live_recharge_combo 
+  	WHERE status=1 and object_oriented like '%2%' and  combo_source=0  order by rech_amount
+  </select>
+  
+<!-- 查询面对商家的最低鸟币套餐额度 -->
+<select  id="findMinRechargeAmount" resultType="map" >
+select min(t.rech_amount) as rech_amount from t_live_recharge_combo t where t.status=1 and t.object_oriented like '%2%' and combo_source=0
+</select>
+
+<!-- 插入专享卡订单表 -->
+<insert id="insertDebitcardOrder" parameterType="map">
+insert into t_debitcard_order(order_no,uid,debitcard_id,sellertype,sellerid,entry_sellerid,pay_coin,denomination,uid_relation_chain,quota,q_quota,entry_selleragio,
+	sellername,entry_sellername,phone,uname,pay_state,create_time,pay_time,seller_income,ledger_level)
+	 values(#{order_no},#{uid},#{debitcard_id},#{sellertype}
+	,#{sellerid},#{entry_sellerid},#{pay_coin},#{denomination},#{uid_relation_chain},#{quota},#{q_quota},#{entry_selleragio}
+	,#{sellername},#{entry_sellername},#{phone},#{uname},#{pay_state},#{create_time},#{pay_time},#{seller_income},#{ledger_level})
+</insert>
+
+<!-- 查询面向商家的所有的粉丝等级-->
+<select  id="findAllRanks" resultType="map">
+     select * from b_live_fans_rank b left join b_live_fans_rank_detail c on b.id = c.rank_id where  c.object_oriented like '%2%' group by b.id
+</select>
+
+<!-- 根据套餐匹配粉丝详情信息-->
+<select id="findFansRankByAmout"  resultType="map" parameterType="map">
+	select f.id,d.conversion_rate from b_live_fans_rank f left join b_live_fans_rank_detail d on f.id = d.rank_id  where 
+	<![CDATA[
+		f.reward_lowest<= #{amount} 
+	]]>
+	and
+	<![CDATA[
+		f.reward_highest >= #{amount}
+	]]>
+	and 
+		d.object_oriented like '%2%'
+	and
+	<![CDATA[
+		d.effective_date <= NOW() 
+	]]>
+    order BY d.effective_date limit 0,1 
+</select>
+
+ </mapper>

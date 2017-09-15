@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xmniao.xmn.core.order.dao.ExperienceConfigDao">
+
+	 <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.order.entity.ExperienceofficerConfig" >
+	    <id column="id" property="id" jdbcType="INTEGER" />
+	    <result column="title" property="title" jdbcType="VARCHAR" />
+	    <result column="type" property="type" jdbcType="INTEGER" />
+	    <result column="is_free" property="isFree" jdbcType="INTEGER" />
+	    <result column="price" property="price" jdbcType="DECIMAL" />
+	    <result column="nums" property="nums" jdbcType="INTEGER" />
+	    <result column="days" property="days" jdbcType="INTEGER" />
+	    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+	    <result column="outDate" property="outDate" jdbcType="VARCHAR" />
+	  </resultMap>
+	
+	<!-- 	根据ID查询体验卡详情 -->
+	<select id="queryExprienceInfoById" parameterType="map" resultMap="BaseResultMap">
+		SELECT c.*, 
+			DATE_FORMAT(DATE_ADD(NOW(),INTERVAL c.days DAY),'%Y年%m月%d日') as outDate 
+		FROM t_experienceofficer_config c  WHERE c.id = {id}
+	</select>
+	
+	<!-- 	根据ID查询体验卡详情 -->
+	<select id="queryExprienceList" parameterType="map" resultMap="BaseResultMap">
+		SELECT c.*, 
+			DATE_FORMAT(DATE_ADD(NOW(),INTERVAL c.days DAY),'%Y年%m月%d日') as outDate 
+		FROM t_experienceofficer_config c  WHERE 1=1 ORDER BY update_time DESC
+	</select>
+	
+	<!-- 	创建订单 -->
+	<insert id="inserExperienceOrder" parameterType="map">
+		INSERT INTO t_experienceofficer_order 
+			(order_no, uid, phone, nname, is_free, nums, days, amount , create_time , description,pay_state,app_source) 
+		VALUES 
+			(#{order_no,jdbcType=VARCHAR}, #{uid,jdbcType=INTEGER}, #{phone,jdbcType=VARCHAR}, #{nname,jdbcType=VARCHAR}, 
+			#{is_free,jdbcType=INTEGER}, #{nums,jdbcType=INTEGER}, #{days,jdbcType=INTEGER}, #{amount,jdbcType=DOUBLE} , 
+			#{create_time,jdbcType=TIMESTAMP} ,#{description,jdbcType=VARCHAR},#{pay_state,jdbcType=INTEGER},
+			#{appSourceStatus,jdbcType=INTEGER}
+			)	
+	</insert>
+	
+		
+	<!-- 	订单主体信息 -->
+	 <resultMap id="ExperienceOrderMap" type="com.xmniao.xmn.core.order.entity.ExperienceOfficerOrder" >
+	 	
+	    <id column="id" property="id" jdbcType="INTEGER" />
+	    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+	    <result column="phone" property="phone" jdbcType="VARCHAR" />
+	    <result column="nname" property="nname" jdbcType="VARCHAR" />
+	    <result column="is_free" property="isFree" jdbcType="INTEGER" />
+	    <result column="nums" property="nums" jdbcType="INTEGER" />
+	    <result column="days" property="days" jdbcType="INTEGER" />
+	    <result column="uid" property="uid" jdbcType="INTEGER" />
+	    <result column="pay_type" property="payType" jdbcType="VARCHAR" />
+	    <result column="payid" property="payid" jdbcType="VARCHAR" />
+	    <result column="live_coin" property="liveCoin" jdbcType="DECIMAL" />
+	    <result column="wallet_amount" property="walletAmount" jdbcType="DECIMAL" />
+	    <result column="pay_state" property="payState" jdbcType="INTEGER" />
+	    <result column="description" property="description" jdbcType="VARCHAR" />
+	    <result column="version" property="version" jdbcType="INTEGER" />
+	    <result column="amount" property="amount" jdbcType="DECIMAL" />
+	    <result column="outDate" property="outDate" jdbcType="VARCHAR" />
+	    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+	    <result column="pay_time" property="payTime" jdbcType="TIMESTAMP" />
+	  </resultMap>
+	
+	<!-- 	根据订单编号查询订单详情 -->
+	<select id="queryExperienceOrderDetail" parameterType="map"  resultMap="ExperienceOrderMap" >
+<!-- 	 resultMap="ExperienceOrderMap" -->
+		SELECT 
+			o.*,  
+			DATE_FORMAT(DATE_ADD(o.create_time,INTERVAL o.days DAY),'%Y年%m月%d日') as outDate 
+		FROM t_experienceofficer_order o  
+		WHERE o.order_no = #{orderNo}
+	</select>
+	
+	<!-- 	根据订单编号查询订单详情 -->
+<!-- 	<select id="queryExperienceOrderList" parameterType="map" resultMap="ExperienceOrderMap"> -->
+<!-- 		SELECT  -->
+<!-- 			o.*,   -->
+<!-- 			DATE_FORMAT(DATE_ADD(o.create_time,INTERVAL c.days DAY),'%Y年%m月%d日') as outDate  -->
+<!-- 		FROM t_experienceofficer_order o   -->
+<!-- 		WHERE uid = #{uid}  -->
+<!-- 		LIMIT ${(page-1)*limit},#{limit} -->
+<!-- 	</select> -->
+
+	<!-- 美食体验官订单列表 -->
+	<select id="queryExperienceOrderList" parameterType="map"  resultMap="ExperienceOrderMap" >
+		SELECT 
+			o.*
+		FROM t_experienceofficer_order o
+		where o.uid = #{uid}
+		<if test="maxTime!=null">
+            <![CDATA[
+            and o.create_time < DATE_FORMAT(#{maxTime}, '%Y-%m-%d %H:%i:%s')
+            ]]>
+        </if>
+        <if test="pay_state != null">
+        	and o.pay_state = #{pay_state}
+        </if>
+        order by o.create_time desc
+        limit ${(page-1)*limit},#{limit}
+	</select>
+
+
+	  	
+	
+</mapper>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.common.dao.HelpDao">
+	<!-- 版主或反馈信息 -->
+	<!-- 查询帮助分类 -->
+	<select id="queryItemList" resultType="map">
+		select id ,
+		ifNull(item,'') item
+		 from t_help_item order by sort desc
+	</select>
+	<!-- 查询分类条目 -->
+	<select id="queryInfoByItemid" resultType="map" parameterType="int">
+		select id ,
+		ifNull(title,'') title,
+		ifNull(context,'') context from t_help_info where item_id=#{itemid}  order by sort desc
+	</select>
+	<!-- 根据ID查询具体帮助信息 -->
+	<select id="queryInfoByid" parameterType="int" resultType="map">
+	select id ,
+		ifNull(title,'') title,
+		ifNull(context,'') context from t_help_info where id=#{id} 
+	</select>
+	
+</mapper>

@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live.dao.PersonalDetailDao">
+	
+<!-- 充值套餐 -->
+<select id="queryRechargeList"  resultType="map" parameterType="map">
+select lrc.id id ,ifnull(lrc.rech_amount,0.0) rech_amount ,ifnull(lrc.rech_norm_coin,0) rech_norm_coin ,ifnull(lrc.rech_free_coin,0) rech_free_coin,
+ifnull(lrc.rech_real_coin,0) rech_real_coin,ifnull(lrc.status,0) status,ifnull(lrc.update_date,'') update_date
+ from t_live_recharge_combo lrc where lrc.status=1 order by lrc.rech_norm_coin asc
+ LIMIT ${(page-1)*limit},#{limit}
+</select>
+
+
+
+<!-- 送出鸟蛋列表 -->
+<select id="queryGiveEggList"  resultType="map" parameterType="map">
+	select lgg.id,
+		ifnull(lgg.gift_name,'') gift_name,ifnull(lgg.anchor_id,0) anchor_id,ifnull(lg.gift_avatar,'') gift_avatar,
+		ifnull(lgg.create_time,'') create_time,ifnull(lgg.liver_id,0) liver_id,ifnull(lgg.gift_nums,0) gift_nums,
+		ifnull(lgg.gift_source, 0) gift_source, ifnull(lgg.sale_product_id, 0) as sale_product_id
+	from t_live_gived_gift lgg
+	 LEFT JOIN t_live_gift lg on lg.id=lgg.gift_id 
+	where lgg.liver_id=#{liver_id} order by lgg.create_time desc
+	LIMIT ${(page-1)*limit},#{limit}
+</select>
+
+
+
+
+<!-- 查询弹幕数及私信数 -->
+
+<select id="queryBarrageMessageNum" resultType="map"  parameterType="int">
+select (SELECT count(1) from t_live_public_message lb where lb.message_type=2 and lb.send_liver_id=#{liver_id}) barragenum,
+(SELECT count(1) from t_live_private_message lp where  lp.send_liver_id=#{liver_id}) messagenum 
+</select>
+
+
+<!-- 查询关注列表 -->
+
+	<select id="queryAttentionFocusList" resultType="map" parameterType="map">
+	select lf.id,ifnull(lf.liver_str_id,0) liver_str_id,ifnull(lf.liver_end_id,0) liver_end_id,ifnull(lf.create_time,'') create_time from t_live_focus lf where lf.liver_str_id=#{liver_str_id}
+	LIMIT ${(page-1)*limit},#{limit}
+	</select>
+
+
+	<!-- 查询粉丝列表 -->
+
+	<select id="queryAttentionFansList" resultType="map" parameterType="map">
+	select lf.id,ifnull(lf.liver_str_id,0) liver_str_id,ifnull(lf.liver_end_id,0) liver_end_id,ifnull(lf.create_time,'') create_time from t_live_focus lf where lf.liver_end_id=#{liver_end_id}
+	LIMIT ${(page-1)*limit},#{limit}
+	</select>
+
+
+
+<!-- 查询粉丝所有数据 -->
+
+	<select id="queryAttentionFansListAll" resultType="map" parameterType="map">
+	select lf.id,ifnull(lf.liver_str_id,0) liver_str_id,ifnull(lf.liver_end_id,0) liver_end_id,ifnull(lf.create_time,'') create_time from t_live_focus lf where lf.liver_end_id=#{liver_end_id}
+	</select>
+
+<!-- 查询所有想看记录列表 -->
+	<select id="queryFansShowListAll" resultType="map" parameterType="int">
+	select id,liver_id,live_record_id,ifnull(status,1) status,ifnull(create_time,'') create_time,ifnull(update_time,'') update_time  from t_live_focus_show where  live_record_id=#{liveRecordId}
+	</select>
+
+	<!-- 查看直播记录 -->
+	<select id="queryLiveRecordList" resultType="map" parameterType="map">
+	select lr.id,DATE_FORMAT(lr.start_date,'%Y-%m-%d') start_date,CONCAT(SEC_TO_TIME(sum(ifnull(lr.zhibo_duration,0))),'') zhibo_duration from t_live_record lr 
+	where lr.anchor_id=#{anchor_id} and YEAR(lr.start_date)=#{year} and MONTH(lr.start_date)=#{month}  and lr.zhibo_type in(3,4,5) GROUP BY DATE_FORMAT(lr.start_date,'%Y-%m-%d')
+	LIMIT ${(page-1)*limit},#{limit}
+	</select>
+	
+	
+	<!-- 直播时长详情 -->
+	<select id="queryLiveRecordDetailList" resultType="map" parameterType="map">
+	select lr.id,DATE_FORMAT(lr.start_date,'%Y-%m-%d') s_date,DATE_FORMAT(lr.start_date,'%Y-%m-%d %H:%i') start_date,CONCAT(SEC_TO_TIME(ifnull(lr.zhibo_duration,0)),'') zhibo_duration from 
+	t_live_record lr 
+	where lr.anchor_id=#{anchor_id} and  YEAR(lr.start_date)=#{year} and MONTH(lr.start_date)=#{month} and lr.zhibo_type in(3,4,5)
+	<!-- and DATE_FORMAT(lr.start_date,'%Y%m%d')=DATE_FORMAT(#{start_date},'%Y%m%d') -->
+	LIMIT ${(page-1)*limit},#{limit}
+	</select>
+	
+	<!-- 查询直播总时长 CONCAT(SEC_TO_TIME(sum(ifnull(lr.zhibo_duration,0))),'')-->
+	<select id="queryLiveRecordNum" parameterType="map" resultType="map">
+	select  ROUND(ifnull(sum(ifnull(lr.zhibo_duration,0))/60,0),0) zhibo_durationnum from t_live_record lr 
+	where lr.anchor_id=#{anchor_id} and YEAR(lr.start_date)=#{year} and MONTH(lr.start_date)=#{month} and lr.zhibo_type in(3,4,5)
+	</select>
+	
+	<!-- 计算本周，本月，共送的鸟豆值-->
+	<select id="queryGiftSendDiffSum" resultType="map" parameterType="int">
+	SELECT
+		sum(gift_price) AS sendAllSum,
+		sum(
+			CASE
+			WHEN YEARWEEK(
+				date_format(update_time, '%Y-%m-%d')
+			) = YEARWEEK(now()) THEN
+				gift_price
+			ELSE
+				0
+			END
+		) AS sendWeekSum,
+		sum(
+			CASE
+			WHEN date_format(create_time, '%Y-%m') = date_format(now(), '%Y-%m') THEN
+				gift_price
+			ELSE
+				0
+			END
+		) AS sendMonthSum
+	FROM
+		t_live_gived_gift
+	WHERE
+		liver_id = #{liver_id}
+	AND STATUS = 1
+	</select>
+	
+	
+	<!-- 查询主播主页的粉丝列表中的互相关注和粉丝列表-->
+	<select id="queryEachFocusAndFansCount" resultType="int" parameterType="map">
+		select count(1) as fans from 
+			(
+				SELECT l.str_uid,l.liver_end_id, 1 AS eachFocus
+				FROM t_live_focus l
+				LEFT JOIN t_live_focus f ON l.liver_end_id = f.liver_str_id
+				WHERE l.liver_end_id = #{liver_end_id}
+				AND l.liver_str_id = f.liver_end_id and l.fans_type = 1
+			UNION
+				SELECT str_uid, liver_end_id, 0 AS eachFocus
+				FROM t_live_focus l
+				WHERE l.liver_end_id = #{liver_end_id}
+				AND l.liver_str_id NOT IN (
+					SELECT l.liver_str_id
+					FROM t_live_focus l
+					LEFT JOIN t_live_focus f ON l.liver_end_id = f.liver_str_id
+					WHERE l.liver_end_id = #{liver_end_id}
+					AND l.liver_str_id = f.liver_end_id
+				)  and l.fans_type = 1
+			UNION
+				select uid as str_uid, focus_id as liver_end_id ,1 AS eachFocus  
+				from t_vstar_like  where player_uid = #{uid} and type = 1 and is_cancel = 1
+			) as focusT
+	</select>
+	
+	<!-- 查询主播主页的粉丝列表中的互相关注和粉丝列表-->
+	<select id="queryEachFocusAndFansList" resultType="map" parameterType="map">
+		select * from 
+			(
+				SELECT l.str_uid,l.liver_end_id, 1 AS eachFocus
+				FROM t_live_focus l
+				LEFT JOIN t_live_focus f ON l.liver_end_id = f.liver_str_id
+				WHERE l.liver_end_id = #{liver_end_id}
+				AND l.liver_str_id = f.liver_end_id and l.fans_type = 1
+			UNION
+				SELECT str_uid, liver_end_id, 0 AS eachFocus
+				FROM t_live_focus l
+				WHERE l.liver_end_id = #{liver_end_id}
+				AND l.liver_str_id NOT IN (
+					SELECT l.liver_str_id
+					FROM t_live_focus l
+					LEFT JOIN t_live_focus f ON l.liver_end_id = f.liver_str_id
+					WHERE l.liver_end_id = #{liver_end_id}
+					AND l.liver_str_id = f.liver_end_id
+				)  and l.fans_type = 1
+			UNION
+				select uid as str_uid, focus_id as liver_end_id ,1 AS eachFocus  
+				from t_vstar_like  where player_uid = #{uid} and type = 1 and is_cancel = 1
+			) as focusT
+			ORDER BY eachFocus DESC
+			LIMIT ${(page-1)*limit},#{limit}
+		
+<!-- 		( -->
+<!-- 			SELECT -->
+<!-- 				l.*, 1 AS eachFocus -->
+<!-- 			FROM -->
+<!-- 				t_live_focus l -->
+<!-- 			LEFT JOIN t_live_focus f ON l.liver_end_id = f.liver_str_id -->
+<!-- 			WHERE -->
+<!-- 				l.liver_end_id = #{liver_end_id} -->
+<!-- 			AND l.liver_str_id = f.liver_end_id -->
+<!-- 		) -->
+<!-- 		UNION -->
+<!-- 			( -->
+<!-- 				SELECT -->
+<!-- 					*, 0 AS eachFocus -->
+<!-- 				FROM -->
+<!-- 					t_live_focus l -->
+<!-- 				WHERE -->
+<!-- 					l.liver_end_id = #{liver_end_id} -->
+<!-- 				AND l.liver_str_id NOT IN ( -->
+<!-- 					SELECT -->
+<!-- 						l.liver_str_id -->
+<!-- 					FROM -->
+<!-- 						t_live_focus l -->
+<!-- 					LEFT JOIN t_live_focus f ON l.liver_end_id = f.liver_str_id -->
+<!-- 					WHERE -->
+<!-- 						l.liver_end_id = #{liver_end_id} -->
+<!-- 					AND l.liver_str_id = f.liver_end_id -->
+<!-- 				) -->
+<!-- 			) -->
+<!-- 		ORDER BY -->
+<!-- 			eachFocus DESC -->
+<!-- 		LIMIT ${(page-1)*limit},#{limit} -->
+	</select>
+	
+	<!-- 粉丝数 -->
+	<select id="selectFansCount" parameterType="int" resultType="int">
+		<!-- select count(id) 
+		from (select id from t_live_focus where end_uid = #{uid} group by str_uid) a -->
+		SELECT 
+  			COUNT(uid) 
+		FROM
+		  (
+		  <!-- 大赛关注数 -->
+		  SELECT 
+		    player_uid AS uid,
+		    uid AS start_uid 
+		  FROM
+		    t_vstar_like 
+		  WHERE TYPE = '1' 
+		    AND is_cancel = '1' 
+		    AND player_uid = #{uid}
+		  UNION
+		  <!-- 用户关注数 -->
+		  SELECT 
+		    end_uid AS uid,
+		    str_uid AS start_uid 
+		  FROM
+		    t_live_focus 
+		  WHERE fans_type = '1' 
+		    AND end_uid = #{uid} 
+		  UNION ALL 
+		  <!-- 机器人关注数 -->
+		  SELECT 
+		    end_uid AS uid,
+		    str_uid AS start_uid 
+		  FROM
+		    t_live_focus 
+		  WHERE fans_type = '2' 
+		    AND end_uid = #{uid}) t 
+		
+	</select>
+
+	<!-- 关注数 -->
+	<select id="selectFocusCount" parameterType="int" resultType="int">
+		select count(id) 
+		from (select id from t_live_focus where str_uid = #{uid} group by end_uid) a
+	</select>
+
+</mapper>

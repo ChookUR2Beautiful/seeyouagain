@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live.dao.AnchorPersonDao">
+	
+ 	<!-- 根据用户uid及时间查询当月直播记录 -->
+   <select id="queryAnchorRecord" parameterType="map" resultType="map">
+	SELECT lr.anchor_id anchor_id ,ifnull(lr.nname,'') nname,IFNULL(lr.avatar,'') avatar, ifnull(lr.anchor_room_no,'') anchor_room_no,ifnull(lr.sellerid,'') sellerid,ifnull(lr.sellername,'') sellername ,ifnull(lr.seller_status,'') seller_status  
+	,ifnull(lr.zhibo_type,'') zhibo_type,ifnull(lr.start_date,'') start_date,ifnull(lr.end_date,'') end_date,cast(lr.status as int) status
+	from t_live_record lr  
+	where lr.anchor_id= #{anchor_id}
+		<if test="year!=null">
+	and YEAR(lr.start_date)=#{year}
+	</if>
+	
+	<if test="month!=null">
+	and MONTH(lr.start_date)=#{month} 
+	</if>
+	
+	
+	ORDER BY lr.start_date desc
+  	 LIMIT ${(page-1)*limit},#{limit}
+   </select>
+   
+  <!--   查询我的鸟蛋今日，累计，可提现数量  -->
+   <select id="queryEggMoneyNum" parameterType="int" resultType="map">
+    select ifnull((select lw.balance balance from b_live_wallet lw where lw.uid=#{uid}),0) totalbirdegg ,
+	ifnull((select sum(wr.egg_money) egg_money from b_live_wallet lw,b_live_wallet_record wr where lw.id=wr.wallet_id 
+	and DATE_FORMAT(wr.create_time,'%Y%m%d')=DATE_FORMAT(SYSDATE(),'%Y%m%d') and  lw.uid=#{uid}),0) todaybirdegg
+   </select>
+   
+	<!-- 查询鸟蛋消费明细 -->
+	<select id="queryEggMoneyDetail" parameterType="map" resultType="map">
+	select 	wr.id id,lw.id accountid,ifnull(wr.rtype,'') rtype,
+	wr.egg_money egg_money,ifnull(wr.sdate,'') sdate, ifnull(wr.description,'') description,ifnull(wr.create_time,'') create_time
+  	 from b_live_wallet_record wr
+	left join b_live_wallet lw on wr.wallet_id=lw.id
+	where lw.uid=#{uid}  ORDER BY wr.create_time desc
+	LIMIT ${(page-1)*limit},#{limit}
+	</select>
+	
+</mapper>

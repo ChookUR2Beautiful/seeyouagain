@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.recruit.dao.RecruitDao">
+ 	
+ 
+ 	<!-- 查询标签 根据 标签类型和状态 -->	
+	<select id="queryRecruitTagList" resultType="map" parameterType="map" >
+	select id,tagName,tagtype type from b_recruit_tag where 1=1
+	<if test="type!=0">
+		and tagType=#{type} and tagstatus=0
+	</if>
+
+	</select>	
+
+
+	
+	
+	<!-- 修改招聘信息 -->
+	<update id="modifyInfoBySellerid">
+		update b_recruit_info set scale=#{scale},contact=#{contact},phone=#{phone},update_date=#{udate}
+		where sellerid=#{sellerid}
+	</update>
+	
+	<!-- 查询自定义标签 -->
+	<select id="queryCustomTag" parameterType="map" resultType="map">
+	select  b.id,b.tagname,b.tagtype type from b_tag_entity a left join b_recruit_tag b on a.tag_id = b.id  where a.pojo_id=#{pojoID} and a.entity_type=#{entityType} and b.tagtype=#{tagtype} and b.tagstatus=1
+	</select>
+	<!-- 查询简历ID -->
+	<select id="queryUsedrCVByuid" parameterType="int" resultType="int">
+	select id from b_user_cv where uid=#{uid} LIMIT 1	
+	</select>
+		<!-- 添加简历查看记录 -->
+	<insert id="addRecruitView" parameterType="map">
+	insert into b_recruit_view(type,suid,cvid,view_date) values(#{type},#{suid},#{cvid},#{vdate})
+	</insert>
+	<!-- 删除浏览记录 -->
+	<delete id="deleteRecuritView" parameterType="map">
+	delete from b_recruit_view where type=#{type} and suid=#{suid} and cvid=#{cvid}
+	
+	</delete>
+	
+</mapper>

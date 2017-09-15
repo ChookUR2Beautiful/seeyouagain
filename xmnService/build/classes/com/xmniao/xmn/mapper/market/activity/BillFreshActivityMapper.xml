@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.market.dao.BillFreshActivityDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.market.entity.activity.BillFreshActivity" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="activity_type" property="activityType" jdbcType="INTEGER" />
+    <result column="activity_id" property="activityId" jdbcType="BIGINT" />
+    <result column="product_code_id" property="productCodeId" jdbcType="VARCHAR" />
+    <result column="product_name" property="productName" jdbcType="VARCHAR" />
+    <result column="product_price" property="productPrice" jdbcType="DECIMAL" />
+    <result column="product_num" property="productNum" jdbcType="INTEGER" />
+    <result column="product_breviary" property="productBreviary" jdbcType="VARCHAR" />
+    <result column="product_pv_ids" property="productPvIds" jdbcType="VARCHAR" />
+    <result column="product_pv_value" property="productPvValue" jdbcType="VARCHAR" />
+    <result column="amount_received" property="amountReceived" jdbcType="DECIMAL" />
+    <result column="auction_deposit" property="auctionDeposit" jdbcType="DECIMAL" />
+    <result column="auction_balance" property="auctionBalance" jdbcType="DECIMAL" />
+    <result column="pay_time" property="payTime" jdbcType="TIMESTAMP" />
+    <result column="pay_type" property="payType" jdbcType="VARCHAR" />
+    <result column="receiving_name" property="receivingName" jdbcType="VARCHAR" />
+    <result column="receiving_phone" property="receivingPhone" jdbcType="VARCHAR" />
+    <result column="receiving_city" property="receivingCity" jdbcType="VARCHAR" />
+    <result column="receiving_address" property="receivingAddress" jdbcType="VARCHAR" />
+    <result column="receiving_confirm" property="receivingConfirm" jdbcType="INTEGER" />
+    <result column="state" property="state" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="user_phone" property="userPhone" jdbcType="VARCHAR" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+    <result column="logistics_type" property="logisticsType" jdbcType="VARCHAR" />
+    <result column="logistics_num" property="logisticsNum" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="logistics_remind" property="logisticsRemind" jdbcType="INTEGER"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, activity_type, activity_id, product_code_id, product_name, product_price, product_num, 
+    product_breviary, product_pv_ids, product_pv_value, amount_received, auction_deposit, 
+    auction_balance, pay_time, pay_type, receiving_name, receiving_phone, receiving_city, 
+    receiving_address, receiving_confirm, state, user_id, user_phone, user_name, logistics_type, 
+    logistics_num, create_time, update_time, logistics_remind
+  </sql>
+  
+  <!-- 	查询订单里的物流公司和单号 -->
+	<select id="queryOrderExpressview" resultType="orderExpress" parameterType="map">
+	    SELECT
+			bfs.logistics_num courier_number,bfs.logistics_type courier_type,exp.express_name
+		FROM
+			t_bill_fresh_activity bfs
+			LEFT JOIN t_express exp  ON bfs.logistics_type = exp.express_name
+		WHERE 
+			bfs.id = #{bid}
+	</select>
+  
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_bill_fresh_activity
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+    <select id="selectByUid" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM t_bill_fresh_activity
+        WHERE user_id = #{uid}
+        <if test="activityType != null">
+            AND activity_type = #{activityType}
+        </if>
+        ORDER BY create_time DESC
+        LIMIT #{page.start},#{page.pageSize}
+    </select>
+    <select id="selectByOrderIdAndUid" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM t_bill_fresh_activity
+        WHERE id = #{orderId}
+        AND user_id = #{uid}
+    </select>
+    <select id="countUnSubmitAddressOrder" resultType="java.lang.Integer">
+        SELECT count(1)
+        FROM t_bill_fresh_activity
+        WHERE user_id = #{uid}
+            <if test="orderType != null">
+                AND activity_type = #{orderType}
+            </if>
+        AND receiving_confirm = 1
+        AND state not in (5)
+    </select>
+    <select id="countUnliquidatedOrder" resultType="java.lang.Integer">
+        SELECT count(1)
+        from t_bill_fresh_activity
+        WHERE user_id = #{uid}
+              AND activity_type = 2
+              AND (auction_deposit + auction_balance) > amount_received
+    </select>
+    <!--查询未支付的 竞拍活动订单-->
+    <select id="selectUnliquidatedOrder" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        from t_bill_fresh_activity
+        WHERE user_id = #{uid}
+        AND activity_type = 2
+        AND state = 1
+    </select>
+    <!--查询提交收货信息的 订单-->
+    <select id="selectUnSubmitAddressOrder" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM t_bill_fresh_activity
+        WHERE user_id = #{uid}
+        <if test="orderType != null">
+            AND activity_type = #{orderType}
+        </if>
+        AND receiving_confirm = 1
+        AND state in (1,2,3)
+    </select>
+    <select id="selectByUidAndActivityId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM t_bill_fresh_activity
+        WHERE user_id = #{uid}
+        AND activity_id = #{boutId}
+        LIMIT 0, 1
+    </select>
+    <select id="selectUnDialogInfo" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM t_bill_fresh_activity
+        WHERE user_id = #{uid}
+        <if test="orderType != null">
+          AND activity_type = #{orderType}
+        </if>
+        AND dialog_confirm = 0
+        AND ((activity_type=2 and state in(1)) OR (activity_type=1 and state in (1,2,3)))
+        ORDER BY create_time ASC
+    </select>
+    <select id="countAliveOrder" resultType="java.lang.Integer">
+        SELECT count(1)
+        FROM t_bill_fresh_activity
+        WHERE user_id = #{uid}
+        AND state in (1,2,3)
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_bill_fresh_activity
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.market.entity.activity.BillFreshActivity" >
+    insert into t_bill_fresh_activity (id, activity_type, activity_id, 
+      product_code_id, product_name, product_price, 
+      product_num, product_breviary, product_pv_ids, 
+      product_pv_value, amount_received, auction_deposit, 
+      auction_balance, pay_time, pay_type, 
+      receiving_name, receiving_phone, receiving_city, 
+      receiving_address, receiving_confirm, state, 
+      user_id, user_phone, user_name, 
+      logistics_type, logistics_num, create_time, 
+      update_time)
+    values (#{id,jdbcType=BIGINT}, #{activityType,jdbcType=INTEGER}, #{activityId,jdbcType=BIGINT}, 
+      #{productCodeId,jdbcType=VARCHAR}, #{productName,jdbcType=VARCHAR}, #{productPrice,jdbcType=DECIMAL}, 
+      #{productNum,jdbcType=INTEGER}, #{productBreviary,jdbcType=VARCHAR}, #{productPvIds,jdbcType=VARCHAR}, 
+      #{productPvValue,jdbcType=VARCHAR}, #{amountReceived,jdbcType=DECIMAL}, #{auctionDeposit,jdbcType=DECIMAL}, 
+      #{auctionBalance,jdbcType=DECIMAL}, #{payTime,jdbcType=TIMESTAMP}, #{payType,jdbcType=VARCHAR}, 
+      #{receivingName,jdbcType=VARCHAR}, #{receivingPhone,jdbcType=VARCHAR}, #{receivingCity,jdbcType=VARCHAR}, 
+      #{receivingAddress,jdbcType=VARCHAR}, #{receivingConfirm,jdbcType=INTEGER}, #{state,jdbcType=INTEGER}, 
+      #{userId,jdbcType=VARCHAR}, #{userPhone,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, 
+      #{logisticsType,jdbcType=VARCHAR}, #{logisticsNum,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.market.entity.activity.BillFreshActivity" >
+    insert into t_bill_fresh_activity
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="activityType != null" >
+        activity_type,
+      </if>
+      <if test="activityId != null" >
+        activity_id,
+      </if>
+      <if test="productCodeId != null" >
+        product_code_id,
+      </if>
+      <if test="productName != null" >
+        product_name,
+      </if>
+      <if test="productPrice != null" >
+        product_price,
+      </if>
+      <if test="productNum != null" >
+        product_num,
+      </if>
+      <if test="productBreviary != null" >
+        product_breviary,
+      </if>
+      <if test="productPvIds != null" >
+        product_pv_ids,
+      </if>
+      <if test="productPvValue != null" >
+        product_pv_value,
+      </if>
+      <if test="amountReceived != null" >
+        amount_received,
+      </if>
+      <if test="auctionDeposit != null" >
+        auction_deposit,
+      </if>
+      <if test="auctionBalance != null" >
+        auction_balance,
+      </if>
+      <if test="payTime != null" >
+        pay_time,
+      </if>
+      <if test="payType != null" >
+        pay_type,
+      </if>
+      <if test="receivingName != null" >
+        receiving_name,
+      </if>
+      <if test="receivingPhone != null" >
+        receiving_phone,
+      </if>
+      <if test="receivingCity != null" >
+        receiving_city,
+      </if>
+      <if test="receivingAddress != null" >
+        receiving_address,
+      </if>
+      <if test="receivingConfirm != null" >
+        receiving_confirm,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="userPhone != null" >
+        user_phone,
+      </if>
+      <if test="userName != null" >
+        user_name,
+      </if>
+      <if test="logisticsType != null" >
+        logistics_type,
+      </if>
+      <if test="logisticsNum != null" >
+        logistics_num,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="activityType != null" >
+        #{activityType,jdbcType=INTEGER},
+      </if>
+      <if test="activityId != null" >
+        #{activityId,jdbcType=BIGINT},
+      </if>
+      <if test="productCodeId != null" >
+        #{productCodeId,jdbcType=VARCHAR},
+      </if>
+      <if test="productName != null" >
+        #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="productPrice != null" >
+        #{productPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="productNum != null" >
+        #{productNum,jdbcType=INTEGER},
+      </if>
+      <if test="productBreviary != null" >
+        #{productBreviary,jdbcType=VARCHAR},
+      </if>
+      <if test="productPvIds != null" >
+        #{productPvIds,jdbcType=VARCHAR},
+      </if>
+      <if test="productPvValue != null" >
+        #{productPvValue,jdbcType=VARCHAR},
+      </if>
+      <if test="amountReceived != null" >
+        #{amountReceived,jdbcType=DECIMAL},
+      </if>
+      <if test="auctionDeposit != null" >
+        #{auctionDeposit,jdbcType=DECIMAL},
+      </if>
+      <if test="auctionBalance != null" >
+        #{auctionBalance,jdbcType=DECIMAL},
+      </if>
+      <if test="payTime != null" >
+        #{payTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="payType != null" >
+        #{payType,jdbcType=VARCHAR},
+      </if>
+      <if test="receivingName != null" >
+        #{receivingName,jdbcType=VARCHAR},
+      </if>
+      <if test="receivingPhone != null" >
+        #{receivingPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="receivingCity != null" >
+        #{receivingCity,jdbcType=VARCHAR},
+      </if>
+      <if test="receivingAddress != null" >
+        #{receivingAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="receivingConfirm != null" >
+        #{receivingConfirm,jdbcType=INTEGER},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="userPhone != null" >
+        #{userPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null" >
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="logisticsType != null" >
+        #{logisticsType,jdbcType=VARCHAR},
+      </if>
+      <if test="logisticsNum != null" >
+        #{logisticsNum,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.market.entity.activity.BillFreshActivity" >
+    update t_bill_fresh_activity
+    <set >
+      <if test="activityType != null" >
+        activity_type = #{activityType,jdbcType=INTEGER},
+      </if>
+      <if test="activityId != null" >
+        activity_id = #{activityId,jdbcType=BIGINT},
+      </if>
+      <if test="productCodeId != null" >
+        product_code_id = #{productCodeId,jdbcType=VARCHAR},
+      </if>
+      <if test="productName != null" >
+        product_name = #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="productPrice != null" >
+        product_price = #{productPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="productNum != null" >
+        product_num = #{productNum,jdbcType=INTEGER},
+      </if>
+      <if test="productBreviary != null" >
+        product_breviary = #{productBreviary,jdbcType=VARCHAR},
+      </if>
+      <if test="productPvIds != null" >
+        product_pv_ids = #{productPvIds,jdbcType=VARCHAR},
+      </if>
+      <if test="productPvValue != null" >
+        product_pv_value = #{productPvValue,jdbcType=VARCHAR},
+      </if>
+      <if test="amountReceived != null" >
+        amount_received = #{amountReceived,jdbcType=DECIMAL},
+      </if>
+      <if test="auctionDeposit != null" >
+        auction_deposit = #{auctionDeposit,jdbcType=DECIMAL},
+      </if>
+      <if test="auctionBalance != null" >
+        auction_balance = #{auctionBalance,jdbcType=DECIMAL},
+      </if>
+      <if test="payTime != null" >
+        pay_time = #{payTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="payType != null" >
+        pay_type = #{payType,jdbcType=VARCHAR},
+      </if>
+      <if test="receivingName != null" >
+        receiving_name = #{receivingName,jdbcType=VARCHAR},
+      </if>
+      <if test="receivingPhone != null" >
+        receiving_phone = #{receivingPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="receivingCity != null" >
+        receiving_city = #{receivingCity,jdbcType=VARCHAR},
+      </if>
+      <if test="receivingAddress != null" >
+        receiving_address = #{receivingAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="receivingConfirm != null" >
+        receiving_confirm = #{receivingConfirm,jdbcType=INTEGER},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="userPhone != null" >
+        user_phone = #{userPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null" >
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="logisticsType != null" >
+        logistics_type = #{logisticsType,jdbcType=VARCHAR},
+      </if>
+      <if test="logisticsNum != null" >
+        logistics_num = #{logisticsNum,jdbcType=VARCHAR},
+      </if>
+      <if test="logisticsRemind != null">
+        logistics_remind = #{logisticsRemind,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.market.entity.activity.BillFreshActivity" >
+    update t_bill_fresh_activity
+    set activity_type = #{activityType,jdbcType=INTEGER},
+      activity_id = #{activityId,jdbcType=BIGINT},
+      product_code_id = #{productCodeId,jdbcType=VARCHAR},
+      product_name = #{productName,jdbcType=VARCHAR},
+      product_price = #{productPrice,jdbcType=DECIMAL},
+      product_num = #{productNum,jdbcType=INTEGER},
+      product_breviary = #{productBreviary,jdbcType=VARCHAR},
+      product_pv_ids = #{productPvIds,jdbcType=VARCHAR},
+      product_pv_value = #{productPvValue,jdbcType=VARCHAR},
+      amount_received = #{amountReceived,jdbcType=DECIMAL},
+      auction_deposit = #{auctionDeposit,jdbcType=DECIMAL},
+      auction_balance = #{auctionBalance,jdbcType=DECIMAL},
+      pay_time = #{payTime,jdbcType=TIMESTAMP},
+      pay_type = #{payType,jdbcType=VARCHAR},
+      receiving_name = #{receivingName,jdbcType=VARCHAR},
+      receiving_phone = #{receivingPhone,jdbcType=VARCHAR},
+      receiving_city = #{receivingCity,jdbcType=VARCHAR},
+      receiving_address = #{receivingAddress,jdbcType=VARCHAR},
+      receiving_confirm = #{receivingConfirm,jdbcType=INTEGER},
+      state = #{state,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=VARCHAR},
+      user_phone = #{userPhone,jdbcType=VARCHAR},
+      user_name = #{userName,jdbcType=VARCHAR},
+      logistics_type = #{logisticsType,jdbcType=VARCHAR},
+      logistics_num = #{logisticsNum,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+    <update id="updateStateByIdAndUserId">
+        UPDATE t_bill_fresh_activity
+        SET state = #{state}
+        WHERE user_id = #{uid}
+        AND id = #{orderId}
+        AND state = #{oldState}
+    </update>
+    <update id="updateDialogConfirm">
+        UPDATE t_bill_fresh_activity
+        SET dialog_confirm = 1
+        WHERE user_id = #{uid}
+        AND id = #{orderId}
+    </update>
+</mapper>

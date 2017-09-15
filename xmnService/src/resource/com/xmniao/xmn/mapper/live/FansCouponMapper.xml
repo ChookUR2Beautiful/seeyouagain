@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live.dao.FansCouponDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.live.entity.FansCoupon" >
+    <id column="anchor_cid" property="anchorCid" jdbcType="INTEGER" />
+    <result column="cid" property="cid" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="record_id" property="recordId" jdbcType="INTEGER" />
+    <result column="start_date" property="startDate" jdbcType="TIMESTAMP" />
+    <result column="end_date" property="endDate" jdbcType="TIMESTAMP" />
+    <result column="anchor_room_no" property="anchorRoomNo" jdbcType="VARCHAR" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="send_num" property="sendNum" jdbcType="INTEGER" />
+    <result column="stock" property="stock" jdbcType="INTEGER" />
+    <result column="send_status" property="sendStatus" jdbcType="INTEGER" />
+    <result column="sdate" property="sdate" jdbcType="TIMESTAMP" />
+    <result column="sale_coupon_ration" property="saleCouponRation" jdbcType="DECIMAL" />
+    <result column="use_coupon_ration" property="useCouponRation" jdbcType="DECIMAL" />
+    <result column="sold_out_time" property="soldOutTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    anchor_cid, cid, uid, record_id, start_date, end_date, anchor_room_no, sellerid, 
+    send_num, stock, send_status, sdate, sale_coupon_ration, use_coupon_ration, sold_out_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_fans_coupon_anchor_ref
+    where anchor_cid = #{anchorCid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_fans_coupon_anchor_ref
+    where anchor_cid = #{anchorCid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.live.entity.FansCoupon" >
+    insert into t_fans_coupon_anchor_ref (anchor_cid, cid, uid, 
+      record_id, start_date, end_date, 
+      anchor_room_no, sellerid, send_num, 
+      stock, send_status, sdate, 
+      sale_coupon_ration, use_coupon_ration, sold_out_time
+      )
+    values (#{anchorCid,jdbcType=INTEGER}, #{cid,jdbcType=INTEGER}, #{uid,jdbcType=INTEGER}, 
+      #{recordId,jdbcType=INTEGER}, #{startDate,jdbcType=TIMESTAMP}, #{endDate,jdbcType=TIMESTAMP}, 
+      #{anchorRoomNo,jdbcType=VARCHAR}, #{sellerid,jdbcType=INTEGER}, #{sendNum,jdbcType=INTEGER}, 
+      #{stock,jdbcType=INTEGER}, #{sendStatus,jdbcType=INTEGER}, #{sdate,jdbcType=TIMESTAMP}, 
+      #{saleCouponRation,jdbcType=DECIMAL}, #{useCouponRation,jdbcType=DECIMAL}, #{soldOutTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.live.entity.FansCoupon" >
+    insert into t_fans_coupon_anchor_ref
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="anchorCid != null" >
+        anchor_cid,
+      </if>
+      <if test="cid != null" >
+        cid,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="recordId != null" >
+        record_id,
+      </if>
+      <if test="startDate != null" >
+        start_date,
+      </if>
+      <if test="endDate != null" >
+        end_date,
+      </if>
+      <if test="anchorRoomNo != null" >
+        anchor_room_no,
+      </if>
+      <if test="sellerid != null" >
+        sellerid,
+      </if>
+      <if test="sendNum != null" >
+        send_num,
+      </if>
+      <if test="stock != null" >
+        stock,
+      </if>
+      <if test="sendStatus != null" >
+        send_status,
+      </if>
+      <if test="sdate != null" >
+        sdate,
+      </if>
+      <if test="saleCouponRation != null" >
+        sale_coupon_ration,
+      </if>
+      <if test="useCouponRation != null" >
+        use_coupon_ration,
+      </if>
+      <if test="soldOutTime != null" >
+        sold_out_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="anchorCid != null" >
+        #{anchorCid,jdbcType=INTEGER},
+      </if>
+      <if test="cid != null" >
+        #{cid,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="recordId != null" >
+        #{recordId,jdbcType=INTEGER},
+      </if>
+      <if test="startDate != null" >
+        #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="anchorRoomNo != null" >
+        #{anchorRoomNo,jdbcType=VARCHAR},
+      </if>
+      <if test="sellerid != null" >
+        #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="sendNum != null" >
+        #{sendNum,jdbcType=INTEGER},
+      </if>
+      <if test="stock != null" >
+        #{stock,jdbcType=INTEGER},
+      </if>
+      <if test="sendStatus != null" >
+        #{sendStatus,jdbcType=INTEGER},
+      </if>
+      <if test="sdate != null" >
+        #{sdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="saleCouponRation != null" >
+        #{saleCouponRation,jdbcType=DECIMAL},
+      </if>
+      <if test="useCouponRation != null" >
+        #{useCouponRation,jdbcType=DECIMAL},
+      </if>
+      <if test="soldOutTime != null" >
+        #{soldOutTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.live.entity.FansCoupon" >
+    update t_fans_coupon_anchor_ref
+    <set >
+      <if test="cid != null" >
+        cid = #{cid,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="recordId != null" >
+        record_id = #{recordId,jdbcType=INTEGER},
+      </if>
+      <if test="startDate != null" >
+        start_date = #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        end_date = #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="anchorRoomNo != null" >
+        anchor_room_no = #{anchorRoomNo,jdbcType=VARCHAR},
+      </if>
+      <if test="sellerid != null" >
+        sellerid = #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="sendNum != null" >
+        send_num = #{sendNum,jdbcType=INTEGER},
+      </if>
+      <if test="stock != null" >
+        stock = #{stock,jdbcType=INTEGER},
+      </if>
+      <if test="sendStatus != null" >
+        send_status = #{sendStatus,jdbcType=INTEGER},
+      </if>
+      <if test="sdate != null" >
+        sdate = #{sdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="saleCouponRation != null" >
+        sale_coupon_ration = #{saleCouponRation,jdbcType=DECIMAL},
+      </if>
+      <if test="useCouponRation != null" >
+        use_coupon_ration = #{useCouponRation,jdbcType=DECIMAL},
+      </if>
+      <if test="soldOutTime != null" >
+        sold_out_time = #{soldOutTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where anchor_cid = #{anchorCid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.live.entity.FansCoupon" >
+    update t_fans_coupon_anchor_ref
+    set cid = #{cid,jdbcType=INTEGER},
+      uid = #{uid,jdbcType=INTEGER},
+      record_id = #{recordId,jdbcType=INTEGER},
+      start_date = #{startDate,jdbcType=TIMESTAMP},
+      end_date = #{endDate,jdbcType=TIMESTAMP},
+      anchor_room_no = #{anchorRoomNo,jdbcType=VARCHAR},
+      sellerid = #{sellerid,jdbcType=INTEGER},
+      send_num = #{sendNum,jdbcType=INTEGER},
+      stock = #{stock,jdbcType=INTEGER},
+      send_status = #{sendStatus,jdbcType=INTEGER},
+      sdate = #{sdate,jdbcType=TIMESTAMP},
+      sale_coupon_ration = #{saleCouponRation,jdbcType=DECIMAL},
+      use_coupon_ration = #{useCouponRation,jdbcType=DECIMAL},
+      sold_out_time = #{soldOutTime,jdbcType=TIMESTAMP}
+    where anchor_cid = #{anchorCid,jdbcType=INTEGER}
+  </update>
+  
+  <select id="findAll" resultType="map">
+  	SELECT 
+  		f.anchor_cid AS fid,c.cname,c.denomination,r.nname,r.sellername,
+		r.seller_alias AS selleralias,r.zhibo_cover AS zhiboCover 
+	FROM t_fans_coupon_anchor_ref f
+	LEFT JOIN t_coupon c ON f.cid = c.cid
+	LEFT JOIN t_live_record r ON f.record_id = r.id
+	WHERE f.send_status=1 AND c.ctype=2 
+	<![CDATA[
+	AND f.start_date <= NOW() AND f.end_date >= NOW() 
+	]]>
+	AND f.anchor_cid IN
+	<foreach collection="coupons" index="index" item="coupons" open="(" separator="," close=")">
+		#{coupons}
+	</foreach>
+  </select>
+  
+</mapper>

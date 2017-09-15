@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.market.dao.PostageFreeRuleDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.market.entity.pay.PostageFreeRule" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="tid" property="tid" jdbcType="INTEGER" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="area" property="area" jdbcType="VARCHAR" />
+    <result column="weight" property="weight" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, tid, area,amount, weight, status
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_postage_free_rule
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_postage_free_rule
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.market.entity.pay.PostageFreeRule" >
+    insert into t_postage_free_rule (id, tid, amount, 
+      weight, status, area
+      )
+    values (#{id,jdbcType=INTEGER}, #{tid,jdbcType=INTEGER}, #{amount,jdbcType=DECIMAL}, 
+      #{weight,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{area,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.market.entity.pay.PostageFreeRule" >
+    insert into t_postage_free_rule
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="tid != null" >
+        tid,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="weight != null" >
+        weight,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="area != null" >
+        area,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="tid != null" >
+        #{tid,jdbcType=INTEGER},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="weight != null" >
+        #{weight,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="area != null" >
+        #{area,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.market.entity.pay.PostageFreeRule" >
+    update t_postage_free_rule
+    <set >
+      <if test="tid != null" >
+        tid = #{tid,jdbcType=INTEGER},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="weight != null" >
+        weight = #{weight,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="area != null" >
+        area = #{area,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.market.entity.pay.PostageFreeRule" >
+    update t_postage_free_rule
+    set tid = #{tid,jdbcType=INTEGER},
+      amount = #{amount,jdbcType=DECIMAL},
+      weight = #{weight,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 通过快递模板ID查询所有包邮模板 -->
+  <select id="findAllByTid" resultMap="BaseResultMap" parameterType="list">
+ 	select 
+   		<include refid="Base_Column_List" />
+   	from t_postage_free_rule
+   	where status=0 and tid in 
+   	<foreach collection="list" index="index" item="list" open="(" close=")" separator=",">
+	 #{list}
+	</foreach>
+  </select>
+  
+  <!-- 查询包邮的 -->
+  <select id="findOneIsFree" resultType="map" parameterType="map">
+  	SELECT p.tid,p.isFree,p.isHigh FROM (
+		SELECT 
+			tid,
+			<![CDATA[
+			(CASE WHEN amount<=#{amount} AND weight>=#{weight} AND area  LIKE CONCAT('%',#{area},'%') THEN 1 ELSE 0 END) AS isFree,
+			IFNULL((CASE WHEN (#{weight}-weight)<0 THEN 0 ELSE (#{weight}-weight) END),0) AS isHigh 
+			]]>
+		FROM t_postage_free_rule WHERE STATUS=0 AND tid=#{tid}
+	) AS p
+	WHERE p.isFree=1 LIMIT 0,1
+  </select>
+
+	<!-- 不好包邮且超重最高的 -->
+	<select id="findOneIsNotFree" resultType="map" parameterType="map">
+		SELECT p.tid,p.isFree,p.isHigh FROM (
+			SELECT 
+				tid,
+				<![CDATA[
+				(CASE WHEN amount<=#{amount} AND weight>=#{weight} AND area  LIKE CONCAT('%',#{area},'%') THEN 1 ELSE 0 END) AS isFree,
+				IFNULL((CASE WHEN (#{weight}-weight)<0 THEN 0 ELSE (#{weight}-weight) END),0) AS isHigh 
+				]]>
+			FROM t_postage_free_rule WHERE STATUS=0 AND tid=#{tid}
+		) AS p
+		WHERE p.isFree=0 LIMIT 0,1
+	</select>
+	
+</mapper>

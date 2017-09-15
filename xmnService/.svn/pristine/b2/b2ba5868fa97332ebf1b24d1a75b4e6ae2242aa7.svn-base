@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.seller.dao.SellerRecommendDao">
+ 	
+ 	<select id="selectSeller" parameterType="map" resultType="map">
+ 	select s.sellername,s.sellerid
+ 	<if test="longitude != null and latitude!=null">
+ 	,ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{latitude}*PI()/180-gg_lat*PI()/180)/2),2)+COS(#{latitude}*PI()/180)*COS(gg_lat*PI()/180)*POW(SIN((#{longitude}*PI()/180-gg_lng*PI()/180)/2),2)))*1000)
+	as `range`
+ 	</if>
+ 	from t_seller s LEFT JOIN t_seller_landmark l on s.sellerid = l.sellerid
+ 	<!-- 已消费的店铺 -->
+ 	<if test="type == 1">
+ 		INNER JOIN (select distinct sellerid  from t_bill where uid=#{uid}) c  on c.sellerid = s.sellerid
+ 	</if>
+ 	<!-- 已收藏的店铺 -->
+ 	<if test="type == 3">
+ 		INNER JOIN (select  sellerid  from t_bill where uid=#{uid}) c  on c.sellerid = s.sellerid
+ 	</if>
+ 	where gg_lat is not null and gg_lng is not null
+ 	
+ 	<if test="zoneid != 0">
+ 		and s.zoneid=#{zoneid}
+ 	</if>
+ 	
+ 	<if test="category != 0">
+ 		and s.category=#{category}
+ 	</if>
+ 	
+ 	<if test="genre != 0">
+ 		and s.genre=#{genre}
+ 	</if>
+ 	
+ 	<!-- 附近的人 -->
+ 	<if test="longitude != null and latitude!=null and type == 4">
+ 	order by `range`
+ 	</if>
+ 	
+ 	limit ${(page-1)*pageSize} , #{pageSize}
+ 	
+ 	</select>
+ 	
+ 	<select id="queryConsuCont" parameterType="int" resultType="int">
+ 		select count(1) from t_bill where status!=0 and status!=5 and uid=#{uid}
+ 	</select>
+ 	
+</mapper>

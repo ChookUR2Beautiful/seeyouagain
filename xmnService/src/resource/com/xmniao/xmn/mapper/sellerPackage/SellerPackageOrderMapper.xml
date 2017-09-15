@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.sellerPackage.dao.SellerPackageOrderDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.sellerPackage.entity.SellerPackageOrder" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="pid" property="pid" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="uname" property="uname" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="pay_time" property="payTime" jdbcType="TIMESTAMP" />
+    <result column="last_time" property="lastTime" jdbcType="DATE" />
+    <result column="nums" property="nums" jdbcType="INTEGER" />
+    <result column="original_price" property="originalPrice" jdbcType="DECIMAL" />
+    <result column="selling_price" property="sellingPrice" jdbcType="DECIMAL" />
+    <result column="selling_coin_price" property="sellingCoinPrice" jdbcType="DECIMAL" />
+    <result column="total_amount" property="totalAmount" jdbcType="DECIMAL" />
+    <result column="cash" property="cash" jdbcType="DECIMAL" />
+    <result column="balance" property="balance" jdbcType="DECIMAL" />
+    <result column="commision" property="commision" jdbcType="DECIMAL" />
+    <result column="zbalance" property="zbalance" jdbcType="DECIMAL" />
+    <result column="beans" property="beans" jdbcType="DECIMAL" />
+    <result column="cuser" property="cuser" jdbcType="DECIMAL" />
+    <result column="cdid" property="cdid" jdbcType="INTEGER" />
+    <result column="retrun_coupon_amount" property="retrunCouponAmount" jdbcType="DECIMAL" />
+    <result column="payment_type" property="paymentType" jdbcType="VARCHAR" />
+    <result column="payid" property="payid" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="ledger_type" property="ledgerType" jdbcType="INTEGER" />
+    <result column="ledger_ratio" property="ledgerRatio" jdbcType="DECIMAL" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="uid_relation_chain" property="uidRelationChain" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="order_source" property="orderSource" jdbcType="INTEGER" />
+    <result column="notice" property="notice" jdbcType="VARCHAR" />
+    <result column="isTimeOut" property="isTimeOut" jdbcType="INTEGER" />
+    <result column="useStatus" property="useStatus" jdbcType="INTEGER" />
+    <result column="pic_url" property="picUrl" jdbcType="VARCHAR" />
+    <result column="seller_coin" property="sellerCoin" jdbcType="VARCHAR" />
+    <result column="send_uid" property="sendUid" jdbcType="INTEGER" />
+    <result column="use_start_time" property="use_start_time" jdbcType="TIMESTAMP" />
+    <result column="use_end_time" property="use_end_time" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, order_no, pid, title, sellerid, uid, phone, uname, create_time, pay_time, last_time, 
+    nums, original_price, selling_price, selling_coin_price, total_amount, cash, balance, 
+    commision, zbalance, beans, cuser, cdid, retrun_coupon_amount, payment_type, payid, 
+    status, ledger_type, ledger_ratio, update_time, uid_relation_chain, version, order_source,notice,seller_coin,send_uid
+  </sql>
+  
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_seller_package_order
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_seller_package_order
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+   <!--   生成套餐订单 -->
+  <insert id="insertSellerPackageOrder" parameterType="map">
+  	INSERT INTO t_seller_package_order(
+				order_no,pid,title,sellerid,uid,phone,uname,
+				create_time,pay_time,last_time,nums,original_price,
+				selling_price,selling_coin_price,total_amount,total_coin_amount,cash,balance,
+				commision,zbalance,beans,cuser,	cdid,
+				retrun_coupon_amount,payment_type,payid,status,
+				ledger_type,ledger_ratio,notice,update_time,uid_relation_chain,
+				order_source,seller_agio,base_agio,buy_source,send_uid,
+				app_source
+			  )
+	VALUES(
+			#{order_no,jdbcType=VARCHAR},#{pid,jdbcType=INTEGER},#{title,jdbcType=VARCHAR},#{sellerid,,jdbcType=INTEGER},#{uid,jdbcType=INTEGER},#{phone,jdbcType=VARCHAR},
+			#{uname,jdbcType=VARCHAR},#{create_time,jdbcType=TIMESTAMP},#{pay_time,jdbcType=TIMESTAMP},	#{last_time,jdbcType=TIMESTAMP},#{nums,jdbcType=INTEGER},#{original_price,jdbcType=DOUBLE},
+			#{selling_price,jdbcType=DOUBLE},#{selling_coin_price,jdbcType=DOUBLE},#{total_amount,jdbcType=DOUBLE},#{total_coin_amount,jdbcType=DOUBLE},#{cash,jdbcType=DOUBLE},#{balance,jdbcType=DOUBLE},
+			#{commision,jdbcType=DOUBLE},#{zbalance,jdbcType=DOUBLE},#{beans,jdbcType=DOUBLE},#{cuser,jdbcType=DOUBLE},	#{cdid,jdbcType=INTEGER},
+			#{retrun_coupon_amount,jdbcType=DOUBLE},#{payment_type,jdbcType=INTEGER},#{payid,jdbcType=VARCHAR},#{status,jdbcType=INTEGER},#{ledger_type,jdbcType=INTEGER},
+			#{ledger_ratio,jdbcType=DOUBLE},#{notice,jdbcType=VARCHAR},#{update_time,jdbcType=TIMESTAMP},#{uid_relation_chain,jdbcType=VARCHAR},
+			#{order_source,jdbcType=INTEGER},#{seller_agio,jdbcType=DOUBLE},#{base_agio,jdbcType=DOUBLE},#{buy_source,jdbcType=INTEGER},#{send_uid,jdbcType=INTEGER},
+			#{appSourceStatus,jdbcType=INTEGER}
+		 )
+  </insert>
+  
+   <select id="querySellerPackageOrderByOrderNo" parameterType="map" resultMap="BaseResultMap">
+    SELECT  <include refid="Base_Column_List" />  FROM t_seller_package_order WHERE order_no = #{order_no}
+  </select>
+  
+  
+<!--   查询订单列表 -->
+   <select id="querySellerPackageOrderList" parameterType="map" resultMap="BaseResultMap">
+    SELECT   o.*, c.isTimeOut, c.useStatus ,pic.pic_url, c.use_start_time, c.use_end_time
+	FROM  t_seller_package_order o  
+	LEFT JOIN
+	(
+		SELECT  g.order_no, sum(NOW() > g.use_end_time) as isTimeOut, sum(g.user_status = 0) as useStatus,
+    g.use_start_time, g.use_end_time
+		FROM t_seller_package_grant g   WHERE g.uid = #{uid}  GROUP BY g.order_no
+	) c  ON  o.order_no = c.order_no 
+	LEFT JOIN t_seller_package_pic  pic ON pic.pid = o.pid and pic.pic_type =1
+	WHERE o.uid = #{uid}  AND o.status = 1
+  <if test="maxTime!=null">
+      <![CDATA[
+      AND o.create_time < DATE_FORMAT(#{maxTime}, '%Y-%m-%d %H:%i:%s')
+      ]]>
+  </if>
+  <if test="status != null">
+    and o.status = #{status}
+  </if>
+	ORDER BY o.create_time desc
+	LIMIT ${(page-1)*limit},#{limit}
+  </select>
+	  
+<!-- 	更新订单状态 -->
+  <update id="updateSellerPackageOrder" parameterType="map">
+  	UPDATE t_seller_package_order
+  	<set>
+  		status = #{status}
+  	</set>
+  	WHERE order_no = #{orderNo}
+  </update>
+ 
+</mapper>

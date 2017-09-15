@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.recruit.dao.WorksDao">
+	<!-- 查询岗位基本信息列表 -->
+	<select id="queryWorksList" resultType="map" parameterType="int">
+		SELECT s.id,s.stationname,s.nums,s.salary,r.sellername,r.scale,r.sellerid FROM b_recruit_station s 
+		LEFT JOIN b_recruit_info r ON s.recruit_id=r.id WHERE s.id=#{id}
+		<if test="scale != null">
+		AND r.scale=#{scale}
+		</if>
+		<if test="salary != null">
+		AND s.salary=#{salary}
+		</if>
+	</select>
+	
+	<!-- 获取店铺头像 -->
+	<select id="querySellerLogo" resultType="map" parameterType="int">
+		SELECT s.province,s.city,s.area,s.address,p.picurl FROM t_seller s LEFT JOIN t_seller_pic p ON s.sellerid=p.sellerid WHERE s.sellerid=#{sellerid} AND islogo=2
+	</select>
+	
+	<!-- 获取岗位信息详情 -->
+	<select id="queryWorksInfo" resultType="map" parameterType="int">
+		SELECT s.recruit_id recruitid,s.stationname,s.nums,s.agemax,s.agemin,s.salary,r.sellername,s.province,s.city,s.degrees,s.experie,r.scale,r.sellerid,r.contact,r.phone 
+		FROM b_recruit_station s LEFT JOIN b_recruit_info r ON s.recruit_id=r.id 
+		WHERE s.id=#{id} AND status=0
+	</select>
+	
+	<!-- 查询商户招聘岗位信息列表 -->
+	<select id="queryWorksTagInfo" resultType="map" parameterType="map">
+		SELECT t.id,t.tagname FROM b_recruit_tag t LEFT JOIN b_tag_entity e ON t.id=e.tag_id WHERE e.pojo_id=#{id} AND t.tagtype=#{type}
+	</select>
+	
+	<!--  查询市，省，区名称 -->
+	<select id="queryAreaName" resultType="String" parameterType="map">
+		SELECT title FROM t_area WHERE area_id=#{areaid} and pid=#{pid}
+	</select>
+</mapper>

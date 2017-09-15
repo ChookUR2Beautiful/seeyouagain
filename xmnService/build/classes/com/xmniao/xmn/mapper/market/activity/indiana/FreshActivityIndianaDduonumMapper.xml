@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.market.dao.FreshActivityIndianaDduonumDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.market.entity.activity.indiana.FreshActivityIndianaDduonum" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="bout_id" property="boutId" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="nname" property="nname" jdbcType="VARCHAR" />
+    <result column="robot_id" property="robotId" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="CHAR"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, bout_id, uid, nname, robot_id, type, create_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_fresh_activity_indiana_dduonum
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+    <select id="selectRecentlyRecord" resultType="com.xmniao.xmn.core.market.entity.activity.indiana.FreshActivityIndianaDduonum">
+        SELECT
+            uid uid,
+            nname nname,
+            count(1) count,
+            create_time createTime,
+            type  type
+        FROM t_fresh_activity_indiana_dduonum
+        WHERE bout_id = #{boutId}
+        GROUP BY create_time,nname
+        ORDER BY create_time DESC
+        LIMIT #{page.start}, #{page.pageSize}
+    </select>
+    <select id="selectByUser" resultType="com.xmniao.xmn.core.market.entity.activity.indiana.IndianaRecord">
+        SELECT bout_id boutId,max(create_time) lastTime, min(create_time) firstTime, count(1) total
+        FROM t_fresh_activity_indiana_dduonum
+        WHERE uid = #{uid}
+        AND type = 0
+        GROUP BY bout_id,uid
+        ORDER BY lastTime desc
+        LIMIT #{page.start},#{page.pageSize}
+    </select>
+    <select id="selectIndianaNumbers" resultType="java.lang.String">
+        SELECT id
+        FROM t_fresh_activity_indiana_dduonum
+        WHERE uid = #{uid}
+        AND bout_id = #{boutId}
+    </select>
+    <select id="countUserBoutJoins" resultType="java.lang.Integer">
+        SELECT count(1)
+        FROM t_fresh_activity_indiana_dduonum
+        WHERE uid = #{uid}
+        AND bout_id = #{boutId}
+    </select>
+    <select id="countRefund" resultType="java.lang.Integer">
+        SELECT count(1)
+        FROM t_fresh_activity_indiana_dduonum
+        WHERE uid = #{uid}
+        AND bout_id = #{boutId}
+        AND status = 1
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_fresh_activity_indiana_dduonum
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.market.entity.activity.indiana.FreshActivityIndianaDduonum" >
+    insert into t_fresh_activity_indiana_dduonum (id, bout_id, uid, 
+      nname, robot_id, type, 
+      create_time)
+    values (#{id,jdbcType=BIGINT}, #{boutId,jdbcType=INTEGER}, #{uid,jdbcType=INTEGER}, 
+      #{nname,jdbcType=VARCHAR}, #{robotId,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.market.entity.activity.indiana.FreshActivityIndianaDduonum" >
+    insert into t_fresh_activity_indiana_dduonum
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+        <if test="orderNo != null">
+            order_no,
+        </if>
+      <if test="boutId != null" >
+        bout_id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+        <if test="nname != null" >
+            nname,
+        </if>
+        <if test="phone != null" >
+            phone,
+        </if>
+      <if test="robotId != null" >
+        robot_id,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+        <if test="orderNo != null" >
+            #{orderNo,jdbcType=VARCHAR},
+        </if>
+      <if test="boutId != null" >
+        #{boutId,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+        <if test="nname != null" >
+            #{nname,jdbcType=VARCHAR},
+        </if>
+        <if test="phone != null" >
+            #{phone,jdbcType=VARCHAR},
+        </if>
+      <if test="robotId != null" >
+        #{robotId,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.market.entity.activity.indiana.FreshActivityIndianaDduonum" >
+    update t_fresh_activity_indiana_dduonum
+    <set >
+      <if test="boutId != null" >
+        bout_id = #{boutId,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="nname != null" >
+        nname = #{nname,jdbcType=VARCHAR},
+      </if>
+      <if test="robotId != null" >
+        robot_id = #{robotId,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime*0.001,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.market.entity.activity.indiana.FreshActivityIndianaDduonum" >
+    update t_fresh_activity_indiana_dduonum
+    set bout_id = #{boutId,jdbcType=INTEGER},
+      uid = #{uid,jdbcType=INTEGER},
+      nname = #{nname,jdbcType=VARCHAR},
+      robot_id = #{robotId,jdbcType=INTEGER},
+      type = #{type,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

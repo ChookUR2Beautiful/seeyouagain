@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live.dao.UserFeedBackDao">
+	
+<!-- 用户反馈 -->
+<insert id="addUserFeedBack" parameterType="map" >
+ insert into t_live_message (liver_send_id,send_utype,liver_to_id,to_utype,message_type,message_title,message_comment,create_time,update_time) 
+ VALUES(#{liver_send_id},#{send_utype},#{liver_to_id},#{to_utype},#{message_type},#{message_title},#{message_comment},#{create_time},#{update_time})
+</insert>
+<!-- 查看此客户是否被举报过 -->
+<select id="queryisFeedBack" resultType="int" parameterType="map">
+	select count(1) from t_live_message where liver_send_id=#{liver_send_id} and liver_to_id=#{liver_to_id}
+</select>
+</mapper>

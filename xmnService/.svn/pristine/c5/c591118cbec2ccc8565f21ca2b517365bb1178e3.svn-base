@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.market.dao.PostageRuleDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.market.entity.pay.PostageRule" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="tid" property="tid" jdbcType="INTEGER" />
+    <result column="base_weight" property="baseWeight" jdbcType="INTEGER" />
+    <result column="base_fee" property="baseFee" jdbcType="DECIMAL" />
+    <result column="extra_weight" property="extraWeight" jdbcType="INTEGER" />
+    <result column="extra_fee" property="extraFee" jdbcType="DECIMAL" />
+    <result column="area" property="area" jdbcType="LONGVARCHAR" />
+    <result column="isdefault" property="isdefault" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, tid, base_weight, base_fee, extra_weight, extra_fee, area,isdefault, status
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_postage_rule
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_postage_rule
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.market.entity.pay.PostageRule" >
+    insert into t_postage_rule (id, tid, base_weight, 
+      base_fee, extra_weight, extra_fee, 
+      isdefault, status, area
+      )
+    values (#{id,jdbcType=INTEGER}, #{tid,jdbcType=INTEGER}, #{baseWeight,jdbcType=INTEGER}, 
+      #{baseFee,jdbcType=DECIMAL}, #{extraWeight,jdbcType=INTEGER}, #{extraFee,jdbcType=DECIMAL}, 
+      #{isdefault,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{area,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.market.entity.pay.PostageRule" >
+    insert into t_postage_rule
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="tid != null" >
+        tid,
+      </if>
+      <if test="baseWeight != null" >
+        base_weight,
+      </if>
+      <if test="baseFee != null" >
+        base_fee,
+      </if>
+      <if test="extraWeight != null" >
+        extra_weight,
+      </if>
+      <if test="extraFee != null" >
+        extra_fee,
+      </if>
+      <if test="isdefault != null" >
+        isdefault,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="area != null" >
+        area,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="tid != null" >
+        #{tid,jdbcType=INTEGER},
+      </if>
+      <if test="baseWeight != null" >
+        #{baseWeight,jdbcType=INTEGER},
+      </if>
+      <if test="baseFee != null" >
+        #{baseFee,jdbcType=DECIMAL},
+      </if>
+      <if test="extraWeight != null" >
+        #{extraWeight,jdbcType=INTEGER},
+      </if>
+      <if test="extraFee != null" >
+        #{extraFee,jdbcType=DECIMAL},
+      </if>
+      <if test="isdefault != null" >
+        #{isdefault,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="area != null" >
+        #{area,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.market.entity.pay.PostageRule" >
+    update t_postage_rule
+    <set >
+      <if test="tid != null" >
+        tid = #{tid,jdbcType=INTEGER},
+      </if>
+      <if test="baseWeight != null" >
+        base_weight = #{baseWeight,jdbcType=INTEGER},
+      </if>
+      <if test="baseFee != null" >
+        base_fee = #{baseFee,jdbcType=DECIMAL},
+      </if>
+      <if test="extraWeight != null" >
+        extra_weight = #{extraWeight,jdbcType=INTEGER},
+      </if>
+      <if test="extraFee != null" >
+        extra_fee = #{extraFee,jdbcType=DECIMAL},
+      </if>
+      <if test="isdefault != null" >
+        isdefault = #{isdefault,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="area != null" >
+        area = #{area,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.market.entity.pay.PostageRule" >
+    update t_postage_rule
+    set tid = #{tid,jdbcType=INTEGER},
+      base_weight = #{baseWeight,jdbcType=INTEGER},
+      base_fee = #{baseFee,jdbcType=DECIMAL},
+      extra_weight = #{extraWeight,jdbcType=INTEGER},
+      extra_fee = #{extraFee,jdbcType=DECIMAL},
+      isdefault = #{isdefault,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 计算运费 -->
+  <select id="getPostPriceByTid" resultType="Double" parameterType="map">
+  	SELECT 
+  		<![CDATA[
+		(CASE WHEN #{weight}-base_weight >0 THEN 
+		CAST((base_fee+((#{weight}-base_weight)/extra_weight)*extra_fee) AS DECIMAL(18,2)) 
+		ELSE base_fee END) AS postPrice
+  		]]>
+	FROM t_postage_rule WHERE status=0
+	AND tid=#{tid} 
+	AND (area LIKE CONCAT ('%',#{areaid},'%') OR area LIKE CONCAT ('%',#{areaname},'%'))
+	ORDER BY base_fee DESC LIMIT 0,1
+  </select>
+  
+  <select id="querySpecifyTemplate" resultType="Double" parameterType="map">
+  	SELECT 
+  		<![CDATA[
+		(CASE WHEN #{weight}-base_weight >0 THEN 
+		CAST((base_fee+((#{weight}-base_weight)/extra_weight)*extra_fee) AS DECIMAL(18,2)) 
+		ELSE base_fee END) AS postPrice
+  		]]>
+	FROM t_postage_rule WHERE status=0 and isdefault=1
+	AND tid=#{tid} 
+	AND (area NOT LIKE CONCAT ('%',#{areaid},'%') OR area NOT LIKE CONCAT ('%',#{areaname},'%'))
+	ORDER BY base_fee DESC LIMIT 0,1
+  </select>
+</mapper>

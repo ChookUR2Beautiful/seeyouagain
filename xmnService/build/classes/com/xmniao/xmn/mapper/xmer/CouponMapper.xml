@@ -1,0 +1,644 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.xmer.dao.CouponDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.xmer.entity.Coupon" >
+    <id column="cid" property="cid" jdbcType="INTEGER" />
+    <result column="cname" property="cname" jdbcType="VARCHAR" />
+    <result column="denomination" property="denomination" jdbcType="DECIMAL" />
+    <result column="validity_desc" property="validityDesc" jdbcType="VARCHAR" />
+    <result column="start_date" property="startDate" jdbcType="DATE" />
+    <result column="end_date" property="endDate" jdbcType="TIMESTAMP" />
+    <result column="condition" property="condition" jdbcType="DECIMAL" />
+    <result column="use_num" property="useNum" jdbcType="INTEGER" />
+    <result column="pic" property="pic" jdbcType="VARCHAR" />
+    <result column="breviary" property="breviary" jdbcType="VARCHAR" />
+    <result column="showall" property="showall" jdbcType="TINYINT" />
+    <result column="is_all_seller" property="isAllSeller" jdbcType="INTEGER" />
+    <result column="day_num" property="dayNum" jdbcType="INTEGER" />
+    <result column="ctype" property="ctype" jdbcType="INTEGER" />
+    <result column="invalid_today" property="invalidToday" jdbcType="INTEGER" />
+    <result column="default_max_num" property="defaultMaxNum" jdbcType="INTEGER" />
+    <result column="introduce" property="introduce" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.xmniao.xmn.core.xmer.entity.Coupon" extends="BaseResultMap" >
+    <result column="rule" property="rule" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    cid, cname, denomination, validity_desc, start_date, end_date, condition, use_num, 
+    pic, breviary, showall, is_all_seller, day_num, ctype, invalid_today, default_max_num, 
+    introduce, update_time
+  </sql>
+  <sql id="Blob_Column_List" >
+    rule
+  </sql>
+  
+  
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_coupon
+    where cid = #{cid,jdbcType=INTEGER}
+  </select>
+  
+  
+  <select id="queryCouponByCid" resultMap="BaseResultMap" parameterType="int" >
+    select 
+   		 *
+    from t_coupon
+    where cid = #{cid,jdbcType=INTEGER}
+  </select>
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_coupon
+    where cid = #{cid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.xmer.entity.Coupon" >
+    insert into t_coupon (cid, cname, denomination, 
+      validity_desc, start_date, end_date, 
+      condition, use_num, pic, 
+      breviary, showall, is_all_seller, 
+      day_num, ctype, invalid_today, 
+      default_max_num, introduce, update_time, 
+      rule)
+    values (#{cid,jdbcType=INTEGER}, #{cname,jdbcType=VARCHAR}, #{denomination,jdbcType=DECIMAL}, 
+      #{validityDesc,jdbcType=VARCHAR}, #{startDate,jdbcType=DATE}, #{endDate,jdbcType=TIMESTAMP}, 
+      #{condition,jdbcType=DECIMAL}, #{useNum,jdbcType=INTEGER}, #{pic,jdbcType=VARCHAR}, 
+      #{breviary,jdbcType=VARCHAR}, #{showall,jdbcType=TINYINT}, #{isAllSeller,jdbcType=INTEGER}, 
+      #{dayNum,jdbcType=INTEGER}, #{ctype,jdbcType=INTEGER}, #{invalidToday,jdbcType=INTEGER}, 
+      #{defaultMaxNum,jdbcType=INTEGER}, #{introduce,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{rule,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.xmer.entity.Coupon" >
+    insert into t_coupon
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="cid != null" >
+        cid,
+      </if>
+      <if test="cname != null" >
+        cname,
+      </if>
+      <if test="denomination != null" >
+        denomination,
+      </if>
+      <if test="validityDesc != null" >
+        validity_desc,
+      </if>
+      <if test="startDate != null" >
+        start_date,
+      </if>
+      <if test="endDate != null" >
+        end_date,
+      </if>
+      <if test="condition != null" >
+        condition,
+      </if>
+      <if test="useNum != null" >
+        use_num,
+      </if>
+      <if test="pic != null" >
+        pic,
+      </if>
+      <if test="breviary != null" >
+        breviary,
+      </if>
+      <if test="showall != null" >
+        showall,
+      </if>
+      <if test="isAllSeller != null" >
+        is_all_seller,
+      </if>
+      <if test="dayNum != null" >
+        day_num,
+      </if>
+      <if test="ctype != null" >
+        ctype,
+      </if>
+      <if test="invalidToday != null" >
+        invalid_today,
+      </if>
+      <if test="defaultMaxNum != null" >
+        default_max_num,
+      </if>
+      <if test="introduce != null" >
+        introduce,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="rule != null" >
+        rule,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="cid != null" >
+        #{cid,jdbcType=INTEGER},
+      </if>
+      <if test="cname != null" >
+        #{cname,jdbcType=VARCHAR},
+      </if>
+      <if test="denomination != null" >
+        #{denomination,jdbcType=DECIMAL},
+      </if>
+      <if test="validityDesc != null" >
+        #{validityDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="startDate != null" >
+        #{startDate,jdbcType=DATE},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="condition != null" >
+        #{condition,jdbcType=DECIMAL},
+      </if>
+      <if test="useNum != null" >
+        #{useNum,jdbcType=INTEGER},
+      </if>
+      <if test="pic != null" >
+        #{pic,jdbcType=VARCHAR},
+      </if>
+      <if test="breviary != null" >
+        #{breviary,jdbcType=VARCHAR},
+      </if>
+      <if test="showall != null" >
+        #{showall,jdbcType=TINYINT},
+      </if>
+      <if test="isAllSeller != null" >
+        #{isAllSeller,jdbcType=INTEGER},
+      </if>
+      <if test="dayNum != null" >
+        #{dayNum,jdbcType=INTEGER},
+      </if>
+      <if test="ctype != null" >
+        #{ctype,jdbcType=INTEGER},
+      </if>
+      <if test="invalidToday != null" >
+        #{invalidToday,jdbcType=INTEGER},
+      </if>
+      <if test="defaultMaxNum != null" >
+        #{defaultMaxNum,jdbcType=INTEGER},
+      </if>
+      <if test="introduce != null" >
+        #{introduce,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="rule != null" >
+        #{rule,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.xmer.entity.Coupon" >
+    update t_coupon
+    <set >
+      <if test="cname != null" >
+        cname = #{cname,jdbcType=VARCHAR},
+      </if>
+      <if test="denomination != null" >
+        denomination = #{denomination,jdbcType=DECIMAL},
+      </if>
+      <if test="validityDesc != null" >
+        validity_desc = #{validityDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="startDate != null" >
+        start_date = #{startDate,jdbcType=DATE},
+      </if>
+      <if test="endDate != null" >
+        end_date = #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="condition != null" >
+        condition = #{condition,jdbcType=DECIMAL},
+      </if>
+      <if test="useNum != null" >
+        use_num = #{useNum,jdbcType=INTEGER},
+      </if>
+      <if test="pic != null" >
+        pic = #{pic,jdbcType=VARCHAR},
+      </if>
+      <if test="breviary != null" >
+        breviary = #{breviary,jdbcType=VARCHAR},
+      </if>
+      <if test="showall != null" >
+        showall = #{showall,jdbcType=TINYINT},
+      </if>
+      <if test="isAllSeller != null" >
+        is_all_seller = #{isAllSeller,jdbcType=INTEGER},
+      </if>
+      <if test="dayNum != null" >
+        day_num = #{dayNum,jdbcType=INTEGER},
+      </if>
+      <if test="ctype != null" >
+        ctype = #{ctype,jdbcType=INTEGER},
+      </if>
+      <if test="invalidToday != null" >
+        invalid_today = #{invalidToday,jdbcType=INTEGER},
+      </if>
+      <if test="defaultMaxNum != null" >
+        default_max_num = #{defaultMaxNum,jdbcType=INTEGER},
+      </if>
+      <if test="introduce != null" >
+        introduce = #{introduce,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="rule != null" >
+        rule = #{rule,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where cid = #{cid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.xmniao.xmn.core.xmer.entity.Coupon" >
+    update t_coupon
+    set cname = #{cname,jdbcType=VARCHAR},
+      denomination = #{denomination,jdbcType=DECIMAL},
+      validity_desc = #{validityDesc,jdbcType=VARCHAR},
+      start_date = #{startDate,jdbcType=DATE},
+      end_date = #{endDate,jdbcType=TIMESTAMP},
+      condition = #{condition,jdbcType=DECIMAL},
+      use_num = #{useNum,jdbcType=INTEGER},
+      pic = #{pic,jdbcType=VARCHAR},
+      breviary = #{breviary,jdbcType=VARCHAR},
+      showall = #{showall,jdbcType=TINYINT},
+      is_all_seller = #{isAllSeller,jdbcType=INTEGER},
+      day_num = #{dayNum,jdbcType=INTEGER},
+      ctype = #{ctype,jdbcType=INTEGER},
+      invalid_today = #{invalidToday,jdbcType=INTEGER},
+      default_max_num = #{defaultMaxNum,jdbcType=INTEGER},
+      introduce = #{introduce,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      rule = #{rule,jdbcType=LONGVARCHAR}
+    where cid = #{cid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.xmer.entity.Coupon" >
+    update t_coupon
+    set cname = #{cname,jdbcType=VARCHAR},
+      denomination = #{denomination,jdbcType=DECIMAL},
+      validity_desc = #{validityDesc,jdbcType=VARCHAR},
+      start_date = #{startDate,jdbcType=DATE},
+      end_date = #{endDate,jdbcType=TIMESTAMP},
+      condition = #{condition,jdbcType=DECIMAL},
+      use_num = #{useNum,jdbcType=INTEGER},
+      pic = #{pic,jdbcType=VARCHAR},
+      breviary = #{breviary,jdbcType=VARCHAR},
+      showall = #{showall,jdbcType=TINYINT},
+      is_all_seller = #{isAllSeller,jdbcType=INTEGER},
+      day_num = #{dayNum,jdbcType=INTEGER},
+      ctype = #{ctype,jdbcType=INTEGER},
+      invalid_today = #{invalidToday,jdbcType=INTEGER},
+      default_max_num = #{defaultMaxNum,jdbcType=INTEGER},
+      introduce = #{introduce,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where cid = #{cid,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 通过用户id查询用户未使用并且未过期的平台礼券 -->
+  <select id="queryPlatCouponUsed" resultType="map" parameterType="map">
+  	SELECT 
+  		cd.cdid as id,cd.sellerid,s.sellername,cd.seats,c.cname,DATE_FORMAT(cd.start_date,'%Y-%m-%d %H:%i:%s') as startDate,DATE_FORMAT(cd.end_date,'%Y-%m-%d %H:%i:%s') as endDate,cd.denomination,
+  		c.rule,cd.user_money as userMoney,cd.ctype,cd.user_status as useStatus,
+  		cd.serial,c.condition AS conditions,
+  		<![CDATA[
+  			CASE WHEN cd.start_date <= NOW() THEN 1 ELSE 0 END AS fresh
+  		]]>
+	FROM t_coupon_detail cd
+	LEFT JOIN t_coupon c ON c.cid=cd.cid
+	LEFT JOIN t_seller s ON cd.sellerid=s.sellerid
+	WHERE cd.uid=#{uid} AND user_status=0
+	<if test="ctype != null and ctype != '' or ctype == 0" >
+   		AND cd.ctype = #{ctype}
+    </if>
+	<![CDATA[
+		AND cd.end_date >= NOW()
+	]]>
+	ORDER BY cd.get_time DESC 
+	LIMIT ${(pageNo-1)*pageSize},#{pageSize}
+  </select>
+  
+  <!-- 通过用户id查询用户已使用或者已过期平台礼券 -->
+  <select id="queryPlatCouponUnused" resultType="map" parameterType="map">
+  	SELECT 
+  		cd.cdid as id,cd.sellerid,s.sellername,cd.seats,c.cname,DATE_FORMAT(cd.start_date,'%Y-%m-%d %H:%i:%s') as startDate,DATE_FORMAT(cd.end_date,'%Y-%m-%d %H:%i:%s') as endDate,cd.denomination,
+  		c.rule,cd.user_money as userMoney,cd.ctype,cd.user_status as useStatus,
+  		cd.serial,c.condition AS conditions,
+  		<![CDATA[
+  			CASE WHEN cd.start_date <= NOW() AND cd.end_date >= NOW() THEN 1 ELSE 0 END AS fresh
+  		]]>
+	FROM t_coupon_detail cd
+	LEFT JOIN t_coupon c ON c.cid=cd.cid
+	LEFT JOIN t_seller s ON cd.sellerid=s.sellerid
+	WHERE cd.uid=#{uid}
+	<if test="ctype != null and ctype != '' or ctype == 0" >
+   		AND cd.ctype = #{ctype}
+    </if> 
+	<![CDATA[
+	AND (cd.user_status != 0 or cd.end_date < NOW())
+	]]>
+	ORDER BY cd.get_time DESC 
+	LIMIT ${(pageNo-1)*pageSize},#{pageSize}
+  </select>
+  
+  
+  <!-- 通过用户id查询用户未使用并且未过期的餐饮商铺优惠券列表 -->
+	<select id="querySellerCouponUsed" resultType="map" parameterType="map">
+		SELECT 
+			uc.cuid as id,s.sellerid,s.sellername,d.cid,d.cname AS cname,
+			uc.denomination AS denomination,uc.cuid,uc.use_status AS useStatus,
+			uc.use_money AS useMoney,DATE_FORMAT(uc.start_date,'%Y-%m-%d %H:%i:%s') AS startDate,DATE_FORMAT(uc.end_date,'%Y-%m-%d %H:%i:%s') AS endDate,
+			uc.get_time AS getTime,uc.serial_no as serial,d.conditions,d.coupon_type AS couponType,
+			<![CDATA[
+				CASE WHEN uc.start_date<= NOW() THEN 1 ELSE 0 END AS fresh
+			]]>
+		FROM t_user_coupon uc
+		LEFT JOIN t_seller_coupon_detail d ON uc.cid=d.cid
+		LEFT JOIN t_seller s ON uc.sellerid=s.sellerid
+		WHERE uc.uid=#{uid} AND use_status = 0 
+		<![CDATA[
+		AND uc.end_date >= NOW()
+		]]>
+		ORDER BY uc.get_time DESC 
+		LIMIT ${(pageNo-1)*pageSize},#{pageSize}
+	</select>
+	
+	<!-- 通过用户id查询用户已使用或者已过期的优惠卷列表 -->
+	<select id="querySellerCouponUnused" resultType="map" parameterType="map">
+	SELECT 
+		uc.cuid AS id,s.sellerid,s.sellername,d.cid,d.cname AS cname,
+		uc.denomination AS denomination,uc.cuid,uc.use_status AS useStatus,
+		uc.use_money AS useMoney,DATE_FORMAT(uc.start_date,'%Y-%m-%d %H:%i:%s') AS startDate,DATE_FORMAT(uc.end_date,'%Y-%m-%d %H:%i:%s') AS endDate,
+		uc.get_time AS getTime,uc.serial_no AS serial,d.conditions,d.coupon_type AS couponType,
+		<![CDATA[
+			CASE WHEN uc.start_date<= NOW() AND uc.end_date >= NOW() THEN 1 ELSE 0 END AS fresh
+		]]>
+	FROM t_user_coupon uc
+	LEFT JOIN t_seller_coupon_detail d ON uc.cid=d.cid
+	LEFT JOIN t_seller s ON uc.sellerid=s.sellerid
+	WHERE uc.uid=#{uid} 
+	<![CDATA[
+	AND (uc.use_status != 0 or uc.end_date < NOW())
+	]]>
+	ORDER BY uc.get_time DESC
+	LIMIT ${(pageNo-1)*pageSize},#{pageSize}
+	</select>
+	
+	<!-- 查询推荐的粉丝券 1、根据用户定位，按距离显示附近店铺粉丝券   2、根据可使用时间，由近至远排序 -->
+  <select id="queryRecommendFansCoupon" resultType="map" parameterType="map">
+  	SELECT
+		<if test="longitude != null and longitude != 0 and latitude != null and latitude != 0">
+			ifnull(ROUND(6378.138*2*ASIN(SQRT(POW(SIN((#{latitude}*PI()/180-r.latitude*PI()/180)/2),2)+COS(#{latitude}*PI()/180)*COS(r.latitude*PI()/180)*POW(SIN((#{longitude}*PI()/180-r.longitude*PI()/180)/2),2)))*1000),'')
+			as `distance`,
+		</if> 
+		s.sellerid,s.sellername,c.cname,f.anchor_cid AS cid,DATE_FORMAT(f.start_date,'%Y-%m-%d %H:%i') as startDate,DATE_FORMAT(f.end_date,'%Y-%m-%d %H:%i') as endDate,c.denomination,
+		c.rule,r.id AS liveRecordId,r.zhibo_cover AS cover,r.zhibo_title AS title,r.zhibo_type AS zhiboType
+	FROM t_coupon c
+	LEFT JOIN t_fans_coupon_anchor_ref f ON c.cid=f.cid
+	LEFT JOIN t_seller s ON f.sellerid=s.sellerid
+	LEFT JOIN t_live_record r ON f.record_id=r.id 
+	WHERE
+		r.status = 1
+	AND r.id not in  (SELECT id FROM t_live_record  WHERE telphones != ''  
+		<choose>
+			<when test="phone != null and phone != ''">
+				AND telphones not like '%${phone}%' )
+			</when>
+			<otherwise>
+				AND telphones is not null)
+			</otherwise>
+		</choose>
+	AND
+		f.send_status = 1
+	<![CDATA[
+	AND
+		f.end_date > NOW()
+	AND
+		(f.sold_out_time > NOW() OR f.sold_out_time is null)
+	AND
+		f.stock > 0
+	]]>
+	GROUP BY
+		s.sellerid
+	ORDER BY
+		DATE_FORMAT(f.start_date,'%Y-%m-%d') ASC,
+	<if test="longitude != null and longitude != 0 and latitude != null and latitude != 0" >
+   		distance ASC,
+    </if>
+		f.start_date ASC
+    LIMIT ${(page-1)*limit},#{limit}
+  </select>
+  
+	<!-- 查询平台推荐的粉丝券数量 -->
+  <select id="queryPlatformRecommendCouponSum" resultType="int"  parameterType="map">
+  	SELECT
+		COUNT(1)
+	FROM t_coupon c
+	LEFT JOIN t_fans_coupon_anchor_ref f ON c.cid=f.cid
+	LEFT JOIN t_live_record r ON r.id=f.record_id
+	WHERE
+		r.status = 1
+	AND r.id not in  (SELECT id FROM t_live_record  WHERE telphones != ''  
+		<choose>
+			<when test="phone != null and phone != ''">
+				AND telphones not like '%${phone}%' )
+			</when>
+			<otherwise>
+				AND telphones is not null)
+			</otherwise>
+		</choose>
+	AND 
+		f.send_status = 1
+	<![CDATA[
+	AND
+		f.end_date > NOW()
+	AND
+		(f.sold_out_time > NOW() OR f.sold_out_time is null)
+	AND
+		c.ctype = 2
+	AND
+		c.is_recom = 1
+	]]>
+  </select>
+  
+	 <!-- 查询主播的其他粉丝券数量-->
+	 <select id="queryAnchorCouponSumByUid" resultType="int" parameterType="map">
+	 	SELECT
+			COUNT(1)
+		FROM t_coupon c
+		LEFT JOIN t_fans_coupon_anchor_ref f ON c.cid=f.cid
+		LEFT JOIN t_live_record r ON r.id=f.record_id
+		WHERE
+			r.status = 1
+		AND r.id not in  (SELECT id FROM t_live_record  WHERE telphones != ''  
+		<choose>
+			<when test="phone != null and phone != ''">
+				AND telphones not like '%${phone}%' )
+			</when>
+			<otherwise>
+				AND telphones is not null)
+			</otherwise>
+		</choose>
+		AND 
+			f.send_status = 1
+		AND
+			f.uid = #{uid}
+		<![CDATA[
+		AND
+			f.end_date > NOW()
+		AND
+			(f.sold_out_time > NOW() OR f.sold_out_time is null)
+		AND
+			c.ctype = 2
+		]]>
+	 </select>
+  
+	<!-- 删除用户的商家优惠卷 -->
+	<delete id="removeSellerCouponByUid" parameterType="java.lang.Integer" >
+    	DELETE FROM t_user_coupon WHERE cuid=#{id} AND uid=#{uid}
+  	</delete>
+  	
+  	<!-- 删除用户的平台优惠卷  -->
+  	
+  	<delete id="removePlatCouponByUid" parameterType="java.lang.Integer" >
+    	DELETE FROM t_coupon_detail WHERE cdid=#{id} AND uid=#{uid}
+  	</delete>
+  	
+  	<!-- 查询平台礼券 -->
+  	<select id="selectXMNCouponsByUid" resultType="map">
+  		SELECT 
+			a.cid,a.sellerid,a.uid,a.denomination,a.conditions,a.cname,a.startDate,a.endDate,a.serial,a.ctype,a.seats,a.useStatus
+		FROM (
+			SELECT 
+				d.cdid AS cid,d.sellerid,d.uid,c.denomination,c.condition AS conditions,c.cname,
+				DATE_FORMAT(d.start_date,'%Y.%m.%d %H:%i') AS startDate,
+				DATE_FORMAT(d.end_date,'%Y.%m.%d %H:%i') AS endDate,
+				d.serial,
+				IF(d.ctype = 5,100,d.ctype)	as ctype,
+				IF(d.seats IS NULL,0,d.seats) AS seats,
+				<![CDATA[
+				(CASE
+				WHEN d.user_status = 0 AND (d.end_date >= NOW() or d.end_date IS NULL ) THEN 0
+				WHEN d.user_status = 0 AND (d.end_date < NOW()  or d.end_date IS NULL ) THEN 1
+				ELSE 2 END) AS useStatus
+				]]>
+			FROM t_coupon_detail d
+			LEFT JOIN t_coupon c ON c.cid=d.cid
+			WHERE d.get_status=1 
+			<if test="type==1">
+			AND d.user_status=0 
+			<![CDATA[
+			AND ( d.start_date <= NOW() AND d.end_date>=NOW() or ( d.start_date is null and d.end_date is null ) ) 
+			]]> 
+			</if>
+			<if test="type==0">
+			<![CDATA[
+			AND (d.user_status=2 or (d.user_status=0 and  d.end_date<NOW()))  
+			]]>
+			</if>
+			AND d.uid=#{uid}
+		UNION ALL
+			SELECT
+				p.id AS cid,p.sellerid,g.uid,g.denomination,0 AS conditions,p.title AS cname,
+				DATE_FORMAT(g.use_start_time,'%Y.%m.%d %H:%i') AS startDate,
+				DATE_FORMAT(g.use_end_time,'%Y.%m.%d %H:%i') AS endDate,
+				g.serial,5 AS ctype,0 AS seats,g.user_status AS useStatus
+			FROM t_seller_package p
+			LEFT JOIN t_seller_package_grant g ON p.id=g.pid
+			WHERE g.uid=#{uid}
+			<if test="type==1">
+			AND g.user_status=0 
+			<![CDATA[
+			AND g.use_start_time<=NOW() AND g.use_end_time >= NOW() 
+			]]>
+			</if>
+			<if test="type==0">
+			AND g.user_status=1 
+			</if>
+			) a ORDER BY a.endDate ASC LIMIT ${(page-1)*pageSize},#{pageSize}
+  	</select>
+  	
+  	
+  	<select id="sumXMNXMNCouponCount" resultType="int">
+  		SELECT 
+			count(1)
+		FROM (
+			SELECT 
+				d.cdid AS cid,d.sellerid,d.uid,c.denomination,c.condition AS conditions,c.cname,
+				DATE_FORMAT(d.start_date,'%Y.%m.%d %H:%i') AS startDate,
+				DATE_FORMAT(d.end_date,'%Y.%m.%d %H:%i') AS endDate,
+				d.serial,d.ctype,IF(d.seats IS NULL,0,d.seats) AS seats,
+				<![CDATA[
+				(CASE 
+				WHEN d.user_status=0 AND d.end_date>=NOW() THEN 0
+				WHEN d.user_status=0 AND d.end_date<NOW() THEN 1
+				ELSE 2 END) AS useStatus
+				]]>
+			FROM t_coupon_detail d
+			LEFT JOIN t_coupon c ON c.cid=d.cid
+			WHERE d.get_status=1 AND d.user_status=0 
+			<![CDATA[
+			AND d.start_date <= NOW() AND d.end_date>=NOW()
+			]]> 
+			AND d.uid=#{uid}
+		UNION ALL
+			SELECT
+				p.id AS cid,p.sellerid,g.uid,g.denomination,0 AS conditions,p.title AS cname,
+				DATE_FORMAT(g.use_start_time,'%Y.%m.%d %H:%i') AS startDate,
+				DATE_FORMAT(g.use_end_time,'%Y.%m.%d %H:%i') AS endDate,
+				g.serial,5 AS ctype,0 AS seats,g.user_status AS useStatus
+			FROM t_seller_package p
+			LEFT JOIN t_seller_package_grant g ON p.id=g.pid
+			WHERE g.uid=#{uid} AND g.user_status=0 
+			<![CDATA[
+			AND g.use_start_time<=NOW() AND g.use_end_time >= NOW() 
+			]]>
+			) a
+  	</select>
+  	
+  	
+  	<!-- 查询saas发布的礼券 -->
+  	<select id="selectSAASCouponsByUid" resultType="map">
+  		SELECT
+			s.sellerid,s.sellername,c.uid,d.cname,d.denomination,IF(d.conditions IS NULL,0.00,d.conditions) AS conditions,
+			c.serial_no AS serialno,c.cuid as cid,DATE_FORMAT(c.start_date,'%Y.%m.%d %H:%i') AS startDate,d.coupon_type AS ctype,
+			DATE_FORMAT(c.end_date,'%Y.%m.%d %H:%i') AS endDate,
+			<![CDATA[
+			(CASE 
+			WHEN c.use_status=0 AND c.end_date>=NOW() THEN 0 
+			WHEN c.use_status=0 AND c.end_date<NOW() THEN 1
+			ELSE 2 END) AS useStatus
+			]]>
+		FROM t_user_coupon c
+		LEFT JOIN t_seller_coupon_detail d ON c.cid=d.cid
+		LEFT JOIN t_seller s ON c.sellerid=s.sellerid
+		WHERE c.uid=#{uid} AND s.status=3 AND s.is_public=1 AND s.isonline=1
+		<if test="type==1">
+		<![CDATA[
+		AND c.use_status=0 AND c.start_date<=NOW() AND c.end_date>=NOW()
+		]]>
+		</if>
+		<if test="type==0">
+		<![CDATA[
+		AND (c.use_status =2 OR (c.use_status=0 AND c.end_date<NOW()))
+		]]>
+		</if>
+		ORDER BY endDate ASC LIMIT ${(page-1)*pageSize},#{pageSize}
+  	</select>
+  	
+  	<select id="sumSAASCouponCount" resultType="int">
+  		SELECT
+			count(1)
+		FROM t_user_coupon c
+		LEFT JOIN t_seller_coupon_detail d ON c.cid=d.cid
+		LEFT JOIN t_seller s ON c.sellerid=s.sellerid
+		WHERE c.uid=#{uid} AND s.status=3 AND s.is_public=1 AND s.isonline=1
+		<![CDATA[
+		AND c.use_status=0 AND c.start_date<=NOW() AND c.end_date>=NOW()
+		]]>
+		
+  	</select>
+  	
+</mapper>
