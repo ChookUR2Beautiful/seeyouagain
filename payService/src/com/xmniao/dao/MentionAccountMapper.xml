@@ -1,0 +1,486 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.MentionAccountMapper">
+
+	
+	<insert id="insertSelective" parameterType="map">
+		insert into t_mention_account
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="accountid != null">
+				accountid,
+			</if>
+			<if test="uid != null">
+				uid,
+			</if>
+			<if test="sellerid != null">
+				sellerid,
+			</if>
+			<if test="jointid != null">
+				jointid,
+			</if>
+			<if test="allianceid != null">
+				allianceid,
+			</if>
+			<if test="type != null">
+				type,
+			</if>
+			<if test="account != null">
+				account,
+			</if>
+			<if test="cardtype != null">
+				cardtype,
+			</if>
+			<if test="username != null and username != 'null'">
+				username,
+			</if>
+			<if test="bankname != null and bankname != 'null'">
+				bankname,
+			</if>
+			<if test="udate != null">
+				udate,
+			</if>
+			<if test="mobileid != null and mobileid != 'null'">
+				mobileid,
+			</if>
+			<if test="isuse != null">
+				isuse,
+			</if>
+			<if test="province != null and province != 'null'">
+				province,
+			</if>
+			<if test="cityname != null and cityname != 'null'">
+				cityname,
+			</if>
+			<if test="ispublic != null">
+				ispublic,
+			</if>
+			<if test="idtype != null">
+				idtype,
+			</if>
+			<if test="identity != null and identity != 'null'">
+				identity,
+			</if>
+			<if test="bank != null and bank != 'null'">
+				bank,
+			</if>
+			<if test="abbrev != null and abbrev != 'null'">
+				abbrev,
+			</if>
+			<if test="license != null and license != 'null'">
+				business_licence,
+			</if>
+			<if test="upidcard != null and upidcard != 'null'">
+				idcard_picp,
+			</if>
+			<if test="dwidcard != null and dwidcard != 'null'">
+				idcard_picn,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="accountid != null">
+				#{accountid},
+			</if>
+			<if test="uid != null">
+				#{uid},
+			</if>
+			<if test="sellerid != null">
+				#{sellerid},
+			</if>
+			<if test="jointid != null">
+				#{jointid},
+			</if>
+			<if test="allianceid != null">
+				#{allianceid},
+			</if>
+			<if test="type != null">
+				#{type},
+			</if>
+			<if test="account != null">
+				#{account},
+			</if>
+			<if test="cardtype != null">
+				#{cardtype},
+			</if>
+			<if test="username != null and username != 'null'">
+				#{username},
+			</if>
+			<if test="bankname != null and bankname != 'null'">
+				#{bankname},
+			</if>
+			<if test="udate != null">
+				#{udate},
+			</if>
+			<if test="mobileid != null and mobileid != 'null'">
+				#{mobileid},
+			</if>
+			<if test="isuse != null">
+				#{isuse},
+			</if>
+			<if test="province != null and province != 'null'">
+				#{province},
+			</if>
+			<if test="cityname != null and cityname != 'null'">
+				#{cityname},
+			</if>
+			<if test="ispublic != null">
+				#{ispublic},
+			</if>
+			<if test="idtype != null">
+				#{idtype},
+			</if>
+			<if test="identity != null and identity != 'null'">
+				#{identity},
+			</if>
+			<if test="bank != null and bank != 'null'">
+				#{bank},
+			</if>
+			<if test="abbrev != null and abbrev != 'null'">
+				#{abbrev},
+			</if>
+			<if test="license != null and license != 'null'">
+				#{license},
+			</if>
+			<if test="upidcard != null and upidcard != 'null'">
+				#{upidcard},
+			</if>
+			<if test="dwidcard != null and dwidcard != 'null'">
+				#{dwidcard},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="updateSelective" parameterType="map">
+		update t_mention_account
+		
+		<set>
+		<trim prefix="" suffix="" suffixOverrides=",">
+			<if test="type != null">
+				type = #{type},
+			</if>
+			<if test="account != null">
+				account = #{account},
+			</if>
+			<if test="cardtype != null">
+				cardtype = #{cardtype},
+			</if>
+			<if test="username != null and username != 'null'">
+				username = #{username},
+			</if>
+			<if test="bankname != null and bankname != 'null'">
+				bankname = #{bankname},
+			</if>
+			<if test="mobileId != null and mobileId != 'null'">
+				mobileid = #{mobileId},
+			</if>
+			<if test="isuse != null">
+				isuse = #{isuse},
+			</if>
+			<if test="province != null and province != 'null'">
+				province = #{province},
+			</if>
+			<if test="cityname != null and cityname != 'null'">
+				cityname = #{cityname},
+			</if>
+			<if test="ispublic != null">
+				ispublic = #{ispublic},
+			</if>
+			<if test="idtype != null">
+				idtype = #{idtype},
+			</if>
+			<if test="identity != null and identity != 'null'">
+				identity = #{identity},
+			</if>
+			<if test="bank != null and bank != 'null'">
+				bank = #{bank},
+			</if>
+			<if test="abbrev != null and abbrev != 'null'">
+				abbrev = #{abbrev},
+			</if>
+			<if test="license != null and license != 'null'">
+				business_licence = #{license},
+			</if>
+			<if test="upidcard != null and upidcard != 'null'">
+				idcard_picp = #{upidcard},
+			</if>
+			<if test="dwidcard != null and dwidcard != 'null'">
+				idcard_picn = #{dwidcard}
+			</if>	
+			</trim>		
+		</set>
+		where
+		id =#{id}
+	</update>
+
+	<select id="selectByuid" resultType="java.util.HashMap"
+		parameterType="map">
+		select
+		<trim prefix="" suffix="" suffixOverrides=",">
+		id,
+		IF(uid !=
+		0,uid,IF(sellerid!=0,sellerid,IF(jointid!=0,jointid,IF(allianceid!=0,allianceid,0)))) AS uId,
+		IF(uid != 0,1,IF(sellerid!=0,2,IF(jointid!=0,3,IF(allianceid!=0,4,1)))) AS userType,
+		uid,sellerid,jointid,allianceid,
+		type,
+		IFNULL(account,'') account,
+		cardtype,
+		IFNULL(username,'') username,
+		IFNULL(bankname,'') bankname,
+		IFNULL(DATE_FORMAT(udate,'%Y-%m-%d %H:%i:%s'),'') udate,
+		IFNULL(mobileid,'') mobileid,
+		isuse,
+		ispublic,
+		idtype,
+		IFNULL(identity,'') identity,
+		IFNULL(bank,'') bank,
+		IFNULL(abbrev,'') abbrev,
+		IFNULL(province,'')	province,
+		IFNULL(cityname,'') cityname,
+		IFNULL(abbrev,'') abbrev,
+		IFNULL(business_licence,'') license,
+		IFNULL(idcard_picp,'') upidcard,
+		IFNULL(idcard_picn,'') dwidcard
+		</trim>
+		from
+		t_mention_account
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="userType == 1">uid=#{uId}</if>
+			<if test="userType == 2">sellerid=#{uId}</if>
+			<if test="userType == 3">jointid=#{uId}</if>
+			<if test="userType == 4">allianceid=#{uId}</if>
+		</trim>
+		<!-- 按修改时间倒序排列 -->
+		ORDER BY udate DESC
+	</select>
+
+	<select id="selectByUids" resultType="java.util.HashMap"
+		parameterType="map">
+		select
+		<trim prefix="" suffix="" suffixOverrides=",">
+		id,
+		IF(uid !=
+		0,uid,IF(sellerid!=0,sellerid,IF(jointid!=0,jointid,IF(allianceid!=0,allianceid,0)))) AS uId,
+		IF(uid != 0,1,IF(sellerid!=0,2,IF(jointid!=0,3,IF(allianceid!=0,4,1)))) AS userType,
+		type,
+		IFNULL(account,'') account,
+		cardtype,
+		IFNULL(username,'') username,
+		IFNULL(bankname,'') bankname,
+		IFNULL(DATE_FORMAT(udate,'%Y-%m-%d %H:%i:%s'),'') udate,
+		IFNULL(mobileid,'') mobileid,
+		isuse,
+		ispublic,
+		idtype,
+		IFNULL(identity,'') identity,
+		IFNULL(bank,'') bank,
+		IFNULL(abbrev,'') abbrev,
+		IFNULL(province,'')	province,
+		IFNULL(cityname,'') cityname,
+		IFNULL(abbrev,'') abbrev,
+		IFNULL(business_licence,'') license,
+		IFNULL(idcard_picp,'') upidcard,
+		IFNULL(idcard_picn,'') dwidcard
+		</trim>
+		from
+		t_mention_account
+		<trim prefix="WHERE" prefixOverrides="or">
+			<foreach collection="list" item="user">
+				<if test="user.userType == 1">or uid=#{user.uId}</if>
+				<if test="user.userType == 2">or sellerid=#{user.uId}</if>
+				<if test="user.userType == 3">or jointid=#{user.uId}</if>
+				<if test="user.userType == 4">or allianceid=#{user.uId}</if>
+			</foreach>
+		</trim>
+		ORDER BY udate DESC
+	</select>
+
+	<!-- 根据ID查询提现方式 -->
+	<select id="selectMentionById" parameterType="string"
+		resultType="map">
+		SELECT
+		tma.account,tma.username,tma.type,tma.bankname,tma.mobileid,tma.bank,tma.abbrev,tma.`ispublic`,tma.`idtype`,tma.`identity`,tma.`province`,tma.`cityname`
+		FROM t_mention_account tma
+		WHERE tma.id = #{id}
+	</select>
+
+	<!-- 根据用户id查询提现帐号表银行卡是否存在 -->
+	<select id="checkByUid" parameterType="map" resultType="map">
+		select uid, sellerid, jointid,allianceid, account from t_mention_account
+		where 1=1
+		<if test="isuse!=null">
+			and isuse = #{isuse}
+		</if>
+		<if test="userType == 1">
+			and uid=#{uId}
+		</if>
+		<if test="userType == 2">
+			and sellerid=#{uId}
+		</if>
+		<if test="userType == 3">
+			and jointid=#{uId}
+		</if>
+		<if test="userType == 4">
+			and allianceid=#{uId}
+		</if>
+	</select>
+
+	<!-- 统计当天提现金额 -->
+	<select id="countTodayMoney" parameterType="map" resultType="double">
+		SELECT IFNULL(SUM(amount+balance+commision+income),0) AS allmoney
+		FROM b_withdrawals_record
+		WHERE 1=1
+		<if test="userType == 1">
+			and uid=#{uId}
+		</if>
+		<if test="userType == 2">
+			and sellerid=#{uId}
+		</if>
+		<if test="userType == 4">
+			and allianceid=#{uId}
+		</if>
+		AND STATUS IN(0,1,3)
+		AND DATE_FORMAT(date,'%y-%m-%d') = DATE_FORMAT(NOW(),'%y-%m-%d')
+	</select>
+	
+	<!-- 统计提现总额（含手续费） -->
+	<select id="countWithdraw" parameterType="map" resultType="map">
+		 SELECT IFNULL(SUM(r.amount+r.balance+r.commision+r.income+e.expenses),0.00) totalAmount
+		 FROM b_withdrawals_record r
+		 LEFT JOIN b_expenses e ON r.flowid = e.flowid
+		 WHERE STATUS IN(0,1,3)
+		 <if test="userType == 1">
+			AND uid=#{uId}
+		</if>
+		<if test="userType == 2">
+			AND sellerid=#{uId}
+		</if>
+		<if test="sdate == null and edate == null">
+			AND DATE_FORMAT(r.date,'%y-%m-%d') = DATE_FORMAT(NOW(),'%y-%m-%d')
+		</if>
+		<if test="sdate != null and sdate !=''">
+			AND DATE_FORMAT(r.date,'%y-%m-%d') &gt;= DATE_FORMAT(#{sdate},'%y-%m-%d')
+		</if>
+		<if test="date != null and date !=''">
+			AND DATE_FORMAT(r.date,'%y-%m-%d') &lt;= DATE_FORMAT(#{edate},'%y-%m-%d')
+		</if>
+	</select>
+	<select id="getCountPage" resultType="int" parameterType="map">
+		select COUNT(*) from t_mention_account
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="userType != null and uId != null">
+				<if test="userType == 1">uid=#{uId}</if>
+				<if test="userType == 2">sellerid=#{uId}</if>
+				<if test="userType == 3">jointid=#{uId}</if>
+				<if test="userType == 4">allianceid=#{uId}</if>
+			</if>
+			<if test="userType != null and uId == null">
+				<if test="userType == 1">uid != 0</if>
+				<if test="userType == 2">sellerid != 0</if>
+				<if test="userType == 3">jointid != 0</if>
+				<if test="userType == 4">allianceid != 0</if>
+			</if>
+			<if test="bankId != null  and bankId != ''">and account=#{bankId}</if>
+			<if test="userName != null and userName != ''">and username LIKE '%${userName}%'</if>
+			<if test="mobileId != null and mobileId != ''">and mobileid=#{mobileId}</if>
+			<if test="identity != null and identity != ''">and identity=#{identity}</if>
+		</trim>
+	</select>
+
+	<select id="getAccountList" resultType="java.util.HashMap"
+		parameterType="map">
+		select
+		<trim prefix="" suffix="" suffixOverrides=",">
+		id,
+		IF(uid !=
+		0,uid,IF(sellerid!=0,sellerid,IF(jointid!=0,jointid,IF(allianceid!=0,allianceid,0)))) AS uId,
+		IF(uid != 0,1,IF(sellerid!=0,2,IF(jointid!=0,3,IF(allianceid!=0,4,1)))) AS userType,
+		type,
+		IFNULL(account,'') account,
+		cardtype,
+		IFNULL(username,'') username,
+		IFNULL(bankname,'') bankname,
+		IFNULL(DATE_FORMAT(udate,'%Y-%m-%d %H:%i:%s'),'') udate,
+		IFNULL(mobileid,'') mobileid,
+		isuse,
+		ispublic,
+		idtype,
+		IFNULL(identity,'') identity,
+		IFNULL(bank,'') bank,
+		IFNULL(abbrev,'') abbrev,
+		IFNULL(province,'')	province,
+		IFNULL(cityname,'') cityname,
+		IFNULL(abbrev,'') abbrev,
+		IFNULL(business_licence,'') license,
+		IFNULL(idcard_picp,'') upidcard,
+		IFNULL(idcard_picn,'') dwidcard
+		</trim>
+		from
+		t_mention_account
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="userType != null and uId != null">
+				<if test="userType == 1">uid=#{uId}</if>
+				<if test="userType == 2">sellerid=#{uId}</if>
+				<if test="userType == 3">jointid=#{uId}</if>
+				<if test="userType == 4">allianceid=#{uId}</if>
+			</if>
+			<if test="userType != null and uId == null">
+				<if test="userType == 1">uid != 0</if>
+				<if test="userType == 2">sellerid != 0</if>
+				<if test="userType == 3">jointid != 0</if>
+				<if test="userType == 4">allianceid != 0</if>
+			</if>
+			<if test="bankId != null and bankId != ''">and account=#{bankId}</if>
+			<if test="userName != null and userName != ''">and username LIKE '%${userName}%'</if>
+			<if test="mobileId != null and mobileId != ''">and mobileid=#{mobileId}</if>
+			<if test="identity != null and identity != ''">and identity=#{identity}</if>
+		</trim>
+		ORDER BY udate DESC
+		limit #{startNo},#{pageSize}
+	</select>
+	
+	<!-- 根据ID查询提现方式 -->
+	<select id="getMentionAccountById" parameterType="string" resultType="map">
+		SELECT
+		 	id,
+		    IFNULL(uid,0) uid,
+		    IFNULL(sellerid,0) sellerid,
+		    IFNULL(jointid,0) jointid,
+		    IFNULL(allianceid,0) allianceid,
+		    account,
+			cardtype,
+			type,
+			IFNULL(username,'') username,
+			IFNULL(bankname,'') bankname,
+			IFNULL(DATE_FORMAT(udate,'%Y-%m-%d %H:%i:%s'),'') udate,
+			IFNULL(mobileid,'') mobileid,
+			isuse,
+			ispublic,
+			idtype,
+			IFNULL(identity,'') identity,
+			IFNULL(bank,'') bank,
+			IFNULL(abbrev,'') abbrev,
+			IFNULL(province,'')	province,
+			IFNULL(cityname,'') cityname,
+			IFNULL(abbrev,'') abbrev,
+			IFNULL(business_licence,'') license,
+			IFNULL(idcard_picp,'') upidcard,
+			IFNULL(idcard_picn,'') dwidcard
+		FROM t_mention_account 
+		WHERE id = #{id}
+	</select>
+	
+	<select id="getMentionAccount" parameterType="map" resultType="map">
+	select  id,uid,sellerid,jointid,allianceid,account,cardtype,username,bankname,udate,mobileid,
+		isuse,type,province,cityname,ispublic,idtype,identity,bank,abbrev,business_licence,
+		idcard_picp, idcard_picn
+	from t_mention_account
+	where id=#{id} and type=#{type} and account like #{account} and 
+		<if test="userType == 1">uid != 0</if>
+		<if test="userType == 2">sellerid != 0</if>
+		<if test="userType == 3">jointid != 0</if>
+		<if test="userType == 4">allianceid != 0</if>
+	</select>
+	
+	<delete id="delMentionAccount" parameterType="String">
+		delete  from t_mention_account where id=#{id}
+	</delete>
+</mapper>

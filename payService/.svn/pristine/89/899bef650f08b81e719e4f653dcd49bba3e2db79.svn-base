@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.dao.LiveWalletLockMapper">
+  <resultMap id="BaseResultMap" type="com.xmniao.entity.LiveWalletLock">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="wallet_id" jdbcType="INTEGER" property="walletId" />
+    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="lock_add" jdbcType="TINYINT" property="lockAdd" />
+    <result column="lock_subtract" jdbcType="TINYINT" property="lockSubtract" />
+    <result column="q_egg_money" jdbcType="DECIMAL" property="qEggMoney" />
+    <result column="q_coin_money" jdbcType="DECIMAL" property="qCoinMoney" />
+    <result column="q_beans_money" jdbcType="DECIMAL" property="qBeansMoney" />
+    <result column="q_seller_beans_money" jdbcType="DECIMAL" property="qSellerBeansMoney" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, wallet_id, type, lock_add, lock_subtract, q_egg_money, q_coin_money, q_beans_money, 
+    q_seller_beans_money, create_time, update_time
+  </sql>
+  
+  <select id="countZbalanceLock" resultType="java.lang.Integer">
+  	 select count(1) from b_live_wallet_lock where wallet_id = #{id,jdbcType=INTEGER} and type = 1 and lock_subtract = 1 
+  </select>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from b_live_wallet_lock
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from b_live_wallet_lock
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.entity.LiveWalletLock">
+    insert into b_live_wallet_lock (id, wallet_id, type, 
+      lock_add, lock_subtract, q_egg_money, 
+      q_coin_money, q_beans_money, q_seller_beans_money, 
+      create_time, update_time)
+    values (#{id,jdbcType=INTEGER}, #{walletId,jdbcType=INTEGER}, #{type,jdbcType=TINYINT}, 
+      #{lockAdd,jdbcType=TINYINT}, #{lockSubtract,jdbcType=TINYINT}, #{qEggMoney,jdbcType=DECIMAL}, 
+      #{qCoinMoney,jdbcType=DECIMAL}, #{qBeansMoney,jdbcType=DECIMAL}, #{qSellerBeansMoney,jdbcType=DECIMAL}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.entity.LiveWalletLock">
+    insert into b_live_wallet_lock
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="walletId != null">
+        wallet_id,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="lockAdd != null">
+        lock_add,
+      </if>
+      <if test="lockSubtract != null">
+        lock_subtract,
+      </if>
+      <if test="qEggMoney != null">
+        q_egg_money,
+      </if>
+      <if test="qCoinMoney != null">
+        q_coin_money,
+      </if>
+      <if test="qBeansMoney != null">
+        q_beans_money,
+      </if>
+      <if test="qSellerBeansMoney != null">
+        q_seller_beans_money,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="walletId != null">
+        #{walletId,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=TINYINT},
+      </if>
+      <if test="lockAdd != null">
+        #{lockAdd,jdbcType=TINYINT},
+      </if>
+      <if test="lockSubtract != null">
+        #{lockSubtract,jdbcType=TINYINT},
+      </if>
+      <if test="qEggMoney != null">
+        #{qEggMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="qCoinMoney != null">
+        #{qCoinMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="qBeansMoney != null">
+        #{qBeansMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="qSellerBeansMoney != null">
+        #{qSellerBeansMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.entity.LiveWalletLock">
+    update b_live_wallet_lock
+    <set>
+      <if test="walletId != null">
+        wallet_id = #{walletId,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=TINYINT},
+      </if>
+      <if test="lockAdd != null">
+        lock_add = #{lockAdd,jdbcType=TINYINT},
+      </if>
+      <if test="lockSubtract != null">
+        lock_subtract = #{lockSubtract,jdbcType=TINYINT},
+      </if>
+      <if test="qEggMoney != null">
+        q_egg_money = #{qEggMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="qCoinMoney != null">
+        q_coin_money = #{qCoinMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="qBeansMoney != null">
+        q_beans_money = #{qBeansMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="qSellerBeansMoney != null">
+        q_seller_beans_money = #{qSellerBeansMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.entity.LiveWalletLock">
+    update b_live_wallet_lock
+    set wallet_id = #{walletId,jdbcType=INTEGER},
+      type = #{type,jdbcType=TINYINT},
+      lock_add = #{lockAdd,jdbcType=TINYINT},
+      lock_subtract = #{lockSubtract,jdbcType=TINYINT},
+      q_egg_money = #{qEggMoney,jdbcType=DECIMAL},
+      q_coin_money = #{qCoinMoney,jdbcType=DECIMAL},
+      q_beans_money = #{qBeansMoney,jdbcType=DECIMAL},
+      q_seller_beans_money = #{qSellerBeansMoney,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

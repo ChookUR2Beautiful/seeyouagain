@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.PayTableExplainMapper" >
+  <resultMap id="BaseResultMap" type="com.xmniao.entity.PayTableExplain" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="table_name" property="tableName" jdbcType="VARCHAR" />
+    <result column="column_name" property="columnName" jdbcType="VARCHAR" />
+    <result column="column_value" property="columnValue" jdbcType="VARCHAR" />
+    <result column="value_explain" property="valueExplain" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, table_name, column_name, column_value, value_explain
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from b_pay_table_explain
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+    <select id="selectVlueExplainByRecord" resultType="java.lang.String">
+      SELECT value_explain
+      FROM b_pay_table_explain
+      WHERE table_name = #{tableName}
+      AND column_name = #{columnName}
+      AND column_value = #{columnValue}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from b_pay_table_explain
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.entity.PayTableExplain" >
+    insert into b_pay_table_explain (id, table_name, column_name, 
+      column_value, value_explain)
+    values (#{id,jdbcType=INTEGER}, #{tableName,jdbcType=VARCHAR}, #{columnName,jdbcType=VARCHAR}, 
+      #{columnValue,jdbcType=VARCHAR}, #{valueExplain,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.entity.PayTableExplain" >
+    insert into b_pay_table_explain
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="tableName != null" >
+        table_name,
+      </if>
+      <if test="columnName != null" >
+        column_name,
+      </if>
+      <if test="columnValue != null" >
+        column_value,
+      </if>
+      <if test="valueExplain != null" >
+        value_explain,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="tableName != null" >
+        #{tableName,jdbcType=VARCHAR},
+      </if>
+      <if test="columnName != null" >
+        #{columnName,jdbcType=VARCHAR},
+      </if>
+      <if test="columnValue != null" >
+        #{columnValue,jdbcType=VARCHAR},
+      </if>
+      <if test="valueExplain != null" >
+        #{valueExplain,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.entity.PayTableExplain" >
+    update b_pay_table_explain
+    <set >
+      <if test="tableName != null" >
+        table_name = #{tableName,jdbcType=VARCHAR},
+      </if>
+      <if test="columnName != null" >
+        column_name = #{columnName,jdbcType=VARCHAR},
+      </if>
+      <if test="columnValue != null" >
+        column_value = #{columnValue,jdbcType=VARCHAR},
+      </if>
+      <if test="valueExplain != null" >
+        value_explain = #{valueExplain,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.entity.PayTableExplain" >
+    update b_pay_table_explain
+    set table_name = #{tableName,jdbcType=VARCHAR},
+      column_name = #{columnName,jdbcType=VARCHAR},
+      column_value = #{columnValue,jdbcType=VARCHAR},
+      value_explain = #{valueExplain,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

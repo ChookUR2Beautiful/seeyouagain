@@ -1,0 +1,221 @@
+package com.xmniao.test.thrift;
+
+import com.xmniao.entity.Experiencecard;
+import com.xmniao.thrift.ledger.ExperiencecardService;
+import com.xmniao.thrift.ledger.ResponseSubList;
+import com.xmniao.thrift.ledger.SellerWallet;
+import org.apache.thrift.TException;
+import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.protocol.TMultiplexedProtocol;
+import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.transport.TFramedTransport;
+import org.apache.thrift.transport.TSocket;
+import org.apache.thrift.transport.TTransport;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Created by yang.qiang on 2017/5/9.
+ */
+public class ExperiencecardServiceTest {
+    // 服务端的IP地址
+//    private static final String IP_NUMBER = "localhost";
+    private static final String IP_NUMBER = "192.168.50.110";
+    // 服务端的端口号
+    private static final int PORT = 7911;
+    private static TTransport transport;
+    ExperiencecardService.Client client;
+
+
+    @Before
+    public void before() throws Exception {
+        transport = new TSocket(IP_NUMBER, PORT);
+        TFramedTransport frame = new TFramedTransport(transport);
+        // 设置传输协议为 TBinaryProtocol
+        TProtocol protocol = new TBinaryProtocol(frame);
+        TMultiplexedProtocol ManagerProtocol = new TMultiplexedProtocol(protocol,
+                "ExperiencecardService");
+        client = new ExperiencecardService.Client(ManagerProtocol);
+        transport.open();
+    }
+
+    @After
+    public void after() throws Exception {
+        transport.close();
+    }
+
+    @Test
+    public void test_createExperiencecard() throws TException {
+        HashMap<String, String> param = new HashMap<>();
+        param.put("uid","606041");
+        param.put("stock","20");
+        param.put("dueDate","2017-07-23 10:10:00");
+        param.put("source",System.currentTimeMillis()+"");
+        param.put("remark","订单备注3");
+        System.out.println(client.createExperiencecard(param));
+    }
+
+    @Test
+    public void test_getExperiencecard() throws TException {
+        HashMap<String, String> param = new HashMap<>();
+        param.put("uid","606041");
+
+        System.out.println(client.getExperiencecard(param));
+    }
+
+    @Test
+    public void test_deductExperiencecard() throws TException {
+        HashMap<String, String> param= new HashMap<>();
+        param.put("uid","606041");
+        param.put("operate","1");
+        param.put("remark","消费美食体验卡");
+        System.out.println(client.deductExperiencecard(param));
+    }
+
+    @Test
+    public void test_queryExperiencerdList() throws TException {
+        HashMap<String, String> paramMap = new HashMap<>();
+        paramMap.put("pageNum","1");
+        paramMap.put("pageSize","5");
+        paramMap.put("status","1");
+        paramMap.put("startDueDate","2017-05-19 00:00:00");
+        paramMap.put("endDueDate","2018-05-21 10:50:03");
+        ResponseSubList responseSubList = client.queryExperiencerdList(paramMap);
+        System.out.println(responseSubList);
+    }
+
+    @Test
+    public void test_updateExperiencecardStatus() throws TException {
+        HashMap<String, String> param = new HashMap<>();
+        param.put("id","14");
+        param.put("status","1");
+        System.out.println(client.updateExperiencecardStatus(param));
+
+        SellerWallet sellerWallet = new SellerWallet();
+
+    }
+
+    public static<T> T convert2Bean(Map<String,String> sourceMap, Class<T> clazz,String dataFormat) throws Exception {
+        T t = clazz.newInstance();
+
+        // 获取Class内所有的属性
+        PropertyDescriptor[] propertyDescriptors = Introspector.getBeanInfo(clazz).getPropertyDescriptors();
+        for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+            // Class的字段名
+            String fieldName = propertyDescriptor.getName();
+            if (sourceMap.containsKey(fieldName)) {
+                Method writeMethod = propertyDescriptor.getWriteMethod();
+                Class<?> propertyType = propertyDescriptor.getPropertyType();
+                String value = sourceMap.get(fieldName);
+
+                if(propertyType == Byte.class || propertyType == byte.class){
+                    writeMethod.invoke(t,Byte.valueOf(value));
+
+                }else if (propertyType == Short.class || propertyType == short.class){
+                    writeMethod.invoke(t,Short.valueOf(value));
+
+                } else if (propertyType == Integer.class || propertyType == int.class) {
+                    writeMethod.invoke(t, Integer.valueOf(value));
+
+                }else if(propertyType == Long.class || propertyType == long.class) {
+                    writeMethod.invoke(t, Long.valueOf(value));
+
+                }else if(propertyType == Float.class || propertyType == float.class) {
+                    writeMethod.invoke(t, Float.valueOf(value));
+
+                }else if(propertyType == Double.class || propertyType == double.class){
+                    writeMethod.invoke(t,Double.valueOf(value));
+
+                }else if(propertyType == Character.class|| propertyType == char.class) {
+                    writeMethod.invoke(t, Character.valueOf(value.charAt(0)));
+
+                }else if(propertyType == Boolean.class || propertyType == boolean.class){
+                    writeMethod.invoke(t,Boolean.valueOf(value));
+
+                }else if(propertyType == String.class ) {
+                    writeMethod.invoke(t, value);
+
+                }else if(propertyType == Date.class) {
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dataFormat);
+                    writeMethod.invoke(t, simpleDateFormat.parse(value));
+                }
+
+            }
+        }
+
+        return t;
+    }
+
+    public static<T> T convert2Bean(Map<String,String> sourceMap, Class<T> clazz) throws Exception {
+        return convert2Bean(sourceMap,clazz,"yyyy-MM-dd HH:ss:mm");
+    }
+
+    @Test
+    public void test() throws Exception {
+        HashMap<String, String> param = new HashMap<>();
+        param.put("id","18");
+        param.put("uid","20202002");
+        param.put("status","1");
+        param.put("stock","18");
+        param.put("used","3");
+        param.put("dueDate","2017-05-20 17:52:21");
+        param.put("updateTime","2017-05-20 17:52:26");
+        Experiencecard experiencecard = convert2Bean(param, Experiencecard.class);
+        System.out.println(experiencecard);
+    }
+
+
+    class Person{
+        Integer age;
+        String name;
+        int size;
+
+        public Person() {
+            super();
+        }
+
+        @Override
+        public String toString() {
+            return "Person{" +
+                    "age=" + age +
+                    ", name='" + name + '\'' +
+                    ", size=" + size +
+                    '}';
+        }
+
+        public Integer getAge() {
+            return age;
+        }
+
+        public void setAge(Integer age) {
+            this.age = age;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public int getSize() {
+            return size;
+        }
+
+        public void setSize(int size) {
+            this.size = size;
+        }
+    }
+
+
+}

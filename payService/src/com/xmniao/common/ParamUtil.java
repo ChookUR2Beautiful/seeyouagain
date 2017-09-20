@@ -1,0 +1,233 @@
+package com.xmniao.common;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+
+import com.xmniao.entity.WalletExpansion;
+import com.xmniao.exception.ParamBlankException;
+import com.xmniao.thrift.ledger.DataResponse;
+import com.xmniao.thrift.ledger.ResponseData;
+
+/**
+ * 参数工具类
+ * 
+ * @author jianming
+ *
+ */
+public class ParamUtil {
+	
+	private final static Logger log = Logger.getLogger(ParamUtil.class);
+
+	public static final Integer PARAM_ERROR = 2;
+
+	public static final Integer SUCCESS_STATE = 0;
+
+	public static final Integer ERROR_STATE = 1;
+
+	public static final Integer PAGENO = 1;
+
+	public static final Integer PAGESIZE = 10;
+
+	public static void checkMustParam(Map<?, ?> map) throws ParamBlankException {
+		for (Map.Entry<?, ?> entry : map.entrySet()) {
+			if (entry.getValue() == null) {
+				log.info("参数为空 ："+entry.getKey());
+				throw new ParamBlankException("参数" + entry.getKey() + "不能为空");
+			}
+		}
+	}
+	
+	
+	public static void checkMustParam(Map<String, ?> map,String... s) throws ParamBlankException {
+		for (String string : s) {
+			if (map.get(string) == null) {
+				log.info("参数为空 ："+string);
+				throw new ParamBlankException("参数" +string + "不能为空");
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * 方法描述：返回失败 创建人：jianming 创建时间：2017年4月5日 下午2:39:35
+	 * 
+	 * @param msg
+	 * @return
+	 */
+	public static ResponseData fail(String msg) {
+		log.info("操作失败  ："+msg);
+		ResponseData responseData = new ResponseData();
+		responseData.setState(PARAM_ERROR);
+		responseData.setMsg(msg);
+		return responseData;
+	}
+
+	/**
+	 * 
+	 * 方法描述：成功 创建人：jianming 创建时间：2017年4月5日 下午2:39:57
+	 * 
+	 * @param string
+	 * @param liveWallet
+	 * @return
+	 */
+	public static ResponseData success(String msg, Map<String, String> resultMap) {
+		log.info("操作成功 ："+msg+"   param="+resultMap);
+		ResponseData responseData = new ResponseData();
+		responseData.setState(SUCCESS_STATE);
+		responseData.setMsg(msg);
+		responseData.setResultMap(resultMap);
+		return responseData;
+	}
+
+	/**
+	 * 
+	 * 方法描述：异常 创建人：jianming 创建时间：2017年4月5日 下午2:41:58
+	 * 
+	 * @return
+	 */
+	public static ResponseData error() {
+		log.info("操作时出现异常！");
+		ResponseData responseData = new ResponseData();
+		responseData.setState(ERROR_STATE);
+		responseData.setMsg("操作失败");
+		return responseData;
+	}
+
+	/**
+	 * 
+	 * 方法描述：参数转换 创建人：jianming 创建时间：2017年4月7日 上午10:51:39
+	 * 
+	 * @param param
+	 * @return
+	 */
+	public static Map<String, String> getParamMap(Map<String, String> param, String... p) {
+		Map<String, String> hashMap = new HashMap<>();
+		if (p != null) {
+			for (int i = 0; i < p.length; i++) {
+				hashMap.put(p[i], param.get(p[i]));
+			}
+		}
+		return hashMap;
+	}
+
+	public static Map<String, String> failMap(String msg) {
+		log.info("操作失败  ："+msg);
+		HashMap<String, String> hashMap = new HashMap<>();
+		hashMap.put("state", PARAM_ERROR.toString());
+		hashMap.put("msg", msg);
+		return hashMap;
+	}
+
+	public static Map<String, String> successMap(String msg) {
+		HashMap<String, String> hashMap = new HashMap<>();
+		hashMap.put("state", SUCCESS_STATE.toString());
+		hashMap.put("msg", msg);
+		return hashMap;
+	}
+
+	/**
+	 * 
+	 * 方法描述：实体类转成map 创建人：jianming 创建时间：2017年4月8日 上午11:26:48
+	 * 
+	 * @param wa
+	 * @return
+	 */
+	public static Map<String, String> pojoToResultMap(Object o, String... param) {
+		Map<String, String> map = new HashMap<>();
+		Class<? extends Object> clz = o.getClass();
+		for (int i = 0; i < param.length; i++) {
+			try {
+				Field field = clz.getDeclaredField(param[i]);
+				field.setAccessible(true);
+				Object object = field.get(o);
+				if(object!=null){
+					map.put(param[i],object.toString());
+				}
+			} catch (Exception e) {
+				throw new RuntimeException("获取参数出现异常:"+param[i],e);
+			}
+		}
+		return map;
+	}
+	
+	
+
+	/**
+	 * 
+	 * 方法描述：实体类转成map 创建人：jianming 创建时间：2017年4月8日 上午11:26:48
+	 * 
+	 * @param wa
+	 * @return
+	 */
+	public static Map<String, Object> pojoToResultMap(Object o) {
+		Map<String, Object> map = new HashMap<>();
+		Class<? extends Object> clz = o.getClass();
+			try {
+				Field[] fields = clz.getDeclaredFields();
+				for (Field field : fields) {
+					field.setAccessible(true);
+					Object object = field.get(o);
+					map.put(field.getName(),object);
+				}
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		return map;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：失败DataResponse
+	 * 创建人：jianming  
+	 * 创建时间：2017年4月24日 下午2:02:59   
+	 * @param message
+	 * @return
+	 */
+	public static DataResponse failDataResponse(String message) {
+		log.info("操作失败  ："+message);
+		DataResponse dataResponse = new DataResponse();
+		dataResponse.setState(PARAM_ERROR);
+		dataResponse.setMsg(message);
+		return dataResponse;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：成功DataResponse
+	 * 创建人：jianming  
+	 * 创建时间：2017年4月24日 下午2:02:59   
+	 * @param message
+	 * @return
+	 */
+	public static DataResponse successDataResponse(String message) {
+		log.info(message);
+		DataResponse dataResponse = new DataResponse();
+		dataResponse.setState(SUCCESS_STATE);
+		dataResponse.setMsg(message);
+		return dataResponse;
+	}
+
+	/**
+	 * 
+	 * 方法描述：成功DataResponse
+	 * 创建人：jianming  
+	 * 创建时间：2017年4月24日 下午2:02:59   
+	 * @param message
+	 * @return
+	 */
+	public static DataResponse errorDataResponse() {
+		log.info("操作时出现异常！");
+		DataResponse dataResponse = new DataResponse();
+		dataResponse.setState(ERROR_STATE);
+		dataResponse.setMsg("操作失败");
+		return dataResponse;
+	}
+	
+
+}

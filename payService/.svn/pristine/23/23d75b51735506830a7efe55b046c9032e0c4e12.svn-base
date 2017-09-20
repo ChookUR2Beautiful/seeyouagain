@@ -1,0 +1,283 @@
+package com.xmniao.service.pay;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.apache.thrift.TException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.xmniao.common.DateUtil;
+import com.xmniao.common.ParamUtil;
+import com.xmniao.common.XmnConstants;
+import com.xmniao.dao.WalletExpansionMapper;
+import com.xmniao.dao.WalletExpansionRecordMapper;
+import com.xmniao.entity.WalletExpansion;
+import com.xmniao.entity.WalletExpansionRecord;
+import com.xmniao.entity.WalletExpenses;
+import com.xmniao.exception.ParamBlankException;
+import com.xmniao.service.CommonService;
+import com.xmniao.service.WalletExService;
+import com.xmniao.service.WalletService;
+import com.xmniao.thrift.ledger.FailureException;
+import com.xmniao.thrift.ledger.ResponseData;
+import com.xmniao.thrift.ledger.ResponsePageList;
+import com.xmniao.thrift.ledger.WalletExpansionService;
+
+
+@Service("WalletExpansionServiceImpl")
+public class WalletExpansionServiceImpl implements WalletExpansionService.Iface{
+	
+	/**
+	 * 日志记录
+	 */
+	private final Logger log = Logger.getLogger(WalletExpansionServiceImpl.class);
+	
+	@Autowired
+	private WalletExpansionMapper walletExpansionMapper;
+	
+	@Autowired
+	private WalletExpansionRecordMapper walletExpansionRecordMapper;
+	
+	/** 提现公共服务 */
+	@Autowired
+	private CommonService commonService;
+	
+	@Autowired
+	private WalletService walletService;
+	
+	@Autowired
+	private WalletExService walletExService;
+	
+	@Autowired
+	private SynthesizeServiceImpl syServiceImpl;
+	
+	@Transactional(rollbackFor={Exception.class,FailureException.class})
+	@Override
+	public Map<String,String> updateWalletExpansion(Map<String,String> param)throws FailureException, TException{
+		log.info("【开始执行更改扩展钱包接口】  param="+param);
+		Map<String,String> map= ParamUtil.getParamMap(param,"type","option","amount");
+		try {
+			ParamUtil.checkMustParam(map);
+			WalletExpansion wallet=walletService.getWalletExpansion(param);
+			if(wallet==null){
+				wallet=walletService.addWalletExpansion(param);
+			}
+			Map<String, String> signMap = wallet.toSignMap();
+			String sign = commonService.WalletExpansionSign(signMap);
+			if(!sign.equals(wallet.getSign())){
+				return ParamUtil.failMap("签名不正确");
+			}
+			if(wallet.getIsFreeze().intValue()==1){
+				return ParamUtil.failMap("钱包已被冻结,不能修改!");
+			}
+			Integer option = Integer.valueOf(map.get("option"));
+			WalletExpansionRecord expansionRecord = new WalletExpansionRecord();
+			expansionRecord.setWalletExpansionId(wallet.getId());
+			expansionRecord.setQamount(wallet.getAmount());
+			expansionRecord.setCreateTime(new Date());
+			BigDecimal amount= new BigDecimal(map.get("amount")).setScale(2);
+			switch (option) {
+			case 0:
+				//添加
+				expansionRecord.setType(Byte.valueOf("1"));
+				wallet.setAmount(wallet.getAmount().add(amount));
+				break;
+			case 1:
+				//减少
+				expansionRecord.setType(Byte.valueOf("2"));
+				if(wallet.getAmount().compareTo(amount)<0){
+					return ParamUtil.failMap("金额不足");
+				}
+				amount=amount.multiply(BigDecimal.valueOf(-1));
+				wallet.setAmount(wallet.getAmount().add(amount));
+				break;
+			default:
+				return ParamUtil.failMap("option参数不正确");
+			}
+			String recordType = param.get("recordType");
+			if(StringUtils.isNotBlank(recordType)){
+				expansionRecord.setType(new Byte(recordType));
+				if(expansionRecord.getType().intValue()==XmnConstants.EX_RECORD_TYPE_3||expansionRecord.getType().intValue()==XmnConstants.EX_RECORD_TYPE_4){
+					wallet.setTransfer(wallet.getTransfer().add(amount.abs()));
+				}
+			}
+			expansionRecord.setHamount(wallet.getAmount());
+			expansionRecord.setRemark(param.get("remark"));
+			expansionRecord.setSource(param.get("source"));
+			expansionRecord.setAmount(amount);
+			Map<String, String> signMap2 = wallet.toSignMap();
+			String sign2 = commonService.WalletExpansionSign(signMap2);
+			wallet.setOldSign(wallet.getSign());
+			wallet.setSign(sign2);
+			wallet.setAmount(amount);
+			wallet.setModifyTime(new Date());
+			int resultInt=walletExpansionMapper.updateAmountById(wallet);
+			if(resultInt>0){
+				walletExpansionRecordMapper.insert(expansionRecord);
+				log.info("【执行更改钱包接口完毕操作成功】");
+				return ParamUtil.successMap("操作成功");
+			}else{
+				log.info("【执行更改钱包接口完毕操作失败】");
+				return ParamUtil.failMap("操作失败");
+			}
+		} catch (ParamBlankException e) {
+			log.info("调用更新扩展钱包余额接口参数不匹配",e);
+			return ParamUtil.failMap(e.getMessage());
+		}catch(Exception e){
+			log.error("修改扩展钱包出现异常",e);
+			throw new FailureException();
+		}
+	}
+	
+	@Transactional(rollbackFor={Exception.class,FailureException.class})
+	@Override
+	public ResponseData withdrawalsExpansion(Map<String, String> param) throws FailureException, TException {
+		log.info("【开始调用扩展钱包转入到普通钱包操作】 param="+param);
+		String commision= param.get("commision");
+		if(StringUtils.isBlank(param.get("type"))){
+			return ParamUtil.fail("type不能为空");
+		}
+		try {
+			WalletExpansion wallet=walletService.getWalletExpansion(param);
+			if(wallet==null){
+				return ParamUtil.fail("钱包不存在");
+			}
+			if(XmnConstants.FORBIDTRANSFER_1.equals(wallet.getForbidTransfer())){
+				return ParamUtil.fail("该钱包类型不能转出");
+			}
+			Map<String, String> signMap = wallet.toSignMap();
+			String sign = commonService.WalletExpansionSign(signMap);
+			if(!sign.equals(wallet.getSign())){
+				return ParamUtil.fail("签名不正确");
+			}
+			if(wallet.getIsFreeze().intValue()==1){
+				return ParamUtil.fail("钱包已被冻结,不能修改!");
+			}
+			BigDecimal newCommision;
+			BigDecimal  rate=	walletExService.withdrawalsExpansion(param);
+			Map<String,String> walletMap = new HashMap<>();
+			walletMap.put("uId", param.get("uid"));
+			walletMap.put("userType", param.get("typeId"));
+			walletMap.put("option", "0");
+			walletMap.put("rType", XmnConstants.getExpansionType2rType(wallet.getType().intValue()).toString());
+			walletMap.put("expenses", rate.toString());
+			walletMap.put("orderId", UUID.randomUUID().toString());
+			if(StringUtils.isNotBlank(commision)){
+				BigDecimal commision1 = new BigDecimal(commision);
+				newCommision = commision1.subtract(rate);
+				walletMap.put("commision", newCommision.toString());
+			}else{
+				newCommision=new BigDecimal(param.get("zbalance"));
+				walletMap.put("zbalance", param.get("zbalance"));
+			}
+			Map<String, String> resMap = syServiceImpl.updateWalletAmount(walletMap);
+			if(!"0".equals(resMap.get("state"))){
+				log.info("会员钱包更新失败："+resMap+"\r\n"+param);
+				throw new FailureException(1,resMap.get("msg"));
+			}
+			Map<String,String> resultMap = new HashMap<>();
+			resultMap.put("amount", param.get("commision")==null?param.get("zbalance"):param.get("commision"));
+			resultMap.put("rate", rate.toString());
+			resultMap.put("amountCount", newCommision.toString());
+			return ParamUtil.success("操作成功", resultMap);
+		} catch (ParamBlankException e) {
+			log.info("调用扩展钱包转入到普通钱包接口参数不匹配",e);
+			return ParamUtil.fail(e.getMessage());
+		}catch(Exception e){
+			log.error("修改扩展钱包转入到普通钱包出现异常",e);
+			throw new FailureException();
+		}
+	}
+
+	@Override
+	public Map<String, String> getExpansionExpense(Map<String, String> param) throws FailureException, TException {
+		log.info("【开始调用扩展钱包获取手续费操作】 param="+param);
+		Map<String, String> hashMap = new HashMap<>();
+		hashMap.put("type", param.get("type"));
+		hashMap.put("commision", param.get("commision"));
+		try {
+			ParamUtil.checkMustParam(hashMap);
+			BigDecimal commision =new BigDecimal(hashMap.get("commision"));
+			WalletExpenses expansionExpense = walletExService.getExpansionExpense(commision, hashMap.get("type"));
+			Map<String, String> resultMap = ParamUtil.pojoToResultMap(expansionExpense, "rateType","rate","rateSum");
+			return resultMap;
+		} catch (ParamBlankException e) {
+			log.info("调用查询手续费参数异常",e);
+			return ParamUtil.failMap(e.getMessage());
+		}catch (Exception e) {
+			log.info("调用查询手续费出现异常",e);
+			throw new FailureException();
+		}
+	}
+
+	@Override
+	public ResponsePageList getExpansion(Map<String, String> param) throws FailureException, TException {
+		log.info("【开始调用扩展钱包获取钱包信息操作】 param="+param);
+		ResponsePageList pageList = new ResponsePageList();
+		try {
+			List<WalletExpansion> walletExpansion = walletService.getWalletExpansionList(param);
+			List<Map<String,String>> resultList=new LinkedList<>();
+			for (WalletExpansion wa : walletExpansion) {
+				Map<String, String> pojoToResultMap = ParamUtil.pojoToResultMap(wa,"type","amount","transfer","isFreeze","forbidTransfer");
+				if(wa.getWalletExpenses()!=null){
+					pojoToResultMap.put("rateType", wa.getWalletExpenses().getRateType()+"");
+					pojoToResultMap.put("rate", wa.getWalletExpenses().getRate()+"");
+				}
+				resultList.add(pojoToResultMap);
+			}
+			ResponseData success = ParamUtil.success("操作成功", null);
+			pageList.setDataInfo(success);
+			pageList.setPageList(resultList);
+			return pageList;
+		} catch (ParamBlankException e) {
+			log.info("调用查询扩展钱包余额参数异常",e);
+			ResponseData fail = ParamUtil.fail(e.getMessage());
+			pageList.setDataInfo(fail);
+			return pageList;
+		}catch(Exception e){
+			log.error("调用查询扩展钱包余额出现异常",e);
+			ResponseData error = ParamUtil.error();
+			pageList.setDataInfo(error);
+			return pageList;
+		}
+	}
+
+	@Override
+	public ResponsePageList getExpansionRecord(Map<String, String> param) throws FailureException, TException {
+		log.info("【开始调用扩展钱包获取钱包操作记录】 param="+param);
+		ResponsePageList pageList = new ResponsePageList();
+		try {
+			List<WalletExpansionRecord>  records = walletService.getWalletExpansionRecordList(param);
+			
+			List<Map<String,String>> resultList=new LinkedList<>();
+			for (WalletExpansionRecord r : records) {
+				Map<String, String> map = ParamUtil.pojoToResultMap(r,"type","remark","source","amount","expansionType");
+				map.put("createTime", DateUtil.formatDate(r.getCreateTime(), DateUtil.Y_M_D_HMS));
+				resultList.add(map);
+			}
+			ResponseData success = ParamUtil.success("操作成功", null);
+			pageList.setDataInfo(success);
+			pageList.setPageList(resultList);
+			return pageList;
+		}  catch (ParamBlankException e) {
+			log.info("调用查询扩展钱包操作记录参数异常",e);
+			ResponseData fail = ParamUtil.fail(e.getMessage());
+			pageList.setDataInfo(fail);
+			return pageList;
+		}catch (Exception e) {
+			log.error("调用查询扩展钱包操作记录出现异常",e);
+			ResponseData error = ParamUtil.error();
+			pageList.setDataInfo(error);
+			return pageList;
+		}
+	}
+
+}

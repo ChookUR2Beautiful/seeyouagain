@@ -1,0 +1,117 @@
+package com.xmniao.service;
+
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+import java.util.Map;
+
+import com.alibaba.rocketmq.client.exception.MQBrokerException;
+import com.alibaba.rocketmq.client.exception.MQClientException;
+import com.alibaba.rocketmq.remoting.exception.RemotingException;
+import com.xmniao.thrift.ledger.FailureException;
+
+public interface CommonService {
+	
+    public final int WITHRAW_RECORD = 1;
+	
+	public final int WITHRAW_JOINT = 2;
+	
+	/**
+	 * 更新提现打款状态
+	 * @param orderNumber  订单号
+	 * @param userType 用户类型 
+	 * @param status 状态
+	 * @param withdrawType 提现方式
+	 * @param uwsMap 分账系统参数
+	 */
+	public void updateWithdrawState(String orderNumber, String userType, int status,String withdrawType, Map<String,String> uwsMap) throws Exception;
+
+	/**
+	 * 根据提现流水号 得到提现记录
+	 * @param statusMap
+	 * @return
+	 */
+	public Map<String, Object> selectByflowid(Map<String, Object> statusMap);
+
+	/**
+	 * 根据提现流水号 得到提现记录
+	 * @param paramMap
+	 * @return
+	 */
+	public Map<String, Object> selectByjointid(Map<String, Object> paramMap);
+	/**
+	 * 根据提现流水号 得到提现状态
+	 * @param userType
+	 * @param orderNumber
+	 * @return
+	 */
+	public String getWithdrawStatus(String userType, String orderNumber);
+
+	/**
+	 * 根据用户类型 类型订单号得到提现记录   **注意：这个用户类型只是用来判断哪张表    
+	 * @param orderNumber
+	 * @param userType
+	 * @return
+	 */
+	public Map<String, Object> getWithdrawInfoByNumUsertype(String orderNumber,int userType);
+
+	/**
+	 * 根据 支付方式 支付状态 得到提现记录数      **注意：这个用户类型只是用来判断哪张表    
+	 * @param userType
+	 * @param status
+	 * @param platform
+	 * @return
+	 */
+	public Integer getWithdrawCountByStatusPlatform(int userType, String status,String platform);
+
+	/**
+	 * 根据 支付方式 支付状态 得到提现列表      **注意：这个用户类型只是用来判断哪张表    
+	 * @param userType 用户类型
+	 * @param status 状态
+	 * @param platform 支付方式
+	 * @param start 开始记录
+	 * @param end   结束记录
+	 * @return
+	 */
+	public List<Map<String, Object>> getWithdrawListByStatusPlatform(int userType,
+			String status, String platform, int start, int end);
+
+	public int getTableByUsertype(int userType);
+
+	void jointWithdrawOperate(Map<String, Object> wrRecordMap,
+			Map<String, Object> redisMap, Map<String, String> signMap,
+			Map<String, Object> amountMap) throws FailureException;
+
+	int withdrawOperate(Map<String, Object> wrRecordMap,
+			Map<String, Object> redisMap, Map<String, String> signMap,
+			Map<String, Object> amountMap) throws FailureException, UnsupportedEncodingException, MQClientException, RemotingException, MQBrokerException, InterruptedException;
+
+	double getTodayWithdrawals(String id, String type);
+
+	String walletSign(Map<String, String> signMap);
+	
+	/**
+	 * 尋蜜客錢包簽名
+	 * @param signMap
+	 * @return
+	 */
+	String XmerWalletSign(Map<String,String> signMap);
+
+	/**
+	 * 方法描述：直播钱包
+	 * 创建人： chenJie
+	 * 创建时间：2016年8月15日下午4:43:27
+	 * @param signMap
+	 * @return
+	 */
+	String LiveWalletSign(Map<String, String> signMap);
+	
+	/**
+	 * 
+	 * 方法描述：扩展钱包
+	 * 创建人：jianming  
+	 * 创建时间：2017年4月7日 上午11:57:29   
+	 * @param signMap
+	 * @return
+	 */
+	String WalletExpansionSign(Map<String, String> signMap);
+}

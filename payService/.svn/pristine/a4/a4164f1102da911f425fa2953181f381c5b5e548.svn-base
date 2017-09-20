@@ -1,0 +1,361 @@
+package com.xmniao.dao.manor;
+
+import com.xmniao.entity.manor.FlowerRecord;
+import com.xmniao.entity.manor.FlowerSeedingGiveRecord;
+import com.xmniao.entity.manor.GiveUserProps;
+import com.xmniao.entity.manor.Props;
+import com.xmniao.entity.manor.PropsRecord;
+import com.xmniao.entity.manor.PropsRedpackage;
+import com.xmniao.entity.manor.PropsRedpackageGiveRecord;
+import com.xmniao.entity.manor.PropsRedpackageRecord;
+import com.xmniao.entity.manor.PropsReport;
+import com.xmniao.entity.manor.PropsStatistics;
+import com.xmniao.entity.manor.UserProps;
+
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+/**
+ * 道具DAO
+ *
+ * @author liyuanbo
+ * @create 2017-05-31 14:33
+ **/
+@Repository
+public interface PropsMapper {
+    /**
+     * 扣除道具数量
+     *
+     * @param uid         用户ID
+     * @param propsType   道具类型
+     * @param propsSource 道具来源
+     * @param number      需要扣除的数量
+     */
+    int minusPropsNumber(@Param("uid") long uid, @Param("propsType") int propsType, @Param("propsSource") int propsSource, @Param("number") double number, @Param("updateTime") String updateTime);
+
+    /**
+     * 扣除道具数量
+     */
+    int minusPropsNumberById(@Param("id") long id, @Param("number") double number, @Param("updateTime") String updateTime);
+
+    /**
+     * 增加道具数量
+     */
+    int addPropsNumber(@Param("uid") long uid, @Param("propsType") int propsType, @Param("propsSource") int propsSource, @Param("number") double number, @Param("updateTime") String updateTime);
+
+    /**
+     * 增加用户花蜜道具表记录
+     */
+    int addNectaryPropsNumber(@Param("uid") long uid, @Param("propsSource") int propsSource, @Param("number") double number, @Param("updateTime") String updateTime);
+
+    /**
+     * 增加道具记录
+     */
+    int insertProps(@Param("props") Props props);
+
+    /**
+     * 批量插入道具类型
+     */
+    int batchInsertProps(@Param("list") List<Props> propses);
+
+
+    /**
+     * 保存道具使用记录
+     */
+    int savePropsRecord(@Param("propsRecords") PropsRecord propsRecords);
+
+    /**
+     * 保存道具使用记录
+     */
+    int batchSavePropsRecord(@Param("list") List<PropsRecord> propsRecords);
+
+
+    /**
+     * 统计用户的道具总数
+     *
+     * @param uid 操作的用户ID
+     */
+    List<UserProps> statisticsPropsByUserId(@Param("uid") long uid);
+
+
+    /**
+     * 获取用户未使用的赠送的花苗记录
+     */
+    List<FlowerSeedingGiveRecord> getFlowerGiveRecordByUid(@Param("uid") long uid, @Param("limit") int limit);
+
+    /**
+     * 更新用户赠送的花苗状态
+     */
+    int updateGiveRecordIds(@Param("uid") long uid, @Param("giveRecords") List<Long> giveRecords, @Param("useTime") String useTime);
+
+    /**
+     * 判断当前交易号是否已经存在在记录中
+     */
+    Integer countPropsRecordByTransNo(@Param("transNo") String transNo);
+
+    /**
+     * 统计当前用户是否已经发送过红包（根据交易。判断是否重复发送）
+     */
+    Integer countRedpackageByTransNoAndUid(@Param("uid") long uid, @Param("trandsNo") String trandsNo);
+
+    /**
+     * 插入红包发送记录
+     */
+    int saveRedpackage(@Param("propsRedpackage") PropsRedpackage propsRedpackage);
+
+    /**
+     * 插入红包发送记录
+     */
+    int saveRedpackages(@Param("list") List<PropsRedpackage> propsRedpackages);
+
+
+    /**
+     * 批量插入红包发送记录
+     */
+    int saveRedpackageGiveRecord(@Param("propsRedpackage") List<PropsRedpackageGiveRecord> giveRecords);
+
+
+    /**
+     * 根据UID和道具类型获取道具的来源数量
+     */
+    List<Props> listPropsByUidAndPropsType(@Param("uid") long uid, @Param("propsType") int propsType);
+
+    /**
+     * 获取当前用户的uid的历史红包记录
+     */
+    List<PropsRedpackage> listUserPropsRedpackageHistoryByUid(@Param("uid") long uid, @Param("offset") int offset, @Param("limit") int limit);
+
+    /**
+     * 获取用户发送红包的领取记录
+     */
+    List<PropsRedpackageRecord> listPropsRedpackageRecordByRedpackageId(@Param("redpackageId") long redpackageId);
+
+    /**
+     * 根据红包ID和用户ID获取记录
+     */
+    PropsRedpackageRecord getUserRedpacageRecord(@Param("redpackageId") long redpackageId, @Param("uid") long uid);
+
+    /**
+     * 增加用户的领取消费记录表
+     */
+    int insertPropsRedpackageRecord(@Param("redpackageRecord") PropsRedpackageRecord redpackageRecord);
+
+    /**
+     * 增加用户的领取消费记录表
+     */
+    int batchInsertPropsRedpackageRecord(@Param("list") List<PropsRedpackageRecord> redpackageRecords);
+
+    /**
+     * 更新红包表
+     */
+    int updateRedpackage(@Param("id") long id);
+
+    /**
+     * 更新园又赠送红包记录表
+     * @param redpackageId
+     * @param giveUid
+     * @return
+     */
+    int updateRedpackageGiveRecord(@Param("redpackageId") long  redpackageId,@Param("giveUid") long giveUid);
+
+    /**
+     * 获取红包的信息
+     *
+     * @param id 红包ID
+     */
+    PropsRedpackage getRedpackage(@Param("id") long id);
+
+    /**
+     * 根据用户ID，道具类型，道具来源获取道具信息
+     */
+    Props getUserPropsByUidAndTypeAndSource(@Param("uid") long uid, @Param("propsType") int propsType, @Param("propsSource") int propsSource);
+
+
+    /**
+     * 保存花苗赠送关系
+     */
+    int insertFlowerGiveRecord(@Param("uid") long uid, @Param("giveUid") long giveUid, @Param("createTime") String createTime);
+
+
+    /**
+     * 获取所有用户的阳光道具
+     */
+    List<PropsStatistics> getSunNumber();
+
+    /**
+     * 获取用户的操作日志
+     */
+    List<PropsRecord> listUserPropsRecordByUidAndChannel(@Param("uid") long uid, @Param("channel") int channel);
+
+
+    /**
+     * 更新红包退回状态
+     */
+    int updateRedpackageReturnStatus(@Param("id") long id);
+
+    /**
+     * 获取所有过期的红包
+     */
+    List<PropsRedpackage> listExpriePropsRepackage(@Param("nowtime") String nowtime);
+
+    /**
+     * 增加用户道具类型
+     */
+    int saveGiveUserProps(@Param("giveUserProps") GiveUserProps giveUserProps);
+
+    /**
+     * 获取当前用户被赠送的道具
+     */
+    List<GiveUserProps> listGiveUserPropsRecord(@Param("uid") long uid, @Param("propsType") int propsType);
+
+    /**
+     * 更新用户赠送的记录状态
+     */
+    int updateUserGiveStatus(@Param("ids") List<Long> ids, @Param("giveTransNo") String giveTransNo, @Param("propsType") int propsType, @Param("nowTime") String nowTime);
+
+    /**
+     * 获取当前用户所有未领取的红包
+     */
+    List<PropsRedpackage> listUserGiveRedpackages(@Param("uid") long uid);
+
+    /**
+     * 更新用户赠送的红包的已领取状态
+     */
+    int updateRedpackageGiveStatus(@Param("ids") List<Long> ids, @Param("uid") long uid);
+
+
+    /**
+     * 获取用户收益的花蜜
+     */
+    Double getUserAddNectarToday(@Param("uid") long uid, @Param("startTime") String startTime, @Param("endTime") String endTime);
+
+    /**
+     * 根据花苗的月份类型得到花苗的道具信息
+     */
+    Props getFlowerPropsByMonthType(@Param("uid") long uid, @Param("propsType") int propsType, @Param("propsSource") int propsSource, @Param("monthType") int monthType);
+
+    /**
+     * 更新自己购买类型花苗的数量
+     */
+    int addFlowerPropsByMonth(@Param("uid") long uid, @Param("number") int number, @Param("propsType") int propsType, @Param("propsSource") int propsSource,
+                              @Param("monthType") int monthType, @Param("updateTime") String updateTime);
+
+    /**
+     * 获取用户花蜜的报表
+     */
+    List<PropsReport> listUserNectaryReport(@Param("uid") long uid, @Param("offset") int offset, @Param("limit") int limit);
+
+    /**
+     * 获取一定时间内的赠送的种子
+     */
+    List<FlowerSeedingGiveRecord> getAllGiveFlowerByDate(@Param("uid") long uid, @Param("miunsTime") String miunsTime);
+
+    /**
+     * 查找一定时间内的购买花的记录
+     */
+    List<FlowerRecord> findFlowerRecordByDate(@Param("uid") long uid, @Param("miunsTime") String miunsTime);
+
+    /**
+     * 更新购买花的记录表数量
+     */
+    int updateGiveFlowerRecordNumberByUid(@Param("id") long id, @Param("number") double number, @Param("nowtime") String nowtime);
+
+    /**
+     * 获取用户购买的花朵
+     */
+    Props listUserBuyFlower(@Param("uid") long uid, @Param("monthType") int monthType);
+
+    /**
+     * 增加花的记录表
+     */
+    int saveFlowerRecord(@Param("flowerRecord") FlowerRecord flowerRecord);
+
+    /**
+     * 获取购买的花苗记录
+     *
+     * @param uid       操作的用户ID
+     * @param propsType 道具类型
+     * @param monthType 花苗的月份类型
+     */
+    List<FlowerRecord> findFlowerRecord(@Param("uid") long uid, @Param("propsType") int propsType, @Param("monthType") int monthType, @Param("miunsTime") String miunsTime);
+
+    /**
+     * 统计用户所有累计的花蜜
+     */
+    Double getUserAddNectarTotal(@Param("uid") long uid);
+
+    /**
+     * 获取所有未使用种子的用户
+     *
+     * @param offset 分页多少条
+     * @return limit 每页多少条
+     */
+    List<Long> getAllNotFinishGrowSeedUser(@Param("miunsTime") String miunsTime, @Param("offset") int offset, @Param("limit") int limit);
+
+    /**
+     * 获取所有未使用的花的用户
+     *
+     * @param offset 分页偏移量
+     * @param limit  每页多少条
+     */
+    List<Long> getAllNotFinishGrowUser(@Param("miunsTime") String miunsTime, @Param("offset") int offset, @Param("limit") int limit);
+
+    /**
+     * 根据一批红包ID获取红包
+     */
+    List<PropsRedpackage> selectRedpackageByTransNos(@Param("transNoList") List<String> transNoList);
+
+    /**
+     *获取用户所有未种赠送的花苗数据
+     * @param uid
+     * @return
+     */
+    List<GiveUserProps> listAllNotUseGiveFlower(@Param("uid") long uid);
+
+    /**
+     * 更新用户赠送的花苗状态为已使用
+     * @param uid
+     * @param giveUids
+     * @return
+     */
+    int updateUserGiveFloweUseStatus(@Param("uid") long uid ,@Param("giveUids") List<Long> giveUids,@Param("nowtime") String nowtime);
+
+    /**
+     * 获取用户领取红包的状态（园又赠送类型）
+     * @param redpackageId
+     * @param giveUid
+     * @return
+     */
+    PropsRedpackageGiveRecord getUserReceiveFriendsTypeRedpackage(@Param("redpackageId") long redpackageId,@Param("giveUid") long giveUid);
+
+    /**
+     * 获取赠送人的红包记录
+     * @param redpackageId
+     * @param giveUid
+     * @return
+     */
+    PropsRedpackageRecord getGiveUserRepackage(@Param("redpackageId") long redpackageId,@Param("giveUid") long giveUid);
+
+    /**
+     * 更新红包记录状态表
+     * @param ids
+     * @return
+     */
+    int updateRedpackageRecordStatus(@Param("list") List<Long> ids,@Param("nowTime")String nowTime);
+
+    /**
+     * 批量更新红包发送表信息
+     * @param redpackageIds
+     * @return
+     */
+    int batchUpdateRedpackage(@Param("list") List<Long> redpackageIds);
+
+    /**
+     * 获取所有已经领取的红包金额总数
+     * @return
+     */
+    Double getAllReceiveRedpackageMoneyByRedpackageId(@Param("redpackageId") long redpackageId);
+}
+

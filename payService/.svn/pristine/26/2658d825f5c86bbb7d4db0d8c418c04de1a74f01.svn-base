@@ -1,0 +1,44 @@
+#\u8bf7\u6c42\u5730\u5740\u3001\u77ed\u4fe1\u9a8c\u8bc1
+requestUrl=http://pay.soopay.net/spay/pay/payservice.do
+#\u9875\u9762\u56de\u8c03\u5730\u5740
+#pageUrl=http://t.pay.ekahuo.com/ump-page-callback
+#\u540e\u53f0\u901a\u77e5\u5730\u5740
+#notifyUrl=https://testpay.ekahuo.com/notify/100/01
+
+#not use
+#oneKeyNotifyUrl=https://testpay.ekahuo.com/notify/100/02
+
+#u\u4ed8\u5feb\u6377\u652f\u4ed8
+quickNotifyUrl=http://58.250.160.243:8000/xmwallet/notify/100/02/
+#u\u4ed8\u975e\u5feb\u6377\u652f\u4ed8
+unQuickNotifyUrl=http://58.250.160.243:8000/xmwallet/notify/100/01/
+#u\u4ed8\u7ed1\u5b9a\u548c\u89e3\u7ed1\u901a\u77e5url
+bindAndUnbindNotifyUrl=http://58.250.160.243:8000/xmwallet/notify/100/03/
+#u\u4ed8\u9000\u6b3e\u56de\u8c03\u901a\u77e5url
+refundNotifyUrl=http://58.250.160.243:8000/xmwallet/notify/100/04/
+#\u56de\u8c03\u5730\u5740
+pageCallbackUrl=http://58.250.160.243:8000/xmwallet/notify/100/00/page_callback
+#\u8ba2\u5355\u6709\u6548\u671f  \u5355\u4f4d\u5206\u949f
+expireTime=20
+
+#\u5546\u6237\u53f7
+merId=9083
+#\u7248\u672c\u53f7
+version=4.0
+#\u5e01\u79cd
+amtType=RMB
+#\u8fd4\u56de\u5730\u5740
+payType=B2CBANK
+#\u5546\u54c1\u540d\u79f0 --eq \u7535\u5b50\u5361\u5145\u503c
+goodsInfo=\u7535\u5B50\u5361\u5145\u503C
+#\u5b57\u7b26\u96c6
+charset=UTF-8
+#service pay_req html5\u7248\u672c
+serviceMob=pay_req
+service=pay_req_split_direct
+serviceQuick=pay_req_shortcut
+serviceSms=req_smsverify_shortcut
+servicePay=agreement_pay_confirm_shortcut
+serviceWeb=pay_req_shortcut_front
+#\u7b7e\u540d\u7c7b\u578b
+signType=RSA

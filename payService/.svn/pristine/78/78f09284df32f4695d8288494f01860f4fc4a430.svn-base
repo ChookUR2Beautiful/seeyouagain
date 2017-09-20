@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 	
+	http://www.springframework.org/schema/beans/spring-beans-4.1.xsd 
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-4.1.xsd 
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-4.1.xsd 
+	http://www.springframework.org/schema/util 
+	http://www.springframework.org/schema/util/spring-util-4.1.xsd
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-4.1.xsd">
+	
+	<context:component-scan base-package="com.xmniao.**">
+	       <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/> 
+    </context:component-scan> 
+
+	<!-- 事务配置 -->
+	<bean name="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	<context:annotation-config />
+	<tx:annotation-driven transaction-manager="transactionManager"
+		proxy-target-class="true" />
+
+	<!-- 数据源配置（支付库） -->
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+		init-method="init" destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url"
+			value="jdbc:mysql://192.168.50.251/test_data9?characterEncoding=utf8&amp;allowMultiQueries=true" />
+		<property name="username" value="joint" />
+		<property name="password" value="123456" />
+		<!-- 配置过滤 -->
+		<property name="filters" value="stat" />
+		<!-- 配置初始化大小、最小、最大 -->
+		<property name="initialSize" value="1" />
+		<property name="minIdle" value="1" />
+		<property name="maxActive" value="20" />
+		<!-- 配置获取连接等待超时的时间 -->
+		<property name="maxWait" value="60000" />
+		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+		<!-- 检测连接是否有效的SQL -->
+		<property name="validationQuery" value="SELECT 'x' from DUAL" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<property name="poolPreparedStatements" value="true" />
+		<property name="maxPoolPreparedStatementPerConnectionSize"
+			value="20" />
+	</bean>
+
+	<!-- 数据源配置（业务库） -->
+	<bean id="jointDataSource" class="com.alibaba.druid.pool.DruidDataSource"
+		init-method="init" destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url"
+			value="jdbc:mysql://mail.xmniao.com/test_data4?characterEncoding=utf8&amp;allowMultiQueries=true" />
+		<property name="username" value="joint" />
+		<property name="password" value="Joint&amp;0113" />
+		<!-- 配置过滤 -->
+		<property name="filters" value="stat" />
+		<!-- 配置初始化大小、最小、最大 -->
+		<property name="initialSize" value="1" />
+		<property name="minIdle" value="1" />
+		<property name="maxActive" value="20" />
+		<!-- 配置获取连接等待超时的时间 -->
+		<property name="maxWait" value="60000" />
+		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+		<!-- 检测连接是否有效的SQL -->
+		<property name="validationQuery" value="SELECT 'x' from DUAL" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<property name="poolPreparedStatements" value="true" />
+		<property name="maxPoolPreparedStatementPerConnectionSize"
+			value="20" />
+	</bean>
+	<!-- 配置Mybatis SqlSessionFactoryBean 自动装配映射文件 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="mapperLocations" value="classpath*:com/xmniao/dao/**/*.xml" />
+	</bean>
+	<!-- 自动 映射DAO层 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.xmniao.dao.**" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+	</bean>
+
+	<!-- 配置Mybatis SqlSessionFactoryBean 自动装配映射文件 -->
+	<bean id="jointSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="jointDataSource" />
+		<property name="mapperLocations" value="classpath*:com/xmniao/joint/dao/**/*.xml" />
+	</bean>
+	<!-- 自动 映射DAO层 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.xmniao.joint.dao.**" />
+		<property name="sqlSessionFactoryBeanName" value="jointSqlSessionFactory"/>
+	</bean>
+	
+	<!-- 缓存redis配置 -->
+	<bean id="jedisConnFactory"
+		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+		p:use-pool="true">
+		<property name="hostName" value="192.168.50.50" />
+		<property name="port" value="6379" />
+		<property name="timeout" value="3000" />
+		<property name="password" value="redispasswd" />
+	</bean>
+	<bean id="redisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
+		p:connection-factory-ref="jedisConnFactory" />
+
+	<!-- 加载thrift服务接口及实现 -->
+	<import resource="pay-thrift.xml" />
+	<bean id="thriftPoolExecutor"
+		class="org.springframework.scheduling.concurrent.ScheduledExecutorTask">
+		<property name="runnable" ref="thriftServerFactory" />
+		<!-- 容器加载1秒后开始执行 -->
+		<property name="delay" value="1000" />
+	</bean>
+	<bean id="xmnWalletPoolExecutor"
+		class="org.springframework.scheduling.concurrent.ScheduledExecutorTask">
+		<property name="runnable" ref="xmnWalletRedisPool" />
+		<!-- 容器加载1秒后开始执行 -->
+		<property name="delay" value="1000" />
+	</bean>
+
+	<!-- 线程池执行工厂 -->
+	<bean id="executorPoolFactory"
+		class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean">
+		<property name="scheduledExecutorTasks">
+			<list>
+				<ref bean="xmnWalletPoolExecutor" />
+				<ref bean="thriftPoolExecutor" /> 
+			</list>
+		</property>
+	</bean>
+
+	<!-- 分账系统 分账状态同步接口 黄小斌 -->
+	<bean name="IP_NUMBER" class="java.lang.String">
+		<constructor-arg value="992.168.20.221" />
+	</bean>
+	<bean name="PORT" class="java.lang.Integer">
+		<constructor-arg value="7913" />
+	</bean>
+	
+		<!-- 业务系统  ip -->
+	<bean name="BUSINESS_IP_NUMBER" class="java.lang.String">
+		<constructor-arg value="192.168.50.122" />
+	</bean>
+	
+	<bean name="IP_PORT_BUSINE" class="java.lang.Integer">
+		<constructor-arg value="7912" />
+	</bean>
+
+	<!-- 商家提现redis队列名称 -->
+	<bean name="storeRedisName" class="java.lang.String">
+		<constructor-arg value="123456" />
+	</bean>
+
+	<!-- 合作商提现redis队列名称 -->
+	<bean name="jointRedisName" class="java.lang.String">
+		<constructor-arg value="123456" />
+	</bean>
+
+	<!-- 自动提现redis名称 -->
+	<bean name="autoRedisName" class="java.lang.String">
+		<constructor-arg value="123456" />
+	</bean>
+	
+	<!-- 更新寻蜜鸟钱包redis名称 -->
+	<bean name="xmnWalletModifyRedisName" class="java.lang.String">
+		<constructor-arg value="xmn_wallet_modify_queue_cb" />
+	</bean>
+	
+	<bean name="withdrawMoneyConfig" class="com.xmniao.entity.WithdrawMoneyConfig">
+	    <property name="limitJoint" value="false" />
+	</bean>
+	
+	<bean name="timeUnit" class="java.lang.Integer">
+		<constructor-arg value="2"/>
+	</bean>
+	
+	<bean name="birdEggLimit" class="java.math.BigDecimal">
+		<constructor-arg value="50000000"/>
+	</bean>
+	<bean name="manorRepackageServiceCharge" class="java.lang.Double">
+      <constructor-arg  value = "10"/>
+	</bean>
+
+	<bean name="energyCoverFlower" class="java.lang.Integer">
+		<constructor-arg  value = "360"/>
+	</bean>
+</beans>

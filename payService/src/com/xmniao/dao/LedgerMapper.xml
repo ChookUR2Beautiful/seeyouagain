@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.LedgerMapper">
+
+	<!-- 保存分账订单 -->
+	<insert id="saveLedgerOrder" parameterType="map">
+		insert into
+		`t_ledger` (`order_id`, `u_id`, `u_money`, `s_id`, `s_money`,
+		`m_id`,
+		`m_money`, `m_type`, `br_id`, `br_money`, `cr_id`, `cr_money`,
+		`apply_date`,`m_expenses`,`br_expenses`,`cr_expenses`, `remark`
+		)
+		values
+		<foreach collection="list" item="item" separator="," index="index">
+			(#{item.orderId},#{item.uId},#{item.uMoney},#{item.sId},#{item.sMoney},#{item.mId},#{item.mMoney},#{item.mType},#{item.brId},#{item.brMoney},#{item.crId},#{item.crMoney},#{item.date},#{item.mExpenses},#{item.brExpenses},#{item.crExpenses}
+			<if test="item.remark != null and item.remark != ''">
+				,#{item.remark}
+			</if>
+			<if test="item.remark == null or item.remark == ''">
+				,''
+			</if>
+			)
+		</foreach>
+	</insert>
+	
+	<!-- 查询分账订单 -->
+	<select id="getLedgerOrder" resultType="map">
+		SELECT t.id,t.order_id orderId,t.u_id uId,t.u_money uMoney,t.s_id sId,t.s_money sMoney,t.m_id mId,t.m_money mMoney,t.m_type mType,t.m_expenses mExpenses,t.br_id brId,t.br_money brMoney,t.br_expenses brExpenses,t.cr_id crId,t.cr_money crMoney,t.cr_expenses crExpenses,t.remark FROM t_ledger t WHERE t.state = 0 and SYSDATE() > t.`apply_date` + INTERVAL 2 MINUTE ORDER BY apply_date ASC LIMIT 0,50
+	</select>
+	
+	<!-- 修改分账订单状态 -->
+	<update id="updateLedgerState" parameterType="map">
+		update t_ledger set state = #{state} where order_id = #{orderId} and state = 0
+	</update>
+	
+	<!-- 删除重复分账订单 -->
+	<delete id="deleteRepeatLedger" >
+		DELETE 
+		FROM
+		  `t_ledger` 
+		WHERE order_id IN 
+		  (SELECT 
+		    a.order_id 
+		  FROM
+		    (SELECT 
+		      order_id 
+		    FROM
+		      `t_ledger` 
+		    GROUP BY order_id 
+		    HAVING COUNT(id) > 1) a) 
+		    AND id NOT IN 
+		    (SELECT 
+		      b.id 
+		    FROM
+		      (SELECT 
+		        MIN(id) id 
+		      FROM
+		        `t_ledger` 
+		      GROUP BY order_id 
+		      HAVING COUNT(id) > 1) b) 
+	</delete>
+	
+	<!-- 删除分账订单 -->
+	<delete id="deleteLedger" parameterType="string">
+		delete from t_ledger where order_id = #{orderId}
+	</delete>
+</mapper>

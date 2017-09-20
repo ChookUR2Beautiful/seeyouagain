@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.manor.ManorRelatedMapper" >
+  <resultMap id="PropsRecordMap" type="com.xmniao.entity.manor.PropsRecord" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="trans_no" property="transNo" jdbcType="VARCHAR" />
+    <result column="batch_no" property="batchNo" jdbcType="VARCHAR" />
+    <result column="uid" property="uid" jdbcType="BIGINT" />
+    <result column="props_id" property="propsId" jdbcType="BIGINT" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="props_type" property="propsType" jdbcType="INTEGER" />
+    <result column="channel" property="channel" jdbcType="INTEGER" />
+    <result column="common" property="common" jdbcType="VARCHAR" />
+    <result column="num" property="num" jdbcType="INTEGER" />
+    <result column="qnum" property="qnum" jdbcType="INTEGER" />
+    <result column="hnum" property="hnum" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="exchange_number" property="exchangeNumber" jdbcType="INTEGER" />
+    <result column="exchange_amount" property="exchangeAmount" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="PropsRecord_Column_List" >
+    id, trans_no, batch_no, uid, props_id, type, props_type, channel, common, num, 
+    qnum, hnum, create_time, remark,exchange_number,exchange_amount
+  </sql>
+  
+  <select id="getSunshineRecord" resultMap="PropsRecordMap" parameterType="Map">
+  	select <include refid="PropsRecord_Column_List" />
+  	from b_manor_props_record
+  	where props_type=2  
+  	<if test="uid!=null">and uid=#{uid}</if>
+  	<if test="type!=null">and type=#{type}</if>
+  	<if test="propsId!=null">and props_id=#{propsId}</if>
+  	<if test="channel!=null">and channel in (${channel})</if>
+  	<if test="giveUid!=null">and give_uid=#{giveUid}</if>
+  	order by id desc
+  	limit ${cPage*pageSize},${pageSize}
+  </select>
+	
+  <select id="countSunshineRecord" resultType="Long" parameterType="Map">
+  	select count(*)
+  	from b_manor_props_record
+  	where props_type=2  
+  	<if test="uid!=null">and uid=#{uid}</if>
+  	<if test="type!=null">and type=#{type}</if>
+  	<if test="propsId!=null">and props_id=#{propsId}</if>
+  	<if test="channel!=null">and channel in (${channel})</if>
+  	<if test="giveUid!=null">and give_uid=#{giveUid}</if>
+  </select>
+  
+  <select id="getConvertRecord" resultMap="PropsRecordMap" parameterType="Map">
+  	select <include refid="PropsRecord_Column_List" />
+  	from b_manor_props_record
+  	where type=2  
+  	<if test="uid!=null">and uid=#{uid}</if>
+  	<if test="type!=null">and type=#{type}</if>
+  	<if test="propsId!=null">and prop_id=#{propsId}</if>
+  	<if test="channel!=null">and channel in (${channel})</if>
+  	<if test="giveUid!=null">and give_uid=#{giveUid}</if>
+  	order by id desc
+  	limit ${cPage*pageSize},${pageSize}
+  </select>
+	
+  <select id="countConvertRecord" resultType="Long" parameterType="Map">
+  	select count(*)
+  	from b_manor_props_record
+ 	where type=2  
+  	<if test="uid!=null">and uid=#{uid}</if>
+  	<if test="type!=null">and type=#{type}</if>
+  	<if test="propsId!=null">and prop_id=#{propsId}</if>
+  	<if test="channel!=null">and channel in (${channel})</if>
+  	<if test="giveUid!=null">and give_uid=#{giveUid}</if>
+  </select>  
+</mapper>

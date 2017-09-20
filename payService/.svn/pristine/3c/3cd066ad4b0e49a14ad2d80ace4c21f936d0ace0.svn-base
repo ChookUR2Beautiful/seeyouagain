@@ -1,0 +1,1030 @@
+package com.xmniao.service.pay;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.apache.thrift.TException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.xmniao.common.MapUtil;
+import com.xmniao.common.XmnConstants;
+import com.xmniao.dao.LiveWalletMapper;
+import com.xmniao.dao.WalletExpansionRecordMapper;
+import com.xmniao.dao.WalletExpensesMapper;
+import com.xmniao.dao.WalletMapper;
+import com.xmniao.dao.XmniaoWalletDao;
+import com.xmniao.service.WalletExService;
+import com.xmniao.thrift.ledger.FailureException;
+import com.xmniao.thrift.ledger.ResponseData;
+import com.xmniao.thrift.ledger.ResponseList;
+import com.xmniao.thrift.ledger.ResponsePageList;
+import com.xmniao.thrift.ledger.ResponseSubList;
+import com.xmniao.thrift.ledger.XmniaoWalletService;
+
+/**
+ * 寻觅鸟钱包接口
+ * 
+ * @author chenJie
+ * 
+ */
+@Service("XmniaoWalletServiceImpl")
+public class XmniaoWalletServiceImpl implements XmniaoWalletService.Iface {
+
+	/**
+	 * 初始化日志类
+	 */
+	private final Logger log = Logger.getLogger(XmniaoWalletServiceImpl.class);
+
+	@Autowired
+	private XmniaoWalletDao xmniaoWalletDao;
+	
+	@Autowired
+	private LiveWalletMapper liveWalletMapper;
+
+	@Autowired
+	private WalletExpansionRecordMapper walletExpansionRecordMapper;
+	
+	
+	@Autowired
+	private WalletMapper walletDao;
+	
+	
+	private static final Integer cPage = 1;// 当前页码，默认为1
+
+	private static final Integer pageSize = 10;// 页大小，默认为10
+
+	/**
+	 * 1.获取当前寻蜜鸟钱包的可提现余额及提现统计信息
+	 */
+	@Override
+	public ResponseData getXmnWithdrawAmount(Map<String, String> walletMap)
+			throws FailureException, TException {
+		log.info("获取提现统计信息getXmnWithdrawAmount：" + walletMap);
+		ResponseData responseData = new ResponseData();
+		Map<String, String> resultMap = new HashMap<>();
+		try {
+			if (null != walletMap) {
+				// 查询钱包信息
+				Map<String, Object> walletMsg = xmniaoWalletDao
+						.getWalletMsg(walletMap);
+
+				if (walletMsg == null) {
+					log.error("该用户没有寻觅鸟钱包" + walletMap);
+					responseData.setState(1);
+					responseData.setMsg("该用户没有寻觅鸟钱包");
+					return responseData;
+				}
+				resultMap.put("id", walletMsg.get("accountid") + "");
+				resultMap.put("commison", walletMsg.get("commision") + "");// 分账余额
+				resultMap.put("sellerAmount", walletMsg.get("sellerAmount")
+						+ "");// 营收余额
+
+				// 提现统计信息
+				Map<String, Object> withdrawCount = xmniaoWalletDao
+						.withdrawCount(walletMap);
+				if (withdrawCount == null) {
+					log.info("该用户没有提现记录");
+					responseData.setState(0);
+					responseData.setMsg("该用户没有提现记录");
+
+					resultMap.put("commisonCount", "0.00");
+					resultMap.put("sellerAmountCount", "0.00");
+					resultMap.put("commisonNum", "0");
+					resultMap.put("sellerAmountNum", "0");
+
+					responseData.setResultMap(resultMap);
+					return responseData;
+				}
+				resultMap.put("commisonCount",
+						withdrawCount.get("commisionCount") + "");
+				resultMap.put("sellerAmountCount",
+						withdrawCount.get("sellerAmountCount") + "");
+				resultMap.put("commisonNum", withdrawCount.get("commisionNum")
+						+ "");
+				resultMap.put("sellerAmountNum",
+						withdrawCount.get("sellerAmountNum") + "");
+				log.info("获取提现统计信息成功");
+				responseData.setState(0);
+				responseData.setMsg("查询成功");
+				responseData.setResultMap(resultMap);
+
+				return responseData;
+			} else {
+				log.error("获取提现统计信息失败,传入参数为空");
+				responseData.setState(2);
+				responseData.setMsg("获取提现统计信息失败,传入参数为空");
+				return responseData;
+			}
+		} catch (Exception e) {
+			log.error("获取提现统计信息失败", e);
+			responseData.setState(1);
+			responseData.setMsg("获取提现统计信息失败");
+			return responseData;
+		}
+	}
+
+	/**
+	 * 2.获取商户当天的收支信息(支出信息暂时无法查询)
+	 */
+	@Override
+	public ResponseData getBusinessInfo(Map<String, String> walletMap)
+			throws FailureException, TException {
+		log.info("获取商户当天的收支信息getBusinessInfo:" + walletMap);
+		ResponseData responseData = new ResponseData();
+		Map<String, String> resultMap = new HashMap<>();
+		// 验证参数
+		try {
+			if (StringUtils.isBlank(walletMap.get("id"))
+					&& (StringUtils.isBlank(walletMap.get("uId")) || StringUtils
+							.isBlank("userType"))) {
+				log.error("传入参数有误" + walletMap);
+				responseData.setState(2);
+				responseData.setMsg("传入参数有误");
+				return responseData;
+			}
+			// 获取钱包信息
+			Map<String, Object> walletMsg = xmniaoWalletDao
+					.getWalletMsg(walletMap);
+			if (walletMsg == null) {
+				log.error("该用户不存在会员钱包" + walletMap);
+				responseData.setState(1);
+				responseData.setMsg("该用户不存在会员钱包");
+				return responseData;
+			}
+
+			resultMap.put("id", walletMsg.get("accountid") + "");// 钱包id
+
+			Map<String, String> paraMap = new HashMap<>();
+			paraMap.put("accountid", walletMsg.get("accountid") + "");// 账号id
+
+			// 查询历史总收入信息
+			Map<String, Object> totalAmount = xmniaoWalletDao
+					.totalAmount(paraMap);
+			if (totalAmount != null) {
+				resultMap.put("commisonCount", totalAmount
+						.get("totalCommision").toString());
+				resultMap.put("sellerAmountCount",
+						totalAmount.get("totalIncome").toString());
+			} else {
+				log.info("该用户暂无收入" + walletMap);
+				resultMap.put("commisonCount", "0.00");
+				resultMap.put("sellerAmountCount", "0.00");
+			}
+
+			// 当天时间 yyyy-MM-dd
+			paraMap.put("sdate",
+					new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+			paraMap.put("uId", walletMap.get("uId"));
+
+			// 查询支出消费信息
+			Map<String, Object> currentDayOutAmount = xmniaoWalletDao
+					.getCurrentDayOutAmount(paraMap);
+			if (currentDayOutAmount != null) {
+				resultMap.put("expendAmount",
+						currentDayOutAmount.get("expendAmount").toString());
+				resultMap.put("expendCount",
+						currentDayOutAmount.get("expendCount").toString());
+				resultMap.put("expendNum", currentDayOutAmount.get("expendNum")
+						+ "");
+			} else {
+				log.info("该用户当天没有支出信息" + new Date() + walletMap.get("uId"));
+				resultMap.put("expendAmount", "0.00");
+				resultMap.put("expendCount", "0.00");
+				resultMap.put("expendNum", "0");
+			}
+
+			// 查询当天收入信息
+			Map<String, Object> currentDayAmount = xmniaoWalletDao
+					.getCurrentDayAmount(paraMap);
+			if (currentDayAmount != null) {
+				resultMap.put("commison", currentDayAmount.get("commision")
+						.toString());
+				resultMap.put("sellerAmount",
+						currentDayAmount.get("sellerAmount").toString());
+			} else {
+				log.info("该用户当天没有收入信息" + new Date() + walletMap);
+				resultMap.put("commison", "0.00");
+				resultMap.put("sellerAmount", "0.00");
+			}
+
+			log.info("获取商户当天的收支信息成功");
+			responseData.setState(0);
+			responseData.setMsg("获取商户当天的收支信息成功");
+			responseData.setResultMap(resultMap);
+			return responseData;
+		} catch (Exception e) {
+			log.error("获取商户当天的收支信息失败", e);
+			responseData.setState(1);
+			responseData.setMsg("获取商户当天的收支信息失败");
+			return responseData;
+		}
+
+	}
+
+	/**
+	 * 3. 获取商户历史营收信息列表
+	 */
+	@Override
+	public ResponsePageList getBusinessList(Map<String, String> walletMap)
+			throws FailureException, TException {
+		log.info("获取商户历史营收信息列表getBusinessList:" + walletMap);
+		ResponseData responseData = new ResponseData();
+		ResponsePageList responsePageList = new ResponsePageList();
+		Map<String, String> resultMap = new HashMap<>();
+		try {
+			// 验证参数
+			if (StringUtils.isBlank(walletMap.get("id"))
+					&& (StringUtils.isBlank(walletMap.get("uId")) || StringUtils
+							.isBlank("userType"))) {
+				log.error("传入参数有误" + walletMap);
+				responseData.setState(2);
+				responseData.setMsg("传入参数有误");
+				responsePageList.setDataInfo(responseData);
+				return responsePageList;
+			}
+
+			// 设置页码
+			if (StringUtils.isBlank(walletMap.get("cPage"))) {
+				walletMap.put("cPage", (cPage - 1) + "");
+			} else {
+				walletMap.put("cPage",
+						(Integer.valueOf(walletMap.get("cPage")) - 1) + "");
+			}
+			// 设置页大小
+			if (StringUtils.isBlank(walletMap.get("pageSize"))) {
+				walletMap.put("pageSize", pageSize.toString());
+			}
+
+			Map<String, Object> walletMsg = xmniaoWalletDao
+					.getWalletMsg(walletMap);
+
+			if (walletMsg == null) {
+				log.error("该用户不存在会员钱包" + walletMap);
+				responseData.setState(1);
+				responseData.setMsg("该用户不存在会员钱包");
+				responsePageList.setDataInfo(responseData);
+				return responsePageList;
+			}
+
+			walletMap.put("accountid", walletMsg.get("accountid") + "");
+
+			// 统计总记录数
+			Integer count = xmniaoWalletDao.countWalletRecord(walletMap);
+			if (count <= 0) {
+				log.info("该用户在所给时间段内没有收入" + walletMap);
+				responseData.setState(0);
+				responseData.setMsg("该用户在所给时间段内没有收入");
+				responsePageList.setDataInfo(responseData);
+				return responsePageList;
+			}
+
+			// 查询历史营收信息列表
+			List<Map<String, Object>> businessList = xmniaoWalletDao
+					.getBusinessList(walletMap);
+			List<Map<String, String>> list = new ArrayList<>();
+			for (Map<String, Object> map : businessList) {
+				list.add(MapUtil.Object2String(map));
+			}
+
+			// 获取历史总收入
+			Map<String, Object> totalAmount = xmniaoWalletDao
+					.totalAmount(walletMap);
+
+			resultMap.put("totalAmount", totalAmount.get("totalAmount")
+					.toString());// 总收入
+			resultMap.put("count", count + "");// 总记录数
+			resultMap.put("pageCount",
+					getPageCount(count + "", walletMap.get("pageSize")) + "");// 总页数
+
+			responseData.setState(0);
+			responseData.setMsg("获取商户历史营收信息列表成功");
+			responseData.setResultMap(resultMap);
+			responsePageList.setDataInfo(responseData);
+			responsePageList.setPageList(list);
+
+			return responsePageList;
+		} catch (Exception e) {
+			log.error("获取商户历史营收信息列表失败", e);
+			responseData.setState(1);
+			responseData.setMsg("获取商户历史营收信息列表失败");
+			responsePageList.setDataInfo(responseData);
+			return responsePageList;
+		}
+
+	}
+
+	/**
+	 * 4.获取钱包的提现信息列表
+	 */
+	@Override
+	public ResponseList getXmnWithdrawList(Map<String, String> walletMap)
+			throws FailureException, TException {
+		log.info("获取钱包的提现信息列表getXmnWithdrawList" + walletMap);
+		ResponseData responseData = new ResponseData();
+		ResponseList responseList = new ResponseList();
+		Map<String, String> resultMap = new HashMap<>();
+		try {
+			// 验证参数
+			if (StringUtils.isBlank(walletMap.get("id"))
+					&& (StringUtils.isBlank(walletMap.get("uId")) || StringUtils
+							.isBlank("userType"))) {
+				log.error("传入参数有误" + walletMap);
+				responseData.setState(2);
+				responseData.setMsg("传入参数有误");
+				responseList.setDataInfo(responseData);
+				return responseList;
+			}
+
+			// 设置页码
+			if (StringUtils.isBlank(walletMap.get("cPage"))) {
+				walletMap.put("cPage", (cPage - 1) + "");
+			} else {
+				walletMap.put("cPage",
+						(Integer.valueOf(walletMap.get("cPage")) - 1) + "");
+			}
+			// 设置页大小
+			if (StringUtils.isBlank(walletMap.get("pageSize"))) {
+				walletMap.put("pageSize", pageSize.toString());
+			}
+
+			// 获取统计提现总金额（提现成功，提现处理中）和总记录数
+			Map<String, Object> countWithdrawalAmount = xmniaoWalletDao
+					.countWithdrawalAmount(walletMap);
+
+			if ((long) countWithdrawalAmount.get("count") == 0) {
+				log.info("该时间段内没有提现记录" + walletMap);
+				responseData.setState(0);
+				responseData.setMsg("该时间段内没有提现记录");
+				responseList.setDataInfo(responseData);
+				return responseList;
+			}
+
+			resultMap.put("totalAmount",
+					countWithdrawalAmount.get("totalAmount").toString());// 总提现金额
+			resultMap.put("count", countWithdrawalAmount.get("count") + "");// 总记录数
+			resultMap.put(
+					"pageCount",
+					getPageCount(countWithdrawalAmount.get("count") + "",
+							walletMap.get("pageSize")) + "");// 总页数
+
+			// 获取月总提现列表
+			List<Map<String, Object>> withdrawalCount = xmniaoWalletDao
+					.withdrawalCountByMonth(walletMap);
+
+			List<ResponseSubList> dataList = new ArrayList<>();
+			Map<String, String> paraMap = new HashMap<>();
+			paraMap.put("uId", walletMap.get("uId"));
+			paraMap.put("userType", walletMap.get("userType"));
+			if (walletMap.get("type") != null) {
+				paraMap.put("type", walletMap.get("type"));
+			}
+			if (walletMap.get("status") != null) {
+				paraMap.put("status", walletMap.get("status"));
+			}
+			paraMap.put("withdrawKind",walletMap.get("withdrawKind"));
+			// 循环获取每月消费记录
+			for (Map<String, Object> map : withdrawalCount) {
+				ResponseSubList responseSubList = new ResponseSubList();
+				responseSubList.setCountSum(Double.valueOf(map.get("countSum")
+						.toString()));// 统计总和
+				responseSubList.setCountDate(map.get("date").toString());// 统计日期
+				paraMap.put("date", map.get("date").toString());
+				List<Map<String, Object>> withdrawalList = xmniaoWalletDao
+						.getWithdrawalList(paraMap);
+				List<Map<String, String>> dayList = new ArrayList<>();
+				for (Map<String, Object> map2 : withdrawalList) {
+					dayList.add(MapUtil.Object2String(map2));
+				}
+				responseSubList.setSubList(dayList);
+				dataList.add(responseSubList);
+
+			}
+
+			log.info("获取钱包的提现信息列表成功");
+			responseData.setState(0);
+			responseData.setMsg("获取钱包的提现信息列表成功");
+			responseData.setResultMap(resultMap);
+
+			responseList.setDataInfo(responseData);
+			responseList.setDataList(dataList);
+			return responseList;
+		} catch (Exception e) {
+			log.error("获取钱包的提现信息列表失败", e);
+			responseData.setState(1);
+			responseData.setMsg("获取钱包的提现信息列表失败");
+			responseList.setDataInfo(responseData);
+			return responseList;
+
+		}
+	}
+
+	/**
+	 * 5. 获取钱包的分账记录列表
+	 */
+	@Override
+	public ResponseList getXmnWalletLedgerList(Map<String, String> walletMap)
+			throws FailureException, TException {
+		log.info("获取钱包的分账记录列表getXmnWalletLedgerList" + walletMap);
+		ResponseData responseData = new ResponseData();
+		ResponseList responseList = new ResponseList();
+		Map<String, String> resultMap = new HashMap<>();
+		try {
+			// 验证参数
+			if (StringUtils.isBlank(walletMap.get("id"))
+					&& (StringUtils.isBlank(walletMap.get("uId")) || StringUtils
+							.isBlank("userType"))) {
+				log.error("传入参数有误" + walletMap);
+				responseData.setState(2);
+				responseData.setMsg("传入参数有误");
+				responseList.setDataInfo(responseData);
+				return responseList;
+			}
+
+			// 设置页码
+			if (StringUtils.isBlank(walletMap.get("cPage"))) {
+				walletMap.put("cPage", (cPage - 1) + "");
+			} else {
+				walletMap.put("cPage",
+						(Integer.valueOf(walletMap.get("cPage")) - 1) + "");
+			}
+			// 设置页大小
+			if (StringUtils.isBlank(walletMap.get("pageSize"))) {
+				walletMap.put("pageSize", pageSize.toString());
+			}
+
+			Map<String, Object> walletMsg = xmniaoWalletDao
+					.getWalletMsg(walletMap);
+
+			if (walletMsg == null) {
+				log.error("该用户不存在会员钱包" + walletMap);
+				responseData.setState(1);
+				responseData.setMsg("该用户不存在会员钱包");
+				responseList.setDataInfo(responseData);
+				return responseList;
+			}
+
+			walletMap.put("accountid", walletMsg.get("accountid") + "");
+			// 获取分账总金额（0 美食分账，22 线下积分分账）和总记录数
+			Map<String, Object> countLedgerAmount = xmniaoWalletDao
+					.countLedgerAmount(walletMap);
+			
+			if (countLedgerAmount != null && (long)countLedgerAmount.get("count")<=0) {
+				log.info("商家:"+walletMap.get("uId")+"没有分账信息");
+				resultMap.put("totalAmount","0.00");
+				resultMap.put("count","0");
+				resultMap.put("pageCount","0");
+				responseData.setResultMap(resultMap);
+				responseList.setDataInfo(responseData);
+				return responseList;
+			}else {
+				resultMap.put("totalAmount", countLedgerAmount.get("totalAmount")
+						.toString());// 总分账金额
+				resultMap.put("count", countLedgerAmount.get("count").toString());// 总记录数
+				resultMap.put(
+						"pageCount",
+						getPageCount(countLedgerAmount.get("count") + "",
+								walletMap.get("pageSize"))
+								+ "");// 总页数
+			}
+			
+			
+
+			// 获取每日分账总记录列表
+			List<Map<String, Object>> ledgerCount = xmniaoWalletDao
+					.ledgerCount(walletMap);
+
+			List<ResponseSubList> dataList = new ArrayList<>();
+			Map<String, String> paraMap = new HashMap<>();
+			paraMap.put("accountid", walletMsg.get("accountid") + "");
+			paraMap.put("btype", walletMap.get("btype"));
+			// 循环获取每月消费记录
+			for (Map<String, Object> map : ledgerCount) {
+				ResponseSubList responseSubList = new ResponseSubList();
+				responseSubList.setCountSum(Double.valueOf(map.get("countSum")
+						.toString()));// 统计总和
+				responseSubList.setCountDate(map.get("date").toString());// 统计日期
+				paraMap.put("date", map.get("date").toString());
+				List<Map<String, Object>> withdrawalList = xmniaoWalletDao
+						.ledgerList(paraMap);
+				List<Map<String, String>> dayList = new ArrayList<>();
+				for (Map<String, Object> map2 : withdrawalList) {
+					dayList.add(MapUtil.Object2String(map2));
+				}
+				responseSubList.setSubList(dayList);
+				dataList.add(responseSubList);
+
+			}
+
+			log.info("获取钱包的分账记录列表成功");
+			responseData.setState(0);
+			responseData.setMsg("获取钱包的分账记录列表成功");
+			responseData.setResultMap(resultMap);
+
+			responseList.setDataInfo(responseData);
+			responseList.setDataList(dataList);
+			return responseList;
+		} catch (Exception e) {
+			log.error("获取钱包的分账记录列表失败", e);
+			responseData.setState(1);
+			responseData.setMsg("获取钱包的分账记录列表失败");
+			responseList.setDataInfo(responseData);
+			return responseList;
+
+		}
+	}
+
+	/**
+	 * 6.获取商户的店外收益信息
+	 */
+	@Override
+	public ResponseData getSellerLedgerInfo(Map<String, String> walletMap)
+			throws FailureException, TException {
+		log.error("获取商户的店外收益信息getSellerLedgerInfo" + walletMap);
+		ResponseData responseData = new ResponseData();
+		Map<String, String> resultMap = new HashMap<>();
+
+		try {
+			// 验证参数
+			if (StringUtils.isBlank(walletMap.get("genussellerid"))
+					&& StringUtils.isBlank(walletMap.get("sellerid"))) {
+				log.error("genussellerid和sellerid都不可为空");
+				responseData.setState(2);
+				responseData.setMsg("genussellerid和sellerid都不可为空");
+				return responseData;
+			}
+
+			Map<String, String> parMap = new HashMap<>();
+			parMap.put("userType", "2");
+
+			parMap.put("uId", walletMap.get("sellerid"));// 消费商家
+
+			Map<String, Object> walletMsg = xmniaoWalletDao
+					.getWalletMsg(parMap);
+
+			if (walletMsg == null) {
+				log.error("该用户不存在会员钱包sellerid" + walletMap.get("sellerid"));
+				responseData.setState(1);
+				responseData.setMsg("该用户不存在会员钱包sellerid"
+						+ walletMap.get("sellerid"));
+				return responseData;
+			}
+
+			parMap.put("uId", walletMap.get("genussellerid"));// 所属商家
+
+			Map<String, Object> walletMsg2 = xmniaoWalletDao
+					.getWalletMsg(parMap);
+
+			if (walletMsg2 == null) {
+				log.error("该用户不存在会员钱包genussellerid"
+						+ walletMap.get("genussellerid"));
+				responseData.setState(1);
+				responseData.setMsg("该用户不存在会员钱包genussellerid"
+						+ walletMap.get("genussellerid"));
+				return responseData;
+			}
+
+			parMap.clear();
+			parMap.put("sellerAccountid", walletMsg.get("accountid") + "");// 消费商家
+			parMap.put("genusAccountid", walletMsg2.get("accountid") + "");// 所属商家
+
+			// 获取商户的店外收益信息
+			Map<String, Object> sellerLedgerInfo = xmniaoWalletDao
+					.getSellerLedgerInfo(parMap);
+
+			resultMap.put("count", sellerLedgerInfo.get("count") + "");
+			resultMap.put("commisonCount", sellerLedgerInfo
+					.get("commisonCount").toString());
+
+			log.info("获取商户的店外收益信息成功");
+			responseData.setState(0);
+			responseData.setMsg("获取商户的店外收益信息成功");
+			responseData.setResultMap(resultMap);
+
+			return responseData;
+		} catch (Exception e) {
+			log.error("获取商户的店外收益信息失败", e);
+			responseData.setState(1);
+			responseData.setMsg("获取商户的店外收益信息失败");
+			return responseData;
+		}
+	}
+
+	/**
+	 * 计算总页数
+	 * 
+	 * @param count
+	 *            总记录数
+	 * @param pageSize
+	 *            页大小
+	 * @return
+	 */
+	private int getPageCount(String count, String pageSize) {
+		int pageCount = Integer.valueOf(count) / Integer.valueOf(pageSize);// 总页数
+		if (Integer.valueOf(count) % Integer.valueOf(pageSize) != 0) {
+			pageCount++;
+		}
+		return pageCount;
+	}
+
+	/**
+	 * 获取商户支出信息列表
+	 */
+	@Override
+	public ResponseList getSellerExpenseList(Map<String, String> walletMap)
+			throws FailureException, TException {
+		log.info("获取商户支出信息列表getSellerExpenseList" + walletMap);
+		ResponseData responseData = new ResponseData();
+		ResponseList responseList = new ResponseList();
+		Map<String, String> resultMap = new HashMap<>();
+		try {
+			// 验证参数
+			if ((StringUtils.isBlank(walletMap.get("uId")) || StringUtils
+					.isBlank("userType"))) {
+				log.error("传入参数有误" + walletMap);
+				responseData.setState(2);
+				responseData.setMsg("传入参数有误");
+				responseList.setDataInfo(responseData);
+				return responseList;
+			}
+
+			// 设置页码
+			if (StringUtils.isBlank(walletMap.get("cPage"))) {
+				walletMap.put("cPage", (cPage - 1) + "");
+			} else {
+				walletMap.put("cPage",
+						(Integer.valueOf(walletMap.get("cPage")) - 1) + "");
+			}
+			// 设置页大小
+			if (StringUtils.isBlank(walletMap.get("pageSize"))) {
+				walletMap.put("pageSize", pageSize.toString());
+			}
+			
+			Map<String, Object> walletMsg = xmniaoWalletDao.getWalletMsg(walletMap);
+			if(walletMsg==null){
+				log.error("该用户没有寻蜜鸟钱包" + walletMap);
+				responseData.setState(2);
+				responseData.setMsg("该用户没有寻蜜鸟钱包");
+				responseList.setDataInfo(responseData);
+				return responseList;
+			}
+			walletMap.put("accountid",walletMsg.get("accountid").toString());//钱包id
+			//商家支出统计
+			Map<String, Object> sellerExpense = xmniaoWalletDao.getSellerExpense(walletMap);
+			
+			if (sellerExpense != null && (long)sellerExpense.get("count")<=0) {
+				log.info("商家:"+walletMap.get("uId")+"没有支出信息");
+				resultMap.put("totalAmount","0.00");
+				resultMap.put("count","0");
+				resultMap.put("pageCount","0");
+				responseData.setResultMap(resultMap);
+				responseList.setDataInfo(responseData);
+				return responseList;
+			}else {
+				resultMap.put("totalAmount",sellerExpense.get("totalAmount").toString());//支出总额
+				resultMap.put("count",sellerExpense.get("count").toString());//支出记录数
+				resultMap.put("pageCount",getPageCount(sellerExpense.get("count") + "",
+						walletMap.get("pageSize"))
+						+ "");//总页数
+			}
+			
+			//商家每日支出总额统计
+			List<Map<String, Object>> selleridExpenseByDay = xmniaoWalletDao.getSelleridExpenseByDay(walletMap);
+			
+			List<ResponseSubList> dataList = new ArrayList<>();
+			Map<String, String> paraMap = new HashMap<>();
+			paraMap.put("uId",walletMap.get("uId"));
+			paraMap.put("userType", walletMap.get("userType"));
+			paraMap.put("accountid",walletMsg.get("accountid").toString());
+			//循环获取每日支出的详细信息列表
+			for (Map<String, Object> map : selleridExpenseByDay) {
+				ResponseSubList responseSubList = new ResponseSubList();
+				responseSubList.setCountSum(Double.valueOf(map.get("countSum")
+						.toString()));// 统计总和
+				responseSubList.setCountDate(map.get("countDate").toString());// 统计日期
+				paraMap.put("time",map.get("countDate")+"");
+				List<Map<String, Object>> sellerExpenseList = xmniaoWalletDao.getSellerExpenseList(paraMap);
+				List<Map<String,String>> dayList = new ArrayList<>();
+				for (Map<String, Object> map2 : sellerExpenseList) {
+					dayList.add(MapUtil.Object2String(map2));
+				}
+				responseSubList.setSubList(dayList);
+				dataList.add(responseSubList);
+			}
+			
+			log.info("获取商户支出记录列表成功");
+			responseData.setState(0);
+			responseData.setMsg("获取商户支出记录列表成功");
+			responseData.setResultMap(resultMap);
+
+			responseList.setDataInfo(responseData);
+			responseList.setDataList(dataList);
+			
+			return responseList;
+		} catch (Exception e) {
+			log.error("获取钱包的支出记录列表失败", e);
+			responseData.setState(1);
+			responseData.setMsg("获取钱包的支出记录列表失败");
+			responseList.setDataInfo(responseData);
+			return responseList;
+		}
+	}
+
+	/**
+	 * 获取用户收支记录
+	 */
+	@Override
+	public ResponsePageList getUserWalletRecordList(
+			Map<String, String> walletMap) throws FailureException, TException {
+		ResponsePageList responsePageList = new ResponsePageList();
+		ResponseData dataInfo = new ResponseData();
+		try{
+			if(walletMap.get("userType")==null || !walletMap.get("userType").equals("1")){
+				log.error("用户类型错");
+				dataInfo.setState(2);
+				dataInfo.setMsg("用户类型错");
+				responsePageList.setDataInfo(dataInfo);
+				return responsePageList;
+			}
+			if(walletMap.get("pageSize")==null){
+				walletMap.put("pageSize", "10");
+			}
+			if(walletMap.get("cPage")==null||walletMap.get("cPage").equals("0")){
+				walletMap.put("cPage", "0");
+			}else{
+				walletMap.put("cPage", (Integer.parseInt(walletMap.get("cPage"))-1)+"");
+			}
+			Map<String,Object> uMap = new HashMap<String,Object>();
+			uMap.put("typeId", "1");
+			uMap.put("uId", walletMap.get("uId"));
+			Map<String,Object> wMap = walletDao.selectByuid(uMap);
+			walletMap.put("accountid", wMap.get("accountid").toString());
+			int pageSize = Integer.parseInt(walletMap.get("pageSize"));
+			Long count =  xmniaoWalletDao.getUserWalletRecordCount(walletMap);
+			Map<String,String> resultMap = new HashMap<String,String>();
+			resultMap.put("count", count+"");
+			resultMap.put("pageCount", (count%pageSize==0?count/pageSize:count/pageSize+1)+"");
+			List<Map<String,String>> pageList = new ArrayList<Map<String,String>>();
+			List<Map<String,Object>> list =  xmniaoWalletDao.getUserWalletRecordList(walletMap);
+			for(Map<String,Object> map:list){
+				String remarks = null;
+				if(map.get("remarks")==null||(map.get("remarks").toString().trim().equals(""))){
+					remarks = XmnConstants.getRtypeString((int)map.get("rtype"));
+					map.put("remarks", remarks);
+				}
+				
+				pageList.add(MapUtil.Object2String(map));
+			}
+			dataInfo.setState(0);
+			dataInfo.setMsg("查询成功");
+			dataInfo.setResultMap(resultMap);
+			responsePageList.setDataInfo(dataInfo);
+			responsePageList.setPageList(pageList);
+		}catch(Exception e){
+			log.error("查询用户钱包修改记录异常",e);
+			dataInfo.setState(1);
+			dataInfo.setMsg("查询异常");
+			responsePageList.setDataInfo(dataInfo);
+		}
+		return responsePageList;
+	}
+	
+	/**
+	 * 获取用户所有收支记录
+	 */
+	@Override
+	public List<Map<String, String>> getUserRecords(Map<String, String> paraMap)
+			throws FailureException, TException {
+		
+		log.info("获取用户所有收支记录getUserRecords:"+paraMap);
+		
+		//设置页大小
+		if(paraMap.get("pageSize")==null){
+			paraMap.put("pageSize", "10");
+		}
+		
+		//设置页大小
+		if(paraMap.get("cPage")==null||paraMap.get("cPage").equals("0")){
+			paraMap.put("cPage", "0");
+		}else{
+			paraMap.put("cPage", (Integer.parseInt(paraMap.get("cPage"))-1)+"");
+		}
+		
+		if(StringUtils.isBlank(paraMap.get("uid"))){
+			log.error("uid为空");
+			throw new FailureException(1,"uid为空");
+		}
+		
+		Map<String,Object> uMap = new HashMap<String,Object>();
+		uMap.put("typeId", "1");
+		uMap.put("uId", paraMap.get("uid"));
+		Map<String,Object> wMap = walletDao.selectByuid(uMap);
+		paraMap.put("accountid", wMap.get("accountid").toString());
+		
+		List<Map<String,String>> list = new ArrayList<>();
+		List<Map<String, Object>> userRecords = xmniaoWalletDao.getUserRecords(paraMap);
+		Long countUserRecord = xmniaoWalletDao.countUserRecord(paraMap);
+		for (Map<String, Object> map : userRecords) {
+			map.put("total", countUserRecord);
+			list.add(MapUtil.Object2String(map));
+		}
+		
+		return list;
+	}
+	
+	/**
+	 * 获取商家充值分账记录
+	 */
+	@Override
+	public ResponseList getSellerRechargeLedgerRecord(
+			Map<String, String> walletMap) throws FailureException, TException {
+		
+		log.info("获取商家充值分账记录getSellerRechargeLedgerRecord" + walletMap);
+		
+		ResponseData responseData = new ResponseData();
+		ResponseList responseList = new ResponseList();
+		Map<String, String> resultMap = new HashMap<>();
+		try {
+			// 验证参数
+			if ((StringUtils.isBlank(walletMap.get("uId")) || StringUtils
+					.isBlank("userType")) || StringUtils.isBlank(walletMap.get("rtype"))) {
+				log.error("传入参数有误" + walletMap);
+				responseData.setState(2);
+				responseData.setMsg("传入参数有误");
+				responseList.setDataInfo(responseData);
+				return responseList;
+			}
+
+			// 设置页码
+			if (StringUtils.isBlank(walletMap.get("cPage"))) {
+				walletMap.put("cPage", (cPage - 1) + "");
+			} else {
+				walletMap.put("cPage",
+						(Integer.valueOf(walletMap.get("cPage")) - 1) + "");
+			}
+			// 设置页大小
+			if (StringUtils.isBlank(walletMap.get("pageSize"))) {
+				walletMap.put("pageSize", pageSize.toString());
+			}
+			
+			Map<String, Object> walletMsg = xmniaoWalletDao.getWalletMsg(walletMap);
+			if(walletMsg==null){
+				log.error("该用户没有寻蜜鸟钱包" + walletMap);
+				responseData.setState(2);
+				responseData.setMsg("该用户没有寻蜜鸟钱包");
+				responseList.setDataInfo(responseData);
+				return responseList;
+			}
+			walletMap.put("accountid",walletMsg.get("accountid").toString());//钱包id
+			walletMap.put("rtype", walletMap.get("rtype"));//记录类型
+			//商家支出统计
+			Map<String, Object> sellerExpense = xmniaoWalletDao.getTotalLedgerMoney(walletMap);
+			
+			if (sellerExpense != null && (long)sellerExpense.get("count")<=0) {
+				log.info("商家:"+walletMap.get("uId")+"充值分账信息");
+				resultMap.put("totalAmount","0.00");
+				resultMap.put("count","0");
+				resultMap.put("pageCount","0");
+				responseData.setResultMap(resultMap);
+				responseList.setDataInfo(responseData);
+				return responseList;
+			}else {
+				resultMap.put("totalAmount",sellerExpense.get("totalAmount").toString());//收支总额
+				resultMap.put("count",sellerExpense.get("count").toString());//收支记录数
+				resultMap.put("pageCount",getPageCount(sellerExpense.get("count") + "",
+						walletMap.get("pageSize"))
+						+ "");//总页数
+			}
+			
+			//商家每日支出总额统计
+			List<Map<String, Object>> selleridExpenseByDay = xmniaoWalletDao.getTotalLedgerMoneyByDay(walletMap);
+			
+			List<ResponseSubList> dataList = new ArrayList<>();
+			Map<String, String> paraMap = new HashMap<>();
+			paraMap.put("accountid",walletMsg.get("accountid").toString());
+			paraMap.put("rtype",walletMap.get("rtype"));
+			//循环获取每日支出的详细信息列表
+			for (Map<String, Object> map : selleridExpenseByDay) {
+				ResponseSubList responseSubList = new ResponseSubList();
+				responseSubList.setCountSum(Double.valueOf(map.get("countSum")
+						.toString()));// 统计总和
+				responseSubList.setCountDate(map.get("countDate").toString());// 统计日期
+				paraMap.put("time",map.get("countDate")+"");
+				List<Map<String, Object>> sellerExpenseList = xmniaoWalletDao.getTotalLedgerMoneyDayList(paraMap);
+				List<Map<String,String>> dayList = new ArrayList<>();
+				for (Map<String, Object> map2 : sellerExpenseList) {
+					dayList.add(MapUtil.Object2String(map2));
+				}
+				responseSubList.setSubList(dayList);
+				dataList.add(responseSubList);
+			}
+			
+			log.info("获取商户支出记录列表成功");
+			responseData.setState(0);
+			responseData.setMsg("获取商户支出记录列表成功");
+			responseData.setResultMap(resultMap);
+
+			responseList.setDataInfo(responseData);
+			responseList.setDataList(dataList);
+			
+			return responseList;
+		} catch (Exception e) {
+			log.error("获取钱包的支出记录列表失败", e);
+			responseData.setState(1);
+			responseData.setMsg("获取钱包的支出记录列表失败");
+			responseList.setDataInfo(responseData);
+			return responseList;
+		}
+	}
+
+	@Override
+	public ResponsePageList getUserWalletRecordList2(Map<String, String> walletMap)
+			throws FailureException, TException {
+		log.info("【开始查询钱包操作记录2  普通钱包+直播钱包+扩展钱包  】 params="+walletMap);
+		ResponsePageList responsePageList = new ResponsePageList();
+		ResponseData dataInfo = new ResponseData();
+		try{
+			if(walletMap.get("userType")==null || !walletMap.get("userType").equals("1")){
+				log.error("用户类型错");
+				dataInfo.setState(2);
+				dataInfo.setMsg("用户类型错");
+				responsePageList.setDataInfo(dataInfo);
+				return responsePageList;
+			}
+			if(walletMap.get("pageSize")==null){
+				walletMap.put("pageSize", "10");
+			}
+			if(walletMap.get("cPage")==null||walletMap.get("cPage").equals("0")){
+				walletMap.put("cPage", "0");
+			}else{
+				walletMap.put("cPage", (Integer.parseInt(walletMap.get("cPage"))-1)+"");
+			}
+			Map<String,Object> uMap = new HashMap<String,Object>();
+			uMap.put("typeId", "1");
+			uMap.put("uId", walletMap.get("uId"));
+			Map<String,Object> wMap = walletDao.selectByuid(uMap);
+			walletMap.put("uid", walletMap.get("uId"));
+			Map<String, Object> liveWallet = liveWalletMapper
+					.getLiveWallet(walletMap);
+			if(liveWallet!=null){
+				walletMap.put("walletId", liveWallet.get("id")+"");
+			}else{
+				walletMap.put("walletId",null);
+			}
+			walletMap.put("accountid", wMap.get("accountid").toString());
+			walletMap.put("pageNo", walletMap.get("cPage"));
+			int pageSize = Integer.parseInt(walletMap.get("pageSize"));
+			
+			Map<String,String> resultMap = new HashMap<String,String>();
+			
+			/* 统计普通钱包 */
+			Long sumRecord = xmniaoWalletDao.sumRecord(walletMap);
+			
+			//统计鸟币
+			Long sumB= liveWalletMapper.sumBirdB(walletMap);
+			
+			//统计鸟豆
+			Long sumBeans = liveWalletMapper.sumBeans(walletMap);
+			
+			Long sumExpansion= walletExpansionRecordMapper.sumExpansion(walletMap);
+			
+			resultMap.put("sumExpansion", sumExpansion+"");
+			
+			resultMap.put("sumRecord", sumRecord+"");
+			
+			resultMap.put("sumB", sumB+"");
+			
+			resultMap.put("sumBeans", sumBeans+"");
+			
+			Long count =  xmniaoWalletDao.getUserWalletRecordCount2(walletMap);
+			resultMap.put("count", count+"");
+			resultMap.put("pageCount", (count%pageSize==0?count/pageSize:count/pageSize+1)+"");
+			List<Map<String,String>> pageList = new ArrayList<Map<String,String>>();
+			List<Map<String,Object>> list =  xmniaoWalletDao.getUserWalletRecordList2(walletMap);
+			for(Map<String,Object> map:list){
+				Long rtype= (Long) map.get("rtype");
+				if(rtype<0){
+					map.put("rtype", Math.abs(rtype.intValue()+1));
+				}
+				pageList.add(MapUtil.Object2String(map));
+			}
+			dataInfo.setState(0);
+			dataInfo.setMsg("查询成功");
+			dataInfo.setResultMap(resultMap);
+			responsePageList.setDataInfo(dataInfo);
+			responsePageList.setPageList(pageList);
+		}catch(Exception e){
+			log.error("查询用户钱包修改记录异常",e);
+			dataInfo.setState(1);
+			dataInfo.setMsg("查询异常");
+			responsePageList.setDataInfo(dataInfo);
+		}
+		return responsePageList;
+	}
+}

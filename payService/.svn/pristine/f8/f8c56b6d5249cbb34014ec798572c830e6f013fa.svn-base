@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.CheckWalletMapper">
+	<select id="getUserPwd" parameterType="map" resultType="map" >
+		select accountid , p_pwd from b_wallet where 1=1
+		<if test="userType==1">
+			and uid=#{uId}
+		</if>
+		<if test="userType==2">
+			and sellerid=#{uId}
+		</if>
+		<if test="userType==3">
+			and jointid=#{uId}
+		</if>
+		<if test="userType==4">
+			and allianceid=#{uId}
+		</if>
+	</select>
+	
+	<select id="selectByUid" parameterType="map" resultType="int" >
+		select count(id) from t_pwd_record where 1=1
+		<if test="userType==1">
+			and uid=#{uId}
+		</if>
+		<if test="userType==2">
+			and sellerid=#{uId}
+		</if>
+		<if test="userType==3">
+			and jointid=#{uId}
+		</if>
+		<if test="userType==4">
+			and allianceid=#{uId}
+		</if>
+	</select>
+</mapper>

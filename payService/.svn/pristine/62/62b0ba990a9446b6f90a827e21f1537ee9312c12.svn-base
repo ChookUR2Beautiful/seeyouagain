@@ -1,0 +1,315 @@
+package com.xmniao.entity;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+public class WalletExpansion {
+    /**
+     * 
+     */
+    private Long id;
+
+    /**
+     * 关联b_wallet accountid字段
+     */
+    private Long accountid;
+
+    /**
+     * 钱包收益拓展类型，0：综合收益，1:V客推荐， 2:V客红包，3:壕赚VIP红包，4:壕赚商户充值红包
+     */
+    private Byte type;
+
+    /**
+     * 余额
+     */
+    private BigDecimal amount;
+
+    /**
+     * 转出总金额
+     */
+    private BigDecimal transfer;
+
+    /**
+     * 是否冻结，0：否，1：是
+     */
+    private Byte isFreeze;
+
+    /**
+     * 记录时间
+     */
+    private Date createTime;
+
+    /**
+     * 更新时间
+     */
+    private Date modifyTime;
+
+    /**
+     * 除去sign本身及create_time字段，其它字段组合MD5
+     */
+    private String sign;
+    
+    private String typeRemark;
+    
+    /**
+     * 旧签名
+     */
+    private String oldSign;
+    
+    
+    /**
+     * 是否禁止转出 0：否 1：是
+     */
+    private Byte forbidTransfer;
+    
+    /**
+     * 钱包名称
+     */
+    private String name;
+    
+    /**
+     * uid
+     */
+    private Integer uid;
+    
+    /**
+     * 手动扣除总数
+     */
+    private BigDecimal decrease;
+    
+    public BigDecimal getDecrease() {
+		return decrease;
+	}
+
+	public void setDecrease(BigDecimal decrease) {
+		this.decrease = decrease;
+	}
+
+	public Integer getUid() {
+		return uid;
+	}
+
+	public void setUid(Integer uid) {
+		this.uid = uid;
+	}
+
+	/**
+     * 手续费
+     */
+    private WalletExpenses walletExpenses;
+    
+    public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public WalletExpenses getWalletExpenses() {
+		return walletExpenses;
+	}
+
+	public void setWalletExpenses(WalletExpenses walletExpenses) {
+		this.walletExpenses = walletExpenses;
+	}
+
+	public String getOldSign() {
+		return oldSign;
+	}
+
+	public void setOldSign(String oldSign) {
+		this.oldSign = oldSign;
+	}
+
+	public Byte getForbidTransfer() {
+		return forbidTransfer;
+	}
+
+	public void setForbidTransfer(Byte forbidTransfer) {
+		this.forbidTransfer = forbidTransfer;
+	}
+
+	public String getTypeRemark() {
+    	if(type==null){
+    		return "未知";
+    	}
+    	switch (type) {
+		case 0:
+			return "综合收益";
+		case 1:
+			return "V客推荐";
+		case 2:
+			return "V客红包";
+		case 3:
+			return "壕赚VIP红包";
+		case 4:
+			return "壕赚商户充值红包";
+		default:
+			break;
+		}
+		return typeRemark;
+	}
+
+	public void setTypeRemark(String typeRemark) {
+		this.typeRemark = typeRemark;
+	}
+
+	/**
+     * 
+     * @return id 
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * 
+     * @param id 
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    /**
+     * 关联b_wallet accountid字段
+     * @return accountid 关联b_wallet accountid字段
+     */
+    public Long getAccountid() {
+        return accountid;
+    }
+
+    /**
+     * 关联b_wallet accountid字段
+     * @param accountid 关联b_wallet accountid字段
+     */
+    public void setAccountid(Long accountid) {
+        this.accountid = accountid;
+    }
+
+    /**
+     * 钱包收益拓展类型，0：综合收益，1:V客推荐， 2:V客红包，3:壕赚VIP红包，4:壕赚商户充值红包
+     * @return type 钱包收益拓展类型，0：综合收益，1:V客推荐， 2:V客红包，3:壕赚VIP红包，4:壕赚商户充值红包
+     */
+    public Byte getType() {
+        return type;
+    }
+
+    /**
+     * 钱包收益拓展类型，0：综合收益，1:V客推荐， 2:V客红包，3:壕赚VIP红包，4:壕赚商户充值红包
+     * @param type 钱包收益拓展类型，0：综合收益，1:V客推荐， 2:V客红包，3:壕赚VIP红包，4:壕赚商户充值红包
+     */
+    public void setType(Byte type) {
+        this.type = type;
+    }
+
+    /**
+     * 余额
+     * @return amount 余额
+     */
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    /**
+     * 余额
+     * @param amount 余额
+     */
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    /**
+     * 转出总金额
+     * @return transfer 转出总金额
+     */
+    public BigDecimal getTransfer() {
+        return transfer;
+    }
+
+    /**
+     * 转出总金额
+     * @param transfer 转出总金额
+     */
+    public void setTransfer(BigDecimal transfer) {
+        this.transfer = transfer;
+    }
+
+    /**
+     * 是否冻结，0：否，1：是
+     * @return is_freeze 是否冻结，0：否，1：是
+     */
+    public Byte getIsFreeze() {
+        return isFreeze;
+    }
+
+    /**
+     * 是否冻结，0：否，1：是
+     * @param isFreeze 是否冻结，0：否，1：是
+     */
+    public void setIsFreeze(Byte isFreeze) {
+        this.isFreeze = isFreeze;
+    }
+
+    /**
+     * 记录时间
+     * @return create_time 记录时间
+     */
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    /**
+     * 记录时间
+     * @param createTime 记录时间
+     */
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    /**
+     * 更新时间
+     * @return modify_time 更新时间
+     */
+    public Date getModifyTime() {
+        return modifyTime;
+    }
+
+    /**
+     * 更新时间
+     * @param modifyTime 更新时间
+     */
+    public void setModifyTime(Date modifyTime) {
+        this.modifyTime = modifyTime;
+    }
+
+    /**
+     * 除去sign本身及create_time字段，其它字段组合MD5
+     * @return sign 除去sign本身及create_time字段，其它字段组合MD5
+     */
+    public String getSign() {
+        return sign;
+    }
+
+    /**
+     * 除去sign本身及create_time字段，其它字段组合MD5
+     * @param sign 除去sign本身及create_time字段，其它字段组合MD5
+     */
+    public void setSign(String sign) {
+        this.sign = sign == null ? null : sign.trim();
+    }
+
+	public Map<String, String> toSignMap() {
+		Map<String,String> map = new HashMap<>();
+		map.put("id", id.toString());
+		map.put("accountid", accountid.toString());
+		map.put("type", type.toString());
+		map.put("amount", amount.toString());
+		map.put("transfer", transfer.toString());
+		map.put("isFreeze", isFreeze.toString());
+		return map;
+	}
+	
+}

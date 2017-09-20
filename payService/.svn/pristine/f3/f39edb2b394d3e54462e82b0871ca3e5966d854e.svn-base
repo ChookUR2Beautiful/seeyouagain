@@ -1,0 +1,44 @@
+package com.xmniao.entity.manor;
+
+/**
+ * @author liyuanbo
+ * @create 2017-06-13 0:33
+ **/
+public class UserRepository {
+    private long uid;//用户ID
+    private int sunOverFlow;//阳光溢出数量
+    private int extendedRepositoryNumber;//扩展的仓库数量
+
+    public long getUid() {
+        return uid;
+    }
+
+    public int getSunOverFlow() {
+        return sunOverFlow;
+    }
+
+    public int getExtendedRepositoryNumber() {
+        return extendedRepositoryNumber;
+    }
+
+    public void setUid(long uid) {
+        this.uid = uid;
+    }
+
+    public void setSunOverFlow(int sunOverFlow) {
+        this.sunOverFlow = sunOverFlow;
+    }
+
+    public void setExtendedRepositoryNumber(int extendedRepositoryNumber) {
+        this.extendedRepositoryNumber = extendedRepositoryNumber;
+    }
+
+    @Override
+    public String toString() {
+        return "UserRepository{" +
+                "uid=" + uid +
+                ", sunOverFlow=" + sunOverFlow +
+                ", extendedRepositoryNumber=" + extendedRepositoryNumber +
+                '}';
+    }
+}

@@ -1,0 +1,176 @@
+package com.xmniao.service;
+
+import com.xmniao.thrift.manor.Result;
+import com.xmniao.thrift.manor.ResultList;
+
+/**
+ * 黄金花园service
+ *
+ * @author liyuanbo
+ * @create 2017-06-05 10:14
+ **/
+public interface PropsService {
+    /**
+     * 激活续租庄园
+     * @param transNo  消费交易号
+     * @param partenUid 用户的父上级ID
+     * @param uid 操作的用户ID
+     * @param type 类型1.激活 2续租
+     * @return
+     */
+    Result activateManor(String transNo, long partenUid, long uid, int type);
+
+    /**
+     * 施肥操作
+     * @param transNo  消费交易号
+     * @param uid      操作用户ID
+     * @param number  施肥渠道
+     *
+     * @return
+     */
+    Result ferilizeByUid( String transNo,long uid,int number);
+
+    /**
+     * 种花操作
+     * @param transNo 消费交易号
+     * @param uid   操作用户ID
+     * @param number  种花的数量
+     * @return
+     */
+    Result growFlowersByUid( String transNo,long uid, int number);
+
+    /**
+     * 统计用户道具
+     * @param uid  操作的用户ID
+     * @return
+     */
+    ResultList statisticsUserProps(long uid);
+
+    /**
+     * 发送红包
+     * @param transNo 消费交易号
+     * @param uid      操作的用户ID
+     * @param propsType 道具类型
+     * @param type
+     * @param number  发送的红包数量
+     * @param amount    发送的红包金额
+     * @return
+     */
+    Result sendPropsRedpackage(String transNo, long uid, int propsType, int type, int number, int amount);
+
+    /**
+     * 获取用户发送的红包历史记录
+     * @param uid  操作的用户ID
+     * @return
+     */
+    ResultList listUserPropsRedpackageHistoryByUid(long uid,int offset ,int limit);
+
+    /**
+     * 获取红包的领取记录
+     * @param redpackageId 红包ID
+     * @return
+     */
+
+    ResultList listPropsRedpackageRecordByRedpackageId(long redpackageId);
+
+    /**
+     * 用户领取红包
+     * @param redpackageId  红包ID
+     * @param uid  领取的用户ID
+     * @return
+     */
+    Result getPropsRedpackage(long redpackageId, long uid);
+
+    /**
+     * 赠送用户道具
+     * @param transNo 消费交易号
+     * @param uid     操作用户ID
+     * @param giveUid 被赠送的用户ID
+     * @param givePropsType 赠送的道具类型
+     * @param amount   赠送的金额
+     * @param   giveTime 赠送次数
+     * @return
+     */
+    Result giveUserProps(String transNo, long uid, long giveUid, int givePropsType, int amount,int giveTime);
+
+    /**
+     * 获取道具统计数量
+     * @param uid 操作的用户ID
+     * @return
+     */
+    Result statisticsUserRepertory(long uid);
+
+    /**
+     * 购买道具
+     * @param transNo  消费的交易号
+     * @param uid        操作的用户ID
+     * @param propsType    购买的道具类型
+     * @param number        购买的数量
+     * @param configSunNumber    配置的阳光比例数量
+     * @return
+     */
+    Result buyPropsUsePropsSun(String transNo, long uid, int propsType, int number, int configSunNumber);
+
+    /**
+     * 兑换抵用券
+     * @param transNo  交易号
+     * @param uid      操作用户ID
+     * @param voucherAmount 抵用券类型
+     * @param propsType     道具类型
+     * @param configPropsNumber 配置比例
+     * @param number      兑换数量
+     * @return
+     */
+    Result exchangeVoucher(String transNo, long uid, int voucherAmount, int propsType, int configPropsNumber, int number);
+
+
+    /**
+     * 兑换现金红包
+     *
+     * @param transNo            交易号
+     * @param uid                用户ID
+     * @param number             兑换的现金数量
+     * @param configNectarNumber 配置的花蜜数量
+     * @param moneyRedpackage    兑换的红包额度
+     */
+    Result exchangeMoneyRedpackage(String transNo, long uid, int number, int configNectarNumber, int moneyRedpackage);
+
+    /**
+     * 补领阳光
+     * @param transNo 消费交易号
+     * @param uid     操作用户ID
+     */
+    Result getOverflowSun(String transNo, long uid,int repertory);
+
+    /**
+     * 获取用户的阳光数量
+     * @return
+     */
+    Result getUserSunTotal(long uid );
+
+    /**
+     * 增加用户的能量总数
+     * @param uid
+     * @param number
+     * @return
+     */
+    Result addUserEnergy(long uid, double number);
+
+    /**
+     * 更新花苗状态
+     * @param uid
+     * @param giveUid
+     * @return
+     */
+    Result updateUserFlowerUseStatus(long uid,long giveUid);
+
+    /**
+     * 获取当前用户被赠送的花苗数量
+     * @param uid
+     * @return
+     */
+    Result getUserGiveFlower(long uid);
+
+    boolean initUserProps(long uid);
+
+}

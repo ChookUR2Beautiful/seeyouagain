@@ -1,0 +1,50 @@
+package com.xmniao.service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
+import com.xmniao.entity.WalletExpansionRecord;
+import com.xmniao.entity.WalletExpenses;
+import com.xmniao.thrift.ledger.FailureException;
+
+/**
+ * 扩展钱包
+ * @author jianming
+ *
+ */
+public interface WalletExService {
+	
+	/**
+	 * 转入可提现钱包
+	 * 方法描述：
+	 * 创建人：jianming  
+	 * 创建时间：2017年4月8日 下午5:35:06   
+	 * @param map
+	 * @return 
+	 */
+	BigDecimal withdrawalsExpansion(Map<String, String> map);
+	
+	/**
+	 * 
+	 * 方法描述：计算手续费
+	 * 创建人：jianming  
+	 * 创建时间：2017年4月8日 下午6:10:34   
+	 * @param commision 转入金额  
+	 * @param type 类型
+	 * @return
+	 */
+	WalletExpenses getExpansionExpense(BigDecimal commision, String type);
+
+	/**
+	 * 
+	 * 方法描述：根据数据源查询
+	 * 创建人：jianming  
+	 * 创建时间：2017年4月10日 下午3:12:05   
+	 * @param string
+	 * @return
+	 */
+	List<WalletExpansionRecord> getBySource(String string)  throws FailureException;
+
+
+}

@@ -1,0 +1,851 @@
+
+package com.xmniao.service.impl;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.alibaba.fastjson.JSON;
+import com.xmniao.common.PayRefundStatus;
+import com.xmniao.common.PayTypeUtil;
+import com.xmniao.common.RefundUtil;
+import com.xmniao.common.StateCodeUtil;
+import com.xmniao.common.UtilString;
+import com.xmniao.common.XmnConstants;
+import com.xmniao.dao.FreshOrderMapper;
+import com.xmniao.dao.FreshRefundMapper;
+import com.xmniao.dao.LiveWalletMapper;
+import com.xmniao.dao.PayOrderMapper;
+import com.xmniao.dao.PayRefundMapper;
+import com.xmniao.dao.WalletRecordMapper;
+import com.xmniao.entity.PayRefund;
+import com.xmniao.entity.WalletRecord;
+import com.xmniao.service.AliPayService;
+import com.xmniao.service.KuaiqianPayService;
+import com.xmniao.service.LlPayService;
+import com.xmniao.service.PnrRefundService;
+import com.xmniao.service.ReaPalService;
+import com.xmniao.service.RefundService;
+import com.xmniao.service.ShengPayService;
+import com.xmniao.service.TongPayService;
+import com.xmniao.service.UPayService;
+import com.xmniao.service.WPayService;
+import com.xmniao.service.WalletService;
+import com.xmniao.service.pay.LiveWalletServiceImpl;
+import com.xmniao.thrift.ledger.ResponseData;
+
+/**
+ * 实现退款操作的常用接口
+ * @author ChenBo
+ *
+ */
+@Service
+public class RefundServiceImpl implements RefundService {
+	
+
+	 //初始日志类
+	private final Logger log = Logger.getLogger(RefundServiceImpl.class);
+	
+	@Autowired
+	private PayRefundMapper payRefundMapper;
+	
+	@Autowired
+	private FreshRefundMapper freshRefundMapper;
+	
+	@Autowired
+	private PayOrderMapper payOrderMapper;
+	
+	@Autowired
+	private FreshOrderMapper freshOrderMapper;
+	/**
+	 * 支付宝支付退款服务
+	 */
+	@Autowired
+	private AliPayService aliPayService;
+	
+	@Resource(name="liveWalletMapperProxy")
+	private LiveWalletMapper lWalletMapper;
+	
+	@Autowired
+	private LiveWalletServiceImpl liveWalletServiceImpl;
+	
+	/**
+	 * 微信支付退款服务
+	 */
+	@Resource(name="wxPayRefund")
+	private WPayService wPayService;
+	
+	/**
+	 * 微信商场账号支付退款服务
+	 */
+	@Resource(name="wxV3PayRefund")
+	private WPayService wxfcPayService;
+	
+	/**
+	 * U付支付退款服务
+	 */
+	@Autowired
+	private UPayService uPayService;
+	
+	/**
+	 * 钱包服务
+	 */
+	@Autowired
+	private  WalletService walletService;
+			
+	/**
+	 * 汇付退款服务
+	 */
+	@Autowired
+	private PnrRefundService pnrPayService;
+	
+	/**
+	 * 融宝退款服务
+	 */
+	@Autowired
+	private ReaPalService reaPalService;
+	
+	/**
+	 * 盛付通退款服务
+	 */
+	@Autowired
+	private ShengPayService shengPayService;
+	
+	/**
+	 * 通联退款服务
+	 */
+	@Autowired
+	private TongPayService tongPayService;
+	
+	/**
+	 * 快钱退款服务
+	 */
+	@Autowired
+	private KuaiqianPayService kuaiqianPayService;
+	
+	/**
+	 * 连连退款服务
+	 */
+	@Autowired
+	private LlPayService llPayService;
+	
+	@Autowired
+	private WalletRecordMapper walletRecordMapper;
+	
+	//0.00元
+	private final BigDecimal ZERO = new BigDecimal("0.00"); 
+	
+	//退款费率
+	@Resource(name="Refund_Fee_Rate")
+	private BigDecimal FEE_RATE;
+	
+	
+	public PayRefund addPayRefundRecord(Map<String, Object> payOrder){
+		return addRefundRecord(payOrder,0);
+	}
+	
+	public PayRefund addFreshRefundRecord(Map<String, Object> payOrder){
+		return addRefundRecord(payOrder,1);
+	}
+	/**
+	 * 添加退款记录    
+	 * @param payOrder 订单信息
+	 * @param serviceType 0-寻蜜鸟系统订单，1-生鲜系统订单
+	 * @return
+	 */
+	public PayRefund addRefundRecord(Map<String, Object> payOrder,int serviceType){
+		log.info("添加退款记录");
+
+		try{
+			PayRefund payRefund = new PayRefund();
+			
+			payRefund.setAccountid((Integer)payOrder.get("accountid"));
+			payRefund.setUserId((Integer)payOrder.get("userId"));
+//			payRefund.setEdate(edate);
+//			payRefund.setId(id);			
+			payRefund.setAmount((BigDecimal)(payOrder.get("amount")==null?ZERO:payOrder.get("amount")));
+			payRefund.setBalance((BigDecimal)(payOrder.get("balance")==null?ZERO:payOrder.get("balance")));
+			payRefund.setCommision((BigDecimal)(payOrder.get("commision")==null?ZERO:payOrder.get("commision")));
+			payRefund.setDescription((String)(payOrder.get("description")==null?"":payOrder.get("description")));
+			payRefund.setIntegral((BigDecimal)(payOrder.get("integral")==null?ZERO:payOrder.get("integral")));
+			payRefund.setMoney((BigDecimal)(payOrder.get("money")==null?ZERO:payOrder.get("money")));
+			payRefund.setPayId((Long)payOrder.get("payId"));
+			payRefund.setRefundId(new SimpleDateFormat("yyMMddHHmmss").format(new Date()).toString()+UtilString.getFourDigit());
+			payRefund.setSamount((BigDecimal)(payOrder.get("samount")==null?ZERO:payOrder.get("samount")));
+			//payRefund.setSdate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()).toString());
+			payRefund.setStatus(PayRefundStatus.PROCESSING);
+			payRefund.setThirdId((String)(payOrder.get("thirdId")==null?"":payOrder.get("thirdId")));
+			payRefund.setThirdName((String)(payOrder.get("thirdName")==null?"":payOrder.get("thirdName")));
+			payRefund.setPayDate(payOrder.get("payDate")==null?"":new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(payOrder.get("payDate")));
+			payRefund.setFees(new BigDecimal("0.00"));//手续费
+			payRefund.setZamount((BigDecimal)(payOrder.get("zbalance")==null?ZERO:payOrder.get("zbalance")));
+			payRefund.setBid((payOrder.get("bid")==null?null:(BigInteger)payOrder.get("bid")));
+			payRefund.setPayDescription((payOrder.get("payDescription")==null?"":(String)payOrder.get("payDescription")));
+			payRefund.setSdate(UtilString.dateFormatNow());
+			
+			payRefund.setLiveCoin((BigDecimal)(payOrder.get("liveCoin")==null?ZERO:payOrder.get("liveCoin")));
+			payRefund.setSellerCoin((BigDecimal)(payOrder.get("sellerCoin")==null?ZERO:payOrder.get("sellerCoin")));
+			if(serviceType==0){
+				payRefundMapper.insertPayRefundByObject(payRefund);
+			}else if(serviceType==1){
+				freshRefundMapper.insertPayRefundByObject(payRefund);
+			}
+
+			log.info("添加退款记录成功！");
+			return payRefund;
+		}catch(Exception e){
+			e.printStackTrace();
+			log.error("添加退款记录异常！");
+		}
+		return null;
+	}
+
+
+	/**
+	 * 退款 ; 第三方支付，则构建第三方支付请求数据,纯钱包支付，则直接退款
+	 * @param payRefund 退款信息
+	 * @param orderNumber 原始订单编号
+	 * @return
+	 */
+	public Map<String,String> refundSubmit(PayRefund payRefund,String orderNumber){
+		return refundSubmit(payRefund,orderNumber,0);
+	}
+	public Map<String,String> refundSubmit(PayRefund payRefund,String orderNumber,int serviceType){
+		log.info("==="+JSON.toJSONString(payRefund)+"===");
+		Map<String,String> resultMap = new HashMap<String,String>();
+		
+		try{
+			//第三方支付金额
+			double refundAmount = Double.valueOf(String.format("%.2f",(payRefund.getSamount() == null?ZERO:payRefund.getSamount())));
+			String thirdName = payRefund.getThirdName();
+			if(thirdName.equals(PayTypeUtil.alipay)){
+				log.info("支付宝退款");
+				//阿里的退款流水号与表中的存储的流水号格式不一致，
+				String aliRefundId = aliPayService.refundIdTobatchNo(payRefund.getRefundId());
+				resultMap = aliPayService.aliPayRefund(aliRefundId, payRefund.getThirdId(),	refundAmount, payRefund.getDescription(),serviceType);
+			}else if(thirdName.equals(PayTypeUtil.umpay)){
+				log.info("U付退款");
+				String payDate = UtilString.dateFormatTodate((String)payRefund.getPayDate());
+				resultMap = uPayService.uPayRefund(payRefund.getRefundId(),String.valueOf(payRefund.getPayId()),payDate,refundAmount,refundAmount,serviceType);
+			}else if(thirdName.equals(PayTypeUtil.wxpay)){
+				log.info("微信/财付通退款");
+				resultMap = wPayService.wPayRefund(payRefund.getRefundId(), payRefund.getPayId()+""/*payRefund.getThirdId()*/,refundAmount,refundAmount);
+			}else if(thirdName.equals(PayTypeUtil.wypay)){
+				log.info("网银退款");
+				resultMap = returnMap(StateCodeUtil.PR_NOT_SUPPORTTYPE_PAY,"暂不支持网银支付退款服务");
+			} 
+			else if(thirdName.equals(PayTypeUtil.hfpay)){
+				log.info("汇付天下退款");
+				resultMap = pnrPayService.pnrPayRefund(payRefund.getRefundId(), String.valueOf(payRefund.getPayId()), refundAmount, payRefund.getDescription(),serviceType);
+			} 
+			else if(thirdName.equals(PayTypeUtil.sypay)){
+				
+				log.info("直接钱包退款");
+				resultMap = returnMap(StateCodeUtil.PR_SUCCESS,"");
+			}
+			else if(thirdName.equals(PayTypeUtil.bcoinpay)){
+				
+				log.info("直接直播钱包退款");
+				resultMap = returnMap(StateCodeUtil.PR_SUCCESS,"");
+			} 
+			else if(thirdName.equals(PayTypeUtil.rbpay)){
+				log.info("融宝退款");
+				resultMap = reaPalService.reaPalRefund(payRefund.getRefundId(), payRefund.getPayId().toString(),refundAmount, payRefund.getDescription());
+			} 
+			else if(thirdName.equals(PayTypeUtil.sftpay)){
+				log.info("盛付通退款");
+				//resultMap = returnMap(StateCodeUtil.PR_NOT_SUPPORTTYPE_PAY,"暂不支持盛付通支付退款服务");
+				resultMap = shengPayService.shengPayRefund(payRefund.getRefundId(), payRefund.getPayId().toString(), refundAmount, payRefund.getDescription(),serviceType);
+			}
+			else if(thirdName.equals(PayTypeUtil.tlpay)){
+				log.info("通联退款");
+				//日期转换
+				String payDate = payRefund.getPayDescription();//UtilString.dateFormatToNumber(payRefund.getPayDescription());
+				resultMap = tongPayService.tongPayRefund(payRefund.getPayId().toString(), payDate, refundAmount);
+			}
+			else if(thirdName.equals(PayTypeUtil.kqpay)){
+				log.info("快钱退款");
+				resultMap = kuaiqianPayService.kuaiqianPayRefund(payRefund.getRefundId(),payRefund.getPayId().toString(),refundAmount);
+			}
+			else if(thirdName.equals(PayTypeUtil.llpay)){
+				log.info("连连退款");
+				String payDate = UtilString.dateFormatToNumber(payRefund.getPayDate());
+				String refundDate = UtilString.dateFormatToNumber(payRefund.getSdate());
+				resultMap = llPayService.llPayRefund(payRefund.getRefundId(),payRefund.getThirdId(),refundAmount,payDate,refundDate,serviceType);
+			}
+			else if(thirdName.equals(PayTypeUtil.yhqpay)){
+				log.info("优惠券退款");
+				resultMap = returnMap(StateCodeUtil.PR_SUCCESS,"");
+			}else if(thirdName.equals(PayTypeUtil.wxscpay)){
+				log.info("微信商城退款");
+				resultMap = wxfcPayService.wPayRefund(payRefund.getRefundId(), payRefund.getPayId()+"",refundAmount,refundAmount);
+//				resultMap = returnMap(StateCodeUtil.PR_SUCCESS,"");
+			} 
+			else{
+				log.error("未知方式 的支付退款 "+thirdName);
+				resultMap = returnMap(StateCodeUtil.PR_NOT_SUPPORTTYPE_PAY,"未知方式 的支付退款");
+			}
+					
+			/*---------------------------------------------------*/
+			/*---退钱包部分：含第三方支付的订单，须第三方退款没出错后，才允许退钱包 ----*/
+			if(RefundUtil.isRefundSuccess(resultMap)){
+				
+//				//若钱包记录中，该单有取消支付记录(rtype=14)，则不退钱包金额，避免重复退钱包金额问题。
+				int result = this.getAccordRefundWallet(orderNumber);
+				if(result ==0){
+					resultMap = this.updateWallet(payRefund);
+				}else{
+					if(result ==1){
+						log.error("该订单已取消支付，不退钱包支付部分金额");
+						//resultMap.put("Msg", /*resultMap.get("Msg")+*/"该订单尚未消费，不允许退款! ");
+						//return returnMap(StateCodeUtil.PR_ORDER_NOTPAY,"该订单已取消支付，不退钱包支付部分金额");
+					}else if(result==2){
+						log.error("该订单尚未消费，不允许退钱包金额 ");
+						//resultMap.put("Msg", /*resultMap.get("Msg")+*/"该订单尚未消费，不允许退款! ");
+						//return returnMap(StateCodeUtil.PR_ORDER_DISENABLE,"该订单尚未消费，不允许退款!");
+					}else{
+						log.error("该订单不允许退钱包金额");
+						//resultMap.put("Msg", /*resultMap.get("Msg")+*/"该订单尚未消费，不允许退款! ");
+						//return returnMap(StateCodeUtil.PR_ORDER_DISENABLE,"该订单不允许退款!");
+					}
+					//不退钱包支付部分，统一作退款钱包成功
+					resultMap = returnMap(StateCodeUtil.PR_SUCCESS,"");
+				}
+			}else if(RefundUtil.isRefunding(resultMap)){
+				log.info("退款处理中  "+resultMap.get("Msg"));
+				resultMap.put("Msg", "退款处理中  "+resultMap.get("Msg"));
+			}else{
+				log.info("退款失败  "+resultMap.get("Msg"));
+				resultMap.put("Msg", "退款失败  "+resultMap.get("Msg"));
+			}
+			/*---------------------------------------------------*/
+			/*----------会员钱包退款成功后，对直播钱包进行退款------------*/
+//			if(RefundUtil.isRefundSuccess(resultMap)&&(payRefund.getLiveCoin().compareTo(BigDecimal.ZERO)>0||payRefund.getSellerCoin().compareTo(BigDecimal.ZERO)>0)){
+//				resultMap = liveCoinRefund(payRefund);
+//			}
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+			resultMap = returnMap(StateCodeUtil.PR_SYSTEM_ERROR,"RefundSubmit执行异常");
+		}
+
+		return resultMap;
+	}
+	
+	/**
+	 * 计算手续费
+	 * ROUND_HALF_UP 向“最接近的”数字舍入，如果与两个相邻数字的距离相等，则为向上舍入的舍入模式。 如1.4->1,1.5->2
+	 * @param totalMoney 总金额
+	 * @return 计算得出的手续费
+	 */
+	public BigDecimal generateFee(BigDecimal totalMoney){
+		return totalMoney.multiply(FEE_RATE).setScale(2,BigDecimal.ROUND_HALF_UP);
+	}
+
+	
+	/**
+	 * 扣取手续费
+	 * @param totelMoney 消息总金额
+	 * @param uId  用户/商家/合作商id
+	 * @param type 1-用户，2-商家，3，合作商
+	 * @return
+	 */
+	public Map<String,String> subtractRefundFee(BigDecimal refundFee,long uId,int type,String remarks){
+		Map<String,String> resultMap = new HashMap<String,String>();
+		if(type>3 || type<1){
+			returnMap(StateCodeUtil.PR_SYSTEM_ERROR,"参数错误");
+		}
+		if(refundFee.equals(ZERO)){
+			log.error("手续费为0，直接返回");
+			return returnMap(StateCodeUtil.PR_SUCCESS,"");
+		}
+		
+		Map<String,Object> walletMap = new HashMap<String,Object>();
+		walletMap.put("uId", uId);
+		walletMap.put("userType", type);
+		walletMap.put("seller_amount",new BigDecimal("-"+refundFee));
+		walletMap.put("rtype", 9);//手续费类型为9
+		walletMap.put("remarks",remarks);
+		walletMap.put("description", "用户"+"退款"+"元，手续费"+refundFee.toString()+"从商户扣除");
+		try{
+		resultMap = walletService.updateWalletAmount(walletMap);
+		}catch(Exception e){
+			log.error("退款失败，扣手续费出错",e);
+			resultMap = returnMap(StateCodeUtil.PR_SYSTEM_ERROR,"扣退款手续费失败");
+		}
+		return resultMap;
+	}
+	
+	/**
+	 * 扣取手续费
+	 * @param totelMoney 消息总金额
+	 * @param uId  用户/商家/合作商id
+	 * @param type 1-用户，2-商家，3，合作商
+	 * @return
+	 */
+	public Map<String,String> subtractRefundFee(Map<String,Object> feeMap){
+		Map<String,String> resultMap = new HashMap<String,String>();
+		if(feeMap == null || feeMap.size()==0){
+			returnMap(StateCodeUtil.PR_SYSTEM_ERROR,"参数错误");
+		}
+		if((int)feeMap.get("userType")>3 || (int)feeMap.get("userType")<1){
+			returnMap(StateCodeUtil.PR_SYSTEM_ERROR,"参数错误");
+		}
+		if(feeMap.get("fee").equals(ZERO)){
+			log.error("手续费为0，直接返回");
+			return returnMap(StateCodeUtil.PR_SUCCESS,"");
+		}
+		
+		Map<String,Object> walletMap = new HashMap<String,Object>();
+		walletMap.put("uId", feeMap.get("uId"));
+		walletMap.put("userType", feeMap.get("userType"));
+		walletMap.put("seller_amount",new BigDecimal("-"+feeMap.get("fee")));
+		walletMap.put("rtype", 9);//手续费类型为9
+		walletMap.put("remarks",feeMap.get("remarks"));
+		walletMap.put("description", feeMap.get("description"));
+		try{
+		resultMap = walletService.updateWalletAmount(walletMap);
+		}catch(Exception e){
+			log.error("退款失败，扣手续费出错",e);
+			resultMap = returnMap(StateCodeUtil.PR_SYSTEM_ERROR,"扣退款手续费失败");
+		}
+		return resultMap;
+	}
+	
+	/**
+	 * 查询退款记录
+	 * @param map 可查条件：sdate(yyyy-MM-dd),status(状态 )
+	 * @return
+	 */
+	public List<Map<String,String>> payRefundList(Map<String, Object> map){
+		log.info("[PayRefundServiceImpl.PayRefundList]map:"+JSON.toJSONString(map));
+
+		List<Map<String,String>> list =  payRefundMapper.getPayRefundList(map);
+		log.info(JSON.toJSON(list));
+		return list;
+	}
+
+	/**
+	 * 返回一个Map数据
+	 * @param code 状态代码
+	 * @param msg 错误信息
+	 * @return
+	 */
+	public Map<String,String> returnMap(String code,String msg){
+		return this.returnMap(code,msg,"");
+	}
+	
+	/**
+	 * 返回一个Map数据
+	 * @param code 状态代码
+	 * @param msg 错误信息
+	 * @param response 正确时的附带返回信息
+	 * @return
+	 */
+	public Map<String,String> returnMap(String code,String msg,String response){
+		Map<String,String> resultMap = new HashMap<String,String>();
+		resultMap.put("code", code);
+		resultMap.put("Msg",msg);
+		resultMap.put("response",response);
+		return resultMap;
+	}
+	
+		
+	/**
+	 * 更新钱包
+	 * @param payRefund 退款信息
+	 * @return
+	 */
+	public Map<String,String> updateWallet(PayRefund payRefund) throws Exception{
+		
+		Map<String,String> resultMap = new HashMap<String,String>();
+		
+		//退 钱包支付部分的钱到 钱包中
+		resultMap = this.refundWalletMoney(payRefund);
+		if(!resultMap.get("code").equals(StateCodeUtil.PR_SUCCESS)){
+			log.error("钱包退款部分异常");
+			return returnMap(StateCodeUtil.PR_SYSTEM_ERROR,"钱包退款部分异常");
+		}
+//
+//		resultMap.clear();
+//		//3.若有赠送金额或积分之类东西时，将其扣除
+//		resultMap = this.refoundWalletIntegral(payRefund);
+//		if(!resultMap.get("code").equals(StateCodeUtil.PR_SUCCESS)){
+//			log.error("钱包扣除积分部分异常");
+//			return returnMap(StateCodeUtil.PR_SYSTEM_ERROR," 钱包扣除积分部分异常");
+//		}
+//		
+//		log.info("退款流水号"+payRefund.getRefundId()+"退款成功！" );
+//		
+		//待全部退款完成后，再更新支付退款申请表数据
+		return returnMap(StateCodeUtil.PR_SUCCESS,"");
+
+	}
+	
+	/**
+	 * 退 钱包支付部分的钱到 钱包
+	 * @param payRefund
+	 * @return
+	 */
+	public Map<String,String> refundWalletMoney(PayRefund payRefund){
+		
+		Map<String,String> resultMap = new HashMap<String,String>();
+		try{
+			Map<String,Object> map = new HashMap<String,Object>();
+			
+			if(ZERO.compareTo(payRefund.getAmount()) != 0){
+				//使用了钱包支付,将该部分金额退还给钱包
+				map.put("amount", payRefund.getAmount());
+			}
+			if(ZERO.compareTo(payRefund.getBalance()) != 0){
+				//使用了佣金支付,将该部分金额退还给佣金
+				map.put("balance", payRefund.getBalance());
+			}
+			if(ZERO.compareTo(payRefund.getCommision()) != 0){
+				//使用了返利支付,将该部分金额退还给返利
+				map.put("commision", payRefund.getCommision());
+			}
+			if(payRefund.getZamount() != null && ZERO.compareTo(payRefund.getZamount()) != 0){
+				//使用了赠送金额支付，将该部分金额退款给赠送金额
+				map.put("zbalance", payRefund.getZamount());
+			}
+			if(payRefund.getIntegral() != null && ZERO.compareTo(payRefund.getIntegral()) != 0){
+				//使用了积分支付，将该部分积分退还给积分账户
+				map.put("integral", payRefund.getIntegral());
+			}
+			if(map.size() != 0){
+				map.put("accountid", payRefund.getAccountid());
+				//-----------------------------------
+				//----2016年3月10日--修改支持生鲜订单退款----
+				map.put("uId", payRefund.getUserId());
+				map.put("userType", 1);
+				//-----------------------------------
+				map.put("refundid", payRefund.getRefundId());	//退款流水号，添加修改钱包记录时，需做为备注信息记录下来
+				map.put("rtype", 1);
+				map.put("remarks", payRefund.getBid());
+				map.put("description", "用户退款");
+				resultMap = walletService.updateWalletAmount(map);
+			}
+			else{
+				log.info("该支付订单无钱包消费");
+				resultMap = returnMap(StateCodeUtil.PR_SUCCESS,"");
+			}
+		}catch(Exception e){
+			String errMsg="该钱包修改记录已插入，请勿重复插入";
+			if(e.getMessage() !=null && errMsg.equals(e.getMessage())){
+				log.info("该退款订单检测到已有退款修改钱包记录的相关记录，将不退款钱包部分，直接返回退款成功");
+				resultMap = returnMap(StateCodeUtil.PR_SUCCESS,"退款成功");
+			}else{
+				resultMap = returnMap(StateCodeUtil.PR_SYSTEM_ERROR,"程序执行异常");
+			}
+		}
+		return resultMap;
+	}
+	
+	/**
+	 * 更新退款订单状态
+	 * @param refundId 退款流水号
+	 * @param serviceType 0 寻蜜鸟 1生鲜
+	 * @param status   退款状态
+	 */
+	public void updateRefundStatus(String refundId,int status){
+		updateRefundStatus(refundId,status,0);
+	}
+	public void updateRefundStatus(String refundId,int status,int serviceType){
+		Map<String,Object> refundMap = new HashMap<String,Object>();
+		refundMap.put("refund_id", refundId);
+		refundMap.put("status", status);
+		refundMap.put("edate", UtilString.dateFormatNow());
+		if(serviceType == 0){
+			payRefundMapper.updatePayOrderByRefundId(refundMap);
+		}else if(serviceType == 1){
+			freshRefundMapper.updatePayOrderByRefundId(refundMap);
+		}
+	}
+	
+	/**
+	 * 更新退款记录信息
+	 * @param updateMap 更新的退款记录信息
+	 */
+	public void updateRefundInfo(Map<String,Object> updateMap){
+		payRefundMapper.updatePayOrderInfo(updateMap);
+	}
+	
+	/**
+	 * 根据pay_id查找退款记录
+	 * @param payId 支付Id
+	 */
+	public PayRefund getPayRefundRecordBypayId(long payId){
+		return payRefundMapper.getPayRefundBypayId(payId); 
+	}
+	public PayRefund getFreshRefundRecordBypayId(long payId){
+		return freshRefundMapper.getPayRefundBypayId(payId); 
+	}
+	@Override
+	public Map<String, String> queryRefund(String refundId,String payType) {
+		if(payType.equals(PayTypeUtil.umpay)){	//U付
+			return uPayService.queryUpayRefund(refundId);
+		}
+		else if(payType.equals(PayTypeUtil.wxpay)){	//W信
+			log.info("微信查询");
+			return wPayService.QueryWPayRefund(refundId,1);
+		}
+		else{
+			log.info("该类型无相关查询接口");
+		}
+		return null;
+	}
+	
+	/**
+	 * 0-允许退钱包金额
+	 * 其他-不允许退钱包金额
+	 */
+	public int getAccordRefundWallet(String orderNumber){
+		//若钱包记录中，该单有取消支付记录(rtype=14)，则不退钱包金额，避免重复退钱包金额问题。
+		Map<String,Object> wrMap = new HashMap<String,Object>();
+		wrMap.put("rtype", 14);
+		wrMap.put("remarks", orderNumber+"%");
+		if(walletRecordMapper.getRecordCount(wrMap)==0){
+			//若钱包记录中，该单没有消费记录(rtype=5)，则不退款钱包金额
+			wrMap.clear();
+			wrMap.put("rtype", 5);
+			wrMap.put("remarks", orderNumber+"%");
+			if(walletRecordMapper.getRecordCount(wrMap)>0){
+				return 0;
+			}else{
+				log.error("该订单尚未消费，不允许退款 ");
+				return 2;
+			}
+		}else{
+			log.error("该订单已取消支付，不退钱包支付部分金额");
+			return 1;
+		}
+	}
+
+	@Override
+	public Map<String,String> updateFreshBusineStatus(String bId, String code, String msg) {
+		String status=null;
+		Map<String,String> map = new HashMap<String,String>();
+		map.put("code",code);
+		if(RefundUtil.isRefundSuccess(map)){	//退款成功
+			status="5";
+		}else if(RefundUtil.isRefunding(map)){	//退款处理中
+			status="6";
+		}else{	//退款失败
+			status="7";
+		}
+		
+		//修改业务库订单状态，已删除2017年7月8日
+		return new HashMap<String,String>();
+	}
+
+	@Override
+	public PayRefund getPayRefundByRefundId(String refundId, int serviceType) {
+		if(serviceType == 0){
+			return payRefundMapper.getPayRefundByRefundId(refundId);
+		}else if(serviceType == 1){
+			return freshRefundMapper.getPayRefundByRefundId(refundId);
+		}
+		return null;
+	}
+
+	@Override
+	public Map<String, Object> getPayOrderBypayId(String payId,int serviceType) {
+		if(serviceType == 0){
+			return payOrderMapper.getPayOrderBypayId(payId);
+		}else if(serviceType == 1){
+			return freshOrderMapper.getPayOrderBypayId(payId);
+		}
+		return null;
+	}
+
+	/*
+	 * 回收订单的赠送金额和积分
+	 * 
+	 */
+	@Override
+	public boolean recoverHandsel(String orderNumber) {
+		if(UtilString.stringIsNotBlank(orderNumber)){
+			try{
+				WalletRecord wr = new WalletRecord();
+				wr.setRtype(XmnConstants.RTYPE_21);
+				wr.setRemarks(orderNumber+"_1");
+				if(walletService.getWalletRecord(wr)!=null){
+					//该退款订单已收回赠送部分金额积分，直接返回true
+					log.info("该退款订单已收回赠送部分金额积分，直接返回true");
+					return true;
+				}
+				
+				wr.setRtype(XmnConstants.RTYPE_4);
+				wr.setRemarks(orderNumber);
+				WalletRecord walletRecord = walletService.getWalletRecord(wr);
+				if(walletRecord==null){
+					//该订单没有赠送部分，直接返回true
+					log.info("该订单没有赠送部分，直接返回true");
+					return true;
+				}
+			
+				Map<String,Object> map = new HashMap<String,Object>();
+				
+				if(ZERO.compareTo(walletRecord.getAmount()) != 0){
+					//使用了钱包支付,将该部分金额退还给钱包
+					map.put("amount", getAmount(walletRecord.getAmount(),false));
+				}
+				if(ZERO.compareTo(walletRecord.getBalance()) != 0){
+					//使用了佣金支付,将该部分金额退还给佣金
+					map.put("balance", getAmount(walletRecord.getBalance(),false));
+				}
+				if(ZERO.compareTo(walletRecord.getCommision()) != 0){
+					//使用了返利支付,将该部分金额退还给返利
+					map.put("commision", getAmount(walletRecord.getCommision(),false));
+				}
+				if(walletRecord.getZbalance() != null && ZERO.compareTo(walletRecord.getZbalance()) != 0){
+					//使用了赠送金额支付，将该部分金额退款给赠送金额
+					map.put("zbalance", getAmount(walletRecord.getZbalance(),false));
+				}
+				if(walletRecord.getIntegral() != null && ZERO.compareTo(walletRecord.getIntegral()) != 0){
+					//使用了积分支付，将该部分积分退还给积分账户
+					map.put("integral", getAmount(walletRecord.getIntegral(),false));
+				}
+				if(map.size() != 0){
+					map.put("accountid", walletRecord.getAccountid());
+					map.put("recoverHandsel", true);	//新增参数，在选用哪种保存钱包修改记录方法中使用
+					map.put("rtype", XmnConstants.RTYPE_21);
+					map.put("remarks", orderNumber+"_1");
+					map.put("description", "退款回收该订单积分");
+					Map<String,String> resultMap = walletService.updateWalletAmount2(map);
+					log.info("退订单积分结果："+resultMap);
+					if(RefundUtil.isRefundSuccess(resultMap)){
+						return true;
+					}
+				}
+				else{
+					log.info("该支付订单无钱包消费");
+					return true;
+				}
+			}catch(Exception e){
+				log.error("收回积分失败",e);
+			}
+		
+			
+		}else{
+			
+		}
+		return false;
+	}
+	/**
+	 * 
+	 * @param strAmount
+	 * @param add  false 扣钱   true 加钱
+	 * @return
+	 */
+	private BigDecimal getAmount(BigDecimal amount,boolean add){
+		return add?amount.abs():amount.abs().negate();
+	}
+	
+	/**
+	 * 鸟币退款
+	 * @param payRefund
+	 * @return
+	 */
+	public Map<String,String> liveCoinRefund(PayRefund payRefund){
+		Map<String,String> resultMap = new HashMap<>();
+		
+		String orderNo = payRefund.getBid().toString();
+		
+		try {
+			
+			Map<String,Object> payOrder = payOrderMapper.getPayOrderByorderNumber(orderNo);
+			
+			payRefund.setUserId((Integer)payOrder.get("userId"));
+			//有鸟币支付部分，进行退还
+			if(payRefund.getLiveCoin().compareTo(BigDecimal.ZERO)>0){
+				//查询是否有鸟币支付记录
+				Long result = lWalletMapper.countCoinRecord(orderNo,1,15);
+				if(result == 1){
+					//查询是否存在鸟币退款记录
+					Long result2 = lWalletMapper.countCoinRecord(orderNo, 1,18);
+					if(result2 <=0){
+						log.info("公共鸟币退款");
+						Map<String,String> walletMap = new HashMap<>();
+						walletMap.put("rtype","18");
+						walletMap.put("uid",payRefund.getUserId().toString());
+						walletMap.put("option","0");
+						walletMap.put("zbalance",payRefund.getLiveCoin().toString());
+						walletMap.put("remarks",orderNo+"_1");
+						
+						ResponseData responseData = liveWalletServiceImpl.liveWalletOption(walletMap);
+						if(responseData.getState()== 0){
+							log.info("公共鸟币退款成功");
+						}else{
+							log.error("公共鸟币退款失败");
+							resultMap.put("code",StateCodeUtil.PR_REFUND_FAIL);
+							resultMap.put("Msg","公共鸟币退款失败");
+							return resultMap;
+						}
+					}else{
+						log.info("订单："+orderNo+"公共鸟币支付部分已完成退款");
+					}
+					
+				}else{
+					log.info("订单："+orderNo+"公共鸟币支付部分无支付记录");
+				}
+			}
+			//有商家专享鸟币支付部分，进行退还
+			if(payRefund.getSellerCoin().compareTo(BigDecimal.ZERO)>0){
+				
+				//查询是否有商家专享鸟币支付记录
+				Long result = lWalletMapper.countCoinRecord(orderNo,2,15);
+				if(result == 1){
+					//查询是否存在商家专享鸟币退款记录
+					Long result2 = lWalletMapper.countCoinRecord(orderNo,2,18);
+					if(result2 <=0){
+						log.info("商家专享鸟币退款");
+						Map<String,String> walletMap = new HashMap<>();
+						walletMap.put("rtype","18");
+						walletMap.put("uid",payRefund.getUserId().toString());
+						walletMap.put("option","0");
+						walletMap.put("sellerCoin",payRefund.getSellerCoin().toString());
+						walletMap.put("remarks",orderNo+"_2");
+						
+						ResponseData responseData = liveWalletServiceImpl.liveWalletOption(walletMap);
+						if(responseData.getState()== 0){
+							log.info("商家专享鸟币退款成功");
+						}else{
+							log.error("商家专享鸟币退款失败");
+							resultMap.put("code",StateCodeUtil.PR_REFUND_FAIL);
+							resultMap.put("Msg","商家专享鸟币退款失败");
+							return resultMap;
+						}
+					}else{
+						log.info("订单："+orderNo+"商家专享鸟币支付部分已完成退款");
+					}
+					
+				}else{
+					log.info("订单："+orderNo+"商家专享鸟币支付部分无支付记录");
+				}
+				
+			}
+		} catch (Exception e) {
+			log.info("订单："+orderNo+"鸟币退款异常",e);
+			resultMap.put("code",StateCodeUtil.PR_REFUND_FAIL);
+			resultMap.put("Msg","鸟币退款异常");
+			return resultMap;
+		}
+		
+		log.info("订单："+orderNo+"鸟币支付部分退款成功");
+		resultMap.put("code",StateCodeUtil.PR_SUCCESS);
+		resultMap.put("Msg","");
+		return resultMap;
+	}
+}

@@ -1,0 +1,32 @@
+package com.xmniao.dao;
+
+import com.xmniao.entity.WalletExpansionExpenses;
+
+import java.util.List;
+
+public interface WalletExpansionExpensesMapper {
+    int deleteByPrimaryKey(Long id);
+
+    int insert(WalletExpansionExpenses record);
+
+    int insertSelective(WalletExpansionExpenses record);
+
+    WalletExpansionExpenses selectByPrimaryKey(Long id);
+
+    int updateByPrimaryKeySelective(WalletExpansionExpenses record);
+
+    int updateByPrimaryKey(WalletExpansionExpenses record);
+
+    /**
+     * 查询拓展钱包金额 设置的手续费
+     * @return
+     */
+    List<WalletExpansionExpenses> selectList();
+
+    /**
+     * 根据条件查询钱包金额 设置的手续费
+     * @param record
+     * @return
+     */
+    List<WalletExpansionExpenses> selectListByRecord(WalletExpansionExpenses record);
+}

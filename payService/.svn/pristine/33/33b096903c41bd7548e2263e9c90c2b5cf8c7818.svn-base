@@ -1,0 +1,1166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.XmniaoWalletDao">
+	
+	<sql id="RecordListRtype">
+		(0,5,6,19,1,3,7,8,9,12,13,14,15,17,18,20,24,32,39,40,41,42)
+	</sql>
+	
+	<sql id="RecordListWhereSQL">
+		and accountid=#{accountid}
+		and rtype in <include refid="RecordListRtype"/>
+		<if test="sdate!=null and sdate!=''">
+			AND DATE_FORMAT(sdate,'%Y-%m-%d') &gt;= DATE_FORMAT(#{sdate},'%Y-%m-%d')
+		</if>
+		<if test="edate!=null and edate!=''">
+			AND DATE_FORMAT(sdate,'%Y-%m-%d') &lt;= DATE_FORMAT(#{edate},'%Y-%m-%d')
+		</if>
+		<if test="listType==1">
+					AND (hrebate &lt; qrebate OR hcommision &lt; qcommision OR hincome &lt; qincome OR hzbalance &lt; qzbalance OR hIntegral &lt; qIntegral) 
+				
+		</if>
+		<if test="listType==2">
+					AND (hrebate &gt; qrebate OR hcommision &gt; qcommision OR hincome &gt; qincome OR hzbalance &gt; qzbalance OR hIntegral &gt; qIntegral) 
+				
+		</if>
+	</sql>
+	
+	<select id="getUserWalletRecordList3" resultType="map"> 
+		 select 
+		cast(id as int) id,accountid,rtype,
+			(ABS(balance)+ABS(commision)+ABS(income)+ABS(zbalance)+ABS(integral)) amount, 
+		SUBSTRING_INDEX(remarks,'_',1) orderId,description remarks,sdate sdate,cast(1 as int) recordType
+		from b_wallet_record
+		where 1=1  
+		<include refid="RecordListWhereSQL"/>
+	    <if test="walletNum != null and walletNum != 'null'">
+	    	and sdate &lt;= (select sdate from b_wallet_record where id = #{walletNum})
+	    	and id &lt;> #{walletNum}
+	    </if>
+	    order by sdate desc 
+	    limit 0,${pageSize}
+	</select>
+	
+	<select id="countUserWalletRecordList3" resultType="java.lang.Long">
+		select 
+		COUNT(1) as count
+		from b_wallet_record
+		where 1=1
+		<include refid="RecordListWhereSQL"/>
+	</select>
+	
+	<!-- 获取钱包信息 -->
+	<select id="getWalletMsg" parameterType="map" resultType="map">
+		SELECT accountid,commision,seller_amount sellerAmount
+		FROM b_wallet
+		WHERE 1=1
+		<if test="id != null">
+			AND accountid =#{id}
+		</if>
+		<if test="uId != null and userType == 1">
+			AND uid = #{uId}
+		</if>
+		<if test="uId != null and userType ==2">
+			AND sellerid = #{uId}
+		</if>
+		<if test="uId != null and userType ==3">
+			AND jointid = #{uId}
+		</if>
+	</select>
+
+	<!-- 提现统计信息 -->
+	<select id="withdrawCount" parameterType="map" resultType="map">
+		SELECT SUM(income) sellerAmountCount,SUM(commision) commisionCount,
+		SUM(CASE WHEN income=0 THEN 0 ELSE 1 END )
+		sellerAmountNum,
+		SUM(CASE
+		WHEN commision=0 THEN 0 ELSE 1 END ) commisionNum
+		FROM
+		b_withdrawals_record
+		WHERE 1=1
+		<if test="uId != null and userType == 1">
+			AND uid = #{uId}
+		</if>
+		<if test="uId != null and userType ==2">
+			AND sellerid = #{uId}
+		</if>
+		<if test="uId != null and userType ==3">
+			AND jointid = #{uId}
+		</if>
+		AND status IN(0,1,3)
+	</select>
+
+	<!-- 获取商户历史营收信息列表 -->
+	<select id="getBusinessList" parameterType="map" resultType="map">
+		SELECT SUM(commision) commision,SUM(income)
+		sellerAmount,DATE_FORMAT(sdate,'%Y-%m-%d')
+		date,(SUM(commision)+SUM(income)) dayAmount ,COUNT(1) num
+		FROM
+		b_wallet_record
+		WHERE accountid = #{accountid}
+		AND rtype IN(0,22)
+		<if test="sdate != null and sdate == edate">
+			AND DATE_FORMAT(sdate,'%Y-%m-%d') =
+			DATE_FORMAT('${sdate}','%Y-%m-%d')
+		</if>
+		<if test="sdate != null and sdate != edate">
+			<if test="sdate != null">
+				AND DATE_FORMAT(sdate,'%Y-%m-%d') &gt;=
+				DATE_FORMAT('${sdate}','%Y-%m-%d')
+			</if>
+			<if test="edate != null">
+				AND DATE_FORMAT(sdate,'%Y-%m-%d') &lt;=
+				DATE_FORMAT('${edate}','%Y-%m-%d')
+			</if>
+		</if>
+		GROUP BY DATE_FORMAT(sdate,'%y-%m-%d')
+		ORDER BY sdate DESC
+		LIMIT
+		${cPage*pageSize},${pageSize}
+	</select>
+
+	<!-- 获取商户收入总记录数 -->
+	<select id="countWalletRecord" parameterType="map" resultType="int">
+		SELECT count(1) count
+		FROM b_wallet_record
+		WHERE accountid =
+		#{accountid}
+		<if test="sdate != null and sdate == edate">
+			AND DATE_FORMAT(sdate,'%Y-%m-%d') =
+			DATE_FORMAT('${sdate}','%Y-%m-%d')
+		</if>
+		<if test="sdate != null and sdate != edate">
+			<if test="sdate != null">
+				AND DATE_FORMAT(sdate,'%Y-%m-%d') &gt;=
+				DATE_FORMAT('${sdate}','%Y-%m-%d')
+			</if>
+			<if test="edate != null">
+				AND DATE_FORMAT(sdate,'%Y-%m-%d') &lt;=
+				DATE_FORMAT('${edate}','%Y-%m-%d')
+			</if>
+		</if>
+		AND rtype IN(0,22)
+	</select>
+
+	<!-- 统计历史总收入 -->
+	<select id="totalAmount" parameterType="map" resultType="map">
+		SELECT SUM(commision) totalCommision,SUM(income)
+		totalIncome,(SUM(commision)+SUM(income)) totalAmount
+		FROM
+		b_wallet_record
+		WHERE accountid =#{accountid}
+		<if test="sdate != null and sdate == edate">
+			AND DATE_FORMAT(sdate,'%Y-%m-%d') =
+			DATE_FORMAT('${sdate}','%Y-%m-%d')
+		</if>
+		<if test="sdate != null and sdate != edate">
+			<if test="sdate != null">
+				AND DATE_FORMAT(sdate,'%Y-%m-%d') &gt;=
+				DATE_FORMAT('${sdate}','%Y-%m-%d')
+			</if>
+			<if test="edate != null">
+				AND DATE_FORMAT(sdate,'%Y-%m-%d') &lt;=
+				DATE_FORMAT('${edate}','%Y-%m-%d')
+			</if>
+		</if>
+		AND rtype IN(0,22)
+	</select>
+
+	<!-- 当天营业收入 -->
+	<select id="getCurrentDayAmount" parameterType="map" resultType="map">
+		SELECT SUM(commision) commision,SUM(income) sellerAmount
+		FROM
+		b_wallet_record
+		WHERE accountid = #{accountid}
+		AND
+		DATE_FORMAT(sdate,'%Y-%m-%d') = #{sdate}
+		AND rtype IN(0,22)
+	</select>
+
+	<!-- 获取当天支出信息 -->
+	<select id="getCurrentDayOutAmount" parameterType="map"
+		resultType="map">
+		SELECT IFNULL(SUM(amount),0.00) expendCount,DATE,COUNT(1) expendNum,
+		IFNULL(
+		SUM(CASE WHEN DATE_FORMAT(date,'%Y-%m-%d')
+		=#{sdate} THEN amount ELSE 0.00 END
+		),0.00) expendAmount
+		FROM 
+		(SELECT 0-amount amount,pay_time date
+		FROM
+		b_unified_order
+		WHERE uid = #{uId}
+		AND STATUS = 1
+		AND
+		source = '006'
+		UNION ALL
+		SELECT commision amount,sdate date
+		FROM b_wallet_record 
+		WHERE rtype = 39
+		AND accountid = #{accountid}) t
+<!-- 		SELECT IFNULL(SUM(amount),0.00) expendCount,COUNT(1)
+		expendNum,
+		IFNULL(
+		SUM(CASE WHEN DATE_FORMAT(pay_time,'%Y-%m-%d')
+		=#{sdate} THEN amount ELSE 0.00 END
+		),0.00) expendAmount
+		FROM
+		b_unified_order
+		WHERE uid = #{uId}
+		AND status = 1
+		AND
+		source = '006' -->
+	</select>
+
+	<!-- 获取用户每月提现列表 -->
+	<select id="getWithdrawalList" parameterType="map" resultType="map">
+		SELECT a.flowid,
+		IF(a.purpose ='自动提现',0,1)
+		type,status,DATE_FORMAT(date,'%Y-%m-%d')
+		time,IFNULL(b.expenses,0.00)
+		expenses,
+		IF(a.commision!=0.00,a.commision ,a.income ) amount,
+		IF(a.commision!=0.00,a.qcommision-a.commision-IFNULL(b.expenses,0.00),a.qincome
+		-a.income-IFNULL(b.expenses,0.00))
+		hamount,
+		IF(a.commision!=0.00,1,2)
+		withdrawKind
+		FROM b_withdrawals_record
+		a
+		LEFT JOIN b_expenses b
+		ON
+		a.flowid = b.flowid
+		WHERE 1=1
+		<if test="uId != null and userType == 1">
+			AND uid = #{uId}
+		</if>
+		<if test="uId != null and userType ==2">
+			AND sellerid = #{uId}
+		</if>
+		<if test="uId != null and userType ==3">
+			AND jointid = #{uId}
+		</if>
+		<if test=" type == 0">
+			AND purpose = '自动提现'
+		</if>
+		<if test=" type == 1">
+			AND purpose != '自动提现'
+		</if>
+		AND DATE_FORMAT(date,'%Y-%m') = #{date}
+		<!-- 收益 -->
+		<if test="withdrawKind == 1">
+			AND commision != 0.00
+		</if>
+		<!-- 营收 -->
+		<if test="withdrawKind == 2">
+			AND income != 0.00
+		</if>
+		<if test="status != null and status !=''">
+			AND status IN (${status})
+		</if>
+		<if test="status == null">
+			AND status IN (0,1,3)
+		</if>
+		ORDER BY date DESC
+	</select>
+
+	<!-- 获取每月提现统计信息 -->
+	<select id="withdrawalCountByMonth" parameterType="map"
+		resultType="map">
+		SELECT 
+		<if test="withdrawKind == null ">
+		IFNULL(SUM(commision+income),0.00) countSum,
+		</if>
+		<if test="withdrawKind == 1">
+		IFNULL(SUM(commision),0.00) countSum,
+		</if>
+		<if test="withdrawKind == 2">
+		IFNULL(SUM(income),0.00) countSum,
+		</if>
+		DATE_FORMAT(DATE,'%Y-%m') date
+		FROM b_withdrawals_record
+		WHERE 1=1
+		<if test="uId != null and userType == 1">
+			AND uid = #{uId}
+		</if>
+		<if test="uId != null and userType ==2">
+			AND sellerid = #{uId}
+		</if>
+		<if test="uId != null and userType ==3">
+			AND jointid = #{uId}
+		</if>
+		<if test="sdate != null and sdate == edate">
+			AND DATE_FORMAT(date,'%Y-%m') =
+			DATE_FORMAT('${sdate}','%Y-%m')
+		</if>
+		<if test="sdate != null and sdate != edate">
+			<if test="sdate != null">
+				AND DATE_FORMAT(date,'%Y-%m') &gt;=
+				DATE_FORMAT('${sdate}','%Y-%m')
+			</if>
+			<if test="edate != null">
+				AND DATE_FORMAT(date,'%Y-%m') &lt;=
+				DATE_FORMAT('${edate}','%Y-%m')
+			</if>
+		</if>
+		<if test="status != null and status !=''">
+			AND status IN (${status})
+		</if>
+		<if test="status == null">
+			AND status IN (0,1,3)
+		</if>
+		<!-- 自动 -->
+		<if test=" type == 0">
+			AND purpose = '自动提现'
+		</if>
+		<if test=" type == 1">
+			AND purpose != '自动提现'
+		</if>
+		<!-- 收益 -->
+		<if test=" withdrawKind == 1">
+			AND commision != 0.00
+		</if>
+		<!-- 营收 -->
+		<if test=" withdrawKind == 2">
+			AND income != 0.00
+		</if>
+		
+		GROUP BY DATE_FORMAT(DATE,'%Y-%m')
+		ORDER BY DATE
+		DESC
+		LIMIT
+		${cPage*pageSize},${pageSize}
+	</select>
+
+	<!-- 统计提现总金额（提现成功，提现处理中）和总记录数 -->
+	<select id="countWithdrawalAmount" parameterType="map"
+		resultType="map">
+		SELECT 
+		<if test="withdrawKind == null ">
+		IFNULL(SUM(commision+income),0.00) totalAmount,
+		</if>
+		<if test="withdrawKind == 1">
+		IFNULL(SUM(commision),0.00) totalAmount,
+		</if>
+		<if test="withdrawKind == 2">
+		IFNULL(SUM(income),0.00) totalAmount,
+		</if>
+		COUNT(1) count
+		FROM
+		b_withdrawals_record
+		WHERE 1=1
+		<if test="uId != null and userType == 1">
+			AND uid = #{uId}
+		</if>
+		<if test="uId != null and userType ==2">
+			AND sellerid = #{uId}
+		</if>
+		<if test="uId != null and userType ==3">
+			AND jointid = #{uId}
+		</if>
+		<if test="sdate != null and sdate == edate">
+			AND DATE_FORMAT(date,'%Y-%m-%d') =
+			DATE_FORMAT('${sdate}','%Y-%m-%d')
+		</if>
+		<if test="sdate != null and sdate != edate">
+			<if test="sdate != null">
+				AND DATE_FORMAT(date,'%Y-%m-%d') &gt;=
+				DATE_FORMAT('${sdate}','%Y-%m-%d')
+			</if>
+			<if test="edate != null">
+				AND DATE_FORMAT(date,'%Y-%m-%d') &lt;=
+				DATE_FORMAT('${edate}','%Y-%m-%d')
+			</if>
+		</if>
+		<if test="status != null and status !=''">
+			AND status IN (${status})
+		</if>
+		<if test="status == null">
+			AND status IN (0,1,3)
+		</if>
+		<!-- 自动 -->
+		<if test=" type == 0">
+			AND 1=1
+		</if>
+		<!-- 手动 -->
+		<if test=" type == 1">
+			AND 1=1
+		</if>
+		<!-- 收益 -->
+		<if test=" withdrawKind == 1">
+			AND commision != 0.00 
+		</if>
+		<!-- 营收 -->
+		<if test=" withdrawKind == 2">
+			AND income != 0.00 
+		</if>
+	</select>
+
+	<!-- 获取用户每日分账总记录 -->
+	<select id="ledgerCount" parameterType="map" resultType="map">
+		SELECT accountid, IFNULL(SUM(commision),0.00) countSum
+		,DATE_FORMAT(sdate,'%Y-%m-%d') date
+		FROM b_wallet_record
+		WHERE accountid
+		= #{accountid}
+		AND commision !=0
+		<if test="btype != null">
+			AND rtype = #{btype}
+		</if>
+		<if test="btype == null">
+			AND rtype IN (0,22)
+		</if>
+		<if test="sdate != null">
+			AND DATE_FORMAT(sdate,'%Y-%m-%d') &gt;=
+			DATE_FORMAT('${sdate}','%Y-%m-%d')
+		</if>
+		<if test="edate != null">
+			AND DATE_FORMAT(sdate,'%Y-%m-%d') &lt;=
+			DATE_FORMAT('${edate}','%Y-%m-%d')
+		</if>
+		GROUP BY DATE_FORMAT(sdate,'%Y-%m-%d')
+		ORDER BY sdate DESC
+		LIMIT
+		${cPage*pageSize},${pageSize}
+	</select>
+	<!-- 获取每日分账详细记录列表 -->
+	<select id="ledgerList" parameterType="map" resultType="map">
+		SELECT IFNULL(commision,0.00) amount,rtype
+		btype,SUBSTRING_INDEX(remarks,'_',1) bid,DATE_FORMAT(sdate,'%Y-%m-%d %H:%i:%s') ftime
+		FROM
+		b_wallet_record
+		WHERE
+		accountid = #{accountid}
+		AND
+		DATE_FORMAT(sdate,'%Y-%m-%d')
+		= #{date}
+		<if test="btype != null">
+			AND rtype = #{btype}
+		</if>
+		<if test="btype == null">
+			AND rtype IN (0,22)
+		</if>
+		AND commision !=0
+		ORDER BY sdate DESC
+	</select>
+	<!-- 统计分账总金额（0 美食分账，22 线下积分分账）和总记录数 -->
+	<select id="countLedgerAmount" parameterType="map" resultType="map">
+		SELECT IFNULL(SUM(commision),0.00) totalAmount,COUNT(1) count
+		FROM
+		b_wallet_record
+		WHERE
+		accountid = #{accountid}
+		<if test="btype != null">
+			AND rtype = #{btype}
+		</if>
+		<if test="btype == null">
+			AND rtype IN (0,22)
+		</if>
+		<if test="sdate != null and sdate == edate">
+			AND DATE_FORMAT(sdate,'%Y-%m-%d') =
+			DATE_FORMAT('${sdate}','%Y-%m-%d')
+		</if>
+		<if test="sdate != null and sdate != edate">
+			<if test="sdate != null">
+				AND DATE_FORMAT(sdate,'%Y-%m-%d') &gt;=
+				DATE_FORMAT('${sdate}','%Y-%m-%d')
+			</if>
+			<if test="edate != null">
+				AND DATE_FORMAT(sdate,'%Y-%m-%d') &lt;=
+				DATE_FORMAT('${edate}','%Y-%m-%d')
+			</if>
+		</if>
+		AND commision != 0
+	</select>
+
+	<!-- 获取商户的店外收益信息 -->
+	<select id="getSellerLedgerInfo" parameterType="map" resultType="map">
+		SELECT COUNT(1) count,IFNULL(SUM(commision),0.00) commisonCount FROM
+		b_wallet_record
+		WHERE remarks IN (
+		SELECT
+		IF(commision!=0 AND income!=0,remarks,REPLACE(remarks,'_2','_3')) bid
+		FROM
+		b_wallet_record WHERE accountid=#{sellerAccountid} AND rtype
+		IN(0,22) AND remarks LIKE '%_2'
+		)
+		AND accountid=#{genusAccountid}
+		AND
+		rtype
+		IN(0,22)
+	</select>
+
+	<!-- 获取商户支出金额和总记录 -->
+	<select id="getSellerExpense" parameterType="map" resultType="map">
+		SELECT IFNULL(SUM(countSum),0.00) totalAmount,COUNT(1) count FROM
+		(
+		SELECT 0-amount countSum, pay_time countDate 
+		FROM  b_unified_order 
+		WHERE uid = #{uId} 
+		<if test="sdate != null">
+			AND DATE_FORMAT(pay_time,'%Y-%m-%d') &gt;=
+			DATE_FORMAT('${sdate}','%Y-%m-%d')
+		</if>
+		<if test="edate != null">
+			AND DATE_FORMAT(pay_time,'%Y-%m-%d') &lt;=
+			DATE_FORMAT('${edate}','%Y-%m-%d')
+		</if> 
+		AND status = 1 
+		AND user_type = #{userType} 
+		UNION ALL
+		SELECT commision countSum,sdate countDate 
+		FROM b_wallet_record 
+		WHERE rtype = 39 
+		<if test="sdate != null">
+			AND DATE_FORMAT(sdate,'%Y-%m-%d') &gt;=
+			DATE_FORMAT('${sdate}','%Y-%m-%d')
+		</if>
+		<if test="edate != null">
+			AND DATE_FORMAT(sdate,'%Y-%m-%d') &lt;=
+			DATE_FORMAT('${edate}','%Y-%m-%d')
+		</if> 
+		AND accountid = #{accountid}
+		) t 
+	</select>
+
+	<!-- 获取每日支出统计信息 -->
+	<select id="getSelleridExpenseByDay" parameterType="map"
+		resultType="map">
+		
+		SELECT IFNULL(SUM(countSum),0.00) countSum,DATE_FORMAT(countDate,'%Y-%m-%d') countDate FROM
+		(
+		SELECT 0-amount countSum, pay_time countDate 
+		FROM  b_unified_order 
+		WHERE uid = #{uId} 
+		<if test="sdate != null">
+			AND DATE_FORMAT(pay_time,'%Y-%m-%d') &gt;=
+			DATE_FORMAT('${sdate}','%Y-%m-%d')
+		</if>
+		<if test="edate != null">
+			AND DATE_FORMAT(pay_time,'%Y-%m-%d') &lt;=
+			DATE_FORMAT('${edate}','%Y-%m-%d')
+		</if> 
+		AND status = 1 
+		AND user_type = #{userType} 
+		UNION ALL
+		SELECT commision countSum,sdate countDate 
+		FROM b_wallet_record 
+		WHERE rtype = 39 
+		<if test="sdate != null">
+			AND DATE_FORMAT(sdate,'%Y-%m-%d') &gt;=
+			DATE_FORMAT('${sdate}','%Y-%m-%d')
+		</if>
+		<if test="edate != null">
+			AND DATE_FORMAT(sdate,'%Y-%m-%d') &lt;=
+			DATE_FORMAT('${edate}','%Y-%m-%d')
+		</if> 
+		AND accountid = #{accountid}
+		) t 
+		GROUP BY DATE_FORMAT(countDate,'%Y-%m-%d') 
+		ORDER BY countDate DESC
+		LIMIT ${cPage*pageSize},${pageSize}
+	</select>
+
+	<!-- 获取当天支出信息列表 -->
+	<select id="getSellerExpenseList" parameterType="map"
+		resultType="map">
+		SELECT bid,amount,DATE_FORMAT(dealTime,'%H:%i:%s') dealTime,payType,subject,payTime FROM
+		(
+		SELECT order_sn bid,0-amount amount,pay_time dealTime,payment_type payType,subject,DATE_FORMAT(pay_time,'%Y-%m-%d %H:%i:%s') payTime 
+		FROM  b_unified_order 
+		WHERE uid = #{uId} 
+		AND status = 1 
+		AND user_type = #{userType} 
+		AND DATE_FORMAT(pay_time,'%Y-%m-%d') = #{time}
+		UNION ALL
+		SELECT remarks bid,commision amount,sdate dealTime,'1111111' payType,description subject,DATE_FORMAT(sdate,'%Y-%m-%d %H:%i:%s') payTime  
+		FROM b_wallet_record 
+		WHERE rtype = 39 
+		AND accountid = #{accountid}
+		AND DATE_FORMAT(sdate,'%Y-%m-%d') = #{time}
+		) t 
+		ORDER BY payType DESC
+	</select>
+	
+	<select id="getUserWalletRecordList" parameterType="map" resultType="map">
+		select 
+		accountid,rtype,
+		<if test="walletType==null or walletType == '' or walletType==0">
+			(ABS(balance)+ABS(commision)+ABS(income)+ABS(zbalance)+ABS(integral)) amount,
+			if((hrebate &lt; qrebate OR hcommision &lt; qcommision OR hincome &lt; qincome OR hzbalance &lt; qzbalance OR hIntegral &lt; qIntegral),1,2) listType, 
+		</if>
+		<if test="walletType==1">
+			(ABS(balance)+ABS(commision)+ABS(income)+ABS(zbalance)) amount,
+			if((hrebate &lt; qrebate OR hcommision &lt; qcommision OR hincome &lt; qincome OR hzbalance &lt; qzbalance),1,2) listType, 
+		</if>
+		<if test="walletType==2">
+			(ABS(integral)) amount,
+			if((hIntegral &lt; qIntegral),1,2) listType, 
+		</if>
+		SUBSTRING_INDEX(remarks,'_',1) orderId,description remarks, DATE_FORMAT(sdate,'%Y-%m-%d %H:%i:%S') sdate,
+		if((Integral!=0),2,1) walletType 
+		from b_wallet_record
+		where accountid=#{accountid}
+		<if test="sdate!=null and sdate!=''">
+			AND DATE_FORMAT(sdate,'%Y-%m-%d') &gt;= DATE_FORMAT(#{sdate},'%Y-%m-%d')
+		</if>
+		<if test="edate!=null and edate!=''">
+			AND DATE_FORMAT(sdate,'%Y-%m-%d') &lt;= DATE_FORMAT(#{edate},'%Y-%m-%d')
+		</if>
+		<if test="walletType==null or walletType=='' or walletType==0">
+			<if test="listType==null or listType=='' or listType==0">
+			AND (hrebate!=qrebate OR hcommision!=qcommision OR hincome!=qincome OR hzbalance!=qzbalance OR hIntegral!=qIntegral) 
+			</if>
+			<if test="listType==1">
+				AND (hrebate &lt; qrebate OR hcommision &lt; qcommision OR hincome &lt; qincome OR hzbalance &lt; qzbalance OR hIntegral &lt; qIntegral) 
+			</if>
+			<if test="listType==2">
+				AND (hrebate &gt; qrebate OR hcommision &gt; qcommision OR hincome &gt; qincome OR hzbalance &gt; qzbalance OR hIntegral &gt; qIntegral) 
+			</if>
+		</if>
+		<if test="walletType==1">
+			<if test="listType==null or listType=='' or listType==0">
+			AND (hrebate!=qrebate OR hcommision!=qcommision OR hincome!=qincome OR hzbalance!=qzbalance) 
+			</if>
+			<if test="listType==1">
+				AND (hrebate &lt; qrebate OR hcommision &lt; qcommision OR hincome &lt; qincome OR hzbalance &lt; qzbalance) 
+			</if>
+			<if test="listType==2">
+				AND (hrebate &gt; qrebate OR hcommision &gt; qcommision OR hincome &gt; qincome OR hzbalance &gt; qzbalance) 
+			</if>
+		</if>
+		<if test="walletType==2">
+			<if test="listType==null or listType=='' or listType==0">
+			AND (hIntegral != qIntegral) 
+			</if>
+			<if test="listType==1">
+				AND (hIntegral &lt; qIntegral) 
+			</if>
+			<if test="listType==2">
+				AND (hIntegral &gt; qIntegral) 
+			</if>
+		</if>
+		order by sdate desc
+		limit ${cPage*pageSize},${pageSize}
+	</select>
+	
+	<select id="getUserWalletRecordList2" parameterType="map" resultType="map">
+		select *
+		from(select wallet.id as accountid,record.rtype*-1-1 rtype,
+		ABS(beans_money+seller_beans_money) as amount,
+		record.remarks orderId,record.description as remarks,
+		record.create_time sdate,3 as recordType,
+		if((h_seller_beans_money > q_seller_beans_money or h_beans_money > q_beans_money),2,1) 	listType
+		from b_live_wallet_record record join b_live_wallet wallet on  record.wallet_id= wallet.id
+		where wallet.id=#{walletId}
+			<if test="sdate!=null and sdate!=''">
+			AND DATE_FORMAT(record.create_time,'%Y-%m-%d') &gt;= DATE_FORMAT(#{sdate},'%Y-%m-%d')
+		</if>
+		<if test="edate!=null and edate!=''">
+			AND DATE_FORMAT(record.create_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{edate},'%Y-%m-%d')
+		</if>
+		<if test="listType == null">
+			<choose>
+				<when test="recordType == 3 or recordType == null">
+					AND (beans_money &lt;> 0  or  seller_beans_money &lt;>)
+				</when>	
+				<otherwise>
+					AND 1=0
+				</otherwise>
+			</choose>
+		</if>
+		<if test="listType==1">
+			<choose>
+				<when test="recordType == 3  or recordType == null">
+					AND (q_beans_money > h_beans_money or q_seller_beans_money > h_seller_beans_money)
+				</when>	
+				<otherwise>
+					AND 1=0
+				</otherwise>
+			</choose>
+		</if>
+		<if test="listType==2">
+			 <choose>
+				<when test="recordType == 3 or recordType == null">
+					AND (h_beans_money > q_beans_money or h_seller_beans_money > q_seller_beans_money)
+				</when>	
+				<otherwise>
+					AND 1=0
+				</otherwise>
+			</choose>
+		</if>
+		<if test="listType ==3">
+			<choose>
+				<when test="recordType == null or recordType == 3">
+				AND record.rtype in (14,19) AND (h_beans_money > q_beans_money or h_seller_beans_money > q_seller_beans_money)
+				</when>
+				<otherwise>
+				AND 1=0
+				</otherwise>
+			</choose>
+		</if>
+		<if test="listType ==4">
+			AND 1=0
+		</if>
+		union all
+		select wallet.id as accountid,record.rtype*-1-1 rtype,
+		ABS(coin_money) as amount,
+		record.remarks orderId,record.description as remarks,
+		record.create_time sdate,4 recordType,
+		if((h_coin_money > q_coin_money),2,1) listType
+		from b_live_wallet_record record join b_live_wallet wallet on  record.wallet_id= wallet.id
+		where wallet.id=#{walletId}
+			<if test="sdate!=null and sdate!=''">
+			AND DATE_FORMAT(record.create_time,'%Y-%m-%d') &gt;= DATE_FORMAT(#{sdate},'%Y-%m-%d')
+		</if>
+		<if test="edate!=null and edate!=''">
+			AND DATE_FORMAT(record.create_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{edate},'%Y-%m-%d')
+		</if>
+		<if test="listType == null">
+			<choose>
+				<when test="recordType ==4 or recordType == null">
+					AND coin_money &lt;> 0
+				</when>
+				<otherwise>
+					AND 1=0
+				</otherwise>
+			</choose>
+		</if>
+		<if test="listType==1">
+			<choose>
+				<when test="recordType ==4  or recordType == null">
+					AND q_coin_money > h_coin_money
+				</when>
+				<otherwise>
+					AND 1=0
+				</otherwise>
+			</choose>
+		</if>
+		<if test="listType==2">
+			 <choose>
+				<when test="recordType ==4   or recordType == null">
+					AND h_coin_money > q_coin_money
+				</when>
+				<otherwise>
+					AND 1=0
+				</otherwise>
+			</choose>
+		</if>
+		<if test="listType ==3">
+				AND 1=0
+			
+		</if>
+		<if test="listType ==4">
+				AND 1=0
+		</if>
+		union all
+		select 
+		accountid,rtype,
+			(ABS(balance)+ABS(commision)+ABS(income)+ABS(zbalance)+ABS(integral)) amount, 
+		SUBSTRING_INDEX(remarks,'_',1) orderId,description remarks, DATE_FORMAT(sdate,'%Y-%m-%d %H:%i:%S') sdate,
+		1 as recordType,if((hrebate &lt; qrebate OR hcommision &lt; qcommision OR hincome &lt; qincome OR hzbalance &lt; qzbalance OR hIntegral &lt; qIntegral),1,2) listType
+		from b_wallet_record
+		where accountid=#{accountid}
+		<if test="sdate!=null and sdate!=''">
+			AND DATE_FORMAT(sdate,'%Y-%m-%d') &gt;= DATE_FORMAT(#{sdate},'%Y-%m-%d')
+		</if>
+		<if test="edate!=null and edate!=''">
+			AND DATE_FORMAT(sdate,'%Y-%m-%d') &lt;= DATE_FORMAT(#{edate},'%Y-%m-%d')
+		</if>
+		<if test="listType==null">
+			<choose>
+				<when test="recordType == 3 or recordType ==4">
+					AND 1=0
+				</when>	
+				<otherwise>
+					AND (balance &lt;> 0 or commision &lt;> 0 or income &lt;> 0 or zbalance &lt;> 0 or amount &lt;> 0 Integral &lt;> 0) 
+				</otherwise>
+			</choose>
+		</if>
+		<if test="listType==1">
+			<choose>
+				<when test="recordType == 3 or recordType ==4">
+					AND 1=0
+				</when>	
+				<otherwise>
+					AND (hrebate &lt; qrebate OR hcommision &lt; qcommision OR hincome &lt; qincome OR hzbalance &lt; qzbalance OR hIntegral &lt; qIntegral) 
+				</otherwise>
+			</choose>
+		</if>
+		<if test="listType==2">
+			<choose>
+				<when test="recordType == 3 or recordType ==4">
+					AND 1=0
+				</when>	
+				<otherwise>
+					AND (hrebate &gt; qrebate OR hcommision &gt; qcommision OR hincome &gt; qincome OR hzbalance &gt; qzbalance OR hIntegral &gt; qIntegral) 
+				</otherwise>
+			</choose>
+		</if>
+		<if test="listType ==3">
+			<choose>
+					<when test="recordType == null or recordType == 1">
+						AND (hrebate &lt; qrebate OR hcommision &lt; qcommision OR hincome &lt; qincome OR hzbalance &lt; qzbalance OR hIntegral &lt; qIntegral) 
+						AND rtype = 32
+					</when>
+					<otherwise>
+						AND 1=0
+					</otherwise>
+				</choose>
+		</if>
+		<if test="listType ==4">
+			 AND rtype = 6
+		</if>
+		union all
+		select 
+		b_wallet_expansion.id accountid,b_wallet_expansion.type rtype,ABS(b_wallet_expansion_record.amount) amount,source orderId,b_wallet_expansion_record.remark remarks,
+		b_wallet_expansion_record.create_time sdate,2 recordType,3 listType
+		from b_wallet_expansion_record  join b_wallet_expansion on 
+		b_wallet_expansion_record.wallet_expansion_id = b_wallet_expansion.id
+		where b_wallet_expansion.accountid=#{accountid}
+		<if test="sdate!=null and sdate!=''">
+			AND DATE_FORMAT(b_wallet_expansion_record.create_time,'%Y-%m-%d') &gt;= DATE_FORMAT(#{sdate},'%Y-%m-%d')
+		</if>
+		<if test="edate!=null and edate!=''">
+			AND DATE_FORMAT(b_wallet_expansion_record.create_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{edate},'%Y-%m-%d')
+		</if>
+		<if test="listType == 1">
+			AND 1=0
+		</if>
+		<if test="listType == 2">
+			AND 1=0
+		</if>
+		<if test="listType ==3">
+			<choose>
+				<when test="recordType == null or recordType == 2">
+					AND b_wallet_expansion_record.hamount > b_wallet_expansion_record.qamount
+				</when>
+				<otherwise>
+					AND 1=0
+				</otherwise>
+			</choose>
+		</if>
+		<if test="listType ==4">
+			AND (b_wallet_expansion_record.type = 3 or b_wallet_expansion_record.type = 4)
+		</if>
+		) a
+		order by sdate desc
+		limit ${cPage*pageSize},${pageSize}
+	</select>
+	
+	<select id="getUserWalletRecordCount" parameterType="map" resultType="Long">
+		select 
+		COUNT(1)
+		from b_wallet_record
+		where accountid=#{accountid}
+		<if test="sdate!=null and sdate!=''">
+			AND DATE_FORMAT(sdate,'%Y-%m-%d') &gt;= DATE_FORMAT(#{sdate},'%Y-%m-%d')
+		</if>
+		<if test="edate!=null and edate!=''">
+			AND DATE_FORMAT(sdate,'%Y-%m-%d') &lt;= DATE_FORMAT(#{edate},'%Y-%m-%d')
+		</if>
+		<if test="walletType==null or walletType=='' or walletType==0">
+			<if test="listType==null or listType=='' or listType==0">
+			AND (hrebate!=qrebate OR hcommision!=qcommision OR hincome!=qincome OR hzbalance!=qzbalance OR hIntegral!=qIntegral) 
+			</if>
+			<if test="listType==1">
+				AND (hrebate &lt; qrebate OR hcommision &lt; qcommision OR hincome &lt; qincome OR hzbalance &lt; qzbalance OR hIntegral &lt; qIntegral) 
+			</if>
+			<if test="listType==2">
+				AND (hrebate &gt; qrebate OR hcommision &gt; qcommision OR hincome &gt; qincome OR hzbalance &gt; qzbalance OR hIntegral &gt; qIntegral) 
+			</if>
+		</if>
+		<if test="walletType==1">
+			<if test="listType==null or listType=='' or listType==0">
+			AND (hrebate!=qrebate OR hcommision!=qcommision OR hincome!=qincome OR hzbalance!=qzbalance) 
+			</if>
+			<if test="listType==1">
+				AND (hrebate &lt; qrebate OR hcommision &lt; qcommision OR hincome &lt; qincome OR hzbalance &lt; qzbalance) 
+			</if>
+			<if test="listType==2">
+				AND (hrebate &gt; qrebate OR hcommision &gt; qcommision OR hincome &gt; qincome OR hzbalance &gt; qzbalance) 
+			</if>
+		</if>
+		<if test="walletType==2">
+			<if test="listType==null or listType=='' or listType==0">
+			AND (hIntegral != qIntegral) 
+			</if>
+			<if test="listType==1">
+				AND (hIntegral &lt; qIntegral) 
+			</if>
+			<if test="listType==2">
+				AND (hIntegral &gt; qIntegral) 
+			</if>
+		</if>
+	</select>
+	
+	
+	
+	<select id="getUserWalletRecordCount2" parameterType="map" resultType="Long">
+			select sum(count)
+		from(select count(1) as count
+		from b_live_wallet_record record join b_live_wallet wallet on  record.wallet_id= wallet.id
+		where wallet.id=#{walletId}
+			<if test="sdate!=null and sdate!=''">
+			AND DATE_FORMAT(record.create_time,'%Y-%m-%d') &gt;= DATE_FORMAT(#{sdate},'%Y-%m-%d')
+		</if>
+		<if test="edate!=null and edate!=''">
+			AND DATE_FORMAT(record.create_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{edate},'%Y-%m-%d')
+		</if>
+		<if test="listType == null">
+			<choose>
+				<when test="recordType == 3 or recordType == null">
+					AND (beans_money &lt;> 0  or  seller_beans_money &lt;>)
+				</when>	
+				<otherwise>
+					AND 1=0
+				</otherwise>
+			</choose>
+		</if>
+		<if test="listType==1">
+			<choose>
+				<when test="recordType == 3  or recordType == null">
+					AND (q_beans_money > h_beans_money or q_seller_beans_money > h_seller_beans_money)
+				</when>	
+				<otherwise>
+					AND 1=0
+				</otherwise>
+			</choose>
+		</if>
+		<if test="listType==2">
+			 <choose>
+				<when test="recordType == 3 or recordType == null">
+					AND (h_beans_money > q_beans_money or h_seller_beans_money > q_seller_beans_money)
+				</when>	
+				<otherwise>
+					AND 1=0
+				</otherwise>
+			</choose>
+		</if>
+		<if test="listType ==3">
+			<choose>
+				<when test="recordType == null or recordType == 3">
+				AND record.rtype in (14,19) AND (h_beans_money > q_beans_money or h_seller_beans_money > q_seller_beans_money)
+				</when>
+				<otherwise>
+				AND 1=0
+				</otherwise>
+			</choose>
+			
+		</if>
+		<if test="listType ==4">
+			AND 1=0
+		</if>
+		union all
+		select count(1) as count
+		from b_live_wallet_record record join b_live_wallet wallet on  record.wallet_id= wallet.id
+		where wallet.id=#{walletId}
+			<if test="sdate!=null and sdate!=''">
+			AND DATE_FORMAT(record.create_time,'%Y-%m-%d') &gt;= DATE_FORMAT(#{sdate},'%Y-%m-%d')
+		</if>
+		<if test="edate!=null and edate!=''">
+			AND DATE_FORMAT(record.create_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{edate},'%Y-%m-%d')
+		</if>
+		<if test="listType == null">
+			<choose>
+				<when test="recordType ==4 or recordType == null">
+					AND coin_money &lt;> 0
+				</when>
+				<otherwise>
+					AND 1=0
+				</otherwise>
+			</choose>
+		</if>
+		<if test="listType==1">
+			<choose>
+				<when test="recordType ==4  or recordType == null">
+					AND q_coin_money > h_coin_money
+				</when>
+				<otherwise>
+					AND 1=0
+				</otherwise>
+			</choose>
+		</if>
+		<if test="listType==2">
+			 <choose>
+				<when test="recordType ==4   or recordType == null">
+					AND h_coin_money > q_coin_money
+				</when>
+				<otherwise>
+					AND 1=0
+				</otherwise>
+			</choose>
+		</if>
+		<if test="listType ==3">
+				AND 1=0
+			
+		</if>
+		<if test="listType ==4">
+			AND 1=0
+		</if>
+		union all
+		select 
+		COUNT(1) as count
+		from b_wallet_record
+		where accountid=#{accountid}
+		<if test="sdate!=null and sdate!=''">
+			AND DATE_FORMAT(sdate,'%Y-%m-%d') &gt;= DATE_FORMAT(#{sdate},'%Y-%m-%d')
+		</if>
+		<if test="edate!=null and edate!=''">
+			AND DATE_FORMAT(sdate,'%Y-%m-%d') &lt;= DATE_FORMAT(#{edate},'%Y-%m-%d')
+		</if>
+		<if test="listType==1">
+			<choose>
+				<when test="recordType == 3 or recordType ==4">
+					AND 1=0
+				</when>	
+				<otherwise>
+					AND (hrebate &lt; qrebate OR hcommision &lt; qcommision OR hincome &lt; qincome OR hzbalance &lt; qzbalance OR hIntegral &lt; qIntegral) 
+				</otherwise>
+			</choose>
+		</if>
+		<if test="listType==2">
+			<choose>
+				<when test="recordType == 3 or recordType ==4">
+					AND 1=0
+				</when>	
+				<otherwise>
+					AND (hrebate &gt; qrebate OR hcommision &gt; qcommision OR hincome &gt; qincome OR hzbalance &gt; qzbalance OR hIntegral &gt; qIntegral) 
+				</otherwise>
+			</choose>
+		</if>
+		<if test="listType==3">
+			<choose>
+					<when test="recordType == null or recordType == 1">
+						AND (hrebate &lt; qrebate OR hcommision &lt; qcommision OR hincome &lt; qincome OR hzbalance &lt; qzbalance OR hIntegral &lt; qIntegral) 
+						AND rtype = 32
+					</when>
+					<otherwise>
+						AND 1=0
+					</otherwise>
+				</choose>
+		</if>
+		<if test="listType==4">
+			 AND rtype = 6
+		</if>
+		union all
+		select count(1) as count
+		 from  b_wallet_expansion_record  
+		 join b_wallet_expansion  on  b_wallet_expansion.id = b_wallet_expansion_record.wallet_expansion_id
+		 where b_wallet_expansion.accountid = #{accountid}
+		 <if test="sdate!=null and sdate!=''">
+			AND DATE_FORMAT(b_wallet_expansion_record.create_time,'%Y-%m-%d') &gt;= DATE_FORMAT(#{sdate},'%Y-%m-%d')
+		</if>
+		<if test="edate!=null and edate!=''">
+			AND DATE_FORMAT(b_wallet_expansion_record.create_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{edate},'%Y-%m-%d')
+		</if>
+		<if test="listType==1">AND 1=0</if><if test="listType==2">AND 1=0</if>
+		<if test="listType==3">
+			AND hamount > qamount 
+		</if>
+		<if test="listType==4">
+			 AND (b_wallet_expansion_record.type = 3 or b_wallet_expansion_record.type = 4)
+		</if>
+		) a
+	</select>
+	
+	
+	
+	
+	<select id="getLastWithdrawalsRecord" resultType="map" parameterType="map">
+		select * from b_withdrawals_record
+		where 1=1
+		<if test="userType==1">AND uid=#{uId}</if>
+		<if test="userType==2">AND sellerid=#{uId}</if>
+		<if test="userType==4">AND allianceid=#{uId}</if>
+		order by flowid desc
+		limit 0,1
+	</select>
+	
+	<select id="getLastJointWithdrawalsRecord" resultType="map" parameterType="map">
+		select * from t_joint_withdrawals
+		where 1=1
+		<if test="userType==3">AND jointid=#{uId}</if>
+		order by id desc
+		limit 0,1
+	</select>
+	
+	<sql id="Base_Column_List" >
+   
+  </sql>
+	
+	<select id="getUserRecords" parameterType="map" resultType="map">
+	SELECT
+    id, accountid, rtype, balance, qrebate, hrebate, commision, qcommision, hcommision, 
+    income, qincome, hincome, zbalance, qzbalance, hzbalance, amount, qamount, hamount, 
+    Integral, qIntegral, hIntegral, DATE_FORMAT(sdate,'%Y-%m-%d %H:%i:%s') createTime, remarks, description, expenses
+    FROM b_wallet_record
+    WHERE  accountid = #{accountid}
+    ORDER BY sdate DESC
+    limit ${cPage*pageSize},${pageSize}
+	</select>
+	
+	<select id="countUserRecord" parameterType="map" resultType="long">
+	SELECT
+    COUNT(1) total
+    FROM b_wallet_record
+    WHERE  accountid = #{accountid}
+	</select>
+	
+	<select id="getTotalLedgerMoney" parameterType="map" resultType="map">
+		SELECT COUNT(1) count,SUM(balance+commision+income+zbalance+amount) totalAmount
+		FROM b_wallet_record
+		WHERE accountid = #{accountid}
+		<if test="rtype != null and rtype !=''">
+		AND rtype = #{rtype}
+		</if>
+		<if test="sdate != null">
+		AND DATE_FORMAT(sdate,'%Y-%m-%d') &gt;=
+		DATE_FORMAT('${sdate}','%Y-%m-%d')
+		</if>
+		<if test="edate != null">
+		AND DATE_FORMAT(sdate,'%Y-%m-%d') &lt;=
+		DATE_FORMAT('${edate}','%Y-%m-%d')
+		</if> 
+	</select>
+	
+	<select id="getTotalLedgerMoneyByDay" parameterType="map" resultType="map">
+		SELECT SUM(balance+commision+income+zbalance+amount) countSum,DATE_FORMAT(sdate,'%Y-%m-%d') countDate
+		FROM b_wallet_record
+		WHERE accountid = #{accountid}
+		<if test="rtype != null and rtype !=''">
+		AND rtype = #{rtype}
+		</if>
+		<if test="sdate != null">
+		AND DATE_FORMAT(sdate,'%Y-%m-%d') &gt;=
+		DATE_FORMAT('${sdate}','%Y-%m-%d')
+		</if>
+		<if test="edate != null">
+		AND DATE_FORMAT(sdate,'%Y-%m-%d') &lt;=
+		DATE_FORMAT('${edate}','%Y-%m-%d')
+		</if> 
+		GROUP BY DATE_FORMAT(sdate,'%Y-%m-%d') 
+		ORDER BY sdate DESC
+		LIMIT ${cPage*pageSize},${pageSize}
+	</select>
+	
+	<select id="getTotalLedgerMoneyDayList" parameterType="map" resultType="map">
+		SELECT balance+commision+income+zbalance+amount amount,DATE_FORMAT(sdate,'%H:%i:%s') dealTime,remarks orderNo
+		FROM b_wallet_record
+		WHERE accountid = #{accountid}
+		<if test="rtype != null and rtype !=''">
+		AND rtype = #{rtype}
+		</if>
+		AND DATE_FORMAT(sdate,'%Y-%m-%d') = #{time}
+		ORDER BY sdate DESC
+	</select>
+	
+	<select id="sumRecord" parameterType="map" resultType="java.lang.Long">
+		 select 
+			IFNULL(sum(ABS(balance)+ABS(commision)+ABS(income)+ABS(zbalance)+ABS(integral)),0) amount
+		from b_wallet_record
+		where 1=1
+		<include refid="RecordListWhereSQL"></include>
+	
+	</select>
+</mapper>

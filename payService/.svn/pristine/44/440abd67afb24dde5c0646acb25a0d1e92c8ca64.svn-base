@@ -1,0 +1,261 @@
+package com.xmniao.service.impl;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.thrift.TException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.xmniao.common.ParamUtil;
+import com.xmniao.common.XmnConstants;
+import com.xmniao.dao.LiveWalletMapper;
+import com.xmniao.dao.LiveWalletRecordMapper;
+import com.xmniao.entity.LiveWallet;
+import com.xmniao.entity.LiveWalletRecord;
+import com.xmniao.exception.CustomException;
+import com.xmniao.exception.ParamBlankException;
+import com.xmniao.service.LiveWalletAccess;
+import com.xmniao.service.pay.LiveWalletServiceImpl;
+import com.xmniao.service.pay.WalletExpansionServiceImpl;
+import com.xmniao.thrift.ledger.FailureException;
+import com.xmniao.thrift.ledger.ResponseData;
+import com.xmniao.util.LiveWalletUtil;
+
+/**
+ * Created by yang.qiang on 2017/5/4.
+ */
+@Service
+public class LiveWalletAccessImpl implements LiveWalletAccess {
+
+	private final static Logger logger = LoggerFactory.getLogger(LiveWalletAccessImpl.class);
+
+	@Autowired
+	private LiveWalletMapper liveWalletMapper;
+
+	@Autowired
+	private LiveWalletRecordMapper liveWalletRecordMapper;
+
+	@Autowired
+	private WalletExpansionServiceImpl walletExpansionServiceImpl;
+
+	@Autowired
+	private LiveWalletServiceImpl liveWalletServiceImpl;
+
+	/**
+	 * 获取用户直播钱包 直播钱包为空, 钱包状态异常会返回错误
+	 * 
+	 * @param uid
+	 */
+	@Override
+	public LiveWallet getLiveWallet(Integer uid) {
+		logger.info("获取用户钱包, uid=" + uid);
+
+		// 查询数据库
+		LiveWallet record = new LiveWallet();
+		record.setUid(uid);
+		LiveWallet liveWallet = liveWalletMapper.selectLiveWalletBySelected(record);
+
+		// 判断钱包是否为空
+		if (liveWallet == null) {
+			throw new CustomException("钱包为空, uid=" + uid, 1);
+		}
+		// 判断钱包状态
+		if (!LiveWalletUtil.verifyStatus(liveWallet)) {
+			throw new CustomException("钱包状态无效! status=" + liveWallet.getStatus());
+		}
+		// 判断钱包签名
+		if (!LiveWalletUtil.verifySign(liveWallet)) {
+			throw new CustomException("钱包签名错误");
+		}
+		return liveWallet;
+	}
+
+	/**
+	 * V客兑换SAAS套餐: 扣除鸟币, 修改鸟币限额
+	 * 
+	 * @param liveWallet
+	 * @param deductZbalance
+	 * @param remarks
+	 */
+	@Override
+	@Transactional
+	public void exchangeSaas(LiveWallet liveWallet, BigDecimal deductZbalance, String remarks) {
+		// 校验订单, 判断订单是否重复存在
+		Long countRemarks = liveWalletMapper.countRemarks(remarks, liveWallet.getId().toString(),
+				XmnConstants.RTYPE_51 + "");
+		if (countRemarks > 0)
+			throw new CustomException("请勿重复提交! 订单已存在! remarks=" + remarks);
+
+		// 判断扣除鸟币金额
+		if (deductZbalance.compareTo(BigDecimal.ZERO) <= 0) {
+			throw new CustomException("扣除鸟币金额错误,deductZbalance=" + deductZbalance);
+		}
+
+		// 判断余额是否充足
+		if (liveWallet.getZbalance().compareTo(deductZbalance) < 0)
+			throw new CustomException("鸟币余额不足, 钱包鸟币余额:" + liveWallet.getZbalance() + "  需要扣除的余额:" + deductZbalance);
+
+		// 扣除鸟币
+		deductZbalance(liveWallet, deductZbalance);
+
+		// 插入钱包更新数据
+		LiveWalletRecord liveWalletRecord = new LiveWalletRecord();
+		liveWalletRecord.setRtype(XmnConstants.RTYPE_51); // Type V客兑换SAAS套餐
+		liveWalletRecord.setEggMoney(new BigDecimal(0)); // 交易鸟蛋金额
+		liveWalletRecord.setCoinMoney(0L); // 交易鸟豆金额
+		liveWalletRecord.setRemarks(remarks); // 订单号
+		liveWalletRecord.setDescription("V客兑换SAAS套餐"); // 描述信息
+		liveWalletRecord.setBeansMoney(deductZbalance); // 交易鸟币金额
+		liveWalletRecord.setSellerBeansMoney(new BigDecimal(0)); // 交易商家鸟币金额
+
+		insertLiveWalletRecord(liveWallet, liveWalletRecord);
+
+		// 解除鸟币限制
+		updateLimitBalance(liveWallet, deductZbalance);
+
+	}
+
+	/**
+	 * 修改鸟币限制金额
+	 * 
+	 * @param liveWallet
+	 * @param deductZbalance
+	 */
+	private void updateLimitBalance(LiveWallet liveWallet, BigDecimal deductZbalance) {
+		// 计算修改后限制金额
+		BigDecimal limitBalacne = liveWallet.getLimitBalance().subtract(deductZbalance);
+		limitBalacne = limitBalacne.compareTo(BigDecimal.ZERO) > 0 ? limitBalacne : BigDecimal.ZERO;
+
+		int updateCount = liveWalletMapper.updateLimitBalane(liveWallet, limitBalacne);
+		if (updateCount < 1) {
+			throw new CustomException("修改鸟币限制金额失败!");
+		}
+		logger.info("已修改鸟币限制金额, 原限制金额为:" + liveWallet.getLimitBalance() + "现限制金额为:" + limitBalacne + "扣除金额为:"
+				+ deductZbalance);
+
+	}
+
+	/**
+	 * 扣除鸟币
+	 * 
+	 * @param liveWallet
+	 *            // 用户钱包
+	 * @param deductZbalance
+	 *            // 需要扣除的鸟币
+	 */
+	private void deductZbalance(LiveWallet liveWallet, BigDecimal deductZbalance) {
+
+		// 获取钱包新签名
+		LiveWallet walletParam = new LiveWallet();
+		walletParam.setUid(liveWallet.getUid()); // 用户uid
+		walletParam.setBalance(liveWallet.getBalance()); // 鸟蛋余额
+		walletParam.setZbalance(liveWallet.getZbalance().subtract(deductZbalance)); // 扣除后的鸟币余额
+		walletParam.setCommision(liveWallet.getCommision()); // 鸟豆余额
+		walletParam.setSellerCoin(liveWallet.getSellerCoin()); // 商家鸟币余额
+		walletParam.setSign(LiveWalletUtil.generateLiveWalletSign(walletParam));
+
+		// 扣除鸟币
+		int deduResultCount = liveWalletMapper.updateZbalance(walletParam, liveWallet, deductZbalance);
+		if (deduResultCount < 1)
+			throw new CustomException("扣除鸟币失败!");
+	}
+
+	/**
+	 * 插入直播钱包记录 更新数据 计算各种余额交易后的余额
+	 * 
+	 * @param beforeWallet
+	 *            更新前的直播钱包
+	 * @param liveWalletRecord
+	 *            直播钱包记录Bean, 需包含扣除金额信息
+	 */
+	private void insertLiveWalletRecord(LiveWallet beforeWallet, LiveWalletRecord liveWalletRecord) {
+		liveWalletRecord.setWalletId(beforeWallet.getId()); // 直播钱包id
+		liveWalletRecord.setAnchorId(beforeWallet.getUid()); // 直播用户id
+
+		BigDecimal hEggMoney = beforeWallet.getBalance().subtract(liveWalletRecord.getEggMoney());
+		liveWalletRecord.setqEggMoney(beforeWallet.getBalance()); // 交易前鸟蛋余额
+		liveWalletRecord.sethEggMoney(hEggMoney); // 交易后鸟蛋余额
+
+		long hCoinMoney = beforeWallet.getCommision() - liveWalletRecord.getCoinMoney();
+		liveWalletRecord.setqCoinMoney(beforeWallet.getCommision());// 交易前鸟豆余额
+		liveWalletRecord.sethCoinMoney(hCoinMoney); // 交易后鸟豆余额
+
+		BigDecimal hBeansMoney = beforeWallet.getZbalance().subtract(liveWalletRecord.getBeansMoney());
+		liveWalletRecord.setqBeansMoney(beforeWallet.getZbalance());// 交易前鸟币余额
+		liveWalletRecord.sethBeansMoney(hBeansMoney); // 交易后鸟币余额
+
+		BigDecimal hSellerBeanMoney = beforeWallet.getSellerCoin().subtract(liveWalletRecord.getSellerBeansMoney());
+		liveWalletRecord.sethSellerBeansMoney(beforeWallet.getSellerCoin());// 交易前商家鸟币余额
+		liveWalletRecord.setqSellerBeansMoney(hSellerBeanMoney); // 交易后商家鸟币余额
+
+		liveWalletRecord.setCreateTime(new Date()); // 创建时间
+		liveWalletRecord.setUpdateTime(new Date()); // 更新时间
+
+		// 向数据库插入直播交易记录
+		logger.info("插入直播钱包更新记录(live_wallet_record)数据, 参数:" + liveWalletRecord);
+		liveWalletRecordMapper.insertSelective(liveWalletRecord);
+	}
+
+	@Transactional
+	@Override
+	public Boolean liveGiftLedger(Map<String, String> param) {
+		logger.info("开始消费主播礼物分账消息  :"+param);
+		try {
+			ParamUtil.checkMustParam(param, "uid", "balance");
+			String source = param.get("source");
+			String vkid = param.get("vkid");
+			String amount = param.get("amount");
+			String remark = param.get("uid");
+			if (StringUtils.isNotBlank(source)) {
+				Long l = liveWalletRecordMapper.countByRemarks(source);
+				if (l > 0) {
+					logger.error("[消费主播礼物分账消息已消费,莫重复消费]" + param);
+					return true;
+				}
+			}
+
+			if (StringUtils.isNotBlank(vkid) && StringUtils.isNotBlank(amount) && new BigDecimal(amount).compareTo(BigDecimal.ZERO)>0) {
+				// 给V客入账
+				ParamUtil.checkMustParam(param, "vkid", "amount");
+				Map<String, String> exWalletParam = new HashMap<>();
+				exWalletParam.put("uid", param.get("vkid"));
+				exWalletParam.put("typeId","1");
+				exWalletParam.put("type", String.valueOf(XmnConstants.EX_RTYPE_10));
+				exWalletParam.put("option", "0");
+				exWalletParam.put("amount", amount);
+				exWalletParam.put("source", source);
+				exWalletParam.put("remark", remark);
+				Map<String, String> updateWalletExpansion = walletExpansionServiceImpl
+						.updateWalletExpansion(exWalletParam);
+				if (!ParamUtil.SUCCESS_STATE.toString().equals(updateWalletExpansion.get("state"))) {
+					throw new FailureException();
+				}
+			}
+			Map<String, String> liveParamMap = new HashMap<>();
+			liveParamMap.put("uid", param.get("uid"));
+			liveParamMap.put("rtype", String.valueOf(XmnConstants.RTYPE_5));
+			liveParamMap.put("balance", param.get("balance"));
+			liveParamMap.put("option", "0");
+			liveParamMap.put("liveRecordId", param.get("liveRecordId"));
+			ResponseData liveWalletOption = liveWalletServiceImpl.liveWalletOption(liveParamMap);
+			if(!ParamUtil.SUCCESS_STATE.equals(liveWalletOption.getState())){
+				throw new FailureException();
+			}else{
+				return true;
+			}
+		} catch (ParamBlankException e) {
+			logger.info("[消费主播礼物分账消息参数异常]" + param, e);
+			return false;
+		} catch (TException e) {
+			logger.error("[消费主播礼物分账消息出现异常]" + param, e);
+			throw new RuntimeException("消费主播礼物分账消息出现异常,进行事务回滚");
+		}
+	}
+}

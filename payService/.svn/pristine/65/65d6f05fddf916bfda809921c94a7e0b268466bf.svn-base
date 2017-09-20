@@ -1,0 +1,304 @@
+/**
+ * 
+ */
+package com.xmniao.dao;
+
+import java.math.BigDecimal;
+import java.nio.MappedByteBuffer;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
+
+/**
+ * 项目名称：payService
+ * 
+ * 类名称：LiveWalletMapper
+ *
+ * 创建人： chenJie
+ * 
+ * 创建时间：2016年8月15日下午3:37:01
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司
+ */
+public interface LiveWalletMapper {
+	
+	/**
+	 * 
+	 * 方法描述：获取钱包信息
+	 * 创建人： chenJie
+	 * 创建时间：2016年8月15日下午3:45:43
+	 * @param map
+	 * @return
+	 */
+	Map<String,Object> getLiveWallet(Map<String,String> map);
+	
+	/**
+	 * 
+	 * 方法描述：添加钱包
+	 * 创建人： chenJie
+	 * 创建时间：2016年8月15日下午3:46:45
+	 * @param map
+	 * @return
+	 */
+	int addLiveWallet(Map<String,Object> map);
+	
+	/**
+	 * 
+	 * 方法描述：解除或锁定钱包
+	 * 创建人： chenJie
+	 * 创建时间：2016年8月15日下午5:28:13
+	 * @param map
+	 * @return
+	 */
+	int updateWalletState(Map<String,String> map);
+	
+	/**
+	 * 
+	 * 方法描述：更新钱包数据
+	 * 创建人： chenJie
+	 * 创建时间：2016年8月16日下午5:33:11
+	 * @param map
+	 * @return
+	 */
+	int updateWallet(Map<String,String> map);
+	
+	/**
+	 * 
+	 * 方法描述：添加钱包记录
+	 * 创建人： chenJie
+	 * 创建时间：2016年8月16日下午5:34:22
+	 * @param map
+	 * @return
+	 */
+	int insertWalletRecord(Map<String,Object> map);
+	
+	/**
+	 * 
+	 * 方法描述：查询鸟蛋交易记录
+	 * 创建人： chenJie
+	 * 创建时间：2016年8月18日上午11:53:21
+	 * @param map
+	 * @return
+	 */
+	List<Map<String,Object>> getWalletRecord(Map<String,Object> map);
+	
+	/**
+	 * 
+	 * 方法描述：统计今日主播的鸟蛋收入
+	 * 创建人： chenJie
+	 * 创建时间：2016年8月18日下午2:43:03
+	 * @param map
+	 * @return
+	 */
+	Map<String,Object> countDayEgg(Map<String,String> map);
+	
+	/**
+	 * 统计累计鸟蛋
+	 * @param map
+	 * @return
+	 */
+	Map<String,Object> countTotalEgg(Map<String,String> map);
+	
+	/**
+	 * 
+	 * 方法描述：统计整个平台鸟币的消费排行
+	 * 创建人： chenJie
+	 * 创建时间：2016年8月18日下午3:36:50
+	 * @return
+	 */
+	List<Map<String,Object>> platformCoin(Map<String,Object> map);
+	
+	/**
+	 * 
+	 * 方法描述：查询每场直播的消费记录排行
+	 * 创建人： chenJie
+	 * 创建时间：2016年8月18日下午3:48:08
+	 * @param map
+	 * @return
+	 */
+	List<Map<String,Object>> liveList(Map<String,Object> map);
+	
+	/**
+	 * 
+	 * 方法描述：查询对主播贡献最高的排行
+	 * 创建人： chenJie
+	 * 创建时间：2016年8月18日下午3:50:38
+	 * @param map
+	 * @return
+	 */
+	List<Map<String,Object>> personList(Map<String,Object> map);
+	
+	/**
+	 * 统计该充值订单号的记录总数
+	 * @param remarks
+	 * @return
+	 */
+	Long countRemarks(@Param("remarks")String remarks,@Param("walletId")String walletId,@Param("rtype")String rtype);
+	
+	/**
+	 * 获取鸟币消费明细
+	 * @param paraMap
+	 * @return
+	 */
+	List<Map<String,Object>> getBirdCoinList(Map<String,Object> paraMap);
+	
+	/**
+	 * 获取本周鸟豆消费统计 
+	 * @param paraMap
+	 * @return
+	 */
+	Map<String,Object> getWeekBeans(Map<String,String> paraMap);
+	/**
+	 * 获取本月鸟豆消费统计 
+	 * @param paraMap
+	 * @return
+	 */
+	Map<String,Object> getMonthBeans(Map<String,String> paraMap);
+	
+	/**
+	 * 统计每日鸟豆消费总额
+	 * @param paraMap
+	 * @return
+	 */
+	List<Map<String,Object>> countBeansByDay(Map<String,String> paraMap);
+	
+	/**
+	 * 
+	 * 方法描述：统计鸟豆消费总额
+	 * 创建人：jianming  
+	 * 创建时间：2017年4月13日 下午5:02:45   
+	 * @param paraMap
+	 * @return
+	 */
+	Long sumBeans(Map<String,String> paraMap);
+	
+	/**
+	 * 获取每日鸟豆消费列表
+	 * @param paraMap
+	 * @return
+	 */
+	List<Map<String,Object>> BeansDetailByDay(Map<String,String> paraMap);
+	
+	
+	/**
+	 * 统计鸟蛋收入总额
+	 * @param paraMap
+	 * @return
+	 */
+	Map<String,Object> countIncomeBirdegg(Map<String,String> paraMap);
+	
+	/**
+	 * 鸟蛋收入记录列表
+	 * @param paraMap
+	 * @return
+	 */
+	List<Map<String,Object>> BirdeggIncomeList(Map<String,String> paraMap);
+	
+	/**
+	 * 鸟蛋收入排行榜
+	 * @return
+	 */
+	List<Map<String,Object>> birdeggIncomeTop(Map<String,String> paraMap);
+	
+	/**
+	 * 对主播贡献的前三名
+	 * @param anchorId
+	 * @return
+	 */
+	List<Map<String,Object>> topThree(Integer anchorId);
+	
+	/**
+	 * 查询鸟币收入记录
+	 * @param paraMap
+	 * @return
+	 */
+	List<Map<String,Object>> birdCoinInDetail(Map<String,String> paraMap);
+	
+	/**
+	 * 查询鸟币支出记录
+	 * @param paraMap
+	 * @return
+	 */
+	List<Map<String,Object>> birdCoinOutDetail(Map<String,String> paraMap);
+	
+	
+	Map<String,Object> getcoinCount(Map<String,String> paraMap);
+	
+	/**
+	 * 统计单位时间内主播鸟蛋收入
+	 * @param parMap
+	 * @return
+	 */
+	BigDecimal countUnitTimeEgg(Map<String,String> parMap);
+	
+	/**
+	 * 统计用户注册获赠鸟豆次数
+	 * @param uid
+	 * @return
+	 */
+	Long countRegister(String id);
+	
+	/**
+	 * 获取用户所有收支明细
+	 * @param paraMap
+	 * @return
+	 */
+	List<Map<String,Object>> getUserRecords(Map<String,String> paraMap);
+	
+	Long countUserRecord(Map<String,String> paraMap);
+	
+	Map<String,String> getWalletMsgByUid(String uid);
+	
+	/**
+	 * 查询美食订单鸟币支付或退还记录
+	 * @param orderNo  订单号
+	 * @param coinType 1 公共鸟币  2 商家专享鸟币
+	 * @param type 15 鸟币消费买单  18 退款 
+	 * @return
+	 */
+	Long countCoinRecord(@Param("orderNo")String orderNo,@Param("coinType")Integer coinType,@Param("type")Integer type);
+	
+	/**
+	 * 统计累计充值
+	 * @param walletId
+	 * @return
+	 */
+	Map<String,Object> getbeanCount(String walletId);
+	
+	/**
+	 * 
+	 * 方法描述：清空钱包
+	 * 创建人：jianming  
+	 * 创建时间：2017年4月5日 下午3:15:45   
+	 * @param object
+	 * @param sign
+	 * @return
+	 */
+	int cleanWallet(@Param("uid")Integer uid, @Param("sign")String sign);
+	
+	/**
+	 * 
+	 * 方法描述：初始化用户的可用于兑换储值卡及不可用于兑换储值卡的面额
+	 * 创建人： ChenBo
+	 * 创建时间：2017年4月6日
+	 * @param map
+	 * @return int
+	 */
+	int initExchangeCoinAmount(Map<String,String> map);
+
+	/**
+	 * 
+	 * 方法描述：统计鸟币总额
+	 * 创建人：jianming  
+	 * 创建时间：2017年4月13日 下午5:05:17   
+	 * @param walletMap
+	 * @return
+	 */
+	Long sumBirdB(Map<String, String> walletMap);
+
+	Long countUserWalletRecordList3(Map<String, String> walletMap);
+
+	List<Map<String, Object>> getUserWalletRecordList3(Map<String, String> walletMap);
+	
+ }

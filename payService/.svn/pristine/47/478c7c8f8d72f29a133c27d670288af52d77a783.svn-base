@@ -1,0 +1,251 @@
+package com.xmniao.service.impl;
+
+import com.xmniao.common.Page;
+import com.xmniao.dao.ExperiencecardMapper;
+import com.xmniao.dao.ExperiencecardRecordMapper;
+import com.xmniao.entity.Experiencecard;
+import com.xmniao.entity.ExperiencecardRecord;
+import com.xmniao.exception.CustomException;
+import com.xmniao.service.ExperiencecardAccess;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by yang.qiang on 2017/5/8.
+ */
+@Service
+public class ExperiencecardAccessImpl implements ExperiencecardAccess {
+    private static final Logger logger = LoggerFactory.getLogger(ExperiencecardAccessImpl.class);
+
+    @Autowired
+    private ExperiencecardMapper experiencecardMapper;
+    @Autowired
+    private ExperiencecardRecordMapper experiencecardRecordMapper;
+
+    /**
+     * 创建/更新美食体验卡
+     * 插入体验卡更新记录
+     *
+     * @param exCardRequest       美食体验卡数据
+     * @param exCardRecordRequest 美食体验记录信息数据
+     */
+    @Override
+    @Transactional
+    public void createCard(Experiencecard exCardRequest, ExperiencecardRecord exCardRecordRequest) {
+
+        // 统计是否存在重复的订单
+        exCardRecordRequest.setRtype(ExperiencecardAccess.ExperiencecardRecordRtypeCharge);
+        if (isExistedOrder(exCardRecordRequest)) {
+            logger.info("订单已存在! " + exCardRecordRequest.toString());
+            throw new CustomException("订单已存在! " + exCardRecordRequest.toString());
+        }
+
+        // 创建美食体验卡新建/更新记录
+        ExperiencecardRecord excardRecordParam = new ExperiencecardRecord();
+        excardRecordParam.setSource(exCardRecordRequest.getSource());   // 订单号
+        excardRecordParam.setRemark(exCardRecordRequest.getRemark());   // 备注
+        excardRecordParam.setRtype(ExperiencecardAccess.ExperiencecardRecordRtypeCharge);
+        excardRecordParam.setStock(exCardRequest.getStock());           // 更新库存数量
+        excardRecordParam.setCreateTime(new Date());                    // 记录时间
+
+        // 查询已存在的美食体验卡
+        Experiencecard existingExCard = queryExperiencecard(exCardRequest.getUid());
+        // 检测美食体验卡状态
+        if (existingExCard != null && existingExCard.getStatus() != 0) {
+            throw new CustomException("美食体验卡状态错误", 3);
+        }
+
+        if (existingExCard == null) {
+            logger.info("用户[" + exCardRequest.getUid() + "], 不存在美食订单卡, 新建美食订单卡");
+
+            // 不存在美食体验卡, 创建新的美食体验卡
+            Experiencecard param = new Experiencecard();
+            param.setStock(exCardRequest.getStock());
+            param.setDueDate(exCardRequest.getDueDate());
+            param.setUid(exCardRequest.getUid());
+            param.setUpdateTime(new Date());
+            // 返回主键
+            int i = experiencecardMapper.insertSelective(param);
+            if (i < 1) {
+                logger.error("创建美食体验卡失败! " + param);
+                throw new CustomException("创建失败!");
+            }
+
+            // 封装 新建记录
+            excardRecordParam.setHstock(exCardRequest.getStock());
+            excardRecordParam.setCid(param.getId());
+        } else {
+            logger.info("用户[" + exCardRequest.getUid() + "], 已存在美食订单卡! 更新美食订单卡");
+
+            // 已存在美食体验卡, 重置美食体验卡
+            Experiencecard param = new Experiencecard();
+            param.setId(existingExCard.getId());
+            param.setStock(exCardRequest.getStock());
+            param.setDueDate(exCardRequest.getDueDate());
+            param.setUpdateTime(new Date());
+            param.setUid(existingExCard.getUid());
+            int i = experiencecardMapper.updateByPrimaryKeySelective(param);
+            if (i < 1) {
+                logger.error("更新美食体验卡失败! " + param);
+                throw new CustomException("更新失败");
+            }
+
+            // 封装 更新记录
+            excardRecordParam.setQstock(existingExCard.getStock());
+            excardRecordParam.setHstock(exCardRequest.getStock());
+            excardRecordParam.setCid(existingExCard.getId());
+        }
+
+        // 插入新建/更新记录信息
+        experiencecardRecordMapper.insertSelective(excardRecordParam);
+    }
+
+    /**
+     * 统计订单, 判断该订单是否已存在
+     *
+     * @param param
+     * @return
+     */
+    private boolean isExistedOrder(ExperiencecardRecord param) {
+        if (experiencecardRecordMapper.countRecord(param) > 0) {
+            logger.info("订单已存在! [rtype=" + param.getRtype() +
+                    ", source=" + param.getSource() + "]");
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 根据用户uid 查询美食体验卡
+     *
+     * @param uid 用户uid
+     * @return 美食体验卡 如果没有则返回null
+     */
+    @Override
+    public Experiencecard queryExperiencecard(Integer uid) {
+        return experiencecardMapper.selectByUid(uid);
+    }
+
+    /**
+     * 扣除美食体验卡
+     *  @param uid          用户uid
+     * @param excardRecord
+     * @param operate
+     */
+    @Override
+    @Transactional
+    public void dudectExperiencecard(Integer uid, ExperiencecardRecord excardRecord, Integer operate) {
+
+        // 校验并获取美食体验卡状态
+        Experiencecard excard = verifyExperiencecard(uid);
+        excard.setUpdateTime(new Date());
+
+
+        ExperiencecardRecord excardRecordParam = new ExperiencecardRecord();
+
+        if (operate == 1){
+            // 扣除美食体验卡
+            if (experiencecardMapper.deductExperiencecard(excard) < 1) {
+                logger.info("扣除美食体验卡失败 uid = " + uid);
+                throw new CustomException("扣除美食体验卡失败");
+            }
+            excardRecordParam.setRtype(1);
+            excardRecordParam.setHstock(excard.getStock() - 1);
+        }else if(operate == 2){
+            // 退还美食体验卡
+            if (experiencecardMapper.increaseExperiencecard(excard) < 1){
+                logger.info("退还美食体验卡失败 uid = " + uid);
+                throw new CustomException("退还美食体验卡失败!");
+            }
+            excardRecordParam.setRtype(2);
+            excardRecordParam.setHstock(excard.getStock() + 1);
+        }else {
+            throw new CustomException("操作类型有误, 不能为" + operate,2);
+        }
+
+
+        // 插入美食体验卡记录
+        excardRecordParam.setRemark(excardRecord.getRemark());
+        excardRecordParam.setSource(excardRecord.getSource());
+        excardRecordParam.setCid(excard.getId());
+        excardRecordParam.setQstock(excard.getStock());
+        excardRecordParam.setCreateTime(new Date());
+        excardRecordParam.setStock(1);
+        if (experiencecardRecordMapper.insertSelective(excardRecordParam) < 1) {
+            logger.info("订单记录失败! " + excardRecordParam);
+            throw new CustomException("创建订单记录失败!");
+        }
+
+    }
+
+    /**
+     * 根据条件统计体验卡数量
+     *
+     * @param paramMap
+     * @return
+     */
+    @Override
+    public int countExperiencecard(Map<String, String> paramMap) {
+        return experiencecardMapper.countExperiencecard(paramMap);
+    }
+
+    /**
+     * 根据查询体验卡
+     *
+     * @param paramMap
+     * @param page
+     * @return
+     */
+    @Override
+    public List<Experiencecard> queryExperiencecardList(Map<String, String> paramMap, Page page) {
+        return experiencecardMapper.queryExperiencecardList(paramMap,page);
+    }
+
+    /**
+     * @param experiencecard
+     * 更新美食体验卡状态
+     */
+    @Override
+    public void updateExcardStatus(Experiencecard experiencecard) {
+        logger.info("更新美食体验卡["+experiencecard.getId()+"] 状态为" + experiencecard.getStatus());
+        Experiencecard record = new Experiencecard();
+        record.setId(experiencecard.getId());
+        record.setStatus(experiencecard.getStatus());
+        experiencecardMapper.updateByPrimaryKeySelective(record);
+    }
+
+
+    /**
+     * 校验美食体验卡状态
+     * @param uid
+     * @return 美食体验卡
+     */
+    private Experiencecard verifyExperiencecard(Integer uid) {
+        // 校验美食体验卡状态
+        Experiencecard excard = queryExperiencecard(uid);
+        if (excard == null) {
+            logger.info("用户[" + uid + "]美食体验卡查询结果为空");
+            throw new CustomException("用户[" + uid + "]未开通美食体验卡", 5);
+        }
+
+        if (excard.getStatus() != 0) {
+            logger.info("用户[" + uid + "]美食体验卡状态为:" + excard.getStatus());
+            throw new CustomException("用户[" + uid + "]美食体验卡状态被锁定", 3);
+        }
+
+        if (excard.getStock() <= 0) {
+            logger.info("用户[" + uid + "]美食体验卡剩余库存为" + excard.getStock());
+            throw new CustomException("库存不足", 4);
+        }
+        return excard;
+    }
+
+}

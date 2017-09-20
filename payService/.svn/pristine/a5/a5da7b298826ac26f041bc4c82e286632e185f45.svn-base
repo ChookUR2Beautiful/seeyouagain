@@ -1,0 +1,12 @@
+package com.xmniao.common;
+
+/**
+ * @author liyuanbo
+ * @create 2017-06-13 17:15
+ **/
+public class XmnUtils {
+
+    public static int floor(double value){
+        return (int) Math.floor(value);
+    }
+}

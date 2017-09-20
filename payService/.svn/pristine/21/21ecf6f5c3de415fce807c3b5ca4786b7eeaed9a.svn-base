@@ -1,0 +1,940 @@
+package com.xmniao.service.pay;
+
+import com.umpay.api.util.StringUtil;
+import com.xmniao.common.*;
+import com.xmniao.dao.*;
+import com.xmniao.entity.*;
+import com.xmniao.entity.Wallet;
+import com.xmniao.exception.ParamBlankException;
+import com.xmniao.service.CommonService;
+import com.xmniao.service.WalletExService;
+import com.xmniao.service.WalletService;
+import com.xmniao.thrift.ledger.*;
+
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.ibatis.annotations.Param;
+import org.apache.log4j.Logger;
+import org.apache.thrift.TException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.math.BigDecimal;
+import java.util.*;
+
+import javax.annotation.Resource;
+
+import com.umpay.api.util.StringUtil;
+import com.xmniao.common.DateUtil;
+import com.xmniao.common.MapBeanUtil;
+import com.xmniao.common.MapUtil;
+import com.xmniao.common.ParamUtil;
+import com.xmniao.common.ValidateUtil;
+import com.xmniao.common.XmnConstants;
+import com.xmniao.entity.ExpansionManage;
+import com.xmniao.entity.ExpansionManage.Expenses;
+import com.xmniao.entity.Wallet;
+import com.xmniao.entity.WalletExpansion;
+import com.xmniao.entity.WalletExpansionExpenses;
+import com.xmniao.entity.WalletExpansionRecord;
+import com.xmniao.entity.WalletExpenses;
+import com.xmniao.exception.ParamBlankException;
+import com.xmniao.service.CommonService;
+import com.xmniao.service.WalletExService;
+import com.xmniao.service.WalletService;
+
+@Service("WalletExpansionServiceImpl")
+public class WalletExpansionServiceImpl implements WalletExpansionService.Iface {
+
+	
+	/**
+	 * 日志记录
+	 */
+	private final Logger log = Logger.getLogger(WalletExpansionServiceImpl.class);
+
+
+	@Resource(name="liveWalletMapperProxy")
+	private LiveWalletMapper liveWalletMapper;
+	
+	@Autowired
+	private WalletExpansionMapper walletExpansionMapper;
+
+	@Autowired
+	private WalletExpansionRecordMapper walletExpansionRecordMapper;
+
+	/** 提现公共服务 */
+	@Autowired
+	private CommonService commonService;
+
+	@Autowired
+	private WalletService walletService;
+
+	@Autowired
+	private WalletExService walletExService;
+
+	@Autowired
+	private SynthesizeServiceImpl syServiceImpl;
+
+	@Autowired
+	private WalletExpansionExpensesMapper walletExpansionExpensesMapper;
+
+	@Autowired
+	private WalletMapper walletMapper;
+	@Autowired
+	private PayTableExplainMapper payTableExplainMapper;
+
+	@Autowired
+	private ExpansionManage expansionManage;
+	
+	@Transactional(rollbackFor={Exception.class,FailureException.class})
+	@Override
+	public Map<String, String> updateWalletExpansion(Map<String, String> param) throws FailureException {
+		log.info("【开始执行更改扩展钱包接口】  param=" + param);
+		Map<String, String> map = ParamUtil.getParamMap(param, "type", "option", "amount");
+		try {
+			ParamUtil.checkMustParam(map);
+			WalletExpansion wallet = walletService.getWalletExpansion(param);
+			if (wallet == null) {
+				wallet = walletService.addWalletExpansion(param);
+			}
+			return updateWallet(param, wallet);
+		} catch (ParamBlankException e) {
+			log.info("调用更新扩展钱包余额接口参数不匹配", e);
+			return ParamUtil.failMap(e.getMessage());
+		} catch (Exception e) {
+			log.error("修改扩展钱包出现异常", e);
+			throw new FailureException();
+		}
+	}
+
+	/**
+	 * 
+	 * 方法描述：修改钱包操作前验证 创建人：jianming 创建时间：2017年4月24日 下午4:27:39
+	 * 
+	 * @param param
+	 * @param wallet
+	 * @return
+	 */
+	private Map<String, String> updateWallet(Map<String, String> param, WalletExpansion wallet) {
+		String sign = walletGetSign(wallet);
+		if (!sign.equals(wallet.getSign())) {
+			return ParamUtil.failMap("用户扩展钱包签名不正确");
+		}
+		if (wallet.getIsFreeze().intValue() == 1) {
+			return ParamUtil.failMap("钱包已被冻结,不能修改!");
+		}
+		return updateNverify(param, wallet);
+	}
+
+	private String walletGetSign(WalletExpansion wallet) {
+		Map<String, String> signMap = wallet.toSignMap();
+		String sign = commonService.WalletExpansionSign(signMap);
+		return sign;
+	}
+
+
+	/**
+	 * 
+	 * 方法描述：修改钱包操作
+	 * 创建人：jianming  
+	 * 创建时间：2017年5月3日 上午11:35:59   
+	 * @param param
+	 * @param wallet
+	 * @return
+	 */
+	private  Map<String, String> updateNverify(Map<String, String> param, WalletExpansion wallet) {
+		Integer option = Integer.valueOf(param.get("option"));
+		WalletExpansionRecord expansionRecord = new WalletExpansionRecord();
+		expansionRecord.setWalletExpansionId(wallet.getId());
+		expansionRecord.setQamount(wallet.getAmount());
+		expansionRecord.setCreateTime(new Date());
+		BigDecimal amount = new BigDecimal(param.get("amount")).setScale(2);
+		switch (option) {
+		case 0:
+			// 添加
+			expansionRecord.setType(Byte.valueOf("1"));
+			wallet.setAmount(wallet.getAmount().add(amount));
+			break;
+		case 1:
+			// 减少
+			expansionRecord.setType(Byte.valueOf("2"));
+			if (wallet.getAmount().compareTo(amount) < 0) {
+				return ParamUtil.failMap("金额不足");
+			}
+			amount = amount.multiply(BigDecimal.valueOf(-1));
+			wallet.setAmount(wallet.getAmount().add(amount));
+			String decrease = param.get("decrease");
+			if(StringUtils.isNotBlank(decrease)){
+				//增加扣减总数
+				BigDecimal de = new BigDecimal(decrease);
+				wallet.setDecrease(wallet.getDecrease().add(de));
+			}
+			break;
+		default:
+			return ParamUtil.failMap("option参数不正确");
+		}
+		String recordType = param.get("recordType");
+		if (StringUtils.isNotBlank(recordType)) {
+			expansionRecord.setType(new Byte(recordType));
+			if(expansionRecord.getType().intValue()==XmnConstants.EX_RECORD_TYPE_3||expansionRecord.getType().intValue()==XmnConstants.EX_RECORD_TYPE_4||expansionRecord.getType().intValue()==XmnConstants.EX_RECORD_TYPE_7){
+				wallet.setTransfer(wallet.getTransfer().add(amount.abs()));
+			}
+		}
+		expansionRecord.setHamount(wallet.getAmount());
+		expansionRecord.setRemark(param.get("remark"));
+		expansionRecord.setSource(param.get("source"));
+		expansionRecord.setAmount(amount);
+		String sign2 = walletGetSign(wallet);
+		wallet.setOldSign(wallet.getSign());
+		wallet.setSign(sign2);
+		wallet.setAmount(amount);
+		wallet.setModifyTime(new Date());
+		int resultInt = walletExpansionMapper.updateAmountById(wallet);
+		if (resultInt > 0) {
+			int insert = walletExpansionRecordMapper.insert(expansionRecord);
+			if (insert <= 0) {
+				throw new RuntimeException("操作失败");
+			}
+			log.info("【执行更改钱包接口完毕操作成功】");
+			return ParamUtil.successMap("操作成功");
+		} else {
+			log.info("【执行更改钱包接口完毕操作失败】");
+			return ParamUtil.failMap("操作失败");
+		}
+	}
+
+	@Transactional(rollbackFor = { Exception.class, FailureException.class })
+	@Override
+	public ResponseData withdrawalsExpansion(Map<String, String> param) throws FailureException, TException {
+		log.info("【开始调用扩展钱包转入到普通钱包操作】 param=" + param);
+		String commision = param.get("commision");
+		if (StringUtils.isBlank(param.get("type"))) {
+			return ParamUtil.fail("type不能为空");
+		}
+		try {
+			WalletExpansion wallet = walletService.getWalletExpansion(param);
+			if (wallet == null) {
+				return ParamUtil.fail("钱包不存在");
+			}
+			if (XmnConstants.FORBIDTRANSFER_1.equals(wallet.getForbidTransfer())) {
+				return ParamUtil.fail("该钱包类型不能转出");
+			}
+			String sign = walletGetSign(wallet);
+			if (!sign.equals(wallet.getSign())) {
+				return ParamUtil.fail("用户扩展钱包签名不正确");
+			}
+			if (wallet.getIsFreeze().intValue() == 1) {
+				return ParamUtil.fail("钱包已被冻结,不能修改!");
+			}
+			BigDecimal amount;
+			if(StringUtils.isNotBlank(commision)){
+				amount=new BigDecimal(commision);
+			}else{
+				amount=new BigDecimal(param.get("zbalance"));
+			}
+			Expenses availableAmount = expansionManage.getAvailableAmount(wallet,amount);
+			
+			if(availableAmount.getState().equals(expansionManage.DEFALT_STATE)){
+				return ParamUtil.fail(availableAmount.getMsg());
+			}
+			if(StringUtils.isNotBlank(commision)){
+				commision=availableAmount.getAmount().toString();
+				param.put("commision", commision);
+			}else{
+				param.put("zbalance", availableAmount.getAmount().toString());
+			}
+			BigDecimal newCommision;
+			BigDecimal rate = walletExService.withdrawalsExpansion(param);
+			Map<String, String> walletMap = new HashMap<>();
+			walletMap.put("uId", param.get("uid"));
+			walletMap.put("userType", param.get("typeId"));
+			walletMap.put("option", "0");
+			walletMap.put("rType", XmnConstants.getExpansionType2rType(wallet.getType().intValue()).toString());
+			walletMap.put("expenses", rate.toString());
+			walletMap.put("orderId", UUID.randomUUID().toString());
+			walletMap.put("remark", "扩展钱包转入");
+			if (StringUtils.isNotBlank(commision)) {
+				BigDecimal commision1 = new BigDecimal(commision);
+				newCommision = commision1.subtract(rate);
+				walletMap.put("commision", newCommision.toString());
+			} else {
+				newCommision = new BigDecimal(param.get("zbalance"));
+				walletMap.put("zbalance", param.get("zbalance"));
+			}
+			Map<String, String> resMap = syServiceImpl.updateWalletAmount(walletMap);
+			if (!"0".equals(resMap.get("state"))) {
+				log.info("会员钱包更新失败：" + resMap + "\r\n" + param);
+				throw new FailureException(1, resMap.get("msg"));
+			}
+			Map<String, String> resultMap = new HashMap<>();
+			resultMap.put("amount", param.get("commision") == null ? param.get("zbalance") : param.get("commision"));
+			resultMap.put("rate", rate.toString());
+			resultMap.put("amountCount", newCommision.toString());
+			return ParamUtil.success(availableAmount.getMsg(), resultMap);
+		} catch (ParamBlankException e) {
+			log.info("调用扩展钱包转入到普通钱包接口参数不匹配", e);
+			return ParamUtil.fail(e.getMessage());
+		} catch (Exception e) {
+			log.error("修改扩展钱包转入到普通钱包出现异常", e);
+			throw new FailureException();
+		}
+	}
+
+	@Override
+	public Map<String, String> getExpansionExpense(Map<String, String> param) throws FailureException, TException {
+		log.info("【开始调用扩展钱包获取手续费操作】 param=" + param);
+		Map<String, String> hashMap = new HashMap<>();
+		hashMap.put("type", param.get("type"));
+		hashMap.put("commision", param.get("commision"));
+		try {
+			ParamUtil.checkMustParam(hashMap);
+			BigDecimal commision = new BigDecimal(hashMap.get("commision"));
+			WalletExpenses expansionExpense = walletExService.getExpansionExpense(commision, hashMap.get("type"));
+			Map<String, String> resultMap = ParamUtil.pojoToResultMap(expansionExpense, "rateType", "rate", "rateSum");
+			return resultMap;
+		} catch (ParamBlankException e) {
+			log.info("调用查询手续费参数异常", e);
+			return ParamUtil.failMap(e.getMessage());
+		} catch (Exception e) {
+			log.info("调用查询手续费出现异常", e);
+			throw new FailureException();
+		}
+	}
+
+	@Override
+	public ResponsePageList getExpansion(Map<String, String> param) throws FailureException, TException {
+		log.info("【开始调用扩展钱包获取钱包信息操作】 param=" + param);
+		ResponsePageList pageList = new ResponsePageList();
+		try {
+			List<WalletExpansion> walletExpansion = walletService.getWalletExpansionList(param);
+			List<Map<String, String>> resultList = new LinkedList<>();
+			for (WalletExpansion wa : walletExpansion) {
+				Map<String, String> pojoToResultMap = ParamUtil.pojoToResultMap(wa, "type", "amount", "transfer",
+						"isFreeze", "forbidTransfer", "name","decrease");
+				if(wa.getType().intValue()==XmnConstants.EX_RTYPE_1){
+					//V客推荐钱包可转出金额=amount-上周到现在的收益总和<0?0:(amount-上周到现在的收益总和)
+					BigDecimal availableAmount = walletExService.getExrtype1availableAmount(wa.getAccountid());
+					pojoToResultMap.put("availableAmount", availableAmount.toString());
+				}
+				 Expenses availableAmount = expansionManage.getAvailableAmount(wa,wa.getAmount());
+				if(availableAmount.getAmount()!=null){
+					pojoToResultMap.put("availableAmount", availableAmount.getAmount().toString());
+				}
+				if(wa.getWalletExpenses()!=null){
+					pojoToResultMap.put("rateType", wa.getWalletExpenses().getRateType()+"");
+					pojoToResultMap.put("rate", wa.getWalletExpenses().getRate()+"");
+				}
+				resultList.add(pojoToResultMap);
+			}
+			ResponseData success = ParamUtil.success("操作成功", null);
+			pageList.setDataInfo(success);
+			pageList.setPageList(resultList);
+			return pageList;
+		} catch (ParamBlankException e) {
+			log.info("调用查询扩展钱包余额参数异常", e);
+			ResponseData fail = ParamUtil.fail(e.getMessage());
+			pageList.setDataInfo(fail);
+			return pageList;
+		} catch (Exception e) {
+			log.error("调用查询扩展钱包余额出现异常", e);
+			ResponseData error = ParamUtil.error();
+			pageList.setDataInfo(error);
+			return pageList;
+		}
+	}
+
+	@Override
+	public ResponsePageList getExpansionRecord(Map<String, String> param) throws FailureException, TException {
+		log.info("【开始调用扩展钱包获取钱包操作记录】 param=" + param);
+		ResponsePageList pageList = new ResponsePageList();
+		try {
+			List<WalletExpansionRecord> records = walletService.getWalletExpansionRecordList(param);
+			
+			//TODO 统计金额总数
+			
+			List<Map<String, String>> resultList = new LinkedList<>();
+			for (WalletExpansionRecord r : records) {
+				Map<String, String> map = ParamUtil.pojoToResultMap(r, "type", "remark", "source", "amount",
+						"expansionType");
+				map.put("createTime", DateUtil.formatDate(r.getCreateTime(), DateUtil.Y_M_D_HMS));
+				resultList.add(map);
+			}
+			ResponseData success = ParamUtil.success("操作成功", null);
+			pageList.setDataInfo(success);
+			pageList.setPageList(resultList);
+			return pageList;
+		} catch (ParamBlankException e) {
+			log.info("调用查询扩展钱包操作记录参数异常", e);
+			ResponseData fail = ParamUtil.fail(e.getMessage());
+			pageList.setDataInfo(fail);
+			return pageList;
+		} catch (Exception e) {
+			log.error("调用查询扩展钱包操作记录出现异常", e);
+			ResponseData error = ParamUtil.error();
+			pageList.setDataInfo(error);
+			return pageList;
+		}
+	}
+
+	@Transactional(rollbackFor = { Exception.class, FailureException.class })
+	@Override
+	public DataResponse updateExpansionAmount(Map<String, String> param) throws FailureException, TException {
+		Map<String, String> map = ParamUtil.getParamMap(param, "option", "amount");
+		String[] types = StringUtil.isNotEmpty(param.get("type")) ? param.get("type").split(",") : null;
+		String option = map.get("option");
+		BigDecimal amount = new BigDecimal(map.get("amount"));
+		try {
+			ParamUtil.checkMustParam(map);
+			Map<String, Object> mapParam = MapUtil.String2Object(param);
+			mapParam.put("type", types);
+			walletService.checkWalletSelectParam(MapUtil.Object2String(mapParam));
+			List<WalletExpansion> walletExpansionList = walletExpansionMapper.getWalletExpansionList(mapParam);
+			if (walletExpansionList.isEmpty()) {
+				return ParamUtil.failDataResponse("钱包为空");
+			}
+			switch (option) {
+			case "0": // 增加余额
+				WalletExpansion walletExpansion = walletExpansionList.get(0);
+				String sign = walletGetSign(walletExpansion);
+				if (!sign.equals(walletExpansion.getSign())) {
+					return ParamUtil.failDataResponse("用户扩展钱包签名不正确");
+				}
+				Map<String, String> updateNverify = updateNverify(param, walletExpansion);
+				if (!"0".equals(updateNverify.get("state"))) {
+					throw new RuntimeException(updateNverify.get("msg"));
+				}
+				/*
+				 * Map<String, String> updateWalletExpansion =
+				 * updateWalletExpansion(param);
+				 * if(!"0".equals(updateWalletExpansion.get("state"))){ return
+				 * ParamUtil.failDataResponse(updateWalletExpansion.get("msg"));
+				 * }
+				 */
+				break;
+			case "1":  //扣除余额
+				//计算所有钱包余额是否足够扣除金额
+				List<WalletExpansion> newList = operationAmount(walletExpansionList,amount);
+				if(newList.isEmpty()){
+					return ParamUtil.failDataResponse("钱包为空");
+				}
+				if(!checkSingList(newList)){
+					return ParamUtil.failDataResponse("用户扩展钱包签名不正确");
+				}
+				Map<String, String> paramMap = ParamUtil.getParamMap(param, "option", "remark", "source");
+				updateWalletList(newList, amount, paramMap);
+				break;
+			default:
+				return ParamUtil.failDataResponse("option格式有误");
+			}
+			return ParamUtil.successDataResponse("操作成功");
+		} catch (ParamBlankException e) {
+			log.info("调用批量修改扩展钱包时参数不正常", e);
+			return ParamUtil.failDataResponse(e.getMessage());
+		} catch (Exception e) {
+			log.error("调用批量修改扩展钱包时出现异常", e);
+			throw new FailureException(ParamUtil.ERROR_STATE, "操作失败");
+		}
+	}
+
+	/**
+	 * 批量验证签名
+	 **/
+	private boolean checkSingList(List<WalletExpansion> walletExpansionList) {
+		for (WalletExpansion walletExpansion : walletExpansionList) {
+			String sign = walletGetSign(walletExpansion);
+			if (!sign.equals(walletExpansion.getSign())) {
+				log.info("用户扩展钱包签名不正确    id=" + walletExpansion.getId());
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * 
+	 * 方法描述：递归修改钱包余额 创建人：jianming 创建时间：2017年4月24日 下午4:11:52
+	 * 
+	 * @param newList
+	 * @param amount
+	 * @param param
+	 */
+	private void updateWalletList(List<WalletExpansion> newList, BigDecimal amount, Map<String, String> param) {
+		WalletExpansion walletExpansion = newList.get(0);
+		BigDecimal amount2 = walletExpansion.getAmount();
+		if(amount2.compareTo(amount)<0){
+			//金额不足扣
+			param.put("amount", amount2+"");
+			Map<String, String> updateWallet = updateNverify(param,walletExpansion);
+			if(!"0".equals(updateWallet.get("state"))){
+				throw new RuntimeException(updateWallet.get("msg"));
+			}
+			BigDecimal subtract = amount.subtract(amount2);
+			newList.remove(0);
+			param.put("decrease", subtract.toString());
+			updateWalletList(newList,subtract,param);
+			
+		}else{
+			//金额足够
+			param.put("amount", amount+"");
+			param.put("decrease", amount.toString());
+			Map<String, String> updateWallet = updateNverify(param,walletExpansion);
+			if(!"0".equals(updateWallet.get("state"))){
+				throw new RuntimeException(updateWallet.get("msg"));
+			}
+		}
+
+	}
+
+	/**
+	 * 
+	 * 方法描述：计算金额是否足够扣除,并返回可扣除的钱包 创建人：jianming 创建时间：2017年4月24日 下午3:47:27
+	 * 
+	 * @param walletExpansionList
+	 * @param amount
+	 * @return
+	 * @throws ParamBlankException
+	 */
+	private List<WalletExpansion> operationAmount(List<WalletExpansion> walletExpansionList, BigDecimal amount)
+			throws ParamBlankException {
+		List<WalletExpansion> list = new ArrayList<>();
+		BigDecimal sum = BigDecimal.valueOf(0);
+		for (WalletExpansion walletExpansion : walletExpansionList) {
+			if (walletExpansion.getAmount().compareTo(BigDecimal.valueOf(0)) > 0) {
+				list.add(walletExpansion);
+				sum = sum.add(walletExpansion.getAmount());
+			}
+		}
+		if (sum.compareTo(amount) < 0) {
+			throw new ParamBlankException("金额不足");
+		}
+		return list;
+	}
+
+
+    /**
+     * 查询拓展钱包体现手续费
+     *
+     * @return
+     * @throws FailureException
+     * @throws TException
+     */
+    @Override
+    public List<Map<String, String>> getExpansionExpenseRateList() throws FailureException, TException {
+        log.info("调用[查询拓展钱包提现手续费列表] 接口");
+        List<Map<String,String>> rateList = new ArrayList<>();
+        // 查询 [拓展金额转出/提现 手续费率设置]
+        List<WalletExpansionExpenses> walletExpansionExpensesList = walletExpansionExpensesMapper
+                .selectList();
+        // 将Bean转成Map
+        for (WalletExpansionExpenses expenses : walletExpansionExpensesList) {
+            Map<String, String> rate = MapBeanUtil.convertMap(expenses, "type", "rateType", "rate");
+            PayTableExplain payTableExplain = new PayTableExplain();
+            payTableExplain.setColumnName("type");
+            payTableExplain.setTableName("b_wallet_expansion");
+            payTableExplain.setColumnValue(rate.get("type"));
+			String typeName = payTableExplainMapper.selectVlueExplainByRecord(payTableExplain);
+			rate.put("typeName", typeName == null ? "未知" : typeName);
+            rateList.add(rate);
+//                log.error("Bean转换Map出现异常 bean:" + expenses,e);
+        }
+		return rateList;
+	}
+
+	/**
+	 * 1.12.7. 查询指定收益类型提现手续费率
+	 * 
+	 * @param paramMap
+	 *            type: 收益类型 0:综合收益 1:V客推荐 2:V客红包 3:壕赚VIP红包 4:壕赚商户充值红包
+	 * @return
+	 * @throws FailureException
+	 * @throws TException
+	 */
+	@Override
+	public List<Map<String, String>> getExpansionExpenseRate(Map<String, String> paramMap)
+			throws FailureException, TException {
+		log.info("调用[查询指定收益类型提现手续费率] 接口, 参数:" + paramMap);
+
+		// 校验参数
+		if (!ValidateUtil.validateNull(paramMap, "type")) {
+			throw new RuntimeException("参数非法! paramMap:" + paramMap);
+		}
+
+		List<Map<String, String>> rateList = new ArrayList<>();
+
+		// 封装查询数据
+		Byte type = Byte.valueOf(paramMap.get("type"));
+		WalletExpansionExpenses record = new WalletExpansionExpenses();
+		record.setType(type);
+
+		// 查询手续费
+		List<WalletExpansionExpenses> walletExpansionExpensesList = walletExpansionExpensesMapper
+				.selectListByRecord(record);
+
+		// 将Bean转成Map
+		for (WalletExpansionExpenses expenses : walletExpansionExpensesList) {
+			Map<String, String> rate = MapBeanUtil.convertMap(expenses, "type", "rateType", "rate");
+			PayTableExplain payTableExplain = new PayTableExplain();
+			payTableExplain.setColumnName("type");
+			payTableExplain.setTableName("b_wallet_expansion");
+			payTableExplain.setColumnValue(rate.get("type"));
+			rate.put("typeName", payTableExplainMapper.selectVlueExplainByRecord(payTableExplain));
+			rateList.add(rate);
+		}
+
+		return rateList;
+	}
+
+	/**
+	 * 1.12.8. 修改扩展钱包提现手续费率
+	 * 
+	 * @param param
+	 *            type 收益类型 0:综合收益 1:V客推荐 2:V客红包 3:壕赚VIP红包 4:壕赚商户充值红包 rateType
+	 *            费率类型 1:比例 2:固定金额 rate 手续费比例
+	 * @return
+	 * @throws FailureException
+	 * @throws TException
+	 */
+	@Override
+	public DataResponse updateExpansionExpenseRate(Map<String, String> param) throws FailureException, TException {
+		log.info("调用[1.12.8.\t修改扩展钱包提现手续费率 updateExpansionExpenseRate 接口] 参数:" + param);
+		DataResponse dataResponse = new DataResponse();
+		try {
+
+			// 校验参数
+			if (!ValidateUtil.validateNull(param, "type", "rateType", "rate")) {
+				dataResponse.setState(2);
+				dataResponse.setMsg("参数错误, param:" + param);
+				log.error("参数错误:param:" + param);
+				return dataResponse;
+			}
+
+			// 封装数据
+			WalletExpansionExpenses record = new WalletExpansionExpenses();
+			try {
+				record.setType(Byte.valueOf(param.get("type")));
+				record.setRate(new BigDecimal(param.get("rate")));
+				record.setRateType(Integer.valueOf(param.get("rateType")));
+				record.setModifyTime(new Date());
+			} catch (Exception e) {
+				dataResponse.setState(2);
+				dataResponse.setMsg("参数格式错误 param" + param);
+				log.error("参数格式错误 param:" + param, e);
+				return dataResponse;
+			}
+
+			// 修改数据
+			int count = walletExpansionExpensesMapper.updateByRecord(record);
+
+			if (count >= 1) {
+				dataResponse.setState(0);
+				dataResponse.setMsg("修改成功!");
+				return dataResponse;
+			} else {
+				dataResponse.setState(1);
+				dataResponse.setMsg("修改失败");
+				return dataResponse;
+			}
+		} catch (Exception e) {
+			dataResponse.setState(1);
+			dataResponse.setMsg("修改失败");
+			log.error("修改失败", e);
+			return dataResponse;
+		}
+
+	}
+
+	@Override
+	public ResponsePageList getBusinessNo() throws FailureException, TException {
+		log.info("开始查询创业排名接口");
+		List<Map<String, String>> list = new ArrayList<>();
+		try {
+			// 获取前三名用户钱包
+			List<Map<String, Object>> resultMap = walletExpansionMapper.getExpansionNo();
+			// 获取用户类型
+			int i = 1;
+			for (Map<String, Object> map : resultMap) {
+				Long accountid = (Long) map.get("accountid");
+				Wallet wallet = walletMapper.getWalletById(accountid.intValue());
+				if (wallet.getUid() != null) {
+					map.put("typeId", "1");
+				} else if (wallet.getSellerid() != null) {
+					map.put("typeId", "2");
+				} else if (wallet.getJointid() != null) {
+					map.put("typeId", "3");
+				}
+				map.put("uid", wallet.getUid());
+				map.put("number", i++);
+				list.add(MapUtil.Object2String(map));
+			}
+
+			return new ResponsePageList(ParamUtil.success("操作成功", ParamUtil.successMap("操作成功")), list);
+		} catch (Exception e) {
+			log.info("查询创业排名接口出现异常", e);
+			return new ResponsePageList(ParamUtil.error(), list);
+		}
+	}
+
+	/**
+	 * 
+	 * 方法描述：批量修改钱包 创建人：jianming 创建时间：2017年5月3日 下午3:18:23
+	 * 
+	 * @param xmerList
+	 * @return
+	 * @throws TException
+	 * @throws FailureException
+	 */
+	@Transactional(rollbackFor = { Exception.class, FailureException.class })
+	public DataResponse updateBatch(List<Map<String, String>> xmerList) throws FailureException {
+		log.info("[开始调用批量修改扩展钱包接口    param=]"+xmerList);
+		try {
+			for (Map<String, String> map : xmerList) {
+				Map<String, String> updateWalletExpansion = updateWalletExpansion(map);
+				if (!ParamUtil.SUCCESS_STATE.toString().equals(updateWalletExpansion.get("state"))) {
+					throw new FailureException(ParamUtil.ERROR_STATE, updateWalletExpansion.get("msg"));
+				}
+			}
+			return ParamUtil.successDataResponse("操作成功");
+		} catch (Exception e) {
+			log.error("[执行批量修改扩展钱包接口出现异常]  list=" + xmerList, e);
+			throw new FailureException(ParamUtil.ERROR_STATE, "操作失败");
+		}
+	}
+
+	@Override
+	public ResponsePageList getXmrIncome(Map<String, String> param) throws FailureException, TException {
+		log.info("开始执行查询寻蜜客收益统计接口 :"+param);
+		ResponsePageList responsePageList = new ResponsePageList();
+		String uid = param.get("uid");
+		try {
+			if (StringUtils.isBlank(uid)) {
+				// 查询排名
+			  if(StringUtils.isBlank(param.get("pageNo"))){
+				  param.put("pageNo", "1");
+			  }
+			  if(StringUtils.isBlank(param.get("pageSize"))){
+				  param.put("pageSize", "10");
+			  }
+			  List<Map<String,Object>> list=  walletExpansionMapper.getXmrUpRankNo(Integer.valueOf(param.get("pageNo")),Integer.valueOf(param.get("pageSize")));
+			  for (Map<String, Object> map : list) {
+				  List<WalletExpansion>  wallets=  walletExpansionMapper.getXmerWallet(((Long)map.get("accountid")).intValue());
+				  for (WalletExpansion walletExpansion : wallets) {
+					  map.put("uid", walletExpansion.getUid()+"");
+					 if(walletExpansion.getType()==XmnConstants.EX_RTYPE_6){
+						 map.put("saasGold", walletExpansion.getAmount().add(walletExpansion.getTransfer()).toString());
+					 }else if(walletExpansion.getType()==XmnConstants.EX_RTYPE_7){
+						 map.put("expenseGold",walletExpansion.getAmount().add(walletExpansion.getTransfer()).toString());
+					 }
+				}
+			  }
+			  responsePageList.setPageList(MapUtil.ListObject2String(list));
+			} else {
+				// 统计用户收益
+				param.put("typeId", "1"); // 用户类型为用户
+				Map<String,String> result = new HashMap<>();
+				String expansionType = param.get("expansionType");
+				Integer type;
+				if("2".equals(expansionType)){
+					//V客
+					type=XmnConstants.EX_RTYPE_8;
+				}else if("3".equals(expansionType)){
+					//中脉
+					type=XmnConstants.EX_RTYPE_9;
+				}else{
+					//寻蜜客
+					param.put("type", String.valueOf(XmnConstants.EX_RTYPE_6));
+					WalletExpansion wallet6 = walletService.getWalletExpansion(param);
+					result.put("saasGold",wallet6==null?"0":wallet6.getAmount().add(wallet6.getTransfer()).toString());
+					Integer walletId = walletMapper.getWalletIdByUserId(Integer.valueOf(param.get("uid")),1);
+					int rank=walletExpansionMapper.getXmrRankNo(walletId.longValue());
+					result.put("rowNo",String.valueOf(rank));
+					type=XmnConstants.EX_RTYPE_7;
+				}
+				param.put("type", String.valueOf(type));
+				WalletExpansion wallet7 = walletService.getWalletExpansion(param);
+				result.put("expenseGold",wallet7==null?"0":wallet7.getAmount().add(wallet7.getTransfer()).toString());
+				responsePageList.setDataInfo(ParamUtil.success("成功", result));
+			}
+			return responsePageList;
+		} catch (ParamBlankException e) {
+			log.info("执行查询收益统计或排名接口参数异常",e);
+			responsePageList.setDataInfo(ParamUtil.fail(e.getMessage()));
+			return responsePageList;
+		}
+	}
+
+	@Override
+	public ResponsePageList getXmrIncomeList(Map<String, String> param) throws FailureException, TException {
+		log.info("开始执行查询寻蜜客收益流水接口 :"+param);
+		ResponsePageList responsePageList = new ResponsePageList();
+		try {
+			ParamUtil.checkMustParam(param,"uid","incomeType","expansionType");
+			List<Integer> type=XmrWalletType(param);
+			List<WalletExpansion> wallet= walletExpansionMapper.getWalletExpansionAtTypes(Integer.valueOf(param.get("uid")),1,type);
+			if(wallet.isEmpty()){
+				Map<String,String> result=new HashMap<>();
+				result.put("totalAmount", "0");
+				responsePageList.setDataInfo(ParamUtil.success("成功", result));
+				responsePageList.setPageList(new ArrayList<Map<String,String>>());
+				return responsePageList;
+			}
+			Map<String, Object> paramMap = MapUtil.String2Object(param);
+			String pageNo = param.get("pageNo");
+			String pageSize = param.get("pageSize");
+			String orders = param.get("orders");
+			if(StringUtils.isBlank(pageNo)){
+				param.put("pageNo", ParamUtil.PAGENO+"");
+			}
+			if(StringUtils.isBlank(pageSize)){
+				param.put("pageSize", ParamUtil.PAGESIZE+"");
+			}
+			paramMap.put("pageNo", Integer.valueOf(param.get("pageNo")));
+			paramMap.put("pageSize", Integer.valueOf(param.get("pageSize")));
+			paramMap.put("type", type);
+			if(StringUtils.isNotBlank(orders)){
+				String[] split = orders.split(",");
+				paramMap.put("orders", split);
+			}
+			List<Long> ids= new ArrayList<>();
+			for (WalletExpansion walletExpansion : wallet) {
+				ids.add(walletExpansion.getId());
+			}
+			paramMap.put("walletExpansionIds", ids);
+			String[] uids = param.get("uid").split(",");
+			if(StringUtils.isNotBlank(param.get("childrenIds"))){
+				 String[] split = param.get("childrenIds").split(",");
+				 uids = (String[]) ArrayUtils.addAll(uids, split);
+			}
+			paramMap.put("childrenIds",uids);
+			List<WalletExpansionRecord> list= walletExpansionRecordMapper.getXmrRecord(paramMap);
+			BigDecimal count = walletExpansionRecordMapper.getXmrTotalAmount(paramMap);
+			Map<String,String> result=new HashMap<>();
+			result.put("totalAmount", count.toString());
+			responsePageList.setDataInfo(ParamUtil.success("成功", result));
+			List<Map<String,String>> arrayList = new ArrayList<>();
+			for (WalletExpansionRecord walletExpansionRecord : list) {
+				String source = walletExpansionRecord.getSource();
+				if(StringUtils.isNotBlank(source)&&source.indexOf('_')>=0){
+					walletExpansionRecord.setSource(source.substring(0,source.indexOf('_')));
+				}
+				Map<String, String> map = ParamUtil.pojoToResultMap(walletExpansionRecord, "remark","source","amount","uid");
+				map.put("createTime", DateUtil.formatDate(walletExpansionRecord.getCreateTime(), DateUtil.Y_M_D_HMS));
+				arrayList.add(map);
+			}
+			responsePageList.setPageList(arrayList);
+			return responsePageList;
+		} catch (ParamBlankException e) {
+			log.info("执行查询收益列表参数异常",e);
+			log.info(e.getMessage(),e);
+			responsePageList.setDataInfo(ParamUtil.fail(e.getMessage()));
+			return responsePageList;
+		}catch(Exception e){
+			log.error("[查询寻蜜客收益列表出现异常]",e);
+			responsePageList.setDataInfo(ParamUtil.error());
+			return responsePageList;
+		}
+	}
+
+	
+	/***
+	 * 
+	 * 方法描述：获取寻蜜客钱包类型
+	 * 创建人：jianming  
+	 * 创建时间：2017年5月9日 上午11:09:16   
+	 * @param param
+	 * @return
+	 * @throws ParamBlankException
+	 */
+	private List<Integer> XmrWalletType(Map<String, String> param) throws ParamBlankException {
+		List<Integer> list=new ArrayList<>();
+		switch (param.get("incomeType")) {
+		case "1":
+			list.add(XmnConstants.EX_RTYPE_6);
+			break;
+		case "2":
+			list.add(XmnConstants.EX_RTYPE_7);
+			list.add(XmnConstants.EX_RTYPE_8);
+			list.add(XmnConstants.EX_RTYPE_9);
+			break;
+		default:
+			break;
+		}
+		return list;
+		
+	}
+
+
+	@Override
+	public ResponsePageList getExpansionByUids(List<String> uids, int type) throws FailureException, TException {
+		log.info("[调取批量获取扩展钱包接口]"+uids+"  type:"+type);
+		ResponsePageList responsePageList = new ResponsePageList();
+		if(uids==null||uids.isEmpty()){
+			responsePageList.setDataInfo(ParamUtil.fail("参数不能为空"));
+			return responsePageList;
+		}
+		List<Integer> uidList = new ArrayList<>();
+		for (String uidStr : uids) {
+			uidList.add(Integer.valueOf(uidStr));
+		}
+		List<WalletExpansion> wallets= walletExpansionMapper.getWalletExpansionByUidsAndType(uidList,type);
+		List<Map<String,String>> resultList = new ArrayList<>();
+		for (WalletExpansion walletExpansion : wallets) {
+			Map<String, String> pojoToResultMap = ParamUtil.pojoToResultMap(walletExpansion, "amount","transfer",
+					"isFreeze", "forbidTransfer","uid");
+			pojoToResultMap.put("totalAmount", walletExpansion.getAmount().add(walletExpansion.getTransfer()).add(walletExpansion.getDecrease()).toString());
+			resultList.add(pojoToResultMap);
+		}
+		responsePageList.setPageList(resultList);
+		responsePageList.setDataInfo(ParamUtil.success(("操作成功"), new HashMap<String,String>()));
+		return responsePageList;
+		
+	}
+
+	@Override
+	public ResponseIDKeyData getIncomeByLivers(Map<String, String> param)
+			throws FailureException, TException {
+		log.info("[开始执行getIncomeByLivers]"+param);
+		ResponseIDKeyData responseIDKeyData = new ResponseIDKeyData();
+		responseIDKeyData.setState(ParamUtil.SUCCESS_STATE);
+		responseIDKeyData.setMsg("操作成功");
+		try {
+			ParamUtil.checkMustParam(param, "uid","liverIds");
+			Integer uid = Integer.valueOf(param.get("uid"));
+			String ids = param.get("liverIds");
+			List<String> liverIds = StringUtils.isBlank(ids)?null:Arrays.asList(param.get("liverIds").split(","));
+			List<Map<String,Object>> incomeMaps = walletExpansionRecordMapper.getIncomeByLivers(uid,liverIds);
+			Map<String,Map<String,String>> resultMap=new HashMap<>();
+				one:for (String liverId : liverIds) {
+					Map<String,String> dobmap = new HashMap();
+					Map<String, String> walletMap = liveWalletMapper.getWalletMsgByUid(liverId);
+					if(walletMap==null){
+						dobmap.put("balanceTotal", "0");
+					}else{
+						dobmap.put("balanceTotal", new BigDecimal(walletMap.get("balance")).add(new BigDecimal(walletMap.get("balanceCoin"))).toString());
+					}
+					for (Map<String, Object> map : incomeMaps) {
+						if(liverId.equals(map.get("uid"))){
+							dobmap.put("amountTotal", map.get("amount").toString());
+							resultMap.put(liverId,dobmap);
+							continue one;
+						}
+					}
+					dobmap.put("amountTotal",BigDecimal.ZERO.toString());
+					resultMap.put(liverId,dobmap);
+				}
+			responseIDKeyData.setResultMap(resultMap);
+			return responseIDKeyData;
+		} catch (ParamBlankException e) {
+			log.info("[调用getIncomeByLivers 参数异常]"+e.getMessage()+param);
+			responseIDKeyData.setState(ParamUtil.PARAM_ERROR);
+			responseIDKeyData.setMsg("操作失败");
+			return responseIDKeyData;
+		}catch(Exception e){
+			log.error("[调用getIncomeByLivers 出现异常]"+param,e);
+			responseIDKeyData.setState(ParamUtil.ERROR_STATE);
+			responseIDKeyData.setMsg("操作失败");
+			return responseIDKeyData;
+		}
+	}
+
+
+}

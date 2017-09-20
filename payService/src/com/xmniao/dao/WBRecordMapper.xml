@@ -1,0 +1,679 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.WBRecordMapper">
+
+	<!-- 用户表  ${tableName}-->
+	<update id="createUserTableByname"  parameterType="map">
+		create table ${tableName}(
+		id 						int(12) PRIMARY KEY AUTO_INCREMENT comment '主键ID',
+		accountid 				int(12) not null comment '钱包ID',
+		uid 					int(12) comment '用户ID',
+		apply_date 				datetime  comment '申请日期',
+		amount 					decimal(12,2) not null default 0 comment '钱包余额',
+		balance 				decimal(12,2) not null default 0 comment '分账余额',
+		commision 				decimal(12,2) not null default 0 comment '佣金余额',
+		zbalance 				decimal(12,2) not null default 0 comment '赠送余额',
+		integral 				decimal(12,2) not null default 0 comment '积分余额',
+		record_date 			datetime comment '记录日期',
+		user_name 				varchar(50) comment '用户名称',
+		remark 					varchar(100) comment '备注',
+		account 				varchar(50)  comment '用户/商户/合作商登录帐号',
+		withdrawals 			decimal(12,2) default 0 comment '当日提现金额',
+		ledger 					decimal(12,2) default 0 comment '当日分账金额'
+		
+		)
+	</update>
+	
+	<!-- 商户表 -->
+	<update id="createSellerTableByname"  parameterType="map">
+		create table ${tableName}(
+		   id 					int(12) PRIMARY KEY AUTO_INCREMENT comment '主键ID',
+		   accountid            int(12) not null comment '钱包ID',
+		   sellerid             int(11) comment '商家ID',
+		   apply_date           datetime comment '申请日期',
+		   amount               decimal(12,2) not null default 0 comment '钱包余额',
+		   seller_amount        decimal(12,2) not null default 0 comment '商户营业收入余额',
+		   commision            decimal(12,2) not null default 0 comment '佣金余额',
+		   zbalance             decimal(12,2) not null default 0 comment '赠送余额',
+		   integral             decimal(12,2) not null default 0 comment '积分余额',
+		   record_date          datetime comment '记录日期',
+		   seller_name          varchar(50) comment '商家名称',
+		   remark               varchar(100) comment '备注',
+		   account 				varchar(50)  comment '用户/商户/合作商登录帐号',
+		   withdrawals          decimal(12,2) default 0 comment '当日提现金额',
+		   ledger               decimal(12,2) default 0 comment '当日分账金额'
+		)
+	</update>
+	
+	<!-- 合作商表 -->
+	<update id="createJonitTableByname"  parameterType="map">
+		create table ${tableName}(
+		   id 					int(12) PRIMARY KEY AUTO_INCREMENT  comment '主键ID',
+		   accountid            int(12) not null comment '钱包ID',
+		   jointid              int(11) comment '合作商ID',
+		   apply_date           datetime comment '申请日期',
+		   amount               decimal(12,2) not null default 0 comment '钱包余额',
+		   seller_amount        decimal(12,2) not null default 0 comment '合作商营业收入余额',
+		   commision            decimal(12,2) not null default 0 comment '佣金余额',
+		   zbalance             decimal(12,2) not null default 0 comment '赠送余额',
+		   integral             decimal(12,2) not null default 0 comment '积分余额',
+		   record_date          datetime comment '记录日期',
+		   joint_name           varchar(50) comment '合作商名称',
+		   remark               varchar(100) comment '备注',
+		   account 				varchar(50)  comment '用户/商户/合作商登录帐号',
+		   withdrawals          decimal(12,2) default 0 comment '当日提现金额',
+		   ledger               decimal(12,2) default 0 comment '当日分账金额'
+		)
+	</update>
+	
+	<update id="createTable" parameterType="map" >
+	    ${sql}
+	</update>
+	
+	<select id="getAllData" parameterType="map" resultType="map">
+	 	select * from ${table}	
+	</select>
+	
+	<!-- 查询合作商月收益与提现 -->
+	<select id="getJointIncome" resultType="map" parameterType="map">
+<!-- 		SELECT IFNULL(seller_amount, 0) income,IFNULL(SUM(withdrawals), 0) wIncome FROM p_wb_${months} WHERE jointid = #{uId} ORDER BY id DESC LIMIT 0,1 -->
+		
+		SELECT IFNULL(bw.`seller_amount`,0) income,IFNULL(SUM(bwr.`income`),0) wIncome FROM b_wallet bw LEFT JOIN b_wallet_record bwr ON bwr.`accountid` = bw.`accountid` AND bwr.rtype = 6 WHERE bw.`jointid` = #{uId}
+	</select>
+	
+	
+	<!-- 批量插入用户数据 -->
+	<insert id="insertUserListData" >
+		insert into ${table} 
+		(
+				accountid,
+				uid,
+				apply_date,
+				amount,
+				balance,
+				commision,
+				zbalance,
+				integral,
+				user_name,
+				remark,
+				account,
+				withdrawals,
+				ledger,
+			record_date)
+			values 
+		<foreach collection="list" item="item" index="index" separator=",">
+			(
+				<if test="item.accountid != null">
+					#{item.accountid},
+				</if>
+				<if test="item.accountid == null">
+					null,
+				</if>
+				<if test="item.uid != null">
+					#{item.uid},
+				</if>
+				<if test="item.uid == null">
+					null,
+				</if>
+				<if test="item.apply_date != null">
+					#{item.apply_date},
+				</if>
+				<if test="item.apply_date == null">
+					null,
+				</if>
+				#{item.amount},
+				#{item.balance},
+				#{item.commision},
+				#{item.zbalance},
+				#{item.integral},
+				
+				<if test="item.user_name != null">
+					#{item.user_name},
+				</if>
+				<if test="item.user_name == null">
+					null,
+				</if>
+				<if test="item.remark != null">
+					#{item.remark},
+				</if>
+				<if test="item.remark == null">
+					null,
+				</if>
+				<if test="item.account != null">
+					#{item.account},
+				</if>
+				<if test="item.account == null">
+					null,
+				</if>
+				<if test="item.withdrawals != null">
+					#{item.withdrawals},
+				</if>
+				<if test="item.withdrawals == null">
+					null,
+				</if>
+				<if test="item.ledger != null">
+					#{item.ledger},
+				</if>
+				<if test="item.ledger == null">
+					null,
+				</if>
+				#{item.recordDate}
+			)
+		</foreach>
+	</insert>
+	
+	
+	<!-- 批量插入商户数据 -->
+	<insert id="insertSellerListData">
+		insert into ${table} (
+				accountid,
+				sellerid,
+				apply_date,
+				amount,
+				seller_amount,
+				commision,
+				zbalance,
+				integral,
+				seller_name,
+				remark,
+				account,
+				withdrawals,
+				ledger,
+			record_date)
+			values 
+		<foreach collection="list" item="item" index="index" separator=",">
+			(
+			<if test="item.accountid != null">
+				#{item.accountid},
+			</if>
+			<if test="item.accountid == null">
+				null,
+			</if>
+			<if test="item.sellerid != null">
+				#{item.sellerid},
+			</if>
+			<if test="item.sellerid == null">
+				null,
+			</if>
+			<if test="item.apply_date != null">
+				#{item.apply_date},
+			</if>
+			<if test="item.apply_date == null">
+				null,
+			</if>
+				#{item.amount},
+				#{item.seller_amount},
+				#{item.commision},
+				#{item.zbalance},
+				#{item.integral},
+			<if test="item.seller_name != null">
+				#{item.seller_name},
+			</if>
+			<if test="item.seller_name == null">
+				null,
+			</if>
+			<if test="item.remark != null">
+				#{item.remark},
+			</if>
+			<if test="item.remark == null">
+				null,
+			</if>
+			<if test="item.account != null">
+				#{item.account},
+			</if>
+			<if test="item.account == null">
+				null,
+			</if>
+			<if test="item.withdrawals != null">
+				#{item.withdrawals},
+			</if>
+			<if test="item.withdrawals == null">
+				null,
+			</if>
+			<if test="item.ledger != null">
+				#{item.ledger},
+			</if>
+			<if test="item.ledger == null">
+				null,
+			</if>
+				#{item.recordDate}
+			)
+		</foreach>	
+	</insert>
+
+	<!-- 批量插入合作商数据 -->
+	<insert id="insertJointListData">
+		insert into ${table} (
+				accountid,
+				jointid,
+				apply_date,
+				amount,
+				seller_amount,
+				commision,
+				zbalance,
+				integral,
+				joint_name,
+				remark,
+				account,
+				withdrawals,
+				ledger,
+			record_date)
+			values 
+		<foreach collection="list" item="item" index="index" separator=",">
+			(
+			<if test="item.accountid != null">
+				#{item.accountid},
+			</if>
+			<if test="item.accountid == null">
+				null,
+			</if>
+			<if test="item.jointid != null">
+				#{item.jointid},
+			</if>
+			<if test="item.jointid == null">
+				null,
+			</if>
+			<if test="item.apply_date != null">
+				#{item.apply_date},
+			</if>
+			<if test="item.apply_date == null">
+				null,
+			</if>
+				#{item.amount},
+				#{item.seller_amount},
+				#{item.commision},
+				#{item.zbalance},
+				#{item.integral},
+			<if test="item.joint_name != null">
+				#{item.joint_name},
+			</if>
+			<if test="item.joint_name == null">
+				null,
+			</if>
+			<if test="item.remark != null">
+				#{item.remark},
+			</if>
+			<if test="item.remark == null">
+				null,
+			</if>
+			<if test="item.account != null">
+				#{item.account},
+			</if>
+			<if test="item.account == null">
+				null,
+			</if>
+			<if test="item.withdrawals != null">
+				#{item.withdrawals},
+			</if>
+			<if test="item.withdrawals == null">
+				null,
+			</if>
+			<if test="item.ledger != null">
+				#{item.ledger},
+			</if>
+			<if test="item.ledger == null">
+				null,
+			</if>
+				#{item.recordDate}
+			)
+		</foreach>
+	</insert>
+	
+	
+	<!-- 查询符合指定日期符合查询条件的钱包总数 -->
+	<select id="getPastWalletCount" resultType="int">
+		SELECT COUNT(accountId) FROM (
+		<trim prefix="" suffix=""  prefixOverrides="UNION ALL">
+			<if test="map.userType==null or map.userType==1">
+					SELECT CAST(accountid AS CHAR(20)) accountId,
+					CAST(apply_date AS CHAR(20)) applyDate,
+					CAST(amount AS CHAR(20)) amount,
+					CAST(commision AS CHAR(20)) commision,
+					CAST(zbalance AS CHAR(20)) zbalance,
+					CAST(integral AS CHAR(20)) integral,
+					CAST(balance AS CHAR(20)) balance,
+					CAST(0 AS CHAR(20)) sellerAmount,
+					CAST(uid AS CHAR(20)) uId,
+					CAST('1' AS CHAR(2)) userType,
+					account AS  phoneNumber,
+					user_name AS  sellerName
+				FROM ${table.user}
+				WHERE record_date LIKE '${map.sDate}%'
+					<if test="map.uId != null">
+						AND uid = #{map.uId}
+					</if>
+					<if test="map.userName != null and map.userName != ''">
+						AND user_name LIKE '%${map.userName}%'
+					</if>
+					<if test="map.account != null and map.account != ''">
+						AND account = #{map.account}
+					</if>
+			</if>
+			<if test="map.userType==null or map.userType==2">
+				UNION ALL
+				SELECT CAST(accountid AS CHAR(20)) accountId,
+					CAST(apply_date AS CHAR(20)) applyDate,
+					CAST(amount AS CHAR(20)) amount,
+					CAST(commision AS CHAR(20)) commision,
+					CAST(zbalance AS CHAR(20)) zbalance,
+					CAST(integral AS CHAR(20)) integral,
+					CAST(0 AS CHAR(20)) balance ,
+					CAST(seller_amount AS CHAR(20)) sellerAmount,
+					CAST(sellerid AS CHAR(20)) uId,
+					CAST('2' AS CHAR(2)) userType,
+					account AS phoneNumber,
+					seller_name AS sellerName
+				FROM ${table.seller}
+				WHERE record_date LIKE '${map.sDate}%'
+					<if test="map.uId != null">
+						AND sellerid = #{map.uId}
+					</if>
+					<if test="map.userName != null and map.userName != ''">
+						AND seller_name LIKE '%${map.userName}%'
+					</if>
+					<if test="map.account != null and map.account != ''">
+						AND account = #{map.account}
+					</if>
+			</if>
+			<if test="map.userType==null or map.userType==3">
+				UNION ALL 
+				SELECT CAST(accountid AS CHAR(20)) accountId,
+					CAST(apply_date AS CHAR(20)) applyDate,
+					CAST(amount AS CHAR(20)) amount,
+					CAST(commision AS CHAR(20)) commision,
+					CAST(zbalance AS CHAR(20)) zbalance,
+					CAST(integral AS CHAR(20)) integral,
+					CAST(0 AS CHAR(20)) balance ,
+					CAST(seller_amount AS CHAR(20)) sellerAmount,
+					CAST(jointid AS CHAR(20)) uId,
+					CAST('3' AS CHAR(2)) userType,
+					account AS phoneNumber,
+					joint_name AS sellerName
+				FROM ${table.joint}
+				WHERE record_date LIKE '${map.sDate}%'
+					<if test="map.uId != null">
+						AND jointid = #{map.uId}
+					</if>
+					<if test="map.userName != null and map.userName != ''">
+						AND joint_name LIKE '%${map.userName}%'
+					</if>
+					<if test="map.account != null and map.account != ''">
+						AND account = #{map.account}
+					</if>
+			</if>		
+		</trim>
+		)  wallet
+
+	</select>
+	
+	<!-- 查询符合指定日期符合查询条件的钱包列表 -->
+	<select id="getPastWalletList" resultType="map">
+		SELECT * FROM (
+		<trim prefix="" suffix=""  prefixOverrides="UNION ALL">
+			<if test="map.userType==null or map.userType==1">
+					SELECT CAST(accountid AS CHAR(20)) accountId,
+					CAST(apply_date AS CHAR(20)) applyDate,
+					CAST(amount AS CHAR(20)) amount,
+					CAST(commision AS CHAR(20)) commision,
+					CAST(zbalance AS CHAR(20)) zbalance,
+					CAST(integral AS CHAR(20)) integral,
+					CAST(balance AS CHAR(20)) balance,
+					CAST(0 AS CHAR(20)) sellerAmount,
+					CAST(uid AS CHAR(20)) uId,
+					CAST('1' AS CHAR(2)) userType,
+					account AS  phoneNumber,
+					user_name AS  sellerName
+				FROM ${table.user}
+				WHERE record_date LIKE '${map.sDate}%'
+					<if test="map.uId != null">
+						AND uid = #{map.uId}
+					</if>
+					<if test="map.userName != null and map.userName != ''">
+						AND user_name LIKE '%${map.userName}%'
+					</if>
+					<if test="map.account != null and map.account != ''">
+						AND account = #{map.account}
+					</if>
+			</if>
+			<if test="map.userType==null or map.userType==2">
+				UNION ALL
+				SELECT CAST(accountid AS CHAR(20)) accountId,
+					CAST(apply_date AS CHAR(20)) applyDate,
+					CAST(amount AS CHAR(20)) amount,
+					CAST(commision AS CHAR(20)) commision,
+					CAST(zbalance AS CHAR(20)) zbalance,
+					CAST(integral AS CHAR(20)) integral,
+					CAST(0 AS CHAR(20)) balance ,
+					CAST(seller_amount AS CHAR(20)) sellerAmount,
+					CAST(sellerid AS CHAR(20)) uId,
+					CAST('2' AS CHAR(2)) userType,
+					account AS phoneNumber,
+					seller_name AS sellerName
+				FROM ${table.seller}
+				WHERE record_date LIKE '${map.sDate}%'
+					<if test="map.uId != null">
+						AND sellerid = #{map.uId}
+					</if>
+					<if test="map.userName != null and map.userName != ''">
+						AND seller_name LIKE '%${map.userName}%'
+					</if>
+					<if test="map.account != null and map.account != ''">
+						AND account = #{map.account}
+					</if>
+			</if>
+			<if test="map.userType==null or map.userType==3">
+				UNION ALL 
+				SELECT CAST(accountid AS CHAR(20)) accountId,
+					CAST(apply_date AS CHAR(20)) applyDate,
+					CAST(amount AS CHAR(20)) amount,
+					CAST(commision AS CHAR(20)) commision,
+					CAST(zbalance AS CHAR(20)) zbalance,
+					CAST(integral AS CHAR(20)) integral,
+					CAST(0 AS CHAR(20)) balance ,
+					CAST(seller_amount AS CHAR(20)) sellerAmount,
+					CAST(jointid AS CHAR(20)) uId,
+					CAST('3' AS CHAR(2)) userType,
+					account AS phoneNumber,
+					joint_name AS sellerName
+				FROM ${table.joint}
+				WHERE record_date LIKE '${map.sDate}%'
+					<if test="map.uId != null">
+						AND jointid = #{map.uId}
+					</if>
+					<if test="map.userName != null and map.userName != ''">
+						AND joint_name LIKE '%${map.userName}%'
+					</if>
+					<if test="map.account != null and map.account != ''">
+						AND account = #{map.account}
+					</if>
+			</if>		
+		</trim>
+		)  wallet
+		ORDER BY accountId
+		LIMIT #{map.startNo},#{map.pageSize}	
+	</select>
+	
+	
+	<!-- 查询符合指定日期段内的符合查询条件的钱包总数 -->
+	<select id="getPastDateWalletCount" resultType="int">
+		SELECT COUNT(accountId) FROM (
+		<trim prefix="" suffix=""  prefixOverrides="UNION ALL">
+			<foreach collection="list" item="item" index="index" separator="">
+				<if test="map.userType==null or map.userType==1">
+						UNION ALL
+						SELECT CAST(accountid AS CHAR(20)) accountId,
+						CAST(apply_date AS CHAR(20)) applyDate,
+						CAST(amount AS CHAR(20)) amount,
+						CAST(commision AS CHAR(20)) commision,
+						CAST(zbalance AS CHAR(20)) zbalance,
+						CAST(integral AS CHAR(20)) integral,
+						CAST(balance AS CHAR(20)) balance,
+						CAST(0 AS CHAR(20)) sellerAmount,
+						CAST(uid AS CHAR(20)) uId,
+						CAST('1' AS CHAR(2)) userType,
+						account AS  phoneNumber,
+						user_name AS  sellerName
+					FROM u_wb_${item}
+					WHERE record_date BETWEEN '${map.sDate}' AND '${map.eDate}'
+						<if test="map.uId != null">
+							AND uid = #{map.uId}
+						</if>
+						<if test="map.userName != null and map.userName != ''">
+							AND user_name LIKE '%${map.userName}%'
+						</if>
+						<if test="map.account != null and map.account != ''">
+							AND account = #{map.account}
+						</if>
+				</if>
+				<if test="map.userType==null or map.userType==2">
+					UNION ALL
+					SELECT CAST(accountid AS CHAR(20)) accountId,
+						CAST(apply_date AS CHAR(20)) applyDate,
+						CAST(amount AS CHAR(20)) amount,
+						CAST(commision AS CHAR(20)) commision,
+						CAST(zbalance AS CHAR(20)) zbalance,
+						CAST(integral AS CHAR(20)) integral,
+						CAST(0 AS CHAR(20)) balance ,
+						CAST(seller_amount AS CHAR(20)) sellerAmount,
+						CAST(sellerid AS CHAR(20)) uId,
+						CAST('2' AS CHAR(2)) userType,
+						account AS phoneNumber,
+						seller_name AS sellerName
+					FROM s_wb_${item}
+					WHERE record_date BETWEEN '${map.sDate}' AND '${map.eDate}'
+						<if test="map.uId != null">
+							AND sellerid = #{map.uId}
+						</if>
+						<if test="map.userName != null and map.userName != ''">
+							AND seller_name LIKE '%${map.userName}%'
+						</if>
+						<if test="map.account != null and map.account != ''">
+							AND account = #{map.account}
+						</if>
+				</if>
+				<if test="map.userType==null or map.userType==3">
+					UNION ALL 
+					SELECT CAST(accountid AS CHAR(20)) accountId,
+						CAST(apply_date AS CHAR(20)) applyDate,
+						CAST(amount AS CHAR(20)) amount,
+						CAST(commision AS CHAR(20)) commision,
+						CAST(zbalance AS CHAR(20)) zbalance,
+						CAST(integral AS CHAR(20)) integral,
+						CAST(0 AS CHAR(20)) balance ,
+						CAST(seller_amount AS CHAR(20)) sellerAmount,
+						CAST(jointid AS CHAR(20)) uId,
+						CAST('3' AS CHAR(2)) userType,
+						account AS phoneNumber,
+						joint_name AS sellerName
+					FROM p_wb_${item}
+					WHERE record_date BETWEEN '${map.sDate}' AND '${map.eDate}'
+						<if test="map.uId != null">
+							AND jointid = #{map.uId}
+						</if>
+						<if test="map.userName != null and map.userName != ''">
+							AND joint_name LIKE '%${map.userName}%'
+						</if>
+						<if test="map.account != null and map.account != ''">
+							AND account = #{map.account}
+						</if>
+				</if>	
+			</foreach>			
+		</trim>	
+		)  wallet
+
+	</select>
+	
+	<!-- 查询符合指定日期段内的符合查询条件的钱包列表 -->
+	<select id="getPastDateWalletList" resultType="map">
+		SELECT * FROM (
+		<trim prefix="" suffix=""  prefixOverrides="UNION ALL">
+			<foreach collection="list" item="item" index="index" separator="">
+				<if test="map.userType==null or map.userType==1">
+						UNION ALL
+						SELECT CAST(accountid AS CHAR(20)) accountId,
+						CAST(apply_date AS CHAR(20)) applyDate,
+						CAST(amount AS CHAR(20)) amount,
+						CAST(commision AS CHAR(20)) commision,
+						CAST(zbalance AS CHAR(20)) zbalance,
+						CAST(integral AS CHAR(20)) integral,
+						CAST(balance AS CHAR(20)) balance,
+						CAST(0 AS CHAR(20)) sellerAmount,
+						CAST(uid AS CHAR(20)) uId,
+						CAST('1' AS CHAR(2)) userType,
+						account AS  phoneNumber,
+						DATE_SUB(DATE_FORMAT(record_date,'%y-%m-%d'),INTERVAL 1 DAY) statisticsDate,
+						user_name AS  sellerName
+					FROM u_wb_${item}
+					WHERE record_date BETWEEN '${map.sDate}' AND '${map.eDate}'
+						<if test="map.uId != null">
+							AND uid = #{map.uId}
+						</if>
+						<if test="map.userName != null and map.userName != ''">
+							AND user_name LIKE '%${map.userName}%'
+						</if>
+						<if test="map.account != null and map.account != ''">
+							AND account = #{map.account}
+						</if>
+				</if>
+				<if test="map.userType==null or map.userType==2">
+					UNION ALL
+					SELECT CAST(accountid AS CHAR(20)) accountId,
+						CAST(apply_date AS CHAR(20)) applyDate,
+						CAST(amount AS CHAR(20)) amount,
+						CAST(commision AS CHAR(20)) commision,
+						CAST(zbalance AS CHAR(20)) zbalance,
+						CAST(integral AS CHAR(20)) integral,
+						CAST(0 AS CHAR(20)) balance ,
+						CAST(seller_amount AS CHAR(20)) sellerAmount,
+						CAST(sellerid AS CHAR(20)) uId,
+						CAST('2' AS CHAR(2)) userType,
+						account AS phoneNumber,
+						DATE_SUB(DATE_FORMAT(record_date,'%y-%m-%d'),INTERVAL 1 DAY) statisticsDate,
+						seller_name AS sellerName
+					FROM s_wb_${item}
+					WHERE record_date BETWEEN '${map.sDate}' AND '${map.eDate}'
+						<if test="map.uId != null">
+							AND sellerid = #{map.uId}
+						</if>
+						<if test="map.userName != null and map.userName != ''">
+							AND seller_name LIKE '%${map.userName}%'
+						</if>
+						<if test="map.account != null and map.account != ''">
+							AND account = #{map.account}
+						</if>
+				</if>
+				<if test="map.userType==null or map.userType==3">
+					UNION ALL 
+					SELECT CAST(accountid AS CHAR(20)) accountId,
+						CAST(apply_date AS CHAR(20)) applyDate,
+						CAST(amount AS CHAR(20)) amount,
+						CAST(commision AS CHAR(20)) commision,
+						CAST(zbalance AS CHAR(20)) zbalance,
+						CAST(integral AS CHAR(20)) integral,
+						CAST(0 AS CHAR(20)) balance ,
+						CAST(seller_amount AS CHAR(20)) sellerAmount,
+						CAST(jointid AS CHAR(20)) uId,
+						CAST('3' AS CHAR(2)) userType,
+						account AS phoneNumber,
+						DATE_SUB(DATE_FORMAT(record_date,'%y-%m-%d'),INTERVAL 1 DAY) statisticsDate,
+						joint_name AS sellerName
+					FROM p_wb_${item}
+					WHERE record_date BETWEEN '${map.sDate}' AND '${map.eDate}'
+						<if test="map.uId != null">
+							AND jointid = #{map.uId}
+						</if>
+						<if test="map.userName != null and map.userName != ''">
+							AND joint_name LIKE '%${map.userName}%'
+						</if>
+						<if test="map.account != null and map.account != ''">
+							AND account = #{map.account}
+						</if>
+				</if>	
+			</foreach>			
+		</trim>
+		
+		)  wallet
+		ORDER BY statisticsDate,accountId
+		LIMIT #{map.startNo},#{map.pageSize}	
+	</select>
+</mapper>

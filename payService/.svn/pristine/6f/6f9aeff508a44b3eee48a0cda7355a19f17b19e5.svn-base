@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.manor.ManorSunshineProfitMapper" >
+  <resultMap id="BaseResultMap" type="com.xmniao.entity.manor.ManorSunshineProfit" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="base_number" property="baseNumber" jdbcType="INTEGER" />
+    <result column="profit" property="profit" jdbcType="DOUBLE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, base_number, profit
+  </sql>
+  
+  <select id="get" resultMap="BaseResultMap" parameterType="int" >
+    select 
+    <include refid="Base_Column_List" />
+    from b_manor_sunshine_profit
+    where base_number &lt;=#{baseNumber}
+    order by base_number desc 
+    limit 1
+  </select>
+  
+  <select id="getList" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from b_manor_sunshine_profit
+    order by base_number
+  </select>
+  
+  <delete id="deleteAll" >
+    delete from b_manor_sunshine_profit
+  </delete>
+  
+  <insert id="insertBatch" parameterType="com.xmniao.entity.manor.ManorSunshineProfit" >
+    insert into b_manor_sunshine_profit (base_number, profit
+      )
+    values 
+    <foreach collection="list" item="props" index="index" separator="," >
+         (#{props.baseNumber,jdbcType=INTEGER}, #{props.profit,jdbcType=DOUBLE})
+    </foreach>
+  </insert>
+  <select id="getProfit" resultType="java.lang.Double">
+
+  SELECT profit FROM b_manor_sunshine_profit  WHERE base_number = (SELECT  MAX(base_number) baseNumber  FROM     b_manor_sunshine_profit
+            WHERE base_number  <![CDATA[ <= ]]> #{number})
+  </select>
+</mapper>

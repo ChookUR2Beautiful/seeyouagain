@@ -1,0 +1,227 @@
+package com.xmniao.service.impl;
+
+import com.xmniao.common.MapBeanUtil;
+import com.xmniao.common.ValidateUtil;
+import com.xmniao.entity.Experiencecard;
+import com.xmniao.entity.ExperiencecardRecord;
+import com.xmniao.exception.CustomException;
+import com.xmniao.service.ExperiencecardAccess;
+import com.xmniao.thrift.ledger.ExperiencecardService;
+import com.xmniao.thrift.ledger.FailureException;
+import com.xmniao.thrift.ledger.ResponseData;
+import org.apache.thrift.TException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 美食体验卡Thrift接口服务实现类
+ * Created by yang.qiang on 2017/5/8.
+ */
+@Service("ExperiencecardServiceImpl")
+public class ExperiencecardServiceImpl implements ExperiencecardService.Iface {
+    private static final Logger logger = LoggerFactory.getLogger(ExperiencecardServiceImpl.class);
+
+    @Autowired
+    private ExperiencecardAccess experiencecardAccess;
+
+    /**
+     * 创建/更新 美食体验卡
+     * 参数
+     * uid : 用户编号
+     * dueDate : 截至时间(yyyy-MM-dd HH:mm:ss)
+     * stock : 美食体验卡初始次数
+     *
+     * @param paramMap
+     */
+    @Override
+    public ResponseData createExperiencecard(Map<String, String> paramMap) throws FailureException, TException {
+        logger.info("调用Thrift接口[创建/更新 美食体验卡], 参数" + paramMap);
+        ResponseData responseData = new ResponseData();
+
+        Experiencecard experiencecard = new Experiencecard();
+        ExperiencecardRecord experiencecardRecord = new ExperiencecardRecord();
+        try {
+            // 判断参数是否为空
+            if (ValidateUtil.validateNull(paramMap, "uid", "dueDate", "stock", "source")) {
+                // 判断参数格式是否可以正确转换
+                experiencecard.setUid(Integer.valueOf(paramMap.get("uid")));
+                experiencecard.setStock(Integer.valueOf(paramMap.get("stock")));
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                experiencecard.setDueDate(simpleDateFormat.parse(paramMap.get("dueDate")));
+
+                experiencecardRecord.setSource(paramMap.get("source"));
+                experiencecardRecord.setRemark(paramMap.get("remark"));
+            } else {
+                logger.info("参数不足, paraMap=" + paramMap);
+                responseData.setState(2);
+                responseData.setMsg("参数不足,paraMap=" + paramMap);
+                return responseData;
+            }
+
+        } catch (Exception e) {
+            logger.error("校验参数失败!", e);
+            responseData.setState(2);
+            responseData.setMsg("参数错误! paraMap=" + paramMap);
+            return responseData;
+        }
+
+        try {
+
+            // 创建更新体验卡
+            experiencecardAccess.createCard(experiencecard, experiencecardRecord);
+            responseData.setState(0);
+            responseData.setMsg("创建/更新体验卡成功");
+
+        } catch (CustomException ex) {
+            logger.info(ex.getMessage());
+            responseData.setMsg(ex.getMessage());
+            responseData.setState(ex.getCode());
+        } catch (Exception e) {
+            responseData.setState(1);
+            responseData.setMsg("支付系统出现异常!");
+            logger.error("调用Thrift接口[创建/更新 美食体验卡], 出现异常!", e);
+        }
+
+        return responseData;
+    }
+
+    /**
+     * 1.13.2 获取美食体验卡信息
+     * 参数
+     * uid : 用户编号
+     *
+     * @param paramMap
+     */
+    @Override
+    public ResponseData getExperiencecard(Map<String, String> paramMap) throws FailureException, TException {
+        logger.info("调用Thrift接口[1.13.2 获取美食体验卡信息], 参数" + paramMap);
+        ResponseData responseData = new ResponseData();
+
+        Integer uid = null;
+        try {
+            // 判断参数是否为空
+            if (ValidateUtil.validateNull(paramMap, "uid")) {
+                // 判断参数格式是否可以正确转换
+                uid = Integer.valueOf(paramMap.get("uid"));
+            } else {
+                logger.info("参数不足, paraMap=" + paramMap);
+                responseData.setState(2);
+                responseData.setMsg("参数不足,paraMap=" + paramMap);
+                return responseData;
+            }
+
+        } catch (Exception e) {
+            logger.error("校验参数失败!", e);
+            responseData.setState(2);
+            responseData.setMsg("参数错误! paraMap=" + paramMap);
+            return responseData;
+        }
+
+        try {
+            Experiencecard experiencecard = experiencecardAccess.queryExperiencecard(uid);
+            if (experiencecard == null) {
+                logger.info("未查询到用户uid为["+uid+"]的美食体验卡");
+                responseData.setState(3);
+                responseData.setMsg("用户["+uid+"], 没有开通美食体验卡!");
+                return responseData;
+            }
+
+            // 转换Bean为Map
+            Map<String, String> resultMap = MapBeanUtil.convertMap(experiencecard,
+                    "id", "uid", "status", "stock", "used", "dueDate", "updateTime");
+            responseData.setResultMap(resultMap);
+            responseData.setMsg("请求成功");
+            responseData.setState(0);
+
+        } catch (CustomException ex) {
+            logger.info(ex.getMessage());
+            responseData.setMsg(ex.getMessage());
+            responseData.setState(ex.getCode());
+        } catch (Exception e) {
+            responseData.setState(1);
+            responseData.setMsg("支付系统出现异常!");
+            logger.error("调用Thrift接口[1.13.2 获取美食体验卡信息], 出现异常!", e);
+        }
+
+        return responseData;
+    }
+
+    /**
+     * 1.13.3 扣除美食体验卡
+     * 参数
+     * uid : 用户编号
+     * source : 消费订单号
+     *
+     * @param paramMap
+     */
+    @Override
+    public ResponseData deductExperiencecard(Map<String, String> paramMap) throws FailureException, TException {
+        logger.info("调用Thrift接口[1.13.3 扣除美食体验卡, 参数" + paramMap);
+        ResponseData responseData = new ResponseData();
+
+        Integer uid = null;
+        String source = null;
+        ExperiencecardRecord experiencecardRecord = new ExperiencecardRecord();
+        try {
+            // 判断参数是否为空
+            if (ValidateUtil.validateNull(paramMap, "uid","source")) {
+                // 判断参数格式是否可以正确转换
+                uid = Integer.valueOf(paramMap.get("uid"));
+                experiencecardRecord.setSource(paramMap.get("source"));
+
+                experiencecardRecord.setRemark(paramMap.get("remark"));
+            } else {
+                logger.info("参数不足, paraMap=" + paramMap);
+                responseData.setState(2);
+                responseData.setMsg("参数不足,paraMap=" + paramMap);
+                return responseData;
+            }
+
+        } catch (Exception e) {
+            logger.error("校验参数失败!", e);
+            responseData.setState(2);
+            responseData.setMsg("参数错误! paraMap=" + paramMap);
+            return responseData;
+        }
+
+        try {
+            // 扣除美食体验卡
+            experiencecardAccess.dudectExperiencecard(uid,experiencecardRecord);
+
+            responseData.setMsg("扣除美食体验卡成功");
+            responseData.setState(0);
+
+        } catch (CustomException ex) {
+            logger.info(ex.getMessage());
+            responseData.setMsg(ex.getMessage());
+            responseData.setState(ex.getCode());
+        } catch (Exception e) {
+            responseData.setState(1);
+            responseData.setMsg("支付系统出现异常!");
+            logger.error("调用Thrift接口[1.13.3 扣除美食体验卡, 出现异常!", e);
+        }
+
+        return responseData;
+
+    }
+
+    /**
+     * 1.13.4 分页获取美食体验卡记录信息
+     * rtype 0充值 | 1消费 | 2退还
+     * uid     用户uid
+     * pageSize    分页页面数量
+     * page        分页页数
+     *
+     * @param paramMap
+     */
+    @Override
+    public List<Map<String, String>> getExperiencecardRecordList(Map<String, String> paramMap) throws FailureException, TException {
+        return null;
+    }
+}

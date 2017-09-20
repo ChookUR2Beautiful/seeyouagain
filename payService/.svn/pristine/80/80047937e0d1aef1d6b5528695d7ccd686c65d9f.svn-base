@@ -1,0 +1,19 @@
+package com.xmniao.dao;
+
+import com.xmniao.entity.LiveWalletLock;
+
+public interface LiveWalletLockMapper {
+    int deleteByPrimaryKey(Integer id);
+
+    int insert(LiveWalletLock record);
+
+    int insertSelective(LiveWalletLock record);
+
+    LiveWalletLock selectByPrimaryKey(Integer id);
+
+    int updateByPrimaryKeySelective(LiveWalletLock record);
+
+    int updateByPrimaryKey(LiveWalletLock record);
+
+	int countZbalanceLock(Integer id);
+}

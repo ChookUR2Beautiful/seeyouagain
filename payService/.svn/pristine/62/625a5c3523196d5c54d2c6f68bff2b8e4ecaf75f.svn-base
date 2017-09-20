@@ -1,0 +1,65 @@
+package com.xmniao.entity.manor;
+
+/**
+ * 红包领取记录表
+ * @author liyuanbo
+ * @create 2017-06-03 13:56
+ **/
+public class PropsRedpackageRecord {
+    private long id;
+    private long redpackageId;//发送红包表ID
+    private long giveUid;//领取红包的用户ID
+    private int amount;//领取的红包金额
+    private String createTime ;//创建时间
+
+    public long getId() {
+        return id;
+    }
+
+    public long getRedpackageId() {
+        return redpackageId;
+    }
+
+    public long getGiveUid() {
+        return giveUid;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setRedpackageId(long redpackageId) {
+        this.redpackageId = redpackageId;
+    }
+
+    public void setGiveUid(long giveUid) {
+        this.giveUid = giveUid;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
+
+    @Override
+    public String toString() {
+        return "PropsRedpackageRecord{" +
+                "id=" + id +
+                ", redpackageId=" + redpackageId +
+                ", giveUid=" + giveUid +
+                ", amount=" + amount +
+                ", createTime='" + createTime + '\'' +
+                '}';
+    }
+}

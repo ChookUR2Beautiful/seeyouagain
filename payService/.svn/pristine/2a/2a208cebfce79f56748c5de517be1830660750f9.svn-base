@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 	
+	http://www.springframework.org/schema/beans/spring-beans-4.1.xsd 
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-4.1.xsd 
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-4.1.xsd 
+	http://www.springframework.org/schema/util 
+	http://www.springframework.org/schema/util/spring-util-4.1.xsd
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-4.1.xsd">
+
+	<!-- 自动注入SERVICE层 -->
+	<context:component-scan base-package="com.xmniao.service.**" />
+	<context:component-scan base-package="com.xmniao.joint.service.**" />
+	<!-- 注入修改分账系统工具类 -->
+	<bean id="updateLedgerSystem" class="com.xmniao.common.UpdateLedgerSystem">
+	</bean>
+	
+	<!-- 退款手续费率 范围:0~1 -->
+	<bean name="Refund_Fee_Rate" class="java.math.BigDecimal">
+		<constructor-arg value="0" /><!-- 0.0125 -->
+	</bean>
+	
+	<!-- 退款回调通知地址URL -->
+	<bean name="notifyServiceUrl" class="java.lang.String">
+		<constructor-arg value="http://tpay.xmniao.com:8101/payService" />
+	</bean>
+	
+	<!-- + alipay -->
+	<bean name="zfb_partner" class="java.lang.String">
+		<constructor-arg value="2088711060430385" />
+	</bean>
+	<bean name="zfb_seller_email" class="java.lang.String">
+		<constructor-arg value="xunminiao@126.com" />
+	</bean>
+	<bean name="zfb_md5Key" class="java.lang.String">
+		<constructor-arg value="3ljjp8ysqkf8ak15du3ukywzone6ihx5" />
+	</bean>
+	<bean name="zfb_rsaKey" class="java.lang.String">
+		<constructor-arg value="MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAMJukHygf3YVJcQcNDtZWKfOEhI82gan3XT3YmL7/0I7g5L9uTY0/5TrVhTtCpxuUZS2Yfn6Jslxi8zuxpYqP6x+7NDgKP9TMGOoSrL6FY4ypq+Ut8XB9Ohb6WHF3kdEJjmNkbi/NhaOfaPNqXvZQLZA8ilUdGLguZzbqIm00BSdAgMBAAECgYEAr1gEx8/6gyRZNb31wNw3nsWx+G6WdVAn4NdFDF2Ue0euxf45bNBo+gUuUZrgaej3e7TrMQROvHbBDCT+ROh/GF/Kekweu11YoxpSrBI2CocBAauoYSwO0vZnHi/hn8ysLcR9iGWrESz7oddB8u+k/0BRDP5wx2NOocJyk+fQRUECQQDf/JMmIIU3yMe3bHQLTWDErAwV3o6CPrmmDI20bW0lR5MqciygTYQitIQSu5Gb3Fqc7cvpeTZq8JM1NCMgqctNAkEA3jidTR6QrGUMHcBV7cN5g+F4XVp4cqdMsz7/XFYUtd8wgTHq2jXLEBTk7n7vOh9BQs9bCso4fyrFh5Qv/hCmkQJAXYMUaAmRtJ11jAWSWRmf+dweW48EDipj1YhOLPK2a6b7MPBj4zUZomec8Dkw7FJN3lCFHl9FsdXoj4DJ3ZwlzQJAHUFu1BxWB5w2ACS2K1s0wDwK0J98g/uqiV6d19YtW9RKWnfr51Z1qWRWz18+t3Qt71HFNqJw1a0X3EWSG+ytQQJBALa6Fg1JefFJzYVAlV9O07vXepv0m2j8QtrByepI+5CMGt1lGPYFv8fywW7/u0cPlrxOn4N3zTLAkk9oqsPzvng=" />
+	</bean>
+	<bean name="zfb_rsapublicKey" class="java.lang.String">
+		<constructor-arg value="MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCnxj/9qwVfgoUh/y2W89L6BkRAFljhNhgPdyPuBV64bfQNN1PjbCzkIM6qRdKBoLPXmKKMiFYnkd6rAoprih3/PrQEB/VsW8OoM8fxn67UDYuyBTqA23MML9q1+ilIZwBC2AQ2UBVOrFXfFl75p6/B5KsiNG9zpgmLCUYuLkxpLQIDAQAB" />
+	</bean>
+
+	<!-- 配置汇付退款 -->
+ 	<bean id="pnrPayRefund" class="com.xmniao.service.impl.PnrRefundServiceImpl">
+		<property name="version" value="10" />
+		<property name="refundCmdId" value="Refund" />
+		<property name="queryRefundCmdId" value="QueryRefundStatus" />
+		<property name="merId" value="872881" />
+		<property name="refundUrl" value="https://mas.chinapnr.com/gao/entry.do" />
+		<property name="queryRefundUrl" value="https://mas.chinapnr.com/gaq/entry.do" />
+	</bean>
+	
+	<!-- 配置微信退款（2201账号） -->
+<!--  	<bean id="wxPayRefund" class="com.xmniao.service.impl.WPayServiceImpl">
+		<property name="refundVersion" value="1.1" />
+		<property name="partner" value="1224582201" />
+		<property name="signType" value="MD5" />
+		<property name="opUserId" value="1224582201" />
+		<property name="passwrod" value="cf710314" />
+		<property name="refundUrl" value="https://api.mch.tenpay.com/refundapi/gateway/refund.xml" />
+		<property name="partnerKey" value="aa0837afd1bcf472b26e4843e09e7883" />
+		<property name="inputCharset" value="GBK" />
+		<property name="signKeyIndex" value="1" />
+		<property name="requestMethod" value="POST" />
+		<property name="certPassword" value="430128"/>
+		<property name="queryRefundUrl" value="https://gw.tenpay.com/gateway/normalrefundquery.xml"/>
+	</bean> -->
+	
+	<!-- 配置微信退款 V3新版本（4401账号）-->
+	 <bean id="wxV3PayRefund" class="com.xmniao.service.impl.WPayV3ServiceImpl">
+ 		<property name="appid" value="wxf22563034b1ca356"/>
+		<property name="partner" value="1266874401" />
+		<property name="signType" value="MD5" />
+		<property name="opUserId" value="1266874401" />
+		<property name="refundUrl" value="https://api.mch.weixin.qq.com/secapi/pay/refund" />
+		<property name="partnerKey" value="2c8623ee30a6c6254538036faa0e17d9" />
+		<property name="requestMethod" value="POST" />
+		<property name="certPassword" value="1266874401"/>
+		<property name="queryRefundUrl" value="https://api.mch.weixin.qq.com/pay/refundquery"/>
+		<property name="cretFile" value="wx_cert_1266874401.p12" />
+	</bean>
+	<!-- 配置微信退款 V3新版本-->
+ 	<bean id="wxPayRefund" class="com.xmniao.service.impl.WPayV3ServiceImpl">
+ 		<property name="appid" value="wx7f722e0957ae851a"/>
+		<property name="partner" value="1224582201" />
+		<property name="signType" value="MD5" />
+		<property name="opUserId" value="1224582201" />
+		<property name="refundUrl" value="https://api.mch.weixin.qq.com/secapi/pay/refund" />
+		<property name="partnerKey" value="aa0837afd1bcf472b26e4843e09e7883" />
+		<property name="requestMethod" value="POST" />
+		<property name="certPassword" value="1224582201"/>
+		<property name="queryRefundUrl" value="https://api.mch.weixin.qq.com/pay/refundquery"/>
+		<property name="cretFile" value="wx_cert_1224582201.p12" />
+	</bean>
+ 	
+	<!--融宝回调异步应答的 url 地址 -->
+    <bean name="RBRetUrl" class="java.lang.String">
+		<constructor-arg value="http://szdev.xmniao.com:8222/payService/rongBoRefundC"></constructor-arg>
+	</bean>
+	
+	<!-- 配置融宝退款 -->
+	<bean id="reaPalRefund" class="com.xmniao.service.impl.ReaPalServiceImpl">
+		<property name="merchantId" value="100000000007696"/>
+		<property name="merchantKey" value="79a7d1g11egbbd172dfdc0430c5a8f369520g7b9ad038c322ff9fe2agdc2cag1"/>
+		<property name="refundUrl" value="http://interface.reapal.com/service/refund"/>
+		<property name="signType" value="MD5"/>
+		<property name="charset" value="GBK"/>
+		<property name="verifyUrl" value="http://interface.reapal.com/verify/notify"/>
+	</bean>
+	
+	<!-- 汇付天下基本信息 -->
+	<bean id="payDatas" class="com.xmniao.common.PayDatas">
+	     <property name="Version" value="10"/>
+	     <property name="CmdId" value="prTrans"/>
+	     <property name="queryCmdId" value="prSingleQuery"/>
+	     <property name="CustId" value="000007644668"/>
+	     <property name="Charset" value="GBK"/>
+	     <property name="ChkType" value="R"/>
+	     <property name="RetUrl" value="http://szdev.xmniao.com:8237/payService/ChinaPnRRefoundNotify"/>
+	     <property name="MerId" value="872881"/>
+	     <property name="SubAcctId" value="000007644668"/>
+	     <property name="payUrl" value="https://lab.chinapnr.com/buser/extUrl/prTransHttp"/>
+	     <property name="queryUrl" value="https://lab.chinapnr.com/buser/extUrl/prSingleInfo" />
+	</bean>
+	
+	<!-- 融宝基本信息 -->
+	<bean id="RTSign" class="com.xmniao.common.RTSign">
+	     <property name="batchVersion" value="00"/>
+	     <property name="signType" value="MD5"/>
+	     <property name="batchBizid" value="100000000007696"/>
+	     <property name="key" value="79a7d1g11egbbd172dfdc0430c5a8f369520g7b9ad038c322ff9fe2agdc2cag1"/>
+	     <property name="inputCharset" value="gbk"/>
+	     <property name="batchBiztype" value="00000"/>
+	     <property name="payUrl" value="http://entrust.reapal.com/agentpay/pay" />
+	     <property name="queryUrl" value="http://entrust.reapal.com/agentpay/payquery" />
+	</bean>
+	
+	<!-- U付 基本信息 -->
+	<bean id="uPayService" class="com.xmniao.service.impl.UPayServiceImpl">
+	     <property name="merId" value="9495"/>
+	     <property name="service" value="transfer_direct_req"/>
+	     <property name="signType" value="RSA"/>
+	     <property name="charset" value="UTF-8"/>
+	     <property name="version" value="4.0"/>
+	     <property name="resFormat" value="HTML"/>
+	</bean>
+	
+	
+	<!-- 盛付通基本信息 -->
+	<bean id="shengPayService" class="com.xmniao.service.impl.ShengPayServiceImpl">
+	     <property name="merchantId" value="424660"/>
+	     <property name="payUrl" value="http://szdev.xmniao.com:8222/payService/shengPayNotify"/>
+	     <property name="signType" value="MD5"/>
+	     <property name="charset" value="UTF-8"/>
+	     <property name="md5Key" value="7P9H58CAD1CE34FCF64CE8C3CCB87389"/>
+	     <property name="refundVersion" value="V4.4.1.1.1"/>
+	     <property name="refundName" value="REFUND_REQ"/>
+	</bean>
+	
+	<!-- 通联基本信息 -->
+	<bean id="tongPayService" class="com.xmniao.service.impl.TongPayServiceImpl">
+	     <!-- 代发 -->
+	     <property name="tranURL" value="http://tlt.allinpay.com/aipg/ProcessServlet"/>
+	     <property name="payVersion" value="03"/>
+	     <property name="merchantIdPay" value="200596000000041"/>
+	     <property name="userName" value="20059600000004104"/>
+	     <property name="userPass" value="111111"/>	      
+	     <property name="pfx" value="20059600000004104.p12"/>
+	     
+	     
+	     <!-- 退款及查询 -->
+	     <property name="refundVersion" value="v1.3"/>     
+	     <property name="queryVersion" value="v2.4"/>	     
+	     <property name="merchantId" value="109020201503025"/>	     
+	     <property name="queryUrl" value="https://service.allinpay.com/mchtoq/refundQuery"/>
+	     <property name="refundUrl" value="https://service.allinpay.com/gateway/index.do"/>
+	     <property name="md5Key" value="7u0dtl3AVDKWQ4x37SGUwrsMgVFrtsYIgJ6ZZCkrtGEIx0X1"/>
+	     <property name="signType" value="0"/>
+	</bean>
+	
+	<!-- 快钱基本信息 -->
+	<bean id="kuaiqianPayService" class="com.xmniao.service.impl.KuaiqianPayServiceImpl">
+
+	     <property name="version" value="1.0"/>
+	     <property name="serviceType" value="fo.batch.settlement.pay"/>
+	     <property name="featureCode" value="F889"/>
+
+	     <property name="queryBatch" value="fo.batch.settlement.batchidquery"/>
+	     <property name="queryOrder" value="fo.batch.settlement.complexquery"/>
+	     <property name="payMerchantName" value="广东寻蜜鸟网络技术有限公司"/>
+	     <property name="payMerchantId" value="10024322312"/>
+	     <property name="payPayerAcctCode" value="1002432231201"/>
+	     <property name="payUrl" value="https://www.99bill.com/fo-batch-settlement/services" />
+     
+	     <property name="refundMerchantId" value="10024234523"/>
+	     <property name="refundVersion" value="bill_drawback_api_1"/>
+	     <property name="refundCommandType" value="001"/>
+	     <property name="refundMerchantKey" value="NXL42XL77GXUSMWM"/>
+	     <property name="charSet" value="utf-8"/>
+		 <property name="refundUrl" value="https://www.99bill.com/webapp/receiveDrawbackAction.do"/>
+ 	
+		 <property name="queryMerchantId" value="1002423452301"/>
+		 <property name="queryVersion" value="v2.0"/>
+		 <property name="queryKey" value="39DCGYYZHZ6JQXIZ"/>
+		 <property name="queryUrl" value="https://www.99bill.com/gatewayapi/services/gatewayRefundQuery?wsdl"/>
+	</bean>
+	
+	<!-- 连连配置 -->
+	<bean id="llPayService" class="com.xmniao.service.impl.LlPayServiceImpl">
+		<property name="partner" value="201502121000214502" />
+		<property name="signKey" value="Q2Pk614lsxuoBJMcntSQCL7u0dtl3AVDKWQ4"/>
+		<property name="signType" value="MD5"/>
+		<property name="refundUrl" value="https://yintong.com.cn/traderapi/refund.htm"/>
+		<property name="refundQueryUrl" value="https://yintong.com.cn/traderapi/refundquery.htm"/>
+		<property name="payUrl" value="https://yintong.com.cn/traderapi/cardandpay.htm" />
+		<property name="payQueryUrl" value="https://yintong.com.cn/traderapi/orderquery.htm" />
+		<property name="rsaPriKey" value="MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBAMlGNh/WsyZSYnQcHd9t5qUkhcOhuQmozrAY9DM4+7fhpbJenmYee4chREW4RB3m95+vsz9DqCq61/dIOoLK940/XmhKkuVjfPqHJpoyHJsHcMYy2bXCd2fI++rERdXtYm0Yj2lFbq1aEAckciutyVZcAIHQoZsFwF8l6oS6DmZRAgMBAAECgYAApq1+JN+nfBS9c2nVUzGvzxJvs5I5qcYhY7NGhySpT52NmijBA9A6e60Q3Ku7vQeICLV3uuxMVxZjwmQOEEIEvXqauyYUYTPgqGGcwYXQFVI7raHa0fNMfVWLMHgtTScoKVXRoU3re6HaXB2z5nUR//NE2OLdGCv0ApaJWEJMwQJBAPWoD/Cm/2LpZdfh7oXkCH+JQ9LoSWGpBDEKkTTzIqU9USNHOKjth9vWagsR55aAn2ImG+EPS+wa9xFTVDk/+WUCQQDRv8B/lYZD43KPi8AJuQxUzibDhpzqUrAcu5Xr3KMvcM4Us7QVzXqP7sFc7FJjZSTWgn3mQqJg1X0pqpdkQSB9AkBFs2jKbGe8BeM6rMVDwh7TKPxQhE4F4rHoxEnND0t+PPafnt6pt7O7oYu3Fl5yao5Oh+eTJQbyt/fwN4eHMuqtAkBx/ob+UCNyjhDbFxa9sgaTqJ7EsUpix6HTW9f1IirGQ8ac1bXQC6bKxvXsLLvyLSxCMRV/qUNa4Wxu0roI0KR5AkAZqsY48Uf/XsacJqRgIvwODstC03fgbml890R0LIdhnwAvE4sGnC9LKySRKmEMo8PuDhI0dTzaV0AbvXnsfDfp" />
+	</bean>
+	
+	<bean id="expansionManage" class="com.xmniao.entity.ExpansionManage">
+		<constructor-arg>
+			<ref bean="walletExServiceImpl"/>
+		</constructor-arg>
+	</bean>
+</beans>

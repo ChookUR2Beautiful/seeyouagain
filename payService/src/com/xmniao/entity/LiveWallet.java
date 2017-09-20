@@ -1,0 +1,252 @@
+package com.xmniao.entity;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Map;
+
+public class LiveWallet {
+    private Integer id;
+
+    private Integer uid;
+
+    private Integer status;
+
+    private BigDecimal balance;
+
+    private Long commision;
+
+    private BigDecimal zbalance;
+
+    private BigDecimal sellerCoin;
+
+    private Long turnEggOut;
+
+    private Long turnCoinOut;
+
+    private BigDecimal cumulativeZbalance;
+
+    private String sign;
+
+    private Integer signType;
+
+    private Date createTime;
+
+    private Date updateTime;
+
+    private String restrictive;
+
+    private BigDecimal limitBalance;
+
+    private BigDecimal availableExchangeCoin;
+
+    private BigDecimal usedExchangeCoin;
+    
+    private Boolean zbalanceLock;
+    
+    public Boolean getZbalanceLock() {
+		return zbalanceLock;
+	}
+
+	public void setZbalanceLock(Boolean zbalanceLock) {
+		this.zbalanceLock = zbalanceLock;
+	}
+
+	public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getUid() {
+        return uid;
+    }
+
+    public void setUid(Integer uid) {
+        this.uid = uid;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public BigDecimal getBalance() {
+        return balance;
+    }
+
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
+
+    public Long getCommision() {
+        return commision;
+    }
+
+    public void setCommision(Long commision) {
+        this.commision = commision;
+    }
+
+    public BigDecimal getZbalance() {
+        return zbalance;
+    }
+
+    public void setZbalance(BigDecimal zbalance) {
+        this.zbalance = zbalance;
+    }
+
+    public BigDecimal getSellerCoin() {
+        return sellerCoin;
+    }
+
+    public void setSellerCoin(BigDecimal sellerCoin) {
+        this.sellerCoin = sellerCoin;
+    }
+
+    public Long getTurnEggOut() {
+        return turnEggOut;
+    }
+
+    public void setTurnEggOut(Long turnEggOut) {
+        this.turnEggOut = turnEggOut;
+    }
+
+    public Long getTurnCoinOut() {
+        return turnCoinOut;
+    }
+
+    public void setTurnCoinOut(Long turnCoinOut) {
+        this.turnCoinOut = turnCoinOut;
+    }
+
+    public BigDecimal getCumulativeZbalance() {
+        return cumulativeZbalance;
+    }
+
+    public void setCumulativeZbalance(BigDecimal cumulativeZbalance) {
+        this.cumulativeZbalance = cumulativeZbalance;
+    }
+
+    public String getSign() {
+        return sign;
+    }
+
+    public void setSign(String sign) {
+        this.sign = sign == null ? null : sign.trim();
+    }
+
+    public Integer getSignType() {
+        return signType;
+    }
+
+    public void setSignType(Integer signType) {
+        this.signType = signType;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getRestrictive() {
+        return restrictive;
+    }
+
+    public void setRestrictive(String restrictive) {
+        this.restrictive = restrictive == null ? null : restrictive.trim();
+    }
+
+    public BigDecimal getLimitBalance() {
+        return limitBalance;
+    }
+
+    public void setLimitBalance(BigDecimal limitBalance) {
+        this.limitBalance = limitBalance;
+    }
+
+    public BigDecimal getAvailableExchangeCoin() {
+        return availableExchangeCoin;
+    }
+
+    public void setAvailableExchangeCoin(BigDecimal availableExchangeCoin) {
+        this.availableExchangeCoin = availableExchangeCoin;
+    }
+
+    public BigDecimal getUsedExchangeCoin() {
+        return usedExchangeCoin;
+    }
+
+    public void setUsedExchangeCoin(BigDecimal usedExchangeCoin) {
+        this.usedExchangeCoin = usedExchangeCoin;
+    }
+
+    @Override
+    public String toString() {
+        return "LiveWallet{" +
+                "id=" + id +
+                ", uid=" + uid +
+                ", status=" + status +
+                ", balance=" + balance +
+                ", commision=" + commision +
+                ", zbalance=" + zbalance +
+                ", sellerCoin=" + sellerCoin +
+                ", turnEggOut=" + turnEggOut +
+                ", turnCoinOut=" + turnCoinOut +
+                ", cumulativeZbalance=" + cumulativeZbalance +
+                ", sign='" + sign + '\'' +
+                ", signType=" + signType +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", restrictive='" + restrictive + '\'' +
+                ", limitBalance=" + limitBalance +
+                ", availableExchangeCoin=" + availableExchangeCoin +
+                ", usedExchangeCoin=" + usedExchangeCoin +
+                '}';
+    }
+
+    
+	public static BigDecimal getAvailableBalanceByMapWallet(Map<String, Object> liveWallet) {
+		BigDecimal zbalance = (BigDecimal) liveWallet.get("zbalance");
+		if("001".equals(liveWallet.get("restrictive"))){
+			BigDecimal limitBalance = (BigDecimal) liveWallet.get("limitBalance");
+			BigDecimal sub = zbalance.subtract(limitBalance).setScale(2, BigDecimal.ROUND_DOWN);
+			if(sub.compareTo(BigDecimal.ZERO)>0){
+				return sub;
+			}else{
+				return BigDecimal.ZERO;
+			}
+		}else{
+			return zbalance;
+		}
+	}
+
+	public static BigDecimal getAvailableBalanceByMapWallet(LiveWallet liveWallet) {
+		BigDecimal zbalance = liveWallet.getZbalance();
+		if("001".equals(liveWallet.getRestrictive())){
+			BigDecimal limitBalance = liveWallet.getLimitBalance();
+			BigDecimal sub = zbalance.subtract(limitBalance).setScale(2, BigDecimal.ROUND_DOWN);
+			if(sub.compareTo(BigDecimal.ZERO)>0){
+				return sub;
+			}else{
+				return BigDecimal.ZERO;
+			}
+		}else{
+			return zbalance;
+		}
+	}
+}

@@ -1,0 +1,89 @@
+package com.xmniao.entity;
+
+import java.util.Date;
+
+public class Experiencecard {
+    private Integer id;
+
+    private Integer uid;
+
+    private Integer status;
+
+    private Integer stock;
+
+    private Integer used;
+
+    private Date dueDate;
+
+    private Date updateTime;
+
+
+    @Override
+    public String toString() {
+        return "Experiencecard{" +
+                "id=" + id +
+                ", uid=" + uid +
+                ", status=" + status +
+                ", stock=" + stock +
+                ", used=" + used +
+                ", dueDate=" + dueDate +
+                ", updateTime=" + updateTime +
+                '}';
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getUid() {
+        return uid;
+    }
+
+    public void setUid(Integer uid) {
+        this.uid = uid;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Integer getStock() {
+        return stock;
+    }
+
+    public void setStock(Integer stock) {
+        this.stock = stock;
+    }
+
+    public Integer getUsed() {
+        return used;
+    }
+
+    public void setUsed(Integer used) {
+        this.used = used;
+    }
+
+    public Date getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(Date dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+}

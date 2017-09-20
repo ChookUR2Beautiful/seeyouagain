@@ -1,0 +1,935 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.LiveWalletMapper">
+
+	<resultMap id="BaseResultMap" type="com.xmniao.entity.LiveWallet" >
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="uid" property="uid" jdbcType="INTEGER" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="balance" property="balance" jdbcType="DECIMAL" />
+		<result column="commision" property="commision" jdbcType="DECIMAL" />
+		<result column="zbalance" property="zbalance" jdbcType="DECIMAL" />
+		<result column="seller_coin" property="sellerCoin" jdbcType="DECIMAL" />
+		<result column="turn_egg_out" property="turnEggOut" jdbcType="DECIMAL" />
+		<result column="turn_coin_out" property="turnCoinOut" jdbcType="DECIMAL" />
+		<result column="cumulative_zbalance" property="cumulativeZbalance" jdbcType="DECIMAL" />
+		<result column="sign" property="sign" jdbcType="VARCHAR" />
+		<result column="sign_type" property="signType" jdbcType="INTEGER" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="restrictive" property="restrictive" jdbcType="VARCHAR" />
+		<result column="limit_balance" property="limitBalance" jdbcType="DECIMAL" />
+		<result column="available_exchange_coin" property="availableExchangeCoin" jdbcType="DECIMAL" />
+		<result column="used_exchange_coin" property="usedExchangeCoin" jdbcType="DECIMAL" />
+	</resultMap>
+	<sql id="Base_Column_List" >
+		id, uid, status, balance, commision, zbalance, seller_coin, turn_egg_out, turn_coin_out,
+		cumulative_zbalance, sign, sign_type, create_time, update_time, restrictive, limit_balance,
+		available_exchange_coin, used_exchange_coin
+	</sql>
+	<sql id="RecordListRtype">
+		(20)
+	</sql>
+	
+	<sql id="RecordListWhereSQL">
+		and  wallet.id=#{walletId}
+		and record.rtype not in <include refid="RecordListRtype"/>
+		and ABS(beans_money+seller_beans_money) &lt;> 0
+			<if test="sdate!=null and sdate!=''">
+			AND DATE_FORMAT(record.create_time,'%Y-%m-%d') &gt;= DATE_FORMAT(#{sdate},'%Y-%m-%d')
+		</if>
+		<if test="edate!=null and edate!=''">
+			AND DATE_FORMAT(record.create_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{edate},'%Y-%m-%d')
+		</if>
+		<if test="listType==1">
+			AND (q_beans_money > h_beans_money or q_seller_beans_money > h_seller_beans_money)
+			AND record.rtype &lt;> 26
+		</if>
+		<if test="listType==2">
+			AND (h_beans_money > q_beans_money or h_seller_beans_money > q_seller_beans_money)
+		</if>
+	</sql>
+	
+	<select id="getWalletById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		  select <include refid="Base_Column_List"/> from b_live_wallet where id = #{id}
+	</select>
+	
+	<select id="getUserWalletRecordList3" resultType="map">
+		select cast(record.id as int) id,wallet.id as accountid,record.rtype rtype,
+		ABS(beans_money+seller_beans_money) as amount,
+		record.remarks orderId,record.description as remarks,
+		record.create_time sdate,cast(3 as int) recordType
+		from b_live_wallet_record record join b_live_wallet wallet on  record.wallet_id= wallet.id
+		where 1=1
+		<include refid="RecordListWhereSQL"/>
+		<if test="liveNum != null and liveNum != 'null'">
+	   	and record.create_time &lt;= (select create_time from b_live_wallet_record where id = #{liveNum})
+	   	and record.id &lt; #{liveNum}
+	   </if>
+	   order by record.create_time desc,record.id desc
+	   limit 0,${pageSize}
+	</select>
+	
+	<select id="countUserWalletRecordList3" resultType="java.lang.Long">
+		select count(1) as count
+		from b_live_wallet_record record join b_live_wallet wallet on  record.wallet_id= wallet.id
+		where 1=1
+		<include refid="RecordListWhereSQL"/>
+	</select>
+	
+	<update id="cleanWallet">
+		UPDATE b_live_wallet set
+		balance = 0,
+		commision = 0,
+		zbalance = 0,
+		seller_coin = 0,
+		turn_egg_out = 0,
+		turn_coin_out = 0,
+		cumulative_zbalance = 0,
+		sign = #{sign},
+		update_time = now(),
+		available_exchange_coin = 0,
+		used_exchange_coin = 0
+		where 
+		uid = #{uid}
+	</update>
+	
+	<!-- 添加钱包 -->
+	<insert id="addLiveWallet" parameterType="map" useGeneratedKeys="true"
+		keyColumn="id" keyProperty="id">
+		INSERT INTO
+		b_live_wallet(uid,status,sign,sign_type,create_time)
+		VALUES(#{uid},#{status},#{sign},#{signType},#{createTime})
+	</insert>
+
+	<!-- 根据id或uid查询钱包信息 -->
+	<select id="getLiveWallet" parameterType="string" resultType="map">
+		SELECT id,uid,balance,zbalance,status,commision,sign,turn_egg_out
+		turnEggOut,turn_coin_out turnCoinOut,cumulative_zbalance
+		cumulativeZbalance,restrictive,limit_balance limitBalance,seller_coin sellerCoin,
+		available_exchange_coin as availableExchangeCoin,used_exchange_coin as usedExchangeCoin
+		FROM b_live_wallet
+		WHERE 1=1
+		<if test=" uid != null and uid != 'null'">
+			AND uid = #{uid}
+		</if>
+		<if test=" id != null and id != 'null'">
+			AND id = #{id}
+		</if>
+		AND status IN (1,2)
+		for update
+	</select>
+
+	<!-- 更新钱包状态 -->
+	<update id="updateWalletState" parameterType="map">
+		UPDATE b_live_wallet
+		SET status = #{status}
+		WHERE sign = #{sign}
+		<if test=" uid != null and uid != 'null'">
+			AND uid = #{uid}
+		</if>
+		<if test=" id != null and id != 'null'">
+			AND id = #{id}
+		</if>
+	</update>
+
+
+	<!-- 更新钱包更新数据 -->
+	<update id="updateWallet" parameterType="map">
+		UPDATE b_live_wallet
+		SET balance = #{balance},commision =
+		#{commision},zbalance = #{zbalance}
+		<if test="sellerCoin != null">
+			,seller_coin = #{sellerCoin}
+		</if>
+		,sign = #{sign},update_time = #{updateTime}
+		<if test="turnEggOut != null">
+			, turn_egg_out = #{turnEggOut}
+		</if>
+		<if test="turnCoinOut != null">
+			, turn_coin_out = #{turnCoinOut}
+		</if>
+		<if test="totalZbalance != null">
+			, cumulative_zbalance = #{totalZbalance}
+		</if>
+		<if test="availableExchangeCoin != null">
+			, available_exchange_coin = available_exchange_coin+#{availableExchangeCoin}
+		</if>
+		<if test="usedExchangeCoin != null">
+			, used_exchange_coin = used_exchange_coin+#{usedExchangeCoin}
+		</if>
+		WHERE
+		status = 1
+		AND sign = #{oldSign}
+		<if test="id != null">
+			AND id = #{id}
+		</if>
+		<if test="uid != null">
+			AND uid = #{uid}
+		</if>
+	</update>
+	<!-- 插入钱包更新记录 -->
+	<insert id="insertWalletRecord" parameterType="map"
+		useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+		INSERT INTO
+		b_live_wallet_record
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			wallet_id,rtype,
+			<if test="eggMoney != null">
+				egg_money,
+			</if>
+			<if test="qeggMoney != null">
+				q_egg_money,
+			</if>
+			<if test="heggMoney != null">
+				h_egg_money,
+			</if>
+			<if test="coinMoney != null">
+				coin_money,
+			</if>
+			<if test="qcoinMoney != null">
+				q_coin_money,
+			</if>
+			<if test="hcoinMoney != null">
+				h_coin_money,
+			</if>
+			<if test="beansMoney != null">
+				beans_money,
+			</if>
+			<if test="qbeansMoney != null">
+				q_beans_money,
+			</if>
+			<if test="hbeansMoney != null">
+				h_beans_money,
+			</if>
+			<if test="sellerCoin != null">
+				seller_beans_money,
+			</if>
+			<if test="qsellerCoin != null">
+				q_seller_beans_money,
+			</if>
+			<if test="hsellerCoin != null">
+				h_seller_beans_money,
+			</if>
+			<if test="liveRecordId != null">
+				live_record_id,
+			</if>
+			<if test="anchorId != null">
+				anchor_id,
+			</if>
+			remarks,description,create_time
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{walletId},#{rtype},
+
+			<if test="eggMoney != null">
+				#{eggMoney},
+			</if>
+			<if test="qeggMoney != null">
+				#{qeggMoney},
+			</if>
+			<if test="heggMoney != null">
+				#{heggMoney},
+			</if>
+			<if test="coinMoney != null">
+				#{coinMoney},
+			</if>
+			<if test="qcoinMoney != null">
+				#{qcoinMoney},
+			</if>
+			<if test="hcoinMoney != null">
+				#{hcoinMoney},
+			</if>
+			<if test="beansMoney != null">
+				#{beansMoney},
+			</if>
+			<if test="qbeansMoney != null">
+				#{qbeansMoney},
+			</if>
+			<if test="hbeansMoney != null">
+				#{hbeansMoney},
+			</if>
+			<if test="sellerCoin != null">
+				#{sellerCoin},
+			</if>
+			<if test="qsellerCoin != null">
+				#{qsellerCoin},
+			</if>
+			<if test="hsellerCoin != null">
+				#{hsellerCoin},
+			</if>
+			<if test="liveRecordId != null">
+				#{liveRecordId},
+			</if>
+			<if test="anchorId != null">
+				#{anchorId},
+			</if>
+			#{remarks},#{description},#{createTime}
+		</trim>
+	</insert>
+
+	<!-- 查询鸟蛋交易明细 （只查转出） -->
+	<select id="getWalletRecord" resultType="map" parameterType="map">
+		SELECT id ,wallet_id walletId ,rtype,egg_money
+		eggMoney,description,DATE_FORMAT(create_time,'%Y-%m-%d %H:%i:%s')
+		createTime
+		FROM b_live_wallet_record
+		WHERE wallet_id = #{walletId}
+		AND
+		rtype =1
+		<if test=" sdate != null and sdate != 'null'">
+			AND create_time &gt;= #{sdate}
+		</if>
+		<if test=" edate != null and edate != 'null'">
+			AND create_time &lt;= #{edate}
+		</if>
+		ORDER BY
+		create_time DESC
+		LIMIT ${(pageNo-1)*pageSize},#{pageSize}
+	</select>
+
+	<!-- 统计今日鸟蛋收入 -->
+	<select id="countDayEgg" parameterType="map" resultType="map">
+		SELECT
+		IFNULL(SUM(egg_money),0) eggMoney
+		FROM b_live_wallet_record
+		WHERE
+		wallet_id =
+		#{walletId}
+		AND
+		DATE(create_time) = #{day}
+		AND rtype IN
+		(5,6,7,9,10)
+	</select>
+	
+	<!-- 统计累计鸟蛋收入 -->
+	<select id="countTotalEgg" parameterType="map" resultType="map">
+		SELECT
+		IFNULL(SUM(egg_money),0) totalEgg
+		FROM b_live_wallet_record
+		WHERE
+		wallet_id =
+		#{walletId}
+		AND rtype IN (5,6,7,9,10)
+	</select>
+	
+	<!-- 统计平台的鸟币消费排行榜 -->
+	<select id="platformCoin" resultType="map" parameterType="map">
+		SELECT
+		(@rowNO := @rowNo + 1) AS rowNo,
+		a.turn_coin_out AS birdCoin,
+		a.uid
+		FROM
+		b_live_wallet a,
+		(SELECT @rowNO := ${(pageNo-1)*pageSize}) b
+		WHERE a.turn_coin_out
+		!= 0
+		<if test="uid != null and uid != ''">
+			AND a.uid NOT IN (${uid})
+		</if>
+		ORDER BY
+		a.turn_coin_out DESC
+		LIMIT ${(pageNo-1)*pageSize},#{pageSize}
+	</select>
+
+	<!-- 查询每场直播的消费记录排行 -->
+	<select id="liveList" parameterType="map" resultType="map">
+		SELECT
+		(@rowNO := @rowNO+1) AS rowNo , c.uid,c.birdCoin
+		FROM
+		(SELECT @rowNO :=
+		${(pageNo-1)*pageSize}) b,
+		(SELECT
+		a.uid,SUM(d.coin_money) birdCoin
+		FROM
+		b_live_wallet a,
+		b_live_wallet_record d
+		WHERE live_record_id =
+		#{recordId}
+		AND d.wallet_id
+		= a.id
+		AND d.rtype IN (2,3,4)
+		GROUP BY
+		d.wallet_id
+		ORDER BY
+		SUM(d.coin_money) DESC
+		LIMIT
+		${(pageNo-1)*pageSize},#{pageSize}) c
+	</select>
+
+	<!--查询对主播贡献最高的排行 -->
+	<select id="personList" parameterType="map" resultType="map">
+		SELECT
+		(@rowNO := @rowNO+1) AS rowNo , c.uid,c.birdCoin
+		FROM
+		(SELECT @rowNO :=
+		${(pageNo-1)*pageSize}) b,
+		(SELECT
+		a.uid,SUM(d.coin_money) birdCoin
+		FROM
+		b_live_wallet a,
+		b_live_wallet_record d
+		WHERE anchor_id = #{anchorId}
+		AND d.wallet_id =
+		a.id
+		AND d.rtype IN (2,3,4)
+		GROUP BY d.wallet_id
+		ORDER
+		BY
+		SUM(d.coin_money) DESC
+		LIMIT ${(pageNo-1)*pageSize},#{pageSize}) c
+
+	</select>
+
+	<!-- 统计该充值订单号的记录总数 -->
+	<select id="countRemarks" resultType="long">
+		SELECT
+		COUNT(1)
+		FROM b_live_wallet_record
+		WHERE remarks = #{remarks}
+		AND wallet_id = #{walletId}
+		AND rtype = #{rtype}
+		AND LENGTH(remarks)>8
+	</select>
+
+	<!-- 获取鸟币消费明细 -->
+	<select id="getBirdCoinList" parameterType="map" resultType="map">
+		SELECT id ,wallet_id walletId,DATE_FORMAT(create_time,'%Y-%m-%d %H:%i:%s')
+		createTime,beans_money beansMoney
+		FROM b_live_wallet_record
+		WHERE wallet_id = #{walletId}
+		AND rtype =8
+		<if test=" sdate != null and sdate != 'null'">
+			AND create_time &gt;= #{sdate}
+		</if>
+		<if test=" edate != null and edate != 'null'">
+			AND create_time &lt;= #{edate}
+		</if>
+		ORDER BY
+		create_time DESC
+		LIMIT ${(pageNo-1)*pageSize},#{pageSize}
+	</select>
+
+	<!-- 获取本周鸟豆消费统计 -->
+	<select id="getWeekBeans" parameterType="map" resultType="map">
+		SELECT
+		IFNULL( SUM(coin_money),0) weekBeans
+		FROM b_live_wallet_record
+		WHERE
+		YEARWEEK(
+		DATE_FORMAT(create_time,'%Y-%m-%d')) = YEARWEEK('${date}')
+		AND
+		wallet_id =#{walletId}
+		AND rtype IN(2,3,4)
+	</select>
+
+	<!-- 获取本月鸟豆消费统计 -->
+	<select id="getMonthBeans" parameterType="map" resultType="map">
+		SELECT IFNULL( SUM(coin_money),0) monthBeans
+		FROM b_live_wallet_record
+		WHERE DATE_FORMAT(create_time,'%Y-%m-%d') =
+		DATE_FORMAT('${date}','%Y-%m-%d')
+		AND
+		wallet_id =#{walletId}
+		AND rtype IN(2,3,4)
+	</select>
+
+	<!-- 统计每日鸟豆消费总额 -->
+	<select id="countBeansByDay" parameterType="map" resultType="map">
+		SELECT DATE_FORMAT(create_time,'%Y-%m-%d') countDate,SUM(coin_money)
+		countSum,SUM(beans_money+seller_beans_money) countNum
+		FROM b_live_wallet_record
+		WHERE
+		wallet_id = #{walletId}
+		AND rtype = 2
+		<if test="sdate != null">
+			AND DATE_FORMAT(create_time,'%Y-%m-%d') &gt;=
+			DATE_FORMAT('${sdate}','%Y-%m-%d')
+		</if>
+		<if test="edate != null">
+			AND DATE_FORMAT(create_time,'%Y-%m-%d') &lt;=
+			DATE_FORMAT('${edate}','%Y-%m-%d')
+		</if>
+		GROUP BY
+		DATE_FORMAT(create_time,'%Y-%m-%d')
+		ORDER BY create_time DESC
+		LIMIT
+		${pageNo*pageSize},${pageSize}
+	</select>
+	
+	<!-- 统计鸟豆消费总额 -->
+	<select id="sumBeans" parameterType="map" resultType="java.lang.Long">
+		SELECT  IFNULL(SUM(coin_money),0) as coinMoney
+		FROM b_live_wallet_record
+		WHERE
+		wallet_id = #{walletId}
+		AND coin_money > 0
+		<if test="listType != null">
+			<choose>
+				<when test="listType == 1">
+					AND q_coin_money > h_coin_money
+				</when>
+				<when test="listType ==2">
+					AND h_coin_money > q_coin_money
+				</when>
+				<when test="listType ==3">
+					AND 1=0
+				</when>
+				<when test="listType ==4">
+					AND 1=0
+				</when>
+			</choose>
+		</if>
+		<if test="sdate != null">
+			AND DATE_FORMAT(create_time,'%Y-%m-%d') &gt;=
+			DATE_FORMAT('${sdate}','%Y-%m-%d')
+		</if>
+		<if test="edate != null">
+			AND DATE_FORMAT(create_time,'%Y-%m-%d') &lt;=
+			DATE_FORMAT('${edate}','%Y-%m-%d')
+		</if>
+	</select>
+	
+	<!-- 统计鸟币消费总额 -->
+	<select id="sumBirdB" parameterType="map" resultType="java.math.BigDecimal">
+		SELECT  IFNULL(cast(SUM(ABS(beans_money)+ABS(seller_beans_money)) as decimal(10,2)),0) as coinMoney
+		from b_live_wallet_record record join b_live_wallet wallet on  record.wallet_id= wallet.id
+		where 1=1
+		<include refid="RecordListWhereSQL"></include>
+	</select>
+
+
+
+
+	<!-- 获取每日鸟豆消费列表 -->
+	<select id="BeansDetailByDay" parameterType="map" resultType="map">
+		SELECT coin_money beansMoney,beans_money+seller_beans_money coinMoney
+		,DATE_FORMAT(create_time,'%Y-%m-%d') createTime
+		,remarks,description
+		FROM b_live_wallet_record
+		WHERE wallet_id =
+		#{walletId}
+		AND DATE_FORMAT(create_time,'%Y-%m-%d') = #{date}
+		AND rtype = 2
+		ORDER BY create_time DESC
+		<if test="pageNo != null">
+		LIMIT
+		${pageNo*pageSize},${pageSize}
+		</if>
+	</select>
+	
+	<!-- 统计鸟蛋收入总额-->
+	<select id="countIncomeBirdegg" parameterType="map" resultType="map">
+		SELECT SUM(egg_money) countSum
+		FROM b_live_wallet_record
+		WHERE wallet_id = #{walletId}
+		<if test="sdate != null">
+			AND DATE_FORMAT(create_time,'%Y-%m-%d') &gt;=
+			DATE_FORMAT('${sdate}','%Y-%m-%d')
+		</if>
+		<if test="edate != null">
+			AND DATE_FORMAT(create_time,'%Y-%m-%d') &lt;=
+			DATE_FORMAT('${edate}','%Y-%m-%d')
+		</if>
+		<if test="status != null">
+			AND rtype IN (${status})
+		</if>
+	</select>
+	
+	<!-- 鸟蛋收入列表 -->
+	<select id="BirdeggIncomeList" parameterType="map" resultType="map">
+	SELECT egg_money eggMoney,remarks,DATE_FORMAT(create_time,'%Y-%m-%d %H:%i:%s') createTime
+	FROM b_live_wallet_record
+	WHERE wallet_id = #{walletId}
+		<if test="sdate != null">
+			AND DATE_FORMAT(create_time,'%Y-%m-%d') &gt;=
+			DATE_FORMAT('${sdate}','%Y-%m-%d')
+		</if>
+		<if test="edate != null">
+			AND DATE_FORMAT(create_time,'%Y-%m-%d') &lt;=
+			DATE_FORMAT('${edate}','%Y-%m-%d')
+		</if>
+		<if test="status != null">
+			AND rtype IN (${status})
+		</if> 
+		ORDER BY create_time DESC
+		LIMIT
+		${pageNo*pageSize},${pageSize}
+	</select>
+	
+	<!-- 鸟蛋收入排行榜 -->
+	<select id="birdeggIncomeTop" resultType="map">
+		SELECT
+		FORMAT((@rowNO := @rowNo + 1),0) AS rowNo,
+		<choose>
+			<when test="sdate != null and edate != null">
+				IFNULL((select sum(egg_money) from b_live_wallet_record record where record.wallet_id = a.id and egg_money > 0 and h_egg_money > q_egg_money 
+				AND DATE_FORMAT(record.create_time,'%Y-%m-%d') &gt;= DATE_FORMAT(#{sdate},'%Y-%m-%d')
+				AND DATE_FORMAT(record.create_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{edate},'%Y-%m-%d') ),0) AS birdeggCount,
+			</when>
+			<otherwise>
+				a.turn_egg_out+a.balance AS birdeggCount,
+			</otherwise>
+		</choose>
+		a.uid
+		FROM
+		b_live_wallet a,
+		(SELECT @rowNO := ${pageNo*pageSize}) b
+		WHERE (a.turn_egg_out
+		!= 0
+		OR a.balance !=0)
+		<if test="uid != null and uid != ''">
+		AND a.uid NOT IN (${uid})
+		</if>
+		<if test="uids != null">
+		AND a.uid in 
+		<foreach collection="uids" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+		</if>
+		ORDER BY
+		birdeggCount  DESC
+		LIMIT 
+		${pageNo*pageSize},${pageSize}
+	</select>
+	
+	<!-- 对主播贡献的前三名 -->
+	<select id="topThree" resultType="map">
+		SELECT FORMAT((@rowNO := @rowNo + 1),0) rowNo,b.coinMoney,b.uid
+		FROM (SELECT @rowNO := 0) a,
+		(SELECT SUM(r.coin_money) coinMoney,r.wallet_id,w.uid
+		FROM
+		b_live_wallet w 
+		LEFT JOIN b_live_wallet_record r ON w.id = r.wallet_id
+		WHERE r.anchor_id = #{0}
+		AND rtype IN (2,3,4)
+		GROUP BY r.wallet_id) b
+		ORDER BY b.coinMoney DESC
+		LIMIT 0,3 
+	</select>
+	
+	<select id="birdCoinInDetail" resultType="map">
+		SELECT r.birdBeans,r.birdCoin,r.date,r.rtype
+		FROM
+		(SELECT  SUM(coin_money) birdBeans,SUM(beans_money+seller_beans_money) birdCoin,DATE_FORMAT(create_time,'%Y-%m-%d') date,rtype
+		FROM b_live_wallet_record
+		WHERE wallet_id = #{walletId}
+		AND rtype = 2
+		<!-- AND beans_money !=0 -->
+		GROUP BY DATE_FORMAT(create_time,'%Y-%m-%d')
+		UNION ALL
+		SELECT 0 birdBeans,beans_money+seller_beans_money birdCoin,DATE_FORMAT(create_time,'%Y-%m-%d %H:%i') date,rtype
+		FROM b_live_wallet_record
+		WHERE wallet_id = #{walletId}
+		AND rtype IN (14,19)
+		<!-- AND beans_money !=0 -->) r
+		ORDER BY r.date DESC
+		LIMIT 
+		${pageNo*pageSize},${pageSize}
+	</select>
+	
+	<select id="birdCoinOutDetail" resultType="map">
+		SELECT  coin_money birdBeans,beans_money birdCoin,DATE_FORMAT(create_time,'%Y-%m-%d %H:%i') date,rtype
+		FROM b_live_wallet_record
+		WHERE rtype IN(8,15)
+		AND wallet_id = #{walletId}
+		AND beans_money !=0
+		ORDER BY create_time DESC
+		LIMIT 
+		${pageNo*pageSize},${pageSize}
+	</select>
+	
+	<select id="getcoinCount" resultType="map">
+		SELECT IFNULL(SUM(beans_money+seller_beans_money),0.00) total
+		FROM b_live_wallet_record
+		WHERE rtype IN(${status})
+		AND wallet_id = #{walletId}
+	</select>
+	
+	<select id="countUnitTimeEgg" parameterType="map" resultType="java.math.BigDecimal">
+		SELECT IFNULL(SUM(egg_money),0.00)
+		FROM b_live_wallet_record
+		WHERE wallet_id = #{walletId}
+		AND rtype IN(5,6,7,9,10,13)
+		<!-- AND create_time &gt;=#{timeUnit} -->
+		AND  DATE_FORMAT(create_time,'%Y-%m')&gt;=#{date}
+	</select>
+	
+	<select id="countRegister" resultType="long">
+		SELECT COUNT(1)
+		FROM b_live_wallet_record
+		WHERE rtype=16
+		AND wallet_id = #{0}
+	</select>
+	
+	<select id="getUserRecords" parameterType="map" resultType="map">
+		SELECT r.wallet_id walletId,w.uid,r.rtype,r.egg_money eggMoney,r.q_egg_money qeggMoney,r.h_egg_money heggMoney
+		,r.coin_money coinMoney,r.q_coin_money qcoinMoney,r.h_coin_money hcoinMoney,r.beans_money beansMoney
+		,r.q_beans_money qbeansMoney,r.h_beans_money hbeansMoney,r.seller_beans_money sellerBeanMoney
+		,r.q_seller_beans_money qsellerBeanMoney,r.h_seller_beans_money hsellerBeanMoney,r.remarks
+		,r.description,DATE_FORMAT(r.create_time,'%Y-%m-%d %H:%i:%s') createTime
+		FROM b_live_wallet_record r
+		LEFT JOIN b_live_wallet w ON r.wallet_id = w.id
+		WHERE 1=1
+		<if test="uid != null">AND w.uid = #{uid}</if> 
+		<if test="option != null and option == 1">
+			<if test="type != null and type == 1">
+			AND r.h_coin_money-r.q_coin_money&gt;0
+			</if>
+			<if test="type != null and type == 2">
+			AND r.h_beans_money-r.q_beans_money&gt;0
+			</if>
+			<if test="type == null">
+			AND (r.h_coin_money-r.q_coin_money&gt;0
+			OR r.h_beans_money-r.q_beans_money&gt;0)
+			</if>
+		</if>
+		<if test="option != null and option == 2">
+			<if test="type != null and type == 1">
+			AND r.h_coin_money-r.q_coin_money&lt;0
+			</if>
+			<if test="type != null and type == 2">
+			AND r.h_beans_money-r.q_beans_money&lt;0
+			</if>
+			<if test="type == null">
+			AND (r.h_coin_money-r.q_coin_money&lt;0
+			OR r.h_beans_money-r.q_beans_money&lt;0)
+			</if>
+		</if>
+		<if test="option == null">
+			<if test="type != null and type == 1">
+			AND r.coin_money !=0
+		</if>
+		<if test="type != null and type == 2">
+			AND r.beans_money !=0
+		</if>
+		</if>
+		<if test="rtype != null and rtype !=''">
+			AND rtype IN (${rtype})
+		</if>
+		ORDER BY r.create_time DESC
+		limit ${cPage*pageSize},${pageSize}
+	</select>
+	
+	<select id="countUserRecord" parameterType="map" resultType="long">
+		SELECT COUNT(1) total
+		FROM b_live_wallet_record r
+		LEFT JOIN b_live_wallet w ON r.wallet_id = w.id
+		WHERE 1=1
+		<if test="uid != null">AND w.uid = #{uid}</if> 
+		<if test="option != null and option == 1">
+			<if test="type != null and type == 1">
+			AND r.h_coin_money-r.q_coin_money&gt;0
+			</if>
+			<if test="type != null and type == 2">
+			AND r.h_beans_money-r.q_beans_money&gt;0
+			</if>
+			<if test="type == null">
+			AND (r.h_coin_money-r.q_coin_money&gt;0
+			OR r.h_beans_money-r.q_beans_money&gt;0)
+			</if>
+		</if>
+		<if test="option != null and option == 2">
+			<if test="type != null and type == 1">
+			AND r.h_coin_money-r.q_coin_money&lt;0
+			</if>
+			<if test="type != null and type == 2">
+			AND r.h_beans_money-r.q_beans_money&lt;0
+			</if>
+			<if test="type == null">
+			AND (r.h_coin_money-r.q_coin_money&lt;0
+			OR r.h_beans_money-r.q_beans_money&lt;0)
+			</if>
+		</if>
+		<if test="option == null">
+			<if test="type != null and type == 1">
+			AND r.coin_money !=0
+		</if>
+		<if test="type != null and type == 2">
+			AND r.beans_money !=0
+		</if>
+		</if>
+		<if test="rtype != null and rtype !=''">
+			AND rtype IN (${rtype})
+		</if>
+	</select>
+	
+	<select id="getWalletMsgByUid" resultType="map">
+		SELECT CAST(commision AS CHAR) birdBean,CAST(zbalance AS CHAR) birdCoin,CAST(balance AS CHAR) balance,CAST(turn_egg_out AS CHAR) balanceCoin
+		FROM b_live_wallet
+		WHERE uid = #{0}
+	</select>
+	
+	<select id="countCoinRecord" resultType="long">
+		SELECT COUNT(1)
+		FROM b_live_wallet_record
+		WHERE remarks LIKE '${orderNo}%'
+		AND rtype = #{type}
+		<if test="coinType == 1">
+			AND beans_money !=0
+		</if>
+		<if test="coinType == 2">
+			AND seller_beans_money !=0
+		</if>
+	</select>
+	
+	<select id="getbeanCount" resultType="map">
+		SELECT IFNULL(SUM(coin_money),0.00) coinMoney
+		FROM b_live_wallet w 
+		LEFT JOIN b_live_wallet_record r ON  w.id = r.wallet_id  
+		WHERE rtype IN(0)
+		AND uid = #{0}
+	</select>
+
+    <update id="initExchangeCoinAmount" parameterType="map">
+		UPDATE b_live_wallet
+		SET 
+		<if test="availableExchangeCoin!=null and availableExchangeCoin !=''">
+			available_exchange_coin= #{availableExchangeCoin},
+		</if>
+		<if test="usedExchangeCoin!=null and usedExchangeCoin !=''">
+			used_exchange_coin= #{usedExchangeCoin}
+		</if>
+		WHERE uid=#{uid}
+	</update>
+
+
+
+	<update id="updateByPrimaryKeySelective" parameterType="com.xmniao.entity.LiveWallet" >
+		update b_live_wallet
+		<set >
+			<if test="uid != null" >
+				uid = #{uid,jdbcType=INTEGER},
+			</if>
+			<if test="status != null" >
+				status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="balance != null" >
+				balance = #{balance,jdbcType=DECIMAL},
+			</if>
+			<if test="commision != null" >
+				commision = #{commision,jdbcType=DECIMAL},
+			</if>
+			<if test="zbalance != null" >
+				zbalance = #{zbalance,jdbcType=DECIMAL},
+			</if>
+			<if test="sellerCoin != null" >
+				seller_coin = #{sellerCoin,jdbcType=DECIMAL},
+			</if>
+			<if test="turnEggOut != null" >
+				turn_egg_out = #{turnEggOut,jdbcType=DECIMAL},
+			</if>
+			<if test="turnCoinOut != null" >
+				turn_coin_out = #{turnCoinOut,jdbcType=DECIMAL},
+			</if>
+			<if test="cumulativeZbalance != null" >
+				cumulative_zbalance = #{cumulativeZbalance,jdbcType=DECIMAL},
+			</if>
+			<if test="sign != null" >
+				sign = #{sign,jdbcType=VARCHAR},
+			</if>
+			<if test="signType != null" >
+				sign_type = #{signType,jdbcType=INTEGER},
+			</if>
+			<if test="createTime != null" >
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null" >
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="restrictive != null" >
+				restrictive = #{restrictive,jdbcType=VARCHAR},
+			</if>
+			<if test="limitBalance != null" >
+				limit_balance = #{limitBalance,jdbcType=DECIMAL},
+			</if>
+			<if test="availableExchangeCoin != null" >
+				available_exchange_coin = #{availableExchangeCoin,jdbcType=DECIMAL},
+			</if>
+			<if test="usedExchangeCoin != null" >
+				used_exchange_coin = #{usedExchangeCoin,jdbcType=DECIMAL},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+
+    <select id="selectLiveWalletBySelected" resultMap="BaseResultMap"
+            parameterType="com.xmniao.entity.LiveWallet">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM b_live_wallet
+        <where>
+            1=1
+            <if test="uid != null">
+                AND uid = #{uid,jdbcType=INTEGER}
+            </if>
+            <if test="status != null">
+                AND status = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="balance != null">
+                AND balance = #{balance,jdbcType=DECIMAL}
+            </if>
+            <if test="commision != null">
+                AND commision = #{commision,jdbcType=DECIMAL}
+            </if>
+            <if test="zbalance != null">
+                AND zbalance = #{zbalance,jdbcType=DECIMAL}
+            </if>
+            <if test="sellerCoin != null">
+                AND seller_coin = #{sellerCoin,jdbcType=DECIMAL}
+            </if>
+            <if test="turnEggOut != null">
+                AND turn_egg_out = #{turnEggOut,jdbcType=DECIMAL}
+            </if>
+            <if test="turnCoinOut != null">
+                AND turn_coin_out = #{turnCoinOut,jdbcType=DECIMAL}
+            </if>
+            <if test="cumulativeZbalance != null">
+                AND cumulative_zbalance = #{cumulativeZbalance,jdbcType=DECIMAL}
+            </if>
+            <if test="sign != null">
+                AND sign = #{sign,jdbcType=VARCHAR}
+            </if>
+            <if test="signType != null">
+                AND sign_type = #{signType,jdbcType=INTEGER}
+            </if>
+            <if test="createTime != null">
+                AND create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                AND update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="restrictive != null">
+                AND restrictive = #{restrictive,jdbcType=VARCHAR}
+            </if>
+            <if test="limitBalance != null">
+                AND limit_balance = #{limitBalance,jdbcType=DECIMAL}
+            </if>
+            <if test="availableExchangeCoin != null">
+                AND available_exchange_coin = #{availableExchangeCoin,jdbcType=DECIMAL}
+            </if>
+            <if test="usedExchangeCoin != null">
+                AND used_exchange_coin = #{usedExchangeCoin,jdbcType=DECIMAL}
+            </if>
+        </where>
+    </select>
+
+    <!--更新鸟币余额-->
+	<update id="updateZbalance" parameterType="com.xmniao.entity.LiveWallet">
+        UPDATE b_live_wallet
+		SET zbalance = #{newWallet.zbalance},
+			sign = #{newWallet.sign}
+		WHERE 1=1
+			AND status = 1
+			AND sign = #{oldWallet.sign}
+			AND id = #{oldWallet.id}
+            AND zbalance >= #{deductZbalance}
+	</update>
+    <update id="updateLimitBalane">
+        UPDATE b_live_wallet
+        SET limit_balance = #{limitBalacne}
+        WHERE id = #{liveWallet.id}
+    </update>
+
+
+</mapper>

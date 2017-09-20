@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 	
+	http://www.springframework.org/schema/beans/spring-beans-4.1.xsd 
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-4.1.xsd 
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-4.1.xsd 
+	http://www.springframework.org/schema/util 
+	http://www.springframework.org/schema/util/spring-util-4.1.xsd
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-4.1.xsd">
+
+	<!-- 总管理类 如果将lazy-init='false'那么容器启动就会执行调度程序 -->
+	 <bean id="startQuertz" lazy-init="false" autowire="no"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+			  
+		   <!--   <ref bean="timeAutoMentionQuertz" />
+				 <ref bean="timeUpdateRefundStatus" />
+			<ref bean="timeAutoLedgerQuertz"/>
+				 <ref bean="timeSaveWBRecord"/> -->
+				 
+			<!--  	 
+				 <ref bean="timeSaveSellerStatistics"/>
+				 <ref bean="UPaytimeUpdateAgio"/> 	
+				  <ref bean="RongBQtimeUpdateSellerAgio" /> 
+				 <ref bean="LianltimeUpdateAgio"/> 
+				 <ref bean="ShengFTtimeUpdateAgio"/>
+				 <ref bean="KuaiQtimeUpdateAgio"/> 
+				 <ref bean="TongLtimeUpdateAgio"/> 
+			 -->
+				 <!-- 汇付自动查询  不上线 -->
+			    <!--  <ref bean="HuiFtimeUpdateAgio"/> -->
+			</list>
+		</property>
+	</bean> 
+
+	<!-- 自动扫描分账 -->
+	<bean id="autoLedger"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="autoLedgerService" />
+		<property name="targetMethod" value="autoLedger" />
+	</bean>
+	<bean id="timeAutoLedgerQuertz"
+	class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="autoLedger" />
+		<property name="cronExpression" value="0/15 * 1 * * ?" />
+	</bean>
+
+	<!-- 自动扫描提现(每小时，自动扫描提现) -->
+	<bean id="autoMentionJD"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="autoMentionService" />
+		<property name="targetMethod" value="autoMention" />
+	</bean>
+	<bean id="timeAutoMentionQuertz"
+	class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="autoMentionJD" />
+		<property name="cronExpression" value="0 0/1 * * * ?" />
+	</bean>
+	
+		<!-- 分账系统融宝定时查询更新数据类 董杰韬-->
+	<bean id="AutoRongBQUpdata" class="com.xmniao.quartz.impl.AutoRongBQUpdataImpl" >
+	</bean>
+	<!-- 自动扫描融宝代发订单(每小时，自动扫描融宝代发订单) -->
+	<bean id="RongBQupdateSellerAgio"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="AutoRongBQUpdata" />
+		<property name="targetMethod" value="autoMention" />
+	</bean>
+	<bean id="RongBQtimeUpdateSellerAgio"
+	class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="RongBQupdateSellerAgio" />
+		<property name="cronExpression" value="0 0/2 * * * ?" />
+	</bean>
+	
+	<!--  快钱自动查询代付结果 更新提现状态     -->
+	
+	<bean id="AutoKuaiQUpdata" class="com.xmniao.quartz.impl.AutoKuaiQUpdataImpl" >
+	</bean>
+	<!-- 自动扫描快钱代发订单(每小时) -->
+	<bean id="AutoKuaiQUpdataAgio"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="AutoKuaiQUpdata" />
+		<property name="targetMethod" value="autoMention" />
+	</bean>
+	<bean id="KuaiQtimeUpdateAgio"
+	class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="AutoKuaiQUpdataAgio" />
+		<property name="cronExpression" value="0 0/2 * * * ?" />
+	</bean>
+
+	<!-- 定时获取退款中订单的更新状态(每天凌晨2点) -->
+	<bean id="updateRefundStatus"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="autoRefreshRefund" />
+		<property name="targetMethod" value="autoRefreshRefund" />
+	</bean>
+	<bean id="timeUpdateRefundStatus"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="updateRefundStatus" />
+		<property name="cronExpression" value= "0 0 */2 * * ?"/>
+	</bean>
+	
+	<!-- 定时保存钱包余额及当日分账提现记录到钱包余额记录表中 -->
+	<bean id="saveWBRecord"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="autoClassifyBalanceService" />
+		<property name="targetMethod" value="autoClassifyBalance" />
+	</bean>
+	<bean id="timeSaveWBRecord"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="saveWBRecord" />
+		<property name="cronExpression" value= "0 0/3 * * * ?"/>
+	</bean>
+	
+	
+	<!--  U付自动查询代付结果 更新提现状态     -->
+	<bean id="AutoUPayUpdata" class="com.xmniao.quartz.impl.AutoUPayUpdataImpl">
+	</bean>
+	<!-- 自动扫描快钱代发订单(每小时) -->
+	<bean id="AutoUPayUpdataAgio"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="AutoUPayUpdata" />
+		<property name="targetMethod" value="autoMention" />
+	</bean>
+	<bean id="UPaytimeUpdateAgio"
+	class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="AutoUPayUpdataAgio" />
+		<property name="cronExpression" value="0 0/2 * * * ?" />
+	</bean>
+	
+	
+	<!--  盛付通自动查询代付结果 更新提现状态     -->
+	
+	<bean id="AutoShengFTUpdata" class="com.xmniao.quartz.impl.AutoShengFTUpdataImpl">
+	</bean>
+	<bean id="AutoShengFTUpdataAgio"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="AutoShengFTUpdata" />
+		<property name="targetMethod" value="autoMention" />
+	</bean>
+	<bean id="ShengFTtimeUpdateAgio"
+	class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="AutoShengFTUpdataAgio" />
+		<property name="cronExpression" value="0 0/2 * * * ?" />
+	</bean>
+	
+	<!--  通联自动查询代付结果 更新提现状态     -->
+	<bean id="AutoTongLUpdata" class="com.xmniao.quartz.impl.AutoTongLUpdataImpl" >
+	</bean>
+	<bean id="AutoTongLUpdataAgio"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="AutoTongLUpdata" />
+		<property name="targetMethod" value="autoMention" />
+	</bean>
+	<bean id="TongLtimeUpdateAgio"
+	class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="AutoTongLUpdataAgio" />
+		<property name="cronExpression" value="0 0/1 * * * ?" />
+	</bean>
+	
+	<!--  汇付自动查询代付结果 更新提现状态     -->
+	<bean id="AutoHuiFUpdata" class="com.xmniao.quartz.impl.AutoHuiFUpdataImpl" >
+	</bean>
+	<bean id="AutoHuiFUpdataAgio"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="AutoHuiFUpdata" />
+		<property name="targetMethod" value="autoMention" />
+	</bean>
+	<bean id="HuiFtimeUpdateAgio"
+	class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="AutoHuiFUpdataAgio" />
+		<property name="cronExpression" value="0 0/1 * * * ?" />
+	</bean>
+
+	<bean id="AutoLianlUpdata" class="com.xmniao.quartz.impl.AutoLianlUpdataImpl" >
+	</bean>
+	<bean id="AutoLianlUpdataAgio"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="AutoLianlUpdata" />
+		<property name="targetMethod" value="autoMention" />
+	</bean>
+	<bean id="LianltimeUpdateAgio"
+	class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="AutoLianlUpdataAgio" />
+		<property name="cronExpression" value="0 0/2 * * * ?" />
+	</bean>	
+	
+		<!-- 定时保存商家营收分账及提现统计记录到表中 -->
+	<bean id="autoSaveSellerStatistics"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="autoCountSellerFundsService" />
+		<property name="targetMethod" value="autoClassifyBalance" />
+	</bean>
+	<bean id="timeSaveSellerStatistics"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="autoSaveSellerStatistics" />
+		<property name="cronExpression" value= "0 2 0 * * ?"/>
+	</bean>
+</beans>

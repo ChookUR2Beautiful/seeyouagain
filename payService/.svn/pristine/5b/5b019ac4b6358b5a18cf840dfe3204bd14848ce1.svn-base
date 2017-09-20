@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.LiveWalletRecordMapper" >
+  <resultMap id="BaseResultMap" type="com.xmniao.entity.LiveWalletRecord" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="wallet_id" property="walletId" jdbcType="INTEGER" />
+    <result column="live_record_id" property="liveRecordId" jdbcType="INTEGER" />
+    <result column="anchor_id" property="anchorId" jdbcType="INTEGER" />
+    <result column="rtype" property="rtype" jdbcType="INTEGER" />
+    <result column="egg_money" property="eggMoney" jdbcType="DECIMAL" />
+    <result column="q_egg_money" property="qEggMoney" jdbcType="DECIMAL" />
+    <result column="h_egg_money" property="hEggMoney" jdbcType="DECIMAL" />
+    <result column="coin_money" property="coinMoney" jdbcType="DECIMAL" />
+    <result column="q_coin_money" property="qCoinMoney" jdbcType="DECIMAL" />
+    <result column="h_coin_money" property="hCoinMoney" jdbcType="DECIMAL" />
+    <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="beans_money" property="beansMoney" jdbcType="DECIMAL" />
+    <result column="q_beans_money" property="qBeansMoney" jdbcType="DECIMAL" />
+    <result column="h_beans_money" property="hBeansMoney" jdbcType="DECIMAL" />
+    <result column="seller_beans_money" property="sellerBeansMoney" jdbcType="DECIMAL" />
+    <result column="q_seller_beans_money" property="qSellerBeansMoney" jdbcType="DECIMAL" />
+    <result column="h_seller_beans_money" property="hSellerBeansMoney" jdbcType="DECIMAL" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, wallet_id, live_record_id, anchor_id, rtype, egg_money, q_egg_money, h_egg_money, 
+    coin_money, q_coin_money, h_coin_money, remarks, description, beans_money, q_beans_money, 
+    h_beans_money, seller_beans_money, q_seller_beans_money, h_seller_beans_money, create_time, 
+    update_time
+  </sql>
+  
+  <select id="countByRemarks" resultType="java.lang.Long">
+  	 select count(1) from b_live_wallet_record
+  	 where remarks = #{remarks}
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from b_live_wallet_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from b_live_wallet_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.entity.LiveWalletRecord" >
+    insert into b_live_wallet_record (id, wallet_id, live_record_id, 
+      anchor_id, rtype, egg_money, 
+      q_egg_money, h_egg_money, coin_money, 
+      q_coin_money, h_coin_money, remarks, 
+      description, beans_money, q_beans_money, 
+      h_beans_money, seller_beans_money, q_seller_beans_money, 
+      h_seller_beans_money, create_time, update_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{walletId,jdbcType=INTEGER}, #{liveRecordId,jdbcType=INTEGER}, 
+      #{anchorId,jdbcType=INTEGER}, #{rtype,jdbcType=INTEGER}, #{eggMoney,jdbcType=DECIMAL}, 
+      #{qEggMoney,jdbcType=DECIMAL}, #{hEggMoney,jdbcType=DECIMAL}, #{coinMoney,jdbcType=DECIMAL}, 
+      #{qCoinMoney,jdbcType=DECIMAL}, #{hCoinMoney,jdbcType=DECIMAL}, #{remarks,jdbcType=VARCHAR}, 
+      #{description,jdbcType=VARCHAR}, #{beansMoney,jdbcType=DECIMAL}, #{qBeansMoney,jdbcType=DECIMAL}, 
+      #{hBeansMoney,jdbcType=DECIMAL}, #{sellerBeansMoney,jdbcType=DECIMAL}, #{qSellerBeansMoney,jdbcType=DECIMAL}, 
+      #{hSellerBeansMoney,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.entity.LiveWalletRecord" >
+    insert into b_live_wallet_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="walletId != null" >
+        wallet_id,
+      </if>
+      <if test="liveRecordId != null" >
+        live_record_id,
+      </if>
+      <if test="anchorId != null" >
+        anchor_id,
+      </if>
+      <if test="rtype != null" >
+        rtype,
+      </if>
+      <if test="eggMoney != null" >
+        egg_money,
+      </if>
+      <if test="qEggMoney != null" >
+        q_egg_money,
+      </if>
+      <if test="hEggMoney != null" >
+        h_egg_money,
+      </if>
+      <if test="coinMoney != null" >
+        coin_money,
+      </if>
+      <if test="qCoinMoney != null" >
+        q_coin_money,
+      </if>
+      <if test="hCoinMoney != null" >
+        h_coin_money,
+      </if>
+      <if test="remarks != null" >
+        remarks,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="beansMoney != null" >
+        beans_money,
+      </if>
+      <if test="qBeansMoney != null" >
+        q_beans_money,
+      </if>
+      <if test="hBeansMoney != null" >
+        h_beans_money,
+      </if>
+      <if test="sellerBeansMoney != null" >
+        seller_beans_money,
+      </if>
+      <if test="qSellerBeansMoney != null" >
+        q_seller_beans_money,
+      </if>
+      <if test="hSellerBeansMoney != null" >
+        h_seller_beans_money,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="walletId != null" >
+        #{walletId,jdbcType=INTEGER},
+      </if>
+      <if test="liveRecordId != null" >
+        #{liveRecordId,jdbcType=INTEGER},
+      </if>
+      <if test="anchorId != null" >
+        #{anchorId,jdbcType=INTEGER},
+      </if>
+      <if test="rtype != null" >
+        #{rtype,jdbcType=INTEGER},
+      </if>
+      <if test="eggMoney != null" >
+        #{eggMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="qEggMoney != null" >
+        #{qEggMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="hEggMoney != null" >
+        #{hEggMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="coinMoney != null" >
+        #{coinMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="qCoinMoney != null" >
+        #{qCoinMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="hCoinMoney != null" >
+        #{hCoinMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="remarks != null" >
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="beansMoney != null" >
+        #{beansMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="qBeansMoney != null" >
+        #{qBeansMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="hBeansMoney != null" >
+        #{hBeansMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="sellerBeansMoney != null" >
+        #{sellerBeansMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="qSellerBeansMoney != null" >
+        #{qSellerBeansMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="hSellerBeansMoney != null" >
+        #{hSellerBeansMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.entity.LiveWalletRecord" >
+    update b_live_wallet_record
+    <set >
+      <if test="walletId != null" >
+        wallet_id = #{walletId,jdbcType=INTEGER},
+      </if>
+      <if test="liveRecordId != null" >
+        live_record_id = #{liveRecordId,jdbcType=INTEGER},
+      </if>
+      <if test="anchorId != null" >
+        anchor_id = #{anchorId,jdbcType=INTEGER},
+      </if>
+      <if test="rtype != null" >
+        rtype = #{rtype,jdbcType=INTEGER},
+      </if>
+      <if test="eggMoney != null" >
+        egg_money = #{eggMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="qEggMoney != null" >
+        q_egg_money = #{qEggMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="hEggMoney != null" >
+        h_egg_money = #{hEggMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="coinMoney != null" >
+        coin_money = #{coinMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="qCoinMoney != null" >
+        q_coin_money = #{qCoinMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="hCoinMoney != null" >
+        h_coin_money = #{hCoinMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="remarks != null" >
+        remarks = #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="beansMoney != null" >
+        beans_money = #{beansMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="qBeansMoney != null" >
+        q_beans_money = #{qBeansMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="hBeansMoney != null" >
+        h_beans_money = #{hBeansMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="sellerBeansMoney != null" >
+        seller_beans_money = #{sellerBeansMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="qSellerBeansMoney != null" >
+        q_seller_beans_money = #{qSellerBeansMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="hSellerBeansMoney != null" >
+        h_seller_beans_money = #{hSellerBeansMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.entity.LiveWalletRecord" >
+    update b_live_wallet_record
+    set wallet_id = #{walletId,jdbcType=INTEGER},
+      live_record_id = #{liveRecordId,jdbcType=INTEGER},
+      anchor_id = #{anchorId,jdbcType=INTEGER},
+      rtype = #{rtype,jdbcType=INTEGER},
+      egg_money = #{eggMoney,jdbcType=DECIMAL},
+      q_egg_money = #{qEggMoney,jdbcType=DECIMAL},
+      h_egg_money = #{hEggMoney,jdbcType=DECIMAL},
+      coin_money = #{coinMoney,jdbcType=DECIMAL},
+      q_coin_money = #{qCoinMoney,jdbcType=DECIMAL},
+      h_coin_money = #{hCoinMoney,jdbcType=DECIMAL},
+      remarks = #{remarks,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      beans_money = #{beansMoney,jdbcType=DECIMAL},
+      q_beans_money = #{qBeansMoney,jdbcType=DECIMAL},
+      h_beans_money = #{hBeansMoney,jdbcType=DECIMAL},
+      seller_beans_money = #{sellerBeansMoney,jdbcType=DECIMAL},
+      q_seller_beans_money = #{qSellerBeansMoney,jdbcType=DECIMAL},
+      h_seller_beans_money = #{hSellerBeansMoney,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,186 @@
+package com.xmniao.service;
+
+import com.xmniao.entity.manor.PropsRedpackage;
+import com.xmniao.thrift.manor.Result;
+import com.xmniao.thrift.manor.ResultList;
+
+import java.util.List;
+
+/**
+ * 黄金花园service
+ *
+ * @author liyuanbo
+ * @create 2017-06-05 10:14
+ **/
+public interface PropsService {
+    /**
+     * 激活续租庄园
+     *
+     * @param transNo   消费交易号
+     * @param partenUid 用户的父上级ID
+     * @param uid       操作的用户ID
+     * @param type      类型1.激活 2续租
+     */
+    Result activateManor(String transNo, long partenUid, long uid, int type, int number);
+
+    /**
+     * 种花操作
+     */
+    ResultList growFlower(String transNo, long uid, int number);
+
+    /**
+     * 用户领取赠送的鸟币
+     */
+    ResultList receiveUserGiveRedpackage(String transNo, long uid,List<String> trandsNoList);
+
+    /**
+     * 用户领取每日统计的花蜜
+     *
+     * @param transNo 交易号
+     * @param uid     操作的用户ID
+     * @param number  数量
+     */
+    Result receiveEvaryDayNectary(String transNo, long uid, double number);
+
+    /**
+     * 用户领取赠送的蜜罐
+     */
+    ResultList receiveUserGiveNectary(String transNo, long uid);
+
+    /**
+     * 赠送用户花蜜
+     */
+    Result giveUserNectary(String transNo, long uid, long giveUid, int number, int coverValue);
+
+    /**
+     * 统计用户道具
+     *
+     * @param uid 操作的用户ID
+     */
+    ResultList statisticsUserProps(long uid);
+
+    /**
+     * 发送红包
+     *
+     * @param transNo 消费交易号
+     * @param uid     操作的用户ID
+     * @param giveUids 赠送的人用户ID集合
+     * @param number  发送的红包数量
+     * @param amount  发送的红包金额
+     */
+    Result sendPropsRedpackage(String transNo, long uid, List<Long> giveUids, int number, double amount, int type,String phone);
+
+    /**
+     * 获取用户发送的红包历史记录
+     *
+     * @param uid 操作的用户ID
+     */
+    ResultList listUserPropsRedpackageHistoryByUid(long uid, int offset, int limit);
+
+    /**
+     * 获取红包的领取记录
+     *
+     * @param redpackageId 红包ID
+     */
+
+    ResultList listPropsRedpackageRecordByRedpackageId(long redpackageId,long uid );
+
+    /**
+     * 用户领取红包
+     *
+     * @param redpackageId 红包ID
+     * @param uid          领取的用户ID
+     */
+    Result getPropsRedpackage(long redpackageId, long uid);
+
+
+    /**
+     * 获取道具统计数量
+     *
+     * @param uid 操作的用户ID
+     */
+    Result statisticsUserRepertory(long uid);
+
+    /**
+     * 兑换现金红包
+     *
+     * @param transNo            交易号
+     * @param uid                用户ID
+     * @param number             兑换的现金数量
+     * @param moneyRedpackage    兑换的红包额度
+     */
+    Result exchangeMoneyRedpackage(String transNo, long uid, int number,  double moneyRedpackage);
+
+
+    /**
+     * 增加用户的能量总数
+     */
+    Result addUserEnergy(String transNo, long uid, double number, int type);
+
+
+    /**
+     * 获取所有过期的红包
+     */
+    List<PropsRedpackage> getUserExprieRedpackage();
+
+    /**
+     * 购买花苗
+     *
+     * @param transNo 交易号
+     * @param uid     交易的用户ID
+     * @param number  购买的花苗数量
+     * @param month   购买的月数
+     * @param amount  总金额
+     */
+    Result buyFlower(String transNo, long uid, int number, int month, double amount);
+
+    /**
+     * 获取用户的花蜜报表
+     */
+    ResultList nectaryReport(long uid, int offset, int limit);
+
+    /**
+     * 退回用户的红包
+     *
+     * @param redpackageId        红包ID
+     * @param uid                 操作的用户ID
+     * @param singleAmount        红包单个金额
+     * @param serviceChargeProfit 手续费比例
+     * @param totalNumber         红包总个数
+     * @param qhum                未领取的红包个数
+     */
+    Result returnUserSunRedpackage(long redpackageId, long uid, double singleAmount, double serviceChargeProfit, int totalNumber,
+                                    int qhum,String phone,int type,double amount );
+
+    /**
+     * 定时任务种花
+     *
+     * @param transNo 交易号
+     * @param uid     用户ID
+     * @param hours   种花小时数
+     */
+    ResultList timerGrowFlower(String transNo, long uid, int hours);
+
+    /**
+     * 获取所有未种完花的用户
+     * @param hours
+     * @return
+     */
+    ResultList getAllNotFinishGrowUserByHours(int hours);
+
+    /**
+     * 获取当前用户所有未使用的赠送的花苗
+     * @return
+     */
+    ResultList listAllNotUseGiveFlower(long uid);
+
+    /**
+     * 种下级赠送的花苗
+     * @param transNo
+     * @param uid
+     * @param giveUids
+     * @return
+     */
+    Result growGiveFlower(String transNo,long uid ,List<Long> giveUids);
+
+}

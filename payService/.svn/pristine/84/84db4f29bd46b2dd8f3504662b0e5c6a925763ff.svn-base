@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.UpdateWalletBalanceMapper">
+
+	<select id="getWalletByUserId" parameterType="map" resultType="map">
+		select
+		uid,sellerid,jointid,accountid,p_pwd,
+		CAST(amount AS CHAR)amount,
+		CAST(balance AS CHAR)balance,
+		CAST(commision AS CHAR)commision,
+		CAST(zbalance AS CHAR)zbalance,
+		CAST(integral AS CHAR)integral,
+		quota,sign,sign_Type,
+		CAST(seller_amount AS CHAR)seller_amount
+		from b_wallet where 1=1
+		<if test="userType==1">
+			and uid=#{uId}
+		</if>
+		<if test="userType==2">
+			and sellerid=#{uId}
+		</if>
+		<if test="userType==3">
+			and jointid=#{uId}
+		</if>
+		for update
+	</select>
+
+	<!-- <select id="getWalletByUid" parameterType="map" resultType="map"> select 
+		uid,sellerid,jointid,accountid,p_pwd,amount,balance,commision,zbalance,integral,quota,sign,sign_Type,seller_amount 
+		from b_wallet where 1=1 <foreach collection="list" item=""> <if test="userType==1"> 
+		and uid=#{uId} </if> <if test="userType==2"> and sellerid=#{uId} </if> <if 
+		test="userType==3"> and jointid=#{uId} </if> </foreach> </select> -->
+
+	<update id="updateBalanceType" parameterType="map">
+		update b_wallet set
+		<trim suffixOverrides=",">
+			<if test="sign != null and sign != ''">
+				sign = #{sign},
+			</if>
+			<if test="commision != '0.00'">
+				commision = #{commision_d},
+			</if>
+			<if test="balance != '0.00'">
+				balance = #{balance_d},
+			</if>
+			<if test="income != '0.00'">
+				seller_amount=#{seller_amount_d},
+			</if>
+			<if test="zbalance != '0.00'">
+				zbalance = #{zbalance_d}
+			</if>
+		</trim>
+		where 1=1
+		<if test="userType==1">
+			and uid=#{uId}
+		</if>
+		<if test="userType==2">
+			and sellerid=#{uId}
+		</if>
+		<if test="userType==3">
+			and jointid=#{uId}
+		</if>
+		<if test="oldSign!=null and oldSign!=''">
+			and sign = #{oldSign}
+		</if>
+	</update>
+
+	<!-- <update id="updateBalanceType" parameterType="java.util.List"> <foreach 
+		collection="list" item="item" index="index" separator=";" > update b_wallet 
+		set <trim suffixOverrides=","> <if test="item.sign != null and item.sign 
+		!= ''"> sign = #{item.sign}, </if> <if test="item.commision != '0.00'"> commision 
+		= #{item.commision_d}, </if> <if test="item.balance != '0.00'"> balance = 
+		#{item.balance_d}, </if> <if test="item.income != '0.00'"> seller_amount=#{item.seller_amount_d}, 
+		</if> <if test="item.zbalance != '0.00'"> zbalance = #{item.zbalance_d} </if> 
+		</trim> where 1=1 <if test="item.userType==1"> and uid=#{item.uId} </if> 
+		<if test="item.userType==2"> and sellerid=#{item.uId} </if> <if test="item.userType==3"> 
+		and jointid=#{item.uId} </if> <if test="item.oldSign!=null and item.oldSign!=''"> 
+		and sign = #{item.oldSign} </if> </foreach> </update> -->
+
+	<!-- 插入分账记录 -->
+	<insert id="insertWalletRecord" parameterType="map"
+		useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+		insert into b_wallet_record
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="accountid != null">
+				accountid,
+			</if>
+			<if test="rtype != null">
+				rtype,
+			</if>
+			<if test="balance != null">
+				balance,
+			</if>
+			<if test="qrebate != null">
+				qrebate,
+			</if>
+			<if test="hrebate != null">
+				hrebate,
+			</if>
+			<if test="commision != null">
+				commision,
+			</if>
+			<if test="qcommision != null">
+				qcommision,
+			</if>
+			<if test="hcommision != null">
+				hcommision,
+			</if>
+			<if test="income != null">
+				income,
+			</if>
+			<if test="qincome != null">
+				qincome,
+			</if>
+			<if test="hincome != null">
+				hincome,
+			</if>
+			<if test="zbalance != null">
+				zbalance,
+			</if>
+			<if test="qzbalance != null">
+				qzbalance,
+			</if>
+			<if test="hzbalance != null">
+				hzbalance,
+			</if>
+			<if test="amount != null">
+				amount,
+			</if>
+			<if test="qamount != null">
+				qamount,
+			</if>
+			<if test="hamount != null">
+				hamount,
+			</if>
+			<if test="Integral != null">
+				Integral,
+			</if>
+			<if test="qIntegral != null">
+				qIntegral,
+			</if>
+			<if test="hIntegral != null">
+				hIntegral,
+			</if>
+			<if test="sdate != null">
+				sdate,
+			</if>
+			<if test="ledgerType != null">
+				remarks,
+			</if>
+			<if test="remark != null">
+				description,
+			</if>
+			<if test="expenses != null">
+				expenses,
+			</if>
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="accountid != null">
+				#{accountid},
+			</if>
+			<if test="rtype != null">
+				#{rtype},
+			</if>
+			<if test="balance != null">
+				#{balance},
+			</if>
+			<if test="qrebate != null and balance != 0 and balance != 0.0">
+				#{qrebate},
+			</if>
+			<if test="qrebate != null and balance == 0 and balance == 0.0">
+				0,
+			</if>
+			<if test="hrebate != null and balance != 0 and balance != 0.0">
+				#{hrebate},
+			</if>
+			<if test="hrebate != null and balance == 0 and balance == 0.0">
+				0,
+			</if>
+			<if test="commision != null">
+				#{commision},
+			</if>
+			<if test="qcommision != null and commision != 0 and commision != 0.0">
+				#{qcommision},
+			</if>
+			<if test="qcommision != null and commision == 0 and commision == 0.0">
+				0,
+			</if>
+			<if test="hcommision != null and commision != 0 and commision != 0.0">
+				#{hcommision},
+			</if>
+			<if test="hcommision != null and commision == 0 and commision == 0.0">
+				0,
+			</if>
+			<if test="income != null">
+				#{income},
+			</if>
+			<if test="qincome != null and income != 0 and income != 0.0">
+				#{qincome},
+			</if>
+			<if test="qincome != null and income == 0 and income == 0.0">
+				0,
+			</if>
+			<if test="hincome != null and income != 0 and income != 0.0">
+				#{hincome},
+			</if>
+			<if test="hincome != null and income == 0 and income == 0.0">
+				0,
+			</if>
+			<if test="zbalance != null">
+				#{zbalance},
+			</if>
+			<if test="qzbalance != null and zbalance != 0 and zbalance != 0.0">
+				#{qzbalance},
+			</if>
+			<if test="qzbalance != null and zbalance == 0 and zbalance == 0.0">
+				0,
+			</if>
+			<if test="hzbalance != null and zbalance != 0 and zbalance != 0.0">
+				#{hzbalance},
+			</if>
+			<if test="hzbalance != null and zbalance == 0 and zbalance == 0.0">
+				0,
+			</if>
+			<if test="amount != null">
+				#{amount},
+			</if>
+			<if test="qamount != null and amount != 0 and amount != 0.0">
+				#{qamount},
+			</if>
+			<if test="qamount != null and amount == 0 and amount == 0.0">
+				0,
+			</if>
+			<if test="hamount != null and amount != 0 and amount != 0.0">
+				#{hamount},
+			</if>
+			<if test="hamount != null and amount == 0 and amount == 0.0">
+				0,
+			</if>
+			<if test="Integral != null">
+				#{Integral},
+			</if>
+			<if test="qIntegral != null and Integral != 0 and Integral != 0.0">
+				#{qIntegral},
+			</if>
+			<if test="qIntegral != null and Integral == 0 and Integral == 0.0">
+				0,
+			</if>
+			<if test="hIntegral != null and Integral != 0 and Integral != 0.0">
+				#{hIntegral},
+			</if>
+			<if test="hIntegral != null and Integral == 0 and Integral == 0.0">
+				0,
+			</if>
+			<if test="sdate != null">
+				#{sdate},
+			</if>
+			<if test="ledgerType != null">
+				'${orderId}_${ledgerType}',
+			</if>
+			<if test="remark != null">
+				#{remark},
+			</if>
+			<if test="expenses != null">
+				#{expenses},
+			</if>
+		</trim>
+	</insert>
+
+	<!-- 插入分账记录（新）insertWR -->
+	<insert id="insertWR" parameterType="java.util.List"
+		useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID() as ID
+		</selectKey>
+		insert into b_wallet_record
+		(accountid, rtype, balance, qrebate,
+		hrebate, commision,qcommision,
+		hcommision, income, qincome, hincome,
+		zbalance, qzbalance, hzbalance, amount, qamount,
+		hamount,
+		Integral,qIntegral, hIntegral, sdate, remarks, description,expenses)
+		values
+		<foreach collection="list" item="item" separator="," index="index">
+			(#{item.accountid}, #{item.rtype}, #{item.balance},
+			<if test="item.balance != 0">
+				#{item.qrebate}, #{item.hrebate},
+			</if>
+			<if test="item.balance == 0">
+				0,0,
+			</if>
+			#{item.commision},
+			<if test="item.commision != 0">
+				#{item.qcommision}, #{item.hcommision},
+			</if>
+			<if test="item.commision == 0">
+				0,0,
+			</if>
+			#{item.income},
+			<if test="item.income != 0">
+				#{item.qincome},#{item.hincome},
+			</if>
+			<if test="item.income == 0">
+				0,0,
+			</if>
+			#{item.zbalance},
+			<if test="item.zbalance != 0">
+				#{item.qzbalance}, #{item.hzbalance},
+			</if>
+			<if test="item.zbalance == 0">
+				0,0,
+			</if>
+			#{item.amount},
+			<if test="item.amount != 0">
+				#{item.qamount}, #{item.hamount},
+			</if>
+			<if test="item.amount == 0">
+				0,0,
+			</if>
+			#{item.Integral},
+			<if test="item.Integral != 0">
+				#{item.qIntegral}, #{item.hIntegral},
+			</if>
+			<if test="item.Integral == 0">
+				0,0,
+			</if>
+			#{item.sdate},
+			'${item.orderId}_${item.ledgerType}', #{item.remark},#{item.expenses})
+		</foreach>
+	</insert>
+
+
+	<!-- 查询钱包记录是否重复 -->
+	<select id="getWRCount" resultType="int" parameterType="map">
+		SELECT
+		COUNT(id) FROM `b_wallet_record` WHERE accountid = #{accountId} AND
+		remarks = '${orderId}_${ledgerType}' AND rtype = #{rtype}
+	</select>
+</mapper>

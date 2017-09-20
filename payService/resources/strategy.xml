@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<strategies xmlns="http://www.99bill.com/schema/asap/strategy"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commons="http://www.99bill.com/schema/asap/commons"
+	xsi:schemaLocation="http://www.99bill.com/schema/asap/strategy http://www.99bill.com/schema/asap/strategy.xsd
+http://www.99bill.com/schema/asap/commons http://www.99bill.com/schema/asap/commons.xsd">
+
+
+
+	<strategy>
+		<mpf>
+			<commons:member-code>10024322312</commons:member-code>
+			<commons:feature-code>F889</commons:feature-code>
+		</mpf>
+		<crypto-strategy>
+			<type>signatureAndCrypto</type>
+			<available>true</available>
+			<algorithm-set>
+				<signature-alg>SHA1withRSA</signature-alg>
+				<symmetric-alg>AES/CBC/PKCS5Padding</symmetric-alg>
+				<asymmetric-alg>RSA/ECB/PKCS1Padding</asymmetric-alg>
+			</algorithm-set>
+		</crypto-strategy>
+		<key-strategy>
+			<bill99-public-key-file-path>99bill.cert.rsa.20340630.cer</bill99-public-key-file-path>
+			<mpf-keystore>
+				<path>99bill-rsa.pfx</path>
+				<key-store-type>PKCS12</key-store-type>
+				<key-store-password>xmniao123456</key-store-password>
+				<alias>test-alias</alias>
+				<key-password>xmniao123456</key-password>
+			</mpf-keystore>
+		</key-strategy>
+	</strategy>
+
+	<!-- <strategy> <mpf> <commons:member-code>10012138842</commons:member-code> 
+		<commons:feature-code>F889</commons:feature-code> </mpf> <crypto-strategy> 
+		<type>signatureAndCrypto</type> <available>true</available> <algorithm-set> 
+		<signature-alg>SHA1withRSA</signature-alg> <symmetric-alg>AES/CBC/PKCS5Padding</symmetric-alg> 
+		<asymmetric-alg>RSA/ECB/PKCS1Padding</asymmetric-alg> </algorithm-set> </crypto-strategy> 
+		<key-strategy> <bill99-public-key-file-path>99bill[1].cert.rsa.20140803.cer</bill99-public-key-file-path> 
+		<mpf-keystore> <path>xtest001-rsa.pfx</path> <key-store-type>PKCS12</key-store-type> 
+		<key-store-password>x001.</key-store-password> <alias>xtest001</alias> <key-password>x001.</key-password> 
+		</mpf-keystore> </key-strategy> </strategy> -->
+
+	<!-- <strategy> <mpf> <commons:member-code>10011629536</commons:member-code> 
+		<commons:feature-code>F888</commons:feature-code> </mpf> <crypto-strategy> 
+		<type>signatureAndCrypto</type> <available>true</available> <algorithm-set> 
+		<signature-alg>SHA1withRSA</signature-alg> <symmetric-alg>AES/CBC/PKCS5Padding</symmetric-alg> 
+		<asymmetric-alg>RSA/ECB/PKCS1Padding</asymmetric-alg> </algorithm-set> </crypto-strategy> 
+		<key-strategy> <md-key>E5NDU5TU9DF5J5KD</md-key> <bill99-public-key-file-path>99bill[1].cert.rsa.20110504.cer</bill99-public-key-file-path> 
+		<mpf-keystore> <path>des3tester.pfx</path> <key-store-type>PKCS12</key-store-type> 
+		<key-store-password>1234</key-store-password> <alias>tester</alias> <key-password>1234</key-password> 
+		</mpf-keystore> </key-strategy> </strategy> <strategy> <mpf> <commons:member-code>10011629543</commons:member-code> 
+		<commons:feature-code>F888</commons:feature-code> </mpf> <crypto-strategy> 
+		<type>messageDigest</type> <algorithm-set> <digest-alg>md5</digest-alg> </algorithm-set> 
+		</crypto-strategy> <key-strategy> <md-key>3DNY86HE5TGHC28J</md-key> </key-strategy> 
+		</strategy> <strategy> <mpf> <commons:member-code>10011629543</commons:member-code> 
+		<commons:feature-code>F889</commons:feature-code> </mpf> <crypto-strategy> 
+		<type>messageDigest</type> <algorithm-set> <digest-alg>md5</digest-alg> </algorithm-set> 
+		</crypto-strategy> <key-strategy> <md-key>H8EC88KSNF3JUZZY</md-key> </key-strategy> 
+		</strategy> -->
+</strategies>

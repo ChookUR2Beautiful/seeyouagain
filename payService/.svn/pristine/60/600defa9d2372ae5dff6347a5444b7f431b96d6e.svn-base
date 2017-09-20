@@ -1,0 +1,244 @@
+/**    
+ * 文件名：ManorRelatedServiceImpl.java    
+ *    
+ * 版本信息：    
+ * 日期：2017年6月15日    
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司  2017     
+ * 版权所有    
+ *    
+ */
+package com.xmniao.service.pay.manor;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.apache.thrift.TException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.xmniao.common.MapBeanUtil;
+import com.xmniao.dao.manor.ManorRelatedMapper;
+import com.xmniao.dao.manor.ManorSunshineProfitMapper;
+import com.xmniao.dao.manor.SunshineManagerMapper;
+import com.xmniao.entity.manor.ManorSunshineProfit;
+import com.xmniao.entity.manor.PropsRecord;
+import com.xmniao.entity.manor.SunshineManager;
+import com.xmniao.enums.PropsChannelEnum;
+import com.xmniao.thrift.ledger.FailureException;
+import com.xmniao.thrift.ledger.ResponseData;
+import com.xmniao.thrift.ledger.ResponsePageList;
+import com.xmniao.thrift.manor.ManorRelatedService;
+
+/**
+ * 
+ * 项目名称：payService
+ * 
+ * 类名称：ManorRelatedServiceImpl
+ * 
+ * 类描述： 黄金庄园周边服务类
+ * 
+ * 创建人： Chen Bo
+ * 
+ * 创建时间：2017年6月15日 下午6:24:00 
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司 
+ */
+@Service("manorRelatedServiceImpl")
+public class ManorRelatedServiceImpl implements ManorRelatedService.Iface{
+
+    private final Logger log = Logger.getLogger(getClass());
+
+    @Autowired
+    private ManorSunshineProfitMapper sunshineProfitMapper;
+    
+    @Autowired
+    private ManorRelatedMapper manorRelatedMapper;
+    
+    @Autowired
+    private SunshineManagerMapper sunshineManagerMapper;
+    
+	@Override
+	public ResponsePageList getSunshineRecord(Map<String, String> paraMap)
+			throws FailureException, TException {
+		log.info("获取庄园的阳光流水记录:"+paraMap);
+		ResponsePageList responsePageList = new ResponsePageList();
+		ResponseData responseData = null;
+		List<Map<String,String>> resultList= new ArrayList<>();
+		Map<String,String> resultMap = new HashMap<>();
+		if(!paraMap.containsKey("cPage")){
+			paraMap.put("cPage", "0");
+		}else{
+			paraMap.put("cPage", (Integer.parseInt(paraMap.get("cPage"))-1)+"");
+		}
+		if(!paraMap.containsKey("pageSize")){
+			paraMap.put("pageSize", "10");
+		}
+		try{
+			List<PropsRecord> list = manorRelatedMapper.getSunshineRecord(paraMap);
+			long count = manorRelatedMapper.countSunshineRecord(paraMap);
+			for(PropsRecord propsRecord:list){
+				Map<String,String> map = MapBeanUtil.convertMap(propsRecord,"uid","remark","type","channel","common","num","createTime" );
+				map.put("title", PropsChannelEnum.getName(propsRecord.getType()));
+				resultList.add(map);
+			}
+			resultMap.put("count", count+"");
+			responseData = new ResponseData(0,"获取成功",resultMap);
+		}catch(Exception e){
+			log.error("获取异常",e);
+			responseData = new ResponseData(1,"获取异常",null);
+		}	
+		responsePageList.setDataInfo(responseData);
+		responsePageList.setPageList(resultList);
+		return responsePageList;
+	}
+
+	
+	@Transactional(rollbackFor={Exception.class,FailureException.class})
+	@Override
+	public ResponseData updateSunshineProfit(List<Map<String, String>> paralist)
+			throws FailureException, TException {
+		try{
+			List<ManorSunshineProfit> list = new ArrayList<>();
+			for(Map<String,String> para:paralist){
+				ManorSunshineProfit profit = MapBeanUtil.convert2Bean(para, ManorSunshineProfit.class);
+				list.add(profit);
+			}
+			sunshineProfitMapper.deleteAll();
+			sunshineProfitMapper.insertBatch(list);
+		}catch(Exception e){
+			log.error("更新异常",e);
+			throw new FailureException();
+		}
+		return new ResponseData(0, "成功", null);
+	}
+
+	
+	@Override
+	public ResponsePageList getSunshineProfit() throws FailureException,
+			TException {
+		ResponsePageList responsePageList = new ResponsePageList();
+		ResponseData responseData =null;
+		List<Map<String,String>> pageList = new ArrayList<>();
+		try{
+			List<ManorSunshineProfit> list = sunshineProfitMapper.getList();
+			for(ManorSunshineProfit profit:list){
+				pageList.add(MapBeanUtil.convertMap(profit, "id","baseNumber","profit"));
+			}
+			Map<String,String> resultMap = new HashMap<>();
+			resultMap.put("count", list.size()+"");
+			responseData = new ResponseData(0, "成功", resultMap);
+		}catch(Exception e){
+			log.error("获取阳光收益配置列表异常",e);
+			responseData = new ResponseData(1, "获取阳光收益配置列表异常", null);
+		}
+		responsePageList.setDataInfo(responseData);
+		responsePageList.setPageList(pageList);
+		return responsePageList;
+	}
+
+	
+	@Override
+	public ResponseData getProfitForSunshine(int sunshine)
+			throws FailureException, TException {
+		Map<String,String> resultMap = null;
+		try{
+			ManorSunshineProfit profit = sunshineProfitMapper.get(sunshine);
+			if(profit!=null){
+				resultMap = MapBeanUtil.convertMap(profit, "id","baseNumber","profit");
+			}
+		}catch(Exception e){
+			log.error("获取异常",e);
+			return new ResponseData(1, "获取异常", null);
+		}
+		return new ResponseData(0, "获取成功", resultMap);
+	}
+
+	/**
+	 * 获取庄园的兑换记录
+	 */
+	@Override
+	public ResponsePageList getConvertRecord(Map<String, String> paraMap)
+			throws FailureException, TException {
+		log.info("获取庄园的兑换记录:"+paraMap);
+		ResponsePageList responsePageList = new ResponsePageList();
+		ResponseData responseData = null;
+		List<Map<String,String>> resultList= new ArrayList<>();
+		Map<String,String> resultMap = new HashMap<>();
+		
+		if(!paraMap.containsKey("cPage")){
+			paraMap.put("cPage", "0");
+		}else{
+			paraMap.put("cPage", (Integer.parseInt(paraMap.get("cPage"))-1)+"");
+		}
+		if(!paraMap.containsKey("pageSize")){
+			paraMap.put("pageSize", "10");
+		}
+		if(!paraMap.containsKey("channel")){
+			paraMap.put("channel", PropsChannelEnum.EXCHANGE_VOUCHER.getChannel()+"," + PropsChannelEnum.EXCHANGE_MONEY_REDPACKAGE.getChannel());
+		}
+		try{
+			List<PropsRecord> list = manorRelatedMapper.getConvertRecord(paraMap);
+			long count = manorRelatedMapper.countConvertRecord(paraMap);
+			for(PropsRecord propsRecord:list){
+				Map<String,String> map =MapBeanUtil.convertMap(propsRecord,"uid","remark","type","channel","common","num","createTime","exchangeAmount","exchangeNumber" );
+				map.put("title", PropsChannelEnum.getName(propsRecord.getType()));
+				resultList.add(map);
+			}
+			resultMap.put("count", count+"");
+			responseData = new ResponseData(0,"获取成功",resultMap);
+		}catch(Exception e){
+			log.error("获取异常",e);
+			responseData = new ResponseData(1,"获取异常",null);
+		}	
+		responsePageList.setDataInfo(responseData);
+		responsePageList.setPageList(resultList);
+		return responsePageList;
+	}
+
+
+	
+	@Override
+	public ResponseData getSunshineManage() throws FailureException, TException {
+		try{
+			Map<String,String> resultMap = new HashMap<>();
+			SunshineManager sunshineManage =  sunshineManagerMapper.getSunshineManager();
+			if(sunshineManage==null){
+				sunshineManage = new SunshineManager();
+			}
+			resultMap.put("handselNumber", sunshineManage.getHandsleNumber()+"");
+			resultMap.put("recommendNumber", sunshineManage.getRecommendNumber()+"");
+			resultMap.put("isSpendEnergy", sunshineManage.getSpendEnergy()+"");
+			resultMap.put("spendEnergyNumber", sunshineManage.getSpendEnergyNumber()+"");
+			return new ResponseData(0, "查询成功", resultMap);
+		}catch(Exception e){
+			log.error("获取异常",e);
+			return new ResponseData(1, "查询异常", null);
+		}
+	}
+
+
+	
+	@Override
+	public ResponseData updateSunshineManage(Map<String, String> paraMap)
+			throws FailureException, TException {
+		try{
+			SunshineManager sunshineManage = new SunshineManager();
+			sunshineManage.setHandsleNumber(Integer.parseInt(paraMap.get("handselNumber")));
+			sunshineManage.setRecommendNumber(Integer.parseInt(paraMap.get("recommendNumber")));
+			sunshineManage.setSpendEnergy(Integer.parseInt(paraMap.get("isSpendEnergy")));
+			sunshineManage.setSpendEnergyNumber(Integer.parseInt(paraMap.get("spendEnergyNumber")));
+			int result = sunshineManagerMapper.updateSunshineManager(sunshineManage);
+			if(result==0){
+				sunshineManagerMapper.insertSunshineManager(sunshineManage);
+			}
+			return new ResponseData(0, "更新成功", null);
+		}catch(Exception e){
+			log.error("更新异常",e);
+			return new ResponseData(1, "更新失败", null);
+		}
+	}
+
+}

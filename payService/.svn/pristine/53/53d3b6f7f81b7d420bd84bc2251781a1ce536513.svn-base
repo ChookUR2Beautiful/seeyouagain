@@ -1,0 +1,118 @@
+package com.xmniao.service.msg.manor;
+
+import java.io.UnsupportedEncodingException;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.rocketmq.client.exception.MQBrokerException;
+import com.alibaba.rocketmq.client.exception.MQClientException;
+import com.alibaba.rocketmq.client.producer.DefaultMQProducer;
+import com.alibaba.rocketmq.client.producer.SendResult;
+import com.alibaba.rocketmq.common.message.Message;
+import com.alibaba.rocketmq.remoting.exception.RemotingException;
+import com.xmniao.common.OSUtil;
+import com.xmniao.entity.MQMsgConfig;
+
+/**
+ * 黄金庄园消息生产者
+ * 
+ * @author ChenBo
+ * 
+ */
+public class ManorProducer {
+
+	/** 日志记录 */
+	private final Logger log = Logger.getLogger(ManorProducer.class);
+	/** 黄金庄园消息生产者 */
+	private DefaultMQProducer producer;
+	
+	private MQMsgConfig mqMsgConfig=new MQMsgConfig();
+
+	/** 分账消息生产实例 */
+	private String manorInstance="";
+	
+	/** 消费者组、消费者实例标识 */
+	private String producerIdent;
+	
+	/**
+	 * 初始化生产者、消息
+	 */
+	public void init() {
+
+		producer = new DefaultMQProducer();
+
+
+
+		/* 判断是否开启集群 */
+		if ("0".equals(mqMsgConfig.getCluster())) {
+			producerIdent = mqMsgConfig.getIdentityPay();
+		} else {
+			producerIdent = OSUtil.getLocalIP_();
+		}
+
+		/* 生产者组名 */
+		producer.setProducerGroup(mqMsgConfig.getProducerGroup()
+				+ producerIdent);
+		/* 生产者实例名 */
+		producer.setInstanceName(manorInstance + "_"
+				+ producerIdent+"_"+OSUtil.getPid());
+		/* 消息服务器地址 */
+		producer.setNamesrvAddr(mqMsgConfig.getNamesrvAddr());
+		try {
+			producer.start();
+		} catch (MQClientException e) {
+			log.error("分账生存者初始化异常", e);
+		}
+
+		log.info("黄金庄园返回消息生产配置：   " + "   group:" + producer.getProducerGroup()
+				+ "   instance:" + producer.getInstanceName());
+	}
+
+	/**
+	 * 发送庄园返回消息
+	 * 
+	 * @param paramMap
+	 *            orderNumber status message platform_code userType
+	 */
+	public void returnBackMsg(String topic,String tag,Object obj)
+			throws UnsupportedEncodingException, MQClientException,
+			RemotingException, MQBrokerException, InterruptedException {
+
+		topic = topic+producerIdent;
+		String body = JSON.toJSONString(obj); // 消息主体
+		Message msg = new Message(topic, tag, body.getBytes("UTF-8"));
+		
+		// 发送消息
+		SendResult sendResult = producer.send(msg);
+		log.info("成功发送庄园返回信息:" + body);
+		log.info("成功发送庄园返回信息:" + msg.getTopic()+","+msg.getTags()+","+msg.getKeys());
+		log.info(sendResult);
+	}
+
+	/**
+	 * 注销生产者
+	 */
+	public void shutdown() {
+		log.info("分账消息生产者被注销...");
+		producer.shutdown();
+	}
+
+	public MQMsgConfig getMqMsgConfig() {
+		return mqMsgConfig;
+	}
+
+	public void setMqMsgConfig(MQMsgConfig mqMsgConfig) {
+		this.mqMsgConfig = mqMsgConfig;
+	}
+
+	public String getManorInstance() {
+		return manorInstance;
+	}
+
+	public void setManorInstance(String manorInstance) {
+		this.manorInstance = manorInstance;
+	}
+
+}

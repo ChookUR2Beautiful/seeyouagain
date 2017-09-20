@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.dao.WalletExpansionMapper">
+  <resultMap id="BaseResultMap" type="com.xmniao.entity.WalletExpansion">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="accountid" jdbcType="BIGINT" property="accountid" />
+    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="amount" jdbcType="DECIMAL" property="amount" />
+    <result column="transfer" jdbcType="DECIMAL" property="transfer" />
+    <result column="is_freeze" jdbcType="TINYINT" property="isFreeze" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="sign" jdbcType="VARCHAR" property="sign" />
+    <result column="forbid_transfer" jdbcType="TINYINT" property="forbidTransfer" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="walletExpensesResultMap" type="com.xmniao.entity.WalletExpansion">
+  	<association property="walletExpenses" javaType="com.xmniao.entity.WalletExpenses">
+    	 <id column="expenses_id" jdbcType="BIGINT" property="id" />
+	    <result column="expenses_type" jdbcType="TINYINT" property="type" />
+	    <result column="expenses_rate_type" jdbcType="TINYINT" property="rateType" />
+	    <result column="expenses_rate" jdbcType="DECIMAL" property="rate" />
+    </association>
+  </resultMap>
+  <sql id="Base_Column_List">
+    b_wallet_expansion.id, 
+    b_wallet_expansion.accountid, 
+    b_wallet_expansion.type, 
+    b_wallet_expansion.amount, 
+    b_wallet_expansion.transfer, 
+    b_wallet_expansion.is_freeze, 
+    b_wallet_expansion.create_time, 
+    b_wallet_expansion.modify_time, 
+    b_wallet_expansion.sign,
+    b_wallet_expansion.forbid_transfer
+  </sql>
+  
+  <sql id="Expenses_Column">
+  	expenses.id as expenses_id,
+  	expenses.type as expenses_type,
+  	expenses.rate_type as expenses_rate_type,
+  	expenses.rate as expenses_rate
+  </sql>
+  
+  <select id="getExpansionNo" resultType="java.util.Map">
+  	 select accountid,sum(amount+transfer) as amount  from  b_wallet_expansion  GROUP BY accountid  ORDER BY  amount desc  limit 0,3
+  </select>
+  
+  <update id="updateAmountById" parameterType="com.xmniao.entity.WalletExpansion">
+  		update b_wallet_expansion set 
+  		amount =amount + #{amount},
+  		modify_time = #{modifyTime},
+  		<if test="transfer != null">
+  		transfer = #{transfer},
+  		</if>
+  		sign = #{sign}
+  		where id = #{id} 
+  		and sign = #{oldSign}
+  </update>
+  
+  <select id="getWalletExpansion"  resultMap="BaseResultMap">
+  	 select 
+  	 <include refid="Base_Column_List" />
+  	 from b_wallet_expansion join b_wallet on b_wallet.accountid =b_wallet_expansion.accountid
+  	 where 1=1
+  	 <choose>
+  	 	<when test="uid != null and uid != ''">
+  	 		<if test="typeId == 1">and b_wallet.uid=#{uid}</if>
+			<if test="typeId == 2">and b_wallet.sellerid=#{uid}</if>
+			<if test="typeId == 3">and b_wallet.jointid=#{uid}</if>
+  	 	</when>
+  	 	<when test="accountid != null and accountid != ''">
+  	 		and b_wallet_expansion.accountid = #{accountid}
+  	 	</when>
+  	 </choose>
+  	 	  and b_wallet_expansion.type = #{type}
+  </select>
+  
+  <select id="getWalletExpansionList" resultMap="walletExpensesResultMap">
+  	  select 
+  	 <include refid="Base_Column_List" />,
+  	  <include refid="Expenses_Column" />
+  	 from b_wallet_expansion join b_wallet on b_wallet.accountid =b_wallet_expansion.accountid
+  	 left join b_wallet_expansion_expenses expenses on expenses.type = b_wallet_expansion.type
+  	 where 1=1
+  	 <choose>
+  	 	<when test="uid != null and uid != ''">
+  	 		<if test="typeId == 1">and b_wallet.uid=#{uid}</if>
+			<if test="typeId == 2">and b_wallet.sellerid=#{uid}</if>
+			<if test="typeId == 3">and b_wallet.jointid=#{uid}</if>
+  	 	</when>
+  	 	<when test="accountid != null and accountid != ''">
+  	 		and b_wallet_expansion.accountid = #{accountid}
+  	 	</when>
+  	 </choose>
+  	 <if test="type != null">
+  	 	  and b_wallet_expansion.type in 
+  	 	  <foreach collection="type" item="item" open="(" close=")" separator=",">
+  	 	  	 #{item}
+  	 	  </foreach>
+  	 </if>
+  </select>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from b_wallet_expansion
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from b_wallet_expansion
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.entity.WalletExpansion" useGeneratedKeys="true" keyProperty="id">
+    insert into b_wallet_expansion (accountid, type, 
+      amount, transfer, is_freeze, 
+      create_time, modify_time, sign,forbid_transfer
+      )
+    values (#{accountid,jdbcType=BIGINT}, #{type,jdbcType=TINYINT}, 
+      #{amount,jdbcType=DECIMAL}, #{transfer,jdbcType=DECIMAL}, #{isFreeze,jdbcType=TINYINT}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{modifyTime,jdbcType=TIMESTAMP}, #{sign,jdbcType=VARCHAR},
+      #{forbidTransfer,jdbcType=TINYINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.entity.WalletExpansion">
+    insert into b_wallet_expansion
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="accountid != null">
+        accountid,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="amount != null">
+        amount,
+      </if>
+      <if test="transfer != null">
+        transfer,
+      </if>
+      <if test="isFreeze != null">
+        is_freeze,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="modifyTime != null">
+        modify_time,
+      </if>
+      <if test="sign != null">
+        sign,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="accountid != null">
+        #{accountid,jdbcType=BIGINT},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=TINYINT},
+      </if>
+      <if test="amount != null">
+        #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="transfer != null">
+        #{transfer,jdbcType=DECIMAL},
+      </if>
+      <if test="isFreeze != null">
+        #{isFreeze,jdbcType=TINYINT},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyTime != null">
+        #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sign != null">
+        #{sign,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.entity.WalletExpansion">
+    update b_wallet_expansion
+    <set>
+      <if test="accountid != null">
+        accountid = #{accountid,jdbcType=BIGINT},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=TINYINT},
+      </if>
+      <if test="amount != null">
+        amount = #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="transfer != null">
+        transfer = #{transfer,jdbcType=DECIMAL},
+      </if>
+      <if test="isFreeze != null">
+        is_freeze = #{isFreeze,jdbcType=TINYINT},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyTime != null">
+        modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sign != null">
+        sign = #{sign,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.entity.WalletExpansion">
+    update b_wallet_expansion
+    set accountid = #{accountid,jdbcType=BIGINT},
+      type = #{type,jdbcType=TINYINT},
+      amount = #{amount,jdbcType=DECIMAL},
+      transfer = #{transfer,jdbcType=DECIMAL},
+      is_freeze = #{isFreeze,jdbcType=TINYINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+      sign = #{sign,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

@@ -1,0 +1,3 @@
+eclipse.preferences.version=1
+validator.Checked=src/com/xmniao/common/RTSign.java,WebRoot/WEB-INF/pay-rocketmq.xml,src/com/xmniao/service/impl/ShengPayServiceImpl.java,src/com/xmniao/test/XmerWalleThriftClent.java
+validator.Unchecked=

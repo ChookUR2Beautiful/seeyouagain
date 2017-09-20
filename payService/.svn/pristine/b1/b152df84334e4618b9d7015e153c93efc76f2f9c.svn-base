@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.dao.WalletExpansionRecordMapper">
+  <resultMap id="BaseResultMap" type="com.xmniao.entity.WalletExpansionRecord">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="wallet_expansion_id" jdbcType="BIGINT" property="walletExpansionId" />
+    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="expansion_type" jdbcType="TINYINT" property="expansionType" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="source" jdbcType="VARCHAR" property="source" />
+    <result column="amount" jdbcType="DECIMAL" property="amount" />
+    <result column="qamount" jdbcType="DECIMAL" property="qamount" />
+    <result column="hamount" jdbcType="DECIMAL" property="hamount" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    b_wallet_expansion_record.id, 
+    b_wallet_expansion_record.wallet_expansion_id, 
+    b_wallet_expansion_record.type, 
+    b_wallet_expansion_record.remark, 
+    b_wallet_expansion_record.source, 
+    b_wallet_expansion_record.amount, 
+    b_wallet_expansion_record.qamount, 
+    b_wallet_expansion_record.hamount, 
+    b_wallet_expansion_record.create_time
+  </sql>
+  
+  <select id="sumExpansion" resultType="java.lang.Long">
+  	 select 
+  	 IFNULL(sum(ABS(record.amount)),0)
+  	  from b_wallet_expansion_record record
+  	  join  b_wallet_expansion expansion on record.wallet_expansion_id = expansion.id
+  	  where 
+  	  accountid = #{accountid}
+  	  <if test="listType != null">
+			<choose>
+				<when test="listType ==3">
+					AND record.hamount > record.qamount
+				</when>
+				<otherwise>
+					AND 1=0
+				</otherwise>
+			</choose>
+		</if>
+		<if test="sdate != null">
+			AND DATE_FORMAT(record.create_time,'%Y-%m-%d') &gt;=
+			DATE_FORMAT('${sdate}','%Y-%m-%d')
+		</if>
+		<if test="edate != null">
+			AND DATE_FORMAT(record.create_time,'%Y-%m-%d') &lt;=
+			DATE_FORMAT('${edate}','%Y-%m-%d')
+		</if>
+  </select>
+  
+  <select id="getBySource" resultMap="BaseResultMap">
+       select 
+    <include refid="Base_Column_List" />
+    from b_wallet_expansion_record
+    where source = #{source}
+  </select>
+  
+  <select id="getWalletExpansionRecordList" resultMap="BaseResultMap" >
+  	 select 
+    <include refid="Base_Column_List" />,b_wallet_expansion.type as expansion_type
+    from b_wallet_expansion_record
+     join b_wallet_expansion on b_wallet_expansion.id = b_wallet_expansion_record.wallet_expansion_id 
+  	 join b_wallet on b_wallet.accountid=b_wallet_expansion.accountid 
+  	 <where>
+  	 <choose>
+  	 	<when test="uid != null and uid != ''">
+  	 		<if test="typeId == 1">and b_wallet.uid=#{uid}</if>
+			<if test="typeId == 2">and b_wallet.sellerid=#{uid}</if>
+			<if test="typeId == 3">and b_wallet.jointid=#{uid}</if>
+  	 	</when>
+  	 	<when test="accountid != null and accountid != ''">
+  	 		and b_wallet_expansion.accountid = #{accountid}
+  	 	</when>
+  	 </choose>
+  	 <if test="expansionType != null">
+  	 	 	 and b_wallet_expansion.type in 
+  	 	  <foreach collection="expansionType" item="item" open="(" close=")" separator=",">
+  	 	  	 #{item}
+  	 	  </foreach>
+  	 </if>
+  	 <if test="type != null">
+  	 	 and b_wallet_expansion_record.type = #{type}
+  	 </if>
+  	 <if test="sdate!=null and sdate!=''">
+			AND DATE_FORMAT(b_wallet_expansion_record.create_time,'%Y-%m-%d') &gt;= DATE_FORMAT(#{sdate},'%Y-%m-%d')
+		</if>
+		<if test="edate!=null and edate!=''">
+			AND DATE_FORMAT(b_wallet_expansion_record.create_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{edate},'%Y-%m-%d')
+		</if>
+  	 </where>
+  	 order by create_time desc
+  	 <if test="pageNo != null and pageSize != null">
+  	 	 limit #{pageNo},#{pageSize}
+  	 </if>
+  </select>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from b_wallet_expansion_record
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from b_wallet_expansion_record
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.entity.WalletExpansionRecord">
+    insert into b_wallet_expansion_record (id, wallet_expansion_id, type, 
+      remark, source, amount, 
+      qamount, hamount, create_time
+      )
+    values (#{id,jdbcType=BIGINT}, #{walletExpansionId,jdbcType=BIGINT}, #{type,jdbcType=TINYINT}, 
+      #{remark,jdbcType=VARCHAR}, #{source,jdbcType=VARCHAR}, #{amount,jdbcType=DECIMAL}, 
+      #{qamount,jdbcType=DECIMAL}, #{hamount,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.entity.WalletExpansionRecord">
+    insert into b_wallet_expansion_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="walletExpansionId != null">
+        wallet_expansion_id,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="source != null">
+        source,
+      </if>
+      <if test="amount != null">
+        amount,
+      </if>
+      <if test="qamount != null">
+        qamount,
+      </if>
+      <if test="hamount != null">
+        hamount,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="walletExpansionId != null">
+        #{walletExpansionId,jdbcType=BIGINT},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=TINYINT},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="source != null">
+        #{source,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null">
+        #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="qamount != null">
+        #{qamount,jdbcType=DECIMAL},
+      </if>
+      <if test="hamount != null">
+        #{hamount,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.entity.WalletExpansionRecord">
+    update b_wallet_expansion_record
+    <set>
+      <if test="walletExpansionId != null">
+        wallet_expansion_id = #{walletExpansionId,jdbcType=BIGINT},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=TINYINT},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="source != null">
+        source = #{source,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null">
+        amount = #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="qamount != null">
+        qamount = #{qamount,jdbcType=DECIMAL},
+      </if>
+      <if test="hamount != null">
+        hamount = #{hamount,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.entity.WalletExpansionRecord">
+    update b_wallet_expansion_record
+    set wallet_expansion_id = #{walletExpansionId,jdbcType=BIGINT},
+      type = #{type,jdbcType=TINYINT},
+      remark = #{remark,jdbcType=VARCHAR},
+      source = #{source,jdbcType=VARCHAR},
+      amount = #{amount,jdbcType=DECIMAL},
+      qamount = #{qamount,jdbcType=DECIMAL},
+      hamount = #{hamount,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

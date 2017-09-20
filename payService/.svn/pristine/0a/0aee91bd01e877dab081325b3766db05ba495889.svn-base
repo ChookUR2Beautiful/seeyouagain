@@ -1,0 +1,143 @@
+package com.xmniao.controller;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.thrift.TException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSON;
+import com.xmniao.dao.LiveWalletMapper;
+import com.xmniao.entity.Resultable;
+import com.xmniao.entity.SubsidyMsg;
+import com.xmniao.service.msg.SubsidyProducer;
+import com.xmniao.service.pay.LiveWalletServiceImpl;
+import com.xmniao.service.pay.SynthesizeServiceImpl;
+import com.xmniao.thrift.ledger.FailureException;
+import com.xmniao.thrift.ledger.LiveWalletService;
+import com.xmniao.thrift.ledger.ResponseData;
+
+
+/**
+ * 接受消息controller
+ * @author zenghm
+ *
+ */
+@Controller
+public class AcceptMsmController {
+
+    // 日志
+    private static final Logger log = LoggerFactory.getLogger(AcceptMsmController.class);
+    
+    @Autowired
+    SubsidyProducer subsidyProducer;
+
+    @Autowired
+    SynthesizeServiceImpl synthesizeServiceImpl; 
+    
+    @Autowired
+    private LiveWalletServiceImpl liveWalletServiceImpl;
+    
+    @Autowired
+    private LiveWalletMapper liveWalletMapper;
+    
+    @RequestMapping(value = "/acceptMsg", method = {RequestMethod.POST })
+    public void acceptMsm(HttpServletResponse rsp,SubsidyMsg subsidyMsg){
+    	log.info("接受消息controller ， 参数： "+subsidyMsg);
+    	String returnMsg = "" ;
+    	String status = "1";
+    	Resultable result = null;
+    	String validateResult = subsidyMsg.validate();
+    	if(!validateResult.equals("")){
+    		result = new Resultable(status,validateResult);
+    		log.error(validateResult);
+    		writerReturn(rsp, result);
+    		return;
+    	}
+    	
+    	if(!subsidyMsg.checkSign()){
+    		result = new Resultable(status,"签名验证失败");
+    		log.error("签名验证失败");
+    		writerReturn(rsp, result);
+    		return;
+    	}
+    	try{
+    		Map<String,String> param = new HashMap<String,String>();
+    		param.put("uId", subsidyMsg.getUId());
+    		param.put("userType", subsidyMsg.getUserType());
+    		synthesizeServiceImpl.addWalletMap(param);
+    	}catch(Exception e){
+    		log.error("检测并创建钱包异常",e);
+    	}
+    	try {
+			subsidyProducer.sendMsg(subsidyMsg);
+			status = "0";
+			returnMsg = "发放补贴消息发送成功";
+			log.info(returnMsg);
+		} catch (Exception e) {
+			returnMsg = "发放补贴消息发送异常";
+			log.error(returnMsg,e);
+			status = "1";
+		} 
+    	
+    	result = new Resultable(status,returnMsg);
+    	writerReturn(rsp, result);
+    	return;
+    }
+    
+    /**
+     * 注册送鸟豆
+     * @return
+     */
+    @RequestMapping(value="/registerSendBirdBeans", method = {RequestMethod.POST })
+    @ResponseBody
+    public String registerSendBirdBeans(@RequestParam("uid")String uid,@RequestParam("birdBean")String birdBean){
+    	log.info("注册送鸟豆:uid "+uid+",birdBean "+birdBean);
+    	//获取用户钱包信息
+    	Map<String,String> map = new HashMap<>();
+    	map.put("uid",uid);
+    	map.put("rtype","16");
+    	map.put("commision",birdBean+"");
+    	try {
+			ResponseData response = liveWalletServiceImpl.updateWalletAmount(map);
+			if(response.getState() !=0){
+				log.error("注册送鸟豆异常 uid:"+uid);
+				return "false";
+			}
+		}  catch (Exception e) {
+			log.error("注册送鸟豆异常 uid:"+uid,e);
+			return "false";
+		}
+    	return "true";
+    }
+    
+    
+	private void writerReturn(HttpServletResponse rsp, Resultable result) {
+		PrintWriter out = null;
+    	try {
+    		rsp.setContentType("text/html;charset=UTF-8"); 
+    		out = rsp.getWriter();
+			out.write(JSON.toJSONString(result));
+			log.info("AcceptMsmController 返回："+JSON.toJSONString(result));
+		} catch (IOException e) {
+			log.error("acceptMsm 返回IO异常",e);
+		}finally{
+			if(out!=null){
+				out.close();
+			}
+		}
+	}
+	
+
+}

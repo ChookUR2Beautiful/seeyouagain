@@ -1,0 +1,50 @@
+package com.xmniao.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import com.xmniao.entity.WalletExpansionRecord;
+
+public interface WalletExpansionRecordMapper {
+    int deleteByPrimaryKey(Long id);
+
+    int insert(WalletExpansionRecord record);
+
+    int insertSelective(WalletExpansionRecord record);
+
+    WalletExpansionRecord selectByPrimaryKey(Long id);
+
+    int updateByPrimaryKeySelective(WalletExpansionRecord record);
+
+    int updateByPrimaryKey(WalletExpansionRecord record);
+
+	/**
+	 * 
+	 * 方法描述：获得扩展钱包操作列表
+	 * 创建人：jianming  
+	 * 创建时间：2017年4月8日 下午2:45:36   
+	 * @param string2Object
+	 * @return
+	 */
+	List<WalletExpansionRecord> getWalletExpansionRecordList(Map<String, Object> string2Object);
+	
+	/**
+	 * 
+	 * 方法描述：根据数据源查询
+	 * 创建人：jianming  
+	 * 创建时间：2017年4月10日 下午3:16:53   
+	 * @param source
+	 * @return
+	 */
+	List<WalletExpansionRecord> getBySource(String source);
+	
+	/**
+	 * 
+	 * 方法描述：统计总收益
+	 * 创建人：jianming  
+	 * 创建时间：2017年4月17日 下午6:48:32   
+	 * @param walletMap
+	 * @return
+	 */
+	Long sumExpansion(Map<String, String> walletMap);
+}

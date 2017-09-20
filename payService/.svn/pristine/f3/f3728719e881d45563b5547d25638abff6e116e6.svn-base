@@ -1,0 +1,17 @@
+package com.xmniao.dao;
+
+import com.xmniao.entity.LiveWalletRecord;
+
+public interface LiveWalletRecordMapper {
+    int deleteByPrimaryKey(Integer id);
+
+    int insert(LiveWalletRecord record);
+
+    int insertSelective(LiveWalletRecord record);
+
+    LiveWalletRecord selectByPrimaryKey(Integer id);
+
+    int updateByPrimaryKeySelective(LiveWalletRecord record);
+
+    int updateByPrimaryKey(LiveWalletRecord record);
+}

@@ -1,0 +1,149 @@
+package com.xmniao.common;
+
+
+import com.xmniao.entity.WalletExpansionExpenses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * 处理Map与Bean数据交互
+ * Created by yang.qiang on 2017/4/24.
+ */
+public class MapBeanUtil {
+    private final static Logger logger = LoggerFactory.getLogger(MapBeanUtil.class);
+    private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    /**
+     * 指定属性名, 将一个Bean转换成Map
+     * @param resource  需要被转换的Bean
+     * @param fields    该Bean需要被转换字段名
+     * @return
+     */
+    public static <T> Map<String,String> convertMap(T resource,String... fields) {
+        HashMap<String, String> resultMap = new HashMap<>();
+
+        try {
+            Class<?> clazz = resource.getClass();
+            for (String fieldName : fields) {
+                Field declaredField = clazz.getDeclaredField(fieldName);
+                declaredField.setAccessible(true);
+                String value;
+
+                Object fieldValue = declaredField.get(resource);
+                // 如果字段为日期, 需要格式化
+                if (declaredField.getType() == Date.class && fieldValue != null) {
+                    value = sdf.format((Date)fieldValue);
+                }
+                // 将字段转换为字符串
+                else {
+                    value = fieldValue+"";
+                }
+
+                if (value != null) {
+                    resultMap.put(fieldName,value);
+                }
+
+            }
+        } catch (Exception e) {
+            logger.error("转换Map出现异常",e);
+            throw new RuntimeException("转换Map出现异常",e);
+        }
+
+        return resultMap;
+    }
+
+
+    /**
+     * 将一个Map转成一个实体对象 只能转换 Java 8种基础类型和对应的包装 以及String Date类型
+     * @param sourceMap     存放对象属性的Map
+     * @param clazz         需要转换的Bean.class
+     * @param dataFormat    时间格式
+     * @param <T>
+     * @return
+     * @throws Exception
+     */
+    public static<T> T convert2Bean(Map<String,String> sourceMap, Class<T> clazz,String dataFormat) throws Exception {
+        T t = clazz.newInstance();
+
+        // 获取Class内所有的属性
+        PropertyDescriptor[] propertyDescriptors = Introspector.getBeanInfo(clazz).getPropertyDescriptors();
+        for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+            // Class的字段名
+            String fieldName = propertyDescriptor.getName();
+            if (sourceMap.containsKey(fieldName)) {
+                Method writeMethod = propertyDescriptor.getWriteMethod();
+                Class<?> propertyType = propertyDescriptor.getPropertyType();
+                String value = sourceMap.get(fieldName);
+                if (propertyType == Integer.class || propertyType == int.class) {
+                    writeMethod.invoke(t, Integer.valueOf(value));
+
+                } else if (propertyType == Long.class || propertyType == long.class) {
+                    writeMethod.invoke(t, Long.valueOf(value));
+
+                } else if (propertyType == Double.class || propertyType == double.class) {
+                    writeMethod.invoke(t, Double.valueOf(value));
+
+                } else if (propertyType == Boolean.class || propertyType == boolean.class) {
+                    writeMethod.invoke(t, Boolean.valueOf(value));
+
+                } else if (propertyType == String.class) {
+                    writeMethod.invoke(t, value);
+
+                } else if (propertyType == Date.class) {
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dataFormat);
+                    writeMethod.invoke(t, simpleDateFormat.parse(value));
+                } else if (propertyType == Byte.class || propertyType == byte.class) {
+                    writeMethod.invoke(t, Byte.valueOf(value));
+
+                } else if (propertyType == Short.class || propertyType == short.class) {
+                    writeMethod.invoke(t, Short.valueOf(value));
+
+                } else if (propertyType == Float.class || propertyType == float.class) {
+                    writeMethod.invoke(t, Float.valueOf(value));
+
+                } else if (propertyType == Character.class || propertyType == char.class) {
+                    writeMethod.invoke(t, Character.valueOf(value.charAt(0)));
+
+                }
+
+            }
+        }
+
+        return t;
+    }
+
+    /**
+     * 将一个Map转成一个实体对象 只能转换 Java 8种基础类型和对应的包装 以及String Date类型
+     * 时间默认格式为 yyyy-MM-dd HH:ss:mm
+     * @param sourceMap     存放对象属性的Map
+     * @param clazz         需要转换的Bean
+     * @param <T>
+     * @return
+     * @throws Exception
+     */
+
+    public static<T> T convert2Bean(Map<String,String> sourceMap, Class<T> clazz) throws Exception {
+        return convert2Bean(sourceMap,clazz,"yyyy-MM-dd HH:ss:mm");
+    }
+
+
+    public static void main(String args[]) throws Exception {
+        WalletExpansionExpenses walletExpansionExpenses = new WalletExpansionExpenses();
+        walletExpansionExpenses.setId(111L);
+        walletExpansionExpenses.setRate(new BigDecimal(1111));
+        Map<String, String> stringStringMap = convertMap(walletExpansionExpenses,"id","rate");
+
+
+    }
+
+}

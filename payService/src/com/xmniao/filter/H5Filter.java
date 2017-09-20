@@ -1,0 +1,30 @@
+package com.xmniao.filter;
+
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class H5Filter extends OncePerRequestFilter {
+
+	@Override
+	protected void doFilterInternal(HttpServletRequest arg0,
+			HttpServletResponse arg1, FilterChain arg2)
+			throws ServletException, IOException {
+		
+		System.out.println("进入过滤器时间：" + System.currentTimeMillis());
+
+		try {
+			Thread.sleep(4690);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		System.out.println("退出过滤器时间：" + System.currentTimeMillis());
+		
+	}
+}

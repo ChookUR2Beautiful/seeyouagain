@@ -1,0 +1,55 @@
+package com.xmniao.dao.manor;
+
+import java.util.List;
+
+import com.xmniao.entity.manor.ManorSunshineProfit;
+
+import org.apache.ibatis.annotations.Param;
+
+public interface ManorSunshineProfitMapper {
+
+	/**
+	 * 
+	 * 方法描述：批量插入
+	 * 创建人： ChenBo
+	 * 创建时间：2017年6月16日
+	 * @param list
+	 * @return int
+	 */
+    int insertBatch(List<ManorSunshineProfit> list);
+
+    /**
+     * 
+     * 方法描述：获取
+     * 创建人： ChenBo
+     * 创建时间：2017年6月16日
+     * @param record
+     * @return ManorSunshineProfit
+     */
+    ManorSunshineProfit get(int baseNumber);
+
+    /**
+     * 
+     * 方法描述：全部获取
+     * 创建人： ChenBo
+     * 创建时间：2017年6月16日
+     * @return ManorSunshineProfit
+     */
+    List<ManorSunshineProfit> getList();
+    
+    /**
+     * 
+     * 方法描述：清空记录
+     * 创建人： ChenBo
+     * 创建时间：2017年6月16日
+     * @return int
+     */
+    int deleteAll();
+
+	/**
+	 * 获得利率比例
+	 * @return
+	 */
+	Double getProfit(@Param("number") double number);
+
+}

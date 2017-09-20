@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.dao.UpdateMentionLedgerMapper">
+	
+	<update id="updateMentionLedger" parameterType="map">
+		update t_mention_config set 
+ 		<if test="amount != null  and amount != '' and amount != '0'">     
+			money = #{amount},
+		</if>                          
+		<if test="money != null and money != ''  and money != '0'">       
+			income = #{money},
+		</if>                    
+		<if test="typeId==1">
+			
+			 mention=#{typeValue} 
+			
+		</if>
+		<if test="typeId==2">
+		
+			 ledger=#{typeValue}
+		
+		</if>
+		where uid=#{uId}
+	</update>
+</mapper>

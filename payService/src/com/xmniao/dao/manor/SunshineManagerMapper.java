@@ -1,0 +1,20 @@
+package com.xmniao.dao.manor;
+
+import com.xmniao.entity.manor.SunshineManager;
+
+import org.springframework.stereotype.Repository;
+
+/**
+ * 阳光渠道管理
+ * @author liyuanbo
+ * @create 2017-06-17 12:30
+ **/
+@Repository
+public interface SunshineManagerMapper {
+
+    SunshineManager getSunshineManager();
+    
+    int updateSunshineManager(SunshineManager sunshineManager); 
+    
+    int insertSunshineManager(SunshineManager sunshineManager); 
+}

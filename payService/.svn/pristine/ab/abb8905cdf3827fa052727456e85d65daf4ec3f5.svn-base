@@ -1,0 +1,42 @@
+log4j.rootLogger=DEBUG,A1,R_INFO,R_ERROR
+
+log4j.appender.A1=org.apache.log4j.ConsoleAppender
+#log4j.appender.A1.Threshold=INFO,ERROR
+log4j.appender.A1.Threshold=INFO,DEBUG
+#log4j.appender.A1.Threshold=ERROR
+log4j.appender.A1.layout=org.apache.log4j.PatternLayout
+log4j.appender.A1.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss.SSS} %t %M(%L) - %m%n
+
+log4j.appender.R_INFO=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.R_INFO.File=../logs/info.log
+log4j.appender.R_INFO.Threshold=INFO
+log4j.appender.R_INFO.DatePattern='.'yyyy-MM-dd'.log'
+log4j.appender.R_INFO.layout=org.apache.log4j.PatternLayout
+log4j.appender.R_INFO.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss.SSS} %t %M(%L) - %m%n
+
+log4j.appender.R_ERROR=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.R_ERROR.File=../logs/error.log
+log4j.appender.R_ERROR.Threshold=ERROR
+log4j.appender.R_ERROR.DatePattern='.'yyyy-MM-dd'.log'
+log4j.appender.R_ERROR.layout=org.apache.log4j.PatternLayout
+log4j.appender.R_ERROR.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %c.%M(%L) - %m%n
+
+log4j.logger.org.spring=DEBUG
+
+
+log4j.appender.R_ROCKETMQ=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.R_ROCKETMQ.File=../logs/info.log
+log4j.appender.R_ROCKETMQ.Threshold=INFO
+log4j.appender.R_ROCKETMQ.DatePattern='.'yyyy-MM-dd'.log'
+log4j.appender.R_ROCKETMQ.layout=org.apache.log4j.PatternLayout
+log4j.appender.R_ROCKETMQ.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %c.%M(%L) - %m%n
+
+
+
+#log4j.logger.com.ibatis=DEBUG 
+#log4j.logger.com.ibatis.common.jdbc.SimpleDataSource=DEBUG 
+#log4j.logger.com.ibatis.common.jdbc.ScriptRunner=DEBUG 
+#log4j.logger.com.ibatis.sqlmap.engine.impl.SqlMapClientDelegate=DEBUG 
+#log4j.logger.java.sql.Connection=DEBUG 
+#log4j.logger.java.sql.Statement=DEBUG 
+#log4j.logger.java.sql.PreparedStatement=DEBUG

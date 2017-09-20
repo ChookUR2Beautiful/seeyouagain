@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.dao.PayRefundMapper">
+	
+	<!-- 新增支付退款记录 -->
+<!-- 	
+	<insert id="insertPayRefund" useGeneratedKeys="true" parameterType="map">
+		insert into b_pay_refund (pay_id,refund_id,sdate,status,money,amount,commision,balance,integral,samount,third_id,description)
+		values (#{payId},#{refundId},#{sdate},#{status},#{money},#{amount},#{commision},#{balance},#{integral},#{samount},#{thirdId},#{description})
+	</insert>
+-->	
+	<!-- 新增支付退款记录 -->
+	<insert id="insertPayRefundByObject" useGeneratedKeys="true" parameterType="com.xmniao.entity.PayRefund">
+		insert into b_pay_refund (pay_id,refund_id,sdate,status,money,amount,commision,balance,integral,samount,third_id,description,fees,zamount,bid,live_coin,seller_coin)
+		values (#{payId},#{refundId},#{sdate},#{status},#{money},#{amount},#{commision},#{balance},#{integral},#{samount},#{thirdId},#{description},#{fees},#{zamount},#{bid},#{liveCoin},#{sellerCoin})
+	</insert>	
+	
+	<!-- 根据退款流水号 查询该 那退款记录   ChenBo-->
+	<select id="getPayRefundByRefundId" parameterType="string" resultType="com.xmniao.entity.PayRefund">
+		select 	
+		a.pay_id payId,	a.refund_id refundId,a.status,	a.money,a.samount,a.amount,a.commision,a.balance,a.integral,a.zamount,b.accountid,a.bid
+		from b_pay_refund a,b_deal_water b
+		where refund_id = #{refundid}
+		AND a.pay_id = b.pay_id
+		limit 0,1
+	</select>
+	
+	<!-- 更新退款记录状态  ChenBo-->
+	<update id="updatePayOrderByRefundId" parameterType="map">
+	    update b_pay_refund
+	    <set >
+	      <if test="status != null" >
+	        status = #{status},
+	        
+	        <!-- 只有当订单成功或失败时，才增加成功时间 -->
+	        <if test="(status == 1) or (status == 2)">
+	        	edate = #{edate},
+	        </if>
+	      </if>
+	    </set>
+	    where refund_id = #{refund_id}
+	</update>
+	
+	
+	<!-- 更新退款记录信息  ChenBo-->
+	<update id="updatePayOrderInfo" parameterType="map">
+	    update b_pay_refund
+	    <set >
+	        refund_id = #{refundId},
+	    </set>
+	    where pay_id = #{payId}
+	</update>
+	
+	<!-- 根据支付号 查询该 退款记录   ChenBo-->
+	<select id="getPayRefundBypayId" parameterType="string" resultType="com.xmniao.entity.PayRefund">
+		select 	
+		a.id,
+		a.pay_id payId,	
+		a.refund_id refundId,
+		a.sdate,
+		a.edate,
+		a.status,	
+		a.money,
+		a.samount,
+		a.amount,
+		a.commision,
+		a.balance,
+		a.integral,
+		a.live_coin liveCoin,
+		a.seller_coin sellerCoin,
+		a.third_id thirdId,
+		a.description,
+		a.fees,
+		a.zamount,
+		b.accountid,
+		b.third_name thirdName,
+		a.bid
+		from b_pay_refund a,b_deal_water b
+		where a.pay_id = #{payid}
+		AND a.pay_id = b.pay_id
+		limit 0,1
+	</select>
+	
+	
+	<!-- 查询退款记录列表  -->
+	<select id="getPayRefundList" parameterType="map" resultType="map"> 
+	select 
+		id, pay_id, refund_id, DATE_FORMAT(sdate,'%Y-%m-%d %H:%i:%s') sdate, IFNULL(DATE_FORMAT(edate,'%Y-%m-%d %H:%i:%s'),'') edate,
+		status, money, amount, commision, balance, IFNULL(integral,0) integral, 
+	    samount, IFNULL(third_id,'') third_id, IFNULL(description,'') description 
+	from b_pay_refund 
+	<trim prefix="where" suffix=""  prefixOverrides="AND">
+		  <if test="sdate != null" >
+	       sdate LIKE CONCAT('%',#{sdate},'%')
+	      </if>
+	      <if test="status != null" >
+	        AND  status = #{status}
+	      </if>
+	</trim>
+	order by id
+	</select>
+	
+	<!-- 按支付类型查询退款记录列表  -->
+	<select id="getPayRefundNoList" parameterType="map" resultType="map"> 
+	select 
+		a.id, a.pay_id, a.refund_id, IFNULL(b.third_id,'') third_id,a.sdate,a.samount,b.third_name thirdName
+	from b_pay_refund a,b_deal_water b
+	<trim prefix="where" suffix=""  prefixOverrides="AND">
+			a.pay_id = b.pay_id
+			
+		  <if test="sdate != null" >
+	        AND  a.sdate LIKE CONCAT('%',#{sdate},'%')
+	      </if>
+	      <if test="status != null" >
+	        AND  a.status = #{status}
+	      </if>
+	      <if test="thirdName != null">
+	      	AND  b.third_name IN (${thirdName})
+	      </if>
+	      <if test="cursorId != null">
+	      	AND a.id>#{cursorId}
+	      </if>
+	      
+	</trim>
+	order by a.id
+	<if test="(beginId != null) and (pageNum != null)">
+		limit #{beginId},#{pageNum}
+	</if>
+	
+	</select>
+	
+</mapper>

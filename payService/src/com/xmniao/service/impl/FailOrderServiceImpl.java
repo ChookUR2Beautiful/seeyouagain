@@ -1,0 +1,215 @@
+package com.xmniao.service.impl;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.log4j.Logger;
+import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.protocol.TMultiplexedProtocol;
+import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.transport.TFramedTransport;
+import org.apache.thrift.transport.TSocket;
+import org.apache.thrift.transport.TTransport;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.xmniao.common.StateCodeUtil;
+import com.xmniao.dao.CancelPayMapper;
+import com.xmniao.dao.PayOrderMapper;
+import com.xmniao.dao.WalletRecordMapper;
+import com.xmniao.service.FailOrderService;
+import com.xmniao.service.WalletService;
+import com.xmniao.thrift.busine.BusiSysOrderService;
+import com.xmniao.thrift.busine.BusiSysOrderService.Client;
+import com.xmniao.thrift.ledger.FailureException;
+
+/**
+ * 恢复报障订单
+ * @author Administrator
+ *
+ */
+@Service("failOrderService")
+public class FailOrderServiceImpl implements FailOrderService {
+	// 初始日志类
+	private final Logger log = Logger.getLogger(FailOrderServiceImpl.class);
+	
+	@Autowired
+	private WalletService walletService;
+	
+	@Autowired
+	private WalletRecordMapper walletRecordMapper;
+	
+
+	@Autowired
+	private PayOrderMapper payOrderMapper;
+	
+	@Autowired
+	private CancelPayMapper cancelPayMapper;
+	
+	
+	@Resource(name = "BUSINESS_IP_NUMBER")
+	private String ipNumbertBusine;
+	
+	@Resource(name = "IP_PORT_BUSINE")
+	private int ipPortBusine;
+	
+	private BigDecimal ZERO = BigDecimal.valueOf(0.00);
+	/**
+	 * 取消报障订单
+	 * @throws FailureException 
+	 * @throws  
+	 */
+	@Transactional(rollbackFor = {FailureException.class,RuntimeException.class } ,isolation= Isolation.SERIALIZABLE, timeout=100)
+	@Override
+	public Map<String, String> recoveryFailOrder(String orderId) throws FailureException {
+		Map<String,String> resultMap = new HashMap<String,String>();
+				
+		//1.验证订单是否已支付
+		if(!getOrderVerify(orderId)){
+			log.error("该订单尚未完成支付");
+			resultMap.put("code", "202");
+			resultMap.put("msg", "该订单尚未完成支付");
+			return resultMap;
+		}
+		
+		//2.获取订单支付金额
+		Map<String,Object> amountMap = getOrderAmount(orderId);
+		if(amountMap==null){
+			log.error("该订单在流水表有没有支付成功的记录");
+			resultMap.put("code", "202");
+			resultMap.put("msg", "该订单尚未完成支付");
+			return resultMap;
+		}
+		
+		if(amountMap.size() ==0){
+			//钱包金额字段无更新
+			log.info("该订单无钱包支付部分");
+		}else{
+			if(!isCancelOrder(orderId)){
+				log.error("该订单没有对应的 取消支付记录");
+				resultMap.put("code", "202");
+				resultMap.put("msg", "该订单没有对应的 取消支付记录");
+				return resultMap;
+			}
+			
+			//添加 rtype=-1的数据，在更新钱包时，即不将该 修改记录写入钱包记录表中。
+			amountMap.put("rtype", "-1");
+			//3.扣钱
+			Map<String,String> walletMap =  walletService.updateWalletAmount2(amountMap);
+			if(walletMap == null || !walletMap.get("code").equals(StateCodeUtil.PR_SUCCESS)){
+				log.error("扣款失败");
+				resultMap.put("code", "201");
+				resultMap.put("msg", "用户钱包ID:"+amountMap.get("accountid")+"扣款失败");
+				return resultMap;
+			}
+		}
+		//3.删rtype=14的该订单
+		//4.删b_cancel_pay表的该订单
+		Map<String,Object> delMap = new HashMap<String,Object>();
+		delMap.put("remarks", orderId+"%");
+		delMap.put("rtype", 14);
+		int delcount = walletService.delWalletRecord(delMap);
+		int delcount2 =cancelPayMapper.delCancelRecord(delMap);
+		log.info("删除订单号为"+orderId+"的rtype=14的记录"+delcount+"条，删除cancelPay的记录"+delcount2+"条");
+		//resultMap.put("code", "100");
+		//resultMap.put("msg", "成功");
+		//return resultMap;
+		//通知业务服务
+		Map<String,String> busineMap = notifyBusineService(orderId);
+		if(!busineMap.get("code").equalsIgnoreCase("100")){
+			throw new FailureException(Integer.valueOf(busineMap.get("code")),busineMap.get("msg"));
+		}
+		return busineMap;
+	}
+	
+	private boolean getOrderVerify(String orderId){
+		Map<String,Object> payOrder = payOrderMapper.getPayOrderByorderNumber(orderId);
+		if(payOrder != null && String.valueOf(payOrder.get("payStatus")).equals("2")){
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean isCancelOrder(String orderId){
+		Map<String,Object> selectMap = new HashMap<String,Object>();
+		selectMap.put("rtype", 14);
+		selectMap.put("remarks", orderId+"%");
+		int count = walletRecordMapper.getRecordCount(selectMap);
+		return count>0 ? true : false;
+	}
+	
+	private Map<String,Object> getOrderAmount(String orderId){
+		Map<String,Object> amountMap = payOrderMapper.getOrderAmount(orderId);
+		if(amountMap == null){
+			return null;
+		}
+		
+		//若这些字段的金额为0，则清空
+		if( ((BigDecimal)amountMap.get("amount")).compareTo(ZERO)==0
+			 && ((BigDecimal)amountMap.get("commision")).compareTo(ZERO)==0
+			 && ((BigDecimal)amountMap.get("balance")).compareTo(ZERO)==0
+			 && ((BigDecimal)amountMap.get("zbalance")).compareTo(ZERO)==0
+			 && ((BigDecimal)amountMap.get("integral")).compareTo(ZERO)==0){
+			amountMap.clear();
+		}
+		return amountMap;
+	}
+	
+	public Map<String,String> notifyBusineService(String orderId){
+			log.info("调用业务系统接口[BusiSysOrderService.payFailRecoverOrder],需恢复的报障单是："+orderId);
+			
+			Map<String,String> paramMap = new HashMap<String,String>();
+			paramMap.put("bid", orderId);
+			TTransport transport = null;
+			try {
+			    transport = new TSocket(ipNumbertBusine, ipPortBusine);
+			    TFramedTransport frame = new TFramedTransport(transport);
+			    // 设置传输协议为 TBinaryProtocol
+			    TProtocol protocol = new TBinaryProtocol(frame);
+			    TMultiplexedProtocol ManagerProtocol = new TMultiplexedProtocol(
+				    protocol, "BusiSysOrderService");
+			    BusiSysOrderService.Client client = new Client(ManagerProtocol);
+			    // 打开端口,开始调用
+			    transport.open();
+			    
+			    try{
+			    	Map<String, String> result = client.payFailRecoverOrder(paramMap);
+			    	log.info("通知业务服务反馈结果："+result);
+			    	if(result != null && result.get("recode").equals("100")){
+			    		Map<String,String> resultMap = new HashMap<String,String>();
+			    		resultMap.put("code", result.get("recode"));
+			    		resultMap.put("msg", result.get("remark"));
+			    		return resultMap;
+			    	}else if(result==null){
+			    		throw new RuntimeException("调用业务服务异常");
+			    	}else{
+			    		throw new FailureException(Integer.valueOf(result.get("recode")),result.get("remark"));
+			    	}
+			    }catch(FailureException e){
+			    	log.info("接口返回失败或执行异常："+e);
+			    	Map<String,String> resultMap = new HashMap<String,String>();
+		    		resultMap.put("code", String.valueOf(e.getState()));
+		    		resultMap.put("msg", e.getInfo());
+		    		return resultMap;
+			    }
+			} catch (Exception e) {
+			    log.error("程序退款调用业务服务异常", e);
+			}finally {
+				if(transport!=null){
+					transport.close();
+				}
+			}
+			 throw new RuntimeException("调用业务服务异常");
+	}
+	
+	public static void main(String[] args) {
+		FailOrderServiceImpl foService = new FailOrderServiceImpl();
+		Map<String,String> resultMap = foService.notifyBusineService("150119000072");
+		System.out.println("最终结果："+resultMap);
+	}
+}

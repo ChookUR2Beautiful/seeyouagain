@@ -1,0 +1,122 @@
+package com.xmniao.test;
+
+import com.xmniao.thrift.ledger.WalletExpansionService;
+import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.protocol.TMultiplexedProtocol;
+import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.transport.TFramedTransport;
+import org.apache.thrift.transport.TSocket;
+import org.apache.thrift.transport.TTransport;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by yang.qiang on 2017/4/24.
+ */
+
+public class WalletExpansionServiceTest {
+    // 服务端的IP地址
+    private static final String IP_NUMBER = "localhost";
+    //    private static final String IP_NUMBER = "192.168.50.110";
+    // 服务端的端口号
+    private static final int PORT = 7911;
+    private static TTransport transport;
+    WalletExpansionService.Client client;
+
+
+    @Before
+    public void before() throws Exception {
+        transport = new TSocket(IP_NUMBER, PORT);
+        TFramedTransport frame = new TFramedTransport(transport);
+        // 设置传输协议为 TBinaryProtocol
+        TProtocol protocol = new TBinaryProtocol(frame);
+        TMultiplexedProtocol ManagerProtocol = new TMultiplexedProtocol(protocol,
+                "WalletExpansionService");
+        client = new WalletExpansionService.Client(ManagerProtocol);
+        transport.open();
+    }
+
+    @After
+    public void after() throws Exception {
+        transport.close();
+    }
+
+    /**
+     * Method: updateWalletExpansion(Map<String,String> param)
+     */
+    @Test
+    public void testUpdateWalletExpansion() throws Exception {
+//TODO: Test goes here...
+    }
+
+    /**
+     * Method: withdrawalsExpansion(Map<String, String> param)
+     */
+    @Test
+    public void testWithdrawalsExpansion() throws Exception {
+//TODO: Test goes here...
+    }
+
+    /**
+     * Method: getExpansionExpense(Map<String, String> param)
+     */
+    @Test
+    public void testGetExpansionExpense() throws Exception {
+//TODO: Test goes here...
+    }
+
+    /**
+     * Method: getExpansion(Map<String, String> param)
+     */
+    @Test
+    public void testGetExpansion() throws Exception {
+//TODO: Test goes here...
+    }
+
+    /**
+     * Method: getExpansionRecord(Map<String, String> param)
+     */
+    @Test
+    public void testGetExpansionRecord() throws Exception {
+//TODO: Test goes here...
+    }
+
+    /**
+     * 1.12.6.	查询全部收益类型提现手续费率
+     * Method: getExpansionExpenseRateList()
+     */
+    @Test
+    public void testGetExpansionExpenseRateList() throws Exception {
+        List<Map<String, String>> expansionExpenseRateList = client.getExpansionExpenseRateList();
+        System.out.println(expansionExpenseRateList);
+    }
+
+    /**
+     * Method: getExpansionExpenseRate(Map<String, String> paramMap)
+     */
+    @Test
+    public void testGetExpansionExpenseRate() throws Exception {
+//TODO: Test goes here...
+    }
+
+    /**
+     * Method: updateExpansionExpenseRate(Map<String, String> param)
+     */
+    @Test
+    public void testUpdateExpansionExpenseRate() throws Exception {
+//TODO: Test goes here...
+    }
+
+    /**
+     * Method: updateExpansionAmount(Map<String, String> param)
+     */
+    @Test
+    public void testUpdateExpansionAmount() throws Exception {
+//TODO: Test goes here...
+    }
+
+}

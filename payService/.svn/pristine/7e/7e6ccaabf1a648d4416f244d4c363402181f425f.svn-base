@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" 
+ 	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 	
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-3.2.xsd 
+	http://www.springframework.org/schema/util
+    http://www.springframework.org/schema/util/spring-util-3.2.xsd">
+	
+	<!-- 消息读取方式   起始位置读取 -->
+	<bean id="CONSUME_FROM_FIRST_OFFSET" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">  
+    	<property name="staticField" >
+    		<value>com.alibaba.rocketmq.common.consumer.ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET</value>
+    	</property>  
+	</bean>
+	
+	<!-- 消息模型: 集群消费-->
+	<bean id="CLUSTERING" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+		<property name="staticField">
+			<value>com.alibaba.rocketmq.common.protocol.heartbeat.MessageModel.CLUSTERING</value>
+		</property>
+	</bean>
+	<!-- 消息模型: 广播消费-->
+	<bean id="BROADCASTING" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+		<property name="staticField">
+			<value>com.alibaba.rocketmq.common.protocol.heartbeat.MessageModel.BROADCASTING</value>
+		</property>
+	</bean>
+	
+	<!--  消息队列基本配置信息  -->
+	<bean id="mqMsgConfig" class="com.xmniao.entity.MQMsgConfig">
+	     <property name="namesrvAddr" value="192.168.50.123:9876" />
+	     <property name="messageModel" ref="CLUSTERING" />
+	     <property name="consumeFromWhere" ref="CONSUME_FROM_FIRST_OFFSET" />
+	     <!--  多台服务器配0  单个服务器配1  -->
+	     <property name="cluster" value="1" />
+	     <property name="identityLedger" value="cp" />
+	     <property name="identityBusine" value="cp" />
+	     <property name="identityPay" value="cp" />
+	     <property name="producerGroup" value="ProducerCallback_"/>
+	     <property name="producerInstance" value="ProducerCallbackInstance_"/>	
+	</bean>
+    	
+	<!-- 打赏消费者 -->
+	<bean id="tipPushConsumer" class="com.xmniao.service.msg.TipPushConsumer" init-method="init"  >
+		<!-- 消息消费者 配置相关  -->
+		<constructor-arg name="configMaps">
+			 <util:map map-class="java.util.HashMap">
+				<!-- 需订阅的 消息标签名称，多个以","分割，"*"表示订阅该主题下所有标签  -->
+				<entry key="subExpression" value="pay_tip"/>
+				<!-- 消费者组名 打赏 -->
+				<entry key="consumerGroup" value="waiterPay_" />
+				<!-- 消费者实例名称 打赏 -->
+				<entry key="consumerInstanceName" value="instanceWaiterPay_" />
+				 <!-- 消息主题名称  打赏 -->
+				<entry key="topic" value="topic_waiter_" />
+			</util:map>
+		</constructor-arg>
+	</bean>
+	
+	
+	<!-- 提现消息队列消费者  -->
+	<bean id="withdrawConsumer" class="com.xmniao.service.msg.WithdrawConsumer" init-method="init"  >
+		<!-- 消息消费者 配置相关  -->
+		<constructor-arg name="configMaps">
+			 <util:map map-class="java.util.HashMap">
+				<!-- 消费者组名  -->
+				<entry key="consumerGroup" value="ConsumerWithdrawPay_" /> 
+				<!-- 消费者实例名称 -->
+				<entry key="consumerInstanceName" value="ConsumerWithdrawInstancePay_" /> 
+				 <!-- 消息主题名称   -->
+				<entry key="topic" value="topic_withdraw_" />
+				<!-- 需订阅的 消息标签名称，多个以","分割，"*"表示订阅该主题下所有标签  -->
+				<entry key="subExpression" value="withdraw"/>	
+			</util:map>
+		</constructor-arg>
+	</bean>
+
+	<!-- 提现返回消息生产 -->
+	<bean id="withdrawProducer" class="com.xmniao.service.msg.WithdrawProducer" init-method="init" destroy-method="shutdown">
+	    <property name="withdrawtopic" value="topic_callback_" />
+	    <property name="withdrawtags" value="withdraw_return" />
+	</bean>
+	
+	<!-- 提现明细返回消息生产 -->
+	<bean id="withdrawDetailProducer" class="com.xmniao.service.msg.WithdrawDetailProducer" init-method="init" destroy-method="shutdown">
+	    <property name="withdrawDetailtopic" value="topic_callback_" />
+	    <property name="withdrawDetailtags" value="wallet_withdraw" />
+	</bean>
+	
+	<!-- 更新钱包消息队列消费者  -->
+	<bean id="walletConsumer" class="com.xmniao.service.msg.WalletConsumer" init-method="init"  >
+		<!-- 消息消费者 配置相关  -->
+		<constructor-arg name="configMaps">
+			 <util:map map-class="java.util.HashMap">
+				<!-- 消费者组名  -->
+				<entry key="consumerGroup" value="WalletPay_" /> 
+				<!-- 消费者实例名称 -->
+				<entry key="consumerInstanceName" value="WalletInstancePay_" /> 
+				 <!-- 消息主题名称   -->
+				<entry key="topic" value="live_ledger_" />
+				<!-- 需订阅的 消息标签名称，多个以"||"分割，"*"表示订阅该主题下所有标签  -->
+				<entry key="subExpression" value="live_recommend_ledger || live_dividends_ledger||live_dividends_ledger_v2 || live_dividends_ledger_v3 || live_gift_ledger"/>	
+			</util:map>
+		</constructor-arg>
+	</bean>
+
+	
+	<!-- 更新钱包返回消息生产 -->
+	<bean id="walletProducer" class="com.xmniao.service.msg.WalletProducer" init-method="init" destroy-method="shutdown">
+	    <property name="updateWallettopic" value="live_ledger_returnback_" />
+	    <property name="updateWalletTags" value="live_recommend_ledger_returnback,live_dividends_ledger_returnback,live_dividends_ledger_v2_returnback" />
+	</bean>
+	
+
+	
+		<!-- 发放补贴消息生产 -->
+	<bean id="subsidyProducer" class="com.xmniao.service.msg.SubsidyProducer" init-method="init" destroy-method="shutdown">
+	    <property name="withdrawtopic" value="topic_waiter_" />
+	    <property name="withdrawtags" value="platform_subsidy" />
+	</bean>
+	
+
+ 	<!-- 平台退款回调消息生产 -->
+ 	<bean id="returnWithdrawalsProducer" class="com.xmniao.service.msg.ReturnWithdrawalsProducer" init-method="init" destroy-method="shutdown">
+		<property name="rwtopic" value="topic_callback_"/>
+		<property name="rwtags" value="callback_return"/>
+		<property name="rwInstance" value="ProducerCallbackInstancePay_"/>
+ 	</bean>
+ 	
+ 	<!-- 补贴 - 补贴发送 回调消息生产 -->
+  	<bean id="updateBalanceCallbackProducer" class="com.xmniao.service.msg.UpdateBalanceCallbackProducer" init-method="init" destroy-method="shutdown">
+		<property name="ubtopic" value="topic_callback_"/>
+		<property name="ubtags" value="subsidy_return"/>
+		<property name="ubInstance" value="ProducerSubsidyInstancePay_"/><!-- instance_subsidy -->
+ 	</bean>
+ 	
+	<!-- 平台退款处理消费者  -->
+	<bean id="returnWithdrawalsConsumer" class="com.xmniao.service.msg.ReturnWithdrawalsConsumer" init-method="init"  >
+		<!-- 消息消费者 配置相关  -->
+		<constructor-arg name="configMaps">
+			 <util:map map-class="java.util.HashMap">
+				<!-- 消费者组名  -->
+				<entry key="consumerGroup" value="ConsumerWithdrawy_" /> 
+				<!-- 消费者实例名 -->
+				<entry key="consumerInstanceName" value="ConsumerWithdrawyInstancePay_" /> 
+				 <!-- 消息主题名称   -->
+				<entry key="topic" value="topic_withdraw_" />
+				<!-- 需订阅的 消息标签名称，多个以","分割，"*"表示订阅该主题下所有标签  -->
+				<entry key="subExpression" value="callback"/>	
+			</util:map>
+		</constructor-arg>
+	</bean>
+	
+	<!-- 分账消息队列生产 -->
+	<bean id="ledgerProducer" class="com.xmniao.service.msg.LedgerProducer" init-method="init" destroy-method="shutdown">
+	    <property name="ledgertopic" value="topic_callback_" />
+	    <property name="ledgertags" value="divide_return" />
+	    <property name="ledgerInstance" value="instance_ledger"/>
+	     <property name="saastags" value="saas_ledger_pop"/>
+	</bean>
+	
+	<!-- 分账消息队列消费者  -->
+	<bean id="ledgerConsumer" class="com.xmniao.service.msg.LedgerConsumer" init-method="init">
+		<!-- 消息消费者 配置相关  -->
+		<constructor-arg name="configMaps">
+			 <util:map map-class="java.util.HashMap">
+				<!-- 消费者组名  -->
+				<entry key="consumerGroup" value="ConsumerWithdraw_" /> 
+				<!-- 消费者实例名称 -->
+				<entry key="consumerInstanceName" value="ConsumerWithdrawInstancePay_" /> 
+				 <!-- 消息主题名称   -->
+				<entry key="topic" value="topic_withdraw_" />
+				<!-- 需订阅的 消息标签名称，多个以"||"分割，"*"表示订阅该主题下所有标签  -->
+				<entry key="subExpression" value="divide_pay || saas_ledger_push || incr_ledger_push || saas_ledger_prepush"/>	
+			</util:map>
+		</constructor-arg>
+	</bean>
+	
+	<!-- 需订阅的 消息标签名称，多个以"||"分割，"*"表示订阅该主题下所有标签  -->
+	<!-- 活动 - 平台发放补贴 消费者 主题 及标签 -->
+	<bean id="HDMsgHeader" class="com.xmniao.entity.MQMsgHeader">
+		<constructor-arg name="topic" value="topic_waiter_"/>
+		<constructor-arg name="tags" value="platform_subsidy"/>
+	</bean>
+	
+	<!-- 补贴 - 补贴发放 消费者 主题 及标签 -->
+	<bean id="BTMsgHeader" class="com.xmniao.entity.MQMsgHeader">
+		<constructor-arg name="topic" value="topic_withdraw_"/>
+		<constructor-arg name="tags" value="subsidy"/>
+	</bean>
+
+	<!-- 修改钱包余额处理及回调服务  -->
+	<bean id="updateBalanceConsumer" class="com.xmniao.service.msg.UpdateBalanceConsumer" init-method="init"  >
+		<!-- 消息消费者 配置相关  -->
+		<constructor-arg name="configMaps">
+			 <util:map map-class="java.util.HashMap">
+				<!-- 消费者组名  -->
+				<entry key="consumerGroup" value="ConsumerWaiter_" /> 
+				<!-- 消费者实例名 -->
+				<entry key="consumerInstanceName" value="ConsumerWaiterInstancePay_" /> 
+				<entry key="msgHeader">	<!-- 消费的多个主题及标签列表 -->
+					<list>
+						<ref bean="HDMsgHeader"/>
+						<ref bean="BTMsgHeader"/>
+					</list>
+				</entry>
+			</util:map>
+		</constructor-arg>
+	</bean>
+</beans>

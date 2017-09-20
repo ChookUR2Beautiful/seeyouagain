@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.dao.ExpensesMpper">
+	<!-- 添加提现手续费记录 -->
+	<insert id="addExpenses" parameterType="map">
+		insert into b_expenses (flowid,expenses,sdate
+		<if test="expensesType !=null">,type</if>
+		) 
+		values (#{id},#{expenses},#{sdate}
+		<if test="expensesType !=null">, #{expensesType}</if>
+		)
+	</insert>
+	
+	<select id="getExpensesByFlowid"  resultType="map">
+	select id,flowid,expenses,sdate,type
+	from b_expenses
+	where flowid=#{flowid}
+	</select>
+</mapper>

@@ -1,0 +1,39 @@
+package com.xmniao.enums;
+
+/**
+ * 道具类型
+ *
+ * @author liyuanbo
+ * @create 2017-05-31 15:07
+ **/
+public enum PropsTypeEnum {
+    FLOWER_SEEDING(1, "花苗"),
+    SUN(2, "阳光"),
+    NECTAR(3, "花蜜"),
+    FERTILIZER(4, "肥料"),
+    ENERGY(5, "能量");
+
+    private int type;
+    private String name;
+
+    private PropsTypeEnum(int type, String name) {
+        this.type = type;
+        this.name = name;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+}

@@ -1,0 +1,2150 @@
+package com.xmniao.service.impl.manor;
+
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.xmniao.common.DateUtil;
+import com.xmniao.common.MapBeanUtil;
+import com.xmniao.common.SnowflakeIdWorker;
+import com.xmniao.common.XmnUtils;
+import com.xmniao.dao.manor.ManorActiveConfigMapper;
+import com.xmniao.dao.manor.ManorSunshineProfitMapper;
+import com.xmniao.dao.manor.PropsMapper;
+import com.xmniao.dao.manor.SunshineManagerMapper;
+import com.xmniao.entity.manor.ActivateManorConfig;
+import com.xmniao.entity.manor.FlowerSeedingGiveRecord;
+import com.xmniao.entity.manor.Props;
+import com.xmniao.entity.manor.PropsRecord;
+import com.xmniao.entity.manor.PropsRedpackage;
+import com.xmniao.entity.manor.PropsRedpackageRecord;
+import com.xmniao.entity.manor.PropsReport;
+import com.xmniao.entity.manor.SunshineManager;
+import com.xmniao.entity.manor.UserNectar;
+import com.xmniao.entity.manor.UserProps;
+import com.xmniao.entity.manor.UserPropsNumber;
+import com.xmniao.entity.manor.UserRepository;
+import com.xmniao.enums.ActiveManorEnum;
+import com.xmniao.enums.BusinessStatusCode;
+import com.xmniao.enums.BusinessStatusCodeEnum;
+import com.xmniao.enums.PropsChannelEnum;
+import com.xmniao.enums.PropsOperationTypeEnum;
+import com.xmniao.enums.PropsSourceEnum;
+import com.xmniao.enums.PropsTypeEnum;
+import com.xmniao.enums.RedPackagTypeStatusEnum;
+import com.xmniao.enums.ResultCodeEnum;
+import com.xmniao.exception.CustomException;
+import com.xmniao.service.PropsService;
+import com.xmniao.service.pay.WalletExpansionServiceImpl;
+import com.xmniao.thrift.manor.Result;
+import com.xmniao.thrift.manor.ResultList;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 黄金花园道具使用表
+ *
+ * @author liyuanbo
+ * @create 2017-05-31 13:57
+ **/
+@Service("propsServiceImpl")
+public class PropsServiceImpl implements PropsService {
+    @Autowired
+    private PropsMapper propsMapper;
+    @Autowired
+    private SunshineManagerMapper sunshineManagerMapper;
+    @Autowired
+    private ManorActiveConfigMapper manorActiveConfigMapper;
+    @Autowired
+    private WalletExpansionServiceImpl walletExpansionService;
+    @Autowired
+    private ManorSunshineProfitMapper manorSunshineProfitMapper;
+
+    private static Logger logger = Logger.getLogger(PropsServiceImpl.class);
+
+
+    /**
+     * 激活庄园或者续租庄园
+     *
+     * @param partenUid 上级用户ID
+     * @param uid       用户ID
+     * @param type      操作类型 1.激活庄园 2.续租庄园
+     * @param transNo   交易号
+     */
+    @Transactional(rollbackFor = {RuntimeException.class}, isolation = Isolation.SERIALIZABLE, timeout = 10)
+    public Result activateManor(String transNo, long partenUid, long uid, int type,int number) {
+        logger.info("当前用户id:" + uid + "开始" + ActiveManorEnum.getRemark(type) + ",交易消费号是" + transNo + "");
+        Result result = new Result();
+        Map<String, String> values = new HashMap<>();
+        if (uid == 0 || uid < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("操作的用户id不能为空,请输入正确值");
+            return result;
+        }
+        if (type == 0 || type < 0 || ActiveManorEnum.getType(type) == 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("操作的类型(type)不能为空,1.激活庄园 2.续租庄园");
+            return result;
+        }
+        if (StringUtils.isBlank(transNo)) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("交易批次号(transNo)不能为空,请输入正确值");
+            return result;
+        }
+        if(type == ActiveManorEnum.ACTIVE.getType()){
+            if(number >1|| number < 0){
+                result.setCode(ResultCodeEnum.ERROR.status());
+                result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+                result.setMessage("激活庄园输入的数量必须是1");
+                return result;
+            }
+            //查询当前用户有没有激活过庄园
+           List<PropsRecord> propsRecords = propsMapper.listUserPropsRecordByUidAndChannel(uid,PropsChannelEnum.ACTIVE_MANOR.getChannel());
+            if(propsRecords != null && propsRecords.size() > 0){
+                result.setCode(ResultCodeEnum.ERROR.status());
+                result.setMessage("用户只能激活一次庄园");
+                result.setStatusCode(BusinessStatusCodeEnum.REPEATEDLY_ACTIVE_MANOR.getStatus());
+                return result;
+            }
+        }
+        if(type == ActiveManorEnum.RENEW.getType()){
+            if(number >1|| number < 0){
+                result.setCode(ResultCodeEnum.ERROR.status());
+                result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+                result.setMessage("续租庄园输入的数量必须大于0");
+                return result;
+            }
+        }
+
+        //根据交易号查询当前用户是否已经发放过
+        if (propsMapper.countRedpackageByTransNoAndUid(uid, transNo, PropsTypeEnum.NECTAR.getType()) > 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.REPEATEDLY_COMMIT_STATUS.getStatus());
+            result.setMessage("交易批次号(transNo)重复提交,不能重复购买");
+            return result;
+        }
+        //获取消耗的道具配置
+        List<ActivateManorConfig> activateManorConfigs = manorActiveConfigMapper.getActiveManorConfig();
+        if (activateManorConfigs == null || activateManorConfigs.size() == 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.SYTEM_CONFING_STATUS.getStatus());
+            result.setMessage("业务系统没有配置庄园续租或者激活的基础数据");
+            return result;
+        }
+        int configSunTotal = 0;//扣除阳光数量
+        int configEnergyTotal = 0;//扣除能量数量
+        int channle = 0;
+        if (type == ActiveManorEnum.ACTIVE.getType()) {
+            channle = PropsChannelEnum.ACTIVE_MANOR.getChannel();
+            for (ActivateManorConfig config : activateManorConfigs) {
+                if (config.getType() == 1) {
+                    configEnergyTotal = config.getNumber();
+                }
+                if (config.getType() == 2) {
+                    configSunTotal = config.getNumber();
+                }
+            }
+        } else if (type == ActiveManorEnum.RENEW.getType()) {
+            channle = PropsChannelEnum.RENEW_MANOR.getChannel();
+            for (ActivateManorConfig config : activateManorConfigs) {
+                if (config.getType() == 3) {
+                    configEnergyTotal = config.getNumber();
+                }
+                if (config.getType() == 4) {
+                    configSunTotal = config.getNumber();
+                }
+            }
+        }
+        //激活庄园 1. 使用360阳光激活.2.使用360能量激活，使用优先级 能量>阳光
+        //续租庄园 1.使用360能量，2.使用3600阳光 使用优先级 能量 > 阳光
+        // if (type == ActiveManorEnum.ACTIVE.getType()) {
+        //判断当前的能量和阳光够不够360.o
+
+        Props nectarProps = propsMapper.getUserPropsByUidAndTypeAndSource(uid, PropsTypeEnum.ENERGY.getType(), PropsSourceEnum.ENERGY_DAY.getSourceType());
+        if (nectarProps != null && nectarProps.getNumber() > configEnergyTotal*number) {
+            logger.info("使用能量激活/续租庄园,当前用户的能量总数是:" + nectarProps.getNumber() + ",需要操作的能量总数是:" + (configEnergyTotal*number));
+            int insertRecordResult = this.savePropsRecord(uid, transNo, channle, PropsOperationTypeEnum.MIUNS.getType(),
+                    configEnergyTotal*number, PropsTypeEnum.ENERGY.getType(), null, nectarProps.getId(), nectarProps.getNumber(), nectarProps.getNumber() - (configEnergyTotal*number), 0, 0,
+                    "当前用户" + uid + "使用能量激活庄园 ，使用的能量数量是:" + configEnergyTotal);
+            if (insertRecordResult == 1) {
+                int miunsNumber = propsMapper.minusPropsNumber(uid, PropsTypeEnum.ENERGY.getType(), PropsSourceEnum.ENERGY_DAY.getSourceType(), configEnergyTotal*number,
+                        DateUtil.getNow(DateUtil.Y_M_D_HMS));
+                if (miunsNumber == 1 ) {
+                    //激活庄园赠送阳光
+                    if(type == ActiveManorEnum.ACTIVE.getType() && partenUid >0){
+                        //激活赠送
+                        values.put("type", PropsTypeEnum.ENERGY.getType() + "");
+                        values.put("number", configEnergyTotal + "");
+                        //赠送用户阳光
+                        if (!this.giveParentSunByConsumeEnergy(transNo, uid, partenUid, configEnergyTotal)) {
+                            throw new CustomException(" 激活庄园失败,赠送用户阳光操作时发生失败.");
+                        }
+                    }
+                } else {
+                    throw new CustomException(ActiveManorEnum.getRemark(type) + "失败.减少用户的道具记录时发生异常.");
+                }
+            } else {
+                throw new CustomException(ActiveManorEnum.getRemark(type) + "失败.插入道具记录表失败.");
+            }
+        } else {
+            Double sunTotal = propsMapper.totalPropsNumberByUidAndPropsType(uid, PropsTypeEnum.SUN.getType());
+            sunTotal = sunTotal == null ? 0 : sunTotal;
+            if (sunTotal < (configSunTotal*number)) {
+                result.setCode(ResultCodeEnum.ERROR.status());
+                result.setStatusCode(BusinessStatusCodeEnum.AMONUT_NOT_ENOUGH_STATUS.getStatus());
+                result.setMessage("当前用户:" + uid + "余额不足，不能进行" + ActiveManorEnum.getRemark(type) + ".");
+                return result;
+            }
+            if (!this.minusUserPropsBySort(transNo, uid, channle, configSunTotal*number, null, 0, 0)) {
+                throw new CustomException(ActiveManorEnum.getRemark(type) + "失败.扣除阳光操作的时候发生异常.");
+            } else {
+                values.put("type", PropsTypeEnum.SUN.getType() + "");
+                values.put("number", configSunTotal + "");
+            }
+        }
+
+        if (type == ActiveManorEnum.ACTIVE.getType()) {
+            if (!initUserProps(uid)) {
+                logger.info("用户激活庄园成功的时候，初始化用户数据失败。");
+                throw new CustomException("激活庄园失败");
+            }
+        }
+        //赠送花苗
+        if (type == ActiveManorEnum.ACTIVE.getType() && partenUid > 0) {
+            if (!this.giveParentFlowerByActiveManor(transNo, uid, partenUid)) {
+                logger.info("用户激活庄园成功的时候,赠送上级花苗失败.");
+                throw new CustomException(ActiveManorEnum.getRemark(type) + "失败.");
+            }
+        }
+        result.setCode(ResultCodeEnum.SUCCESS.status());
+        result.setStatusCode(BusinessStatusCodeEnum.SUCCESS_STATUS.getStatus());
+        result.setValues(values);
+        result.setMessage(ActiveManorEnum.getRemark(type) + "成功.");
+        return result;
+    }
+
+    /**
+     * 激活庄园的时候初始化用户数据
+     */
+    public boolean initUserProps(long uid) {
+        //花苗
+        List<Props> propses = new ArrayList<>();
+        //花苗自己购买
+        Props props = new Props();
+        props.setPropsType(PropsTypeEnum.FLOWER_SEEDING.getType());
+        props.setCreateTime(DateUtil.getNow(DateUtil.Y_M_D_HMS));
+        props.setUid(uid);
+        props.setPropsSource(PropsSourceEnum.FLOWER_SEEDING_OWN_BUY.getSourceType());
+        props.setNumber(0);
+        propses.add(props);
+
+//        //花苗园又赠送
+        Props props1 = new Props();
+        props1.setPropsType(PropsTypeEnum.FLOWER_SEEDING.getType());
+        props1.setCreateTime(DateUtil.getNow(DateUtil.Y_M_D_HMS));
+        props1.setUid(uid);
+        props1.setPropsSource(PropsSourceEnum.FLOWER_SEEDING_GIVE.getSourceType());
+        props1.setNumber(0);
+        propses.add(props1);
+
+        //阳光 下线消费能量获得奖励
+        Props sunProps1 = new Props();
+        sunProps1.setPropsType(PropsTypeEnum.SUN.getType());
+        sunProps1.setCreateTime(DateUtil.getNow(DateUtil.Y_M_D_HMS));
+        sunProps1.setUid(uid);
+        sunProps1.setPropsSource(PropsSourceEnum.SUN_CONSUM_REWARD.getSourceType());
+        sunProps1.setNumber(0);
+        propses.add(sunProps1);
+        //阳光 库存收益奖励的利息
+        Props sunProps2 = new Props();
+        sunProps2.setPropsType(PropsTypeEnum.SUN.getType());
+        sunProps2.setUid(uid);
+        sunProps2.setPropsSource(PropsSourceEnum.SUN_STOCK_REWARD.getSourceType());
+        sunProps2.setCreateTime(DateUtil.getNow(DateUtil.Y_M_D_HMS));
+        sunProps2.setNumber(0);
+        propses.add(sunProps2);
+        //阳光 阳光红包(有可能当前的用户还没有激活庄园，也可以领取阳光红包)
+
+
+        //阳光 园又赠送
+        Props sunProps4 = new Props();
+        sunProps4.setPropsType(PropsTypeEnum.SUN.getType());
+        sunProps4.setCreateTime(DateUtil.getNow(DateUtil.Y_M_D_HMS));
+        sunProps4.setUid(uid);
+        sunProps4.setPropsSource(PropsSourceEnum.SUN_GIVE.getSourceType());
+        sunProps4.setNumber(0);
+        propses.add(sunProps4);
+        //阳光 领取溢出的阳光类型
+        Props sunProps5 = new Props();
+        sunProps5.setPropsType(PropsTypeEnum.SUN.getType());
+        sunProps5.setCreateTime(DateUtil.getNow(DateUtil.Y_M_D_HMS));
+        sunProps5.setUid(uid);
+        sunProps5.setPropsSource(PropsSourceEnum.SUN_GET_OVERFLOWER.getSourceType());
+        sunProps5.setNumber(0);
+        propses.add(sunProps5);
+
+        //花蜜 每日收益
+        Props nectorProps = new Props();
+        nectorProps.setPropsType(PropsTypeEnum.NECTAR.getType());
+        nectorProps.setCreateTime(DateUtil.getNow(DateUtil.Y_M_D_HMS));
+        nectorProps.setUid(uid);
+        nectorProps.setPropsSource(PropsSourceEnum.NECTAR_EVERY_DAY.getSourceType());
+        nectorProps.setNumber(0);
+        propses.add(nectorProps);
+
+        //肥料 自己购买的肥料
+        Props fertilizer = new Props();
+        fertilizer.setPropsType(PropsTypeEnum.FERTILIZER.getType());
+        fertilizer.setCreateTime(DateUtil.getNow(DateUtil.Y_M_D_HMS));
+        fertilizer.setUid(uid);
+        fertilizer.setPropsSource(PropsSourceEnum.FERTILIZER_OWN_BUY.getSourceType());
+        fertilizer.setNumber(0);
+        propses.add(fertilizer);
+
+        //批量插入数据
+        int insertResult = propsMapper.batchInsertProps(propses);
+        if (insertResult != 8) {
+            logger.error("激活庄园的时候初始化用户道具表发生异常.");
+            return false;
+        }
+
+        int isnertNectarResult = propsMapper.saveUserNector(uid, 0, DateUtil.getNow(DateUtil.Y_M_D_HMS));
+        if (isnertNectarResult != 1) {
+            logger.error("激活庄园的时候，初始化用户花蜜的统计表(b_manor_nector)发生异常.");
+            return false;
+        }
+        return true;
+
+    }
+
+    /**
+     * 下级消耗能量的时候赠送上级阳光
+     *
+     * @param transNo      交易号
+     * @param uid          操作的用户ID
+     * @param parentUid    上级ID
+     * @param energyNumber 消费的能量数
+     */
+    private boolean giveParentSunByConsumeEnergy(String transNo, long uid, long parentUid, int energyNumber) {
+        logger.info("下级消耗能量的时候,赠送上级阳光.下级UID:" + uid + ",上级UID:" + parentUid + ",消费交易号:" + transNo + "");
+        SunshineManager manager = sunshineManagerMapper.getSunshineManager();
+        if (parentUid > 0 && manager.getSpendEnergy() == 1 && manager.getSpendEnergyNumber() >= energyNumber) {
+            Map<String, String> map = new HashMap<>();
+            map.put("amount", manager.getRecommendNumber() + "");
+            map.put("giveUid", uid + "");
+            Props nectarProps = propsMapper.getUserPropsByUidAndTypeAndSource(parentUid, PropsTypeEnum.SUN.getType(), PropsSourceEnum.SUN_CONSUM_REWARD.getSourceType());
+            int insertRecordResult = this.savePropsRecord(parentUid, transNo, PropsChannelEnum.RECOMMEND_REWARDS.getChannel(), PropsOperationTypeEnum.ADD.getType(),
+                    manager.getRecommendNumber(), PropsTypeEnum.SUN.getType(), JSON.toJSONString(map), nectarProps.getId(), nectarProps.getNumber(),
+                    nectarProps.getNumber() + manager.getRecommendNumber(), 0, 0,
+                    "用户" + uid + "使用能量进行操作时，,赠送给上级用户(" + parentUid + ")" + manager.getRecommendNumber() + "阳光");
+            if (insertRecordResult == 1) {
+                int insertResult = propsMapper.addPropsNumber(parentUid, PropsTypeEnum.SUN.getType(), PropsSourceEnum.SUN_CONSUM_REWARD.getSourceType(), manager.getRecommendNumber(),
+                        DateUtil.getNow(DateUtil.Y_M_D_HMS));
+                if (insertResult != 1) {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 增加用户的能量数
+     */
+    public Result addUserEnergy(long uid, double number) {
+        Result result = new Result();
+        if (uid == 0 || uid < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("请输入正确的参数UID");
+            return result;
+        }
+        if (uid == 0 || number < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("请输入正确的能量数");
+            return result;
+        }
+
+        //查询当前用户是否有能量统计的记录
+        List<Props> propses = propsMapper.listPropsByUidAndPropsType(uid, PropsTypeEnum.ENERGY.getType());
+        if (propses == null || propses.size() == 0) {
+            //        //能量 打赏累计
+            List<Props> insertProps = new ArrayList<>();
+            Props energy = new Props();
+            energy.setPropsType(PropsTypeEnum.ENERGY.getType());
+            energy.setCreateTime(DateUtil.getNow(DateUtil.Y_M_D_HMS));
+            energy.setUid(uid);
+            energy.setPropsSource(PropsSourceEnum.ENERGY_DAY.getSourceType());
+            energy.setNumber(number);
+            insertProps.add(energy);
+            int insertResult = propsMapper.batchInsertProps(insertProps);
+            if (insertResult != 1) {
+                result.setCode(ResultCodeEnum.ERROR.status());
+                result.setMessage("增加用户能量数据失败");
+                return result;
+            }
+        } else {
+            int miunsNumber = propsMapper.addPropsNumber(uid, PropsTypeEnum.ENERGY.getType(), PropsSourceEnum.ENERGY_DAY.getSourceType(), number, DateUtil.getNow(DateUtil.Y_M_D_HMS));
+            if (miunsNumber != 1) {
+                result.setCode(ResultCodeEnum.ERROR.status());
+                result.setMessage("增加用户能量数据失败");
+                return result;
+            }
+        }
+        result.setCode(ResultCodeEnum.SUCCESS.status());
+        result.setMessage("增加用户能量成功.");
+        return result;
+    }
+
+
+    /**
+     * 下级激活庄园赠送花苗
+     */
+    private boolean giveParentFlowerByActiveManor(String transNo, long uid, long parentUid) {
+        logger.info("下级激活庄园使时候,赠送上级花苗.下级UID:" + uid + ",上级UID:" + parentUid + ",激活庄园的消费交易号:" + transNo + "");
+        boolean result = true;
+        //用户激活
+        Map<String, String> map = new HashMap<>();
+        map.put("number", "1");
+        map.put("giveUid", uid + "");
+        Props props = propsMapper.getUserPropsByUidAndTypeAndSource(parentUid, PropsTypeEnum.FLOWER_SEEDING.getType(), PropsSourceEnum.FLOWER_SEEDING_GIVE.getSourceType());
+        int insertRecordResult = this.savePropsRecord(parentUid, transNo, PropsChannelEnum.GIVE.getChannel(), PropsOperationTypeEnum.ADD.getType(),
+                1, PropsTypeEnum.FLOWER_SEEDING.getType(), JSON.toJSONString(map), props.getId(), props.getNumber(), props.getNumber() + 1, 0, 0,
+                "用户" + uid + "激活庄园,赠送给上级用户(" + parentUid + ")1课花苗");
+        if (insertRecordResult == 1) {
+            //关系记录表插入一条记录
+            int insertResult = propsMapper.insertFlowerGiveRecord(parentUid, uid, DateUtil.getNow(DateUtil.Y_M_D_HMS));
+            if (insertResult == 1) {
+                insertResult = propsMapper.addPropsNumber(parentUid, PropsTypeEnum.FLOWER_SEEDING.getType(), PropsSourceEnum.FLOWER_SEEDING_GIVE.getSourceType(), 1,
+                        DateUtil.getNow(DateUtil.Y_M_D_HMS));
+                if (insertResult != 1) {
+                    result = false;
+                }
+            } else {
+                result = false;
+            }
+        } else {
+            result = false;
+        }
+        return result;
+    }
+
+
+    /**
+     * 统计用户道具
+     *
+     * @param uid 用户ID
+     */
+    public ResultList statisticsUserProps(long uid) {
+        logger.info("当前用户id:" + uid + "统计自己的用户道具信息");
+        ResultList result = new ResultList();
+
+        if (uid == 0 || uid < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("操作的用户id不能为空,请输入正确的值");
+            return result;
+        }
+        //转换的花苗数量
+        Integer coverFlowerValue = propsMapper.getCoverValue(PropsTypeEnum.ENERGY.getType(), PropsTypeEnum.FLOWER_SEEDING.getType());
+        if (coverFlowerValue == null) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.SYTEM_CONFING_STATUS.getStatus());
+            result.setMessage("能量转换花苗后台没有配置.");
+            return result;
+        }
+        Integer coverFertilizerValue = propsMapper.getCoverValue(PropsTypeEnum.ENERGY.getType(), PropsTypeEnum.FERTILIZER.getType());
+        if (coverFertilizerValue == null) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.SYTEM_CONFING_STATUS.getStatus());
+            result.setMessage("能量转换肥料后台没有配置.");
+            return result;
+        }
+        //获取当前用户每一种道具的总和
+        List<UserProps> propsStatisticses = propsMapper.statisticsPropsByUserId(uid);
+        List<Map<String, String>> coverMap = new ArrayList<>();
+
+        if (propsStatisticses != null && propsStatisticses.size() > 0) {
+            for (UserProps props : propsStatisticses) {
+                Map<String, String> value = MapBeanUtil.convertMap(props, "type", "number");
+                coverMap.add(value);
+            }
+        }
+        //统计昨天是否有新的受益
+        Map<String, String> hasnewNectarMap = new HashMap<>();
+        Integer newNectar = propsMapper.checkUserHasNewNectar(uid, DateUtil.getNow(DateUtil.Y_M_D) + " 00:00:00", DateUtil.getNow(DateUtil.Y_M_D) + " 23:59:59");
+        hasnewNectarMap.put("hasNewNectar", newNectar == null ? "0" : "1");
+        hasnewNectarMap.put("coverFlowerValue", String.valueOf(coverFlowerValue));
+        hasnewNectarMap.put("coverFertilizerValue", String.valueOf(coverFertilizerValue));
+        //获取能量转换花苗和施肥的配置参数
+        propsMapper.getCoverValue(PropsTypeEnum.ENERGY.getType(), PropsTypeEnum.FLOWER_SEEDING.getType());
+        coverMap.add(hasnewNectarMap);
+        result.setMessage("获取当前用户的每种道具的数量统计");
+        result.setCode(ResultCodeEnum.SUCCESS.status());
+        result.setValues(coverMap);
+        return result;
+    }
+
+    /**
+     * 统计用户仓库的道具信息
+     */
+    public Result statisticsUserRepertory(long uid) {
+        logger.info("当前用户id:" + uid + "统计用户仓库信息");
+        Result result = new Result();
+        if (uid == 0 || uid < 0) {
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setMessage("当前用户UID不能为空");
+            return result;
+        }
+        result.setCode(ResultCodeEnum.SUCCESS.status());
+        result.setStatusCode(BusinessStatusCodeEnum.SUCCESS_STATUS.getStatus());
+        result.setMessage("统计用户的仓库道具信息");
+        //1.获取仓库的花蜜滴数 2.今日收益的花蜜数  3.今日收获的阳光数量
+        //获取花蜜数
+        Map<String, String> values = new HashMap<>();
+        Double nectaryTotal = propsMapper.totalPropsNumberByUidAndPropsType(uid, PropsTypeEnum.NECTAR.getType());
+        values.put("nectarCount", nectaryTotal == null ? "0" : nectaryTotal + "");
+        //获取今日收益的花蜜数
+        Integer todayNectary = propsMapper.getEarningsByUidAndPropsType(uid, PropsTypeEnum.NECTAR.getType(),
+                DateUtil.getNow(DateUtil.Y_M_D) + " 00:00:00", DateUtil.getNow(DateUtil.Y_M_D) + " 23:59:59");
+        values.put("nectarToday", todayNectary == null ? "0" : todayNectary + "");
+        Double sunTotal = propsMapper.totalPropsNumberByUidAndPropsType(uid, PropsTypeEnum.SUN.getType());
+        values.put("sunCount", sunTotal == null ? "0" : sunTotal + "");
+        Integer todaySun = propsMapper.getEarningsByUidAndPropsType(uid, PropsTypeEnum.SUN.getType(),
+                DateUtil.getNow(DateUtil.Y_M_D) + " 00:00:00", DateUtil.getNow(DateUtil.Y_M_D) + " 23:59:59");
+        values.put("sunToday", todaySun == null ? "0" : todaySun + "");
+
+        result.setValues(values);
+        return result;
+    }
+
+    /**
+     * 购买道具
+     *
+     * @param uid       操作用户UID
+     * @param propsType 购买的道具类型
+     * @param number    购买的数量
+     */
+    @Override
+    @Transactional(rollbackFor = {RuntimeException.class}, isolation = Isolation.SERIALIZABLE, timeout = 10)
+    public Result buyPropsUsePropsSun(String transNo, long uid, int propsType, int number, int configSunNumber) {
+        logger.info("当前用户id:" + uid + "购买道具,消费号:" + transNo + ",道具类型:" + propsType + ",购买的数量是:" + number + ",业务后台配置的值configSunNumber:" + configSunNumber + "");
+        Result result = new Result();
+        if (uid == 0 || uid < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("操作的用户id不能为空");
+            return result;
+        }
+        if (propsType == 0 || propsType < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("购买的道具类型不能为空,请输入正确值");
+            return result;
+
+        }
+        if (number == 0 || number < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("购买的数量必须大于0");
+            return result;
+        }
+
+        if (configSunNumber == 0 || configSunNumber < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("转换的道具的比例不能为空");
+            return result;
+        }
+        //首先插入记录
+        //增加消费阳光记录表
+        PropsChannelEnum propsChannelEnum = null;
+        int propsSource = 0;
+        if (propsType == PropsTypeEnum.FLOWER_SEEDING.getType()) {
+            propsChannelEnum = PropsChannelEnum.BUY_FLOWER_SEEDLING;
+            propsSource = PropsSourceEnum.FLOWER_SEEDING_OWN_BUY.getSourceType();
+        } else if (propsType == PropsTypeEnum.FERTILIZER.getType()) {
+            propsChannelEnum = PropsChannelEnum.BUY_FERTILIZER;
+            propsSource = PropsSourceEnum.FERTILIZER_OWN_BUY.getSourceType();
+        } else {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("阳光购买的道具必须是花苗或者肥料.");
+            return result;
+        }
+
+        //根据交易号查询当前用户是否已经发放过
+        if (propsMapper.countRedpackageByTransNoAndUid(uid, transNo, propsType) > 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.REPEATEDLY_COMMIT_STATUS.getStatus());
+            result.setMessage("交易批次号(transNo)重复提交,不能重复购买");
+            return result;
+        }
+
+        //先查询需要扣除的道具类型的数量够不够
+        int totalPropsNumber = configSunNumber * number;//需要扣除的数量
+        Double total = propsMapper.totalPropsNumberByUidAndPropsType(uid, PropsTypeEnum.SUN.getType());
+        total = total == null ? 0 : total;
+        if (totalPropsNumber > total) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.AMONUT_NOT_ENOUGH_STATUS.getStatus());
+            result.setMessage("当前用户:" + uid + "无法进行购买，余额不足请及时充值");
+            return result;
+        }
+
+        //就开始扣除阳光数量
+        Map<String, String> map = new HashMap<>();
+        map.put("number", number + "");
+        if (this.minusUserPropsBySort(transNo, uid, propsChannelEnum.getChannel(), totalPropsNumber, JSON.toJSONString(map), 0, 0)) {
+            //增加一条记录
+            //增加花苗购买花苗
+            Props props = new Props();
+            if (propsType == PropsTypeEnum.FLOWER_SEEDING.getType()) {
+                props = propsMapper.getUserPropsByUidAndTypeAndSource(uid, PropsTypeEnum.FLOWER_SEEDING.getType(), propsSource);
+            } else if (propsType == PropsTypeEnum.FERTILIZER.getType()) {
+                props = propsMapper.getUserPropsByUidAndTypeAndSource(uid, PropsTypeEnum.FERTILIZER.getType(), propsSource);
+            }
+            int insertRecordResult = this.savePropsRecord(uid, transNo, propsChannelEnum.getChannel(), PropsOperationTypeEnum.ADD.getType(),
+                    number, propsType, null, props.getId(), props.getNumber(), props.getNumber() + number, 0, 0,
+                    "当前用户" + uid + "使用阳光" + propsChannelEnum.getRemark() + ",购买的道具数量是:" + number + "，使用的阳光数量是:" + totalPropsNumber);
+            if (insertRecordResult == 1) {
+                insertRecordResult = propsMapper.addPropsNumber(uid, propsType, propsSource, number, DateUtil.getNow(DateUtil.Y_M_D_HMS));
+                if (insertRecordResult != 1) {
+                    throw new CustomException("购买失败");
+                }
+            }
+        } else {
+            throw new CustomException("使用阳光购买道具失败");
+        }
+
+        logger.info("当前用户id:" + uid + "购买道具结束,消费号:" + transNo + ",道具类型:" + propsType + ",购买的数量是:" + number + ",业务后台配置的值configSunNumber:" + configSunNumber + "");
+        result.setCode(ResultCodeEnum.SUCCESS.status());
+        result.setStatusCode(BusinessStatusCodeEnum.SUCCESS_STATUS.getStatus());
+        result.setMessage(propsChannelEnum.getRemark() + "成功.");
+        return result;
+    }
+
+
+    /**
+     * 兑换抵用券
+     *
+     * @param transNo           消费交易号
+     * @param uid               操作用户ID
+     * @param voucherAmount     抵用券类型
+     * @param propsType         道具类型
+     * @param configPropsNumber 兑换的道具比例
+     * @param number            兑换的数量
+     */
+    @Transactional(rollbackFor = {RuntimeException.class}, isolation = Isolation.SERIALIZABLE, timeout = 10)
+    public Result exchangeVoucher(String transNo, long uid, double voucherAmount, int propsType, int configPropsNumber, int number) {
+        Result result = new Result();
+        if (StringUtils.isBlank(transNo)) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("交易消费号不能为空");
+            return result;
+        }
+        if (uid == 0 || uid < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("操作用户ID不能为空");
+            return result;
+        }
+        if (voucherAmount <= 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("请输入正确兑换的金额");
+            return result;
+        }
+        if (propsType == 0 || propsType < 0 || propsType != PropsTypeEnum.SUN.getType()) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("兑换的道具类型不能为空,兑换的道具类型必须为阳光");
+            return result;
+        }
+        if (configPropsNumber == 0 || configPropsNumber < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("兑换的比例不能为空.");
+            return result;
+        }
+        if (number == 0 || number < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("兑换的抵用券数量必须大于0.");
+            return result;
+        }
+        //目前这阶段只考虑阳光类型
+        //先判断当前交易号是否已经存在记录表中
+        if (propsMapper.countPropsRecordByTransNo(transNo) > 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.REPEATEDLY_COMMIT_STATUS.getStatus());
+            result.setMessage("交易批次号(transNo)重复提交,请勿重复提交");
+            return result;
+        }
+        //判断阳光的数量是否足够
+        Double total = propsMapper.totalPropsNumberByUidAndPropsType(uid, propsType);
+        total = total == null ? 0 : total;
+        int amountTotal = configPropsNumber * number;
+        if (amountTotal > total) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.AMONUT_NOT_ENOUGH_STATUS.getStatus());
+            result.setMessage("当前用户:" + uid + "无法兑换抵用券，余额不足请及时充值");
+            return result;
+        }
+        logger.info("消费交易号:" + transNo + ",开始兑换抵用券,兑换的抵用券面额:" + voucherAmount + ",兑换的数量是" + number + "");
+        //先插入一条记录到数据库中
+        //赠送用户阳光操作步骤 1.增加消费记录(操作用户ID减少阳光数量) 2.减少操作用户的阳光数量, 3.给赠送的用户增加消费记录 4.增加赠送用户的数量总数
+        Map<String, String> map = new HashMap<>();
+        map.put("number", number + "");
+        map.put("amount", voucherAmount + "");
+        if (!this.minusUserPropsBySort(transNo, uid, PropsChannelEnum.EXCHANGE_VOUCHER.getChannel(), amountTotal, JSON.toJSONString(map), number, (int) voucherAmount)) {
+            throw new CustomException("兑换抵用券失败");
+        }
+        Map<String, String> values = new HashMap<>();
+        values.put("number", number + "");
+        values.put("amount", voucherAmount + "");
+        logger.info("消费交易号:" + transNo + ",兑换抵用券结束,兑换的抵用券面额:" + voucherAmount + ",兑换的数量是" + number + "");
+        result.setCode(ResultCodeEnum.SUCCESS.status());
+        result.setStatusCode(BusinessStatusCodeEnum.SUCCESS_STATUS.getStatus());
+        result.setMessage("用户使用阳光兑换抵用券成功");
+        return result;
+    }
+
+    /**
+     * 花蜜兑换现金红包
+     *
+     * @param moneyRedpackageAmount 红包额度
+     * @param configNectarNumber    多少花蜜换一罐蜂蜜(后台配置的)
+     * @param transNo               交易号 消费交易号
+     * @param uid                   用户ID  用户ID
+     * @param number                数量    购买的数量
+     */
+    @Transactional(rollbackFor = {RuntimeException.class}, isolation = Isolation.SERIALIZABLE, timeout = 10)
+    public Result exchangeMoneyRedpackage(String transNo, long uid, int number, int configNectarNumber, double moneyRedpackageAmount) {
+
+        Result result = new Result();
+        if (StringUtils.isBlank(transNo)) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("交易消费号不能为空");
+            return result;
+        }
+        if (uid == 0 || uid < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("操作用户ID不能为空");
+            return result;
+        }
+        if (number == 0 || number < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("购买的数量必须大于0.");
+            return result;
+
+        }
+        if (configNectarNumber == 0 || configNectarNumber < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("兑换的比例不能为空.");
+            return result;
+        }
+        //判断当前用户是否已经进行了交易
+        if (propsMapper.countPropsRecordByTransNo(transNo) > 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.REPEATEDLY_COMMIT_STATUS.getStatus());
+            result.setMessage("交易批次号(transNo)重复提交,请勿重复提交");
+            return result;
+        }
+        logger.info("用户uid:" + uid + "使用花蜜兑换现金红包.交易号:" + transNo + ",兑换的数量:" + number + ",花蜜兑换成1灌的数量是:" + configNectarNumber + "");
+        int nectarTotal = number * configNectarNumber;
+        //查询当前用户的花蜜数量是否足够扣除
+        Props props = propsMapper.getUserPropsByUidAndTypeAndSource(uid, PropsTypeEnum.NECTAR.getType(), PropsSourceEnum.NECTAR_EVERY_DAY.getSourceType());
+        if (props != null && nectarTotal > props.getNumber()) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.AMONUT_NOT_ENOUGH_STATUS.getStatus());
+            result.setMessage("当前用户:" + uid + "无法兑换现金，花蜜余额不足请及时充值");
+            return result;
+        }
+        Map<String, String> map = new HashMap<>();
+        map.put("number", number + "");
+        map.put("amount", moneyRedpackageAmount + "");
+        int insertRecordResult = this.savePropsRecord(uid, transNo, PropsChannelEnum.EXCHANGE_MONEY_REDPACKAGE.getChannel(), PropsOperationTypeEnum.MIUNS.getType(),
+                nectarTotal, PropsTypeEnum.NECTAR.getType(), JSON.toJSONString(map), props.getId(), props.getNumber(), props.getNumber() - nectarTotal, number, moneyRedpackageAmount,
+                "当前用户" + uid + "将" + nectarTotal + "花蜜数量兑换了" + number + "张类型为" + moneyRedpackageAmount + "现金红包");
+        if (insertRecordResult == 1) {
+            //扣除当前用户的花蜜数量
+            int minusResult = propsMapper.minusPropsNumber(uid, PropsTypeEnum.NECTAR.getType(), PropsSourceEnum.NECTAR_EVERY_DAY.getSourceType(),
+                    number * configNectarNumber, DateUtil.getNow(DateUtil.Y_M_D_HMS));
+            if (minusResult == 1) {
+                //往用户的账户里面增加现在红包
+                Map<String, String> param = new HashMap<>();
+                param.put("uid", String.valueOf(uid));//用户ID
+                param.put("typeId", "1");//用户类型
+                param.put("type", "11");//收益类型
+                param.put("option", "0");//增加类型
+                param.put("amount", String.valueOf(number * moneyRedpackageAmount));
+                try {
+                    logger.info("用户uid:" + uid + "使用花蜜兑换现金红包.交易号:" + transNo + ",往用户的扩展钱包转入红包现金,转入的红包金额是:" + number * moneyRedpackageAmount);
+                    Map<String, String> resultMap = walletExpansionService.updateWalletExpansion(param);
+                    String state = resultMap.get("state");
+                    if (!"0".equals(state)) {
+                        logger.info("用户uid:" + uid + "使用花蜜兑换现金红包.交易号:" + transNo + ",往用户的扩展钱包转入金额失败,异常信息如下:" + resultMap.get("msg"));
+                        throw new CustomException("使用花蜜兑换现金红包失败");
+                    }
+                } catch (com.xmniao.thrift.ledger.FailureException e) {
+                    logger.error("使用花蜜兑换现在红包，往用户的扩展钱包转入金额失败.异常信息如下:" + e);
+                    throw new CustomException("使用花蜜兑换现金红包失败");
+                }
+            } else {
+                logger.info("用户uid:" + uid + "使用花蜜兑换现金红包.交易号:" + transNo + ",兑换的数量:" + number + ",花蜜兑换成1灌的数量是:" + configNectarNumber + ",扣除花蜜数量失败");
+                throw new CustomException("使用花蜜兑换现金红包失败");
+            }
+        } else {
+            throw new CustomException("使用花蜜兑换现金红包失败");
+        }
+        logger.info("用户uid:" + uid + "使用花蜜兑换现金红包结束.交易号:" + transNo + ",兑换的数量:" + number + ",花蜜兑换成1灌的数量是:" + configNectarNumber + "");
+        result.setCode(ResultCodeEnum.SUCCESS.status());
+        result.setStatusCode(BusinessStatusCodeEnum.SUCCESS_STATUS.getStatus());
+        result.setMessage("用户使用花蜜兑换现在红包成功");
+        return result;
+    }
+
+    /**
+     * 根据用户ID种花操作
+     *
+     * @param uid    操作的用户ID
+     * @param number 花苗数量
+     */
+    @Transactional(rollbackFor = {RuntimeException.class}, isolation = Isolation.SERIALIZABLE, timeout = 10)
+    public Result growFlowersByUid(String transNo, long uid, long parentId, int number) {
+        logger.info("当前操作用户uid:" + uid + ",开始种花,种花的数量是:" + number + ",交易号是:" + transNo + "");
+        Result result = new Result();
+        if (uid == 0 || uid < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("操作的用户id不能为空,请输入正确值");
+            return result;
+        }
+
+        if (number == 0 || number < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("花苗的数量(number)必须大于0,请输入正确值");
+            return result;
+        }
+        if (StringUtils.isBlank(transNo)) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("交易批次号(transNo)不能为空.请输入正确值");
+            return result;
+        }
+        //先判断当前交易号是否已经存在记录表中
+        if (propsMapper.countPropsRecordByTransNo(transNo) > 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.REPEATEDLY_COMMIT_STATUS.getStatus());
+            result.setMessage("交易批次号(transNo)重复提交");
+            return result;
+        }
+        //种花的时候，使用道具：1.花苗(包含自己购买或直接下级委托种植的花苗) 2.能量  使用优先级：1.园又赠送 2.能量 3自己购买(使用阳光购买)
+        double totalNumber = 0;
+        List<Props> userPropsList = propsMapper.listPropsByUidAndPropsType(uid, PropsTypeEnum.FLOWER_SEEDING.getType());
+        if (userPropsList != null && userPropsList.size() > 0) {
+            for (Props p : userPropsList) {
+                totalNumber = totalNumber + p.getNumber();
+            }
+        }
+        Props nectarProps = propsMapper.getUserPropsByUidAndTypeAndSource(uid, PropsTypeEnum.ENERGY.getType(), PropsSourceEnum.ENERGY_DAY.getSourceType());
+        int coverTotal = 0;
+        Integer coverValue = 0;
+        if (nectarProps != null && nectarProps.getNumber() > 0) {
+            //统计出当前用户的能量总数
+            coverValue = propsMapper.getCoverValue(PropsTypeEnum.ENERGY.getType(), PropsTypeEnum.FLOWER_SEEDING.getType());
+            if (coverValue == null) {
+                result.setCode(ResultCodeEnum.ERROR.status());
+                result.setStatusCode(BusinessStatusCodeEnum.SYTEM_CONFING_STATUS.getStatus());
+                result.setMessage("业务后台系统没有能量转换花苗的业务配置.");
+                return result;
+            }
+            coverTotal = XmnUtils.floor(nectarProps.getNumber() / coverValue);//能量能转换的花苗数量s
+            logger.info("能量转换花苗的数量是:" + coverTotal);
+        }
+        if ((totalNumber + coverTotal) < number) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.AMONUT_NOT_ENOUGH_STATUS.getStatus());
+            result.setMessage("当前用户无法种花，余额不足");
+            return result;
+        }
+
+        Map<String, String> userGiveMap = new HashMap<>();
+        int hnumber = 0;
+        int giveNumber = 0;
+        //园又赠送
+        Props giveProps = propsMapper.getUserPropsByUidAndTypeAndSource(uid, PropsTypeEnum.FLOWER_SEEDING.getType(), PropsSourceEnum.FLOWER_SEEDING_GIVE.getSourceType());
+        if (giveProps != null) {
+            giveNumber = (int) giveProps.getNumber();
+        }
+        //先扣除园又赠送记录
+        int kGiveNumber = 0;
+        if (giveNumber > 0) {
+            if (number >= giveNumber) {
+                kGiveNumber = giveNumber;
+            } else if (number < giveNumber) {
+                kGiveNumber = number;
+            }
+            logger.info("用户使用园又赠送的数量进行种花，扣除的的数量是:>>>>>" + kGiveNumber);
+            //扣除园又赠送的花苗记录
+            //插入消费记录
+            int insertRecordResult = this.savePropsRecord(uid, transNo, PropsChannelEnum.GROW_FLOWERS.getChannel(), PropsOperationTypeEnum.MIUNS.getType(), kGiveNumber,
+                    PropsTypeEnum.FLOWER_SEEDING.getType(), null, giveProps.getId(), giveProps.getNumber(), giveNumber - kGiveNumber, 0, 0,
+                    "当前用户" + uid + "使用赠送的花苗进行种花，使用的赠送的数量是:" + giveNumber);
+            if (insertRecordResult == 1) {
+                //更新用户道具表的数据(园又赠送记录)
+                int minusGiveResult = propsMapper.minusPropsNumber(uid, PropsTypeEnum.FLOWER_SEEDING.getType(), PropsSourceEnum.FLOWER_SEEDING_GIVE.getSourceType(),
+                        kGiveNumber, DateUtil.getNow(DateUtil.Y_M_D_HMS));
+
+                if (minusGiveResult == 1) {
+                    //更新园又赠送的关系表
+                    List<FlowerSeedingGiveRecord> giveRecords = propsMapper.getFlowerGiveRecordByUid(uid, kGiveNumber, DateUtil.getNow(DateUtil.Y_M_D) + " 00:00:00", DateUtil.getNow(DateUtil.Y_M_D) + " 23:59:59");
+                    if (giveRecords == null || giveRecords.size() != kGiveNumber) {
+                        logger.error("当前用户的花苗关系链表查询出来的数据和需要扣除的花苗数量不匹配.数据库花苗的数量是:" + giveRecords.size() + ",更新的值是giveNumber=" + giveNumber);
+                        throw new CustomException("当前用户的花苗关系链表查询出来的数据和需要扣除的花苗数量不匹配");
+                    } else {
+                        //先更新数据表
+                        List<Long> giveIds = new ArrayList<>();
+                        for (FlowerSeedingGiveRecord giveRecord : giveRecords) {
+                            if (userGiveMap.get(giveRecord.getGiveUid() + "") == null) {
+                                giveIds.add(giveRecord.getId());
+                                userGiveMap.put(giveRecord.getGiveUid() + "", "1");
+                            } else {
+                                userGiveMap.put(giveRecord.getGiveUid() + "", userGiveMap.get(giveRecord.getGiveUid()) + 1);
+                            }
+                        }
+                        int giveUpdateResult = propsMapper.updateGiveRecordIds(uid, giveIds, DateUtil.getNow(DateUtil.Y_M_D_HMS));//更新花苗使用状态
+                        if (giveUpdateResult != giveNumber) {
+                            throw new CustomException("更新花苗关系链时发生问题,种花失败");
+                        }
+                    }
+                } else {
+                    throw new CustomException("更新用户道具表的数据时发生异常,种花失败");
+                }
+            } else {
+                throw new CustomException("插入种花记录表是发生异常,种花失败");
+            }
+        }
+        hnumber = number - kGiveNumber;
+        //扣除能量
+        int kNectNumber = 0;
+        if (hnumber > 0 && coverTotal > 0) {
+            if (hnumber >= coverTotal) {
+                kNectNumber = coverTotal;
+            } else if (hnumber < coverTotal) {
+                kNectNumber = hnumber;
+            }
+            logger.info("用户使用能量兑换花苗，兑换的花苗数量是:" + kGiveNumber + ",兑换的阳光数量是:" + (kNectNumber * coverValue));
+            int insertEnergyRecordResult = this.savePropsRecord(uid, transNo, PropsChannelEnum.GROW_FLOWERS.getChannel(), PropsOperationTypeEnum.MIUNS.getType(),
+                    kNectNumber * coverValue, PropsTypeEnum.ENERGY.getType(), null, nectarProps.getId(), nectarProps.getNumber(), nectarProps.getNumber() - (kNectNumber * coverValue), 0, 0,
+                    "当前用户" + uid + "使用能量转换的花苗进行种花，使用转换的能量总数是:" + (kNectNumber * coverValue) + ",转换的花苗数量是:" + kNectNumber + "");
+            if (insertEnergyRecordResult == 1) {
+                //扣除用户的能量
+                int minusResult = propsMapper.minusPropsNumber(uid, PropsTypeEnum.ENERGY.getType(), PropsSourceEnum.ENERGY_DAY.getSourceType(), kNectNumber * coverValue,
+                        DateUtil.getNow(DateUtil.Y_M_D_HMS));
+                if (minusResult != 1) {
+                    throw new CustomException("使用能量转换花苗发生问题,种花失败");
+                }
+            } else {
+                throw new CustomException("使用能量转换花苗发生问题,种花失败");
+            }
+        }
+
+        //自己购买的数量
+        int buyNumber = 0;
+        Props buyProps = propsMapper.getUserPropsByUidAndTypeAndSource(uid, PropsTypeEnum.FLOWER_SEEDING.getType(), PropsSourceEnum.FLOWER_SEEDING_OWN_BUY.getSourceType());
+        if (buyProps != null) {
+            buyNumber = (int) buyProps.getNumber();
+        }
+        hnumber = number - kGiveNumber - kNectNumber;
+        if (hnumber > 0 && buyNumber > 0) {
+            if (hnumber > buyNumber) {
+                throw new CustomException("使用用户自己购买的花苗进行种花时发生问题，需要种花数量和当前用户拥有的花数量不能匹配,种花失败.");
+            } else {
+                //扣除自己购买的花苗
+                int insertEnergyRecordResult = this.savePropsRecord(uid, transNo, PropsChannelEnum.GROW_FLOWERS.getChannel(), PropsOperationTypeEnum.MIUNS.getType(), hnumber,
+                        PropsTypeEnum.FLOWER_SEEDING.getType(), null, buyProps.getId(), buyProps.getNumber(), buyProps.getNumber() - hnumber, 0, 0,
+                        "当前用户" + uid + "使用自己购买的花苗进行种花，使用花苗的数量是:" + hnumber);
+                if (insertEnergyRecordResult == 1) {
+                    int minusFlowerResult = propsMapper.minusPropsNumber(uid, PropsTypeEnum.FLOWER_SEEDING.getType(), PropsSourceEnum.FLOWER_SEEDING_OWN_BUY.getSourceType(),
+                            hnumber, DateUtil.getNow(DateUtil.Y_M_D_HMS));
+                    if (minusFlowerResult != 1) {
+                        throw new CustomException("使用用户自己购买的花苗进行种花发生问题,种花失败.");
+                    }
+                } else {
+                    throw new CustomException("扣除用户自己购买花苗的道具记录表时发生异常,种花失败");
+                }
+            }
+            hnumber = 0;
+        }
+        if (hnumber != 0) {
+            throw new CustomException("花苗的数量扣除失败，扣除后的数量不等于0,种花失败");
+        }
+        result.setCode(ResultCodeEnum.SUCCESS.status());
+        result.setStatusCode(BusinessStatusCodeEnum.SUCCESS_STATUS.getStatus());
+        result.setValues(userGiveMap);
+        result.setMessage("用户种花操作成功.");
+        return result;
+    }
+
+
+    /**
+     * 施肥操作(针对花苗和花朵)
+     *
+     * @param uid     用户ID
+     * @param number  施肥数量
+     * @param transNo 交易号
+     */
+    @Transactional(rollbackFor = {RuntimeException.class}, isolation = Isolation.SERIALIZABLE, timeout = 10)
+    public Result ferilizeByUid(String transNo, long uid, long partentId, int number) {
+        Result result = new Result();
+        if (number == 0 || number < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("施肥的数量必须大于0");
+            return result;
+        }
+        if (uid == 0 || uid < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("操作的用户id不能为空.");
+            return result;
+        }
+        if (StringUtils.isBlank(transNo)) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("交易的批次号(transNo)不能为空.");
+            return result;
+        }
+        //先判断当前交易号是否已经存在记录表中
+        if (propsMapper.countPropsRecordByTransNo(transNo) > 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.REPEATEDLY_COMMIT_STATUS.getStatus());
+            result.setMessage("交易批次号(transNo)重复提交");
+            return result;
+        }
+
+        logger.info("当前用户" + uid + ",正在施肥,施肥的数量是:" + number + ",交易号是:" + transNo + "");
+        //判断当前用户的余额是否足够购买肥料 1.能量 2.肥料
+        //统计出当前用户的能量总数
+
+        //获取当前用户的能量总数
+        Props energyProps = propsMapper.getUserPropsByUidAndTypeAndSource(uid, PropsTypeEnum.ENERGY.getType(), PropsSourceEnum.ENERGY_DAY.getSourceType());
+        Integer coverValue = null;
+        int coverTotal = 0;
+        if (energyProps != null && energyProps.getNumber() > 0) {
+            coverValue = propsMapper.getCoverValue(PropsTypeEnum.ENERGY.getType(), PropsTypeEnum.FERTILIZER.getType());
+            coverValue = coverValue == null ? 0 : coverValue;
+            if (coverValue == null) {
+                result.setCode(ResultCodeEnum.ERROR.status());
+                result.setStatusCode(BusinessStatusCodeEnum.SYTEM_CONFING_STATUS.getStatus());
+                result.setMessage("业务后台系统没有能力转换肥料的业务配置.");
+                return result;
+            }
+            coverTotal = XmnUtils.floor(energyProps.getNumber() / coverValue);//能量能转换的花苗数量s
+            logger.info("转换的能量总数是:" + coverTotal);
+        }
+        //根据转换比例获取可以转换的花苗数量
+
+        //如果能量可以扣除就不用计算当前用户购买的肥料总数
+        Props fertilizerProps = propsMapper.getUserPropsByUidAndTypeAndSource(uid, PropsTypeEnum.FERTILIZER.getType(), PropsSourceEnum.FERTILIZER_OWN_BUY.getSourceType());
+        if (coverTotal < number) {
+            //统计出当前用户的肥料总数
+            Double fertilizerTotal = 0d;
+
+            if (fertilizerProps != null) {
+                fertilizerTotal = fertilizerProps.getNumber();
+            }
+            if (fertilizerTotal + coverTotal < number) {
+                result.setCode(ResultCodeEnum.ERROR.status());
+                result.setStatusCode(BusinessStatusCodeEnum.AMONUT_NOT_ENOUGH_STATUS.getStatus());
+                result.setMessage("当前用户:" + uid + "无法施肥，余额不足请及时充值");
+                return result;
+            }
+        }
+        //用户的肥料余额足够，就扣除肥料.使用道具优先顺序1.能量.2.肥料
+        //首先插入消费能量的记录数
+        int hnumber = 0;
+        if (coverTotal > 0) {
+            if (coverTotal <= number) {
+                coverTotal = coverTotal;
+            } else {
+                coverTotal = number;
+            }
+            int insertRecordResult = this.savePropsRecord(uid, transNo, PropsChannelEnum.FEED.getChannel(), PropsOperationTypeEnum.MIUNS.getType(), coverTotal * coverValue,
+                    PropsTypeEnum.ENERGY.getType(), null, energyProps.getId(), energyProps.getNumber(), energyProps.getNumber() - (coverTotal * coverValue), 0, 0,
+                    "当前用户" + uid + "使用能量对进行施肥，施肥的总数量是:" + number + ",使用的能量数量是:" + (coverTotal * coverValue));
+            if (insertRecordResult == 1) {
+                //扣除能量
+                int minudsEnergyResult = propsMapper.minusPropsNumber(uid, PropsTypeEnum.ENERGY.getType(), PropsSourceEnum.ENERGY_DAY.getSourceType(), coverTotal * coverValue,
+                        DateUtil.getNow(DateUtil.Y_M_D_HMS));
+                if (minudsEnergyResult != 1) {
+                    throw new CustomException("施肥失败.施肥时使用的是用户的能量，扣除用户的能量时发生异常");
+                }
+            } else {
+                throw new CustomException("施肥失败,增加用户的操作记录表发生异常.");
+            }
+            hnumber = number - coverTotal;
+        } else {
+            hnumber = number;
+        }
+
+        //使用自己购买的肥料进行扣除
+        if (hnumber > 0) {
+            logger.info("当前用户" + uid + "使用自己购买的肥料对进行施肥，使用的肥料数量是" + hnumber);
+            int insertRecordResult = this.savePropsRecord(uid, transNo, PropsChannelEnum.FEED.getChannel(), PropsOperationTypeEnum.MIUNS.getType(), hnumber,
+                    PropsTypeEnum.FERTILIZER.getType(), null, fertilizerProps.getId(), fertilizerProps.getNumber(), fertilizerProps.getNumber() - hnumber, 0, 0,
+                    "当前用户" + uid + "使用自己购买的肥料对进行施肥，施肥的总数量是:" + number + ",使用的肥料数量是:" + hnumber);
+            if (insertRecordResult == 1) {
+                int minudsBuyResult = propsMapper.minusPropsNumber(uid, PropsTypeEnum.FERTILIZER.getType(), PropsSourceEnum.FERTILIZER_OWN_BUY.getSourceType(),
+                        hnumber, DateUtil.getNow(DateUtil.Y_M_D_HMS));
+                if (minudsBuyResult != 1) {
+                    throw new CustomException("施肥花苗失败,使用自己购买的肥料进行施肥时减少用户自己购买肥料类型时发生异常.请重试.");
+                }
+            } else {
+                throw new CustomException("施肥花苗失败,使用自己购买的肥料进行施肥时增加操作记录表发生异常.请重试.");
+            }
+        }
+        result.setCode(ResultCodeEnum.SUCCESS.status());
+        result.setStatusCode(BusinessStatusCodeEnum.SUCCESS_STATUS.getStatus());
+        result.setMessage("当前用户:" + uid + "施肥肥料成功.");
+        return result;
+    }
+
+    /**
+     * 赠送用户道具
+     *
+     * @param uid           操作的用户
+     * @param givePropsType 赠送的道具类型
+     */
+    @Transactional(rollbackFor = {RuntimeException.class}, isolation = Isolation.SERIALIZABLE, timeout = 10)
+    public Result giveUserProps(String transNo, long uid, long giveUid, int givePropsType, int giveTime) {
+        Result result = new Result();
+        if (uid == 0 || uid < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("请输入正确的操作用户ID");
+            return result;
+        }
+        if (giveUid == 0 || giveUid < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("请输入正确的赠送的用户ID");
+            return result;
+        }
+        if (givePropsType == 0 || givePropsType < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("请输入正确的赠送的道具类型");
+            return result;
+        }
+
+        if (StringUtils.isBlank(transNo)) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("交易的流水号不能为空");
+        }
+        SunshineManager manager = sunshineManagerMapper.getSunshineManager();
+        if (manager == null) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.SYTEM_CONFING_STATUS.getStatus());
+            result.setMessage("系统没有进行配置");
+        }
+        if (manager.getHandsleNumber() <= 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.SYTEM_CONFING_STATUS.getStatus());
+            result.setMessage("系统没有进行配置赠送的数量");
+        }
+        //判断当前用户的道具类型的金额
+        //判断用户当前的阳光数量够不够扣
+        int amount = manager.getHandsleNumber();
+        Double total = propsMapper.totalPropsNumberByUidAndPropsType(uid, givePropsType);
+        total = total == null ? 0 : total;
+        if (amount > total) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.AMONUT_NOT_ENOUGH_STATUS.getStatus());
+            result.setMessage("当前用户:" + uid + "无法赠送阳光，余额不足请及时充值");
+            return result;
+        }
+        //判断当前用户是否赠送过  //目前需求是每天阳光红包每一天只能赠送一次
+        int time = 0;
+        List<PropsRecord> propsMappers = propsMapper.checkGivePropsFromUserToGiveUser(uid, givePropsType, DateUtil.getNow(DateUtil.Y_M_D) + " 00:00:00", DateUtil.getNow(DateUtil.Y_M_D) + " 23:59:59");
+        if (propsMappers != null && propsMappers.size() > 0) {
+            for (PropsRecord propsRecord : propsMappers) {
+                String common = propsRecord.getCommon();
+                Map<String, String> map = JSONObject.parseObject(common, Map.class);
+                String giveUidStr = map.get("giveUid");
+                if (giveUidStr.equals(String.valueOf(giveUid))) {
+                    time = time + 1;
+                }
+            }
+        }
+        if (time >= giveTime) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.REPEATEDLY_GIVE_STAUTS.getStatus());
+            result.setMessage("当前用户:" + uid + "每天只能赠送" + giveTime + "次");
+            return result;
+        }
+
+        Map<String, String> map = new HashMap<>();
+        map.put("amount", amount + "");
+        map.put("giveUid", giveUid + "");
+        if (this.minusUserPropsBySort(transNo, uid, PropsChannelEnum.GIVE.getChannel(), amount, JSON.toJSONString(map), 0, 0)) {
+            //增加赠送用户的消息记录
+            Props props = propsMapper.getUserPropsByUidAndTypeAndSource(giveUid, PropsTypeEnum.SUN.getType(), PropsSourceEnum.SUN_GIVE.getSourceType());
+            //如果这道具来源为空，就创建一条记录出来
+            if (props == null) {
+                props = new Props();
+                props.setUid(giveUid);
+                props.setNumber(0);
+                props.setPropsType(PropsTypeEnum.SUN.getType());
+                props.setPropsSource(PropsSourceEnum.SUN_GIVE.getSourceType());
+                props.setCreateTime(DateUtil.getNow(DateUtil.Y_M_D_HMS));
+                int insertResult = propsMapper.insertProps(props);
+                if (insertResult != 1) {
+                    throw new CustomException("赠送失败");
+                }
+            }
+            Map<String, String> map1 = new HashMap<>();
+            map1.put("amount", amount + "");
+            map1.put("sendUid", uid + "");
+            int insertGiveRecordResult = this.savePropsRecord(giveUid, transNo, PropsChannelEnum.GET_GIVE.getChannel(), PropsOperationTypeEnum.ADD.getType(),
+                    amount, PropsTypeEnum.SUN.getType(), JSON.toJSONString(map1), props.getId(), props.getNumber(), props.getNumber() + amount, 0, 0,
+                    "当前用户" + giveUid + "领取" + uid + "用户赠送的道具");
+
+            if (insertGiveRecordResult == 1) {
+                if (this.checkUserSunRepositoryIsFull(uid)) {
+                    int updateResult = propsMapper.addUserOverFlow(uid, amount, DateUtil.getNow(DateUtil.Y_M_D_HMS));
+                    if (updateResult != 1) {
+                        logger.error("领取红包失败，当前用户的阳光仓库已满，讲领取的红包额增加到用户的溢出阳光仓库中.");
+                        throw new CustomException("领取红包失败，当前用户的阳光仓库已满，讲领取的红包额增加到用户的溢出阳光仓库中.领取的阳光数量是:" + amount);
+                    }
+                }
+
+
+                //增加用户的道具数量
+                int addPropsNumberResult = propsMapper.addPropsNumber(giveUid, PropsTypeEnum.SUN.getType(), PropsSourceEnum.SUN_GIVE.getSourceType(), amount, DateUtil.getNow(DateUtil.Y_M_D_HMS));
+                if (addPropsNumberResult != 1) {
+                    throw new CustomException("赠送失败");
+                }
+            } else {
+                throw new CustomException("赠送失败");
+            }
+        } else {
+            throw new CustomException("赠送失败");
+        }
+        Map<String, String> values = new HashMap<>();
+        values.put("amount", amount + "");
+        result.setValues(values);
+        result.setMessage("赠送成功");
+        result.setCode(ResultCodeEnum.SUCCESS.status());
+        result.setStatusCode(BusinessStatusCodeEnum.SUCCESS_STATUS.getStatus());
+        return result;
+    }
+
+    /**
+     * 按照优先顺序减少用户的阳光数量
+     */
+    private boolean minusUserPropsBySort(String transNo, long uid, int channle, int amount, String common, int exchangeNumber, double exchangeAmount) {
+
+        //获取每一种类型阳光数量
+        List<Props> sunPros = propsMapper.listPropsByUidAndPropsType(uid, PropsTypeEnum.SUN.getType());
+        //获取排序后的阳光来源
+        List<PropsSourceEnum> propsSourceEnum = PropsSourceEnum.getSortSourceType(PropsSourceEnum.Series.SUN.value());
+        //要扣除当前用户账号的阳光数量。按照优先级扣除。
+        double hnumber = 0;
+        double knumber = 0;
+        for (PropsSourceEnum sourceEnum : propsSourceEnum) {
+            for (Props props : sunPros) {
+                if (sourceEnum.getSourceType() == props.getPropsSource()) {
+                    knumber = (amount - hnumber - props.getNumber()) > 0 ? props.getNumber() : amount - hnumber;
+
+                    if (props.getNumber() > 0 && knumber > 0) {
+                        int insertRecordResult = this.savePropsRecord(uid, transNo, channle, PropsOperationTypeEnum.MIUNS.getType(),
+                                (int) knumber, PropsTypeEnum.SUN.getType(), common, props.getId(), props.getNumber(), props.getNumber() - knumber, exchangeNumber, exchangeAmount,
+                                "当前用户" + uid + "使用" + PropsSourceEnum.getRemark(sourceEnum.getSourceType()) + "类型阳光，使用的阳光数量是:" + knumber);
+                        //update 语句
+                        if (insertRecordResult == 1) {
+                            int minudsSunResult = propsMapper.minusPropsNumber(uid, PropsTypeEnum.SUN.getType(), sourceEnum.getSourceType(), knumber, DateUtil.getNow(DateUtil.Y_M_D_HMS));//扣除用户账户的阳光数量
+                            if (minudsSunResult != 1) {
+                                return false;
+                            }
+                        } else {
+                            return false;
+                        }
+                    }
+                    hnumber = hnumber + knumber;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 发送道具红包
+     *
+     * @param uid       用户ID
+     * @param propsType 道具类
+     * @number 红包数量
+     */
+    @Transactional(rollbackFor = {RuntimeException.class}, isolation = Isolation.SERIALIZABLE, timeout = 10)
+    public Result sendPropsRedpackage(String transNo, long uid, int propsType, int type, int number, int amount) {
+        Result result = new Result();
+        if (uid == 0 || uid < 1) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("用户ID参数错误.");
+            return result;
+        }
+        if (propsType == 0 || propsType < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("道具类型错误.");
+            return result;
+        }
+        if (type == 0 || type < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("请输入正确的发送红包的类型,1.随机2.固定");
+            return result;
+        }
+        if (number == 0 || type < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("请输入正确的红包数量.");
+            return result;
+        }
+        if (amount == 0 || amount < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("请输入正确的单个红包数量.");
+            return result;
+        }
+        if (StringUtils.isBlank(transNo)) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("请输入正确的消费交易号.");
+            return result;
+        }
+
+        //根据交易号查询当前用户是否已经发放过
+        if (propsMapper.countRedpackageByTransNoAndUid(uid, transNo, propsType) > 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.REPEATEDLY_COMMIT_STATUS.getStatus());
+            result.setMessage("交易批次号(transNo)重复提交,不能重复发送红包");
+            return result;
+        }
+        //判断用户当前的阳光数量够不够扣
+        Double total = propsMapper.totalPropsNumberByUidAndPropsType(uid, propsType);
+        total = total == null ? 0 : total;
+        if (number * amount > total) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.AMONUT_NOT_ENOUGH_STATUS.getStatus());
+            result.setMessage("当前用户:" + uid + "无法发送阳光红包，余额不足请及时充值");
+            return result;
+        }
+
+        //先插入发送红包记录
+        PropsRedpackage propsRedpackage = new PropsRedpackage();
+        propsRedpackage.setTransNo(transNo);//交易号
+        propsRedpackage.setUid(uid);//发送红包的用户ID
+        propsRedpackage.setPropsType(propsType);//道具类型
+        propsRedpackage.setType(type);//红包类型
+        propsRedpackage.setNumber(number);//红包数量
+        propsRedpackage.setSingleRedpackageAmount(amount);//单个红包额度
+        propsRedpackage.setCreateTime(DateUtil.getNow(DateUtil.Y_M_D_HMS));//创建时间
+        propsRedpackage.setExprieTime(DateUtil.getAddHoursafterDate(DateUtil.getNow(DateUtil.Y_M_D_HMS), 24, DateUtil.Y_M_D_HMS));//过期时间 24小时之后
+        int insertResult = propsMapper.saveRedpackage(propsRedpackage);
+
+        if (insertResult == 1) {
+//            //增加消费阳光记录表
+//            int insertRecordResult = this.savePropsRecord(uid, transNo, "111", PropsChannelEnum.SEND_REDPACKAGE.getChannel(), PropsOperationTypeEnum.MIUNS.getType(),
+//                    amount * number, PropsTypeEnum.SUN.getType(), null, "当前用户" + uid + "发送红包，使用的红包数量是:" + (amount * number));
+            // if (insertRecordResult == 1) { //红包记录插入成功，就扣除阳光的数量 //扣除阳光的数量的优先顺序是 1.阳光红包  2.园又赠送 3.获得奖励 4.库存收益
+
+            if (!minusUserPropsBySort(transNo, uid, PropsChannelEnum.SEND_REDPACKAGE.getChannel(), number * amount, null, 0, 0)) {
+                throw new CustomException("发送红包失败");
+            }
+        } else {
+            throw new CustomException("红包发送失败,增加发红红包记录时发生异常,请重试");
+        }
+        Map<String, String> values = new HashMap<>();
+        values.put("redpackageId", propsRedpackage.getId() + "");
+        result.setStatusCode(BusinessStatusCodeEnum.SUCCESS_STATUS.getStatus());
+        result.setCode(ResultCodeEnum.SUCCESS.status());
+        result.setValues(values);
+        return result;
+    }
+
+    /**
+     * 获取当前用户的红包历史记录
+     *
+     * @param uid 用户ID
+     */
+    public ResultList listUserPropsRedpackageHistoryByUid(long uid, int offset, int limit) {
+        ResultList result = new ResultList();
+        if (uid == 0 || uid < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("操作的用户id不能为空.请输入正确值");
+            return result;
+        }
+        //根据用户ID获取当前用户的红包历史记录
+        List<PropsRedpackage> propsRedpackages = propsMapper.listUserPropsRedpackageHistoryByUid(uid, offset, limit);
+        List<Map<String, String>> values = new ArrayList<>();
+        if (propsRedpackages != null && propsRedpackages.size() > 0) {
+            for (PropsRedpackage record : propsRedpackages) {
+                Map<String, String> value = MapBeanUtil.convertMap(record, "id", "transNo", "uid", "propsType", "type", "number", "singleRedpackageAmount", "status", "currentGetNumber",
+                        "createTime", "exprieTime");
+                values.add(value);
+            }
+        }
+        result.setValues(values);
+        result.setCode(ResultCodeEnum.SUCCESS.status());
+        result.setStatusCode(BusinessStatusCodeEnum.SUCCESS_STATUS.getStatus());
+        result.setMessage("根据该用户ID获取当前用户发送的红包记录");
+        return result;
+    }
+
+    /**
+     * 根据发送的红包ID获取领取的用户记录
+     *
+     * @param redpackageId 红包ID
+     */
+    public ResultList listPropsRedpackageRecordByRedpackageId(long redpackageId) {
+        ResultList result = new ResultList();
+        if (redpackageId == 0 || redpackageId < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("红包ID不能为空.请输入正确值.");
+            return result;
+        }
+        logger.info("根据红包ID" + redpackageId + ",查询红包的领取记录。");
+        List<PropsRedpackageRecord> propsRedpackageRecords = propsMapper.listPropsRedpackageRecordByRedpackageId(redpackageId);
+        PropsRedpackage propsRedpackage = propsMapper.getRedpackage(redpackageId);
+        List<Map<String, String>> values = new ArrayList<>();
+        if (propsRedpackageRecords != null && propsRedpackageRecords.size() > 0) {
+            for (PropsRedpackageRecord record : propsRedpackageRecords) {
+                Map<String, String> value = MapBeanUtil.convertMap(record, "id", "redpackageId", "giveUid", "amount", "createTime");
+                values.add(value);
+
+            }
+            result.setValues(values);
+        } else {
+            result.setValues(new ArrayList<Map<String, String>>());
+        }
+        result.setCode(ResultCodeEnum.SUCCESS.status());
+        result.setStatusCode(BusinessStatusCodeEnum.SUCCESS_STATUS.getStatus());
+        result.setMessage(propsRedpackage.getNumber() + "个红包共" + propsRedpackage.getNumber() * propsRedpackage.getSingleRedpackageAmount() + "阳光,"
+                + RedPackagTypeStatusEnum.getName(propsRedpackage.getStatus()) + "");
+        return result;
+    }
+
+    /**
+     * 用户领取红包ID
+     *
+     * @param uid 用户ID
+     */
+    @Transactional(rollbackFor = {RuntimeException.class}, isolation = Isolation.SERIALIZABLE, timeout = 10)
+    public Result getPropsRedpackage(long redpackageId, long uid) {
+        Result result = new Result();
+        if (redpackageId == 0 || redpackageId < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("请输入正确的红包ID,请输入正确值.");
+            return result;
+        }
+        if (uid == 0 || uid < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("请输入正确的用户ID,请输入正确值");
+            return result;
+        }
+
+        //判断当前用户是否已经领取过红包
+        PropsRedpackageRecord record = propsMapper.getUserRedpacageRecord(redpackageId, uid);
+        if (record != null) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.REPEATEDLY_GIVE_STAUTS.getStatus());
+            result.setMessage("已经领取过红包，请勿重复领取");
+            return result;
+        }
+        //判断当前的红包是否过期
+        PropsRedpackage redpackage = propsMapper.getRedpackage(redpackageId);
+        if (redpackage == null) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.NOT_FOUND_STATUS.getStatus());
+            result.setMessage("红包数据不存在");
+            return result;
+        }
+        if (redpackage.getStatus() == 2) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.GIVE_REDPACKAGE_FINISH_STATUS.getStatus());
+            result.setMessage("红包已经领取完毕.");
+            return result;
+        }
+        if (DateUtil.compare_date(redpackage.getExprieTime(), DateUtil.getNow(DateUtil.Y_M_D_HMS)) != 1) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.EXPRIE_TIME_STATUS.getStatus());
+            result.setMessage("红包时间已过期,已经无法领取");
+            return result;
+        }
+        int amount = 0;
+        if (redpackage.getType() == 2) {//固定值
+            amount = redpackage.getSingleRedpackageAmount();
+        }
+        //用户领取红包步骤，1.增加领取记录 2.更新红包表数据  3.对当前用户增加道具消费记录 4.增加用户的账户记录表
+        PropsRedpackageRecord propsRedpackageRecord = new PropsRedpackageRecord();
+        propsRedpackageRecord.setCreateTime(DateUtil.getNow(DateUtil.Y_M_D_HMS));
+        propsRedpackageRecord.setAmount(amount);
+        propsRedpackageRecord.setGiveUid(uid);
+        propsRedpackageRecord.setRedpackageId(redpackageId);
+        int saveRedpackageReord = propsMapper.insertPropsRedpackageRecord(propsRedpackageRecord);
+        if (saveRedpackageReord == 1) {
+            //更新红包表的状态
+            int updateRedpackage = propsMapper.updateRedpackage(redpackageId);
+            if (updateRedpackage == 1) {
+                //增加消费记录
+                Props props = propsMapper.getUserPropsByUidAndTypeAndSource(uid, PropsTypeEnum.SUN.getType(), PropsSourceEnum.SUN_REDPACKAGE.getSourceType());
+                //如果这道具来源为空，就创建一条记录出来
+                if (props == null) {
+                    props = new Props();
+                    props.setUid(uid);
+                    props.setNumber(0);
+                    props.setPropsType(PropsTypeEnum.SUN.getType());
+                    props.setPropsSource(PropsSourceEnum.SUN_REDPACKAGE.getSourceType());
+                    props.setCreateTime(DateUtil.getNow(DateUtil.Y_M_D_HMS));
+                    int insertResult = propsMapper.insertProps(props);
+                    if (insertResult != 1) {
+                        throw new CustomException("创建用户的阳光表(领取阳光红包类型)时，发生异常");
+                    }
+                }
+                Map<String, String> map = new HashMap<>();
+                map.put("sendUid", redpackage.getUid() + "");
+                map.put("amount", amount + "");
+                int insertRecordResult = this.savePropsRecord(uid, redpackage.getTransNo(), PropsChannelEnum.GET_REDPACKAGE.getChannel(), PropsOperationTypeEnum.ADD.getType(),
+                        amount, PropsTypeEnum.SUN.getType(), JSON.toJSONString(map), props.getId(), props.getNumber(), props.getNumber() + amount, 0, 0,
+                        "当前用户" + uid + "领取" + redpackage.getUid() + "发送的红包，领取的红包金额是:" + amount);
+                if (insertRecordResult == 1) {
+                    //增加当前用户的账号阳光数量  首选判断当前用户是否有领取阳光来源这个数据，如果没有则增加。否则就累计数量上去
+                    //判断当前用户的阳光仓库是否已满
+                    if (this.checkUserSunRepositoryIsFull(uid)) {
+                        int updateResult = propsMapper.addUserOverFlow(uid, amount, DateUtil.getNow(DateUtil.Y_M_D_HMS));
+                        if (updateResult != 1) {
+                            logger.error("领取红包失败，当前用户的阳光仓库已满，讲领取的红包额增加到用户的溢出阳光仓库中.");
+                            throw new CustomException("领取红包失败，当前用户的阳光仓库已满，讲领取的红包额增加到用户的溢出阳光仓库中.领取的阳光数量是:" + amount);
+                        }
+                    }
+                    int addResult = propsMapper.addPropsNumber(uid, PropsTypeEnum.SUN.getType(), PropsSourceEnum.SUN_REDPACKAGE.getSourceType(),
+                            amount, DateUtil.getNow(DateUtil.Y_M_D_HMS));
+                    if (addResult != 1) {
+                        throw new CustomException("领取红包失败，给领取用户增加阳光红包失败.");
+                    }
+                } else {
+                    throw new CustomException("无法领取红包,更新道具操作记录表失败.");
+                }
+            } else {
+                throw new CustomException("领取红包失败,创建红包发送记录表失败.");
+            }
+
+        } else {
+            throw new CustomException("无法领取红包");
+        }
+        Map<String, String> values = new HashMap<>();
+        values.put("amount", amount + "");
+        result.setCode(ResultCodeEnum.SUCCESS.status());
+        result.setStatusCode(BusinessStatusCodeEnum.SUCCESS_STATUS.getStatus());
+        result.setValues(values);
+        result.setMessage("用户领取红包成功.");
+        return result;
+    }
+
+
+    /**
+     * 用户补领阳光
+     */
+    @Transactional(rollbackFor = {RuntimeException.class}, isolation = Isolation.SERIALIZABLE, timeout = 10)
+    public Result getOverflowSun(String transNo, long uid) {
+
+        Result result = new Result();
+        if (uid == 0 || uid < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("请输入正确的用户ID,请输入正确值");
+            return result;
+        }
+        if (propsMapper.countRedpackageByTransNoAndUid(uid, transNo, PropsTypeEnum.SUN.getType()) > 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.REPEATEDLY_COMMIT_STATUS.getStatus());
+            result.setMessage("交易批次号(transNo)重复提交,不能重复补领阳光.");
+            return result;
+        }
+        UserRepository userRepository = propsMapper.getUserRepository(uid);
+        Double total = propsMapper.totalPropsNumberByUidAndPropsType(uid, PropsTypeEnum.SUN.getType());
+        total = total == null ? 0 : total;
+
+        if (userRepository == null || total >= userRepository.getCurrentRepositoryNumber()) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.SUN_REPERTORY_FULL.getStatus());
+            result.setMessage("用户当前的阳光数量已达到最高,无法补领,请出售阳光.");
+            return result;
+        }
+        logger.info("消费交易号:" + transNo + ",用户UID:" + uid + ",开始补领溢出的阳光..");
+        if (userRepository == null || userRepository.getSunOverFlow() == 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.SUN_REPERTORY_NOT_FULL.getStatus());
+            result.setMessage("当前用户无法补领阳光，没有溢出的阳光.");
+            return result;
+        }
+        //需要领取的数量
+        double getNumber = userRepository.getCurrentRepositoryNumber() - total;
+        int overFlow = userRepository.getSunOverFlow();
+        if (getNumber > overFlow) {
+            getNumber = overFlow;
+        }
+        //增加操作记录
+        Props props = propsMapper.getUserPropsByUidAndTypeAndSource(uid, PropsTypeEnum.SUN.getType(), PropsSourceEnum.SUN_GET_OVERFLOWER.getSourceType());
+        int insertRecordResult = this.savePropsRecord(uid, transNo, PropsChannelEnum.GET_OVERFLOWER.getChannel(), PropsOperationTypeEnum.ADD.getType(),
+                (int) getNumber, PropsTypeEnum.SUN.getType(), null, props.getId(), props.getNumber(), props.getNumber() + getNumber, 0, 0,
+                "当前用户" + uid + "领取溢出的阳光，领取的数量是:" + getNumber);
+        if (insertRecordResult == 1) {
+            //开始补领阳光
+            int updateResult = propsMapper.updateUserOverFlow(uid, (int) getNumber, DateUtil.getNow(DateUtil.Y_M_D_HMS));
+            if (updateResult == 1) {
+                //增加阳光数量
+                int addResult = propsMapper.addPropsNumber(uid, PropsTypeEnum.SUN.getType(), PropsSourceEnum.SUN_GET_OVERFLOWER.getSourceType(),
+                        getNumber, DateUtil.getNow(DateUtil.Y_M_D_HMS));
+                if (addResult != 1) {
+                    throw new CustomException("补领阳光失败.增加用户的阳光数量发生失败");
+                }
+            } else {
+                throw new CustomException("补领阳光失败.更新用户仓库的溢出数量值时发生异常.");
+            }
+        } else {
+            throw new CustomException("补领阳光失败.插入补领阳光的操作记录发生异常.");
+        }
+        Map<String, String> values = new HashMap<>();
+        values.put("getNumber", getNumber + "");
+        result.setCode(ResultCodeEnum.SUCCESS.status());
+        result.setMessage("补领溢出的阳光成功");
+        result.setStatusCode(BusinessStatusCodeEnum.SUCCESS_STATUS.getStatus());
+        result.setValues(values);
+        logger.info("消费交易号:" + transNo + ",用户UID:" + uid + ",补领溢出的阳光结束,补领的阳光数量是:" + getNumber);
+        return result;
+    }
+
+    /**
+     * 获取用户阳光的总数量
+     */
+    @Override
+    public Result getUserSunTotal(long uid) {
+        Result result = new Result();
+        if (uid == 0 || uid < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("用户ID参数错误，请输入正确的参数.");
+            return result;
+        }
+        Double total = propsMapper.totalPropsNumberByUidAndPropsType(uid, PropsTypeEnum.SUN.getType());
+        total = total == null ? 0 : total;
+        result.setCode(ResultCodeEnum.SUCCESS.status());
+        result.setStatusCode(BusinessStatusCodeEnum.SUCCESS_STATUS.getStatus());
+        result.setMessage("获取用户的阳光数量");
+        Map<String, String> values = new HashMap<>();
+        values.put("total", total + "");
+        result.setValues(values);
+        return result;
+    }
+
+    /**
+     * 更新用户花苗关系联的花苗为使用状态
+     */
+    @Transactional(rollbackFor = {RuntimeException.class}, isolation = Isolation.SERIALIZABLE, timeout = 10)
+    public Result updateUserFlowerUseStatus(String transNo, long uid, long giveUid) {
+        Result result = new Result();
+        if (uid == 0 || uid < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("请输入正确的用户ID,请输入正确值");
+            return result;
+        }
+        if (giveUid == 0 || giveUid < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("请输入正确赠送者的用户ID");
+            return result;
+        }
+        //更新状态
+        int updateResult = propsMapper.updateUserFlowerUseStatus(uid, giveUid, DateUtil.Y_M_D_HMS);
+        if (updateResult == 1) {
+            Props props = propsMapper.getUserPropsByUidAndTypeAndSource(uid, PropsTypeEnum.FLOWER_SEEDING.getType(), PropsSourceEnum.FLOWER_SEEDING_GIVE.getSourceType());
+            int insertRecordResult = this.savePropsRecord(uid, transNo, PropsChannelEnum.GROW_FLOWERS.getChannel(), PropsOperationTypeEnum.MIUNS.getType(),
+                    1, PropsTypeEnum.FLOWER_SEEDING.getType(), null, props.getId(), props.getNumber(), props.getNumber() - 1, 0, 0,
+                    "当前用户" + uid + "自动种下级花苗，数量是:" + 1);
+            if (insertRecordResult == 1) {
+                int addResult = propsMapper.minusPropsNumber(uid, PropsTypeEnum.FLOWER_SEEDING.getType(), PropsSourceEnum.FLOWER_SEEDING_GIVE.getSourceType(),
+                        1, DateUtil.getNow(DateUtil.Y_M_D_HMS));
+                if (addResult != 1) {
+                    logger.error("当前用户" + uid + "自动种花，更新用户的道具表总数失败.");
+                    throw new CustomException("当前用户" + uid + "自动种花，更新用户的道具表总数失败.");
+                }
+
+            } else {
+                logger.error("当前用户" + uid + "自动种花，插入道具消费记录表失败.");
+                throw new CustomException("当前用户" + uid + "自动种花，插入道具消费记录表失败.");
+            }
+        } else {
+            logger.error("当前用户" + uid + "自动种花，更新花苗关系链表状态失败.");
+            throw new CustomException("当前用户" + uid + "自动种花,更新花苗关系链表状态失败");
+        }
+        result.setCode(ResultCodeEnum.SUCCESS.status());
+        result.setMessage("更新花苗关系链状态成功");
+        result.setStatusCode(BusinessStatusCode.SUCCESS_STATUS.getStatus());
+        return result;
+    }
+
+    /**
+     * 获取当前用户这一天内下级多少颗花苗没有种
+     */
+    public Result getUserGiveFlower(long uid) {
+        Result result = new Result();
+        if (uid == 0 || uid < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("请输入正确的用户ID,请输入正确值");
+            return result;
+        }
+        Integer total = propsMapper.getUserAllGiveNumber(uid, DateUtil.getNow(DateUtil.Y_M_D) + " 00:00:00", DateUtil.getNow(DateUtil.Y_M_D) + " 23:59:59");
+        total = total == null ? 0 : total;
+        Map<String, String> values = new HashMap<>();
+        values.put("number", total + "");
+        result.setCode(ResultCodeEnum.SUCCESS.status());
+        result.setStatusCode(BusinessStatusCode.SUCCESS_STATUS.getStatus());
+        result.setValues(values);
+        result.setMessage("获取当前用户下级赠送的花苗数量.");
+        return result;
+    }
+
+    /**
+     * 获取用户的道具账单
+     *
+     * @param uid       用户ID
+     * @param propsType 道具类型
+     */
+    public ResultList listPropsReport(long uid, int propsType, int offset, int limit) {
+        ResultList result = new ResultList();
+        if (uid == 0 || uid < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("请输入正确的用户ID,请输入正确值");
+            return result;
+        }
+        if (propsType == 0 || propsType < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("请输入正确的道具类型.");
+            return result;
+        }
+        List<Map<String, String>> values = new ArrayList<>();
+        List<PropsReport> userPropses = propsMapper.listUserPropsReport(uid, propsType, offset, limit);
+        if (userPropses != null && userPropses.size() > 0) {
+            for (PropsReport record : userPropses) {
+                Map<String, String> value = MapBeanUtil.convertMap(record, "transNo", "number", "type", "channel", "createTime", "common");
+                values.add(value);
+            }
+        }
+        result.setCode(ResultCodeEnum.SUCCESS.status());
+        result.setMessage("获取用户的道具报表");
+        result.setStatusCode(BusinessStatusCode.SUCCESS_STATUS.getStatus());
+        result.setValues(values);
+        return result;
+
+    }
+
+    /**
+     * 获取用户溢出的阳光数量
+     */
+    public Result overFlowerSunNumber(long uid) {
+        Result result = new Result();
+        if (uid == 0 || uid < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("请输入正确的用户ID,请输入正确值");
+            return result;
+        }
+        Map<String, String> values = new HashMap<>();
+        UserRepository userRepository = propsMapper.getUserRepository(uid);
+        if (userRepository != null) {
+            values.put("number", userRepository.getSunOverFlow() + "");
+        } else {
+            values.put("number", "0");
+        }
+        result.setCode(ResultCodeEnum.SUCCESS.status());
+        result.setMessage("获取用户溢出的阳光总数量.");
+        result.setValues(values);
+        return result;
+    }
+
+    /**
+     * 道具出售报表(也就是出售就是兑换抵用券)
+     *
+     * @param uid 操作的用户ID
+     */
+    public ResultList exchangeReport(long uid, int offset, int limit) {
+        ResultList result = new ResultList();
+        if (uid == 0 || uid < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("请输入正确的用户ID,请输入正确值");
+            return result;
+        }
+        List<PropsReport> propsReports = propsMapper.listUserSalePropsReport(uid, offset, limit);
+        List<Map<String, String>> values = new ArrayList<>();
+        if (propsReports != null && propsReports.size() > 0) {
+            for (PropsReport record : propsReports) {
+                Map<String, String> value = MapBeanUtil.convertMap(record, "transNo", "number", "type", "channel", "createTime", "common");
+                values.add(value);
+            }
+        }
+        result.setMessage("获取用户出售的报表数据");
+        result.setCode(ResultCodeEnum.SUCCESS.status());
+        result.setStatusCode(BusinessStatusCode.SUCCESS_STATUS.getStatus());
+        result.setValues(values);
+        return result;
+    }
+
+    /**
+     * 增加用户的花蜜数量
+     */
+    @Transactional(rollbackFor = {RuntimeException.class}, isolation = Isolation.SERIALIZABLE, timeout = 10)
+    public Result addUserNectar(String transNo, long uid, int number) {
+        Result result = new Result();
+        if (uid == 0 || uid < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("请输入正确的用户ID,请输入正确值");
+            return result;
+        }
+        if (propsMapper.countRedpackageByTransNoAndUid(uid, transNo, PropsTypeEnum.NECTAR.getType()) > 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.REPEATEDLY_COMMIT_STATUS.getStatus());
+            result.setMessage("交易批次号(transNo)重复提交,不能重复增加花蜜数量.");
+            return result;
+        }
+        Props props = propsMapper.getUserPropsByUidAndTypeAndSource(uid, PropsTypeEnum.NECTAR.getType(), PropsSourceEnum.NECTAR_EVERY_DAY.getSourceType());
+        int insertRecordResult = this.savePropsRecord(uid, transNo, PropsChannelEnum.EVERY_DAY_EARNINGS.getChannel(), PropsOperationTypeEnum.ADD.getType(),
+                number, PropsTypeEnum.NECTAR.getType(), null, props.getId(), props.getNumber(), props.getNumber() + number, 0, 0,
+                "当前用户" + uid + "每日统计花蜜的数量，花蜜数量:" + number);
+
+        if (insertRecordResult == 1) {
+            //增加用户的
+            int addResult = propsMapper.addPropsNumber(uid, PropsTypeEnum.NECTAR.getType(), PropsSourceEnum.NECTAR_EVERY_DAY.getSourceType(), number, DateUtil.getNow(DateUtil.Y_M_D_HMS));
+            if (addResult == 1) {
+                //增加用户的总花蜜收入表
+                int updateResult = propsMapper.addUserNectorNumber(uid, number, DateUtil.getNow(DateUtil.Y_M_D_HMS));
+                if (updateResult != 1) {
+                    logger.error("更新用户花蜜总数量表时发生异常.");
+                    throw new CustomException("更新用户花蜜总数量表时发生异常.");
+                }
+            } else {
+                logger.error("增加当前用户的每日的花蜜数量用户道具表失败.");
+                throw new CustomException("增加当前用户的每日的花蜜数量用户道具表失败");
+            }
+        } else {
+            logger.error("增加当前用户的每日的花蜜数量操作记录表失败.");
+            throw new CustomException("增加当前用户的每日的花蜜数量操作记录表失败");
+        }
+        result.setMessage("增加用户的花蜜数量成功");
+        result.setCode(ResultCodeEnum.SUCCESS.status());
+        result.setStatusCode(BusinessStatusCode.SUCCESS_STATUS.getStatus());
+        return result;
+    }
+
+    /**
+     * 获取用户的花蜜数量集合
+     *
+     * @param offset 偏移量
+     * @param limit  每页多少条
+     */
+    public ResultList listUserNectarList(int offset, int limit) {
+        ResultList result = new ResultList();
+        if (offset < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("偏移量不能为负数");
+            return result;
+        }
+        if (limit <= 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("每页条数不能为负数或者等于0");
+            return result;
+        }
+
+        List<UserNectar> userNectars = propsMapper.listUserNecatars(offset, limit);
+        List<Map<String, String>> values = new ArrayList<>();
+        if (userNectars != null && userNectars.size() > 0) {
+            for (UserNectar record : userNectars) {
+                Map<String, String> value = MapBeanUtil.convertMap(record, "uid", "number");
+                values.add(value);
+            }
+        }
+        result.setMessage("获取用户的花蜜排行榜");
+        result.setCode(ResultCodeEnum.SUCCESS.status());
+        result.setStatusCode(BusinessStatusCode.SUCCESS_STATUS.getStatus());
+        result.setValues(values);
+        return result;
+    }
+
+    /**
+     * 更新用户的仓库数量
+     *
+     * @param uid    用户ID
+     * @param number 数量
+     */
+    @Transactional(rollbackFor = {RuntimeException.class}, isolation = Isolation.SERIALIZABLE, timeout = 10)
+    public Result updateUserRepository(long uid, int number) {
+        logger.info("每日更新用户的仓库数量，根据用户的等级更新用户的仓库数量.");
+        Result result = new Result();
+        if (uid == 0 || uid < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("请输入正确的用户ID,请输入正确值.");
+            return result;
+        }
+        if (number == 0 || number < 0) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("用户的仓库数量不能等于小于0.");
+            return result;
+        }
+        result.setMessage("每日更新用户的仓库数量，根据用户的等级更新用户的仓库数量.更新成功");
+        UserRepository userRepository = propsMapper.getUserRepository(uid);
+        if (userRepository == null) {
+            userRepository = new UserRepository();
+            userRepository.setCurrentRepositoryNumber(number);
+            userRepository.setSunOverFlow(0);
+            userRepository.setExtendedRepositoryNumber(0);
+            userRepository.setUid(uid);
+            userRepository.setCreateTime(DateUtil.getNow(DateUtil.Y_M_D_HMS));
+            int insertResult = propsMapper.insertUserRepository(userRepository);
+            if (insertResult != 1) {
+                throw new CustomException("新增用户的仓库数据发生失败.");
+            }
+        } else {
+            //更新用户的仓库数量
+            int updateResult = propsMapper.updateUserRepository(uid, number);
+            if (updateResult != 1) {
+                throw new CustomException("更新用户的具体仓库数值失败.");
+            }
+        }
+        result.setMessage("更新用户的具体仓库数值成功");
+        result.setCode(ResultCodeEnum.SUCCESS.status());
+        result.setStatusCode(BusinessStatusCode.SUCCESS_STATUS.getStatus());
+        return result;
+    }
+
+
+    /**
+     * 判断用户当前的仓库是否已满
+     */
+    private boolean checkUserSunRepositoryIsFull(long uid) {
+        //首选获取用户的仓库值
+        UserRepository userRepository = propsMapper.getUserRepository(uid);
+        if (userRepository == null) {
+            logger.info("当前用户" + uid + "没有仓库记录.");
+            return false;
+        }
+        Double total = propsMapper.totalPropsNumberByUidAndPropsType(uid, PropsTypeEnum.SUN.getType());
+        total = total == null ? 0 : total;
+        //代表已满，那就需要讲阳光存到用户溢出的记录中
+        if (total >= userRepository.getCurrentRepositoryNumber()) {
+//            int updateResult = propsMapper.updateUserOverFlow(uid, number, DateUtil.getNow(DateUtil.Y_M_D_HMS));
+//            if (updateResult != 1) {
+//                logger.error("更新用户仓库溢出阳光数量失败.");
+//                return false;
+//            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 获取用户的阳光数和花蜜数
+     */
+
+    public ResultList getUserSunAndNectar(List<Long> uids) {
+        ResultList result = new ResultList();
+        if (uids.size() == 0 || uids.size() > 20) {
+            result.setCode(ResultCodeEnum.ERROR.status());
+            result.setStatusCode(BusinessStatusCodeEnum.PARAM_ERROR_STATUS.getStatus());
+            result.setMessage("请求的用户ID个数必须大于1小于20个.");
+            return result;
+        }
+        List<Map<String, String>> values = new ArrayList<>();
+        //获取用阳光和花蜜的总数
+        List<UserPropsNumber> propsStatisticses = propsMapper.getUserSunAndNectar(uids);
+        System.out.println(propsStatisticses.size());
+        //获取用户的仓库总数
+        List<UserRepository> repositories = propsMapper.getUserRepositoryByUids(uids);
+
+        List<UserNectar> userNectars = propsMapper.getUserMoneyPackageTotal(uids);
+
+        //propsMapper.getUserMoneyPackageTotal(uids);
+        if (propsStatisticses != null && propsStatisticses.size() > 0) {
+            for (UserPropsNumber propsStatistics : propsStatisticses) {
+                Map<String, String> value = MapBeanUtil.convertMap(propsStatistics, "uid", "sunNumber", "nectarNumber");
+                if (repositories != null && repositories.size() > 0) {
+                    for (UserRepository userRepository : repositories) {
+                        if (propsStatistics.getUid() == userRepository.getUid()) {
+                            int number = userRepository.getCurrentRepositoryNumber();
+                            value.put("repositoryNumber", number + "");
+                            break;
+                        }
+                    }
+                }
+                if (userNectars != null && userNectars.size() > 0) {
+                    for (UserNectar nectar : userNectars) {
+                        System.out.println(nectar.getUid());
+                        System.out.println(propsStatistics.getUid());
+                        if (nectar.getUid() == propsStatistics.getUid()) {
+                            double number = nectar.getNumber();
+                            value.put("money", number + "");
+                            break;
+                        }
+                    }
+                }
+                values.add(value);
+            }
+        }
+        //获取用户的收益红包
+        result.setCode(ResultCodeEnum.SUCCESS.status());
+        result.setStatusCode(BusinessStatusCode.SUCCESS_STATUS.getStatus());
+        result.setValues(values);
+        result.setMessage("获取用户的阳光和花蜜数");
+        return result;
+    }
+
+    /**
+     * 增加用户每日收益数据
+     *
+     * @param uid      用户ID
+     * @param sunTotal 阳光总数
+     */
+    @Transactional(rollbackFor = {RuntimeException.class}, isolation = Isolation.SERIALIZABLE, timeout = 10)
+    public Result addUserEveryDaySun(long uid, double sunTotal) {
+        logger.info("用户"+uid+"开始统计用户的阳光收益，当前时间是:"+DateUtil.getNow(DateUtil.Y_M_D_HMS));
+        Result result = new Result();
+        if(sunTotal <=0){
+            result.setMessage("当前用户没有阳光数量，不用进行统计");
+            result.setCode(ResultCodeEnum.SUCCESS.status());
+            return result;
+        }
+
+        //查询当前用户的仓库总数
+        UserRepository userRepository = propsMapper.getUserRepository(uid);
+        //获取用户的利率比例
+        Double profilt = manorSunshineProfitMapper.getProfit(sunTotal);
+        if (profilt <= 0) {
+            result.setMessage("当前用户没有利率比例，不用进行统计");
+            result.setCode(ResultCodeEnum.SUCCESS.status());
+            return result;
+        }
+        //收益数量
+        SnowflakeIdWorker idWorker = new SnowflakeIdWorker(1,1);
+        double profitNumber = XmnUtils.formatDouble2(sunTotal * profilt);
+        Props props = propsMapper.getUserPropsByUidAndTypeAndSource(uid, PropsTypeEnum.SUN.getType(), PropsSourceEnum.SUN_STOCK_REWARD.getSourceType());
+        int insertRecordResult = this.savePropsRecord(uid, idWorker.nextId()+"", PropsChannelEnum.EVERY_DAY_EARNINGS.getChannel(), PropsOperationTypeEnum.ADD.getType(),
+                profitNumber, PropsTypeEnum.SUN.getType(), null, props.getId(), props.getNumber(), props.getNumber() + profitNumber, 0, 0,
+                "当前用户" + uid + "每日统计阳光收益的数量，花蜜数量:" + profitNumber);
+        if(insertRecordResult !=1 ){
+            logger.error("用户"+uid+"每日统计阳光的收益插入记录表时发生异常.");
+            throw  new CustomException("用户"+uid+"每日统计阳光的收益插入记录表时发生异常.");
+        }
+        if (userRepository != null && userRepository.getCurrentRepositoryNumber() > 0) {
+            //如果用户当前的阳光数量大于仓库数量,就将阳光收益放到溢出部分
+            if (sunTotal >= userRepository.getCurrentRepositoryNumber()) {
+                int updateResult = propsMapper.addUserOverFlow(uid, profitNumber, DateUtil.getNow(DateUtil.Y_M_D_HMS));
+                if(updateResult != 1){
+                    logger.error("用户"+uid+"每日统计阳光的收益插入往用户溢出的阳光表中加入数值发生异常.");
+                    throw  new CustomException("用户"+uid+"每日统计阳光的收益插入往用户溢出的阳光表中加入数值发生异常.");
+                }
+            }
+        }else{
+            int addResult = propsMapper.addPropsNumber(uid, PropsTypeEnum.SUN.getType(), PropsSourceEnum.NECTAR_EVERY_DAY.getSourceType(), profitNumber, DateUtil.getNow(DateUtil.Y_M_D_HMS));
+            if(addResult !=1){
+                logger.error("用户"+uid+"每日统计阳光的收益插入阳光道具表时发生异常.");
+                throw  new CustomException("用户"+uid+"每日统计阳光的收益插入阳光道具表时发生异常.");
+            }
+        }
+        logger.info("用户"+uid+"统计用户的阳光收益结束，当前时间是:"+DateUtil.getNow(DateUtil.Y_M_D_HMS));
+        result.setMessage("统计用户的阳光收益成功.");
+        result.setCode(ResultCodeEnum.SUCCESS.status());
+        return result;
+    }
+
+
+    /**
+     * 增加交易记录
+     *
+     * @param uid       操作用户UID
+     * @param transNo   消费交易号
+     * @param channel   交易类型
+     * @param type      交易类型（）
+     * @param number    操作数量
+     * @param propsType 道具类型
+     * @param common    保存一些需要用到的数据
+     * @param remark    备注
+     */
+    private int savePropsRecord(long uid, String transNo, int channel, int type, double number, int propsType, String common, long propsId, double qhun, double hnum,
+                                int exchangeNumber, double exchangeAmount, String remark) {
+        /**
+         * long propsId,double qhum, double hnum,
+         */
+        PropsRecord rp = new PropsRecord();
+        rp.setUid(uid);
+        rp.setTransNo(transNo);
+        //rp.setBatchNo(batchNo);
+        rp.setChannel(channel);
+        rp.setType(type);
+        rp.setNum(number);
+        rp.setPropsType(propsType);
+        if (common != null) {
+            rp.setCommon(common);
+        }
+        rp.setPropsId(propsId);
+        rp.setQnum(qhun);
+        rp.setHnum(hnum);
+        rp.setExchangeNumber(exchangeNumber);
+        rp.setExchangeAmount(exchangeAmount);
+        rp.setRemark(remark);
+        rp.setCreateTime(DateUtil.getNow(DateUtil.Y_M_D_HMS));
+        return propsMapper.savePropsRecord(rp);
+    }
+
+
+}

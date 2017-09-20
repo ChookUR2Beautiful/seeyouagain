@@ -1,0 +1,275 @@
+package com.xmniao.service.msg;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang.math.NumberUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.alibaba.rocketmq.client.consumer.DefaultMQPushConsumer;
+import com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
+import com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
+import com.alibaba.rocketmq.client.consumer.listener.MessageListenerConcurrently;
+import com.alibaba.rocketmq.client.exception.MQClientException;
+import com.alibaba.rocketmq.common.message.MessageExt;
+import com.xmniao.common.OSUtil;
+import com.xmniao.dao.WalletMapper;
+import com.xmniao.entity.MQMsgConfig;
+import com.xmniao.service.LiveWalletAccess;
+import com.xmniao.service.pay.LiveWalletServiceImpl;
+import com.xmniao.service.pay.SynthesizeServiceImpl;
+import com.xmniao.thrift.ledger.ResponseData;
+
+public class WalletConsumer {
+
+	/** 日志记录 */
+	private final Logger log = Logger.getLogger(WalletConsumer.class);
+	/** 消息服务 消费者 配置 */
+	private Map<String, Object> configMaps = new HashMap<String, Object>();
+	
+	@Autowired
+	private WalletMapper wMapper;
+	
+	@Autowired
+	private LiveWalletServiceImpl liveServiceImpl;
+	
+	@Autowired
+	private SynthesizeServiceImpl syServiceImpl;
+	/** 消息队列基本配置 */
+	@Autowired
+	private MQMsgConfig mqMsgConfig;
+	/** 业务服务IP */
+	@Autowired
+	@Qualifier("BUSINESS_IP_NUMBER")
+	private String businessIP;
+	/** 钱包支付消息生产者 */
+	@Autowired
+	private WalletProducer walletProducer;
+	
+	@Autowired
+	private LiveWalletAccess liveWalletAccess;
+	
+	public void init() throws MQClientException {
+
+		log.info("消息消费者初始化成功...");
+
+		/* 消费者组、消费者实例标识 */
+		String consumer_ident = "";
+		/* 主题 标识 */
+		String topic = this.configMaps.get("topic") + "";
+
+		/* 判断是否开启集群   得到标识*/
+		if ("0".equals(mqMsgConfig.getCluster())) {
+			consumer_ident = mqMsgConfig.getIdentityPay();
+			topic += mqMsgConfig.getIdentityLedger();
+		} else {
+			consumer_ident = OSUtil.getLocalIP_();
+			topic += businessIP.replace(".", "_");
+		}
+		DefaultMQPushConsumer consumer = new DefaultMQPushConsumer();
+		// 配置消费组
+		consumer.setConsumerGroup(this.configMaps.get("consumerGroup")+ consumer_ident);
+		// 配置地址
+		consumer.setNamesrvAddr(mqMsgConfig.getNamesrvAddr());
+		// 配置消费者
+		consumer.setInstanceName(this.configMaps.get("consumerInstanceName")+ consumer_ident);
+		// 配置监听主题、标签
+		consumer.subscribe(topic + "", this.configMaps.get("subExpression")+ "");
+		// 配置消费模式
+		consumer.setConsumeFromWhere(mqMsgConfig.getConsumeFromWhere());
+		consumer.setConsumeThreadMax(NumberUtils.toInt(this.configMaps.get("consumeThreadMax") + "", 1));
+		consumer.setConsumeThreadMin(NumberUtils.toInt(this.configMaps.get("consumeThreadMin") + "", 1));
+
+		log.info("消费者配置： "
+		        + "  group:" + consumer.getConsumerGroup()
+				+ "  instgance:" + consumer.getInstanceName() 
+				+ "  topic:"+ topic);
+		
+		// 配置消息监听
+		consumer.registerMessageListener(new MessageListenerConcurrently() {
+
+			@Override
+			public ConsumeConcurrentlyStatus consumeMessage(
+					List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
+                //提现返回消息map
+				Map<String, String> sendMap = new HashMap<String, String>();
+				
+				try {
+					MessageExt msg = msgs.get(0);
+					int times = msg.getReconsumeTimes();
+					//设置重消费时间级别     1s 5s 10s 30s 1m 2m 3m 4m 5m 6m 7m 8m 9m 10m 20m 30m 1h 2h
+					log.info("消息消费次数 ： "+(times+1));
+					log.info("消息延迟级别 : "+5*(times+1));
+					// 1m 6m 20m 2h 2h
+					context.setDelayLevelWhenNextConsume(5*(times+1));
+					
+					// 消息内容
+					String message = new String(msg.getBody(), "utf-8");
+				
+					log.info(new Date() +"queryId:"+msg.getQueueId()+",消息ID:"+msg.getMsgId()+ ",消息：" + message+",tags:"+msg.getTags());
+					//提现参数map
+//					Map<String, String> paramMap = JSON.parseObject(message,new TypeReference<Map<String, String>>() {});
+					
+					String status ="1";
+					String recordid = "";
+					String uid = "";
+					String userType = "";
+					int flag = 3;
+					try {
+						//更新鸟币-直播钱包
+						if(msg.getTags().equals("live_recommend_ledger")){
+							
+							Map<String, String> paramMap = JSON.parseObject(message,new TypeReference<Map<String, String>>() {});
+							
+							ResponseData responseData = liveServiceImpl.updateWalletAmount(paramMap);
+							
+							flag =0;
+							uid = paramMap.get("uid");
+							status=responseData.getState()+"";
+							recordid = paramMap.get("recordid");
+							userType = paramMap.get("userType");
+						//更新钱包余额-会员钱包
+						}else if(msg.getTags().equals("live_dividends_ledger")){
+							
+							Map<String, String> paramMap = JSON.parseObject(message,new TypeReference<Map<String, String>>() {});
+							
+							/**
+							 * 判断用户是否存在用户钱包
+							 */
+							Map<String,Object> wMap = new HashMap<>();
+							wMap.put("uId",paramMap.get("uId"));
+							wMap.put("typeId",1);
+							Map<String, Object> walletMap = wMapper.selectByuid(wMap);
+							if(walletMap == null){
+								log.info("用户:"+paramMap.get("uId")+"不存在会员钱包，调用支付服务创建...");
+								Map<String,String> map = new HashMap<>();
+								map.put("uId",paramMap.get("uId"));
+								map.put("userType","1");
+								Map<String, String> result = syServiceImpl.addWalletMap(map);
+								if(!"0".equals(result.get("state"))){
+									log.error("用户:"+paramMap.get("uId")+"不存在会员钱包，调用支付服务创建失败");
+									times = 3;
+								}
+							}
+							
+							Map<String, String> resMap = syServiceImpl.updateWalletAmount(paramMap);
+							
+							flag = 1;
+							uid = paramMap.get("uId");
+							status=resMap.get("state");
+							recordid = paramMap.get("recordid");
+							userType = paramMap.get("userType");
+						//同时更新会员钱包和直播钱包
+						}else if(msg.getTags().equals("live_dividends_ledger_v2")){
+							
+							
+							List<Map<String, String>> paramList = JSON.parseObject(message,new TypeReference<List<Map<String,String>>>(){});
+							
+							Boolean bool;
+							try {
+								bool = liveServiceImpl.updateWallet(paramList);
+							} catch (Exception e) {
+								log.error("更新失败",e);
+								bool = false;
+							}
+							
+							if(bool){
+								status = "0";
+							}
+							
+							flag = 2;
+							uid = paramList.get(0).get("uId");
+							recordid = paramList.get(0).get("recordid");
+							userType = paramList.get(0).get("userType");
+						}else if(msg.getTags().equals("live_dividends_ledger_v3")){
+							
+							List<Map<String, String>> paramList = JSON.parseObject(message,new TypeReference<List<Map<String,String>>>(){});
+							Boolean bool;
+							try {
+							bool =liveServiceImpl.updateWallet2(paramList);
+							} catch (Exception e) {
+								log.error("更新失败",e);
+								bool = false;
+							}
+							
+							if(bool){
+								status = "0";
+							}
+							
+							flag = 3;
+							uid = paramList.get(0).get("uId");
+							recordid = paramList.get(0).get("recordid");
+							userType = paramList.get(0).get("userType");
+						}else if(msg.getTags().equals("live_gift_ledger")){
+							//打赏主播礼物,添加鸟蛋 & V客推荐分账钱包 
+							Map<String, String> param = JSON.parseObject(message,new TypeReference<Map<String,String>>(){});
+							Boolean bool;
+							try {
+								bool=liveWalletAccess.liveGiftLedger(param);
+							} catch (Exception e) {
+								log.error("更新失败",e);
+								bool = false;
+							}
+							
+							if(bool){
+								status = "0";
+							}
+							flag = 4;
+							uid = param.get("uid");
+							recordid = param.get("source");
+						}
+					} catch (Exception e) {
+						log.error("更新钱包异常",e);
+					}
+					//更新失败，且次数小于3
+					if(!"0".equals(status)&& times<3){
+						return ConsumeConcurrentlyStatus.RECONSUME_LATER;
+					}else{
+						try {
+							sendMap.put("id",recordid);
+							sendMap.put("uid",uid);
+							sendMap.put("status",status);
+							sendMap.put("userType",userType);
+							walletProducer.sendMsg(sendMap,flag);
+						} catch (Exception e) {
+							log.error("发送更新钱包返回消息异常",e);
+						}
+					}
+				} catch (Exception e) {
+					log.error("更新失败", e);
+				}
+				return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+			}
+
+		});
+
+		/**
+		 * Consumer对象在使用之前必须要调用start初始化，初始化一次即可<br>
+		 */
+		consumer.start();
+	}
+
+	public Map<String, Object> getConfigMaps() {
+		return configMaps;
+	}
+
+	public void setConfigMaps(Map<String, Object> configMaps) {
+		this.configMaps = configMaps;
+	}
+
+	public WalletConsumer() throws MQClientException {
+		log.info("创建更新钱包消费者成功");
+	}
+
+	public WalletConsumer(Map<String, Object> configMaps) {
+		super();
+		this.configMaps = configMaps;
+	}
+
+}

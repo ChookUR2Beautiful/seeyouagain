@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.dao.GetMentionLedgerMapper">
+
+	<select id="getMention" parameterType="String" resultType="map">
+		select mention state, money, income from t_mention_config  where uid=#{uId}
+	</select>
+	
+	<select id="getLedger" parameterType="String" resultType="map">
+		select ledger state, money, income from t_mention_config  where uid=#{uId}
+	</select>
+	
+	<select id="selectByAccountid" parameterType="String" resultType="map">
+		select accountid from  b_wallet where sellerid = #{uId} 
+	</select>
+	
+	<insert id="insertByAccountid" parameterType="map" keyProperty="id" useGeneratedKeys="true">
+		insert into t_mention_config (uid,accountid,mention,money,ledger,amount) 
+		values (#{uId},#{accountid},#{mention},#{money},#{ledger},#{amount})
+	</insert>
+	
+</mapper>

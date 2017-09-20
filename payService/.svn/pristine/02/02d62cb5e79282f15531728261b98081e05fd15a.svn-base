@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.WalletExpansionExpensesMapper">
+
+    <resultMap id="BaseResultMap" type="com.xmniao.entity.WalletExpansionExpenses">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="type" property="type" jdbcType="TINYINT"/>
+        <result column="rate_type" property="rateType" jdbcType="INTEGER"/>
+        <result column="rate" property="rate" jdbcType="DECIMAL"/>
+        <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, type, rate_type, rate, modify_time
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from b_wallet_expansion_expenses
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM b_wallet_expansion_expenses
+    </select>
+    <select id="selectListByRecord" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM b_wallet_expansion_expenses
+        <where>
+            <if test="#{type} != null">
+                type = #{type}
+            </if>
+        </where>
+
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        DELETE FROM b_wallet_expansion_expenses
+        WHERE id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insert" parameterType="com.xmniao.entity.WalletExpansionExpenses">
+        INSERT INTO b_wallet_expansion_expenses (id, type, rate_type,
+                                                 rate, modify_time)
+        VALUES (#{id,jdbcType=BIGINT}, #{type,jdbcType=TINYINT}, #{rateType,jdbcType=BIT},
+                #{rate,jdbcType=DECIMAL}, #{modifyTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.xmniao.entity.WalletExpansionExpenses">
+        insert into b_wallet_expansion_expenses
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="rateType != null">
+                rate_type,
+            </if>
+            <if test="rate != null">
+                rate,
+            </if>
+            <if test="modifyTime != null">
+                modify_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=TINYINT},
+            </if>
+            <if test="rateType != null">
+                #{rateType,jdbcType=BIT},
+            </if>
+            <if test="rate != null">
+                #{rate,jdbcType=DECIMAL},
+            </if>
+            <if test="modifyTime != null">
+                #{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective"
+            parameterType="com.xmniao.entity.WalletExpansionExpenses">
+        update b_wallet_expansion_expenses
+        <set>
+            <if test="type != null">
+                type = #{type,jdbcType=TINYINT},
+            </if>
+            <if test="rateType != null">
+                rate_type = #{rateType,jdbcType=BIT},
+            </if>
+            <if test="rate != null">
+                rate = #{rate,jdbcType=DECIMAL},
+            </if>
+            <if test="modifyTime != null">
+                modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.xmniao.entity.WalletExpansionExpenses">
+        UPDATE b_wallet_expansion_expenses
+        SET type        = #{type,jdbcType=TINYINT},
+            rate_type   = #{rateType,jdbcType=BIT},
+            rate        = #{rate,jdbcType=DECIMAL},
+            modify_time = #{modifyTime,jdbcType=TIMESTAMP}
+        WHERE id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByRecord" parameterType="com.xmniao.entity.WalletExpansionExpenses">
+        UPDATE b_wallet_expansion_expenses
+        SET rate = #{rate,jdbcType=TINYINT}, modify_time = #{modifyTime,jdbcType=TIMESTAMP}
+        WHERE type = #{type}
+        AND   rate_type = #{rateType}
+    </update>
+</mapper>

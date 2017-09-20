@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.ErrorLogMapper">
+	<insert id="insertErrorLog" parameterType="map">
+		INSERT INTO t_error_log	
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="paramStr!=null">
+			param_str,
+			</if>
+			<if test="errorLog!=null">
+			error_log,
+			</if>
+			<if test="errorDate!=null">
+			error_date,
+			</if>
+		</trim>
+		VALUES
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="paramStr!=null">
+			#{paramStr},
+			</if>
+			<if test="errorLog!=null">
+			#{errorLog},
+			</if>
+			<if test="errorDate!=null">
+			#{errorDate},
+			</if>
+			
+		</trim>
+	</insert>
+</mapper>

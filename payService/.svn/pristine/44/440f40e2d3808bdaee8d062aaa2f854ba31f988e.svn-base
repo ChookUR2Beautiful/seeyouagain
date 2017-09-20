@@ -1,0 +1,305 @@
+package com.xmniao.controller;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.thrift.TException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.umpay.api.exception.VerifyException;
+import com.xmniao.common.CodeConst;
+import com.xmniao.common.PayConstants;
+import com.xmniao.common.PayRefundStatus;
+import com.xmniao.common.StateCodeUtil;
+import com.xmniao.common.UpdateLedgerSystem;
+import com.xmniao.dao.PayOrderMapper;
+import com.xmniao.entity.PayRefund;
+import com.xmniao.service.CommonService;
+import com.xmniao.service.RefundService;
+import com.xmniao.service.UPayService;
+import com.xmniao.service.pay.PayRefundServiceImpl;
+import com.xmniao.thrift.ledger.FailureException;
+import com.xmniao.thrift.ledger.WithdrawMoneyService;
+
+
+/**
+ * U付异步回调控制器
+ * 
+ * @author YangJing
+ * 
+ */
+@Controller
+public class UPayNotifyController {
+
+    // 日志
+    private static final Logger log = LoggerFactory
+	    .getLogger(UPayNotifyController.class);
+
+    /**
+     * U付Service
+     */
+    @Autowired
+    private UPayService uPayService;
+
+	@Autowired
+	private PayOrderMapper payOrderMapper;
+	
+	private RefundService refundService;
+    
+    /**
+     * 退款service
+     */
+    @Resource(name = "PayRefundServiceImpl")
+    private PayRefundServiceImpl payRefundService;
+
+    /**
+     * 
+     */
+    @Autowired
+    private WithdrawMoneyService.Iface withdrawMoneyService;
+    
+    @Autowired
+    private UpdateLedgerSystem updateLedgerSystem;
+    
+    @Autowired
+    private CommonService commonService;
+
+    /**
+     * u付回调方法
+     * 
+     * @param request
+     * @param response
+     * @throws TException
+     * @throws FailureException
+     * @throws NumberFormatException
+     */
+    @RequestMapping(value = "/pay", method = { RequestMethod.GET,
+	    RequestMethod.POST })
+    public void uPayNotify(HttpServletRequest request,
+	    HttpServletResponse response) throws NumberFormatException,
+	    FailureException, TException {
+
+	log.info("u付代发回调入口");
+	long edate = System.currentTimeMillis();
+	log.info("U代付回调时间-----------："+edate);
+	Map<String, String> result;
+	try {
+	    request.setCharacterEncoding("utf-8");
+	    
+	    log.info("u付代发回调参数CharacterEncoding="+request.getCharacterEncoding()+"参数="+request.getParameterMap());
+	    
+	    // 验证u付报文
+	    result = uPayService.virifySign(request);
+
+	} catch (VerifyException e) {
+	    log.error("u付报文验证失败", e);
+	    return;
+	} catch (UnsupportedEncodingException e) {
+	    log.error("u付报文转码失败", e);
+	    return;
+	}
+
+	String orderIdStr = result.get("order_id"); // 订单号
+	String merDate = result.get("mer_date");
+
+	String[] orderIdArray = orderIdStr.split("-");
+
+	String orderId = orderIdArray[0];
+
+	String userType = orderIdArray[1];
+
+	String tradeState = result.get("trade_state"); // 退费状态
+	
+	String tradeNo = result.get("trade_no");//联动优势交易流水号
+	
+	String retMsg = "";//
+	
+	String sta = commonService.getWithdrawStatus(userType,orderId);
+
+	// 验证是否已经修改了支付状态
+	if (!PayConstants.WITHDRAW_STATUS_PROCESS.equals(sta)) {
+	    PrintWriter out = null;
+	    try {
+		out = response.getWriter();
+		out.write(uPayService.payRespUmp("0000", "", orderId, merDate));
+		out.flush();
+	    } catch (IOException e) {
+		// 如果发送错误就不通知 等待再次u付通知
+		log.error("notify upay is error : {}", e);
+	    } finally {
+		if (out != null)
+		    out.close();
+	    }
+	    return;
+	}
+	
+	if ("-1".equals(sta)) {
+		log.error("u付代付回调参数异常----userType:"+userType+",orderId:"+orderId);
+		return;
+	}
+	
+	String status = tradeState != null && tradeState.equals("4")?PayConstants.WITHDRAW_STATUS_SUCCESS:PayConstants.WITHDRAW_STATUS_FAIL;
+	if(status.equals(PayConstants.WITHDRAW_STATUS_SUCCESS)){
+		retMsg = PayConstants.WITHDRAW_MSG_SUCCESS;
+	}else{
+		retMsg = PayConstants.WITHDRAW_MSG_FAIL+","+result.get("ret_msg");
+	}
+
+	//修改分账服务
+	Map<String, String> uwsMap = new HashMap<String, String>();
+	uwsMap.put("orderNumber", orderId);
+	uwsMap.put("status", status);
+	uwsMap.put("Message", retMsg);
+	uwsMap.put("platform_code", tradeNo);
+
+	try {
+		//修改提现状态
+		commonService.updateWithdrawState(orderId, userType, Integer.valueOf(status),PayConstants.WITHDRAW_TYPE_UF, uwsMap);
+	} catch (Exception e) {
+		log.error("u付代发回调异常！订单号为："+orderId,e);
+	}
+	return;
+    }
+
+    /**
+     * u付退款回调方法
+     * 
+     * @param request
+     * @param response
+     */
+    @RequestMapping({"/xmn/uRefundNotify","/uRefundNotify"})
+    public void xmnRefundNotify(HttpServletRequest request,
+	    HttpServletResponse response) {
+    	uRefundNotify(request,response,0);
+    }
+    @RequestMapping("/fresh/uRefundNotify")
+    public void freshRefundNotify(HttpServletRequest request,
+	    HttpServletResponse response) {
+    	uRefundNotify(request,response,1);
+    }
+    
+    public void uRefundNotify(HttpServletRequest request,
+	    HttpServletResponse response,int serviceType) {
+
+    log.info("u付退款回调入口");
+	Map<String, String> result;
+	try {
+	    // 验证u付报文
+	    result = uPayService.virifySign(request);
+	} catch (VerifyException e) {
+	    log.debug("u付报文验证失败", e);
+	    return;
+	}
+
+	String refundId = result.get("refund_no"); // 退款流水号
+	String refundState = result.get("refund_state"); // 退费状态
+	String orderId = result.get("order_id");// order_number
+
+	// 根据退款流水号获取退款流水记录
+	PayRefund payRefund = refundService.getPayRefundByRefundId(refundId,serviceType);
+	if (payRefund == null) {
+	    log.error("退款流水号[{}]无对应的流水订单", refundId);
+	    return;
+	}
+	// 验证是否已经修改了支付状态
+	if (PayRefundStatus.PROCESS_SUCCESS == payRefund.getStatus()) {
+	    doResponse(response);
+	    return;
+	}
+	Map<String, Object> refundMap = new HashMap<String, Object>();
+	if (CodeConst.REFUND_SUCCESS.equalsIgnoreCase(refundState)) {
+
+	    Map<String, String> resultMap = uPayService
+		    .RefoundWalletMoney(payRefund);
+	    if (resultMap != null
+		    && resultMap.get("code") == StateCodeUtil.PR_SUCCESS) {
+		// 待全部退款完成后，再更新支付退款申请表数据
+		refundMap.put("refund_id", refundId);
+		refundMap.put("status", PayRefundStatus.PROCESS_SUCCESS);
+		//uPayService.updatePayOrderByRefundId(refundMap);
+		refundService.updateRefundStatus(refundId,PayRefundStatus.PROCESS_SUCCESS,serviceType);
+		//根据payID获取orderNumber
+		Map<String,Object> payOrderMap = refundService.getPayOrderBypayId(orderId,serviceType);
+		String orderNumber = String.valueOf(payOrderMap.get("order_number"));
+		
+		Map<String, String> busineMap = null;
+		if(0 == serviceType){
+			payRefundService.updateBusineStatus(orderNumber, resultMap.get("code"),	resultMap.get("Mscodeg"));
+		}else if(1 == serviceType){
+			refundService
+			.updateFreshBusineStatus(orderNumber, resultMap.get("code"),resultMap.get("Mscodeg"));
+		}
+		
+		if (busineMap == null) {
+		    log.error("U付异步退款，调用业务服务接口，失败");
+		}
+
+		log.info("退款记录表更新状态完成，退款流程结束");
+	    }
+	} else if (CodeConst.REFUND_FAIL.equalsIgnoreCase(refundState)
+		|| CodeConst.REFUND_UNKNOWN.equalsIgnoreCase(refundState)) {
+	    // 更新支付退款申请表数据
+	    refundMap.put("refund_id", refundId);
+	    refundMap.put("status", PayRefundStatus.PROCESS_Failure);
+	    //uPayService.updatePayOrderByRefundId(refundMap);
+	    refundService.updateRefundStatus(refundId,PayRefundStatus.PROCESS_Failure,serviceType);
+	    log.error("退款失败退款流水号" + refundId);
+
+		//根据payID获取orderNumber
+		Map<String,Object> payOrderMap = refundService.getPayOrderBypayId(orderId,serviceType);
+		String orderNumber = String.valueOf(payOrderMap.get("order_number"));
+	    Map<String, String> busineMap = null;
+	    if(0==serviceType){
+	    	payRefundService
+		    .updateBusineStatus(orderNumber,
+			    StateCodeUtil.PR_THIRD_SERVER_FAIL, "退款失败退款流水号"
+				    + refundId);
+	    }else if(1 == serviceType){
+	    	refundService
+		    .updateFreshBusineStatus(orderNumber,
+			    StateCodeUtil.PR_THIRD_SERVER_FAIL, "退款失败退款流水号"
+				    + refundId);
+	    }
+	    if (busineMap == null) {
+		log.error("U付异步退款，调用业务服务接口，失败");
+	    }
+
+	}
+	return;
+    }
+
+    public boolean supprot(String channel, String subChannel, String action,
+	    HttpServletRequest request) {
+	return CodeConst.UMP_CHANNEL_CODE.equalsIgnoreCase(channel)
+		&& CodeConst.UMP_REFUND_SUB_CHANNEL_CODE
+			.equalsIgnoreCase(subChannel)
+		&& CodeConst.REFUND_ACTION.equalsIgnoreCase(action);
+    }
+
+    protected void doResponse(HttpServletResponse response) {
+	PrintWriter out = null;
+	try {
+	    out = response.getWriter();
+	    out.write(uPayService.merRespUmp("0000", ""));
+	    out.flush();
+	} catch (IOException e) {
+	    // 如果发送错误就不通知 等待再次u付通知
+	    log.debug("notify upay is error : {}", e);
+	} finally {
+	    if (out != null)
+		out.close();
+	}
+    }
+}

@@ -1,0 +1,790 @@
+package com.xmniao.service.pay;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+
+
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.apache.thrift.TException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.xmniao.common.MapUtil;
+import com.xmniao.common.UtilString;
+import com.xmniao.dao.DeletedAccountMapper;
+import com.xmniao.dao.MentionAccountMapper;
+import com.xmniao.dao.XmniaoWalletDao;
+import com.xmniao.thrift.ledger.FailureException;
+import com.xmniao.thrift.ledger.MentionAccount;
+import com.xmniao.thrift.ledger.MentionAccountService;
+
+/**
+ * 新版本银行卡接口
+ * @author ChenBo
+ *
+ */
+@Service("MentionAccountServiceImpl")
+public class MentionAccountServiceImpl implements MentionAccountService.Iface{
+
+	private final Logger log = Logger.getLogger(MentionAccountServiceImpl.class);
+	
+	
+	@Autowired
+	private MentionAccountMapper mentionAccountMapper;
+
+	@Autowired
+	private SynthesizeServiceImpl synthesizeServiceImpl;
+	
+	@Autowired
+	private DeletedAccountMapper deletedAccountMapper;
+	
+	@Autowired
+	private XmniaoWalletDao xmniaoWalletDao;
+	/**
+	 * 添加银行卡
+	 */
+	@Override
+	public Map<String, String> addMentionAccount(Map<String, String> paramMap)
+			throws FailureException, TException {
+		log.info("[MentionAccountServiceImpl.addMentionAccount]传入参数param=:"+paramMap);
+		Map<String, String> resultMap = new HashMap<String, String>();
+		try{
+		//参数完整性校验
+		if((null == paramMap.get("uId"))
+			||(null == paramMap.get("type"))
+			||(null == paramMap.get("account"))
+			||(null == paramMap.get("cardType"))
+			||(null == paramMap.get("userName"))
+			||(null == paramMap.get("bankName"))
+			/*||(null == paramMap.get("isuse"))*/
+			||(null == paramMap.get("userType"))
+			||(null == paramMap.get("ispublic"))
+			||(null == paramMap.get("bank"))
+			||(null == paramMap.get("abbrev"))
+			||(null == paramMap.get("province"))
+			||(null == paramMap.get("cityname"))){
+			log.error("传入参数不完整");		
+			resultMap.put("state", "2");
+			resultMap.put("msg", "传入参数不完整");
+			return resultMap;
+		}
+		
+		//对私必填以下字段
+		if(paramMap.get("ispublic").equals("0")){
+			if((null == paramMap.get("mobileId"))
+				||(null == paramMap.get("idtype"))
+				||(null == paramMap.get("identity"))){
+				log.error("对私业务，请填定预留手机号及证件号");		
+				resultMap.put("state", "2");
+				resultMap.put("msg", "传入参数不完整，对私业务，请填定预留手机号及证件号");
+				return resultMap;
+			}else{
+				if((paramMap.get("mobileId").length()==0 || paramMap.get("mobileId").length()>20)
+					||(paramMap.get("idtype").length()==0)
+					||(paramMap.get("identity").length()==0||paramMap.get("identity").length()>20)){
+						log.error("参数约束性验证失败");
+						resultMap.put("state", "2");
+						resultMap.put("msg", "参数约束性验证失败");
+						return resultMap;
+				}
+			}
+		}
+		
+		for(Map.Entry<String,String> index:paramMap.entrySet()){
+				paramMap.put(index.getKey(),index.getValue()==null?null:index.getValue().trim());
+		}
+		log.info("[MentionAccountServiceImpl.addMentionAccount]转换后参数param=:"+paramMap);
+		//参数约束性验证
+		if((paramMap.get("uId").length()==0)
+			||(paramMap.get("type").length()==0)
+			||(paramMap.get("account").length()==0||paramMap.get("account").length()>100)
+			||( paramMap.get("cardType").length()==0)
+			||(paramMap.get("userName").length()==0||paramMap.get("userName").length()>100)
+			||(paramMap.get("bankName").length()==0 ||paramMap.get("bankName").length()>100)
+			/*||(paramMap.get("isuse").length()==0)*/
+			||(paramMap.get("userType").length()==0)
+			||(paramMap.get("ispublic").length()==0)
+			||(paramMap.get("bank").length()==0 ||paramMap.get("bank").length()>20)
+			||(paramMap.get("abbrev").length()==0||paramMap.get("abbrev").length()>20)
+			||(paramMap.get("province").length()==0||paramMap.get("province").length()>20)
+			||(paramMap.get("cityname").length()==0||paramMap.get("cityname").length()>20)){
+			log.error("参数约束性验证失败");
+			resultMap.put("state", "2");
+			resultMap.put("msg", "参数约束性验证失败");
+			return resultMap;
+		}
+
+		String uId = paramMap.get("uId");
+		String userType = paramMap.get("userType");
+		
+		 /*if(chickMAisuse(Integer.parseInt(userType),Integer.parseInt(paramMap.get("isuse"))) == 1){
+				resultMap.put("state", "2");
+				resultMap.put("msg", "传入参数的用户类型错误");
+				return resultMap;
+		 }*/
+		
+		int check = synthesizeServiceImpl.checkandaddwallet(uId, userType, "", "");
+		if (check != 3 && check != 0) {
+			log.info("检查钱包异常");
+			log.info("返回参数：" + 1);
+			resultMap.put("state", "1");
+			resultMap.put("msg", "添加钱包失败");
+			return resultMap;
+		}
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("uId", uId);
+		map.put("userType", userType);
+		//map.put("account", paramMap.get("account"));
+		//map.put("isuse", paramMap.get("isuse"));
+		List<Map<String, Object>> maList = mentionAccountMapper.checkByUid(map);
+		if (maList == null || maList.size()==0) {
+			int result = mentionAccount(paramMap);
+			log.info("返回参数：" + result);
+			resultMap.put("state", result + "");
+			resultMap.put("msg", "该用户已经成功添加该银行卡");
+			return resultMap;
+		} else {
+			if(userType.equals("1")){
+				for(Map<String,Object> mentionMap:maList){
+					if(mentionMap.get("account").equals(paramMap.get("account"))){
+						log.info("该用户已经添加该银行卡");
+						log.info("返回参数：" + 3);
+						resultMap.put("state", "3");
+						resultMap.put("msg", "该用户已经添加过银行卡");
+						return resultMap;	
+					}
+				}
+				int result = mentionAccount(paramMap);
+				log.info("返回参数：" + result);
+				resultMap.put("state", result + "");
+				resultMap.put("msg", "该用户已经成功添加该银行卡");
+				return resultMap;
+			}else{
+				log.info("该用户已经添加该银行卡");
+				log.info("返回参数：" + 3);
+				resultMap.put("state", "3");
+				resultMap.put("msg", "该用户已经添加过银行卡");
+				return resultMap;	
+			}
+		}
+		}catch(Exception e){
+			log.error("添加银行卡失败",e);
+			resultMap.put("state", "1");
+			resultMap.put("msg", "添加银行卡失败");
+			return resultMap;
+		}
+	}
+
+	/**
+	 * 获取银行卡
+	 */
+	@Override
+	public List<Map<String, String>> getMentionAccount(String uId, int userType)
+			throws FailureException, TException {
+		log.info("[MentionAccountServiceImpl.getMentionAccount]传入参数:uId="+uId+",userType="+userType);
+
+		// 查询uId的银行卡集合
+		if (userType < 1 || userType > 3) {
+			log.error("请求用户类型错误 ");
+			log.info("返回参数：" + new ArrayList<Map<String, String>>());
+			return new ArrayList<Map<String, String>>();
+		}
+		if(!uId.matches("^-?[0-9]*$")){
+			log.error("请求用户ID错误 ");
+			log.info("返回参数：" + new ArrayList<Map<String, String>>());
+			return new ArrayList<Map<String, String>>();
+		}
+		
+		try {
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("uId", uId);
+			map.put("userType", userType);
+			List<Map<String, Object>> list = mentionAccountMapper
+					.selectByuid(map);
+
+			List<Map<String, String>> newList = new ArrayList<Map<String, String>>();
+			for (Map<String, Object> index : list) {
+				Map<String, String> temp = MapUtil.Object2String(index);
+				newList.add(temp);;
+			}
+			return newList;
+		} catch (Exception e) {
+			log.error("获取银行卡异常", e);
+		}
+		log.info("返回参数：" + new ArrayList<Map<String, String>>());
+		return new ArrayList<Map<String, String>>();
+	}
+
+	/**
+	 * 更新银行卡
+	 */
+	@Override
+	public Map<String, String> updateMentionAccount(Map<String, String> paramMap)
+			throws FailureException, TException {
+		log.info("[MentionAccountServiceImpl.updateMentionAccount]传入参数:param="+paramMap);
+		log.info("[updateMentionAccount]" + paramMap);
+		Map<String, String> resultMap = new HashMap<String, String>();
+		try {
+			Map<String, Object> map = new HashMap<String, Object>();
+			if (paramMap.get("id") == null
+					|| "".equals(paramMap.get("id").trim())) {
+				log.error("传入参数错误，帐号ID不能为null或空");
+				resultMap.put("state", "2");
+				resultMap.put("msg", "传入参数错误，帐号ID不能为null或空");
+				return resultMap;
+			}
+			
+			for(Map.Entry<String,String> index:paramMap.entrySet()){
+				paramMap.put(index.getKey(),index.getValue()==null?null:index.getValue().trim());
+			}
+			log.info("[MentionAccountServiceImpl.addMentionAccount]转换后参数param=:"+paramMap);
+			//参数约束性验证
+			if((null!=paramMap.get("id")&&paramMap.get("id").length()==0)
+				||(null!=paramMap.get("type")&&paramMap.get("type").length()==0)
+				||(null!=paramMap.get("account") &&(paramMap.get("account").length()==0||paramMap.get("account").length()>100))
+				||(null!=paramMap.get("cardType")&&paramMap.get("cardType").length()==0)
+				||(null!=paramMap.get("userName")&&(paramMap.get("userName").length()==0||paramMap.get("userName").length()>100))
+				||(null!=paramMap.get("bankName")&&(paramMap.get("bankName").length()==0 ||paramMap.get("bankName").length()>100))
+				/*||(null!=paramMap.get("isuse")&&paramMap.get("isuse").length()==0)*/
+				||(null!=paramMap.get("userType")&&paramMap.get("userType").length()==0)
+				||(null!=paramMap.get("ispublic")&&paramMap.get("ispublic").length()==0)
+				||(null!=paramMap.get("bank")&&(paramMap.get("bank").length()==0 ||paramMap.get("bank").length()>20))
+				||(null!=paramMap.get("abbrev")&&(paramMap.get("abbrev").length()==0||paramMap.get("abbrev").length()>20))
+				||(null!=paramMap.get("province")&&(paramMap.get("province").length()==0||paramMap.get("province").length()>20))
+				||(null!=paramMap.get("cityname")&&(paramMap.get("cityname").length()==0||paramMap.get("cityname").length()>20))){
+				log.error("参数约束性验证失败");
+				resultMap.put("state", "2");
+				resultMap.put("msg", "参数约束性验证失败");
+				return resultMap;
+			}
+			
+			Map<String,Object> getMap = getMentionAccountById(Integer.parseInt(paramMap.get("id")));
+			if(getMap == null || getMap.size()==0){
+				log.error("查无此银行卡");
+				resultMap.put("state", "1");
+				resultMap.put("msg", "查无此银行卡");
+				return resultMap;
+			}else{
+				
+				//对公转对私必填以下字段
+				if(paramMap.get("ispublic").equals("0") && getMap.get("ispublic").toString().equals("1")){
+					
+					if((null == paramMap.get("mobileId"))
+						||(null == paramMap.get("idtype"))
+						||(null == paramMap.get("identity"))){
+						log.error("对私业务，请填定预留手机号及证件号");		
+						resultMap.put("state", "2");
+						resultMap.put("msg", "传入参数不完整，对私业务，请填定预留手机号及证件号");
+						return resultMap;
+					}else{
+						if((paramMap.get("mobileId").length()==0 || paramMap.get("mobileId").length()>20)
+							||(paramMap.get("idtype").length()==0)
+							||(paramMap.get("identity").length()==0||paramMap.get("identity").length()>20)){
+								log.error("参数约束性验证失败");
+								resultMap.put("state", "2");
+								resultMap.put("msg", "参数约束性验证失败");
+								return resultMap;
+						}
+					}
+				}else if(paramMap.get("ispublic").equals("1") && getMap.get("ispublic").toString().equals("0")){
+					paramMap.remove("idtype");
+					paramMap.remove("identity");
+				}
+				
+				
+//				int isuse = Integer.parseInt(paramMap.get("isuse"));
+				int userType = 0;
+				if((long)getMap.get("uid") != 0){
+					userType=1;
+				}else if((long)getMap.get("sellerid") != 0){
+					userType=2;
+				}else if((long)getMap.get("jointid") != 0){
+					userType=3;
+				}
+				
+/*				if(chickMAisuse(userType,isuse) == 1){
+					resultMap.put("state", "2");
+					resultMap.put("msg", "isuse传入参数错误");
+					return resultMap;
+				}*/
+			}
+			
+			map.put("id", paramMap.get("id"));
+			map.put("type", paramMap.get("type"));
+			map.put("account", paramMap.get("account"));
+			if (stringIsNotBlank(paramMap.get("cardType"))) {
+				map.put("cardtype", Integer.parseInt(paramMap.get("cardType")));
+			}
+
+			map.put("username", paramMap.get("userName"));
+			map.put("bankname", paramMap.get("bankName"));
+			map.put("mobileId", paramMap.get("mobileId"));
+			if (stringIsNotBlank(paramMap.get("isuse"))) {
+				map.put("isuse", Integer.parseInt(paramMap.get("isuse")));
+			}
+			if (stringIsNotBlank(paramMap.get("ispublic"))) {
+				map.put("ispublic", Integer.parseInt(paramMap.get("ispublic")));
+			}
+			if(paramMap.get("idtype") != null){
+				if (stringIsNotBlank(paramMap.get("idtype"))) {
+					map.put("idtype", Integer.parseInt(paramMap.get("idtype")));
+				}
+			}
+			map.put("identity", paramMap.get("identity"));
+			map.put("bank", paramMap.get("bank"));
+			map.put("abbrev", paramMap.get("abbrev"));
+			map.put("province", paramMap.get("province"));
+			map.put("cityname", paramMap.get("cityname"));
+			map.put("license", paramMap.get("license"));
+			map.put("upidcard", paramMap.get("upidcard"));
+			map.put("dwidcard", paramMap.get("dwidcard"));
+
+			int result = mentionAccountMapper.updateSelective(map);
+			if (result == 1) {
+				log.info("修改成功");
+				log.info("返回参数：" + 0);
+				resultMap.put("state", "0");
+				resultMap.put("msg", "成功");
+				return resultMap;
+			} else {
+				log.info("银行卡信息有误" + result);
+				log.info("返回参数：" + 1);
+				resultMap.put("state", "1");
+				resultMap.put("msg", "银行卡信息有误");
+				return resultMap;
+			}
+		} catch (Exception e) {
+			log.error("修改银行卡异常", e);
+		}
+		log.info("返回参数：" + 1);
+		resultMap.put("state", "1");
+		resultMap.put("msg", "修改银行卡异常");
+		return resultMap;
+	}
+
+	/**
+	 * 删除银行卡
+	 */
+	@Override
+	public int delMentionAccount(String id) throws FailureException, TException {
+		log.info("[MentionAccountServiceImpl.delMentionAccount]传入参数:id="+id);
+		try {
+			if (id.equals("") || id == null) {
+				log.info("返回参数：" + 2);
+				return 2;// 参数异常
+			}
+			int result = mentionAccountMapper.delMentionAccount(id);
+			if (result == 1) {
+				log.info("返回参数：" + 0);
+				return 0;
+			} else if (result == 0) {
+				log.info("返回参数：" + 1);
+				return 1;
+			} else {
+				log.info("返回参数：" + 2);
+				return 2;
+			}
+		} catch (Exception e) {
+			log.error("帐号不存在", e);
+			log.info("返回参数：" + 3);
+			return 3;
+		}
+	}
+
+	/**
+	 * 查询银行卡列表
+	 */
+	@Override
+	public MentionAccount getMentionAccountList(Map<String, String> paramMap)
+			throws FailureException, TException {
+		log.info("[MentionAccountServiceImpl.getMentionAccountList]传入参数:param="+paramMap);
+
+		try{
+			// 分页设置
+			int pagesize = paramMap.get("pageSize") != null
+					&& !"".equals(paramMap.get("pageSize")) ? Integer
+					.valueOf(paramMap.get("pageSize")) : 10;
+			int cPage = paramMap.get("cPage") != null
+					&& !"".equals(paramMap.get("cPage")) ? Integer.valueOf(paramMap
+					.get("cPage")) : 1;
+	
+			Map<String, Object> newMap = new HashMap<String, Object>();
+			newMap.put("startNo", (cPage - 1) * pagesize);
+			newMap.put("pageSize", pagesize);
+			if (paramMap.get("username") != null
+					&& paramMap.get("username").trim().length() != 0) {
+				newMap.put("userName", paramMap.get("username"));
+			}
+	
+			/* 根据查询条件:传uId时，必须同时传userType，而传userType时，不一定需要传uId */
+			if (paramMap.get("userType") != null
+					&& paramMap.get("userType").length() != 0) {
+				if(!paramMap.get("userType").matches("^[1-3]$")){
+					log.error("用户类型错误");
+					throw new Exception("用户类型错误");
+				}
+				newMap.put("userType", Integer.parseInt(paramMap.get("userType")));
+	
+				if (paramMap.get("uId") != null
+						&& paramMap.get("uId").length() != 0) {
+					newMap.put("uId", Integer.parseInt(paramMap.get("uId")));
+				}
+			}
+	
+			if (paramMap.get("bankid") != null
+					&& paramMap.get("bankid").length() != 0) {
+				newMap.put("bankId", paramMap.get("bankid"));
+			}
+			if (paramMap.get("mobileid") != null
+					&& paramMap.get("mobileid").length() != 0) {
+				newMap.put("mobileId", paramMap.get("mobileid"));
+			}
+			if (paramMap.get("identity") != null
+					&& paramMap.get("identity").length() != 0) {
+				newMap.put("identity", paramMap.get("identity"));
+			}
+	
+			log.info("查询参数---newMap:" + newMap);
+			int countpage = mentionAccountMapper.getCountPage(newMap);
+			int pageCount = countpage % pagesize == 0 ? countpage / pagesize
+					: countpage / pagesize + 1;
+			List<Map<String, Object>> walletList = mentionAccountMapper
+					.getAccountList(newMap);
+			Map<String,Object> wrMap = null; 
+			
+			if(paramMap.get("islable")!=null&&paramMap.get("islable").equals("1")){
+				//需获取银行卡的标签
+				if(paramMap.get("userType").equals("3")){
+					wrMap=xmniaoWalletDao.getLastJointWithdrawalsRecord(paramMap);
+				}else{
+					wrMap=xmniaoWalletDao.getLastWithdrawalsRecord(paramMap);
+				}
+			}
+			List<Map<String, String>> newList = new ArrayList<Map<String, String>>();
+			for (int i=0;i<walletList.size();i++) {
+				Map<String, Object> index=walletList.get(i);
+				Map<String,String> tempMap = MapUtil.Object2String(index);
+				
+				//添加返回银行卡的标签
+				if(paramMap.get("islable")!=null&&paramMap.get("islable").equals("1")){
+					tempMap.put("recentlyUsed", "0");//最近使用提现的
+					tempMap.put("recentlyEdited", "0");//最近添加修改的
+					tempMap.put("recently", "0");	//最近提现或修改的
+					
+					if(wrMap!=null && wrMap.get("account").equals(tempMap.get("account"))){
+						tempMap.put("recentlyUsed", "1");
+						tempMap.put("recently", "1");
+					}
+					
+					if(i==0){
+						tempMap.put("recentlyEdited", "1");
+						if(wrMap==null){
+							tempMap.put("recently", "1");
+						}
+					}
+				}
+				
+				newList.add(tempMap);
+			}
+			log.info("结果：pageCount=" + pageCount + "-----countpage=" + countpage);
+	
+			return new MentionAccount(pageCount, newList, countpage);
+		}catch(Exception e){
+			log.error("查询异常",e);
+			return new MentionAccount(0, new ArrayList<Map<String, String>>(), 0);
+		}
+	}
+
+	/**
+	 * 查询用户银行卡
+	 */
+	@Override
+	public List<Map<String, String>> getMentionAccounts(
+			List<Map<String, String>> param) throws FailureException,
+			TException {
+		log.info("[MentionAccountServiceImpl.getMentionAccounts]传入参数:param="+param);
+
+		try {
+
+			if (param.size() == 0) {
+
+				log.info("参数为空");
+				return new ArrayList<Map<String, String>>();
+			}
+			
+			for(Map<String,String> u:param){
+				if(UtilString.stringIsNotBlank(u.get("uId")) 
+					&& UtilString.stringIsNotBlank(u.get("userType"))){
+					if(u.get("uId").matches("^-?[0-9]*$")
+						&& u.get("userType").matches("^[1-3]$")){
+						log.info("好的");
+					}else{
+						log.info("参数格式不对");
+						return new ArrayList<Map<String, String>>(); 
+					}
+				}else{
+					log.info("参数不齐");
+					return new ArrayList<Map<String, String>>(); 
+				}	
+			}
+			
+			List<Map<String, Object>> list = mentionAccountMapper
+					.selectByUids(param);
+
+			List<Map<String, String>> newList = new ArrayList<Map<String, String>>();
+			for (Map<String, Object> index : list) {
+
+				if (newList.size() == 0) {
+					newList.add(MapUtil.Object2String(index));
+				} else {
+					for (int a = 0; a < newList.size(); a++) {
+
+						Map<String, String> temp = newList.get(a);
+
+						if (String.valueOf(index.get("uId")).equals(
+								temp.get("uId"))) {
+
+							newList.remove(a);
+
+							for (String key : index.keySet()) {
+
+								temp.put(key + "2", index.get(key).toString());
+							}
+							newList.add(temp);
+
+							break;
+						} else if ((a + 1) == newList.size()) {
+							newList.add(MapUtil.Object2String(index));
+							break;
+						}
+					}
+				}
+			}
+			log.info("返回参数大小：" + newList.size());
+			return newList;
+		} catch (Exception e) {
+			log.error("获取银行卡异常", e);
+		}
+		log.info("返回参数：" + new ArrayList<Map<String, String>>());
+		return new ArrayList<Map<String, String>>();
+	}
+
+	/**
+	 * 根据提现Id查询提现信息
+	 */
+	@Override
+	public Map<String, String> getMentionAccountById(String id)
+			throws FailureException, TException {
+		log.info("[MentionAccountServiceImpl.getMentionAccountById]传入参数:id="+id);
+		Map<String,String> resultMap = new HashMap<String,String>();
+		Map<String,Object> maMap = getMentionAccountById(Integer.parseInt(id));
+		if(maMap == null || maMap.size() == 0){
+		}
+		else{
+			if(maMap.get("business_licence") != null){
+				String value = (String) maMap.get("business_licence");
+				maMap.remove("business_licence");
+				maMap.put("license", value);
+			}
+			if(maMap.get("idcard_picp") != null){
+				String value = (String) maMap.get("idcard_picp");
+				maMap.remove("idcard_picp");
+				maMap.put("upidcard", value);
+			}
+			if(maMap.get("idcard_picn") != null){
+				String value = (String) maMap.get("idcard_picn");
+				maMap.remove("idcard_picn");
+				maMap.put("dwidcard", value);
+			}
+			
+			long uid = maMap.get("uid")==null?0:(long)maMap.get("uid");
+			long sellerid =maMap.get("sellerid")==null?0:(long)maMap.get("sellerid");
+			long jointid = maMap.get("jointid")==null?0:(long)maMap.get("jointid");
+			maMap.remove("uid");
+			maMap.remove("sellerid");
+			maMap.remove("jointid");
+			if(uid == 0){
+				if(sellerid ==0){
+					if(jointid ==0){
+						maMap.put("uId", 0);
+						maMap.put("userType",0);
+					}else{
+						maMap.put("uId", jointid);
+						maMap.put("userType",3);
+					}
+				}else{
+					maMap.put("uId", sellerid);
+					maMap.put("userType",2);
+				}
+			}else{
+				maMap.put("uId", uid);
+				maMap.put("userType",1);
+			}
+			resultMap = MapUtil.Object2String(maMap);
+		}
+		return resultMap;
+	}
+
+	
+	/*
+	 * 添加银行卡私用方法 0添加成功 1添加失败 (新版本)
+	 */
+	private int mentionAccount(Map<String, String> paramMap) {
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		String uId = paramMap.get("uId");
+		int userType = Integer.parseInt(paramMap.get("userType"));
+		if (1 == userType) {
+			map.put("uid", uId);
+			map.put("jointid", 0);
+			map.put("sellerid", 0);
+		} else if (2 == userType) {
+			map.put("uid", "0");
+			map.put("jointid", "0");
+			map.put("sellerid", uId);
+		} else if (3 == userType) {
+			map.put("uid", "0");
+			map.put("jointid", uId);
+			map.put("sellerid", "0");
+		} else {
+			log.error("账号类型错误");
+			log.info("返回参数：" + 1);
+			return 1;
+		}
+		if (stringIsNotBlank(paramMap.get("type"))) {
+			map.put("type", Integer.parseInt(paramMap.get("type")));
+		}
+		map.put("account", paramMap.get("account"));
+		if (stringIsNotBlank(paramMap.get("cardType"))) {
+			map.put("cardtype", Integer.parseInt(paramMap.get("cardType")));
+		}
+		map.put("username", paramMap.get("userName"));
+		map.put("bankname", paramMap.get("bankName"));
+		map.put("udate",
+				new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+		map.put("mobileid", paramMap.get("mobileId"));
+		if (stringIsNotBlank(paramMap.get("isuse"))) {
+			map.put("isuse", Integer.parseInt(paramMap.get("isuse")));
+		}
+		if (stringIsNotBlank(paramMap.get("ispublic"))) {
+			map.put("ispublic", Integer.parseInt(paramMap.get("ispublic")));
+		}
+		if (stringIsNotBlank(paramMap.get("idtype"))) {
+			map.put("idtype", Integer.parseInt(paramMap.get("idtype")));
+		}
+		map.put("identity", paramMap.get("identity"));
+		map.put("bank", paramMap.get("bank"));
+		map.put("abbrev", paramMap.get("abbrev"));
+		map.put("province", paramMap.get("province"));
+		map.put("cityname", paramMap.get("cityname"));
+		map.put("license", paramMap.get("license"));
+		map.put("upidcard", paramMap.get("upidcard"));
+		map.put("dwidcard", paramMap.get("dwidcard"));
+
+		try {
+			mentionAccountMapper.insertSelective(map);
+			log.info("返回参数：" + 0);
+			return 0;
+		} catch (Exception e) {
+			log.error("数据库操作出错." + e);
+		}
+		log.info("返回参数：" + 1);
+		return 1;
+	}
+	
+	private Map<String,Object> getMentionAccountById(int id){
+		return mentionAccountMapper.getMentionAccountById(id);
+	}
+	
+	private int chickMAisuse(int userType,int isuse){
+		if(userType == 1 || userType==3){
+			if(isuse != 0){
+				log.error("用户及合作商类型isuse只能为0");
+				return 1;
+			}
+			else{
+				return 0;
+			}
+		}else if(userType == 2){
+			if(isuse == 1 || isuse == 2){
+				return 0;
+			}else{
+				log.error("商户的银行卡类型isuse只有为1或2");
+				return 1;
+			}
+		}
+		log.error("用户类型错误");
+		return 1;
+	}
+	
+	// 是否为空
+	private boolean stringIsNotBlank(String str) {
+		if (str != null) {
+			if (!str.trim().equals("") && !str.trim().equalsIgnoreCase("null")) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * 解除银行卡绑定
+	 */
+	@Override
+	public Map<String, String> unbundlingAccount(Map<String, String> accountMap)
+			throws FailureException, TException {
+		log.info("[MentionAccountServiceImpl.unbundlingAccount]accountMap:"+accountMap);
+		Map<String,String> returnMap = new HashMap<String,String>();
+		String usertype = accountMap.get("userType");
+		if(usertype.matches("[^123]")){
+			log.error("指定用户类型错误");
+			returnMap.put("state", "2");
+			returnMap.put("msg", "指定用户类型错误");
+			return returnMap;
+		}
+		try{
+			returnMap = synthesizeServiceImpl.delMentionAccountByMap(accountMap);
+		}catch(Exception e){
+			log.error("解除绑定执行异常",e);
+			returnMap.put("state", "3");
+			returnMap.put("msg", "解除绑定执行异常");
+		}
+		return returnMap;
+	}
+	
+	/**
+	 * 查询用户银行卡信息
+	 */
+	@Override
+	public Map<String, String> getSingleMentionAccount(Map<String, String> param)
+			throws FailureException, TException {
+		log.info("查询用户银行卡信息getSingleMentionAccount"+param);
+		try {
+			if (StringUtils.isBlank(param.get("uId")) || StringUtils.isBlank(param.get("userType"))) {
+				log.error("插入参数有误，uId和userType不可为空");
+			}
+			Map<String,Object> maMap =this.getSingleMA(MapUtil.String2Object(param));
+			return MapUtil.Object2String(maMap);
+		} catch (Exception e) {
+			log.error("查询用户银行卡信息失败",e);
+			return new HashMap<String,String>();
+		}
+		
+	}
+	public Map<String,Object> getSingleMA(Map<String,Object> param){
+		List<Map<String, Object>> list = mentionAccountMapper
+				.selectByuid(param);
+		
+		if(list.size()>0){
+			return list.get(0);
+		}
+		return null;
+	}
+}

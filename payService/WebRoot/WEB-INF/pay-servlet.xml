@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
+		http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd 
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-3.2.xsd
+		http://www.springframework.org/schema/util 
+		http://www.springframework.org/schema/util/spring-util-3.1.xsd
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+		
+	<mvc:annotation-driven/>
+	
+	<!-- 将返回值自动转成json格式 此包要用spring-web-3.2.5的架包 当前是3.2.4的 -->
+	 
+<!-- 	<mvc:annotation-driven enableMatrixVariables="false" >
+		<mvc:message-converters>
+			<beans:bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"/>
+		</mvc:message-converters>
+	</mvc:annotation-driven> 
+	 -->
+	<!-- 扫描controller包，应用Spring的注解 -->
+	<context:component-scan base-package="com.xmniao.controller.**">
+	    <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service"/> 
+    </context:component-scan>  
+	
+	<!-- 配置视图解析器，将ModelAndView及字符串解析为具体的页面 -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+		p:viewClass="org.springframework.web.servlet.view.JstlView" p:prefix="/WEB-INF/view/"
+		p:suffix=".jsp" />
+		
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+		p:viewClass="org.springframework.web.servlet.view.JstlView" p:prefix="/WEB-INF/error/"
+		p:suffix=".jsp" />
+		
+	 <!--定义异常处理页面-->
+    <bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="exceptionMappings">
+            <props>
+                <prop key="java.sql.SQLException">error/500</prop>
+                <prop key="java.io.IOException">error/500</prop>                
+                <prop key="com.alibaba.fastjson.JSONException">error/500</prop> 
+                <prop key="java.lang.exception">error/500</prop>  
+            </props>
+        </property>
+    </bean>	
+		
+</beans>

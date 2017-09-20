@@ -1,0 +1,68 @@
+package com.xmniao.joint.service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.xmniao.common.UtilString;
+import com.xmniao.joint.dao.BillFreshMapper;
+
+
+/**
+ * 
+ * 
+ * 项目名称：payService
+ * 
+ * 类名称：FreshBillService
+ * 
+ * 类描述： 生鲜订单Service类
+ * 
+ * 创建人： Chen Bo
+ * 
+ * 创建时间：2016年3月11日 上午11:04:25 
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司
+ */
+@Service
+public class FreshBillService {
+	
+	/**
+     * 日志记录
+     */
+    private final Logger log = Logger.getLogger(FreshBillService.class);
+    
+    @Autowired
+    private BillFreshMapper billFreshMapper;
+    
+    //private 
+    
+    public Map<String,String> refundFreshBill(String bid,String status){
+    	
+    	if(status.equals("5")){
+	        //查询已使用的优惠券与订单关系
+	        List<Map<String, Object>> resListMap=billFreshMapper.getOrderCouponList(bid);
+	        //若查询的优惠券只有一条已使用，则进行更新为未使用；反之，则不无需更新
+	        if(resListMap.size()==1 && resListMap.get(0).containsKey("bid") && 
+	           resListMap.get(0).get("bid").toString().equals(bid))
+	        {
+	            //根据优惠券序列码修改用户使用状态
+	        	billFreshMapper.mdyCouponUserStatus(resListMap.get(0).get("cdid").toString());
+	        }
+    	}
+    	Map<String,Object> refundMap = new HashMap<String,Object>();
+    	refundMap.put("bid",bid);
+    	refundMap.put("status",status);
+    	refundMap.put("udate",UtilString.dateFormatNow());
+    	log.info("更新业务库订单退款状态："+refundMap);
+    	
+    	int update = billFreshMapper.updateBillStatus(refundMap);
+    	if(1 != update){
+    		log.error("警告，更新业务订单退款状态数目不对，本次更新记录数为："+update);
+    	}
+    	return new HashMap<String,String>();
+    }
+}

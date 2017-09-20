@@ -1,0 +1,29 @@
+package com.xmniao.service;
+
+import com.xmniao.entity.Experiencecard;
+import com.xmniao.entity.ExperiencecardRecord;
+
+/**
+ * Created by yang.qiang on 2017/5/8.
+ */
+public interface ExperiencecardAccess {
+    // 美食体验卡记录rtype : 充值
+    Integer ExperiencecardRecordRtypeCharge = 0;
+
+
+    /**
+     * 创建/更新美食体验卡
+     * @param experiencecard        美食体验卡数据
+     * @param experiencecardRecord  美食体验记录信息数据
+     */
+    void createCard(Experiencecard experiencecard, ExperiencecardRecord experiencecardRecord);
+
+    Experiencecard queryExperiencecard(Integer uid);
+
+    /**
+     * 扣除美食体验卡
+     * @param uid
+     * @param excardRecord
+     */
+    void dudectExperiencecard(Integer uid, ExperiencecardRecord excardRecord);
+}

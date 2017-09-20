@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 合作商信息 -->
+<mapper namespace="com.xmniao.dao.JointInfoMapper">
+	
+	
+        
+	<sql id="pageSql">
+		limit #{startPage},#{pageSize}
+	</sql>
+	
+	<sql id="each"> 
+		 <foreach item="jointid" index="index" collection="list" open="("
+				separator="," close=")">
+				#{jointid}
+		</foreach>
+	</sql>
+	
+	<sql id="withdrawWhere">
+	  <where>
+	    jointid IN 
+		 <include refid="each"></include>
+		    AND STATUS IN (0, 1, 3) 
+	  </where>
+	</sql>
+	
+	<sql id="incomeWhere">
+	<where>
+	 w.`jointid` IN 
+	        <include refid="each"></include>
+		    AND r.`rtype` = 0 
+	</where>
+	</sql>
+	
+	
+	<select id="getIncomeWithdraw" parameterType="map" resultType="map">
+	
+	SELECT SUM(withdrawedMoney) withdrawedMoney,SUM(withdrawingMoney) withdrawingMoney,SUM(splitMoney) splitMoney ,SUM(nowSplitMoney) nowSplitMoney
+    FROM
+      (SELECT 
+		    IFNULL(SUM((CASE WHEN STATUS = 1 THEN amount END)),0.00) withdrawedMoney,
+		    IFNULL(SUM((CASE WHEN STATUS != 1 THEN amount END)),0.00) withdrawingMoney,
+		    0 splitMoney,
+		    0 nowSplitMoney 
+		  FROM
+		    t_joint_withdrawals 
+		  <include refid="withdrawWhere"></include>
+		  UNION
+		  SELECT 
+		    0 withdrawedMoney,
+		    0 withdrawingMoney,
+		    IFNULL(SUM((CASE WHEN TO_DAYS(r.sdate) = TO_DAYS(#{sDate}) THEN r.income END)),0.00) todayIncom,
+		    IFNULL(SUM(r.income), 0.00) allIncome 
+		  FROM
+		     b_wallet w LEFT JOIN 
+             `b_wallet_record` r  ON w.`accountid` = r.`accountid` 
+		    <include refid="incomeWhere"></include>
+		 ) t 
+	</select>
+	
+
+<select  id="getSomeIncomeWithdraws" parameterType="map" resultType="map"> 
+
+	SELECT jointid jointId ,SUM(todayIncom) splitMoney ,SUM(allIncome) nowSplitMoney,SUM(withdrawed) withdrawedMoney,SUM(withdrawing) withdrawingMoney
+	FROM
+	  (SELECT w.`jointid`,
+	    IFNULL(SUM((CASE WHEN TO_DAYS(r.sdate) = TO_DAYS(#{sDate}) THEN r.income END)), 0.00) todayIncom,
+	    IFNULL(SUM(r.income), 0.00) allIncome,
+	    0 withdrawed,
+	    0 withdrawing 
+	  FROM
+	     b_wallet w LEFT JOIN 
+	    `b_wallet_record` r  ON w.`accountid` = r.`accountid` 
+	    <include refid="incomeWhere"></include>
+	  GROUP BY w.`jointid` 
+	  UNION
+	  SELECT jointid, 0 todayIncom, 0 allIncome,
+	    IFNULL(SUM((CASE WHEN STATUS = 1 THEN amount END)), 0.00) withdrawed,
+	    IFNULL(SUM((CASE WHEN STATUS != 1 THEN amount END)), 0.00 ) withdrawing 
+	  FROM
+	    t_joint_withdrawals 
+	   <include refid="withdrawWhere"></include>
+	  GROUP BY jointid) t 
+	GROUP BY jointid 
+	<include refid="pageSql"></include>
+
+</select>
+	
+
+</mapper>

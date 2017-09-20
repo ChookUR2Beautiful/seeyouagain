@@ -1,0 +1,312 @@
+package com.xmniao.test;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.Test;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.rocketmq.client.exception.MQBrokerException;
+import com.alibaba.rocketmq.client.exception.MQClientException;
+import com.alibaba.rocketmq.client.producer.DefaultMQProducer;
+import com.alibaba.rocketmq.client.producer.SendCallback;
+import com.alibaba.rocketmq.client.producer.SendResult;
+import com.alibaba.rocketmq.common.message.Message;
+import com.alibaba.rocketmq.common.message.MessageQueue;
+import com.alibaba.rocketmq.remoting.exception.RemotingException;
+
+public class 模拟生产者C {
+	   public static void main(String[] args) throws InterruptedException{
+		   //updateWalletProducer();
+		   pushTopic_push1();
+//		   pushTopic_push2();
+//		   pullTopic_pull();
+		   
+//		   withdrawProducer();
+//			   PullTopic p = new PullTopic(); 
+//			   p.start();
+//			   
+	   } 
+	   
+	   /**
+	    * 生产者A
+	    */
+	   public static void pushTopic_push1(){  
+//	        DefaultMQProducer producer = new DefaultMQProducer("ProducerWithdraw_192.168.20.666");  
+	        DefaultMQProducer producer = new DefaultMQProducer("ProducerWithdraw_172_16_130_196");  
+	        producer.setNamesrvAddr("192.168.50.123:9876");   
+	        try {  
+	            producer.start();  
+	            
+	           for(int a = 1;a < 2; a++){
+	        	   Map<String, String> tempmap = new HashMap<String, String>();
+					 tempmap.put("orderId", String.valueOf(2019610728058L + a));
+					 tempmap.put("uId", "83");
+					 tempmap.put("uMoney", "0.01");
+					 tempmap.put("sId",
+					 "4658");
+					 tempmap.put("sMoney", "0.0");
+					 tempmap.put("mId",
+					 "4658");
+					 tempmap.put("mMoney", "0.01");
+					 tempmap.put("mType",
+					 "2");
+					 tempmap.put("brId", "1916299");
+					 tempmap.put("brMoney",
+					 "0.0");
+					 tempmap.put("crId", "1916299");
+					 tempmap.put("crMoney",
+					 "0.01");
+					 tempmap.put("remark", "谁在装逼？ 好刺眼！！");
+					 tempmap.put("mExpenses", "0");
+					 tempmap.put("brExpenses", "1");
+					 tempmap.put("crExpenses", "0");
+		              
+		            Message msg = new Message("topic_withdraw_",   
+		                    "divide_pay",   
+		                    "fz_2015529103727",   
+		                    JSON.toJSONString(tempmap).getBytes());  
+		              
+		            SendResult result = producer.send(msg);  
+		            System.out.println("id:" + result.getMsgId() +  
+		                    " result:" + result.getSendStatus());   
+	           }
+
+	        } catch (Exception e) {  
+	            e.printStackTrace();  
+	        }finally{  
+	            producer.shutdown();  
+	            System.out.println("线程处理完成");
+	        }  
+	    }
+	   
+	   /**
+	    * 生产者B
+	    */
+	   public static void pushTopic_push2(){
+		   
+	        DefaultMQProducer producer = new DefaultMQProducer("Producer");  
+	        producer.setNamesrvAddr("192.168.50.123:9876");   
+	        try {  
+	            producer.start();  
+	              
+	            Message msg = new Message("PushTopic",   
+	                    "push2",   
+	                    "2",   
+	                    "Just for test2.".getBytes());  
+	              
+	            SendResult result = producer.send(msg);  
+	            System.out.println("id:" + result.getMsgId() +  
+	                    " result:" + result.getSendStatus()); 
+	        } catch (Exception e) {  
+	            e.printStackTrace();  
+	        }finally{  
+	            producer.shutdown();  
+	        }  
+	    
+	   }
+	   /**
+	    * 提现生产者
+	    */
+	   public static void withdrawProducer(){
+		   
+		   DefaultMQProducer producer = new DefaultMQProducer("ProducerCallback_172_16_180_241");  
+		   producer.setNamesrvAddr("192.168.50.123:9876");   
+		   try {  
+			   producer.start();  
+			   
+			   for(int a = 1;a < 101; a++){
+	        	   System.out.println(a);
+	        	   Map<String, String> tempmap = new HashMap<String, String>();
+					 tempmap.put("uId", String.valueOf(9021651128058L + a));
+					 tempmap.put("type", "1");
+					 tempmap.put("amount",
+					 "10");
+					
+					 tempmap.put("description", "谁在装逼？ 好刺眼！！");
+					 tempmap.put("sdate",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+		              
+		            Message msg = new Message("topic_callback_172_16_180_241",   
+		                    "wallet_withdraw",   
+		                    "tx_1_"+2015529103727L+a,   
+		                    JSON.toJSONString(tempmap).getBytes());  
+			   
+			   SendResult result = producer.send(msg);  
+			   System.out.println("id:" + result.getMsgId() +  
+					   " result:" + result.getSendStatus()); 
+			   }
+		   } catch (Exception e) {  
+			   e.printStackTrace();  
+		   }finally{  
+			   producer.shutdown();  
+		   }  
+		   
+	   }
+	   
+	   /**
+	    * 更新钱包生产者
+	    */
+	   public static void updateWalletProducer(){
+		   
+		   DefaultMQProducer producer = new DefaultMQProducer("ProducerCallback192_168_50_122");  
+		   producer.setNamesrvAddr("192.168.50.123:9876");   
+		   try {  
+			   producer.start();  
+			   
+			   for(int a = 1;a < 10; a++){
+	        	   System.out.println(a);
+	        	   Map<String, String> tempmap = new HashMap<String, String>();
+					 tempmap.put("uId", String.valueOf(9021651128058L + a));
+					 tempmap.put("type", "1");
+					 tempmap.put("amount",
+					 "10");
+					
+					 tempmap.put("description", "谁在装逼？ 好刺眼！！");
+					 tempmap.put("sdate",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+		              
+		            Message msg = new Message("live_ledger192_168_50_122",   
+		                    "live_recommend_ledger",   
+		                    "uw_1_"+2015529103727L+a,   
+		                    JSON.toJSONString(tempmap).getBytes());  
+			   
+			   SendResult result = producer.send(msg);  
+			   System.out.println("id:" + result.getMsgId() +  
+					   " result:" + result.getSendStatus()); 
+			   }
+		   } catch (Exception e) {  
+			   e.printStackTrace();  
+		   }finally{  
+			   producer.shutdown();  
+		   }  
+		   
+	   }
+	   
+	   /**
+	    * 生产者C 
+	    */
+	   public static void pullTopic_pull(){
+		   
+	        DefaultMQProducer producer = new DefaultMQProducer("Producer");  
+	        producer.setNamesrvAddr("192.168.50.123:9876");   
+	        try {  
+	            producer.start();  
+	            Message msg = new Message("PullTopic",   
+	                    "pull",   
+	                    "2",   
+	                    "Just for test.".getBytes());  
+	              
+	            SendResult result = producer.send(msg);  
+	            System.out.println("id:" + result.getMsgId() +  
+	                    " result:" + result.getSendStatus());  
+	        } catch (Exception e) {  
+	            e.printStackTrace();  
+	        }finally{  
+	            producer.shutdown();  
+	        }  
+	      
+	   }
+	   
+	   @Test
+	   public void liveGiftMsg(){
+			DefaultMQProducer producer = new DefaultMQProducer("Producer");
+			producer.setNamesrvAddr("192.168.50.123:9876");
+			try {
+				producer.start();
+				 Map<String,String> paramMap = new HashMap<>();
+		            paramMap.put("uid", "607130");
+		            paramMap.put("balance", "500");
+		            paramMap.put("vkid", "607129");
+		            paramMap.put("amount", "80");
+		            paramMap.put("source", "6464646464");
+		            
+				Message message = new Message("live_ledger_", "live_gift_ledger", JSON.toJSONString(paramMap).getBytes());
+				SendResult send = producer.send(message/*, new SendCallback() {
+					
+					@Override
+					public void onSuccess(SendResult arg0) {
+						MessageQueue messageQueue = arg0.getMessageQueue();
+						System.out.println(messageQueue.getTopic());
+					}
+					
+					@Override
+					public void onException(Throwable arg0) {
+						System.out.println(arg0);
+						
+					}
+				}*/);
+				System.out.println(send.getSendStatus());
+			} catch (MQClientException e) {
+				e.printStackTrace();
+			} catch (RemotingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (MQBrokerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
+			
+	   }
+}
+
+
+
+
+class PullTopic extends Thread{
+	
+	public void run(){
+		
+		 DefaultMQProducer producer = new DefaultMQProducer("ProducerWithdraw_yj1");  
+	        producer.setNamesrvAddr("192.168.50.123:9876");   
+	        try {  
+	            producer.start();  
+	            
+	           for(int a = 1;a < 101; a++){
+	        	   System.out.println(a);
+	        	   Map<String, String> tempmap = new HashMap<String, String>();
+					 tempmap.put("orderId", String.valueOf(9021651128058L + a));
+					 tempmap.put("uId", "83");
+					 tempmap.put("uMoney", "0.08");
+					 tempmap.put("sId",
+					 "4658");
+					 tempmap.put("sMoney", "0.0");
+					 tempmap.put("mId",
+					 "4658");
+					 tempmap.put("mMoney", "0.0");
+					 tempmap.put("mType",
+					 "2");
+					 tempmap.put("brId", "1916299");
+					 tempmap.put("brMoney",
+					 "0.0");
+					 tempmap.put("crId", "1916299");
+					 tempmap.put("crMoney",
+					 "0.0");
+					 tempmap.put("remark", "谁在装逼？ 好刺眼！！");
+					 tempmap.put("mExpenses", "0");
+					 tempmap.put("brExpenses", "1");
+					 tempmap.put("crExpenses", "0");
+		              
+		            Message msg = new Message("topic_withdraw_yj1",   
+		                    "divide_pay",   
+		                    "fz_"+2015529103727L+a,   
+		                    JSON.toJSONString(tempmap).getBytes());  
+		              
+		            SendResult result = producer.send(msg);
+		            
+		            System.out.println("id:" + result.getMsgId() +  
+		                    " result:" + result.getSendStatus());  
+	           }
+
+	        } catch (Exception e) {  
+	            e.printStackTrace();  
+	        }finally{  
+	            producer.shutdown();  
+	        }  
+	}
+}

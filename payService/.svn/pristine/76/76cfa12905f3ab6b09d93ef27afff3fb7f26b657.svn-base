@@ -1,0 +1,584 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.WalletRecordMapper">
+
+	<!-- 通过用户id获取钱包id -->
+	<select id="getAccountid" resultType="Integer" parameterType="map">
+		select accountid from b_wallet where 1=1
+		<if test="userType == 1">
+			and uid = #{uId}
+		</if>
+		<if test="userType == 2">
+			and sellerid = #{uId}
+		</if>
+		<if test="userType == 3">
+			and jointid = #{uId}
+		</if>
+	</select>
+
+	<resultMap id="walletRecordMap" type="com.xmniao.entity.WalletRecord">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="rtype" property="rtype" jdbcType="VARCHAR" />
+		<result column="balance" property="balance" jdbcType="VARCHAR" />
+		<result column="qrebate" property="qrebate" jdbcType="VARCHAR" />
+		<result column="hrebate" property="hrebate" jdbcType="VARCHAR" />
+		<result column="commision" property="commision" jdbcType="VARCHAR" />
+		<result column="qcommision" property="qcommision" jdbcType="VARCHAR" />
+		<result column="hcommision" property="hcommision" jdbcType="VARCHAR" />
+		<result column="income" property="income" jdbcType="VARCHAR" />
+		<result column="qincome" property="qincome" jdbcType="VARCHAR" />
+		<result column="hincome" property="hincome" jdbcType="VARCHAR" />
+		<result column="zbalance" property="zbalance" jdbcType="VARCHAR" />
+		<result column="qzbalance" property="qzbalance" jdbcType="VARCHAR" />
+		<result column="hzbalance" property="hzbalance" jdbcType="VARCHAR" />
+		<result column="amount" property="amount" jdbcType="VARCHAR" />
+		<result column="qamount" property="qamount" jdbcType="VARCHAR" />
+		<result column="hamount" property="hamount" jdbcType="VARCHAR" />
+		<result column="Integral" property="Integral" jdbcType="VARCHAR" />
+		<result column="qIntegral" property="qIntegral" jdbcType="VARCHAR" />
+		<result column="hIntegral" property="hIntegral" jdbcType="VARCHAR" />
+		<result column="sdate" property="sdate" jdbcType="VARCHAR" />
+		<result column="description" property="remark" jdbcType="VARCHAR" />
+		<result column="uId" property="uId" jdbcType="VARCHAR" />
+		<result column="userType" property="userType" jdbcType="VARCHAR" />
+		<result column="sellername" property="sellerName" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<!-- 查询钱包修改记录 -->
+	<select id="getWalletRecord" parameterType="map" resultType="map">
+		select
+		b_wallet_record.id id,
+		b_wallet_record.rtype rtype,
+		b_wallet_record.balance balance,
+		b_wallet_record.qrebate qrebate,
+		b_wallet_record.hrebate hrebate,
+		b_wallet_record.commision commision,
+		b_wallet_record.qcommision qcommision,
+		b_wallet_record.hcommision
+		hcommision,
+		b_wallet_record.income income,
+		b_wallet_record.qincome
+		qincome,
+		b_wallet_record.hincome hincome,
+		b_wallet_record.zbalance
+		zbalance,
+		b_wallet_record.qzbalance qzbalance,
+		b_wallet_record.hzbalance hzbalance,
+		b_wallet_record.amount amount,
+		b_wallet_record.qamount qamount,
+		b_wallet_record.hamount hamount,
+		b_wallet_record.Integral Integral,
+		b_wallet_record.qIntegral qIntegral,
+		b_wallet_record.hIntegral hIntegral,
+		ifnull(b_wallet_record.description,'') remark,
+		ifnull(b_wallet_record.remarks,'') orderNumber,
+		date_format(b_wallet_record.sdate,'%Y-%m-%d %H:%i:%s') sdate,
+
+		IF(uid !=
+		0, uid,
+		IF(sellerid != 0, sellerid,
+		IF(jointid != 0, jointid, 0))) uId,
+
+		IF(uid != 0,1,
+		IF(sellerid != 0, 2,
+		IF(jointid != 0, 3, 1))) userType,
+		IFNULL(sellername, "") sellerName,
+		IFNULL(account,"") phoneNumber
+		
+		from b_wallet_record, b_wallet where
+		b_wallet_record.`accountid` =
+		b_wallet.`accountid`
+		<if test="accountid != null and accountid != ''">
+			and b_wallet_record.accountid = #{accountid}
+		</if>
+		<if test="accountid == null or accountid == ''">
+			<if test="userType == 1">
+				and b_wallet.uid != 0
+			</if>
+			<if test="userType == 2">
+				and b_wallet.sellerid != 0
+			</if>
+			<if test="userType == 3">
+				and b_wallet.jointid != 0
+			</if>
+		</if>
+		<if test="sDate!=null and sDate!=''">
+    		<![CDATA[   and DATE_FORMAT(sdate, '%Y-%m-%d') >=  DATE_FORMAT(#{sDate}, '%Y-%m-%d')   ]]>
+		</if>
+		<if test="eDate!=null and eDate!=''">
+    		<![CDATA[  and DATE_FORMAT(sdate, '%Y-%m-%d') <= DATE_FORMAT(#{eDate}, '%Y-%m-%d')    ]]>
+		</if>
+		<if test="rType != null and rType != ''">
+			and rtype in (${rType})
+		</if>
+		<if test="phoneNumber != null and phoneNumber != ''">
+			and b_wallet.account = #{phoneNumber}
+		</if>
+		<if test="userName != null and userName != ''">
+			and b_wallet.sellername LIKE CONCAT('%',#{userName},'%')
+
+		</if>
+		<if test="orderId != null and orderId != ''">
+			and b_wallet_record.remarks LIKE CONCAT('%',#{orderId},'%')
+		</if>
+		<if test="oType == 0 or oType == null or oType ==''">
+			order by b_wallet_record.id asc
+		</if>
+		<if test="oType == 1 ">
+			order by b_wallet_record.id desc
+		</if>
+		limit #{cPage} , #{pageSize}
+	</select>
+
+	<!-- 查询记录数量 -->
+	<select id="getListCount" parameterType="map" resultType="Integer">
+		select count(b_wallet_record.id)
+		from b_wallet_record, b_wallet where
+		b_wallet_record.`accountid` =
+		b_wallet.`accountid`
+		<if test="accountid != null and accountid != ''">
+			and b_wallet_record.accountid = #{accountid}
+		</if>
+		<if test="accountid == null or accountid == ''">
+			<if test="userType == 1">
+				and b_wallet.uid != 0
+			</if>
+			<if test="userType == 2">
+				and b_wallet.sellerid != 0
+			</if>
+			<if test="userType == 3">
+				and b_wallet.jointid != 0
+			</if>
+		</if>
+		<if test="sDate!=null and sDate!=''">
+    		<![CDATA[   and DATE_FORMAT(sdate, '%Y-%m-%d') >=  DATE_FORMAT(#{sDate}, '%Y-%m-%d')   ]]>
+		</if>
+		<if test="eDate!=null and eDate!=''">
+    		<![CDATA[  and DATE_FORMAT(sdate, '%Y-%m-%d') <= DATE_FORMAT(#{eDate}, '%Y-%m-%d')    ]]>
+		</if>
+		<if test="rType != null and rType != ''">
+			and rtype in (${rType})
+		</if>
+		<if test="userName != null and userName != ''">
+			and b_wallet.sellername LIKE CONCAT('%',#{userName},'%')
+		</if>
+		<if test="phoneNumber != null and phoneNumber != ''">
+			and b_wallet.account = #{phoneNumber}
+		</if>
+		<if test="orderId != null and orderId != ''">
+			and b_wallet_record.remarks LIKE CONCAT('%',#{orderId},'%')
+		</if>
+	</select>
+
+	<!-- 查询钱包记录总金额 -->
+	<select id="getWalletAmount" parameterType="map" resultType="double">
+		select ifnull(sum(commision), 0.00) commisions from b_wallet_record
+		where accountid = #{accountid}
+		<if test="rType != null">
+			and rtype = #{rType}
+		</if>
+	</select>
+
+	<!-- 查询钱包记录总个数（用于分账系统钱包记录导出） -->
+	<select id="getWalletRecordCount" resultType="int"
+		parameterType="map">
+		SELECT COUNT(id) FROM b_wallet_record,b_wallet
+		WHERE
+		b_wallet_record.accountid = b_wallet.accountid
+		<if test="userType != null">
+			<if test="userType == 1">
+				<if test="uId == null">
+					and b_wallet.uid != 0
+				</if>
+				<if test="uId != null">
+					and b_wallet.uid = #{uId}
+				</if>
+			</if>
+			<if test="userType == 2">
+				<if test="uId == null">
+					and b_wallet.sellerid != 0
+				</if>
+				<if test="uId != null">
+					and b_wallet.sellerid = #{uId}
+				</if>
+			</if>
+			<if test="userType == 3">
+				<if test="uId == null">
+					and b_wallet.jointid != 0
+				</if>
+				<if test="uId != null">
+					and b_wallet.jointid = #{uId}
+				</if>
+			</if>
+		</if>
+		<if test="userName != null  and rType != ''">
+			AND b_wallet.sellername LIKE '%${userName}%'
+		</if>
+		<if test="rType != null">
+			AND rType = #{rType}
+		</if>
+		<if test="sDate!=null and sDate!=''">
+	    		<![CDATA[   AND DATE_FORMAT(sdate, '%Y-%m-%d') >=  DATE_FORMAT(#{sDate}, '%Y-%m-%d')   ]]>
+		</if>
+		<if test="eDate!=null and eDate!=''">
+	    		<![CDATA[  AND DATE_FORMAT(sdate, '%Y-%m-%d') <= DATE_FORMAT(#{eDate}, '%Y-%m-%d')    ]]>
+		</if>
+	</select>
+
+	<!-- 新增钱包修改记录 -->
+	<insert id="addWalletRecord" parameterType="map" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+		insert into b_wallet_record
+
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+
+			<if test="accountid != null">
+				accountid,
+			</if>
+			<if test="rtype != null">
+				rtype,
+			</if>
+			<if test="balance != null">
+				balance,
+			</if>
+			<if test="qrebate != null">
+				qrebate,
+			</if>
+			<if test="hrebate != null">
+				hrebate,
+			</if>
+			<if test="commision != null">
+				commision,
+			</if>
+			<if test="qcommision != null">
+				qcommision,
+			</if>
+			<if test="hcommision != null">
+				hcommision,
+			</if>
+			<if test="income != null">
+				income,
+			</if>
+			<if test="qincome != null">
+				qincome,
+			</if>
+			<if test="hincome != null">
+				hincome,
+			</if>
+			<if test="zbalance != null">
+				zbalance,
+			</if>
+			<if test="qzbalance != null">
+				qzbalance,
+			</if>
+			<if test="hzbalance != null">
+				hzbalance,
+			</if>
+			<if test="amount != null">
+				amount,
+			</if>
+			<if test="qamount != null">
+				qamount,
+			</if>
+			<if test="hamount != null">
+				hamount,
+			</if>
+			<if test="Integral != null">
+				Integral,
+			</if>
+			<if test="qIntegral != null">
+				qIntegral,
+			</if>
+			<if test="hIntegral != null">
+				hIntegral,
+			</if>
+			sdate,
+			<if test="remarks != null">
+				remarks,
+			</if>
+			<if test="description != null">
+				description,
+			</if>
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="accountid != null">
+				#{accountid},
+			</if>
+			<if test="rtype != null">
+				#{rtype},
+			</if>
+			<if test="balance != null">
+				#{balance},
+			</if>
+			<if test="qrebate != null and balance != 0">
+				#{qrebate},
+			</if>
+			<if test="qrebate != null and balance == 0">
+				0,
+			</if>
+			<if test="hrebate != null and balance != 0">
+				#{hrebate},
+			</if>
+			<if test="hrebate != null and balance == 0">
+				0,
+			</if>
+			<if test="commision != null">
+				#{commision},
+			</if>
+			<if test="qcommision != null and commision != 0">
+				#{qcommision},
+			</if>
+			<if test="qcommision != null and commision == 0">
+				0,
+			</if>
+			<if test="hcommision != null and commision != 0">
+				#{hcommision},
+			</if>
+			<if test="hcommision != null and commision == 0">
+				0,
+			</if>
+			<if test="income != null">
+				#{income},
+			</if>
+			<if test="qincome != null and income != 0">
+				#{qincome},
+			</if>
+			<if test="qincome != null and income == 0">
+				0,
+			</if>
+			<if test="hincome != null and income != 0">
+				#{hincome},
+			</if>
+			<if test="hincome != null and income == 0">
+				0,
+			</if>
+			<if test="zbalance != null">
+				#{zbalance},
+			</if>
+			<if test="qzbalance != null and zbalance != 0">
+				#{qzbalance},
+			</if>
+			<if test="qzbalance != null and zbalance == 0">
+				0,
+			</if>
+			<if test="hzbalance != null and zbalance != 0">
+				#{hzbalance},
+			</if>
+			<if test="hzbalance != null and zbalance == 0">
+				0,
+			</if>
+			<if test="amount != null">
+				#{amount},
+			</if>
+			<if test="qamount != null and amount != 0">
+				#{qamount},
+			</if>
+			<if test="qamount != null and amount == 0">
+				0,
+			</if>
+			<if test="hamount != null and amount != 0">
+				#{hamount},
+			</if>
+			<if test="hamount != null and amount == 0">
+				0,
+			</if>
+			<if test="Integral != null">
+				#{Integral},
+			</if>
+			<if test="qIntegral != null and Integral != 0">
+				#{qIntegral},
+			</if>
+			<if test="qIntegral != null and Integral == 0">
+				0,
+			</if>
+			<if test="hIntegral != null and Integral != 0">
+				#{hIntegral},
+			</if>
+			<if test="hIntegral != null and Integral == 0">
+				0,
+			</if>
+			<if test="sdate != null">
+				#{sdate},
+			</if>
+			
+			<if test="remarks != null">
+				#{remarks},
+			</if>
+			<if test="description != null">
+				#{description},
+			</if>
+		</trim>
+	</insert>
+
+	<!-- <select id="getRecordCount" parameterType="map" resultType="int">
+		SELECT COUNT(id) 
+		FROM b_wallet_record 
+		WHERE accountid = #{accountid} AND rtype = #{rtype} AND remarks LIKE '%${remarks}%' 
+	</select> -->
+	
+	<select id="getRecordCount" parameterType="map" resultType="int">
+		SELECT COUNT(id) 
+		FROM b_wallet_record 
+		WHERE rtype = #{rtype} AND remarks LIKE #{remarks} 
+	</select>
+
+	<select id="getRecordCountMap" parameterType="map" resultType="int">
+		SELECT COUNT(id) 
+		FROM b_wallet_record 
+		WHERE rtype = #{rtype} AND accountid=#{accountid} AND remarks LIKE #{remarks} 
+	</select>
+	
+	<select id="getWalletRecordStr" parameterType="map" resultType="map">
+		select 
+		CAST(b_wallet_record.id AS CHAR(20)) id,
+		CAST(b_wallet_record.rtype AS CHAR(20)) rtype,
+		CAST(b_wallet_record.balance AS CHAR(20)) balance,
+		CAST(b_wallet_record.qrebate AS CHAR(20)) qrebate,
+		CAST(b_wallet_record.hrebate AS CHAR(20)) hrebate,
+		CAST(b_wallet_record.commision AS CHAR(20)) commision,
+		CAST(b_wallet_record.qcommision AS CHAR(20)) qcommision,
+		CAST(b_wallet_record.hcommision AS CHAR(20)) hcommision,
+		CAST(b_wallet_record.income AS CHAR(20)) income,
+		CAST(b_wallet_record.qincome AS CHAR(20)) qincome,
+		CAST(b_wallet_record.hincome AS CHAR(20)) hincome,
+		CAST(b_wallet_record.zbalance AS CHAR(20)) zbalance,
+		CAST(b_wallet_record.qzbalance AS CHAR(20)) qzbalance,
+		CAST(b_wallet_record.hzbalance AS CHAR(20)) hzbalance,
+		CAST(b_wallet_record.amount AS CHAR(20)) amount,
+		CAST(b_wallet_record.qamount AS CHAR(20)) qamount,
+		CAST(b_wallet_record.hamount AS CHAR(20)) hamount,
+		CAST(b_wallet_record.Integral AS CHAR(20)) Integral,
+		CAST(b_wallet_record.qIntegral AS CHAR(20)) qIntegral,
+		CAST(b_wallet_record.hIntegral AS CHAR(20)) hIntegral,
+		ifnull(b_wallet_record.description,'') remark,
+		ifnull(b_wallet_record.remarks,'') orderNumber,
+		date_format(b_wallet_record.sdate,'%Y-%m-%d %H:%i:%s') sdate,
+
+		CAST(IF(uid !=
+		0, uid,
+		IF(sellerid != 0, sellerid,
+		IF(jointid != 0, jointid, 0))) AS CHAR(20)) uId,
+
+		CAST(IF(uid != 0,1,
+		IF(sellerid != 0, 2,
+		IF(jointid != 0, 3, 1))) AS CHAR(20)) userType,
+		IFNULL(sellername, "") sellerName,
+		IFNULL(account,"") phoneNumber
+		
+		from b_wallet_record, b_wallet where
+		b_wallet_record.`accountid` =
+		b_wallet.`accountid`
+		<if test="accountid != null and accountid != ''">
+			and b_wallet_record.accountid = #{accountid}
+		</if>
+		<if test="accountid == null or accountid == ''">
+			<if test="userType == 1">
+				and b_wallet.uid != 0
+			</if>
+			<if test="userType == 2">
+				and b_wallet.sellerid != 0
+			</if>
+			<if test="userType == 3">
+				and b_wallet.jointid != 0
+			</if>
+		</if>
+		<if test="sDate!=null and sDate!=''">
+    		<![CDATA[   and DATE_FORMAT(sdate, '%Y-%m-%d') >=  DATE_FORMAT(#{sDate}, '%Y-%m-%d')   ]]>
+		</if>
+		<if test="eDate!=null and eDate!=''">
+    		<![CDATA[  and DATE_FORMAT(sdate, '%Y-%m-%d') <= DATE_FORMAT(#{eDate}, '%Y-%m-%d')    ]]>
+		</if>
+		<if test="rType != null and rType != ''">
+			and rtype in (${rType})
+		</if>
+		<if test="phoneNumber != null and phoneNumber != ''">
+			and b_wallet.account = #{phoneNumber}
+		</if>
+		<if test="userName != null and userName != ''">
+			and b_wallet.sellername LIKE CONCAT('%',#{userName},'%')
+
+		</if>
+		<if test="orderId != null and orderId != ''">
+			and b_wallet_record.remarks LIKE CONCAT('%',#{orderId},'%')
+		</if>
+		<if test="oType == 0 or oType == null or oType ==''">
+			order by b_wallet_record.id asc
+		</if>
+		<if test="oType == 1 ">
+			order by b_wallet_record.id desc
+		</if>
+		limit #{cPage} , #{pageSize}
+	</select>
+	
+	<delete id="delWalletRecord" parameterType="map">
+	delete from b_wallet_record 
+	where remarks like #{remarks} and rtype=#{rtype}
+	</delete>
+	
+	<select id="getSellerRecordCount" parameterType="map" resultType="int">
+		SELECT COUNT(id) 
+		FROM b_wallet, b_wallet_record 
+		WHERE b_wallet.accountid = b_wallet_record.accountid AND b_wallet.sellerid=#{sellerid}
+		<![CDATA[  AND DATE_FORMAT(sdate, '%Y-%m-%d') = DATE_FORMAT(#{date}, '%Y-%m-%d')    ]]>
+		<if test="amountType != null and amountType == 1">
+			AND b_wallet_record.income!=0
+		</if>
+		<if test="amountType != null and amountType == 2">
+			AND b_wallet_record.commision!=0
+		</if>
+	</select>
+	
+	<select id="getSellerRecordList" parameterType="map" resultType="map">
+		SELECT  rtype rType,
+		DATE_FORMAT(sdate,'%Y-%m-%d %H:%I:%s') sdate,
+		<if test="amountType != null and amountType == 1">
+		hincome-qincome sMoney
+		</if>
+		<if test="amountType != null and amountType == 2">
+		hcommision-qcommision sMoney
+		</if>
+		FROM b_wallet, b_wallet_record 
+		WHERE b_wallet.accountid = b_wallet_record.accountid AND b_wallet.sellerid =#{sellerid}
+		<![CDATA[  AND DATE_FORMAT(sdate, '%Y-%m-%d') = DATE_FORMAT(#{date}, '%Y-%m-%d')    ]]>
+		<if test="amountType != null and amountType == 1">
+			AND b_wallet_record.income!=0
+		</if>
+		<if test="amountType != null and amountType == 2">
+			AND b_wallet_record.commision!=0
+		</if>
+		<if test="order != null and order == 0">
+			ORDER by sdate
+		</if>
+		<if test="order == null or order != 0">
+			ORDER by sdate DESC
+		</if>
+	</select>
+	
+	<select id="getWalletRecordData" parameterType="com.xmniao.entity.WalletRecord" resultType="com.xmniao.entity.WalletRecord">
+		select * from b_wallet_record
+		where 1=1
+		<if test="null != id">
+			and id=#{id}
+		</if>
+		<if test="null != rtype">
+			and rtype=#{rtype}
+		</if>
+		<if test="null != accountid">
+			and accountid=#{accountid}
+		</if>
+		<if test="null != remarks and '' != remarks">
+			and remarks LIKE '${remarks}%'
+		</if>
+	</select>
+	
+	<select id="getWalletRecordList" parameterType="map" resultType="com.xmniao.entity.WalletRecord">
+		SELECT * FROM b_wallet_record
+		WHERE 1=1
+		<if test="null != rtype">
+			AND rtype=#{rtype}
+		</if>
+		<if test="null != remarks and ''!=remarks">
+			AND remarks LIKE '${remarks}%'
+		</if>
+	</select>
+</mapper>

@@ -1,0 +1,51 @@
+package com.xmniao.quartz.impl;
+
+import com.xmniao.dao.manor.PropsMapper;
+import com.xmniao.entity.manor.PropsStatistics;
+import com.xmniao.exception.CustomException;
+import com.xmniao.quartz.AutoSunPropsService;
+import com.xmniao.service.PropsService;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+/**
+ * @author liyuanbo
+ * @create 2017-06-20 20:29
+ **/
+@Service("autoSunPropsService")
+public class AutoSunPropsServiceImpl implements AutoSunPropsService {
+    @Autowired
+    private PropsMapper propsMapper;
+    @Autowired
+    private PropsService propsService;
+
+    private static Logger logger = Logger.getLogger(AutoSunPropsServiceImpl.class);
+
+    /**
+     * 自动统计用户的阳光每日收益
+     */
+    public void timerTotalSunEveryProfit(){
+      List<PropsStatistics> propsStatisticsList=  propsMapper.getSunNumber();
+
+
+        if(propsStatisticsList != null && propsStatisticsList.size() > 0){
+            for(PropsStatistics props : propsStatisticsList){
+                System.out.println(props.getUid() +">>>>>.");
+                try {
+                    //propsService.addUserEveryDaySun(props.getUid(), props.getNumber());
+                }catch (CustomException e){
+                    logger.error("当前用户"+props.getUid()+"统计阳光的每日收益发生异常,");
+                }catch (Exception e){
+                    logger.error("当前用户"+props.getUid()+"统计阳光的每日收益发生异常,异常信息如下:"+e);
+                }
+            }
+        }
+
+    }
+
+
+}

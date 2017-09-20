@@ -1,0 +1,28 @@
+package com.xmniao.joint.dao;
+
+import java.util.List;
+import java.util.Map;
+
+
+public interface BillFreshMapper {
+
+	int updateBillStatus(Map<String,Object> updateMap);
+	
+	/**
+	 * 查询已使用的优惠券与订单关系
+	 * @param bid [订单号]
+	 * @return List<Map<String,Object>> [返回类型说明]
+	 * @exception throws [违例类型] [违例说明]
+	 * @see [类、类#方法、类#成员]
+	 */
+	public List<Map<String, Object>> getOrderCouponList(String bid);
+	
+	/**
+	 * 根据优惠券序列码修改用户使用状态
+	 * @param serial [优惠券序列码]
+	 * @return void [返回类型说明]
+	 * @exception throws [违例类型] [违例说明]
+	 * @see [类、类#方法、类#成员]
+	 */
+	public void mdyCouponUserStatus(String serial);
+}

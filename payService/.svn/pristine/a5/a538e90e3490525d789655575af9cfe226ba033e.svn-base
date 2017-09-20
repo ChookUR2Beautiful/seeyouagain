@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 	
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-3.2.xsd 
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-3.2.xsd 
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+	
+	<!-- thrift服务器工厂 -->
+	<bean id="thriftServerFactory" class="com.xmniao.proxy.ThriftProxyFactory">
+		<!-- 服务端的端口 -->
+		<property name="port" value="7911" />
+		<!-- 工作线程数默认5 生产环境可修改为50-->
+		<property name="workerThreads" value="50" />
+		<!-- 注入多个接口类列表 -->
+		<property name="proxys">
+			<list>
+				<ref bean="SynthesizeService"/>
+				<ref bean="PayRefundService" />
+				<ref bean="WithdrawMoneyService"/>
+				<ref bean="MentionAccountService"/>
+				<ref bean="FreshRefundService"/>
+				<ref bean="XmerWalletService"/>
+				<ref bean="LiveWalletService"/>
+				<ref bean="XmniaoWalletService"/>
+				<ref bean="ValueCardService"/>
+				<ref bean="WalletExpansionService"/>
+                <ref bean="ExperiencecardService"/>
+				<ref bean="ManorPropsThriftService"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 配置加载多个接口类和接口实现类、接口类的名字 -->
+	<!-- 出现多个接口类时，必须配置多个bean元素，一个接口类、接口实现类配置一个bean元素 -->
+	<!-- 工作管理代理类bean -->
+	<bean id="SynthesizeService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.ledger.SynthesizeService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="SynthesizeServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="SynthesizeService" />
+	
+	</bean>
+	
+		<bean id="WithdrawMoneyService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.ledger.WithdrawMoneyService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="WithdrawMoneyServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="WithdrawMoneyService" />
+	</bean>
+	
+		<bean id="XmerWalletService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.ledger.XmerWalletService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="XmerWalletServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="XmerWalletService" />
+	</bean>
+	
+		<bean id="LiveWalletService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.ledger.LiveWalletService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="LiveWalletServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="LiveWalletService" />
+	</bean>
+	
+		<bean id="XmniaoWalletService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.ledger.XmniaoWalletService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="XmniaoWalletServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="XmniaoWalletService" />
+	</bean>
+	
+	<bean id="PayRefundService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.ledger.PayRefundService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="PayRefundServiceImpl" />
+		<!-- 接口类的名字，value值必须与接口类名字相同 -->
+		<property name="serviceName" value="PayRefundService" />
+	</bean>
+	
+	<bean id="FreshRefundService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.ledger.FreshRefundService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="FreshRefundServiceImpl" />
+		<!-- 接口类的名字，value值必须与接口类名字相同 -->
+		<property name="serviceName" value="FreshRefundService" />
+	</bean>
+	
+	<!-- 新版银行卡接口 -->
+	<bean id="MentionAccountService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.ledger.MentionAccountService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="MentionAccountServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="MentionAccountService" />
+	</bean>
+	
+	<!-- 储值卡接口 -->
+	<bean id="ValueCardService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.ledger.ValueCardService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="ValueCardServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="ValueCardService" />
+	</bean>
+	
+	<!-- 扩展钱包接口 -->
+	<bean id="WalletExpansionService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.ledger.WalletExpansionService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="WalletExpansionServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="WalletExpansionService" />
+	</bean>
+
+    <!--美食体验卡接口-->
+	<bean id="ExperiencecardService" class="com.xmniao.proxy.ThriftServiceProxy">
+        <!-- thrift生成的接口类 -->
+        <property name="serviceInterface" value="com.xmniao.thrift.ledger.ExperiencecardService"/>
+        <!-- 接口实现类 -->
+        <property name="serviceImpl" ref="ExperiencecardServiceImpl"/>
+        <!--接口类的名字,value值必须与接口类名字相同 -->
+        <property name="serviceName" value="ExperiencecardService"/>
+	</bean>
+
+	<!--黄金庄园-->
+	<bean id="ManorPropsThriftService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.manor.ManorPropsThriftService"/>
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="ManorPropsThriftServiceImpl"/>
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="ManorPropsThriftService"/>
+	</bean>
+</beans>

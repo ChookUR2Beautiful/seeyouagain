@@ -1,0 +1,112 @@
+package com.xmniao.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.xmniao.entity.WalletExpansion;
+
+public interface WalletExpansionMapper {
+    int deleteByPrimaryKey(Long id);
+
+    int insert(WalletExpansion record);
+
+    int insertSelective(WalletExpansion record);
+
+    WalletExpansion selectByPrimaryKey(Long id);
+
+    int updateByPrimaryKeySelective(WalletExpansion record);
+
+    int updateByPrimaryKey(WalletExpansion record);
+    
+    /**
+     * 
+     * 方法描述：获得扩展钱包
+     * 创建人：jianming  
+     * 创建时间：2017年4月7日 上午11:28:51   
+     * @param param
+     * @return
+     */
+	WalletExpansion getWalletExpansion(Map<String, String> param);
+	
+	/**
+	 * 
+	 * 方法描述：修改钱包
+	 * 创建人：jianming  
+	 * 创建时间：2017年4月7日 下午3:21:43   
+	 * @param wallet
+	 * @return
+	 */
+	int updateAmountById(WalletExpansion wallet);
+	
+	/**
+	 * 
+	 * 方法描述：获得扩展钱包列表
+	 * 创建人：jianming  
+	 * 创建时间：2017年4月8日 上午11:20:19   
+	 * @param string2Object
+	 * @return
+	 */
+	List<WalletExpansion> getWalletExpansionList(Map<String, Object> string2Object);
+	
+	/**
+	 * 
+	 * 方法描述：查询收益排名前几条
+	 * 创建人：jianming  
+	 * 创建时间：2017年4月26日 下午5:09:52   
+	 * @return
+	 */
+	List<Map<String, Object>> getExpansionNo();
+	
+	/**
+	 * 
+	 * 方法描述：查询指定寻蜜客收益排名
+	 * 创建人：jianming  
+	 * 创建时间：2017年5月5日 上午11:21:56   
+	 * @param accountid
+	 * @return
+	 */
+	int getXmrRankNo(Long accountid);
+	
+	/**
+	 * 
+	 * 方法描述：查询寻蜜客用户排名
+	 * 创建人：jianming  
+	 * 创建时间：2017年5月5日 下午2:30:23   
+	 * @param hashMap
+	 * @return
+	 */
+	List<Map<String, Object>> getXmrUpRankNo(@Param("pageNo")Integer pageNo,@Param("pageSize")Integer pageSize);
+	
+	/**
+	 * 
+	 * 方法描述：获得寻蜜客相关钱包
+	 * 创建人：jianming  
+	 * 创建时间：2017年5月5日 下午5:16:18   
+	 * @param string
+	 * @return
+	 */
+	List<WalletExpansion> getXmerWallet(Integer string);
+	
+	/**
+	 * 
+	 * 方法描述：获得扩展钱包
+	 * 创建人：jianming  
+	 * 创建时间：2017年5月9日 上午11:21:56   
+	 * @param uid  用户id
+	 * @param typeId  用户类型
+	 * @param type  钱包类型
+	 * @return
+	 */
+	WalletExpansion getWalletExpansion(@Param("uid")Integer uid, @Param("typeId")int typeId,@Param("type") Integer type);
+	
+	
+	List<WalletExpansion> getWalletExpansionAtTypes(@Param("uid")Integer valueOf, @Param("typeId") int typeId,@Param("type") List<Integer> type);
+
+	
+	
+	List<WalletExpansion> getWalletExpansionByUidsAndType(@Param("uids") List<Integer> uidList,@Param("type") int type);
+	
+	
+}

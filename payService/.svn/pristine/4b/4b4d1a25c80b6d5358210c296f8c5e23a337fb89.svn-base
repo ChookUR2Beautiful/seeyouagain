@@ -1,0 +1,17 @@
+package com.xmniao.dao;
+
+import com.xmniao.entity.Experiencecard;
+
+public interface ExperiencecardMapper {
+    int deleteByPrimaryKey(Integer id);
+
+    int insert(Experiencecard record);
+
+    int insertSelective(Experiencecard record);
+
+    Experiencecard selectByPrimaryKey(Integer id);
+
+    int updateByPrimaryKeySelective(Experiencecard record);
+
+    int updateByPrimaryKey(Experiencecard record);
+}

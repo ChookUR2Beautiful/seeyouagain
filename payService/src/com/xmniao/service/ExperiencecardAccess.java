@@ -1,0 +1,63 @@
+package com.xmniao.service;
+
+import com.xmniao.common.Page;
+import com.xmniao.entity.Experiencecard;
+import com.xmniao.entity.ExperiencecardRecord;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by yang.qiang on 2017/5/8.
+ */
+public interface ExperiencecardAccess {
+    // 美食体验卡记录rtype : 充值
+    Integer ExperiencecardRecordRtypeCharge = 0;
+
+
+    /**
+     * 创建/更新美食体验卡
+     * @param experiencecard        美食体验卡数据
+     * @param experiencecardRecord  美食体验记录信息数据
+     */
+    void createCard(Experiencecard experiencecard, ExperiencecardRecord experiencecardRecord);
+
+    Experiencecard queryExperiencecard(Integer uid);
+
+    /**
+     * 扣除美食体验卡
+     * @param uid
+     * @param excardRecord
+     * @param operate
+     */
+    void dudectExperiencecard(Integer uid, ExperiencecardRecord excardRecord, Integer operate);
+
+    /**
+     * 根据条件统计体验卡数量
+     * @param paramMap
+     * @return
+     */
+    int countExperiencecard(Map<String, String> paramMap);
+
+    /**
+     * 根据查询体验卡
+     * @param paramMap
+     * @param page
+     * @return
+     */
+    List<Experiencecard> queryExperiencecardList(Map<String, String> paramMap, Page page);
+
+    /**
+     * 
+     * @param experiencecard
+     */
+    void updateExcardStatus(Experiencecard experiencecard);
+
+
+    /**
+     * 批量获取体验卡
+     * @param uids 用户id列表
+     * @return
+     */
+    List<Experiencecard> queryExperiencecardList(List<Integer> uids);
+}

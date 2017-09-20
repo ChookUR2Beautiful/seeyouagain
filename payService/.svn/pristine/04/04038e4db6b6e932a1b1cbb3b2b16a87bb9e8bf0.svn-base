@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.joint.dao.BillFreshMapper" >
+
+	<update id="updateBillStatus" parameterType="map">
+	UPDATE 
+		t_bill_fresh
+	SET
+		status=#{status},
+		udate=#{udate}
+	WHERE 
+		bid=#{bid}
+	</update>
+	
+	<!-- 查询已使用的优惠券与订单关系-->
+	<select id="getOrderCouponList" resultType="java.util.Map" parameterType="String">
+		SELECT c.bid,c.cdid FROM t_coupon_relation c,t_coupon_detail d ,t_bill b
+		WHERE  c.cdid IN (SELECT cdid FROM t_coupon_relation WHERE bid= #{bid})
+		AND c.cdid = d. cdid AND b.bid = c.bid AND d.user_status = 2 AND b.status NOT IN (0,5) AND b.source&lt;&gt;2 
+	</select>
+	
+	<!-- 根据优惠券序列码修改用户使用状态 -->
+	<update id="mdyCouponUserStatus" parameterType="String">
+	    UPDATE t_coupon_detail SET user_status=0 WHERE cdid=#{cdid}
+	</update>
+</mapper>

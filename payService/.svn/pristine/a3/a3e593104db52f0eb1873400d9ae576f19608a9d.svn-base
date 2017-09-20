@@ -1,0 +1,270 @@
+package com.xmniao.dao.manor;
+
+import com.xmniao.entity.manor.FlowerSeedingGiveRecord;
+import com.xmniao.entity.manor.Props;
+import com.xmniao.entity.manor.PropsRecord;
+import com.xmniao.entity.manor.PropsRedpackage;
+import com.xmniao.entity.manor.PropsRedpackageRecord;
+import com.xmniao.entity.manor.PropsReport;
+import com.xmniao.entity.manor.PropsStatistics;
+import com.xmniao.entity.manor.UserNectar;
+import com.xmniao.entity.manor.UserProps;
+import com.xmniao.entity.manor.UserPropsNumber;
+import com.xmniao.entity.manor.UserRepository;
+
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+
+/**
+ * 道具DAO
+ *
+ * @author liyuanbo
+ * @create 2017-05-31 14:33
+ **/
+public interface PropsMapper {
+    /**
+     * 扣除道具数量
+     *
+     * @param uid         用户ID
+     * @param propsType   道具类型
+     * @param propsSource 道具来源
+     * @param number      需要扣除的数量
+     */
+    int minusPropsNumber(@Param("uid") long uid, @Param("propsType") int propsType, @Param("propsSource") int propsSource, @Param("number") double number, @Param("updateTime") String updateTime);
+
+    /**
+     * 增加道具数量
+     */
+    int addPropsNumber(@Param("uid") long uid, @Param("propsType") int propsType, @Param("propsSource") int propsSource, @Param("number") double number, @Param("updateTime") String updateTime);
+
+    /**
+     * 增加道具记录
+     */
+    int insertProps(@Param("props") Props props);
+
+    /**
+     * 批量插入道具类型
+     */
+    int batchInsertProps(@Param("list") List<Props> propses);
+
+
+    /**
+     * 保存道具使用记录
+     */
+    int savePropsRecord(@Param("propsRecords") PropsRecord propsRecords);
+
+    /**
+     * 统计用户的道具总数
+     *
+     * @param uid 操作的用户ID
+     */
+    List<UserProps> statisticsPropsByUserId(@Param("uid") long uid);
+
+    /**
+     * 根据时间获取用户的花蜜
+     *
+     * @param uid 用户ID
+     */
+    Integer checkUserHasNewNectar(@Param("uid") long uid, @Param("startTime") String startTime, @Param("endTime") String endTime);
+
+
+    /**
+     * 道具能量转换
+     *
+     * @param type      转换的主道具
+     * @param coverType 转换的道具类型
+     */
+    Integer getCoverValue(@Param("type") int type, @Param("coverType") int coverType);
+
+    /**
+     * 获取用户未使用的赠送的花苗记录
+     */
+    List<FlowerSeedingGiveRecord> getFlowerGiveRecordByUid(@Param("uid") long uid, @Param("limit") int limit, @Param("startTime") String startTime, @Param("endTime") String endTime);
+
+    /**
+     * 获取用户当前所有赠送的花苗数量（当天）
+     */
+    Integer getUserAllGiveNumber(@Param("uid") long uid, @Param("startTime") String startTime, @Param("endTime") String endTime);
+
+    /**
+     * 更新用户赠送的花苗状态
+     */
+    int updateGiveRecordIds(@Param("uid") long uid, @Param("giveRecords") List<Long> giveRecords, @Param("useTime") String useTime);
+
+    /**
+     * 判断当前交易号是否已经存在在记录中
+     */
+    Integer countPropsRecordByTransNo(@Param("transNo") String transNo);
+
+    /**
+     * 判断当前用户是否已经赠送过道具给其他用户
+     */
+    List<PropsRecord> checkGivePropsFromUserToGiveUser(@Param("uid") long uid, @Param("givePropsType") int givePropsType, @Param("startTime") String startTime, @Param("endTime") String endTime);
+
+
+    /**
+     * 统计当前用户是否已经发送过红包（根据交易。判断是否重复发送）
+     */
+    Integer countRedpackageByTransNoAndUid(@Param("uid") long uid, @Param("trandsNo") String trandsNo, @Param("propsType") int propsType);
+
+    /**
+     * 插入红包发送记录
+     */
+    int saveRedpackage(@Param("propsRedpackage") PropsRedpackage propsRedpackage);
+
+    /**
+     * 根据用户ID和道具类型判断当前用户的道具数量是否足够
+     */
+    Double totalPropsNumberByUidAndPropsType(@Param("uid") long uid, @Param("propsType") int propsType);
+
+    /**
+     * 根据UID和道具类型获取道具的来源数量
+     */
+    List<Props> listPropsByUidAndPropsType(@Param("uid") long uid, @Param("propsType") int propsType);
+
+    /**
+     * 获取当前用户的uid的历史红包记录
+     */
+    List<PropsRedpackage> listUserPropsRedpackageHistoryByUid(@Param("uid") long uid, @Param("offset") int offset, @Param("limit") int limit);
+
+    /**
+     * 获取用户发送红包的领取记录
+     */
+    List<PropsRedpackageRecord> listPropsRedpackageRecordByRedpackageId(@Param("redpackageId") long redpackageId);
+
+    /**
+     * 根据红包ID和用户ID获取记录
+     */
+    PropsRedpackageRecord getUserRedpacageRecord(@Param("redpackageId") long redpackageId, @Param("uid") long uid);
+
+    /**
+     * 增加用户的领取消费记录表
+     */
+    int insertPropsRedpackageRecord(@Param("redpackageRecord") PropsRedpackageRecord redpackageRecord);
+
+    /**
+     * 更新红包表
+     */
+    int updateRedpackage(@Param("id") long id);
+
+    /**
+     * 获取红包的信息
+     *
+     * @param id 红包ID
+     */
+    PropsRedpackage getRedpackage(@Param("id") long id);
+
+    /**
+     * 根据用户ID，道具类型，道具来源获取道具信息
+     */
+    Props getUserPropsByUidAndTypeAndSource(@Param("uid") long uid, @Param("propsType") int propsType, @Param("propsSource") int propsSource);
+
+    /**
+     * 获取道具今天的收益数量
+     */
+    Integer getEarningsByUidAndPropsType(@Param("uid") long uid, @Param("propsType") int propsType, @Param("startTime") String startTime, @Param("endTime") String endTime);
+
+    /**
+     * 保存花苗赠送关系
+     */
+    int insertFlowerGiveRecord(@Param("uid") long uid, @Param("giveUid") long giveUid, @Param("createTime") String createTime);
+
+    /**
+     * 获取用户仓库信息
+     */
+    UserRepository getUserRepository(@Param("uid") long uid);
+
+    /**
+     * 新增用户仓库数据
+     */
+    int insertUserRepository(@Param("repository") UserRepository repository);
+
+    /**
+     * 领取溢出的阳光
+     */
+    int updateUserOverFlow(@Param("uid") long uid, @Param("getNumber") double getNumber, @Param("nowtime") String nowtime);
+
+    /**
+     * 更新用户当地的仓库数量
+     */
+    int updateUserRepository(@Param("uid") long uid, @Param("number") long number);
+
+    /**
+     * 更新花苗使用状态
+     */
+    int updateUserFlowerUseStatus(@Param("uid") long uid, @Param("giveUid") long giveUid, @Param("useTime") String useTime);
+
+    /**
+     * 获取用户的道具账单列表
+     */
+    List<PropsReport> listUserPropsReport(@Param("uid") long uid, @Param("propsType") int propsType, @Param("offset") int offset, @Param("limit") int limit);
+
+
+    /**
+     * 获取用户出售道具的报表
+     */
+    List<PropsReport> listUserSalePropsReport(@Param("uid") long uid, @Param("offset") int offset, @Param("limit") int limit);
+
+    /**
+     * 增加用户的花蜜数量
+     */
+    int addUserNectorNumber(@Param("uid") long uid, @Param("number") double number, @Param("updateTime") String updateTime);
+
+    /***
+     * 新增一条记录
+     * @param uid
+     * @param number
+     * @param createTime
+     * @return
+     */
+    int saveUserNector(@Param("uid") long uid, @Param("number") int number, @Param("createTime") String createTime);
+
+    /**
+     * 获取用户的花蜜数量
+     */
+    List<UserNectar> listUserNecatars(@Param("offset") int offset, @Param("limit") int limit);
+
+    /**
+     * 获取当前用户一共兑换的现金红包(只统计出花蜜数)
+     */
+    List<UserNectar> getUserMoneyPackageTotal(@Param("uids") List<Long> uids);
+
+    /**
+     * 获取一批用户的仓库总数
+     * @param uids
+     * @return
+     */
+    List<UserRepository> getUserRepositoryByUids(@Param("uids") List<Long> uids);
+
+    /**
+     * 获取一批用户的阳光数量和花蜜数
+     * @param uids
+     * @return
+     */
+    List<UserPropsNumber> getUserSunAndNectar(@Param("uids") List<Long> uids);
+
+    /**
+     * 获取所有用户的阳光道具
+     * @return
+     */
+    List<PropsStatistics> getSunNumber();
+
+    /**
+     * 获取用户的操作日志
+     * @param uid
+     * @param channel
+     * @return
+     */
+    List<PropsRecord>  listUserPropsRecordByUidAndChannel(@Param("uid") long uid,@Param("channel") int channel);
+
+    /**
+     * 增加用户溢出的阳光数量
+     * @param uid
+     * @param number
+     * @return
+     */
+    int addUserOverFlow(@Param("uid") long uid,@Param("number") double number,@Param("nowtime") String nowtime);
+
+
+}

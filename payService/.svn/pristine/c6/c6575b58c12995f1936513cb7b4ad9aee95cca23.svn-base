@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.dao.manor.PropsMapper">
+
+    <update id="minusPropsNumber">
+        UPDATE b_manor_props SET currnet_number = currnet_number - #{number},update_time =#{updateTime}
+        WHERE props_type = #{propsType} AND props_source = #{propsSource}
+        AND uid = #{uid} AND currnet_number >= #{number}
+    </update>
+
+
+    <update id="addPropsNumber">
+        UPDATE b_manor_props SET currnet_number = currnet_number + #{number},update_time =#{updateTime}
+        WHERE props_type = #{propsType}  AND props_source = #{propsSource} AND uid = #{uid}
+
+    </update>
+
+    <insert id="insertProps" useGeneratedKeys="true" keyProperty="props.id">
+       INSERT  INTO  b_manor_props(uid,currnet_number,props_type,props_source,create_time) VALUES
+       (#{props.uid},#{props.number},#{props.propsType},#{props.propsSource},#{props.createTime})
+   </insert>
+
+    <insert id="batchInsertProps">
+        INSERT  INTO  b_manor_props(uid,currnet_number,props_type,props_source,create_time) VALUES
+        <foreach collection="list" item="props" index="index" separator="," >
+            (#{props.uid},#{props.number},#{props.propsType},#{props.propsSource},#{props.createTime})
+        </foreach>
+    </insert>
+
+
+    <insert id="savePropsRecord" parameterType="java.util.List">
+        INSERT INTO
+        b_manor_props_record(trans_no,batch_no,uid,props_id,type,props_type,channel,give_uid,num,qnum,hnum,create_time,remark)
+         values(#{propsRecords.transNo},#{propsRecords.batchNo},#{propsRecords.uid},#{propsRecords.propsId},#{propsRecords.type},
+            #{propsRecords.propsType},#{propsRecords.channel},#{propsRecords.giveUid},#{propsRecords.num},#{propsRecords.qnum},#{propsRecords.hnum},
+            #{propsRecords.createTime},#{propsRecords.remark} )
+    </insert>
+
+    <select id="statisticsPropsByUserId" resultType="java.util.Map">
+          SELECT props_type type ,SUM(currnet_number) number FROM     b_manor_props
+          WHERE uid = #{uid} GROUP BY props_type
+
+    </select>
+
+    <select id="checkUserHasNewNectar" resultType="java.lang.Integer">
+        SELECT num  FROM b_manor_props_record where uid = #{uid} and props_type = 3
+        and create_time  <![CDATA[ >= ]]> #{startTime}
+        AND create_time  <![CDATA[ <= ]]> #{endTime}
+    </select>
+
+
+    <select id="getCoverValue" resultType="java.lang.Integer">
+        SELECT cover_val from b_manor_props_conver_config where type =#{type} and cover_type =#{coverType}
+    </select>
+
+    <select id="getUserEnergry" resultType="java.lang.Double">
+         SELECT currnet_number  FROM  b_manor_props   where uid =#{uid} and props_type = 5
+    </select>
+
+    <select id="getUserPropsByUidAndTypeAndSource" resultType="com.xmniao.entity.manor.Props">
+        select id,uid,currnet_number number ,props_source propsSource from b_manor_props where uid = #{uid} and props_type =#{propsType}
+        and props_source =#{propsSource}
+
+    </select>
+
+    <select id="getFlowerGiveRecordByUid" resultType="com.xmniao.entity.manor.FlowerSeedingGiveRecord">
+
+      SELECT  id,uid, give_uid giveUid,status,create_time createTime,use_time userTime  FROM  b_manor_props_flower_give_record
+      where uid = #{uid} and status =1
+       and create_time  <![CDATA[ <= ]]> #{createTime}
+        AND create_time  <![CDATA[ >= ]]> #{endTime}
+      order by CREATE_time ASC  limit 0 , #{limit}
+    </select>
+
+    <select id="getUserAllGiveNumber" resultType="java.lang.Integer">
+        select COUNT(1) from b_manor_props_flower_give_record  where   uid = #{uid} and status =1
+         and create_time  <![CDATA[ >= ]]> #{startTime}
+         AND create_time  <![CDATA[ <= ]]> #{endTime}
+
+    </select>
+    <insert id="insertFlowerGiveRecord" >
+        INSERT  INTO b_manor_props_flower_give_record(uid,give_uid,status,create_time)
+             values(#{uid},#{giveUid},1,#{createTime})
+    </insert>
+    <update id="updateGiveRecordIds">
+        update b_manor_props_flower_give_record set status = 2 where uid = #{uid} and id in
+        <foreach collection="giveRecords" item="item" index="index" separator="," open="("
+                 close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <select id="countPropsRecordByTransNo" resultType="java.lang.Integer">
+         select count(*) from b_manor_props_record where trans_no =#{transNo}
+    </select>
+
+
+    <insert id="saveRedpackageRecord">
+        INSERT  INTO  b_manor_props_redpacket_record(redpackage_id,give_uid,give_amount,create_time) values
+        (#{redpackageId},#{giveUid},#{amount},#{createTime})
+    </insert>
+
+    <insert id="saveRedpackage" useGeneratedKeys="true" keyProperty="propsRedpackage.id" parameterType="com.xmniao.entity.manor.PropsRedpackage">
+        INSERT  INTO b_manor_props_redpacket(trans_no,uid,props_type,type,redpacket_number,single_redpacket_amount,create_time,exprie_time)
+        values(#{propsRedpackage.transNo},#{propsRedpackage.uid},#{propsRedpackage.propsType},#{propsRedpackage.type},#{propsRedpackage.number},
+        #{propsRedpackage.singleRedpackageAmount},#{propsRedpackage.createTime},#{propsRedpackage.exprieTime})
+    </insert>
+
+    <select id="countRedpackageByTransNoAndUid" resultType="java.lang.Integer">
+        SELECT count(1) FROM b_manor_props_redpacket where uid =#{uid} and trans_no =#{trandsNo} and props_type =#{propsType}
+    </select>
+
+    <select id="totalPropsNumberByUidAndPropsType" resultType="java.lang.Double">
+       SELECT  SUM(currnet_number) as number FROM  b_manor_props where uid = #{uid} and props_type =#{propsType}
+    </select>
+    <select id="listPropsByUidAndPropsType" resultType="com.xmniao.entity.manor.Props">
+        select id,uid,currnet_number number ,props_source propsSource from b_manor_props where uid = #{uid} and props_type =#{propsType}
+    </select>
+
+    <select id="listUserPropsRedpackageHistoryByUid" resultType="com.xmniao.entity.manor.PropsRedpackage">
+        SELECT id ,trans_no transNo,uid,props_type propsType ,type ,redpacket_number number ,single_redpacket_amount singleRedpackageAmount,
+            status,current_get_number currentGetNumber ,create_time createTime,exprie_time exprieTime FROM  b_manor_props_redpacket
+            where uid  =#{uid} ORDER BY create_time limit #{offset},#{limit}
+
+    </select>
+
+    <select id="listPropsRedpackageRecordByRedpackageId"  resultType="com.xmniao.entity.manor.PropsRedpackageRecord">
+         SELECT id ,redpackage_id redpackageId,give_uid giveUid,give_amount amount,create_time createTime FROM  b_manor_props_redpacket_record
+         where redpackage_id  =#{redpackageId} ORDER BY create_time DESC
+    </select>
+
+    <select id="getUserRedpacageRecord" resultType="com.xmniao.entity.manor.PropsRedpackageRecord">
+         SELECT id ,redpackage_id redpackageId,give_uid giveUid,give_amount amount,create_time createTime FROM  b_manor_props_redpacket_record
+         where redpackage_id  =#{redpackageId} and give_uid = #{uid}  ORDER BY create_time DESC
+    </select>
+
+    <insert id="insertPropsRedpackageRecord">
+        INSERT INTO b_manor_props_redpacket_record(redpackage_id,give_uid,give_amount,create_time) VALUES
+        (#{redpackageRecord.redpackageId},#{redpackageRecord.giveUid},#{redpackageRecord.amount},#{redpackageRecord.createTime})
+    </insert>
+
+    <update id="updateRedpackage">
+        UPDATE b_manor_props_redpacket  SET current_get_number = current_get_number +1  ,STATUS =(CASE WHEN current_get_number  = redpacket_number THEN 2 ELSE 1 END )
+         WHERE id =#{id} AND STATUS = 1
+    </update>
+
+    <select id="getRedpackage" resultType="com.xmniao.entity.manor.PropsRedpackage">
+         SELECT id ,trans_no transNo,uid,props_type propsType ,type ,redpacket_number number ,single_redpacket_amount singleRedpackageAmount,
+            status,current_get_number currentGetNumber ,create_time createTime,exprie_time exprieTime FROM  b_manor_props_redpacket
+            where id  =#{id}
+    </select>
+
+    <select id="checkGivePropsFromUserToGiveUser" resultType="com.xmniao.entity.manor.PropsRecord">
+        select id,trans_no transNo,uid uid ,type type,props_type propsType,channel,give_uid giveUid,create_time createTime,remark remark from b_manor_props_record
+        where uid = #{uid} and give_uid =#{giveUid}  AND  channel = 10
+        and create_time  <![CDATA[ <= ]]> #{nowTime}
+        AND create_time  <![CDATA[ >= ]]> #{nowTime}
+    </select>
+
+    <select id="getEarningsByUidAndPropsType" resultType="java.lang.Integer">
+        select sum(num) from b_manor_props_record
+        where uid = #{uid} and props_type =#{propsType}  and type = 1
+        and create_time  <![CDATA[ >= ]]> #{startTime}
+        AND create_time  <![CDATA[ <= ]]> #{endTime}
+    </select>
+
+    <select id="getUserRepository" resultType="java.lang.Integer" >
+        SELECT uid,sun_repository_overflow sunOverFlow,extended_repository_number  extendedRepositoryNumber
+        WHERE b_manor_props_user_repository where uid =#{uid}
+
+    </select>
+
+    <update id="getOverFlowSun">
+        UPDATE b_manor_props_user_repository set sun_repository_overflow = sun_repository_overflow - #{getNumber} ,update_time = #{nowtime}
+        where uid = #{uid} and sun_repository_overflow >= #{getNumber}
+    </update>
+
+    <update id="updateUserFlowerUseStatus">
+        UPDATE  b_manor_props_flower_give_record  set status =2 where uid =#{uid} and give_uid =#{giveUid}
+    </update>
+
+
+
+</mapper>
+

@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.ValueCardDao">
+
+	<select id="getValueCard" parameterType="map" resultType="map">
+		SELECT 
+		id,uid,phone,sellerid,sellertype,quota,cumulative_quota cumulativeQuota,update_time updateTime,sellername
+		FROM b_debitcard_quota 
+		WHERE status = 1
+		<if test="uid != null">
+			AND uid = #{uid}
+		</if>
+		<if test="sellerid != null">
+			AND sellerid = #{sellerid}
+		</if>
+		<if test="sellertype != null">
+			AND sellertype = #{sellertype}
+		</if>
+		<if test="isOverdue != null">
+			AND status = #{isOverdue}
+		</if>
+		<if test="pageSize != null and limit != -1">
+			LIMIT ${page*pageSize},${pageSize}
+		</if>
+	</select>
+	
+	<insert id="addValueCard" parameterType="map" >
+		INSERT INTO b_debitcard_quota(
+			uid,sellerid,update_time
+			<if test="sellertype != null">
+				,sellertype
+			</if>
+			<if test="sellername != null">
+				,sellername
+			</if>
+			<if test="phone != null and phone !=''">
+				,phone
+			</if>
+		)
+		VALUES(
+		#{uid},#{sellerid},#{updateTime}
+		<if test="sellertype != null">
+			,#{sellertype}
+		</if>
+		<if test="sellername != null">
+			,#{sellername}
+		</if>
+		<if test="phone != null and phone !=''">
+			,#{phone}
+		</if>
+		)
+	</insert>
+	
+	<update id="updateValueCard" parameterType="map">
+		UPDATE b_debitcard_quota
+		SET quota =#{hquota},
+		cumulative_quota = #{cumulativeQuota},
+		update_time = #{updateTime}
+		WHERE uid = #{uid}
+		AND sellerid = #{sellerid}
+		AND status = 1
+		<if test="sellertype != null and sellertype !=''">
+		AND sellertype = #{sellertype}
+		</if>
+	</update>
+	
+	<insert id="addValueCardRecord" parameterType="map">
+		INSERT INTO b_debitcard_quota_record(
+		qid,uid,rtype,sellerid,remarks,update_time,quota,q_quota,h_quota
+		<if test="sellername != null">
+		,sellername
+		</if>
+		<if test="sellertype != null">
+		,sellertype
+		</if>
+		<if test="consumeSellerid != null">
+		,consume_sellerid
+		</if>
+		<if test="consumeSellername != null">
+		,consume_sellername
+		</if>
+		)VALUES(
+		#{qid},#{uid},#{rtype},#{sellerid},#{remarks},#{updateTime},#{quota},#{qquota},#{hquota}
+		<if test="sellername != null">
+		,#{sellername}
+		</if>
+		<if test="sellertype != null">
+		,#{sellertype}
+		</if>
+		<if test="consumeSellerid != null">
+		,#{consumeSellerid}
+		</if>
+		<if test="consumeSellername != null">
+		,#{consumeSellername}
+		</if>
+		)
+	</insert>
+	
+	
+	<select id="getCardList" parameterType="map" resultType="map">
+		SELECT 
+		id,uid,phone,sellerid,sellertype,quota,cumulative_quota cumulativeQuota,update_time updateTime
+		FROM b_debitcard_quota 
+		WHERE status = 1
+		<if test="uid != null">
+			AND uid = #{uid}
+		</if>
+		<if test="sellername != null">
+			AND sellername like '%${sellername}%'
+		</if>
+		<if test="sellertype != null">
+			AND sellertype = #{sellertype}
+		</if>
+		ORDER BY update_time DESC
+		LIMIT ${(page-1)*limit},#{limit}
+	</select>
+	
+	<select id="countCard" parameterType="map" resultType="long">
+		SELECT COUNT(1) 
+		FROM b_debitcard_quota
+		WHERE status = 1
+		<if test="uid != null">
+			AND uid = #{uid}
+		</if>
+		<if test="sellername != null">
+			AND sellername like '%${sellername}%'
+		</if>
+		<if test="sellertype != null">
+			AND sellertype = #{sellertype}
+		</if>
+	</select>
+	
+	<select id="countBalance" resultType="map">
+		SELECT IFNULL(SUM(cumulative_quota),0.00) cumulativeQuota,IFNULL(SUM(quota),0.00) quota,COUNT(uid) num
+		FROM b_debitcard_quota
+		WHERE sellerid = #{0}
+		AND status = 1
+	</select>
+	
+	<update id="updateCardStatus">
+		UPDATE b_debitcard_quota
+		SET status = 0
+		,quota = 0.00
+		,update_time = NOW()
+		WHERE sellerid = #{sellerid}
+		AND sellertype = #{sellertype}
+		AND status = 1
+	</update>
+	
+	<insert id="insertRecord" parameterType="java.util.List">
+		INSERT INTO b_debitcard_quota_record
+		(qid,uid,rtype,sellername,sellerid,quota,q_quota,h_quota,update_time,remarks
+		)
+		VALUES
+		<foreach collection="list" item="quota" separator="," index="index">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+			#{quota.id,jdbcType=INTEGER},
+			#{quota.uid,jdbcType=INTEGER},
+			3,
+			#{quota.sellername,jdbcType=VARCHAR},
+			#{quota.sellerid,jdbcType=DECIMAL},
+			#{quota.quota,jdbcType=DECIMAL},
+			#{quota.quota,jdbcType=DECIMAL},
+			0.00,
+			NOW(),
+			"商家释放储值卡"
+			</trim>
+		</foreach>
+	</insert>
+	
+	<select id="getRecords" parameterType="map" resultType="map">
+		SELECT qid,uid,rtype,sellerid,sellername,sellertype,consume_sellerid consumeSellerid
+		,consume_sellername consumeSellername,quota,q_quota qquota,h_quota hquota,remarks,DATE_FORMAT(update_time,'%Y-%m-%d %H:%i:%s') updateTime
+		FROM b_debitcard_quota_record
+		WHERE 1=1
+		<if test="uid != null and uid !=''">
+			AND uid = #{uid}
+		</if>
+		<if test="sellerid != null and sellerid !=''">
+			AND sellerid = #{sellerid}
+		</if>
+		<if test="rtype != null and rtype !=''">
+			AND rtype =#{rtype}
+		</if>
+		ORDER BY update_time DESC
+		<if test="limit != -1">
+			LIMIT ${page*pageSize},${pageSize}
+		</if>
+	</select>
+	
+	<select id="countQuotaByDate" parameterType="map" resultType="map">
+		SELECT COUNT(1) sum,IFNULL(SUM(quota),0.00) total,COUNT(DISTINCT uid) userNum
+		FROM b_debitcard_quota_record
+		WHERE sellerid = #{sellerid}
+		<if test="rtype != null and rtype != ''">
+			AND rtype IN (${rtype})
+		</if>
+		<if test="sdate != null and sdate != ''">
+			AND DATE_FORMAT(update_time,'%Y-%m-%d') &gt;= DATE_FORMAT('${sdate}','%Y-%m-%d')
+		</if>
+		<if test="edate != null and edate != ''">
+			AND DATE_FORMAT(update_time,'%Y-%m-%d') &lt;= DATE_FORMAT('${edate}','%Y-%m-%d')
+		</if>
+	</select>
+	
+	<select id="getRecordGroupByDay" parameterType="map" resultType="map">
+		SELECT DATE_FORMAT(update_time,'%Y-%m-%d') dealDate,SUM(quota) total,sellerid
+		FROM b_debitcard_quota_record
+		WHERE sellerid = #{sellerid}
+		<if test="rtype != null and rtype != ''">
+			AND rtype IN (${rtype})
+		</if>
+		<if test="sdate != null and sdate == edate">
+			AND DATE_FORMAT(update_time,'%Y-%m-%d') =
+			DATE_FORMAT('${sdate}','%Y-%m-%d')
+		</if>
+		<if test="sdate != null and sdate != edate">
+			<if test="sdate != null">
+				AND DATE_FORMAT(update_time,'%Y-%m-%d') &gt;=
+				DATE_FORMAT('${sdate}','%Y-%m-%d')
+			</if>
+			<if test="edate != null">
+				AND DATE_FORMAT(update_time,'%Y-%m-%d') &lt;=
+				DATE_FORMAT('${edate}','%Y-%m-%d')
+			</if>
+		</if>
+		GROUP BY DATE_FORMAT(update_time,'%Y-%m-%d')
+		ORDER BY update_time DESC
+		LIMIT
+		${page*pageSize},${pageSize}
+	</select>
+	
+	<select id="getRecordListByDay" parameterType="map" resultType="map">
+		SELECT DATE_FORMAT(update_time,'%H:%i:%s') payTime,quota,q_quota qquota,h_quota hquota,uid,DATE_FORMAT(update_time,'%Y-%m-%d %H:%i:%s') updateTime,remarks,rtype,sellerid
+		FROM b_debitcard_quota_record
+		WHERE sellerid = #{sellerid}
+		AND rtype IN (${rtype})
+		AND DATE_FORMAT(update_time,'%Y-%m-%d') = #{dealDate}
+	</select>
+	
+	<select id="getUserRecordInfo" resultType="map" parameterType="map">
+		SELECT DATE_FORMAT(MIN(update_time),'%Y-%m-%d %H:%i:%s') minTime,DATE_FORMAT(MAX(update_time),'%Y-%m-%d %H:%i:%s') maxTime,COUNT(1) sum,MIN(quota) minQuota,MAX(quota) maxQuota,IFNULL(SUM(quota),0.00) totalConsume
+		FROM 
+		b_debitcard_quota_record 
+		WHERE 
+		uid = #{uid}
+		AND sellerid = #{sellerid}
+		AND rtype = 2
+	</select>
+	
+	<select id="countCardNum" parameterType="map" resultType="map">
+		SELECT COUNT(1) num
+		FROM b_debitcard_quota
+		WHERE uid = #{uid}
+		AND status = 1
+	</select>
+	
+	<select id="countConsumeTime" resultType="long">
+		SELECT COUNT(1)
+		FROM b_debitcard_quota_record
+		WHERE rtype IN (${rtype})
+		AND uid = #{uid}
+		AND sellerid = #{sellerid}
+		AND update_time &lt;=#{updateTime}
+	</select>
+</mapper>

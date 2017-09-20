@@ -1,0 +1,136 @@
+package com.xmniao.service;
+
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import com.umpay.api.exception.VerifyException;
+import com.xmniao.entity.PayRefund;
+import com.xmniao.thrift.ledger.FailureException;
+
+/**
+ * u付Service
+ * 
+ * @author YangJing
+ * 
+ */
+public interface UPayService {
+
+    /**
+     * 退款接口
+     * 
+     * @param refundId
+     * @param orderId
+     * @param merDate
+     * @param refundAmount
+     * @param orderAmount
+     * @return
+     * @throws FailureException
+     */
+    public Map<String, String> uPayRefund(String refundId, String orderId,
+	    String merDate, double refundAmount, double orderAmount,int serviceType)
+	    throws FailureException;
+    
+    /**
+     * 查询接口，通过该接口查询U付服务器端退款订单处理状态
+     * @param refundId 退款流水号
+     * @return
+     */
+    public Map<String,String> queryUpayRefund(String refundId);
+    
+    /**
+     * 根据退款流水号 查询该 退款记录
+     * 
+     * @param refundid
+     * @return
+     */
+    PayRefund getPayRefundByRefundId(String refundid);
+
+    /**
+     * 根据订单号，查询相关支付订单表数据
+     * 
+     * @param order_number
+     * @return
+     */
+    Map<String, Object> getPayOrderByorderNumber(String order_number);
+
+    /**
+     * 根据支付号 查询该 退款记录
+     * 
+     * @param payid
+     * @return
+     */
+    PayRefund getPayRefundBypayId(long payid);
+
+    /**
+     * 更新退款记录状态
+     * 
+     * @param map
+     */
+    void updatePayOrderByRefundId(Map<String, Object> map);
+
+    /**
+     * u付代发服务
+     * 
+     * @param paramMap
+     * @return
+     * @throws FailureException
+     */
+    Map<String, String> uPay(Map<String, Object> paramMap)
+	    throws FailureException;
+
+    /**
+     * 获取用户商家提现记录
+     * 
+     * @param statusMap
+     * @return
+     */
+    Map<String, Object> selectByflowid(Map<String, Object> statusMap);
+
+    /**
+     * 获取合作商提现记录
+     * 
+     * @param paramMap
+     * @return
+     */
+    Map<String, Object> selectByjointid(Map<String, Object> paramMap);
+    
+    /**
+     * u付验签方法
+     * 
+     * @param req
+     * @return
+     * @throws VerifyException
+     */
+    Map<String, String> virifySign(HttpServletRequest req)
+	    throws VerifyException;
+    
+    /**
+     * 代发回应 U付网关
+     * 
+     * @param ret_code
+     * @param ret_msg
+     * @return
+     */
+    String payRespUmp(String ret_code, String ret_msg, String orderId,
+	    String merDate);
+    
+    /**
+     * 退 钱包支付部分的钱到 钱包
+     * 
+     * @param payRefund
+     * @return
+     */
+    Map<String, String> RefoundWalletMoney(PayRefund payRefund);
+
+    /**
+     * 商户 回应 U付网关
+     * 
+     * @param ret_code
+     * @param ret_msg
+     * @return
+     */
+    String merRespUmp(String ret_code, String ret_msg);
+
+	Map<String, String> queryUPayResult(String orderId,String merDate);
+}

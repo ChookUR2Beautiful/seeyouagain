@@ -1,0 +1,80 @@
+package com.xmniao.common;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.xmniao.exception.ParamBlankException;
+import com.xmniao.thrift.ledger.ResponseData;
+
+/**
+ * 参数工具类
+ * @author jianming
+ *
+ */
+public class ParamUtil {
+	
+	public static final int PARAM_ERROR = 2;
+	
+	public static final int SUCCESS_STATE=0;
+
+	public static final int ERROR_STATE = 1;
+	
+	public static void checkMustParam(Map<?,?> map) throws ParamBlankException{
+		for (Map.Entry<?, ?> entry : map.entrySet()) { 
+			if(entry.getValue()==null){
+				throw new ParamBlankException("参数"+entry.getKey()+"不能为空");
+			}
+		}
+	}
+	
+	/**
+	 * 
+	 * 方法描述：返回失败
+	 * 创建人：jianming  
+	 * 创建时间：2017年4月5日 下午2:39:35   
+	 * @param msg
+	 * @return
+	 */
+	public static ResponseData fail(String msg) {
+		ResponseData responseData = new ResponseData();
+		responseData.setState(PARAM_ERROR);
+		responseData.setMsg(msg);
+		return responseData;
+	}
+
+	/**
+	 * 
+	 * 方法描述：成功
+	 * 创建人：jianming  
+	 * 创建时间：2017年4月5日 下午2:39:57   
+	 * @param string
+	 * @param liveWallet
+	 * @return
+	 */
+	public static ResponseData success(String msg, Map<String,String> resultMap) {
+		ResponseData responseData = new ResponseData();
+		responseData.setState(SUCCESS_STATE);
+		responseData.setMsg(msg);
+		responseData.setResultMap(resultMap);
+		return responseData;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：异常
+	 * 创建人：jianming  
+	 * 创建时间：2017年4月5日 下午2:41:58   
+	 * @return
+	 */
+	public static ResponseData error() {
+		ResponseData responseData = new ResponseData();
+		responseData.setState(ERROR_STATE);
+		responseData.setMsg("操作失败");
+		return responseData;
+	}
+
+
+}

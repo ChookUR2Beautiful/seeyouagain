@@ -1,0 +1,90 @@
+package com.xmniao.service.impl;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.xmniao.common.XmnConstants;
+import com.xmniao.dao.WalletExpansionRecordMapper;
+import com.xmniao.dao.WalletExpensesMapper;
+import com.xmniao.entity.WalletExpansionRecord;
+import com.xmniao.entity.WalletExpenses;
+import com.xmniao.service.WalletExService;
+import com.xmniao.service.pay.WalletExpansionServiceImpl;
+import com.xmniao.thrift.ledger.FailureException;
+
+@Service
+public class WalletExServiceImpl implements WalletExService {
+
+	@Resource(name = "WalletExpansionServiceImpl")
+	private WalletExpansionServiceImpl walletExpansionServiceImpl;
+
+	@Autowired
+	private WalletExpensesMapper walletExpensesMapper;
+
+	@Autowired
+	private WalletExpansionRecordMapper walletExpansionRecordMapper;
+	
+	@Override
+	public BigDecimal withdrawalsExpansion(Map<String, String> map) {
+		try {
+			String commision = map.get("commision");
+			String zbalance = map.get("zbalance");
+			if (StringUtils.isNotBlank(commision)) {
+				// 转入到可提现
+				BigDecimal expenses = getExpansionExpense(new BigDecimal(commision), map.get("type")).getRateSum();
+				map.put("amount", commision);
+				map.put("option", "1");
+				map.put("recordType",String.valueOf(XmnConstants.EX_RECORD_TYPE_3));
+				Map<String, String> updateWalletExpansion = walletExpansionServiceImpl.updateWalletExpansion(map);
+				if (!"0".equals(updateWalletExpansion.get("state"))) {
+					throw new RuntimeException(updateWalletExpansion.get("msg"));
+				}
+				return expenses;
+			} else if (StringUtils.isNotEmpty(zbalance)) {
+				// 转入到不可提现
+				map.put("amount", zbalance);
+				map.put("option", "1");
+				map.put("recordType",String.valueOf(XmnConstants.EX_RECORD_TYPE_4));
+				Map<String, String> updateWalletExpansion = walletExpansionServiceImpl.updateWalletExpansion(map);
+				if (!"0".equals(updateWalletExpansion.get("state"))) {
+					throw new RuntimeException(updateWalletExpansion.get("msg"));
+				}
+				return BigDecimal.valueOf(0);
+			}
+			return BigDecimal.valueOf(0);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public WalletExpenses getExpansionExpense(BigDecimal commision, String type) {
+		WalletExpenses walletExpenses = walletExpensesMapper.getExpenses(type);
+		int rateType = walletExpenses.getRateType().intValue();
+		BigDecimal rate = walletExpenses.getRate();
+		if (rateType == 1) {
+			// 比例
+			walletExpenses.setRateSum(commision.multiply(rate).setScale(2,BigDecimal.ROUND_DOWN));
+		} else if (rateType == 2) {
+			// 固定金额
+			walletExpenses.setRateSum(rate);
+		}
+		return walletExpenses;
+	}
+
+	@Override
+	public List<WalletExpansionRecord> getBySource(String source) throws FailureException {
+		if(StringUtils.isBlank(source)){
+			throw new FailureException(1,"source订单号不能为空");
+		}
+		return walletExpansionRecordMapper.getBySource(source);
+	}
+
+}

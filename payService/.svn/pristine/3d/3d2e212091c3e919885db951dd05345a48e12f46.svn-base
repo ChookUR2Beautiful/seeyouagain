@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.UpdateWithdrawalsRecordStateMapper"> 
+
+<sql id="pageSql">
+		LIMIT #{start},#{end}
+</sql>
+	<!-- 修改用户和商家的提现状态 -->
+	<update id="updateWithdrawalsRecordState" parameterType="map">
+		update b_withdrawals_record set udate = #{udate},
+		<if test="platform!=null">
+			platform=#{platform},
+		</if>
+		<if test="Desc!=null">
+			tdesc=#{Desc},
+		</if>
+		<if test="number!=null">
+		number=#{number},
+		</if>
+		<if test="msg!=null">
+		tdesc=#{msg},
+		</if>
+		<if test="status==1">
+			status=1
+		</if>
+		<if test="status==2">
+			status=2
+		</if>
+		<if test="status==3">
+			status=3
+		</if>
+		<if test="status==4">
+			status=4
+		</if>
+		<if test="status==5">
+			status=5
+		</if>
+		<if test="status==6">
+			status=6
+		</if>
+		where 	flowid = #{orderNumber}
+
+	</update>
+	
+	<!-- 修改合作商的提现状态 -->
+	<update id="updateWithdrawalsRecordStateByjointid" parameterType="map">
+		update t_joint_withdrawals set edate = #{udate},
+		<if test="platform!=null">
+			platform=#{platform},
+		</if>
+		<if test="Desc!=null">
+			remarks=#{Desc},
+		</if>
+		<if test="number!=null">
+		number=#{number},
+		</if>
+		<if test="msg!=null">
+		remarks=#{msg},
+		</if>
+		<if test="status==1">
+			status=1
+		</if>
+		<if test="status==2">
+			status=2
+		</if>
+		<if test="status==3">
+			status=3
+		</if>
+		<if test="status==4">
+			status=4
+		</if>
+		<if test="status==5">
+			status=5
+		</if>
+		<if test="status==6">
+			status=6
+		</if>
+		where   id = #{orderNumber}
+	</update>
+	
+	<!-- 提现状态，查询商家和用户提现信息 （代发）-->
+	<select id="selectByflowid" parameterType="map" resultType="map">
+		select flowid, uid, sellerid, amount, balance, commision, income, bankname, account, mobileid, fullname, purpose,status,
+		abbrev,bank,province,cityname,idtype,identity,ispublic
+		
+		 from b_withdrawals_record
+		where flowid = #{orderNumber}
+	</select>
+	
+	<!-- 提现状态，查询合作商提现信息（代发） -->
+	<select id="selectByjointid" parameterType="map" resultType="map">
+		select id, jointid, amount, bankname, mobileid, cardid account, fullname,status,
+		abbrev,bank,province,cityname,idtype,identity,ispublic 
+		from t_joint_withdrawals
+		where id = #{orderNumber}
+	</select>
+	
+	<!-- 电子钱包(账户)提现记录表 按条件查询相关数据条数 -->
+	<select id="selectByflowidCounts" parameterType="map" resultType="Integer">
+		SELECT ifnull(count(*),0) as count FROM b_withdrawals_record WHERE 
+		STATUS=#{status} AND platform= #{platform}
+	</select>
+	<!--合作商提现记录表 按条件查询相关数据条数 -->
+	<select id="selectByjointidCounts" parameterType="map" resultType="Integer">
+		SELECT ifnull(COUNT(*),0) as count FROM t_joint_withdrawals WHERE 
+		STATUS=#{status} AND platform= #{platform}
+	</select>
+	
+		<!-- 电子钱包(账户)提现记录表 按条件查询相关数据 -->
+	<select id="selectByflowids" parameterType="map" resultType="map">
+		select flowid id, uid, sellerid, amount, balance, commision, income, bankname, account, mobileid, fullname, purpose,udate date,status,abbrev,cash
+		
+		from b_withdrawals_record
+		where STATUS=#{status} AND platform= #{platform} 
+		<if test="end !=null">
+		<include refid="pageSql"></include>
+		</if>
+	</select>
+	<!--合作商提现记录表 按条件查询相关数据 -->
+	<select id="selectByjointids" parameterType="map" resultType="map">
+		select id, jointid, amount, bankname, mobileid, cardid, fullname,edate,status,abbrev,sdate date from t_joint_withdrawals
+		where STATUS=#{status}  AND platform= #{platform} 
+		<if test="end !=null">
+		<include refid="pageSql"></include>
+		</if>
+	</select>
+	
+	<!-- 新增提现记录 -->
+	<insert id="insertWRRecord" parameterType="map" useGeneratedKeys="true" keyColumn="flowid" keyProperty="id">  
+        INSERT INTO b_withdrawals_record (uid,sellerid,jointid,sellername,type,amount,balance,commision,income,qamount,qrebate,qcommision,
+        qincome,date,
+        <if test="udate != null">
+        	udate,
+        </if>
+        <if test="autowithdrawals != null">
+        	autowithdrawals,
+        </if>
+        recchannel,tdesc,purpose,account,cash,bankname,mobileid,fullname,abbrev,bank,ispublic,idtype,identity,province,cityname)  
+        VALUE (
+        <if test="userType == 1">
+        	#{uid},0,0,
+        </if>
+        <if test="userType == 2">
+        	0,#{uid},0,
+        </if>
+        #{name},
+        <if test="account_type == 1">
+        	1,
+        </if>
+        <if test="account_type != 1">
+        	2,
+        </if>
+        #{wallet},#{rebate},#{commission},#{income},#{oldWallet},#{oldRebate},#{oldCommission},#{oldIncome},#{sdate},
+        <if test="udate != null">
+        	#{udate},
+        </if>
+        <if test="autowithdrawals != null">
+        	#{autowithdrawals},
+        </if>
+        #{recchannel},#{tdesc},#{purpose},#{account},#{cash_type},#{bankname},#{mobileid},#{fullname},#{abbrev},#{bank},#{ispublic},#{idtype},#{identity},#{province},#{cityname})  
+    </insert> 
+    
+    <!-- 新增合作商提现记录 -->
+	<insert id="insertJWRRecord" parameterType="map" useGeneratedKeys="true" keyColumn="id" keyProperty="id">  
+        INSERT INTO t_joint_withdrawals (jointid,qincome,amount,invoice,company,express,expressid,fullname,cardid,sdate,bankname,mobileid,abbrev,bank,ispublic,idtype,identity,province,cityname,pic)  
+        VALUE (
+        #{uid},
+        #{oldIncome},
+        #{income},
+        #{invoice},
+        #{name},
+        #{express},
+        #{expressid},
+        #{fullname},
+        #{account},
+        #{sdate},
+        #{bankname},
+        #{mobileid},
+        #{abbrev},
+        #{bank},
+        #{ispublic},
+        #{idtype},
+        #{identity},
+        #{province},
+        #{cityname},
+        #{pic})
+    </insert> 
+    
+    <!-- 统计当天提现金额 -->
+	<select id="countTodayMoney" parameterType="String" resultType="double">
+		SELECT IFNULL(SUM(amount),0) AS allmoney 
+		FROM t_joint_withdrawals 
+		WHERE 
+			jointid=#{id} 
+			AND STATUS IN(0,1) 
+			AND DATE_FORMAT(sdate,'%y-%m-%d') = DATE_FORMAT(NOW(),'%y-%m-%d')
+	</select>
+	
+	<!-- 修改用户和商家 -->
+	<update id="updateWithdrawalsRecord2Lock" parameterType="int">
+		update b_withdrawals_record set flowid =  #{orderNumber} where 	flowid = #{orderNumber}
+	</update>
+	
+	<!-- 修改合作商 -->
+	<update id="updateWithdrawalsRecordJointid2Lock" parameterType="int">
+		update t_joint_withdrawals set id = #{orderNumber} where   id = #{orderNumber}
+	</update>
+	
+</mapper>

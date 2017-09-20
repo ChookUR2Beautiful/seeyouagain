@@ -1,0 +1,199 @@
+package com.xmniao.dao;
+
+import java.util.List;
+import java.util.Map;
+
+public interface XmniaoWalletDao {
+	
+	/**
+	 * 获取寻觅鸟钱包信息
+	 * @param paraMap
+	 * @return
+	 */
+	Map<String,Object> getWalletMsg(Map<String,String> paraMap);
+	
+	/**
+	 * 获取提现统计信息
+	 * @param paramMap
+	 * @return
+	 */
+	Map<String,Object> withdrawCount(Map<String,String> paramMap); 
+	
+	/**
+	 * 获取商户收入总记录数
+	 * @param paramMap
+	 * @return
+	 */
+	Integer countWalletRecord(Map<String,String> paramMap);
+	
+	/**
+	 * 获取商户历史营收信息列表
+	 * @param paraMap
+	 * @return
+	 */
+	List<Map<String,Object>> getBusinessList(Map<String,String> paraMap);
+	
+	/**
+	 * 统计历史总收入
+	 */
+	Map<String,Object> totalAmount(Map<String,String> paraMap);
+	
+	/**
+	 * 获取当天收入信息
+	 * @param paraMap
+	 * @return
+	 */
+	Map<String,Object> getCurrentDayAmount(Map<String,String> paraMap);
+	
+	/**
+	 * 获取支出信息
+	 * @param paraMap
+	 * @return
+	 */
+	Map<String,Object> getCurrentDayOutAmount(Map<String,String> paraMap);
+	/**
+	 * 获取用户每月提现列表
+	 * @param paraMap
+	 * @return
+	 */
+	List<Map<String,Object>> getWithdrawalList(Map<String,String> paraMap);
+	
+	/**
+	 * 获取每月提现统计信息
+	 * @param parMap
+	 * @return
+	 */
+	List<Map<String,Object>> withdrawalCountByMonth(Map<String,String> parMap);
+	
+	/**
+	 * 统计提现总金额（提现成功，提现处理中）和总记录数
+	 */
+	Map<String,Object> countWithdrawalAmount(Map<String,String> parMap);
+	
+	/**
+	 * 获取用户每日分账总记录
+	 * @param parMap
+	 * @return
+	 */
+	List<Map<String,Object>> ledgerCount(Map<String,String> parMap);
+	
+	/**
+	 * 获取每日分账详细记录列表
+	 * @param parMap
+	 * @return
+	 */
+	List<Map<String,Object>> ledgerList(Map<String,String> parMap);
+	
+	/**
+	 * 统计分账总金额（0 美食分账，22 线下积分分账）和总记录数
+	 * @param parMap
+	 * @return
+	 */
+	Map<String,Object> countLedgerAmount(Map<String,String> parMap);
+	
+	/**
+	 * 获取商户的店外收益信息
+	 * @param parMap
+	 * @return
+	 */
+	Map<String,Object> getSellerLedgerInfo(Map<String,String> parMap);
+	
+	/**
+	 * 获取商户历史支出统计信息
+	 * @param paraMap
+	 * @return
+	 */
+	Map<String,Object> getSellerExpense(Map<String,String> paraMap);
+	
+	/**
+	 * 获取每日支出统计信息
+	 * @param parMap
+	 * @return
+	 */
+	List<Map<String,Object>> getSelleridExpenseByDay(Map<String,String> parMap);
+	
+	/**
+	 * 获取每日支出信息列表
+	 * @param paraMap
+	 * @return
+	 */
+	List<Map<String,Object>> getSellerExpenseList(Map<String,String> paraMap);
+	
+	/**
+	 * 获取用户收支列表信息
+	 * @Title: getUserList 
+	 * @Description:
+	 */
+	List<Map<String,Object>> getUserWalletRecordList(Map<String,String> paraMap);
+	
+	/**
+	 * 获取用户收支列表总数
+	 * @Title: getUserList 
+	 * @Description:
+	 */
+	long getUserWalletRecordCount(Map<String,String> paraMap);
+	
+	/**
+	 * 获取用户/商户最近一条提现记录
+	 * @Title: getLastWithdrawalsRecord 
+	 * @Description:
+	 */
+	Map<String,Object> getLastWithdrawalsRecord(Map<String,String> paraMap);
+	
+	/**
+	 * 获取合作商最近一条提现记录
+	 * @Title: getLastWithdrawalsRecord 
+	 * @Description:
+	 */
+	Map<String,Object> getLastJointWithdrawalsRecord(Map<String,String> paraMap);
+	
+	List<Map<String,Object>> getUserRecords(Map<String,String> paraMap);
+	
+	Long countUserRecord(Map<String,String> paraMap);
+	
+	/**
+	 * 获取充值分账总额
+	 * @param paraMap
+	 * @return
+	 */
+	Map<String,Object> getTotalLedgerMoney(Map<String,String> paraMap);
+	
+	List<Map<String, Object>> getTotalLedgerMoneyByDay(Map<String,String> paraMap);
+	
+	List<Map<String, Object>> getTotalLedgerMoneyDayList(Map<String,String> paraMap);
+	
+	/**
+	 * 
+	 * 方法描述：金额记录总和
+	 * 创建人：jianming  
+	 * 创建时间：2017年4月13日 下午5:19:49   
+	 * @param walletMap
+	 * @return
+	 */
+	Long sumRecord(Map<String, String> walletMap);
+	
+	/**
+	 * 
+	 * 方法描述：统计钱包记录(普通钱包+直播钱包)
+	 * 创建人：jianming  
+	 * 创建时间：2017年4月13日 下午5:34:04   
+	 * @param walletMap
+	 * @return
+	 */
+	Long getUserWalletRecordCount2(Map<String, String> walletMap);
+	
+	/**
+	 * 
+	 * 方法描述：查询钱包记录列表(普通钱包+直播钱包)
+	 * 创建人：jianming  
+	 * 创建时间：2017年4月13日 下午6:04:25   
+	 * @param walletMap
+	 * @return
+	 */
+	List<Map<String, Object>> getUserWalletRecordList2(Map<String, String> walletMap);
+
+	Long countUserWalletRecordList3(Map<String, String> walletMap);
+
+	List<Map<String, Object>> getUserWalletRecordList3(Map<String, String> walletMap);
+	
+}

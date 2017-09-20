@@ -1,0 +1,31 @@
+package com.xmniao.dao;
+
+import com.xmniao.entity.Experiencecard;
+
+public interface ExperiencecardMapper {
+    int deleteByPrimaryKey(Integer id);
+
+    int insert(Experiencecard record);
+
+    int insertSelective(Experiencecard record);
+
+    Experiencecard selectByPrimaryKey(Integer id);
+
+    int updateByPrimaryKeySelective(Experiencecard record);
+
+    int updateByPrimaryKey(Experiencecard record);
+
+    /**
+     * 根据用户 uid 查询
+     * @param uid
+     * @return
+     */
+    Experiencecard selectByUid(Integer uid);
+
+    /**
+     * 扣除1张美食体验卡
+     * @param experiencecard
+     * @return
+     */
+    int deductExperiencecard(Experiencecard experiencecard);
+}

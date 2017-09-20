@@ -1,0 +1,842 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.WalletMapper">
+
+	<!-- 获取用户余额信息 -->
+	<select id="selectByuid" resultType="java.util.HashMap"
+		parameterType="java.lang.Integer">
+		select
+		uid,sellerid,jointid,p_pwd as pwd,amount,balance,commision,zbalance,integral,sign,seller_amount,accountid,account
+		from
+		b_wallet
+		where 1=1
+		<if test="typeId == 1">
+			and uid=#{uId}
+		</if>
+		<if test="typeId == 2">
+			and sellerid=#{uId}
+		</if>
+		<if test="typeId == 3">
+			and jointid=#{uId}
+		</if>
+	</select>
+
+
+	<!-- 获取用户钱包信息 -->
+	<select id="getWalletByUserId" parameterType="map" resultType="map">
+		select uid,sellerid,jointid,accountid,p_pwd
+		pwd,
+		CAST(amount AS CHAR)amount,
+		CAST(balance AS CHAR)balance,
+		CAST(commision AS CHAR)commision,
+		CAST(zbalance AS CHAR)zbalance,
+		CAST(integral AS CHAR) Integral,
+		CAST(quota AS CHAR)quota,sign,sign_type
+		signType,
+		CAST(seller_amount AS CHAR) sellerAmount,
+		account,status from b_wallet
+		
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="typeId == 1">uid=#{uId}</if>
+			<if test="typeId == 2">sellerid=#{uId}</if>
+			<if test="typeId == 3">jointid=#{uId}</if>
+		</trim>
+	</select>
+
+	<!-- 根据密钥和用户Id修改钱包密码 -->
+	<update id="updatePwdBySign" parameterType="map">
+		update b_wallet set p_pwd = #{pwd},sign = #{sign} where 1=1
+		<if test="typeId == 1">
+			and uid=#{uId}
+		</if>
+		<if test="typeId == 2">
+			and sellerid=#{uId}
+		</if>
+		<if test="typeId == 3">
+			and jointid=#{uId}
+		</if>
+		<if test="oldSign != null and oldSign!=''">
+			and sign = #{oldSign}
+		</if>
+
+	</update>
+	<!-- 新增钱包账号 -->
+	<insert id="addWalletByuid" parameterType="map">
+
+		insert into b_wallet
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+
+			<if test="uid != null">
+				uid,
+			</if>
+			<if test="sellerid != null">
+				sellerid,
+			</if>
+			<if test="jointid != null">
+				jointid,
+			</if>
+			<if test="p_pwd != null">
+				p_pwd,
+			</if>
+			<if test="last_date != null">
+				last_date,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="sign != null">
+				sign,
+			</if>
+			<if test="sign_type != null">
+				sign_type,
+			</if>
+			<if test="sellername != null">
+				sellername,
+			</if>
+			<if test="apply_date != null">
+				apply_date,
+			</if>
+			<if test="effect_date != null">
+				effect_date,
+			</if>
+			<if test="account != null">
+				account
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="uid != null">
+				#{uid},
+			</if>
+			<if test="sellerid != null">
+				#{sellerid},
+			</if>
+			<if test="jointid != null">
+				#{jointid},
+			</if>
+			<if test="p_pwd != null">
+				#{p_pwd},
+			</if>
+			<if test="last_date != null">
+				#{last_date},
+			</if>
+			<if test="status != null">
+				#{status},
+			</if>
+			<if test="sign != null">
+				#{sign},
+			</if>
+			<if test="sign_type != null">
+				#{sign_type},
+			</if>
+			<if test="sellername != null">
+				#{sellername},
+			</if>
+			<if test="apply_date != null">
+				#{apply_date},
+			</if>
+			<if test="effect_date != null">
+				#{effect_date},
+			</if>
+			<if test="account != null">
+				#{account}
+			</if>
+		</trim>
+
+	</insert>
+
+	
+	<!-- 获取能提现佣金的用户 -->
+	<select id="getMentionCommisionUsers" resultType="map">
+		SELECT
+		bw.`accountid`,bw.`sellerid`
+		sellerId,bw.`sellername`,bw.`amount`,bw.`commision`,bw.`seller_amount`
+		income,bw.`balance`,tmc.`money` tMoney,bw.`sign`,bw.`p_pwd`
+		pwd,bw.`integral`,bw.`zbalance` FROM b_wallet bw LEFT JOIN
+		t_mention_config tmc ON tmc.uid = bw.`sellerid` WHERE bw.`sellerid`
+		&lt;&gt; 0 AND tmc.`mention` = 1 AND tmc.`money` &gt; 0 AND
+		bw.`commision` &gt;= tmc.`money`
+	</select>
+
+	<!-- 获取能提现营收的用户 -->
+	<select id="getMentionIncomeUsers" resultType="map">
+		SELECT
+		bw.`accountid`,bw.`sellerid`
+		sellerId,bw.`sellername`,bw.`amount`,bw.`commision`,bw.`seller_amount`
+		income,bw.`balance`,tmc.`income` tIncome,bw.`sign`,bw.`p_pwd`
+		pwd,bw.`integral`,bw.`zbalance` FROM b_wallet bw LEFT JOIN
+		t_mention_config tmc ON tmc.uid = bw.`sellerid` WHERE bw.`sellerid`
+		&lt;&gt; 0 AND tmc.`mention` = 1 AND bw.`seller_amount` &gt;=
+		tmc.`income` AND tmc.`income` &gt; 0
+	</select>
+
+	<!-- 根据密钥和用户Id修改钱包密码 -->
+	<update id="updateWalletBySign" parameterType="map">
+		update b_wallet set amount =
+		#{amount},balance=#{balance},commision=#{commision},seller_amount=#{sellerAmount},sign
+		= #{sign}
+		<if test="lastDate != null">
+				,last_date=#{lastDate}
+		</if>
+		 where status=1
+		<if test="typeId == 1">
+			and uid=#{uId}
+		</if>
+		<if test="typeId == 2">
+			and sellerid=#{uId}
+		</if>
+		<if test="typeId == 3">
+			and jointid=#{uId}
+		</if>
+		<if test="oldSign != null and oldSign!=''">
+			and sign = #{oldSign}
+		</if>
+	</update>
+
+	<!-- 退款 修改钱包金额 Edit By ChenBo -->
+	<update id="updateWalletMoney">
+		update b_wallet set
+		amount =
+		#{wallet.amount},
+		balance =
+		#{wallet.balance},
+		commision =
+		#{wallet.commision},
+		zbalance =
+		#{wallet.zbalance},
+		seller_amount =
+		#{wallet.sellerAmount},
+		integral =
+		#{wallet.integral},
+		sign =
+		#{wallet.sign},
+		<if test="wallet.lastDate!=null">
+		last_date=#{wallet.lastDate}
+		</if>
+		where accountid =
+		#{wallet.accountid} and sign =
+		#{oldSign} and status=1
+	</update>
+
+
+	<!-- xmer钱包金额转到会员钱包 Edit By Chenjie -->
+	<update id="updateWalletMoneyFromXmer">
+		update b_wallet set
+		commision =
+		#{commision},
+		sign =
+		#{sign},
+		<if test="lastDate!=null">
+		last_date=#{lastDate}
+		</if>
+		where accountid =
+		#{accountid} and sign =
+		#{oldSign} and status=1
+	</update>
+	
+	<!-- xmer钱包金额转到会员钱包 Edit By CJ -->
+	<update id="updateWalletMoneyFromLive" parameterType="map">
+		update b_wallet set
+		commision =
+		#{commision},
+		sign =
+		#{sign},
+		<if test="lastDate!=null">
+		last_date=#{lastDate}
+		</if>
+		where accountid =
+		#{accountid} and sign =
+		#{oldSign} and status=1
+	</update>
+
+	<!-- 根据钱包id拿到整个wallet对象数据 -->
+	<select id="getWalletById" parameterType="long"
+		resultType="com.xmniao.entity.Wallet">
+		SELECT
+		accountid,
+		uid,
+		sellerid,
+		jointid,
+		p_pwd pPwd,
+		apply_date
+		applyDate,
+		effect_date effectDate,
+		cancel_date cancelDate,
+		status,
+		amount,
+		balance,
+		commision,
+		zbalance,
+		integral,
+		seller_amount sellerAmount,
+		quota,
+		sign,
+		sign_type signType,
+		last_date lastDate,
+		father_id fatherId
+		FROM b_wallet
+		WHERE accountid = #{accountid}
+		for update
+	</select>
+
+	<!-- 根据用户拿到整个wallet对象数据 -->
+	<select id="getWalletByuId" parameterType="map"
+		resultType="com.xmniao.entity.Wallet">
+		SELECT
+		accountid,
+		uid,
+		sellerid,
+		jointid,
+		p_pwd pPwd,
+		apply_date applyDate,
+		effect_date effectDate,
+		cancel_date cancelDate,
+		status,
+		amount,
+		balance,
+		commision,
+		zbalance,
+		integral,
+		seller_amount sellerAmount,
+		quota,
+		sign,
+		sign_type signType,
+		last_date lastDate,
+		father_id fatherId
+		FROM b_wallet
+		<where>
+			<choose>
+				<when test="userType == 1">uid=#{uId}</when>
+				<when test="userType == 2">sellerid=#{uId}</when>
+				<when test="userType == 3">jointid=#{uId}</when>
+				<otherwise></otherwise>
+			</choose>
+		</where>
+	   for update
+	</select>
+
+	<!-- 根据account拿到整个wallet对象数据 -->
+	<select id="getWalletByAccount" parameterType="String"
+		resultType="com.xmniao.entity.Wallet">
+		SELECT
+		accountid,
+		uid,
+		sellerid,
+		jointid,
+		p_pwd pPwd,
+		apply_date
+		applyDate,
+		effect_date effectDate,
+		cancel_date cancelDate,
+		status,
+		amount,
+		balance,
+		commision,
+		zbalance,
+		integral,
+		seller_amount sellerAmount,
+		quota,
+		sign,
+		sign_type signType,
+		last_date lastDate,
+		father_id fatherId
+		FROM b_wallet
+		WHERE account = #{account}
+		<if test="userType!=null">
+		<choose>
+			<when test="userType == 1">and uid !=0</when>
+			<when test="userType == 2">and sellerid !=0</when>
+			<when test="userType == 3">and jointid !=0</when>
+			<otherwise></otherwise>
+		</choose>
+		</if>
+		for update
+	</select>
+
+	<!-- 获取可提现金额信息 -->
+	<select id="getWithdrawalsByid" resultType="double"
+		parameterType="map">
+		select
+		IFNULL(sum(balance+commision+seller_amount),0)
+		from b_wallet
+		where
+		<choose>
+			<when test="userType == 1">uid=#{uId}</when>
+			<when test="userType == 2">sellerid=#{uId}</when>
+			<when test="userType == 3">jointid=#{uId}</when>
+			<otherwise></otherwise>
+		</choose>
+		AND status = 1
+
+	</select>
+
+	<select id="getCountPage" resultType="int" parameterType="map">
+		SELECT COUNT(*) FROM b_wallet
+		WHERE
+		1=1
+		<if test="userType != null">
+			<if test="userType==1">
+				AND uid != 0
+			</if>
+			<if test="userType==2">
+				AND sellerid != 0
+			</if>
+			<if test="userType==3">
+				AND jointid != 0
+			</if>
+		</if>
+		<if test="userType != null and uId != null">
+			<if test="userType==1">
+				AND uid = #{uId}
+			</if>
+			<if test="userType==2">
+				AND sellerid = #{uId}
+			</if>
+			<if test="userType==3">
+				AND jointid = #{uId}
+			</if>
+		</if>
+		<if test="userName != null and userName != ''">
+			AND sellername LIKE '%${userName}%'
+		</if>
+		<if test="account != null and account != ''">
+			AND account = #{account}
+		</if>
+	</select>
+
+	<select id="getwelletList" resultType="map" parameterType="map">
+		SELECT
+		CAST(accountid AS CHAR(20)) accountId,
+		CAST(IF(uid !=
+		0,uid,IF(sellerid!=0,sellerid,IF(jointid!=0,jointid,0))) AS CHAR(20))
+		uId,
+		CAST(IF(uid != 0,1,IF(sellerid!=0,2,IF(jointid!=0,3,1))) AS
+		CHAR(20)) userType,
+		IFNULL(DATE_FORMAT(apply_date,'%Y-%m-%d %H:%i:%s'),
+		'') applyDate,
+		CAST(status AS
+		CHAR(4)) status,
+		CAST(amount AS CHAR(10))
+		amount,CAST(balance AS
+		CHAR(10)) balance,CAST(commision AS CHAR(10))
+		commision,
+		CAST(zbalance
+		AS CHAR(10)) zbalance,CAST(seller_amount AS
+		CHAR(10))
+		sellerAmount,CAST(integral AS CHAR(10)) integral,
+		IFNULL(sellername,"") sellerName,
+		IFNULL(DATE_FORMAT(effect_date,'%Y-%m-%d %H:%i:%s'), "") effectDate,
+		IFNULL(DATE_FORMAT(cancel_date,'%Y-%m-%d %H:%i:%s'), "") cancelDate,
+		IFNULL(CAST(quota AS CHAR(10)), "0") quota,
+		DATE_FORMAT(curdate(),'%y-%m-%d') statisticsDate,
+		IFNULL(account,"") phoneNumber
+		FROM b_wallet
+		where
+		1=1
+		<if test="userType != null">
+			<if test="userType==1">
+				AND uid != 0
+			</if>
+			<if test="userType==2">
+				AND sellerid != 0
+			</if>
+			<if test="userType==3">
+				AND jointid != 0
+			</if>
+		</if>
+		<if test="userType != null and uId != null">
+			<if test="userType==1">
+				AND uid = #{uId}
+			</if>
+			<if test="userType==2">
+				AND sellerid = #{uId}
+			</if>
+			<if test="userType==3">
+				AND jointid = #{uId}
+			</if>
+		</if>
+		<if test="userName != null and userName != ''">
+			AND sellername LIKE '%${userName}%'
+		</if>
+		<if test="account != null and account != ''">
+			AND account = #{account}
+		</if>
+		ORDER BY accountid
+		LIMIT #{startNo},#{pageSize}
+	</select>
+
+	<select id="getWalletCount" resultType="int" parameterType="map">
+		SELECT COUNT(*) FROM b_wallet
+		<trim prefix="WHERE" suffix="" prefixOverrides="AND">
+			<if test="userType != null">
+				<if test="userType == 1">
+					and uid != 0
+				</if>
+				<if test="userType == 2">
+					and sellerid != 0
+				</if>
+				<if test="userType == 3">
+					and jointid != 0
+				</if>
+			</if>
+			<if test="userName != null and userName != ''">
+				AND sellername LIKE '%${userName}%'
+			</if>
+		</trim>
+	</select>
+
+	<!-- 查询钱包数量（验证钱包是否存在） -->
+	<select id="getWalletNum" parameterType="map" resultType="int">
+		select
+		count(accountid)
+		from
+		b_wallet
+		where 
+		<trim prefix="" suffix="" prefixOverrides="or">
+			<if test="uId != null and uId != ''"> 
+			or(
+				<if test="userType == 1">
+					uid=#{uId}
+				</if>
+				<if test="userType == 2">
+					sellerid=#{uId}
+				</if>
+				<if test="userType == 3">
+					jointid=#{uId}
+				</if>
+				)
+			</if>
+			<if test="account != null and account != ''"> 
+			
+				or (
+					account=#{account}
+					<if test="userType == 1">
+						and uid!=0
+					</if>
+					<if test="userType == 2">
+						and sellerid!=0
+					</if>
+					<if test="userType == 3">
+						and jointid!=0
+					</if>
+				)
+				
+			</if>
+		</trim>
+	</select>
+
+	<!-- 查询用户总金额 -->
+	<select id="getAmountTotal" parameterType="map" resultType="double">
+		SELECT
+		<if test="moneyType == 1">
+			SUM(commision)
+		</if>
+		<if test="moneyType == 2">
+			SUM(balance)
+		</if>
+		<if test="moneyType == 3">
+			SUM(seller_amount)
+		</if>
+		<if test="moneyType == 4">
+			SUM(amount)
+		</if>
+		FROM b_wallet bw WHERE bw.`sellerid` IN
+		<foreach collection="ids" item="id" open="(" separator=","
+			close=")">
+			#{id}
+		</foreach>
+	</select>
+	<!-- 查询钱包信息 -->
+	<select id="getWalletAccount" parameterType="map" resultType="map">
+		SELECT CAST(bw.`sellerid` AS CHAR(20)) sellerId,
+		<if test="moneyType == 1">
+			CAST(bw.`commision` AS CHAR(20)) money,
+		</if>
+		<if test="moneyType == 2">
+			CAST(bw.`balance` AS CHAR(20)) money,
+		</if>
+		<if test="moneyType == 3">
+			CAST(bw.`seller_amount` AS CHAR(20)) money,
+		</if>
+		<if test="moneyType == 4">
+			CAST(bw.`amount` AS CHAR(20)) money,
+		</if>
+		ma.`account` account,CAST(ma.`cardtype` AS CHAR(2)) type FROM b_wallet
+		bw
+		LEFT JOIN `t_mention_account` ma ON ma.`sellerid` = bw.`sellerid`
+		<if test="moneyType == 2 or moneyType == 4">
+			AND ma.`isuse` = 0
+		</if>
+		<if test="moneyType == 1">
+			AND ma.`isuse` = 2
+		</if>
+		<if test="moneyType == 3">
+			AND ma.`isuse` = 1
+		</if>
+		WHERE bw.`sellerid` IN
+		<foreach collection="ids" item="id" open="(" separator=","
+			close=")">
+			#{id}
+		</foreach>
+	</select>
+
+	<!-- 根据类型修改钱包余额 -->
+	<update id="updateMoneyByType" parameterType="map">
+		UPDATE b_wallet bw SET
+		<if test="moneyType == 1">
+			bw.`commision` = #{money},
+		</if>
+		<if test="moneyType == 2">
+			bw.`balance` = #{money},
+		</if>
+		<if test="moneyType == 3">
+			bw.`seller_amount` = #{money},
+		</if>
+		<if test="moneyType == 4">
+			bw.`amount` = #{money},
+		</if>
+		bw.`sign` = #{sign} WHERE bw.`sellerid` = #{uId} AND bw.`sign` =
+		#{oldSign}
+	</update>
+
+	<!-- 校验打赏订单是否存在 或还未打赏 -->
+	<select id="checkReward" parameterType="String" resultType="int">
+
+		SELECT IFNULL(count(*),0) FROM b_wallet_record
+		WHERE remarks =
+		#{remarks}
+		AND (rtype=0 OR rtype=11)
+	</select>
+
+	<!-- 统计用户提醒金额 -->
+	<select id="getWithdrawalsMoney" parameterType="map" resultType="map">
+		SELECT IFNULL(SUM(bwr.`commision`), 0) commision,IFNULL(SUM(bwr.`income`), 0) income FROM
+		`b_withdrawals_record` bwr WHERE 1=1
+		<if test="userType == 1">
+			and bwr.uid=#{uId}
+		</if>
+		<if test="userType == 2">
+			and bwr.sellerid=#{uId}
+		</if>
+		AND bwr.`status` in
+		<foreach collection="status" item="statu" open="(" separator=","
+			close=")">
+			#{statu}
+		</foreach>
+	</select>
+	
+	<!-- 获取统计 -->
+<!--	<select id="getEffectiveWalletCount" resultType="int" parameterType="map">
+		SELECT SUM(accountidCount)
+		FROM 
+			((SELECT COUNT(accountid)  accountidCount
+				FROM b_wallet WHERE  		
+				<if test="userType != null">
+				<if test="userType == 1">
+					uid != 0
+				</if>
+				<if test="userType == 2">
+					sellerid != 0
+				</if>
+				<if test="userType == 3">
+					jointid != 0
+				</if>
+			</if> 
+			AND (amount!=0 OR balance!=0 OR commision!=0 OR zbalance!=0 OR integral!=0 OR seller_amount!=0))
+			 UNION 
+			(SELECT COUNT(DISTINCT  w.accountid)  accountidCount
+				FROM  (SELECT accountid 
+							FROM b_wallet WHERE 			
+							<if test="userType != null">
+								<if test="userType == 1">
+									uid != 0
+								</if>
+								<if test="userType == 2">
+									sellerid != 0
+								</if>
+								<if test="userType == 3">
+									jointid != 0
+								</if>
+							</if>AND amount=0 AND balance=0 AND commision=0 AND zbalance=0 AND integral=0 AND seller_amount=0) w 
+			INNER JOIN b_wallet_record  r ON w.accountid = r.accountid)
+			) b_wallet
+	</select>
+ -->
+	
+	<select id="getEffectiveWalletCount" resultType="int" parameterType="map">
+		SELECT COUNT(accountid)
+		FROM 
+			((SELECT accountid,uid,sellerid,jointid,p_pwd,apply_date,effect_date,cancel_date,STATUS,amount,balance,commision,zbalance,integral,seller_amount,quota,SIGN,sign_type,last_date,father_id,sellername,account 
+				FROM b_wallet WHERE amount!=0 OR balance!=0 OR commision!=0 OR zbalance!=0 OR integral!=0 OR seller_amount!=0)
+			 UNION 
+			(SELECT w.accountid,w.uid,w.sellerid,w.jointid,w.p_pwd,w.apply_date,w.effect_date,w.cancel_date,w.STATUS,w.amount,w.balance,w.commision,w.zbalance,w.integral,w.seller_amount,w.quota,w.SIGN,w.sign_type,w.last_date,w.father_id,w.sellername,w.account 
+				FROM  (SELECT accountid,uid,sellerid,jointid,p_pwd,apply_date,effect_date,cancel_date,STATUS,amount,balance,commision,zbalance,integral,seller_amount,quota,SIGN,sign_type,last_date,father_id,sellername,account 
+							FROM b_wallet WHERE amount=0 AND balance=0 AND commision=0 AND zbalance=0 AND integral=0 AND seller_amount=0) w 
+			INNER JOIN b_wallet_record  r ON w.accountid = r.accountid)
+			) b_wallet			
+		<trim prefix="WHERE" suffix="" prefixOverrides="AND">
+			<if test="userType != null">
+				<if test="userType == 1">
+					and uid != 0
+				</if>
+				<if test="userType == 2">
+					and sellerid != 0
+				</if>
+				<if test="userType == 3">
+					and jointid != 0
+				</if>
+			</if>
+		</trim>
+	</select>
+	
+	<!-- 用户 -->
+	<select id="getUserWalletBalance" resultType="map" parameterType="map">
+		SELECT b_wallet.accountid,uid,apply_date,amount,balance,commision,zbalance,integral,sellername AS user_name,account,w_record.withhdrawals,l_record.ledger
+		FROM 
+			((SELECT accountid,uid,apply_date,amount,balance,commision,zbalance,integral,sellername,account FROM b_wallet WHERE amount!=0 OR balance!=0 OR commision!=0 OR zbalance!=0 OR integral!=0 OR seller_amount!=0)
+			 UNION 
+			(SELECT w.accountid,w.uid,w.apply_date,w.amount,w.balance,w.commision,w.zbalance,w.integral,w.sellername,w.account FROM 
+				(SELECT accountid,uid,apply_date,amount,balance,commision,zbalance,integral,sellername,account FROM b_wallet WHERE amount=0 AND balance=0 AND commision=0 AND zbalance=0 AND integral=0 AND seller_amount=0) w 
+			INNER JOIN b_wallet_record  r ON w.accountid = r.accountid)
+			) b_wallet
+		LEFT JOIN 
+		(SELECT  accountid, SUM(commision+balance+income+amount) ledger FROM b_wallet_record WHERE rtype=0 AND sdate LIKE CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY),'%') GROUP BY accountid) l_record ON b_wallet.accountid = l_record.accountid
+		LEFT JOIN 
+		(SELECT accountid, SUM(commision+balance+income+amount) withhdrawals FROM b_wallet_record WHERE rtype=6 AND sdate LIKE CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY),'%') GROUP BY accountid) w_record ON b_wallet.accountid = w_record.accountid
+		WHERE b_wallet.uid != 0 
+		ORDER BY b_wallet.accountid
+		LIMIT #{startNo},#{pageSize}
+	</select>
+		
+	<!-- 商户 -->
+	<select id="getSellerWalletBalance" resultType="map" parameterType="map">
+		SELECT b_wallet.accountid,sellerid,apply_date,amount,seller_amount,commision,zbalance,integral,sellername AS seller_name,account,w_record.withhdrawals,l_record.ledger
+		FROM 
+			((SELECT accountid,sellerid,apply_date,amount,seller_amount,commision,zbalance,integral,sellername,account FROM b_wallet WHERE amount!=0 OR balance!=0 OR commision!=0 OR zbalance!=0 OR integral!=0 OR seller_amount!=0)
+			 UNION 
+			(SELECT w.accountid,w.sellerid,w.apply_date,w.amount,w.seller_amount,w.commision,w.zbalance,w.integral,w.sellername,w.account FROM 
+				(SELECT accountid,sellerid,apply_date,amount,seller_amount,commision,zbalance,integral,sellername,account FROM b_wallet WHERE amount=0 AND balance=0 AND commision=0 AND zbalance=0 AND integral=0 AND seller_amount=0) w 
+			INNER JOIN b_wallet_record  r ON w.accountid = r.accountid)
+			) b_wallet		
+		LEFT JOIN 
+		(SELECT  accountid, SUM(commision+balance+income+amount) ledger FROM b_wallet_record WHERE rtype=0 AND sdate LIKE CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY),'%') GROUP BY accountid) l_record ON b_wallet.accountid = l_record.accountid
+		LEFT JOIN 
+		(SELECT accountid, SUM(commision+balance+income+amount) withhdrawals FROM b_wallet_record WHERE rtype=6 AND sdate LIKE CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY),'%') GROUP BY accountid) w_record ON b_wallet.accountid = w_record.accountid
+		WHERE b_wallet.sellerid != 0 
+		ORDER BY b_wallet.accountid
+		LIMIT #{startNo},#{pageSize}
+	</select>
+	
+	<!-- 合作商 -->
+	<select id="getJonitWalletBalance" resultType="map" parameterType="map">
+		SELECT b_wallet.accountid,jointid,apply_date,amount,seller_amount,commision,zbalance,integral,sellername AS joint_name,account,w_record.withhdrawals,l_record.ledger
+		FROM 
+			((SELECT accountid,jointid,apply_date,amount,seller_amount,commision,zbalance,integral,sellername,account FROM b_wallet WHERE amount!=0 OR balance!=0 OR commision!=0 OR zbalance!=0 OR integral!=0 OR seller_amount!=0)
+			 UNION 
+			(SELECT w.accountid,w.jointid,w.apply_date,w.amount,w.seller_amount,w.commision,w.zbalance,w.integral,w.sellername,w.account FROM 
+				(SELECT accountid,jointid,apply_date,amount,seller_amount,commision,zbalance,integral,sellername,account FROM b_wallet WHERE amount=0 AND balance=0 AND commision=0 AND zbalance=0 AND integral=0 AND seller_amount=0) w 
+			INNER JOIN b_wallet_record  r ON w.accountid = r.accountid)
+			) b_wallet		
+		LEFT JOIN 
+		(SELECT  accountid, SUM(commision+balance+income+amount) ledger FROM b_wallet_record WHERE rtype=0 AND sdate LIKE CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY),'%') GROUP BY accountid) l_record ON b_wallet.accountid = l_record.accountid
+		LEFT JOIN 
+		(SELECT accountid, SUM(commision+balance+income+amount) withhdrawals FROM b_wallet_record WHERE rtype=6 AND sdate LIKE CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY),'%') GROUP BY accountid) w_record ON b_wallet.accountid = w_record.accountid
+		WHERE b_wallet.jointid != 0 
+		ORDER BY b_wallet.accountid
+		LIMIT #{startNo},#{pageSize}
+	</select>
+	
+	
+	<!-- 查询钱包信息（根据account获取uId,sellerId,jointId,accountid） -->
+	<select id="getWalletInfoByAccount" parameterType="map" resultType="map">
+		select
+		accountid,uid,sellerid,jointid，status
+		from
+		b_wallet
+		where account=#{account}
+		<if test="typeId == 1"> and uid != 0</if>
+		<if test="typeId == 2">and sellerid != 0</if>
+		<if test="typeId == 3">and jointid != 0</if>
+	</select>
+	
+	
+	<!-- 更新钱包 -->
+	<update id="updateWallet" parameterType="com.xmniao.entity.Wallet">
+		update b_wallet set status = #{status} 
+		where accountid = #{accountid} and sign = #{sign} 
+	</update>
+	
+	<update id="" parameterType="com.xmniao.entity.Wallet">
+		update b_wallet set status = #{status} 
+		where accountid = #{accountid} and sign = #{sign} 
+	</update>
+	
+	<!-- 统计商家营收,提现  -->
+	<select id="countSellerIncomeStatistics" resultType="int">
+		SELECT COUNT(b_wallet.accountid) countNum
+		FROM 
+			(SELECT accountid,sellerid FROM b_wallet WHERE sellerid != 0 AND STATUS=1
+			) b_wallet		
+		LEFT JOIN 
+			(SELECT b_wallet.`sellerid`,b_wallet.`accountid`,
+				<![CDATA[ SUM(IF(b_wallet_record.`hincome`-b_wallet_record.`qincome`>0,ABS(b_wallet_record.`hincome`-b_wallet_record.`qincome`),0)) ledger,]]>
+				<![CDATA[ SUM(IF(b_wallet_record.`hincome`-b_wallet_record.`qincome`<0,ABS(b_wallet_record.`hincome`-b_wallet_record.`qincome`),0)) withdrawals ]]>
+			FROM b_wallet,b_wallet_record 
+			WHERE b_wallet.`accountid` = b_wallet_record.`accountid` AND b_wallet.`sellerid` != 0 AND b_wallet_record.`qincome`!=b_wallet_record.`hincome`   AND b_wallet_record.`sdate` LIKE '${countDate}%'
+			GROUP BY b_wallet.`accountid`) t_count ON b_wallet.sellerid = t_count.sellerid
+		WHERE ledger OR withdrawals
+		ORDER BY b_wallet.accountid	
+	</select>
+	
+	<!-- 获取商家营收,提现列表  -->
+	<select id="listSellerIncomeStatistics" parameterType="map" resultType="map">
+		SELECT b_wallet.accountid,b_wallet.sellerid,IFNULL(withdrawals,0) withdrawals,IFNULL(ledger,0) ledger
+		FROM 
+			(SELECT accountid,sellerid FROM b_wallet WHERE sellerid != 0 AND STATUS=1
+			) b_wallet		
+		LEFT JOIN 
+			(SELECT b_wallet.`sellerid`,b_wallet.`accountid`,
+				<![CDATA[ SUM(IF(b_wallet_record.`hincome`-b_wallet_record.`qincome`>0,ABS(b_wallet_record.`hincome`-b_wallet_record.`qincome`),0)) ledger, ]]>
+				<![CDATA[ SUM(IF(b_wallet_record.`hincome`-b_wallet_record.`qincome`<0,ABS(b_wallet_record.`hincome`-b_wallet_record.`qincome`),0)) withdrawals  ]]>
+			FROM b_wallet,b_wallet_record 
+			WHERE b_wallet.`accountid` = b_wallet_record.`accountid` AND b_wallet.`sellerid` != 0 AND b_wallet_record.`qincome`!=b_wallet_record.`hincome`   AND b_wallet_record.`sdate` LIKE '${countDate}%'
+			GROUP BY b_wallet.`accountid`) t_count ON b_wallet.sellerid = t_count.sellerid
+		WHERE ledger OR withdrawals
+		ORDER BY b_wallet.accountid	
+		LIMIT #{startNo},#{pageSize}
+	</select>
+	
+	<!-- 统计商家分账,提现  -->
+	<select id="countSellerCommisionStatistics"  resultType="int">
+		SELECT COUNT(b_wallet.accountid) countNum
+		FROM 
+			(SELECT accountid,sellerid FROM b_wallet WHERE sellerid != 0 AND STATUS=1
+			) b_wallet		
+		LEFT JOIN 
+			(SELECT b_wallet.`sellerid`,b_wallet.`accountid`,
+				<![CDATA[ SUM(IF(b_wallet_record.`hcommision`-b_wallet_record.`qcommision`>0,ABS(b_wallet_record.`hcommision`-b_wallet_record.`qcommision`),0)) ledger, ]]>
+				<![CDATA[ SUM(IF(b_wallet_record.`hcommision`-b_wallet_record.`qcommision`<0,ABS(b_wallet_record.`hcommision`-b_wallet_record.`qcommision`),0)) withdrawals  ]]>
+			FROM b_wallet,b_wallet_record 
+			WHERE b_wallet.`accountid` = b_wallet_record.`accountid` AND b_wallet.`sellerid` != 0 AND b_wallet_record.`qcommision`!=b_wallet_record.`hcommision`   AND b_wallet_record.`sdate` LIKE '${countDate}%'
+			GROUP BY b_wallet.`accountid`) t_count ON b_wallet.sellerid = t_count.sellerid
+		WHERE ledger OR withdrawals
+		ORDER BY b_wallet.accountid	
+	</select>
+	
+	<!-- 获取商家分账,提现列表  -->
+	<select id="listSellerCommisionStatistics" parameterType="map" resultType="map">
+		SELECT b_wallet.accountid,b_wallet.sellerid,IFNULL(withdrawals,0) withdrawals,IFNULL(ledger,0) ledger
+		FROM 
+			(SELECT accountid,sellerid FROM b_wallet WHERE sellerid != 0 AND STATUS=1
+			) b_wallet		
+		LEFT JOIN 
+			(SELECT b_wallet.`sellerid`,b_wallet.`accountid`,
+				<![CDATA[ SUM(IF(b_wallet_record.`hcommision`-b_wallet_record.`qcommision`>0,ABS(b_wallet_record.`hcommision`-b_wallet_record.`qcommision`),0)) ledger,  ]]>
+				<![CDATA[ SUM(IF(b_wallet_record.`hcommision`-b_wallet_record.`qcommision`<0,ABS(b_wallet_record.`hcommision`-b_wallet_record.`qcommision`),0)) withdrawals   ]]>
+			FROM b_wallet,b_wallet_record 
+			WHERE b_wallet.`accountid` = b_wallet_record.`accountid` AND b_wallet.`sellerid` != 0 AND b_wallet_record.`qcommision`!=b_wallet_record.`hcommision`   AND b_wallet_record.`sdate` LIKE '${countDate}%'
+			GROUP BY b_wallet.`accountid`) t_count ON b_wallet.sellerid = t_count.sellerid
+		WHERE ledger OR withdrawals
+		ORDER BY b_wallet.accountid	
+		LIMIT #{startNo},#{pageSize}
+	</select>
+</mapper>

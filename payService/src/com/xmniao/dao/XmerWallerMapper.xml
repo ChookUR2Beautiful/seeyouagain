@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.XmerWallerMapper">
+
+	<!-- 插入寻蜜客钱包 -->
+	<insert id="addXmerWallet" parameterType="map">
+
+		<selectKey resultType="java.lang.String" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+
+		INSERT INTO b_xmer_wallet
+		(uid,apply_date,sign,last_date,father_id,uname)
+		values(#{uid},#{applyDate},#{sign},#{lastDate},#{fatherId},#{uname})
+	</insert>
+
+	<!-- 根据用户id，查询钱包id -->
+	<select id="getWalletByuid" resultType="map">
+		SELECT accountid
+		FROM
+		b_wallet
+		WHERE
+		uid=#{uid}
+	</select>
+
+	<!-- 根据寻蜜客用户id，查询该用户寻蜜客钱包 -->
+	<select id="selectXmerWallet" resultType="map">
+		SELECT
+		CAST(id AS CHAR)id,
+		CAST(uid AS CHAR) uid,
+		CAST(status AS CHAR) status,
+		CAST(profit AS CHAR)profit,
+		CAST(trunout AS CHAR)trunout,
+		sign,
+		uname,
+		CAST(father_id AS CHAR)as fatherId
+		FROM
+		b_xmer_wallet
+		WHERE 1=1
+		<if test="id != null and id != 'null'">
+			AND id= #{id}
+		</if>
+		<if test="uid != null and uid != 'null'">
+			AND uid=#{uid}
+		</if>
+		for update
+	</select>
+
+	<!-- 根据寻蜜客钱包id，查询该用户寻蜜客钱包 -->
+	<select id="selectXmerWalletById" resultType="map"> 
+	SELECT
+	id,uid,status,profit,trunout,sign,uname,father_id as fatherId 
+	FROM b_xmer_wallet 
+	WHERE 
+	id=#{id}
+	</select>
+
+	<!-- 根据id或uid修改寻蜜客钱包状态 -->
+	<update id="updateWalletstate" parameterType="map">
+		UPDATE
+		b_xmer_wallet
+		SET status=#{state}
+		WHERE sign = #{sign} 
+		<if test="id != null and id != 'null'">
+			AND id= #{id}
+		</if>
+		<if test="uid != null and uid != 'null'">
+			AND uid=#{uid}
+		</if>
+		
+	</update>
+
+	<!-- 根据uid修改寻蜜客钱包状态 -->
+	<!-- <update id="updateWalletstateByUid" parameterType="map">
+		UPDATE
+		b_xmer_wallet
+		SET status=#{state}
+		WHERE
+		uid=#{uid}
+	</update> -->
+
+	<!-- 更新钱包数据 -->
+	<update id="updateWalletById" parameterType="map">
+		UPDATE b_xmer_wallet
+		SET profit=#{profit},
+		<if test="trunout != null and trunout != 'null'">
+		trunout=#{trunout},
+		</if>
+		sign = #{sign}
+		<if test="lastDate != null and trunout != 'lastDate'">
+		, last_date =
+		#{lastDate}
+		</if>
+		WHERE
+		id=#{id}
+		AND sign = #{oldSign}
+	</update>
+
+	<!-- 插入钱包更新记录 -->
+	<insert id="insertXmerWalletRecord" parameterType="map" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+		INSERT INTO b_xmer_wallet_record
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			xid,rtype,profit,qprofit,hprofit,sdate,
+			<if test="remark != null">
+				remark,
+			</if>
+			<if test="description != null">
+				description
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{xid},#{rtype},#{profit},#{qprofit},#{hprofit},#{sdate},
+			<if test="remark != null">
+				#{remark},
+			</if>
+			<if test="description != null">
+				#{description}
+			</if>
+		</trim>
+	</insert>
+
+	<!-- 获取钱包记录条数 -->
+	<select id="countWalletRecord" parameterType="map" resultType="int">
+		SELECT COUNT(1)
+		FROM b_xmer_wallet_record
+		WHERE 1=1
+		<if test="orderId !=null and orderId !='null'">AND remark like '${orderId}%'</if>
+		<if test="rtype !=null and rtype !='null'">AND rtype = #{rtype}</if>
+		<if test="xid != null and xid != 0">AND xid = #{xid}</if>
+	</select>
+
+	<!-- 根据订单号查询记录 -->
+	<select id="getRecordsByRemarks" resultType="map" parameterType="map">
+		SELECT xid ,profit,qprofit,hprofit,remark,description
+		FROM b_xmer_wallet_record
+		WHERE 1=1
+		<if test="remark !=null and remark !='null'">AND remark like '${remark}%'</if>
+		<if test="rtype !=null and rtype !='null'">AND rtype = #{rtype}</if>
+	</select>
+</mapper>
