@@ -1,0 +1,139 @@
+var city = '广州';
+var map = new AMap.Map('container', {
+    zoom: 11
+});
+
+map.setCity(city);
+
+var auto = new AMap.Autocomplete({
+    input: "map-search",
+    city: city,
+    citylimit: false
+});
+
+
+AMap.event.addListener(auto, "select", function(e) {
+    addMarker(e.poi.location);
+});
+
+AMap.event.addListener(map, 'click', function(e) {
+    addMarker(e.lnglat);
+});
+
+var geoSearch;
+map.plugin(["AMap.Geocoder"], function() {
+    geoSearch = new AMap.Geocoder({
+        city: city,
+        radius: 1000
+            // batch: false
+    })
+    AMap.event.addListener(geoSearch, "complete", geoSearchResult);
+});
+
+function addMarker(poi) {
+    map.clearMap();
+    marker = new AMap.Marker({
+        icon: "http://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
+        position: [poi.lng, poi.lat]
+    });
+    marker.setMap(map);
+    map.panTo([poi.lng, poi.lat]);
+    map.setZoom(16);
+
+    /*搜索周边信息*/
+    var poiObj = new AMap.LngLat(poi.lng, poi.lat);
+    geoSearch.getAddress(poiObj);
+}
+
+var searchResult;
+
+function geoSearchResult(GeocoderResult) {
+    var title = '地址信息';
+    var content = [];
+    var poi = marker.getPosition();
+    content.push("地址：" + GeocoderResult.regeocode.formattedAddress);
+    content.push("标志建筑：" + GeocoderResult.regeocode.addressComponent.building);
+
+    infoWindow = new AMap.InfoWindow({
+        isCustom: true, //使用自定义窗体
+        content: infoWindowContent(title, content.join('<br>')),
+        offset: new AMap.Pixel(16, -45)
+    });
+    infoWindow.open(map, poi);
+    var res = {
+            poi: poi,
+            address: GeocoderResult
+        }
+        // mapService.$setPoiInfo(res);
+    searchResult = res;
+}
+
+function infoWindowContent(title, content) {
+    var info = document.createElement("div");
+    info.className = "info";
+
+    //可以通过下面的方式修改自定义窗体的宽高
+    //info.style.width = "400px";
+    // 定义顶部标题
+    var top = document.createElement("div");
+    var titleD = document.createElement("div");
+    var closeX = document.createElement("img");
+    top.className = "info-top";
+    titleD.innerHTML = title;
+    closeX.src = "http://webapi.amap.com/images/close2.gif";
+    closeX.onclick = closeInfoWindow;
+
+    top.appendChild(titleD);
+    top.appendChild(closeX);
+    info.appendChild(top);
+
+    // 定义中部内容
+    var middle = document.createElement("div");
+    middle.className = "info-middle";
+    middle.style.backgroundColor = 'white';
+    middle.innerHTML = content;
+    info.appendChild(middle);
+
+    //确定按钮
+    var confirmBox = document.createElement("div");
+    confirmBox.className = "info-confirmbox";
+    confirmBox.style.backgroundColor = 'white';
+    var confirmBtn = document.createElement("a");
+    confirmBtn.setAttribute('href', 'javascript:;');
+    confirmBtn.innerHTML = '确定';
+    confirmBtn.onclick = subData;
+    confirmBox.appendChild(confirmBtn);
+    info.appendChild(confirmBox);
+
+    // 定义底部内容
+    var bottom = document.createElement("div");
+    bottom.className = "info-bottom";
+    bottom.style.position = 'relative';
+    bottom.style.top = '0px';
+    bottom.style.margin = '0 auto';
+    var sharp = document.createElement("img");
+    sharp.src = "http://webapi.amap.com/images/sharp.png";
+    bottom.appendChild(sharp);
+    info.appendChild(bottom);
+    return info;
+}
+
+function subData() {
+    console.log(searchResult);
+}
+
+function closeInfoWindow() {
+    map.clearInfoWindow();
+}
+
+/*初始化*/
+
+var initLng = 113.250425;
+var initLat = 23.09739;
+
+if (initLng && initLat) {
+    var poi = new AMap.LngLat(initLng, initLat);
+    setTimeout(function() {
+        addMarker(poi);
+    }, 700);
+}

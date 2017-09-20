@@ -1,0 +1,39 @@
+package com.xmn.designer.service.account.impl;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.xmn.designer.base.ResponseCode;
+import com.xmn.designer.entity.account.SellerAccount;
+import com.xmn.designer.service.account.AccountService;
+import com.xmn.designer.service.base.RedisService;
+@Service
+public class AccountServiceImpl implements AccountService{
+
+    @Autowired
+    private RedisService  redisService;
+    /**
+     * 从商户端登录，生成自设计的token，创建自设计的用户
+     * @param sessionToken
+     * @return
+     */
+    @Transactional
+    @Override
+    public Map<String, Object> enter(String sessionToken) {
+        SellerAccount sellerAccount = redisService.getSellerAccount(sessionToken);
+        Map<String,Object> result = new HashMap<String, Object>();
+        if(sellerAccount==null){
+            result.put("state", ResponseCode.SUCCESS);
+            result.put("info", "商户端sessionToken错误！");
+        }
+        
+        
+        
+        return null;
+    }
+
+}

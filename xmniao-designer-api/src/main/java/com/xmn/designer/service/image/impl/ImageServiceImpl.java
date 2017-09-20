@@ -1,0 +1,91 @@
+package com.xmn.designer.service.image.impl;
+
+
+import com.xmn.designer.base.GlobalConfig;
+import com.xmn.designer.base.UploadClientFactory;
+import com.xmn.designer.dao.image.ImageTempDao;
+import com.xmn.designer.entity.image.Image;
+import com.xmn.designer.entity.image.ImageTemp;
+import com.xmn.designer.exception.CustomException;
+import com.xmn.designer.service.image.ImageService;
+import org.apache.commons.lang3.StringUtils;
+import org.csource.common.NameValuePair;
+import org.csource.fastdfs.StorageClient1;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * 图片服务实现类
+ * create 2016/09/29
+ *
+ * @author yangQiang
+ */
+
+@Service("imageService")
+public class ImageServiceImpl implements ImageService {
+    // 初始化日志类
+    private final Logger logger = LoggerFactory.getLogger(ImageServiceImpl.class);
+
+    @Autowired
+    private GlobalConfig globalConfig;
+
+    // 注入FastDfs客户端工厂
+    @Autowired
+    private UploadClientFactory uploadClientFactory;
+
+    @Autowired
+    private ImageTempDao imageTempDao;
+
+    @Override
+    public List<Image> upload(List<MultipartFile> files) throws CustomException {
+        StorageClient1 client = uploadClientFactory.getStorageClients();
+        List<Image> imageList = new ArrayList<>();
+
+        try {
+            // 将文件通过DFS客户端存入,返回URI
+            for (MultipartFile file : files) {
+                String filename = file.getOriginalFilename();
+                NameValuePair[] metaList = new NameValuePair[3];
+                metaList[0] = new NameValuePair("fileName", filename);
+                metaList[1] = new NameValuePair("fileExtName","jpg");
+                metaList[2] = new NameValuePair("fileLength",file.getSize()+"");
+                String fileUri = client.upload_file1(file.getBytes(), "", metaList);
+
+                // 将图片记录在图片临时记录表,便于以后清理未使用的图片
+                ImageTemp imageTemp = new ImageTemp();
+                imageTemp.setUrl(fileUri);
+                imageTempDao.insertSelective(imageTemp);
+
+                imageList.add(new Image(fileUri,globalConfig.getImageHost(),filename));
+            }
+            return imageList;
+        } catch (Exception e) {
+            logger.error("调用DFS服务器出现异常",e);
+            throw new CustomException("图片上传内部异常!");
+        } finally {
+            uploadClientFactory.close();
+        }
+    }
+
+
+    /**
+     * 标记该图片已被使用, 否者图片过期将会被回收, 图片将无法访问;
+     * @param uri 图片uri(短路径)
+     */
+    @Override
+    public void useImage(String uri)  {
+        // 在图片临时记录表删除该条数据
+        if (!StringUtils.isBlank(uri)) {
+            int count = imageTempDao.deleteByUri(uri);
+            logger.info("图片 : "+ uri +" 已标记为已使用!");
+        }
+    }
+
+
+}

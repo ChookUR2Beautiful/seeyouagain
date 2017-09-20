@@ -1,0 +1,129 @@
+package com.xmn.designer.controller.api.v1.customize.vo;
+
+import com.xmn.designer.entity.customize.OrderMaterialCustomize;
+import com.xmn.designer.entity.order.Order;
+import org.springframework.beans.BeanUtils;
+
+import javax.validation.constraints.NotNull;
+import java.util.Date;
+
+/**
+ * create 2016/11/16
+ *
+ * @author yangQiang
+ */
+
+public class SubmitCustomizeRequest {
+
+
+    // 定制物料物料规格数据
+    @NotNull(message = "定制物料规格数据,不能为空")
+    private String specJson;
+
+    // 需求描述
+    @NotNull(message = "需求描述不能为空")
+    private String remark;
+
+    // 收货联系手机号
+    @NotNull(message = "收货联系手机号不能为空")
+    private String mobile;
+
+    // 收货人
+    @NotNull(message = "收货人不能为空")
+    private String consignee;
+
+    // 要求完成时间
+    @NotNull(message = "要求完成时间不能为空")
+    private Date finishTime;
+
+    // 配送地址
+    @NotNull(message = "配送地址不能为空")
+    private String deliveryAddress;
+
+    // 图片地址
+    @NotNull(message = "图片地址不能为空")
+    private String imagJson;
+
+
+    public OrderMaterialCustomize convertToOrderMaterialCustomize(){
+        OrderMaterialCustomize orderMaterialCustomize = new OrderMaterialCustomize();
+        org.springframework.beans.BeanUtils.copyProperties(this,orderMaterialCustomize);
+        return orderMaterialCustomize;
+    }
+
+    public Order convertToOrder(){
+        Order order = new Order();
+        BeanUtils.copyProperties(this,order);
+        return order;
+    }
+
+
+    @Override
+    public String toString() {
+        return "SubmitCustomizeRequest{" +
+                "specJson='" + specJson + '\'' +
+                ", remark='" + remark + '\'' +
+                ", mobile='" + mobile + '\'' +
+                ", consignee='" + consignee + '\'' +
+                ", finishTime=" + finishTime +
+                ", deliveryAddress='" + deliveryAddress + '\'' +
+                ", imagJson='" + imagJson + '\'' +
+                '}';
+    }
+
+    public String getImagJson() {
+        return imagJson;
+    }
+
+    public void setImagJson(String imagJson) {
+        this.imagJson = imagJson;
+    }
+
+    public String getSpecJson() {
+        return specJson;
+    }
+
+    public void setSpecJson(String specJson) {
+        this.specJson = specJson;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public String getConsignee() {
+        return consignee;
+    }
+
+    public void setConsignee(String consignee) {
+        this.consignee = consignee;
+    }
+
+    public Date getFinishTime() {
+        return finishTime;
+    }
+
+    public void setFinishTime(Date finishTime) {
+        this.finishTime = finishTime;
+    }
+
+    public String getDeliveryAddress() {
+        return deliveryAddress;
+    }
+
+    public void setDeliveryAddress(String deliveryAddress) {
+        this.deliveryAddress = deliveryAddress;
+    }
+}

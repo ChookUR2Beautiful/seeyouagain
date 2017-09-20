@@ -1,0 +1,43 @@
+package com.xmn.designer.entity.address;
+
+import java.util.List;
+
+public class Area {
+	
+	private int id;
+	
+	private String name;
+	
+	private List<Area> subset;	//子集
+	
+	
+	
+	
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public List<Area> getSubset() {
+		return subset;
+	}
+
+	public void setSubset(List<Area> subset) {
+		this.subset = subset;
+	}
+	
+	
+	
+}

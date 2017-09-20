@@ -1,0 +1,18 @@
+package com.xmn.designer.dao.other;
+
+
+import com.xmn.designer.entity.other.MaterialCategoryAttrVal;
+
+public interface MaterialCategoryAttrValMapper {
+    int deleteByPrimaryKey(Long id);
+
+    int insert(MaterialCategoryAttrVal record);
+
+    int insertSelective(MaterialCategoryAttrVal record);
+
+    MaterialCategoryAttrVal selectByPrimaryKey(Long id);
+
+    int updateByPrimaryKeySelective(MaterialCategoryAttrVal record);
+
+    int updateByPrimaryKey(MaterialCategoryAttrVal record);
+}

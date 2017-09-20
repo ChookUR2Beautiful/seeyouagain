@@ -1,0 +1,708 @@
+package com.xmn.designer.controller.api.v1.order;
+
+import com.alibaba.fastjson.JSONObject;
+import com.xmn.designer.base.AbstractController;
+import com.xmn.designer.base.Response;
+import com.xmn.designer.base.ResponseCode;
+import com.xmn.designer.base.ThriftBuilder;
+import com.xmn.designer.constants.DesignerConsts;
+import com.xmn.designer.constants.PaymentTypeConsts;
+import com.xmn.designer.controller.api.v1.order.vo.CheckPayPasswdRequest;
+import com.xmn.designer.controller.api.v1.order.vo.OrderListRequest;
+import com.xmn.designer.entity.account.User;
+import com.xmn.designer.entity.customize.OrderMaterialCustomize;
+import com.xmn.designer.entity.material.OrderMaterial;
+import com.xmn.designer.entity.order.DesignerOrder;
+import com.xmn.designer.entity.order.Order;
+import com.xmn.designer.exception.CustomException;
+import com.xmn.designer.service.base.RedisService;
+import com.xmn.designer.service.order.OrderService;
+import com.xmn.designer.service.order.WalletService;
+import com.xmn.designer.utils.CalendarUtil;
+import com.xmn.designer.utils.HttpConnectionUtil;
+import com.xmn.designer.utils.PropertiesUtil;
+import com.xmn.designer.utils.Signature;
+import org.apache.commons.lang.StringUtils;
+import org.jsoup.helper.StringUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.validation.Valid;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
+@Controller(value = "api-v1-order-controller")
+@RequestMapping(value = "api/v1/order")
+public class OrderController extends AbstractController {
+
+    private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
+    private static final BigDecimal ZERO = new BigDecimal("0.00");
+    @Autowired
+    private OrderService orderService;
+    @Autowired
+    private RedisService redeRedisService;
+    @Autowired
+    private WalletService walletService;
+
+    /**
+     *
+     * 方法描述：物料下单接口 创建人：jianming 创建时间：2016年11月16日 上午9:28:39
+     *
+     * @return 订单号
+     * @throws IOException
+     *//*
+         * @RequestMapping(value="palce_order",method=RequestMethod.POST)
+		 * 
+		 * @ResponseBody public void placeOrder(MaterialRequest materialRequest)
+		 * throws IOException{ try { OrderMaterial orderMaterial = new
+		 * OrderMaterial(); orderMaterial.setNums(materialRequest.getNum()); //
+		 * orderMaterial.setType(materialRequest.getType()); User user =
+		 * redeRedisService.getDesignerUser(this.getToken()); String orderNum =
+		 * orderService.placeOrder(orderMaterial,materialRequest.getCarouselJson
+		 * (),materialRequest.getMaterialAttrId(),1L); new
+		 * Response(ResponseCode.SUCCESS, "生成订单成功",orderNum).write(); } catch
+		 * (Exception e) { e.printStackTrace(); new
+		 * Response(ResponseCode.FAILURE,"生成订单失败").write(); } }
+		 */
+
+    /**
+     * 方法描述：加载结算页面,显示订单详细信息 创建人：jianming 创建时间：2016年11月16日 上午9:31:50
+     *
+     * @return 订单详细, 价格
+     * @throws IOException
+     */
+    @RequestMapping(value = "detail_order", method = RequestMethod.POST)
+    @ResponseBody
+    public void detailOrder(@RequestParam(value = "orderNum", required = true) String orderNum) throws IOException {
+        try {
+            User user = redeRedisService.getDesignerUser(this.getToken());
+            // 查询订单信息
+            Order order = orderService.getOrderByOrderNum(orderNum, user.getId());
+            // 查询物料订单信息
+            OrderMaterial orderMaterial = orderService.getOrderMeterialByOrderNum(orderNum);
+            Map<String, Object> map = new HashMap<>();
+
+            map.put("title", orderMaterial.getTitle());
+            map.put("remork", orderMaterial.getRemark());
+            map.put("salePrice", orderMaterial.getSalePrice());
+            map.put("materialAttrGroupVal", orderMaterial.getMaterialAttrGroupVal());
+            map.put("nums", orderMaterial.getNums());
+            map.put("orderAmount", order.getOrderAmount());
+            map.put("orderNo", order.getOrderNo());
+            map.put("createTime", CalendarUtil.getDateString(order.getCreateTime(), CalendarUtil.FORMAT1));
+            new Response(ResponseCode.SUCCESS, "获取订单信息成功", map).write();
+        } catch (Exception e) {
+            e.printStackTrace();
+            new Response(ResponseCode.FAILURE, "获取订单信息失败").write();
+        }
+
+    }
+
+    /**
+     * 方法描述：获取运费信息 创建人：jianming 创建时间：2016年11月16日 上午9:34:04
+     */
+    @RequestMapping(value = "freight", method = RequestMethod.POST)
+    @ResponseBody
+    public void freight() {
+
+    }
+
+    /**
+     * 方法描述：计算用户余额是否足够支付,调用显示页面价格接口,显示余额可低用跟网银需支付额度 创建人：jianming
+     * 创建时间：2016年11月16日 上午9:54:20
+     */
+    @RequestMapping(value = "verify_pay", method = RequestMethod.POST)
+    @ResponseBody
+    public Response verifyPay(@RequestParam(value = "orderNo", required = true) String orderNo) {
+        logger.info("[调用加载付款页面接口]orderNo=" + orderNo);
+        if (StringUtil.isBlank(orderNo)) {
+            return new Response(ResponseCode.FAILURE, "订单编号为空");
+        }
+        User user = redeRedisService.getDesignerUser(this.getToken());
+        if (user == null) {
+            return new Response(ResponseCode.TOKENERR, "验证token失败");
+        }
+        // 查询订单信息
+        Order order = orderService.getOrderByOrderNum(orderNo, user.getId());
+        if (null == order) {
+            return new Response(ResponseCode.BILL_NO_NOT_EXIST, "订单号不存在");
+        }
+        if (null == order.getMobile()) {
+            return new Response(ResponseCode.BILL_NO_NOT_EXIST, "订单信息不完整");
+        }
+        if (order.getStatus() != DesignerConsts.ORDER_STATUS_NO_PAYMENT) {
+            return new Response(ResponseCode.BILL_CAN_NOT_TRANSFER, "订单已支付");
+        }
+        // 订单总额 ,商品名称 ,用户余额,邮费
+        // 查询物料订单信息
+        String type = order.getType();
+        String title = "";
+        BigDecimal orderAmount = null;
+        if (DesignerConsts.ORDER_TYPE_MATERIAL.equals(type)) {
+            OrderMaterial orderMaterial = orderService.getOrderMeterialByOrderNum(orderNo);
+            title = orderMaterial.getTitle();
+            orderAmount = order.getOrderAmount().add(order.getFreight());
+        } else if (DesignerConsts.ORDER_TYPE_CUSTOMIZE.equals(type)) {
+            OrderMaterialCustomize orderMaterialCustomize = orderService.getOrderMeterialCustomizeByOrderNum(orderNo);
+            if (!DesignerConsts.ORDER_CUSTOMIZE_STATUS_UNCHECKED.equals(orderMaterialCustomize.getState())) {
+                return new Response(ResponseCode.BILL_CAN_NOT_TRANSFER, "订单状态有误");
+            }
+            orderAmount = order.getOrderAmount();
+            title = orderMaterialCustomize.getTitle();
+        }
+        Map<String, String> walletMap = walletService.getWalletBalance(user);
+        BigDecimal usableAmount = new BigDecimal(0);
+        if (walletMap.isEmpty()) {
+            return new Response(ResponseCode.FAILURE, "未获取到商家钱包信息");
+        } else {
+            BigDecimal zbalance = new BigDecimal(walletMap.get("zbalance")).setScale(2, BigDecimal.ROUND_HALF_UP);// 商家赠送余额
+            BigDecimal walletAmount = new BigDecimal(walletMap.get("amount")).setScale(2, BigDecimal.ROUND_HALF_UP);// 商家钱包余额
+            BigDecimal balance = new BigDecimal(walletMap.get("balance")).setScale(2, BigDecimal.ROUND_HALF_UP);// 商家分账余额
+            BigDecimal commision = new BigDecimal(walletMap.get("commision")).setScale(2, BigDecimal.ROUND_HALF_UP);// 商家佣金余额
+            //BigDecimal integral = new BigDecimal(walletMap.get("integral")).setScale(2, BigDecimal.ROUND_HALF_UP);// 商家积分余额
+            BigDecimal sellerAmount = new BigDecimal(walletMap.get("seller_amount")).setScale(2, BigDecimal.ROUND_HALF_UP);// 商家收益金额
+            usableAmount = walletAmount.add(zbalance).add(balance).add(commision).add(sellerAmount).setScale(2, BigDecimal.ROUND_HALF_UP);
+
+        }
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        resultMap.put("orderAmount", orderAmount);
+        resultMap.put("title", title);
+        resultMap.put("freight", order.getFreight());
+        resultMap.put("amount", usableAmount);
+        resultMap.put("orderNo", orderNo); // 订单编号
+        resultMap.put("sypay_type", PaymentTypeConsts.sypay); // 钱包余额类型
+        resultMap.put("wxpay_type", PaymentTypeConsts.wxjspay); // 微信支付类型
+        resultMap.put("alipay_type", PaymentTypeConsts.alipay); // 支付宝类型
+        boolean isEnough = false;
+        if (usableAmount.subtract(order.getOrderAmount().add(order.getFreight())).doubleValue() > 0) { // 判断商家钱包余额是否足够支付
+            isEnough = true;
+        }
+        resultMap.put("isEnough", isEnough); // 是否足够支付
+        return new Response(ResponseCode.SUCCESS, "确认支付页面数据加载成功", resultMap);
+    }
+
+    /**
+     * 校验支付密码,输入错误3次 "冻结" 该商户.
+     */
+    @ResponseBody
+    @RequestMapping(value = "check_pay_passwd", method = RequestMethod.POST)
+    public Response checkPayPasswd(@Valid CheckPayPasswdRequest request, BindingResult result) throws Exception {
+        logger.info("[调用验证支付密码接口/check_pay_passwd]");
+        if (!request.doValidate(result)) {
+            return new Response(ResponseCode.PARAM_ERROR, "密码为空!");
+        }
+
+        User user = redeRedisService.getDesignerUser(this.getToken());
+        String payPasswd = request.getPayPasswd();
+
+        Map<String, Object> map;
+        try {
+            map = walletService.checkPayPasswd(payPasswd, user);
+        } catch (Exception e) {
+            logger.error("调用自设计校验支付密码接口出现异常:", e);
+            return new Response(ResponseCode.FAILURE, "请求失败");
+        }
+
+        return new Response(ResponseCode.SUCCESS, "请求成功!", map);
+
+    }
+
+    /**
+     * 方法描述：第三方支付和余额支付接口,改变订单支付状态
+     * 创建人：jianming
+     * 创建时间：2016年11月16日 上午9:55:29
+     *
+     * @throws IOException
+     */
+    @RequestMapping(value = "order_pay", method = RequestMethod.POST)
+    @ResponseBody
+    public void orderPay(@RequestParam(value = "orderNo", required = true) String orderNo,
+                         @RequestParam(value = "payType", required = true) String payType) throws IOException {
+        try {
+
+            logger.info("支付确认  orderNo:" + orderNo);
+            logger.info("支付确认  payType:" + payType);
+
+            if (StringUtil.isBlank(orderNo)) {
+                new Response(ResponseCode.FAILURE, "订单编号为空").write();
+                return;
+            }
+
+            if (payType == null) {
+                new Response(ResponseCode.FAILURE, "支付类型为空").write();
+                return;
+            }
+
+            User user = redeRedisService.getDesignerUser(this.getToken());
+            if (user == null) {
+                new Response(ResponseCode.TOKENERR, "验证token失败").write();
+                return;
+            }
+            //查询订单信息
+            Order order = orderService.getOrderByOrderNum(orderNo, user.getId());
+            if (order == null) {
+                new Response(ResponseCode.FAILURE, "该订单信息不存在").write();
+            } else {
+                if (order.getStatus().intValue() == DesignerConsts.ORDER_STATUS_NO_PAYMENT) {
+                    String title = "";
+                    String type = order.getType();
+                    HashMap<String, Object> resultMap = new HashMap<String, Object>();
+                    Map<String, String> payParamMap = new HashMap<String, String>();
+                    if (DesignerConsts.ORDER_TYPE_MATERIAL.equals(type)) {
+                        OrderMaterial orderMaterial = orderService.getOrderMeterialByOrderNum(orderNo);
+                        payParamMap.put("body", orderMaterial.getRemark());// 订单描述
+                        resultMap.put("nums", orderMaterial.getNums());
+                        title = orderMaterial.getTitle();
+
+                    } else if (DesignerConsts.ORDER_TYPE_CUSTOMIZE.equals(type)) {
+                        OrderMaterialCustomize orderMaterialCustomize = orderService.getOrderMeterialCustomizeByOrderNum(orderNo);
+                        if (!DesignerConsts.ORDER_CUSTOMIZE_STATUS_UNCHECKED.equals(orderMaterialCustomize.getState())) {
+                            new Response(ResponseCode.BILL_CAN_NOT_TRANSFER, "订单状态有误").write();
+                            return;
+                        }
+                        payParamMap.put("body", orderMaterialCustomize.getRemark());// 订单描述
+                        title = orderMaterialCustomize.getTitle();
+                    } else {
+                        new Response(ResponseCode.BILL_CAN_NOT_TRANSFER, "订单状态有误").write();
+                        return;
+                    }
+                    Map<String, String> walletMap = walletService.getWalletBalance(user);
+                    if (walletMap.isEmpty()) {
+                        new Response(ResponseCode.FAILURE, "未获取到用户钱包信息").write();
+                        return;
+                    }
+                    BigDecimal totalAmount = order.getOrderAmount().add(order.getFreight()).setScale(2, BigDecimal.ROUND_HALF_UP);//订单总金额
+                    BigDecimal walletAmount = new BigDecimal(walletMap.get("seller_amount")).setScale(2, BigDecimal.ROUND_HALF_UP);// 商家钱包余额
+                    BigDecimal zbalance = new BigDecimal(0.00).setScale(2, BigDecimal.ROUND_HALF_UP);// 商家赠送余额
+                    BigDecimal amount = new BigDecimal(0.00).setScale(2, BigDecimal.ROUND_HALF_UP);// 商家钱包余额
+                    BigDecimal balance = new BigDecimal(0.00).setScale(2, BigDecimal.ROUND_HALF_UP);// 商家分账余额
+                    BigDecimal commision = new BigDecimal(0.00).setScale(2, BigDecimal.ROUND_HALF_UP);// 商家佣金余额
+                    BigDecimal sellerAmount = new BigDecimal(0.00).setScale(2, BigDecimal.ROUND_HALF_UP);// 商家收益金额
+
+                    // 所有传入金额必须格式化为2位小数
+                    if (PaymentTypeConsts.sypay.equals(payType)) {
+                        zbalance = new BigDecimal(walletMap.get("zbalance")).setScale(2, BigDecimal.ROUND_HALF_UP);// 商家赠送余额
+                        amount = new BigDecimal(walletMap.get("amount")).setScale(2, BigDecimal.ROUND_HALF_UP);// 商家钱包余额
+                        balance = new BigDecimal(walletMap.get("balance")).setScale(2, BigDecimal.ROUND_HALF_UP);// 商家分账余额
+                        commision = new BigDecimal(walletMap.get("commision")).setScale(2, BigDecimal.ROUND_HALF_UP);// 商家佣金余额
+                        sellerAmount = new BigDecimal(walletMap.get("seller_amount")).setScale(2, BigDecimal.ROUND_HALF_UP);// 商家收益金额
+                        //扣款顺序： 赠送余额-->钱包余额-->分账余额-->佣金余额-->收益余额
+                        BigDecimal temp = totalAmount.subtract(zbalance);
+                        boolean flag = true; //是否足够支付标识
+                        if (temp.compareTo(ZERO) > 0) {
+                            temp = temp.subtract(amount);
+                        } else {
+                            zbalance = zbalance.add(temp);
+                            amount = ZERO;
+                            balance = ZERO;
+                            commision = ZERO;
+                            sellerAmount = ZERO;
+                            flag = false;
+                        }
+                        if (temp.compareTo(ZERO) > 0) {
+                            temp = temp.subtract(balance);
+                        } else if (flag) {
+                            amount = amount.add(temp);
+                            balance = ZERO;
+                            commision = ZERO;
+                            sellerAmount = ZERO;
+                            flag = false;
+                        }
+
+                        if (temp.compareTo(ZERO) > 0) {
+                            temp = temp.subtract(commision);
+                        } else if (flag) {
+                            balance = balance.add(temp);
+                            commision = ZERO;
+                            sellerAmount = ZERO;
+                            flag = false;
+                        }
+
+                        if (temp.compareTo(ZERO) > 0) {
+                            temp = temp.subtract(sellerAmount);
+                        } else if (flag) {
+                            commision = commision.add(temp);
+                            sellerAmount = ZERO;
+                            flag = false;
+                        }
+
+                        if (temp.compareTo(ZERO) > 0) {
+                            new Response(ResponseCode.FAILURE, "余额不足").write();
+                            return;
+                        } else if (flag) {
+                            sellerAmount = temp.add(sellerAmount);
+                            flag = false;
+                        }
+                        if (zbalance.compareTo(ZERO) > 0) {
+                            payParamMap.put("zbalance", zbalance + "");// 赠送支付金额
+                        }
+                        if (amount.compareTo(ZERO) > 0) {
+                            payParamMap.put("sellerAmount", amount + "");// 钱包支付余额
+                        }
+                        if (balance.compareTo(ZERO) > 0) {
+                            payParamMap.put("sellerBalance", balance + "");// 分账支付余额
+                        }
+                        if (commision.compareTo(ZERO) > 0) {
+                            payParamMap.put("commision", commision + "");// 佣金支付金额
+                        }
+                        if (sellerAmount.compareTo(ZERO) > 0) {
+                            payParamMap.put("profit", sellerAmount + "");// 收益支付金额
+                        }
+							 /*if (walletAmount.compareTo(totalAmount) > 0) {
+								new Response(ResponseCode.FAILURE, "余额不足").write();
+								return;
+							}*/
+                    }
+
+                    payParamMap.put("subject", title);// 订单标题
+                    payParamMap.put("orderSn", order.getOrderNo());// 订单编号
+                    payParamMap.put("userType", "2");// 用户类型
+                    payParamMap.put("uid", String.valueOf(user.getOutId()));// 商家id
+                    payParamMap.put("amount", totalAmount.toString()); // 订单金额
+                    payParamMap.put("source", "009");// 订单来源，标识内部业务系统不同类型订单,001:业务系统-SAAS套餐订单;002:业务系统-SAAS软件订单;003:业务系统-积分商品订单；004:业务系统-物料订单；005:业务系统-直播鸟币购买订单 ； 006:业务系统-红包支付订单
+                    payParamMap.put("paymentType", payType + "");// 支付方式，1000001:支付宝SDK支付;1000003:微信SDK支付;1000013:微信公众号支付，1000000：钱包支付
+                    payParamMap.put("orderType", "2");// 订单类型，目前传固定值2
+                    String key = PropertiesUtil.readValue("payKey");
+                    logger.info("key:" + key);
+                    payParamMap.put("sign", Signature.sign(payParamMap, key));// 签名
+                    String url = PropertiesUtil.readValue("payUrl");
+                    logger.info("url：" + url);
+                    String requestParam = "";
+                    for (Entry<String, String> entry : payParamMap.entrySet()) {
+                        requestParam += "&" + entry.getKey() + "=" + entry.getValue();
+                    }
+                    requestParam = requestParam.substring(1, requestParam.length());
+                    String payurl = url + "?" + requestParam;
+                    logger.info("payurl:" + payurl);
+                    String result = HttpConnectionUtil.doPost(payurl, "");// 请求支付接口
+                    logger.info("result:" + result);
+                    if (StringUtils.isNotEmpty(result)) {
+
+                        JSONObject json = JSONObject.parseObject(result);
+                        logger.info("json:" + json);
+                        if (json.containsKey("result")) {
+                            Object data = json.get("result");
+                            resultMap.put("data", data);
+                        }
+                        resultMap.put("orderNum", order.getOrderNo());
+                        resultMap.put("title", title);// 订单标题
+                        resultMap.put("deliveryAddress", order.getDeliveryAddress());    //收货地址
+                        resultMap.put("mobile", order.getMobile());    //联系电话
+                        resultMap.put("consignee", order.getConsignee());    //收货人
+                        logger.info("返回客户端数据:" + resultMap);
+                        if ("201".equals(json.getString("state")) || "200".equals(json.getString("state"))) {
+                            new Response(ResponseCode.SUCCESS, json.getString("info"), resultMap).write();
+                        } else {
+                            new Response(ResponseCode.FAILURE, json.getString("info"), resultMap).write();
+                        }
+                    } else {
+                        new Response(ResponseCode.FAILURE, "调用支付接口失败").write();
+                    }
+
+                } else if (order.getStatus().intValue() == DesignerConsts.ORDER_STATUS_IS_PAYMENT) {
+                    new Response(ResponseCode.FAILURE, "该订单已支付，请勿重复支付").write();
+                } else {
+                    new Response(ResponseCode.FAILURE, "订单状态异常").write();
+                }
+            }
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            logger.error(e.getMessage(), e);
+            new Response(ResponseCode.FAILURE, "订单支付失败").write();
+        } finally {
+            ThriftBuilder.close();
+        }
+    }
+
+    /**
+     * 方法描述：支付信息接口
+     * 创建人：jianming
+     * 创建时间：2016年12月1日 上午11:05:08
+     *
+     * @param orderNo
+     * @throws Exception
+     */
+    @RequestMapping(value = "pay_result", method = RequestMethod.POST)
+    @ResponseBody
+    public void orderResult(@RequestParam(value = "orderNo", required = true) String orderNo) throws Exception {
+        logger.info("支付完成详情接口  orderNo:" + orderNo);
+        try {
+            if (StringUtils.isBlank(orderNo)) {
+                new Response(ResponseCode.BILL_NO_NOT_EXIST, "订单号不存在").write();
+                return;
+            }
+
+            User user = redeRedisService.getDesignerUser(this.getToken());
+            // 查询订单信息
+            Order order = orderService.getOrderByOrderNum(orderNo, user.getId());
+            if (order == null) {
+                new Response(ResponseCode.BILL_NO_NOT_EXIST, "订单号不存在").write();
+                return;
+            }
+            if (order.getStatus() == DesignerConsts.ORDER_STATUS_NO_PAYMENT) {
+                new Response(ResponseCode.FAILURE, "订单未付款").write();
+                return;
+            } else {
+                Map<String, Object> resultMap = new HashMap<String, Object>();
+                resultMap.put("payType", PaymentTypeConsts.payTypeToString(order.getPayType()));
+                resultMap.put("payTime", org.apache.tools.ant.util.DateUtils.format(order.getPayTime(), "yyyy-MM-dd HH:mm:ss"));
+                resultMap.put("tradeNo", order.getTradeNo());
+                new Response(ResponseCode.SUCCESS, "加载成功", resultMap).write();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            new Response(ResponseCode.FAILURE, "调用失败").write();
+        }
+    }
+
+
+    /**
+     * 获取订单列表
+     */
+    @ResponseBody
+    @RequestMapping(value = "list", method = RequestMethod.POST)
+    public void list(@Valid OrderListRequest request, BindingResult result) throws IOException {
+        logger.info("调用[获取订单列表接口 /api/v1/order/list] 参数:" + request.toString());
+        try {
+            Order order = request.convertToOrder();
+            // 获取用户id
+            String sessionToken = this.getToken();
+            User designerUser = redeRedisService.getDesignerUser(sessionToken);
+            order.setUid(designerUser.getId());
+
+            // 查询订单列表
+            HashMap<String, Object> resultMap = orderService.queryOrderList(order, request.convertToPage());
+
+//			success(resultMap,
+//					new HashMap<Class<?>, String[]>(){{put(DesignerOrder.class,
+//							new String[]{"type","orderNo","status","orderImg","orderName","ammount","describe",
+//									"price","nums","specJson","dStatus"});}});
+            success(resultMap,
+                    new HashMap<Class<?>, String[]>() {{
+                        put(DesignerOrder.class, new String[]{
+                                "ammount", "describe", "orderImg", "orderNo", "status", "type", "nums", "price", "title", "specJson", "dStatus", "freight"});
+                    }},
+                    "yyyy-MM-dd HH:mm:ss");
+        } catch (Exception e) {
+            logger.error("调用时[获取订单列表接口 /api/v1/order/list] 出现异常!", e);
+            failure();
+        }
+    }
+
+
+    /**
+     * 获取 定制物料 订单详情
+     */
+    @ResponseBody
+    @RequestMapping(value = "detail_customize", method = RequestMethod.POST)
+    public void detailCustomize(@RequestParam(value = "orderNo", required = true) String orderNo) throws IOException {
+        logger.info("调用[定制物料订单详情接口 api/v1/order/detail_customize] 请求参数: orderNo:" + orderNo);
+        try {
+            String sessionToken = this.getToken();
+            User designerUser = redeRedisService.getDesignerUser(sessionToken);
+            OrderMaterialCustomize orderMaterialCustomize = new OrderMaterialCustomize();
+            DesignerOrder designerOrder = orderService.queryCustomizeDetail(orderNo, designerUser.getId());
+
+            success(designerOrder,
+                    new HashMap<Class<?>, String[]>() {{
+                        put(DesignerOrder.class, new String[]{
+                                "ammount", "categoryName", "consignee", "createTime", "dStatus", "deliveryAddress", "describe", "finishTime",
+                                "freight", "mobile", "orderImg", "orderNo", "specJson", "status", "type", "payType",
+                                "payTime", "title"});
+                    }},
+                    "yyyy-MM-dd HH:mm:ss");
+
+        } catch (CustomException e) {
+            failure(e);
+        } catch (Exception e) {
+            logger.error("调用[定制物料订单详情接口] 时出现异常!", e);
+            failure();
+        }
+    }
+
+    /**
+     * 获取 平面物料订单 订单详情
+     */
+    @ResponseBody
+    @RequestMapping(value = "detail_material", method = RequestMethod.POST)
+    public void detailMaterial(@RequestParam(value = "orderNo") String orderNo) throws IOException {
+        logger.info("调用[定制物料订单详情接口 api/v1/order/detail_material ] 请求参数: orderNo :" + orderNo);
+
+        try {
+            String sessionToken = this.getToken();
+            User designerUser = redeRedisService.getDesignerUser(sessionToken);
+            DesignerOrder designerOrder = orderService.queryMatrialDetail(orderNo, designerUser.getId());
+            success(designerOrder,
+                    new HashMap<Class<?>, String[]>() {{
+                        put(DesignerOrder.class, new String[]{
+                                "ammount", "categoryName", "consignee", "createTime", "deliveryAddress", "describe", "freight",
+                                "materialAttr", "mobile", "nums", "orderImg", "orderNo", "price", "status", "title",
+                                "type", "payType", "payTime"});
+                    }},
+                    "yyyy-MM-dd HH:mm:ss");
+        } catch (CustomException e) {
+            failure(e);
+        } catch (Exception e) {
+            logger.error("调用[定制物料订单详情接口]出现异常!", e);
+            failure();
+        }
+    }
+
+
+    /**
+     * 确认收货
+     */
+    @ResponseBody
+    @RequestMapping(value = "confirm", method = RequestMethod.POST)
+    public void confirm(@RequestParam("orderNo") String orderNo) throws IOException {
+        logger.info("调用[确认收货接口 /api/v1/order/confirm] 参数 : " + orderNo);
+
+        try {
+            // 封装Order查询参数
+            String sessionToken = this.getToken();
+            User designerUser = redeRedisService.getDesignerUser(sessionToken);
+            Order order = new Order();
+            order.setUid(designerUser.getId());
+            order.setOrderNo(orderNo);
+
+            // 确认收货
+            orderService.confirmOrder(order);
+            success("已确认收货!");
+        } catch (CustomException e) {
+            failure(e);
+        } catch (Exception e) {
+            logger.error("调用[确认收货接口]接口 出现异常", e);
+            failure();
+        }
+    }
+
+    /**
+     * 删除订单
+     */
+    @ResponseBody
+    @RequestMapping(value = "delete", method = RequestMethod.POST)
+    public void delete(@RequestParam(value = "orderNo") String orderNo) throws IOException {
+        logger.info("调用[删除订单 api/v1/order/delete]接口 参数 :" + orderNo);
+
+        try {
+            // 封装订单数据
+            String sessionToken = this.getToken();
+            User designerUser = redeRedisService.getDesignerUser(sessionToken);
+            Order order = new Order();
+            order.setUid(designerUser.getId());
+            order.setOrderNo(orderNo);
+
+            // 删除订单
+            orderService.deleteOrder(order);
+            success("订单已删除!");
+        } catch (CustomException e) {
+            failure(e);
+        } catch (Exception e) {
+            logger.error("调用[删除订单]接口时出现异常", e);
+            failure();
+        }
+
+    }
+
+
+    /**
+     * 取消订单
+     */
+    @ResponseBody
+    @RequestMapping(value = "cancel", method = RequestMethod.POST)
+    public void cancel(@RequestParam("orderNo") String orderNo,
+                       @RequestParam(value = "reason") String reason) throws IOException {
+        logger.info("调用[取消订单接口 api/v1/order/cancel]接口 参数 :" + orderNo);
+
+        try {
+            String sessionToken = this.getToken();
+            User designerUser = redeRedisService.getDesignerUser(sessionToken);
+
+            // 封装订单信息
+            Order order = new Order();
+            order.setUid(designerUser.getId());
+            order.setOrderNo(orderNo);
+            order.setCancelReason(reason);
+
+            // 取消订单
+            orderService.cancelOrder(order);
+            success("订单已取消!");
+        } catch (CustomException e) {
+            failure(e);
+        } catch (Exception e) {
+            logger.error("调用[取消订单 api/v1/order/cancel] 出现异常 " + e);
+            failure();
+        }
+    }
+
+    /**
+     * 提醒发货
+     */
+    @ResponseBody
+    @RequestMapping(value = "remind", method = RequestMethod.POST)
+    public void remind(@RequestParam(value = "orderNo") String orderNo) throws IOException {
+        logger.info("调用[查看物料接口 api/v1/order/remind ] orderNo:" + orderNo);
+
+        try {
+            // 封装Order数据
+            String sessionToken = this.getToken();
+            User designerUser = redeRedisService.getDesignerUser(sessionToken);
+            Order order = new Order();
+            order.setUid(designerUser.getId());
+            order.setOrderNo(orderNo);
+            Map<String, Object> resultMap = new HashMap<>();
+
+            // 标记提醒发货
+            resultMap.put("redminded", orderService.remindShipment(order));
+            success(resultMap);
+        } catch (CustomException e) {
+            failure(e);
+        } catch (Exception e) {
+            logger.error("调用提醒发货接口出现异常", e);
+            failure();
+        }
+    }
+
+    /**
+     * 查询物料信息
+     */
+    @ResponseBody
+    @RequestMapping(value = "exp_info", method = RequestMethod.POST)
+    public void expInfo(@RequestParam(value = "orderNo") String orderNo) throws IOException {
+        logger.info("调用[查看物料接口 api/v1/order/exp_info ] 参数:" + orderNo);
+
+        try {
+            User designerUser = redeRedisService.getDesignerUser(this.getToken());
+            Order order = new Order(designerUser.getId(), orderNo);
+
+            // 查询物流信息
+            Object result = orderService.queryExpInfo(order);
+            success(result);
+        } catch (CustomException e) {
+            failure(e);
+        } catch (Exception e) {
+            logger.error("调用[查询物流信息接口]-出现异常!", e);
+            failure();
+        }
+    }
+}
+
+
+
+
+
+
+
+

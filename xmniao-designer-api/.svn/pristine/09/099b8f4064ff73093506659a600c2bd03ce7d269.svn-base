@@ -1,0 +1,7 @@
+package com.xmn.designer.controller.api.v1.order.vo;
+
+import com.xmn.designer.base.Request;
+
+public class VerifyPayRequest extends Request {
+	private String orderNo;	//订单号
+}

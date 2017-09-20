@@ -1,0 +1,102 @@
+package com.xmn.designer.service.material.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.xmn.designer.base.ResponseCode;
+import com.xmn.designer.dao.material.MaterialCategoryAttrDao;
+import com.xmn.designer.dao.material.MaterialCategoryAttrRelationDao;
+import com.xmn.designer.dao.material.MaterialCategoryAttrValDao;
+import com.xmn.designer.dao.material.MaterialCategoryDao;
+import com.xmn.designer.dao.material.MaterialDao;
+import com.xmn.designer.dao.material.MaterialTagDao;
+import com.xmn.designer.entity.material.Material;
+import com.xmn.designer.entity.material.MaterialCategory;
+import com.xmn.designer.entity.material.MaterialCategoryAttr;
+import com.xmn.designer.entity.material.MaterialCategoryAttrRelation;
+import com.xmn.designer.entity.material.MaterialCategoryAttrVal;
+import com.xmn.designer.entity.material.MaterialTag;
+import com.xmn.designer.service.material.MaterialService;
+
+
+/**
+ * 平面物料服务类实现
+ * 
+ * @author zhouxiaojian
+ * @date 2016/11/18
+ */
+@Service
+public class MaterialServiceImpl implements MaterialService {
+
+    @Autowired
+    private MaterialCategoryDao materialCategoryDao;
+
+    @Autowired
+    private MaterialCategoryAttrDao materialCategoryAttrDao;
+
+    @Autowired
+    private MaterialTagDao materialTagDao;
+
+    @Autowired
+    private MaterialCategoryAttrRelationDao materialCategoryAttrRelationDao;
+    
+    @Autowired
+    private MaterialCategoryAttrValDao materialCategoryAttrValDao;
+
+    /**
+     * 物料分类标签规格
+     */
+    @Override
+    public Map<String, Object> category(String type, Long id) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("msg", "请求成功");
+        result.put("code", ResponseCode.SUCCESS);
+        if (id == null) {
+            switch (type) {
+            // 分类
+                case "001":
+                    List<MaterialCategory> materialList = materialCategoryDao.findAll();
+                    result.put("dataList", materialList);
+                    break;
+                // 标签
+                case "002":
+                    List<MaterialTag> materialTagList = materialTagDao.findAll();
+                    result.put("dataList", materialTagList);
+                    break;
+                // 规格
+                case "003":
+                    List<MaterialCategoryAttr> materialCategoryAttrList =
+                            materialCategoryAttrDao.findAll();
+                    result.put("dataList", materialCategoryAttrList);
+                    break;
+
+                default:
+                    break;
+            }
+        } else {
+            switch (type) {
+                // 分类关联规格
+                case "001":
+                    List<MaterialCategoryAttrRelation> materialCategoryAttrRelationList =  materialCategoryAttrRelationDao.findRelation(id);
+                    result.put("dataList", materialCategoryAttrRelationList);
+                    break;
+                // 规格细项
+                case "003":
+                    List<MaterialCategoryAttrVal> materialCategoryAttrValList =
+                            materialCategoryAttrValDao.findByCategoryAttrId(id);
+                    result.put("dataList", materialCategoryAttrValList);
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        return result;
+    }
+
+}

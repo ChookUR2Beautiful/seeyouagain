@@ -1,0 +1,50 @@
+package com.xmn.designer.controller.api.v1.order.model;
+
+import com.xmn.designer.entity.customize.OrderMaterialCustomize;
+import com.xmn.designer.entity.material.OrderMaterial;
+import com.xmn.designer.entity.order.Order;
+
+import java.math.BigDecimal;
+
+/**
+ * create 2016/11/16
+ *
+ * @author yangQiang
+ */
+
+public class DesignerOrder {
+
+    private String type;        // 订单类型
+    private Long id;            // 订单号
+    private Integer status;     // 订单状态
+    private String orderImg;    // 订单主图
+    private String orderName;   // 订单名
+    private String describe;    // 描述信息
+    private BigDecimal ammount; // 订单总价(含运费)
+
+    private String consignee;   // 收货人
+    private String mobile;      // 收货联系人电话
+    private String deliveryAddress; //收货地址
+
+    private BigDecimal price;   // 平面物料 : 商品单价
+    private Integer nums;       // 平面物料 : 商品数量
+
+    private String specJson;    // 定制订单 : 规格
+    private String budget;      // 定制订单 : 预算
+    private String dStatus;     // 定制订单 : 设计状态
+
+    private DesignerOrder(Order order) {
+        this.type = order.getType();
+        this.id = order.getId();
+        this.status = order.getStatus();
+    }
+    public DesignerOrder(Order order, OrderMaterial orderMaterial){
+        this(order);
+        this.describe = orderMaterial.getTitle();
+        this.nums = orderMaterial.getNums();
+    }
+    public DesignerOrder(Order order, OrderMaterialCustomize orderMaterial){
+        this(order);
+        this.describe = orderMaterial.getRemark();
+    }
+}

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.designer.dao.material.MaterialCategoryAttrRelationDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.designer.entity.material.MaterialCategoryAttrRelation" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="category_id" property="categoryId" jdbcType="BIGINT" />
+    <result column="material_attr_id" property="materialAttrId" jdbcType="BIGINT" />
+    <result column="material_attr_val" property="materialAttrVal" jdbcType="VARCHAR" />
+    <result column="category_val" property="categoryVal" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, category_id, material_attr_id, material_attr_val, category_val, create_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from  d_material_category_attr_relation
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="findRelation" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    id, material_attr_val, category_val
+    from d_material_category_attr_relation
+    where category_id = #{id} order by create_time desc
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from d_material_category_attr_relation
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmn.designer.entity.material.MaterialCategoryAttrRelation" >
+    insert into d_material_category_attr_relation (id, category_id, material_attr_id, 
+      material_attr_val, category_val, create_time
+      )
+    values (#{id,jdbcType=BIGINT}, #{categoryId,jdbcType=BIGINT}, #{materialAttrId,jdbcType=BIGINT}, 
+      #{materialAttrVal,jdbcType=VARCHAR}, #{categoryVal,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmn.designer.entity.material.MaterialCategoryAttrRelation" >
+    insert into d_material_category_attr_relation
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="categoryId != null" >
+        category_id,
+      </if>
+      <if test="materialAttrId != null" >
+        material_attr_id,
+      </if>
+      <if test="materialAttrVal != null" >
+        material_attr_val,
+      </if>
+      <if test="categoryVal != null" >
+        category_val,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="categoryId != null" >
+        #{categoryId,jdbcType=BIGINT},
+      </if>
+      <if test="materialAttrId != null" >
+        #{materialAttrId,jdbcType=BIGINT},
+      </if>
+      <if test="materialAttrVal != null" >
+        #{materialAttrVal,jdbcType=VARCHAR},
+      </if>
+      <if test="categoryVal != null" >
+        #{categoryVal,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.designer.entity.material.MaterialCategoryAttrRelation" >
+    update d_material_category_attr_relation
+    <set >
+      <if test="categoryId != null" >
+        category_id = #{categoryId,jdbcType=BIGINT},
+      </if>
+      <if test="materialAttrId != null" >
+        material_attr_id = #{materialAttrId,jdbcType=BIGINT},
+      </if>
+      <if test="materialAttrVal != null" >
+        material_attr_val = #{materialAttrVal,jdbcType=VARCHAR},
+      </if>
+      <if test="categoryVal != null" >
+        category_val = #{categoryVal,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.designer.entity.material.MaterialCategoryAttrRelation" >
+    update d_material_category_attr_relation
+    set category_id = #{categoryId,jdbcType=BIGINT},
+      material_attr_id = #{materialAttrId,jdbcType=BIGINT},
+      material_attr_val = #{materialAttrVal,jdbcType=VARCHAR},
+      category_val = #{categoryVal,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

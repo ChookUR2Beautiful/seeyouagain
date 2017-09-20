@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmn.designer.dao.material.MaterialCategoryAttrValDao">
+  <resultMap id="BaseResultMap" type="com.xmn.designer.entity.material.MaterialCategoryAttrVal">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="category_attr_id" jdbcType="BIGINT" property="categoryAttrId" />
+    <result column="val" jdbcType="VARCHAR" property="val" />
+    <result column="sort_val" jdbcType="INTEGER" property="sortVal" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, category_attr_id, val, sort_val
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from d_material_category_attr_val
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectByCategoryAttrId" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List"/>
+    FROM d_material_category_attr_val
+    WHERE category_attr_id = #{?}
+    order by sort_val asc
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from d_material_category_attr_val
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmn.designer.entity.material.MaterialCategoryAttrVal">
+    insert into d_material_category_attr_val (id, category_attr_id, val, 
+      sort_val)
+    values (#{id,jdbcType=BIGINT}, #{categoryAttrId,jdbcType=BIGINT}, #{val,jdbcType=VARCHAR}, 
+      #{sortVal,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmn.designer.entity.material.MaterialCategoryAttrVal">
+    insert into d_material_category_attr_val
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="categoryAttrId != null">
+        category_attr_id,
+      </if>
+      <if test="val != null">
+        val,
+      </if>
+      <if test="sortVal != null">
+        sort_val,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="categoryAttrId != null">
+        #{categoryAttrId,jdbcType=BIGINT},
+      </if>
+      <if test="val != null">
+        #{val,jdbcType=VARCHAR},
+      </if>
+      <if test="sortVal != null">
+        #{sortVal,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.designer.entity.material.MaterialCategoryAttrVal">
+    update d_material_category_attr_val
+    <set>
+      <if test="categoryAttrId != null">
+        category_attr_id = #{categoryAttrId,jdbcType=BIGINT},
+      </if>
+      <if test="val != null">
+        val = #{val,jdbcType=VARCHAR},
+      </if>
+      <if test="sortVal != null">
+        sort_val = #{sortVal,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.designer.entity.material.MaterialCategoryAttrVal">
+    update d_material_category_attr_val
+    set category_attr_id = #{categoryAttrId,jdbcType=BIGINT},
+      val = #{val,jdbcType=VARCHAR},
+      sort_val = #{sortVal,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

@@ -1,0 +1,21 @@
+package com.xmn.designer.dao.material;
+
+import java.util.List;
+
+import com.xmn.designer.entity.material.MaterialCategory;
+
+public interface MaterialCategoryDao {
+    int deleteByPrimaryKey(Long id);
+
+    int insert(MaterialCategory record);
+
+    int insertSelective(MaterialCategory record);
+
+    MaterialCategory selectByPrimaryKey(Long id);
+    
+    List<MaterialCategory> findAll();
+
+    int updateByPrimaryKeySelective(MaterialCategory record);
+
+    int updateByPrimaryKey(MaterialCategory record);
+}

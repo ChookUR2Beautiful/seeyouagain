@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 	
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-3.2.xsd 
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-3.2.xsd 
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+
+	<!-- thrift服务器工厂 -->
+	<bean id="thriftServerFactory" class="com.xmn.designer.base.thrift.proxy.ThriftProxyFactory">
+		<!-- 服务端的端口 -->
+		<property name="port" value="7914" />
+		<!-- 工作线程数默认5 生产环境可修改为50 -->
+		<property name="workerThreads" value="10" />
+		<!-- 注入多个接口类列表 -->
+		<property name="proxys">
+			<list>
+				<!-- 注入订单服务模块 -->
+				<ref bean="orderPayService" />
+				
+			</list>
+		</property>
+	</bean>
+
+	<!-- 配置加载多个接口类和接口实现类、接口类的名字 -->
+	<!-- 出现多个接口类时，必须配置多个bean元素，一个接口类、接口实现类配置一个bean元素 -->
+	<!-- 订单服务模块bean -->
+	<bean id="orderPayService" class="com.xmn.designer.base.thrift.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmn.designer.base.thrift.service.OrderPayService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="orderPayServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="OrderPayService" />
+	</bean>
+
+	
+</beans>

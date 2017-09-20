@@ -1,0 +1,57 @@
+package com.xmn.designer.dao.material;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.xmn.designer.entity.material.Material;
+
+public interface MaterialDao {
+    int deleteByPrimaryKey(Long id);
+
+    int insert(Material record);
+
+    int insertSelective(Material record);
+
+    Material selectByPrimaryKey(Long id);
+    
+    List<Material> selectByMinAndMax(@Param("minPrice")Integer min,@Param("maxPrice")Integer max,@Param("pageOffset")Integer pageOffset,@Param("pageSize")Integer pageSize);
+    
+    List<Material> selectByCategoryId(@Param("categoryId")Long categoryId,@Param("pageOffset")Integer pageOffset,@Param("pageSize")Integer pageSize);
+    
+    List<Material> selectByTagId(@Param("tagId")Long tagId,@Param("pageOffset")Integer pageOffset,@Param("pageSize")Integer pageSize);
+    
+    List<Material> selectByOrderType(@Param("orderType")String orderType,@Param("pageOffset")Integer pageOffset,@Param("pageSize")Integer pageSize);
+    
+    List<Material> findAll(@Param("pageOffset")Integer pageOffset,@Param("pageSize")Integer pageSize);
+    //计算分页总数start
+    int selectByMinAndMaxCount(@Param("minPrice")Integer min,@Param("maxPrice")Integer max,@Param("pageOffset")Integer pageOffset,@Param("pageSize")Integer pageSize);
+    
+    int selectByCategoryIdCount(@Param("categoryId")Long categoryId,@Param("pageOffset")Integer pageOffset,@Param("pageSize")Integer pageSize);
+    
+    int selectByTagIdCount(@Param("tagId")Long tagId,@Param("pageOffset")Integer pageOffset,@Param("pageSize")Integer pageSize);
+    
+    int selectByOrderTypeCount(@Param("orderType")String orderType,@Param("pageOffset")Integer pageOffset,@Param("pageSize")Integer pageSize);
+    
+    int findAllCount(@Param("pageOffset")Integer pageOffset,@Param("pageSize")Integer pageSize);
+    //计算分页总数end
+    
+    Map<String,BigDecimal> selectMaxAndMin();
+
+    int updateByPrimaryKeySelective(Material record);
+
+    int updateByPrimaryKeyWithBLOBs(Material record);
+
+    int updateByPrimaryKey(Material record);
+    
+    /**
+     * 
+     * 方法描述：使用次数加1
+     * 创建人：jianming  
+     * 创建时间：2016年11月24日 上午11:22:12   
+     * @param materialId
+     */
+	void updateSoldTimes(Long materialId);
+}

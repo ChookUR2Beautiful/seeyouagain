@@ -1,0 +1,52 @@
+package com.xmn.designer.controller.api.v1.custom;
+
+import com.xmn.designer.base.AbstractController;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.io.IOException;
+
+/**
+ * create 2016/11/14
+ *
+ * @author yangQiang
+ */
+
+@Controller("api-v1-custom-controller")
+@RequestMapping(value = "api/v1/custom")
+public class CustomController extends AbstractController{
+
+    /**
+     * 获取定制物料的可选定制规格参数
+     */
+    @ResponseBody
+    @RequestMapping(value = "standard_list",method = RequestMethod.POST)
+    public void standardList() throws IOException {
+        success();
+        return;
+    }
+
+    /**
+     * 提交定制物料订单
+     */
+    @ResponseBody
+    @RequestMapping(value = "submit",method = RequestMethod.POST)
+    public void submit() throws IOException {
+        success();
+        return;
+    }
+
+    /**
+     * 条件定制物料图片
+     */
+    @ResponseBody
+    @RequestMapping(value = "submit_carousel",method = RequestMethod.POST)
+    public void submitCarousel() throws IOException {
+
+        success();
+        return;
+    }
+
+}

@@ -1,0 +1,435 @@
+package com.xmn.designer.service.material.impl;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.alibaba.fastjson.JSON;
+import com.xmn.designer.base.GlobalConfig;
+import com.xmn.designer.base.ResponseCode;
+import com.xmn.designer.dao.material.MaterialAttrDao;
+import com.xmn.designer.dao.material.MaterialAttrGroupDao;
+import com.xmn.designer.dao.material.MaterialAttrValDao;
+import com.xmn.designer.dao.material.MaterialCarouselDao;
+import com.xmn.designer.dao.material.MaterialCarouselSourceDao;
+import com.xmn.designer.dao.material.MaterialCategoryAttrDao;
+import com.xmn.designer.dao.material.MaterialCategoryAttrRelationDao;
+import com.xmn.designer.dao.material.MaterialCategoryAttrValDao;
+import com.xmn.designer.dao.material.MaterialCategoryDao;
+import com.xmn.designer.dao.material.MaterialCategoryTagRelationDao;
+import com.xmn.designer.dao.material.MaterialDao;
+import com.xmn.designer.dao.material.MaterialTagDao;
+import com.xmn.designer.dao.material.OrderMaterialCarouselDao;
+import com.xmn.designer.dao.material.OrderMaterialCarouselSourceDao;
+import com.xmn.designer.dao.postage.PostageConditionsDao;
+import com.xmn.designer.entity.material.Material;
+import com.xmn.designer.entity.material.MaterialAttr;
+import com.xmn.designer.entity.material.MaterialAttrGroup;
+import com.xmn.designer.entity.material.MaterialCarousel;
+import com.xmn.designer.entity.material.MaterialCarouselSource;
+import com.xmn.designer.entity.material.MaterialCategory;
+import com.xmn.designer.entity.material.MaterialCategoryAttr;
+import com.xmn.designer.entity.material.MaterialCategoryAttrRelation;
+import com.xmn.designer.entity.material.MaterialCategoryAttrVal;
+import com.xmn.designer.entity.material.MaterialCategoryTagRelation;
+import com.xmn.designer.entity.material.MaterialTag;
+import com.xmn.designer.entity.material.OrderMaterial;
+import com.xmn.designer.entity.material.OrderMaterialCarousel;
+import com.xmn.designer.entity.material.OrderMaterialCarouselSource;
+import com.xmn.designer.entity.order.Order;
+import com.xmn.designer.entity.postage.PostageConditions;
+import com.xmn.designer.exception.CustomException;
+import com.xmn.designer.service.image.ImageService;
+import com.xmn.designer.service.material.MaterialService;
+import com.xmn.designer.service.order.OrderService;
+import com.xmn.designer.service.postage.PostageService;
+import com.xmn.designer.utils.CalendarUtil;
+import com.xmn.designer.utils.HttpConnectionUtil;
+
+
+/**
+ * 平面物料服务类实现
+ * 
+ * @author zhouxiaojian
+ * @date 2016/11/18
+ */
+@Service
+public class MaterialServiceImpl implements MaterialService {
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    @Autowired
+    private MaterialCategoryDao materialCategoryDao;
+
+    @Autowired
+    private MaterialCategoryTagRelationDao materialCategoryTagRelationDao;
+
+    @Autowired
+    private PostageService postageService;
+
+    @Autowired
+    private ImageService imageService;
+
+    @Autowired
+    private MaterialAttrGroupDao materialAttrGroupDao;
+
+    @Autowired
+    private OrderMaterialCarouselDao orderMaterialCarouselDao;
+
+    @Autowired
+    private OrderMaterialCarouselSourceDao orderMaterialCarouselSourceDao;
+
+    @Autowired
+    private OrderService orderService;
+
+    @Autowired
+    private MaterialAttrDao materialAttrDao;
+
+    @Autowired
+    private MaterialAttrValDao materialAttrValDao;
+
+    @Autowired
+    private PostageConditionsDao postageConditionsDao;
+
+
+    @Autowired
+    private MaterialCarouselSourceDao materialCarouselSourceDao;
+
+    @Autowired
+    private MaterialCarouselDao materialCarouselDao;
+
+    @Autowired
+    private MaterialCategoryAttrDao materialCategoryAttrDao;
+
+    @Autowired
+    private MaterialTagDao materialTagDao;
+
+    @Autowired
+    private MaterialDao materialDao;
+
+    @Autowired
+    private MaterialCategoryAttrRelationDao materialCategoryAttrRelationDao;
+
+    @Autowired
+    private MaterialCategoryAttrValDao materialCategoryAttrValDao;
+    
+    @Autowired
+    private GlobalConfig globalConfig;
+
+    /**
+     * 物料分类标签规格
+     */
+    @Override
+    public Map<String, Object> category(String type, Long id,String key) throws CustomException {
+        Map<String, Object> result = new HashMap<>();
+        result.put("msg", "请求成功");
+        result.put("code", ResponseCode.SUCCESS);
+        if (id == null && !StringUtils.isNotBlank(key)) {
+            switch (type) {
+            // 分类
+                case "001":
+                    List<MaterialCategory> materialList = materialCategoryDao.findAll();
+                    result.put("dataList", materialList);
+                    break;
+                // 标签
+                case "002":
+                    List<MaterialTag> materialTagList = materialTagDao.findAll();
+                    result.put("dataList", materialTagList);
+                    break;
+                // 规格
+                case "003":
+                    List<MaterialCategoryAttr> materialCategoryAttrList =
+                            materialCategoryAttrDao.findAll();
+                    result.put("dataList", materialCategoryAttrList);
+                    break;
+                // 价格
+                case "004":
+                    Map<String, BigDecimal> selectMaxAndMin = materialDao.selectMaxAndMin();
+                    List<Map<String, Integer>> list = new ArrayList<>();
+                    list.add(getMaxMin(selectMaxAndMin.get("min"), selectMaxAndMin.get("max"),
+                            0.00, 0.33, 1));
+                    list.add(getMaxMin(selectMaxAndMin.get("min"), selectMaxAndMin.get("max"),
+                            0.33, 0.66, 2));
+                    list.add(getMaxMin(selectMaxAndMin.get("min"), selectMaxAndMin.get("max"),
+                            0.66, 1, 3));
+                    result.put("dataList", list);
+                    break;
+
+                default:
+                    break;
+            }
+        } else if(StringUtils.isNotBlank(key)){
+            List<MaterialCategory> materialList = materialCategoryDao.findByKey(key);
+            result.put("dataList", materialList);
+            return result;
+        }else {
+            switch (type) {
+            // 分类关联规格
+                case "001":
+                    List<MaterialCategoryAttrRelation> materialCategoryAttrRelationList =
+                            materialCategoryAttrRelationDao.findRelation(id);
+                    result.put("dataList", materialCategoryAttrRelationList);
+                    break;
+                // 规格细项
+                case "003":
+                    List<MaterialCategoryAttrVal> materialCategoryAttrValList =
+                            materialCategoryAttrValDao.findByCategoryAttrId(id);
+                    result.put("dataList", materialCategoryAttrValList);
+                    break;
+                case "005":
+                    List<MaterialCategoryTagRelation> materialCategoryTagRelationList =
+                            materialCategoryTagRelationDao.selectByCategoryId(id);
+                    result.put("dataList", materialCategoryTagRelationList);
+                    break;
+                case "006":
+                    List<MaterialCategoryTagRelation> tagCategoryRelationList =
+                            materialCategoryTagRelationDao.selectByMaterialTagId(id);
+                    result.put("dataList", tagCategoryRelationList);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return result;
+    }
+
+
+
+    /**
+     * 基础物料列表接口
+     */
+    @Override
+    public Map<String, Object> list(Material material) throws CustomException {
+        List<Material> list = new ArrayList<>();
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("msg", "请求成功");
+        resultMap.put("code", ResponseCode.SUCCESS);
+        int rows = 0;
+        // 分页
+        list = materialDao.selectList(material);
+        rows = materialDao.selectListCount(material);
+        resultMap.put("dataList", list);
+        resultMap.put("rows", rows);
+        return resultMap;
+    }
+
+    /**
+     * 基础物料搜索接口
+     */
+    @Override
+    public Map<String, Object> search(String keys, Integer page, Integer pageSize)
+            throws CustomException {
+        List<Material> list = new ArrayList<>();
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("msg", "请求成功");
+        resultMap.put("code", ResponseCode.SUCCESS);
+        int rows = 0;
+        // 分页
+        Integer pageOffset = (page - 1) * pageSize;
+        list = materialDao.findByKey(keys.trim(), pageOffset, pageSize);
+        rows = materialDao.findByKeyCount(keys.trim(), pageOffset, pageSize);
+        resultMap.put("dataList", list);
+        resultMap.put("rows", rows);
+        return resultMap;
+    }
+
+    /**
+     * 获取物料基础价格最大最小值
+     * 
+     * @param max
+     * @param min
+     * @return
+     */
+    public Map<String, Integer> getMaxMin(BigDecimal min, BigDecimal max, double minPercent,
+            double maxPercent, int id) throws CustomException {
+        Map<String, Integer> map = new HashMap<>();
+        BigDecimal bewteen = max.subtract(min);
+        BigDecimal Min = min.add(bewteen.multiply(BigDecimal.valueOf(minPercent)));
+        BigDecimal Max = min.add(bewteen.multiply(BigDecimal.valueOf(maxPercent)));
+        map.put("minPrice", Min.intValue());
+        map.put("maxPrice", Max.intValue());
+        map.put("id", id);
+        return map;
+    }
+
+
+    /**
+     * 平面物料详情
+     */
+    @Override
+    public Material detail(Long id, String deliveryCityNo) throws CustomException {
+        Material material = materialDao.selectByPrimaryKey(id);
+        // banner图
+        List<MaterialCarouselSource> bannerList = materialCarouselSourceDao.selectByMaterialId(id);
+        material.setBanner(bannerList);
+        // 邮费情况
+        //定位失败
+        if(deliveryCityNo.equals("-1")){
+            deliveryCityNo="%";
+        }
+        //判断是否当月的数据
+        String lastPaytime = CalendarUtil.getDateString(material.getLastPaytime(), "yyyyMM");
+        String nowTime = CalendarUtil.getDateString(new Date(), "yyyyMM");
+        if(!lastPaytime.equals(nowTime)){
+            material.setMonthlySales(0);//设置为月销量0
+        }
+        List<PostageConditions> postageConditionsList =
+                postageConditionsDao.selectShippingPrice(material.getSupplierId(), deliveryCityNo);
+        if(postageConditionsList!=null && postageConditionsList.size()>0){
+            material.setShippingPrice(postageConditionsList.get(0)
+                    .getFirstItem().doubleValue());
+        }else{
+            material.setShippingPrice(0.00);
+        }
+        return material;
+    }
+
+
+    /**
+     * 基础物料订单规格选择接口
+     * 
+     * @param id
+     * @return
+     */
+    @Override
+    public List<MaterialAttr> materialAttr(Long materialId) throws CustomException {
+        List<MaterialAttr> list = null;
+        list = materialAttrDao.selectByMaterialId(materialId);
+        for (MaterialAttr vo : list) {
+            vo.setSubList(materialAttrValDao.selectByMaterialAttrId(vo.getId()));
+        }
+        return list;
+    }
+
+    /**
+     * 基础物料订单规格选择接口
+     * 
+     * @param id
+     * @return
+     */
+    @Override
+    public List<MaterialCarousel> edit(Long materialId) throws CustomException {
+        List<MaterialCarousel> list = null;
+        list = materialCarouselDao.selectByMaterialId(materialId);
+        for (MaterialCarousel vo : list) {
+            vo.setSubList(materialCarouselSourceDao.selectByMaterialCarouselId(vo.getId()));
+        }
+        return list;
+    }
+
+    /**
+     * 创建订单
+     * 
+     * @param id
+     * @param materialAttrId
+     * @param materialAttrVal
+     * @param nums
+     * @param shippingAddress
+     * @param remark
+     * @param dataList
+     * @return
+     */
+    @Transactional
+    @Override
+    public Map<String, Object> createOrder(MaterialAttrGroup materialAttrGroup, Order order,
+            String dataList, Integer areaId, Integer nums) throws CustomException {
+        Map<String, Object> resultMap = new HashMap<>();
+        Material material =materialDao.selectByPrimaryKey(materialAttrGroup.getMaterialId());
+        order.setMainImage(material.getPicUrl());//设置订单的主图
+        // 获取销售分组bean
+        MaterialAttrGroup materialAttrGroupVO =
+                materialAttrGroupDao.findMaterialAttrGroup(materialAttrGroup.getMaterialId(),
+                        materialAttrGroup.getMaterialAttrIds(),
+                        materialAttrGroup.getMaterialAttrVals());
+        OrderMaterial orderMaterial =orderService.placeOrder(materialAttrGroupVO, order, nums, areaId);
+        if (orderMaterial != null) {
+            List<MaterialCarousel> list = JSON.parseArray(dataList, MaterialCarousel.class);
+            for (MaterialCarousel vo : list) {
+                OrderMaterialCarousel orderMaterialCarousel = new OrderMaterialCarousel();
+                orderMaterialCarousel.setOrderVal(vo.getOrderVal());
+                orderMaterialCarousel.setRemark(vo.getRemark());
+                orderMaterialCarousel.setOrderMaterialId(orderMaterial.getId());
+                orderMaterialCarouselDao.insert(orderMaterialCarousel);
+                for (MaterialCarouselSource subVo : vo.getSubList()) {
+                    OrderMaterialCarouselSource orderMaterialCarouselSource =
+                            new OrderMaterialCarouselSource();
+                    BeanUtils.copyProperties(subVo, orderMaterialCarouselSource);
+                    orderMaterialCarouselSource.setId(null);
+                    orderMaterialCarouselSource.setCreateTime(new Date());
+                    orderMaterialCarouselSource.setMaterialCarouselId(orderMaterialCarousel.getId());
+                    orderMaterialCarouselSourceDao.insert(orderMaterialCarouselSource);
+                    // 判断是否图片类型
+                    if (StringUtils.isNotBlank(orderMaterialCarouselSource.getType())&& orderMaterialCarouselSource.getType().equals("001") && StringUtils.isNotBlank(orderMaterialCarouselSource.getPicUrl())) {
+                        imageService.useImage(orderMaterialCarouselSource.getPicUrl());
+                    }
+                }
+            }
+            resultMap.put("msg", "创建成功");
+            resultMap.put("code", ResponseCode.SUCCESS);
+          //发送消息给业务后台
+            this.sendOrder(orderMaterial.getOrderNo());
+            resultMap.put("orderNo", orderMaterial.getOrderNo());
+        }
+        return resultMap;
+    }
+
+
+    /**
+     * 订单详情
+     */
+    @Override
+    public Map<String, Object> orderDetail(MaterialAttrGroup materialAttrGroup, Integer areaId,
+            Integer nums) throws CustomException {
+        Map<String, Object> resultMap = new HashMap<>();
+        // 获取销售分组bean
+        MaterialAttrGroup materialAttrGroupVO =
+                materialAttrGroupDao.findMaterialAttrGroup(materialAttrGroup.getMaterialId(),
+                        materialAttrGroup.getMaterialAttrIds(),
+                        materialAttrGroup.getMaterialAttrVals());
+        Material material = materialDao.selectByPrimaryKey(materialAttrGroup.getMaterialId());
+        if (material != null) {
+            resultMap
+                    .put("totalAmount",
+                            (material.getSalePrice().add(materialAttrGroupVO.getAmount())
+                                    .doubleValue() * nums));// 加价格后的总价格
+            resultMap.put("basePrice", material.getSalePrice().add(materialAttrGroupVO.getAmount())
+                    .doubleValue());// 加价后商品单价
+            resultMap.put("picUrl", material.getPicUrl()) ;//主图
+        }
+        if (materialAttrGroupVO != null) {
+            BigDecimal condition =
+                    postageService.calculateCondittion(materialAttrGroupVO.getMaterialId(), areaId,
+                            nums);
+            resultMap.put("shippingPrice", condition.doubleValue());// 邮费
+            resultMap.put("code", ResponseCode.SUCCESS);
+            resultMap.put("msg", "请求成功");
+        } else {
+            resultMap.put("code", ResponseCode.FAILURE);
+            resultMap.put("msg", "所选商品计算价格有误！");
+        }
+        return resultMap;
+    }
+    
+    //发送消息给业务后台
+    public   void sendOrder(String orderNo){
+        final String no = orderNo;
+        new Thread() {  
+            public void run() {
+                String url = globalConfig.getOrderSendUrl()+"?orderNo="+no;
+                HttpConnectionUtil.doPost(url, "");
+               logger.info(url +" 订单号："+no+" 发消息给业务后台合成图");
+            }
+        }.start();
+    }
+
+}

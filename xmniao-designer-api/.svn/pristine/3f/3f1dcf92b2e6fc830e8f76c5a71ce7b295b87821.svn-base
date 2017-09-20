@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.designer.dao.material.OrderMaterialDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.designer.entity.material.OrderMaterial" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="material_id" property="materialId" jdbcType="BIGINT" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="nums" property="nums" jdbcType="INTEGER" />
+    <result column="sale_price" property="salePrice" jdbcType="DECIMAL" />
+    <result column="base_price" property="basePrice" jdbcType="DECIMAL" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="material_attr_group_val" property="materialAttrGroupVal" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="category_name" property="categoryName" jdbcType="VARCHAR"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, material_id, order_no, nums, sale_price, base_price, title, remark, material_attr_group_val, 
+    type, category_name
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from d_order_material
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from d_order_material
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmn.designer.entity.material.OrderMaterial" useGeneratedKeys="true" keyProperty="id">
+    insert into d_order_material (material_id, order_no, 
+      nums, sale_price, base_price, 
+      title, remark, material_attr_group_val, 
+      type)
+    values (#{materialId,jdbcType=BIGINT}, #{orderNo,jdbcType=VARCHAR}, 
+      #{nums,jdbcType=INTEGER}, #{salePrice,jdbcType=DECIMAL}, #{basePrice,jdbcType=DECIMAL}, 
+      #{title,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{materialAttrGroupVal,jdbcType=VARCHAR}, 
+      #{type,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmn.designer.entity.material.OrderMaterial" >
+    insert into d_order_material
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="materialId != null" >
+        material_id,
+      </if>
+      <if test="orderNo != null" >
+        order_no,
+      </if>
+      <if test="nums != null" >
+        nums,
+      </if>
+      <if test="salePrice != null" >
+        sale_price,
+      </if>
+      <if test="basePrice != null" >
+        base_price,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="materialAttrGroupVal != null" >
+        material_attr_group_val,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="materialId != null" >
+        #{materialId,jdbcType=BIGINT},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="nums != null" >
+        #{nums,jdbcType=INTEGER},
+      </if>
+      <if test="salePrice != null" >
+        #{salePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="basePrice != null" >
+        #{basePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="materialAttrGroupVal != null" >
+        #{materialAttrGroupVal,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.designer.entity.material.OrderMaterial" >
+    update d_order_material
+    <set >
+      <if test="materialId != null" >
+        material_id = #{materialId,jdbcType=BIGINT},
+      </if>
+      <if test="orderNo != null" >
+        order_no = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="nums != null" >
+        nums = #{nums,jdbcType=INTEGER},
+      </if>
+      <if test="salePrice != null" >
+        sale_price = #{salePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="basePrice != null" >
+        base_price = #{basePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="materialAttrGroupVal != null" >
+        material_attr_group_val = #{materialAttrGroupVal,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.designer.entity.material.OrderMaterial" >
+    update d_order_material
+    set material_id = #{materialId,jdbcType=BIGINT},
+      order_no = #{orderNo,jdbcType=VARCHAR},
+      nums = #{nums,jdbcType=INTEGER},
+      sale_price = #{salePrice,jdbcType=DECIMAL},
+      base_price = #{basePrice,jdbcType=DECIMAL},
+      title = #{title,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      material_attr_group_val = #{materialAttrGroupVal,jdbcType=VARCHAR},
+      type = #{type,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="selectByOrderNum" resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from d_order_material
+    where order_no = #{orderNum,jdbcType=VARCHAR} 
+  </select>
+  <select id="selectByOrderNo" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List"/>
+    FROM d_order_material
+    WHERE order_no = #{orderNo}
+  </select>
+</mapper>

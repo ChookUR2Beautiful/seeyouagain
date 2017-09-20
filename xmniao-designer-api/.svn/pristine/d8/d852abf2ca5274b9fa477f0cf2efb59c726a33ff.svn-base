@@ -1,0 +1,156 @@
+package com.xmn.designer.service.address.impl;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xmn.designer.base.ResponseCode;
+import com.xmn.designer.entity.address.DesigberAddress;
+import com.xmn.designer.service.address.DesignerAddressService;
+import com.xmn.designer.utils.HttpConnectionUtil;
+import com.xmn.designer.utils.PropertiesUtil;
+
+@Service
+public class DesignerAddressServiceIimpl implements DesignerAddressService {
+	private static final String LISTADDRESSURL = PropertiesUtil.readValue("thrift.saas.host") + "/h5/address/list";
+	private static final String DEFALUTADDRESSURL = PropertiesUtil.readValue("thrift.saas.host") + "/h5/address/get_default";
+	private static final String ADDADDRESSURL = PropertiesUtil.readValue("thrift.saas.host") + "/h5/address/save";
+	private static final String REMOVEADDRESSURL = PropertiesUtil.readValue("thrift.saas.host") + "/h5/address/remove";
+	private static final String AREAURL = PropertiesUtil.readValue("thrift.saas.host") + "/h5/address/list_area";
+	
+
+	private static final ObjectMapper MAPPER = new ObjectMapper();
+
+	public List<DesigberAddress> list(String sessionToken) {
+		try{
+		Map<String,Object> map=new HashMap<String,Object>();
+		map.put("sessionToken", sessionToken);
+		String jsonString = HttpConnectionUtil.requestGet(LISTADDRESSURL, map);
+		JsonNode rootNode = MAPPER.readTree(jsonString);
+		if(!new Integer(ResponseCode.SUCCESS).toString().equals(rootNode.get("state").toString())){
+			throw new RuntimeException("商户端后台接口发生异常");
+		}
+		JsonNode result = rootNode.get("result");
+		if(StringUtils.isBlank(result.toString()))return null;
+		JavaType javaType = MAPPER.getTypeFactory().constructParametricType(ArrayList.class, DesigberAddress.class);
+		List<DesigberAddress> list =  (List<DesigberAddress>)MAPPER.readValue(result.toString(), javaType);
+		return list;
+		}catch(Exception e){
+			e.printStackTrace();
+			throw new RuntimeException();
+		}
+	}
+
+	public DesigberAddress getDefaultAddress(String sessionToken) {
+		try {
+			Map<String,Object> map=new HashMap<String,Object>();
+			map.put("sessionToken", sessionToken);
+			String jsonString = HttpConnectionUtil.requestGet(DEFALUTADDRESSURL, map);
+			JsonNode rootNode = MAPPER.readTree(jsonString);
+			if(!new Integer(ResponseCode.SUCCESS).toString().equals(rootNode.get("state").toString())){
+				throw new RuntimeException("商户端后台接口发生异常");
+			}
+			JsonNode result = rootNode.get("result");
+			if(StringUtils.isBlank(result.toString()))return null;
+			DesigberAddress desigberAddress = MAPPER.readValue(result.toString(), DesigberAddress.class);
+			return desigberAddress;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException();
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public void add(DesigberAddress desigberAddress,String sessionToken) {
+			try {
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("nname", desigberAddress.getNname());
+				map.put("sex", desigberAddress.getSex().toString());
+				map.put("phone", desigberAddress.getPhone().toString());
+				map.put("address", desigberAddress.getAddress());
+				map.put("isDefault", desigberAddress.getIsDefault().toString());
+				map.put("areaId", desigberAddress.getAreaId().toString());
+				map.put("cityId", desigberAddress.getCityId().toString());
+				map.put("provinceId", desigberAddress.getProvinceId().toString());
+				map.put("sessionToken", sessionToken);
+				 String jsonString = HttpConnectionUtil.requestPost(ADDADDRESSURL,map);
+				JsonNode rootNode = MAPPER.readTree(jsonString);
+				if(!new Integer(ResponseCode.SUCCESS).toString().equals(rootNode.get("state").toString())){
+					throw new RuntimeException("商户端后台接口发生异常");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new RuntimeException();
+			}
+	}
+
+	@Override
+	public void edit(DesigberAddress desigberAddress, String sessionToken) {
+		try {
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("id", desigberAddress.getId().toString());
+			map.put("nname", desigberAddress.getNname());
+			map.put("sex", desigberAddress.getSex().toString());
+			map.put("phone", desigberAddress.getPhone().toString());
+			map.put("address", desigberAddress.getAddress());
+			map.put("isDefault", desigberAddress.getIsDefault().toString());
+			map.put("areaId", desigberAddress.getAreaId().toString());
+			map.put("cityId", desigberAddress.getCityId().toString());
+			map.put("provinceId", desigberAddress.getProvinceId().toString());
+			map.put("sessionToken", sessionToken);
+			 String jsonString = HttpConnectionUtil.requestPost(ADDADDRESSURL,map);
+			JsonNode rootNode = MAPPER.readTree(jsonString);
+			if(!new Integer(ResponseCode.SUCCESS).toString().equals(rootNode.get("state").toString())){
+				throw new RuntimeException("商户端后台接口发生异常");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException();
+		}
+	}
+
+	@Override
+	public void delete(Integer id, String sessionToken) {
+		try {
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("id", id.toString());
+			map.put("sessionToken", sessionToken);
+			 String jsonString = HttpConnectionUtil.requestPost(REMOVEADDRESSURL,map);
+				JsonNode rootNode = MAPPER.readTree(jsonString);
+				if(!new Integer(ResponseCode.SUCCESS).toString().equals(rootNode.get("state").toString())){
+					throw new RuntimeException("商户端后台接口发生异常");
+				}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException();
+		}
+		
+	}
+
+	@Override
+	public String listArea(Integer pid,String sessionToken) {
+		try {
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("pid", pid.toString());
+			map.put("sessionToken", sessionToken);
+			String jsonString = HttpConnectionUtil.requestGet(AREAURL,map);
+			JsonNode rootNode = MAPPER.readTree(jsonString);
+			if(!new Integer(ResponseCode.SUCCESS).toString().equals(rootNode.get("state").toString())){
+				throw new RuntimeException("商户端后台接口发生异常");
+			}
+			return jsonString;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException();
+		}
+	}
+
+}

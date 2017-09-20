@@ -1,0 +1,246 @@
+package com.xmn.designer.entity.order;
+
+import com.xmn.designer.entity.customize.OrderMaterialCustomize;
+import com.xmn.designer.entity.material.OrderMaterial;
+import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+/**
+ * create 2016/11/16
+ *
+ * @author yangQiang
+ */
+
+@Component
+public class DesignerOrder {
+
+
+    // 包含信息在 d_order 表中
+    private String type;        // 订单类型
+    private String orderNo;     // 订单号
+    private Integer status;     // 订单状态
+    private String orderImg;    // 订单主图
+    private String consignee;   // 收货人
+    private String mobile;      // 收货联系人电话
+    private String deliveryAddress; //收货地址
+    private Date createTime;    // 下单时间
+    private BigDecimal ammount; // 订单总价(含运费)
+    private BigDecimal freight; // 运费
+
+    // 根据订单类型分表设值
+    private String categoryName;// 商品类型名
+    private String describe;    // 描述信息
+
+    // 平面物料相关属性
+    private String title;       // 订单名
+    private BigDecimal price;   // 平面物料 : 商品单价
+    private Integer nums;       // 平面物料 : 商品数量
+    private String materialAttr;// 平面物料 : 销售属性值
+
+    // 定制物料相关属性
+    private String specJson;    // 定制订单 : 规格
+    private String dStatus;     // 定制订单 : 设计状态
+    private Date finishTime;    // 定制订单 : 要求完成时间
+
+    public DesignerOrder() {
+        super();
+    }
+
+    // 设置订单表属性
+    private DesignerOrder(Order order) {
+        this.type = order.getType();
+        this.orderNo = order.getOrderNo();
+        this.status = order.getStatus();
+        this.orderImg =order.getMainImage();
+        this.consignee = order.getConsignee();
+        this.mobile = order.getMobile();
+        this.deliveryAddress = order.getDeliveryAddress();
+        this.createTime = order.getCreateTime();
+        this.ammount = order.getOrderAmount();
+        this.freight = order.getFreight();
+    }
+
+    // 设置平面物料订单属性
+    public DesignerOrder(Order order, OrderMaterial orderMaterial){
+        this(order);
+
+        this.title = orderMaterial.getTitle();
+        this.categoryName =orderMaterial.getCategoryName();
+        this.describe = orderMaterial.getRemark();
+
+        this.nums = orderMaterial.getNums();
+        this.price = orderMaterial.getSalePrice();
+        this.materialAttr = orderMaterial.getMaterialAttrGroupVal();
+
+    }
+
+    // 设置定制物料相关属性
+    public DesignerOrder(Order order, OrderMaterialCustomize orderMaterial){
+        this(order);
+
+        this.categoryName = "定制服务";
+        this.describe = orderMaterial.getRemark();
+
+        this.specJson = orderMaterial.getSpecJson();
+        this.dStatus = orderMaterial.getState();
+        this.finishTime = orderMaterial.getFinishTime();
+    }
+
+
+
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public BigDecimal getFreight() {
+        return freight;
+    }
+
+    public void setFreight(BigDecimal freight) {
+        this.freight = freight;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public Date getFinishTime() {
+        return finishTime;
+    }
+
+    public void setFinishTime(Date finishTime) {
+        this.finishTime = finishTime;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getOrderNo() {
+        return orderNo;
+    }
+
+    public void setOrderNo(String orderNo) {
+        this.orderNo = orderNo;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public String getOrderImg() {
+        return orderImg;
+    }
+
+    public void setOrderImg(String orderImg) {
+        this.orderImg = orderImg;
+    }
+
+    public String getDescribe() {
+        return describe;
+    }
+
+    public void setDescribe(String describe) {
+        this.describe = describe;
+    }
+
+    public BigDecimal getAmmount() {
+        return ammount;
+    }
+
+    public void setAmmount(BigDecimal ammount) {
+        this.ammount = ammount;
+    }
+
+    public String getConsignee() {
+        return consignee;
+    }
+
+    public void setConsignee(String consignee) {
+        this.consignee = consignee;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public String getDeliveryAddress() {
+        return deliveryAddress;
+    }
+
+    public void setDeliveryAddress(String deliveryAddress) {
+        this.deliveryAddress = deliveryAddress;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public Integer getNums() {
+        return nums;
+    }
+
+    public void setNums(Integer nums) {
+        this.nums = nums;
+    }
+
+    public String getSpecJson() {
+        return specJson;
+    }
+
+    public void setSpecJson(String specJson) {
+        this.specJson = specJson;
+    }
+
+
+    public String getMaterialAttr() {
+        return materialAttr;
+    }
+
+    public void setMaterialAttr(String materialAttr) {
+        this.materialAttr = materialAttr;
+    }
+
+    public String getdStatus() {
+        return dStatus;
+    }
+
+    public void setdStatus(String dStatus) {
+        this.dStatus = dStatus;
+    }
+}

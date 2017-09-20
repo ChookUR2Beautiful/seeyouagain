@@ -1,0 +1,20 @@
+package com.xmn.designer.dao.customize;
+
+
+import com.xmn.designer.entity.customize.OrderMaterialCustomize;
+
+public interface OrderMaterialCustomizeDao {
+    int deleteByPrimaryKey(Long id);
+
+    int insert(OrderMaterialCustomize record);
+
+    int insertSelective(OrderMaterialCustomize record);
+
+    OrderMaterialCustomize selectByPrimaryKey(Long id);
+
+    int updateByPrimaryKeySelective(OrderMaterialCustomize record);
+
+    int updateByPrimaryKey(OrderMaterialCustomize record);
+
+    OrderMaterialCustomize selectByOrderNo(String orderNo);
+}

@@ -1,0 +1,17 @@
+jointDriver=com.mysql.jdbc.Driver
+jointUrl=jdbc\:mysql\://192.168.50.251\:3306/designer?characterEncoding\=utf-8&zeroDateTimeBehavior\=convertToNull&allowMultiQueries\=true
+jointUser=root
+jointPassword=xmn2014qwer
+
+order.customize.high.spec.name = \u9884\u7B97
+
+file.upload.fastDFS.http=http://gzdev.xmniao.com:88/
+file.upload.fastDFS.tracker.server=192.168.50.50
+file.upload.fastDFS.tracker.server.port=22122
+file.upload.fastDFS.tracker.http.port=80
+
+
+# \u5FEB\u9012\u67E5\u8BE2\u63A5\u53E3\u76F8\u5173\u4FE1\u606F
+express.api.url = http://api.jisuapi.com/express/query
+express.api.appkey = 73f347c04cf3ea73
+

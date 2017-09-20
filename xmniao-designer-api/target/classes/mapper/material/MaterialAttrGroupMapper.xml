@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.designer.dao.material.MaterialAttrGroupDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.designer.entity.material.MaterialAttrGroup" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="material_id" property="materialId" jdbcType="BIGINT" />
+    <result column="material_attr_ids" property="materialAttrIds" jdbcType="VARCHAR" />
+    <result column="material_attr_vals" property="materialAttrVals" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="sales" property="sales" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, material_id, material_attr_ids, material_attr_vals, amount, sales
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from d_material_attr_group
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="findMaterialAttrGroup" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from d_material_attr_group
+    where material_id = #{materialId} and material_attr_ids = #{materialAttrIds} and material_attr_vals = #{materialAttrVals}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from d_material_attr_group
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmn.designer.entity.material.MaterialAttrGroup" >
+    insert into d_material_attr_group (id, material_id, material_attr_ids, 
+      material_attr_vals, amount, sales
+      )
+    values (#{id,jdbcType=BIGINT}, #{materialId,jdbcType=BIGINT}, #{materialAttrIds,jdbcType=VARCHAR}, 
+      #{materialAttrVals,jdbcType=VARCHAR}, #{amount,jdbcType=DECIMAL}, #{sales,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmn.designer.entity.material.MaterialAttrGroup" >
+    insert into d_material_attr_group
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="materialId != null" >
+        material_id,
+      </if>
+      <if test="materialAttrIds != null" >
+        material_attr_ids,
+      </if>
+      <if test="materialAttrVals != null" >
+        material_attr_vals,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="sales != null" >
+        sales,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="materialId != null" >
+        #{materialId,jdbcType=BIGINT},
+      </if>
+      <if test="materialAttrIds != null" >
+        #{materialAttrIds,jdbcType=VARCHAR},
+      </if>
+      <if test="materialAttrVals != null" >
+        #{materialAttrVals,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="sales != null" >
+        #{sales,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.designer.entity.material.MaterialAttrGroup" >
+    update d_material_attr_group
+    <set >
+      <if test="materialId != null" >
+        material_id = #{materialId,jdbcType=BIGINT},
+      </if>
+      <if test="materialAttrIds != null" >
+        material_attr_ids = #{materialAttrIds,jdbcType=VARCHAR},
+      </if>
+      <if test="materialAttrVals != null" >
+        material_attr_vals = #{materialAttrVals,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="sales != null" >
+        sales = #{sales,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.designer.entity.material.MaterialAttrGroup" >
+    update d_material_attr_group
+    set material_id = #{materialId,jdbcType=BIGINT},
+      material_attr_ids = #{materialAttrIds,jdbcType=VARCHAR},
+      material_attr_vals = #{materialAttrVals,jdbcType=VARCHAR},
+      amount = #{amount,jdbcType=DECIMAL},
+      sales = #{sales,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

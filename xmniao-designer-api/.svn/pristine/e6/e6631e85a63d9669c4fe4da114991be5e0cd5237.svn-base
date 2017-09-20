@@ -1,0 +1,22 @@
+package com.xmn.designer.controller.api.v1.order.vo;
+
+import com.xmn.designer.entity.order.Order;
+import org.springframework.beans.BeanUtils;
+
+/**
+ * create 2016/11/18
+ *
+ * @author yangQiang
+ */
+
+public class ListRequest {
+
+    // 订单类型
+    private String type;
+
+    public Order convertToOrder() {
+        Order order = new Order();
+        BeanUtils.copyProperties(this,order);
+        return order;
+    }
+}

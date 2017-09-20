@@ -1,0 +1,46 @@
+package com.xmn.designer.controller.api.v1.order.vo;
+
+import com.xmn.designer.base.Request;
+
+public class PalceOrderRequest extends Request {
+	private Long materialAttrId;	 //物料链Id
+	private Integer num;	//购买数量
+	private String carouselJson;	//图片临时表主键
+	private Integer type; //物料订单类型
+	private Integer deviceType;	//客户端类型
+	
+	
+	public Integer getDeviceType() {
+		return deviceType;
+	}
+	public void setDeviceType(Integer deviceType) {
+		this.deviceType = deviceType;
+	}
+	public Integer getNum() {
+		return num;
+	}
+	public void setNum(Integer num) {
+		this.num = num;
+	}
+	
+	public Integer getType() {
+		return type;
+	}
+	public void setType(Integer type) {
+		this.type = type;
+	}
+	public Long getMaterialAttrId() {
+		return materialAttrId;
+	}
+	public void setMaterialAttrId(Long materialAttrId) {
+		this.materialAttrId = materialAttrId;
+	}
+	public String getCarouselJson() {
+		return carouselJson;
+	}
+	public void setCarouselJson(String carouselJson) {
+		this.carouselJson = carouselJson;
+	}
+	
+	
+}

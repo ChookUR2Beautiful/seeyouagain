@@ -1,0 +1,108 @@
+package com.xmn.designer.service.order.impl;
+
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xmn.designer.dao.material.MaterialAttrGroupDao;
+import com.xmn.designer.dao.material.MaterialDao;
+import com.xmn.designer.dao.material.OrderMaterialCarouselDao;
+import com.xmn.designer.dao.material.OrderMaterialDao;
+import com.xmn.designer.dao.order.OrderDao;
+import com.xmn.designer.entity.material.Material;
+import com.xmn.designer.entity.material.MaterialAttrGroup;
+import com.xmn.designer.entity.material.OrderMaterial;
+import com.xmn.designer.entity.material.OrderMaterialCarousel;
+import com.xmn.designer.entity.order.Order;
+import com.xmn.designer.service.order.OrderService;
+import com.xmn.designer.utils.MakeOrderNum;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+@Service
+public class OrderServiceImpl implements OrderService {
+	
+	@Autowired
+	private MakeOrderNum makeOrderNum;
+	
+	@Autowired
+	private MaterialAttrGroupDao materialAttrGroupDao;
+	
+	@Autowired
+	private OrderMaterialDao orderMaterialDao;
+	
+	@Autowired
+	private MaterialDao  materialDao;
+	
+	@Autowired
+	private OrderDao orderDao;
+	
+	@Autowired
+	private OrderMaterialCarouselDao carouselDao;
+	
+	private static final ObjectMapper MAPPER= new ObjectMapper(); 
+	
+	@Override
+	public MaterialAttrGroup getMaterialAttr(Long materialAttrId) {
+		return materialAttrGroupDao.selectByPrimaryKey(materialAttrId);
+	}
+	
+	@Transactional(propagation = Propagation.REQUIRED)
+	@Override
+	public String placeOrder(OrderMaterial orderMaterial, String carouselJson, Long materialAttrId, Long userId) {
+		try {
+			JavaType javaType = MAPPER.getTypeFactory().constructParametricType(ArrayList.class, OrderMaterialCarousel.class);
+			List<OrderMaterialCarousel> list =  (List<OrderMaterialCarousel>)MAPPER.readValue(carouselJson, javaType); //物料订单相册
+			MaterialAttrGroup materialAttrGroup = materialAttrGroupDao.selectByPrimaryKey(materialAttrId);
+			Material material = materialDao.selectByPrimaryKey(materialAttrGroup.getMaterialId());
+			String orderNum = makeOrderNum.makeOrderNum();  
+			Order order=new Order();	//订单
+			order.setUid(userId);
+			order.setStatus(0);
+			order.setOrderNo(orderNum);
+			order.setOrderAmount(material.getSalePrice().add(materialAttrGroup.getAmount()).multiply(new BigDecimal(orderMaterial.getNums())));
+			order.setCreateTime(new Date());
+			orderDao.insert(order);
+			orderMaterial.setMaterialId(material.getId());	//物料订单
+			orderMaterial.setBasePrice(material.getBasePrice());
+			orderMaterial.setSalePrice(material.getSalePrice());
+			orderMaterial.setTitle(material.getTitle());
+			orderMaterial.setRemark(material.getRemark());
+			orderMaterial.setOrderNo(orderNum);
+			orderMaterialDao.insert(orderMaterial);
+			for (OrderMaterialCarousel orderMaterialCarousel : list) {
+				orderMaterialCarousel.setOrderMaterialId(orderMaterial.getId());
+				carouselDao.insert(orderMaterialCarousel);
+			}
+			return order.getOrderNo();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException();
+		}
+		
+	}
+
+	@Override
+	public OrderMaterial getOrderMeterialByOrderNum(String orderNum) {
+		return orderMaterialDao.selectByOrderNum(orderNum);
+	}
+
+	@Override
+	public Order getOrderByOrderNum(String orderNum, Long outId) {
+		return orderDao.selectByOrderNum(orderNum, outId);
+	}
+
+	@Override
+	public OrderMaterialCarousel getFristCarousel(Long id) {
+		return carouselDao.selectFristCarousel(id);
+				
+	}
+
+	
+	
+}

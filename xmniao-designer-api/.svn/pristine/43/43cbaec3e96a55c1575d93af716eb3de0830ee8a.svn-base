@@ -1,0 +1,6 @@
+#redis.HostName=192.168.50.113
+redis.HostName=192.168.50.50
+redis.Port=6379
+redis.Passwd=redispasswd
+
+

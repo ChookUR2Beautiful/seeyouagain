@@ -1,0 +1,46 @@
+package com.xmn.designer.service.customize.impl;
+
+import com.xmn.designer.dao.material.MaterialCategoryAttrDao;
+import com.xmn.designer.dao.material.MaterialCategoryAttrValDao;
+import com.xmn.designer.entity.material.MaterialCategoryAttr;
+import com.xmn.designer.entity.material.MaterialCategoryAttrVal;
+import com.xmn.designer.service.customize.CustomizeService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * create 2016/11/15
+ * 定制订单服务类
+ * @author yangQiang
+ */
+@Service
+class CustomizeServiceImpl implements CustomizeService {
+
+    @Autowired
+    private MaterialCategoryAttrDao MaterialCategoryAttrdao;
+
+    @Autowired
+    private MaterialCategoryAttrValDao materialCategoryAttrValDao;
+
+    @Override
+    public List<MaterialCategoryAttr> getCustomStandard() {
+        // 查询定制规格列表
+        List<MaterialCategoryAttr> standardList  =  MaterialCategoryAttrdao.queryCustomStandard();
+
+        // 查询每种定制规格的规格明细, 并填充到 规格列表
+        for (MaterialCategoryAttr standard : standardList) {
+            List<MaterialCategoryAttrVal> valList = materialCategoryAttrValDao.selectByCategoryAttrId(standard.getId());
+            List<String> vals = new ArrayList<>();
+            for (MaterialCategoryAttrVal val : valList) {
+                vals.add(val.getVal());
+            }
+            standard.setVals(vals);
+        }
+
+        // 返回规格列表
+        return standardList;
+    }
+}

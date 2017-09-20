@@ -1,0 +1,175 @@
+package com.xmn.designer.service.order.impl;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xmn.designer.constants.DesignerConsts;
+import com.xmn.designer.controller.api.v1.order.model.DesignerOrder;
+import com.xmn.designer.dao.customize.OrderMaterialCustomizeCarouselDao;
+import com.xmn.designer.dao.customize.OrderMaterialCustomizeDao;
+import com.xmn.designer.dao.material.MaterialAttrGroupDao;
+import com.xmn.designer.dao.material.MaterialDao;
+import com.xmn.designer.dao.material.OrderMaterialCarouselDao;
+import com.xmn.designer.dao.material.OrderMaterialDao;
+import com.xmn.designer.dao.order.OrderDao;
+import com.xmn.designer.entity.customize.OrderMaterialCustomize;
+import com.xmn.designer.entity.customize.OrderMaterialCustomizeCarousel;
+import com.xmn.designer.entity.material.Material;
+import com.xmn.designer.entity.material.MaterialAttrGroup;
+import com.xmn.designer.entity.material.OrderMaterial;
+import com.xmn.designer.entity.material.OrderMaterialCarousel;
+import com.xmn.designer.entity.order.Order;
+import com.xmn.designer.service.order.OrderService;
+import com.xmn.designer.utils.MakeOrderNum;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+@Service
+public class OrderServiceImpl implements OrderService {
+	
+	@Autowired
+	private MakeOrderNum makeOrderNum;
+	
+	@Autowired
+	private MaterialAttrGroupDao materialAttrGroupDao;
+	
+	@Autowired
+	private OrderMaterialDao orderMaterialDao;
+
+	@Autowired
+	private OrderMaterialCustomizeCarouselDao orderMaterialCustomizeCarouselDao;
+	
+	@Autowired
+	private MaterialDao  materialDao;
+	
+	@Autowired
+	private OrderDao orderDao;
+	
+	@Autowired
+	private OrderMaterialCustomizeDao orderMaterialCustomizeDao;
+	
+	@Autowired
+	private OrderMaterialCarouselDao carouselDao;
+	
+	private static final ObjectMapper MAPPER= new ObjectMapper(); 
+	
+	@Override
+	public MaterialAttrGroup getMaterialAttr(Long materialAttrId) {
+		return materialAttrGroupDao.selectByPrimaryKey(materialAttrId);
+	}
+	
+	@Transactional(propagation = Propagation.REQUIRED)
+	@Override
+	public Long placeOrder(MaterialAttrGroup materialAttrGroup,Order order,Integer num) {
+		try {
+			String type = order.getType();
+			if(type!=DesignerConsts.ORDER_TYPE_MATERIAL){
+				throw new RuntimeException("生成订单传递类型错误");
+			}
+				String orderNum = makeOrderNum.makeOrderNum();  
+				order.setType(DesignerConsts.ORDER_TYPE_MATERIAL);
+				order.setStatus(DesignerConsts.ORDER_STATUS_NO_PAYMENT);
+				order.setOrderNo(orderNum);
+				order.setCreateTime(new Date());
+				Material material = materialDao.selectByPrimaryKey(materialAttrGroup.getMaterialId());
+				order.setOrderAmount(material.getSalePrice().add(materialAttrGroup.getAmount()).multiply(new BigDecimal(num)));
+				orderDao.insert(order);
+				OrderMaterial orderMaterial = new OrderMaterial();
+				orderMaterial.setMaterialId(material.getId());	//物料订单
+				orderMaterial.setBasePrice(material.getBasePrice());
+				orderMaterial.setSalePrice(material.getSalePrice());
+				orderMaterial.setTitle(material.getTitle());
+				orderMaterial.setRemark(material.getRemark());
+				orderMaterial.setOrderNo(orderNum);
+				orderMaterial.setMaterialAttrGroupVal(materialAttrGroup.getMaterialAttrVals());
+				orderMaterialDao.insert(orderMaterial);
+				return orderMaterial.getId();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException();
+		}
+		
+	}
+	
+	@Transactional(propagation = Propagation.REQUIRED)
+	@Override
+	public OrderMaterialCustomize placeOrderCustomize(Order order, OrderMaterialCustomize orderMaterialCustomize){
+		String type = order.getType();
+		if(DesignerConsts.ORDER_TYPE_CUSTOMIZE!=type){
+			throw new RuntimeException("生成订单传递类型错误");
+		}
+		String orderNum = makeOrderNum.makeOrderNum();  
+		order.setStatus(DesignerConsts.ORDER_STATUS_NO_PAYMENT);
+		order.setOrderNo(orderNum);
+		order.setCreateTime(new Date());
+		order.setType(DesignerConsts.ORDER_TYPE_CUSTOMIZE);
+		orderDao.insert(order);
+		orderMaterialCustomize.setOrderNo(orderNum);
+		orderMaterialCustomizeDao.insertSelective(orderMaterialCustomize);
+		return orderMaterialCustomize;
+	}
+
+	@Override
+	public List<DesignerOrder> queryOrderList(Order order) {
+		List<DesignerOrder> designerOrderList = new ArrayList<>();
+
+		// 查询订单列表 根据条件查询
+		List<Order> orderList = orderDao.selectBySelective(order);
+
+		// 遍历Order列表
+		for (Order ol : orderList) {
+			// 获取订单号
+			String orderNo = ol.getOrderNo();
+
+			// 如果订单类型是 平面物料查询d_order_material
+            if(DesignerConsts.ORDER_TYPE_MATERIAL.equals(ol.getType())){
+                // 根据订单号查询 平面物料
+				OrderMaterial orderMateria = orderMaterialDao.selectByOrderNo(orderNo);
+
+				DesignerOrder designerOrder = new DesignerOrder(order,orderMateria);
+                designerOrderList.add(designerOrder);
+			}
+
+			// 如果订单类型是 定制物料查询 d_order_material_customize
+			if(DesignerConsts.ORDER_TYPE_CUSTOMIZE.equals(ol.getType())){
+
+				// 根据订单号(order_no)查询定制物料
+				OrderMaterialCustomize customizeOrder = orderMaterialCustomizeDao.selectByOrderNo(orderNo);
+
+				List<OrderMaterialCustomizeCarousel> orderMaterialCustomizeCarousels = orderMaterialCustomizeCarouselDao.selectByCustomizeMaterialId(customizeOrder.getId());
+				if (orderMaterialCustomizeCarousels.size() >= 1){
+					customizeOrder.setMainImage(orderMaterialCustomizeCarousels.get(0).getPicUrl());
+				}
+
+				// 封装响应数据
+				DesignerOrder designerOrder = new DesignerOrder(ol,customizeOrder);
+				designerOrderList.add(designerOrder);
+			}
+		}
+
+		return designerOrderList;
+	}
+
+	@Override
+	public OrderMaterial getOrderMeterialByOrderNum(String orderNum) {
+		return orderMaterialDao.selectByOrderNum(orderNum);
+	}
+
+	@Override
+	public Order getOrderByOrderNum(String orderNum, Long outId) {
+		return orderDao.selectByOrderNum(orderNum, outId);
+	}
+
+	@Override
+	public OrderMaterialCarousel getFristCarousel(Long id) {
+		return carouselDao.selectFristCarousel(id);
+	}
+
+	
+	
+}

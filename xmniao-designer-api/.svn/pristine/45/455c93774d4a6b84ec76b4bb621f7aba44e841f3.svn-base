@@ -1,0 +1,19 @@
+package com.xmn.designer.dao.material;
+
+import com.xmn.designer.entity.material.Material;
+
+public interface MaterialDao {
+    int deleteByPrimaryKey(Long id);
+
+    int insert(Material record);
+
+    int insertSelective(Material record);
+
+    Material selectByPrimaryKey(Long id);
+
+    int updateByPrimaryKeySelective(Material record);
+
+    int updateByPrimaryKeyWithBLOBs(Material record);
+
+    int updateByPrimaryKey(Material record);
+}

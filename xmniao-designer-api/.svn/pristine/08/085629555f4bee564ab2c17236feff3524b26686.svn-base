@@ -1,0 +1,49 @@
+package com.xmn.designer.service.postage.impl;
+
+import java.math.BigDecimal;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.google.zxing.oned.CodaBarReader;
+import com.xmn.designer.constants.DesignerConsts;
+import com.xmn.designer.dao.material.MaterialDao;
+import com.xmn.designer.dao.postage.PostageConditionsDao;
+import com.xmn.designer.dao.postage.PostageTemplateDao;
+import com.xmn.designer.entity.material.Material;
+import com.xmn.designer.entity.postage.PostageConditions;
+import com.xmn.designer.entity.postage.PostageTemplate;
+import com.xmn.designer.service.postage.PostageService;
+@Service
+public class PostageServiceImpl implements PostageService{
+	@Autowired
+	private PostageConditionsDao postageConditionsDao;
+	
+	@Autowired
+	private MaterialDao materialDao;
+	
+	@Autowired
+	private PostageTemplateDao postageTemplateDao;
+	
+	@Override
+	public PostageConditions getCondition(Long materialId, Integer areaId) {
+		return postageConditionsDao.selectCondition(materialId,areaId);
+	}
+
+	@Override
+	public BigDecimal calculateCondittion(Long materialId, Integer areaId,Integer num) {
+		PostageConditions condition = postageConditionsDao.selectCondition(materialId,areaId);
+		String type = condition.getType();
+		if(DesignerConsts.POSTAGE_CONDITIONS_TYPE_WEIGHT.equals(type)){
+			Material material = materialDao.selectByPrimaryKey(materialId);
+			num=num*material.getWeight().intValue();
+		}
+		if(num<=condition.getFirstNum()){
+			return condition.getFirstItem();
+		}else{
+			Integer continuedNum=(num-condition.getFirstNum())/condition.getContinuedNum()+((num-condition.getFirstNum())%condition.getContinuedNum()>0?1:0);
+			return condition.getContinuedItem().subtract(new BigDecimal(continuedNum));
+		}
+	}
+
+}

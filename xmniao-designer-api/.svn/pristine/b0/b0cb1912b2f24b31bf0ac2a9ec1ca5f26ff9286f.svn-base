@@ -1,0 +1,37 @@
+package com.xmn.designer.base;
+
+import com.xmn.designer.exception.CustomException;
+import com.xmn.designer.utils.CookieUtils;
+import com.xmn.designer.utils.WebUtils;
+import org.slf4j.Logger;
+
+import java.io.IOException;
+
+public class AbstractController {
+	public final static String SESSION_TOKEN = "sessionToken";
+	
+	public String getToken(){
+		return WebUtils.getRequest().getParameter(SESSION_TOKEN);
+	}
+	//获取cookie的token
+	public String getCookieToken(){
+	    return CookieUtils.getVal(SESSION_TOKEN, WebUtils.getRequest());
+	}
+
+	public void success() throws IOException {
+		new Response(ResponseCode.SUCCESS,"请求成功!").write();
+	}
+
+	public void success(Object result) throws IOException {
+		new Response(ResponseCode.SUCCESS,"请求成功!",result).write();
+	}
+
+	public void success(Object result,String format) throws IOException {
+		new Response(ResponseCode.SUCCESS,"请求成功!",result).write(format);
+	}
+
+	public void error(Logger logger, CustomException e) throws IOException {
+		logger.error(e.getMessage(),e);
+		new Response(e.getCode(),e.getMessage()).write();
+	}
+}

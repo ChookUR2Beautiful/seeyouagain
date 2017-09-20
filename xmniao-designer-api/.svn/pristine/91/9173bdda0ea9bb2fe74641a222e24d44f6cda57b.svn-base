@@ -1,0 +1,146 @@
+package com.xmn.designer.controller.api.v1.order;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.xmn.designer.base.AbstractController;
+import com.xmn.designer.base.Response;
+import com.xmn.designer.base.ResponseCode;
+import com.xmn.designer.controller.api.v1.order.vo.MaterialRequest;
+import com.xmn.designer.entity.account.User;
+import com.xmn.designer.entity.material.OrderMaterial;
+import com.xmn.designer.entity.material.OrderMaterialCarousel;
+import com.xmn.designer.entity.other.Order;
+import com.xmn.designer.service.base.RedisService;
+import com.xmn.designer.service.order.OrderService;
+
+@Controller(value="api-v1-material-controller")
+@RequestMapping(value="designer/material")
+public class OrderController extends AbstractController{
+	
+	@Autowired
+	private OrderService orderService;
+	
+	@Autowired
+	private RedisService redeRedisService;
+	
+	/**
+	 * 
+	 * 方法描述：物料下单接口
+	 * 创建人：jianming  
+	 * 创建时间：2016年11月16日 上午9:28:39
+	 * @return 订单号
+	 */
+	@RequestMapping(value="palce_order",method=RequestMethod.POST)
+	@ResponseBody
+	public void placeOrder(MaterialRequest materialRequest){
+		try {
+			OrderMaterial orderMaterial = new OrderMaterial();
+			orderMaterial.setNums(materialRequest.getNum());
+			orderMaterial.setType(materialRequest.getType());
+			User user = redeRedisService.getDesignerUser(this.getCookieToken());
+			String orderNum = orderService.placeOrder(orderMaterial,materialRequest.getCarouselJson(),materialRequest.getMaterialAttrId(),1L);
+			new Response(ResponseCode.SUCCESS, "生成订单成功",orderNum).write();;
+		} catch (Exception e) {
+			e.printStackTrace();
+			new Response(ResponseCode.FAILURE,"生成订单失败");
+		}
+	}
+	
+	/**
+	 * 
+	 * 方法描述：加载结算页面,显示订单详细信息
+	 * 创建人：jianming  
+	 * 创建时间：2016年11月16日 上午9:31:50
+	 * @return  订单详细,价格
+	 */
+	@RequestMapping(value="detail_order",method=RequestMethod.POST)
+	@ResponseBody
+	public void  detailOrder(@RequestParam(value="orderNum",required=true)String orderNum){
+		try {
+			User user = redeRedisService.getDesignerUser(this.getCookieToken());
+			//查询订单信息
+			Order order=orderService.getOrderByOrderNum(orderNum,user.getOutId());
+			//查询物料订单信息
+			OrderMaterial orderMaterial=orderService.getOrderMeterialByOrderNum(orderNum);
+			//查询首图
+			OrderMaterialCarousel carousel=orderService.getFristCarousel(orderMaterial.getId());
+			Map<String,Object> map=new HashMap<>();
+			map.put("title", orderMaterial.getTitle());
+			map.put("remork", orderMaterial.getRemark());
+			map.put("salePrice", orderMaterial.getSalePrice());
+			map.put("materialAttrGroupVal", orderMaterial.getMaterialAttrGroupVal());
+			map.put("nums", orderMaterial.getNums());
+			map.put("orderAmount", order.getOrderAmount());
+			map.put("orderNo", order.getOrderNo());
+			map.put("picUrl", carousel.getPicUrl());
+			map.put("createTime", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getCreateTime()));
+			new Response(ResponseCode.SUCCESS, "获取订单信息成功",map).write();
+		} catch (Exception e) {
+			e.printStackTrace();
+			new Response(ResponseCode.FAILURE,"获取订单信息失败");
+		}
+		
+	}
+	
+    /**
+     * 
+     * 方法描述：获取运费信息
+     * 创建人：jianming  
+     * 创建时间：2016年11月16日 上午9:34:04
+     */
+	@RequestMapping(value="freight",method=RequestMethod.POST)
+	@ResponseBody
+	public void  freight(){
+		
+	}
+	
+	/**
+	 * 
+	 * 方法描述：提交订单,修改订单收货地址,统计价格
+	 * 创建人：jianming  
+	 * 创建时间：2016年11月16日 上午9:39:56
+	 */
+	@RequestMapping(value="save_order",method=RequestMethod.POST)
+	@ResponseBody
+	public void saveOrder(){
+		
+	}
+	
+	
+	/**
+	 * 
+	 * 方法描述：,计算用户余额是否足够支付,调用显示页面价格接口,显示余额可低用跟网银需支付额度
+	 * 创建人：jianming  
+	 * 创建时间：2016年11月16日 上午9:54:20
+	 */
+	@RequestMapping(value="verify_pay",method=RequestMethod.POST)
+	@ResponseBody
+	public void verifyPay(){
+		
+	}
+	
+	/**
+	 * 
+	 * 方法描述：用户选择支付方式,验证支付密码,调用邓哥支付接口,密码错误记录错误次数
+	 * 创建人：jianming  
+	 * 创建时间：2016年11月16日 上午9:55:29
+	 */
+	@RequestMapping(value="order_pay",method=RequestMethod.POST)
+	@ResponseBody
+	public void orderPay(){
+		
+	}
+	
+	
+	
+}	

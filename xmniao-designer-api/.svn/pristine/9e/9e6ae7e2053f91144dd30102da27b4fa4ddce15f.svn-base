@@ -1,0 +1,17 @@
+package com.xmn.designer.dao.material;
+
+import com.xmn.designer.entity.material.MaterialAttrGroup;
+
+public interface MaterialAttrGroupDao {
+    int deleteByPrimaryKey(Long id);
+
+    int insert(MaterialAttrGroup record);
+
+    int insertSelective(MaterialAttrGroup record);
+
+    MaterialAttrGroup selectByPrimaryKey(Long id);
+
+    int updateByPrimaryKeySelective(MaterialAttrGroup record);
+
+    int updateByPrimaryKey(MaterialAttrGroup record);
+}

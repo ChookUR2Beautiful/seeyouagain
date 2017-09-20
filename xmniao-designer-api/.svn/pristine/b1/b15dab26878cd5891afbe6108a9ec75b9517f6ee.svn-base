@@ -1,0 +1,166 @@
+package com.xmn.designer.controller.api.v1.address;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.xmn.designer.base.Response;
+import com.xmn.designer.base.ResponseCode;
+import com.xmn.designer.controller.api.v1.address.vo.AddressRequest;
+import com.xmn.designer.entity.address.Area;
+import com.xmn.designer.entity.address.DesigberAddress;
+import com.xmn.designer.service.address.DesigberAddressService;
+import com.xmn.designer.utils.JsonUtils;
+import com.xmn.designer.utils.WebUtils;
+
+@Controller(value="api-v1-address-controller")
+@RequestMapping(value="designer/shippingAddress")
+public class DesignerAddressController {
+	
+	@Autowired
+	private DesigberAddressService designerAddressService;
+	
+	/**
+	 * 
+	 * 方法描述：获得默认地址
+	 * 创建人：jianming  
+	 * 创建时间：2016年11月14日 下午5:27:15
+	 */
+	@ResponseBody
+	@RequestMapping(value="/default_address",method=RequestMethod.GET)
+	public Response defaultAddress(@RequestParam(value="token",required=true)String sessionToken){
+		try {
+			DesigberAddress desigberAddress =designerAddressService.getDefaultAddress(sessionToken);
+			return new Response(ResponseCode.SUCCESS,"获取收货地址列表成功",desigberAddress.transformRsponse());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Response(ResponseCode.FAILURE,"获取收货地址列表失败");
+		}
+	}
+	
+	/**
+	 * 
+	 * 方法描述：收货地址列表
+	 * 创建人：jianming  
+	 * 创建时间：2016年11月14日 下午5:01:37   
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value="/list",method=RequestMethod.GET)
+    public Response list(@RequestParam(value="token",required=true)String sessionToken){
+		try {
+			List<DesigberAddress> desigberAddresses = designerAddressService.list(sessionToken);
+			List<Map<String,Object>> desigberAddressResponse=new ArrayList<Map<String,Object>>();
+			for (DesigberAddress desigberAddress : desigberAddresses) {
+				Map<String,Object> map=desigberAddress.transformRsponse();
+				desigberAddressResponse.add(map);
+			}
+			return new Response(ResponseCode.SUCCESS,"获取收货地址列表成功",desigberAddressResponse);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Response(ResponseCode.FAILURE,"获取收货地址列表失败");
+		}
+    }
+	
+	/**
+	 * 
+	 * 方法描述：添加收货地址
+	 * 创建人：jianming  
+	 * 创建时间：2016年11月14日 下午5:22:39   
+	 * @param addressRequest
+	 * @throws IOException 
+	 */
+	@ResponseBody
+	@RequestMapping(value="/add",method=RequestMethod.POST)
+	public void  add(AddressRequest addressRequest,@RequestParam(value="token",required=true)String sessionToken) throws IOException{
+		try {
+			DesigberAddress desigberAddress=addressRequest.convertRequestToBean();
+			designerAddressService.add(desigberAddress,sessionToken);
+			new Response(ResponseCode.SUCCESS,"添加收货地址成功").write();
+		} catch (Exception e) {
+			e.printStackTrace();
+			new Response(ResponseCode.FAILURE,"添加收货地址失败").write();
+		}
+		
+	}
+	
+	/**
+	 * 
+	 * 方法描述：修改
+	 * 创建人：jianming  
+	 * 创建时间：2016年11月14日 下午5:22:52   
+	 * @param addressRequest
+	 * @throws IOException 
+	 */
+	@ResponseBody
+	@RequestMapping(value="/edit",method=RequestMethod.POST)
+	public void  edit(AddressRequest addressRequest,@RequestParam(value="token",required=true)String sessionToken) throws IOException{
+		try {
+			DesigberAddress desigberAddress=addressRequest.convertRequestToBean();
+			designerAddressService.edit(desigberAddress,sessionToken);
+			new Response(ResponseCode.SUCCESS,"修改收货地址成功").write();
+		} catch (Exception e) {
+			e.printStackTrace();
+			new Response(ResponseCode.FAILURE,"修改收货地址失败").write();
+		}
+	}
+	
+	/**
+	 * 
+	 * 方法描述：删除
+	 * 创建人：jianming  
+	 * 创建时间：2016年11月14日 下午5:23:00   
+	 * @param addressRequest
+	 * @throws IOException 
+	 */
+	@ResponseBody
+	@RequestMapping(value="/delete",method=RequestMethod.POST)
+	public void  delete(@RequestParam(value="id",required=true)Integer id,@RequestParam(value="token",required=true)String sessionToken) throws IOException{
+		try {
+			designerAddressService.delete(id,sessionToken);
+			new Response(ResponseCode.SUCCESS,"删除收货地址成功").write();
+		} catch (Exception e) {
+			e.printStackTrace();
+			new Response(ResponseCode.FAILURE,"删除收货地址失败").write();
+		}
+	}
+	
+	
+	/**
+	 * 
+	 * 方法描述：获取字级区域信息
+	 * 创建人：jianming  
+	 * 创建时间：2016年11月15日 下午5:25:32   
+	 * @param pid
+	 * @throws IOException 
+	 */
+	@RequestMapping(value="list_area",method=RequestMethod.POST)
+	@ResponseBody
+	public void listArea(@RequestParam(value="pid",defaultValue="0")Integer pid,@RequestParam(value="token",required=true)String sessionToken) throws IOException{
+	    try {
+			String areasJson = designerAddressService.listArea(pid,sessionToken);
+			HttpServletResponse response = WebUtils.getResponse();
+			response.setContentType("application/json;charset=utf-8");
+			PrintWriter writer = response.getWriter();
+			writer.write(areasJson);
+		} catch (Exception e) {
+			e.printStackTrace();
+			new Response(ResponseCode.FAILURE,"获取子级地址失败").write();
+		}
+	}
+	
+	
+	
+	
+}

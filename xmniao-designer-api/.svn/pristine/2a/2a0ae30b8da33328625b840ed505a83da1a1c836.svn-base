@@ -1,0 +1,184 @@
+package com.xmn.designer.controller.api.v1.material;
+
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.validation.Valid;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSON;
+import com.xmn.designer.base.AbstractController;
+import com.xmn.designer.controller.api.v1.material.vo.MaterialCategoryRequest;
+import com.xmn.designer.controller.api.v1.material.vo.MaterialCreateOrderRequest;
+import com.xmn.designer.controller.api.v1.material.vo.MaterialDetailRequest;
+import com.xmn.designer.controller.api.v1.material.vo.MaterialListRequest;
+import com.xmn.designer.entity.account.User;
+import com.xmn.designer.entity.material.Material;
+import com.xmn.designer.entity.material.MaterialAttr;
+import com.xmn.designer.entity.material.MaterialAttrVal;
+import com.xmn.designer.entity.material.MaterialCarousel;
+import com.xmn.designer.entity.material.MaterialCarouselSource;
+import com.xmn.designer.service.base.RedisService;
+import com.xmn.designer.service.material.MaterialService;
+
+/**
+ * 平面物料controller
+ * 
+ * @author zhouxiaojian
+ * @date 2016/11/18
+ *
+ */
+@Controller( "api-v1-material-controller" )
+@RequestMapping( value = "api/v1/material" )
+public class MaterialController extends AbstractController {
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Autowired
+    private MaterialService materialService;
+    
+    @Autowired
+    private RedisService redisService;
+
+    /**
+     * 分类接口
+     * 
+     * @throws Exception
+     */
+    @ResponseBody
+    @RequestMapping( value = "/category" , method = RequestMethod.POST )
+    public void category(@Valid MaterialCategoryRequest request, BindingResult result)
+            throws Exception {
+        logger.info("【访问物料分类页面显示接口】-【 post /api/v1/material/category】  参数：" + request.toString());
+        if (!request.doValidate(result)) {
+            return;
+        }
+        success(materialService.category(request.getType(), request.getId()));
+        return;
+    }
+
+
+    /**
+     * 基础物料列表接口
+     * 
+     * @throws Exception
+     */
+    @ResponseBody
+    @RequestMapping( value = "/list" , method = RequestMethod.POST )
+    public void list(@Valid MaterialListRequest request, BindingResult result) throws Exception {
+        logger.info("【访问物料列表接口】-【 post /api/v1/material/list】  参数：" + request.toString());
+        if (!request.doValidate(result)) {
+            return;
+        }
+        Map<String,Object> resultMap = materialService.list(request.getMinPrice(), request.getMaxPrice(), request.getCategoryId()
+                , request.getTagId(), request.getOrderType(), request.getPage(),
+                request.getPageSize());
+        
+        success(resultMap,new HashMap<Class<?>, String[]>() {
+            {
+                put(Material.class, new String[] { "id" ,"title", "picUrl","soldTimes" });
+            }
+        });
+        return;
+    }
+    
+    
+    /**
+     * 基础物料详情接口
+     * 
+     * @throws Exception
+     */
+    @ResponseBody
+    @RequestMapping( value = "/detail" , method = RequestMethod.POST )
+    public void detail(@Valid MaterialDetailRequest request, BindingResult result) throws Exception {
+        logger.info("【访问物料详情接口】-【 post /api/v1/material/detail】  参数：" + request.toString());
+        if (!request.doValidate(result)) {
+            return;
+        }
+        Material material = materialService.detail(request.getId(), request.getDeliveryCityNo());
+        success(material,new HashMap<Class<?>, String[]>() {
+            {
+                put(Material.class, new String[] { "id" ,"title", "remark", "monthlySales", "content","shippingPrice","banner" });
+                put(MaterialCarouselSource.class, new String[] { "id" ,"picUrl", "remark", "orderVal"});
+            }
+        });
+        return;
+    }
+
+    /**
+     * 基础物料订单规格选择接口
+     * @param id
+     * @throws Exception
+     */
+    @ResponseBody
+    @RequestMapping( value = "/material_attr" , method = RequestMethod.POST )
+    public void materialAttr(Long id) throws Exception {
+        logger.info("【访问基础物料订单规格选择接口】-【 post /api/v1/material/material_attr】  参数：" + id);
+        if(id==null){
+            failure("物料主键不能为空！");
+            return;
+        }
+        
+        success(materialService.materialAttr(id),new HashMap<Class<?>, String[]>() {
+            {
+                put(MaterialAttr.class, new String[] { "id" ,"name", "sortVal","subList" });
+                put(MaterialAttrVal.class, new String[] { "id" ,"val", "sortVal"});
+            }
+        });
+        
+    }
+    
+    
+    /**
+     * 基础物料编辑接口
+     * @param id
+     * @throws Exception
+     */
+    @ResponseBody
+    @RequestMapping( value = "/edit" , method = RequestMethod.POST )
+    public void edit(Long id) throws Exception {
+        logger.info("【访问基础物料编辑接口】-【 post /api/v1/material/edit】  参数：" + id);
+        if(id==null){
+            failure("物料主键不能为空！");
+            return;
+        }
+        List<MaterialCarousel> list = materialService.edit(id);
+        System.out.println(JSON.toJSONString(list));
+        success(materialService.edit(id),new HashMap<Class<?>, String[]>() {
+            {
+                put(MaterialCarousel.class, new String[] { "id" , "orderVal","subList" });
+                put(MaterialCarouselSource.class, new String[] { "id" , "picUrl","type","orderVal" ,"fontCoordinate","imgCoordinate","imgSize","fontSize","font","fontNum","fontText","imgType"});
+            }
+        });
+        
+    }
+    
+    /**
+     * 基础物料创建订单接口
+     * @param id
+     * @throws Exception
+     */
+    @ResponseBody
+    @RequestMapping( value = "/create_order" , method = RequestMethod.POST )
+    public void createOrder(@Valid  MaterialCreateOrderRequest request, BindingResult result) throws Exception {
+        logger.info("【基础物料创建订单接口】-【 post /api/v1/material/create_order】  参数：" + request.toString());
+        if (!request.doValidate(result)) {
+            return;
+        }
+        User user = redisService.getDesignerUser(this.getToken());
+        Map<String,Object> resultMap = materialService.createOrder(request.convertToMaterialAttrGroup(), request.convertToOrder(user.getId()), request.getDataList(), request.getAreaId(), request.getNums());
+        success(resultMap);
+        return;
+    }
+}

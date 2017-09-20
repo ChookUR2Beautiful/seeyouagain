@@ -1,0 +1,85 @@
+package com.xmn.designer.entity.postage;
+
+import java.math.BigDecimal;
+
+public class PostageConditions {
+    private Long id;
+
+    private Long templateId;
+
+    private BigDecimal firstHeavyFee;
+
+    private BigDecimal continuedHeavy;
+
+    private BigDecimal firstItem;
+
+    private BigDecimal continuedItem;
+
+    private String deliveryCityNo;
+
+    private String type;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getTemplateId() {
+        return templateId;
+    }
+
+    public void setTemplateId(Long templateId) {
+        this.templateId = templateId;
+    }
+
+    public BigDecimal getFirstHeavyFee() {
+        return firstHeavyFee;
+    }
+
+    public void setFirstHeavyFee(BigDecimal firstHeavyFee) {
+        this.firstHeavyFee = firstHeavyFee;
+    }
+
+    public BigDecimal getContinuedHeavy() {
+        return continuedHeavy;
+    }
+
+    public void setContinuedHeavy(BigDecimal continuedHeavy) {
+        this.continuedHeavy = continuedHeavy;
+    }
+
+    public BigDecimal getFirstItem() {
+        return firstItem;
+    }
+
+    public void setFirstItem(BigDecimal firstItem) {
+        this.firstItem = firstItem;
+    }
+
+    public BigDecimal getContinuedItem() {
+        return continuedItem;
+    }
+
+    public void setContinuedItem(BigDecimal continuedItem) {
+        this.continuedItem = continuedItem;
+    }
+
+    public String getDeliveryCityNo() {
+        return deliveryCityNo;
+    }
+
+    public void setDeliveryCityNo(String deliveryCityNo) {
+        this.deliveryCityNo = deliveryCityNo == null ? null : deliveryCityNo.trim();
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type == null ? null : type.trim();
+    }
+}

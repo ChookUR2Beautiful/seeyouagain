@@ -1,0 +1,5 @@
+package com.xmn.designer.controller.api.v1.order.vo;
+
+public class OrderResponse {
+
+}

@@ -1,0 +1,16 @@
+package com.xmn.designer.service.material;
+
+import java.util.Map;
+
+
+/**
+ * 平面物料服务类
+ * @author zhouxiaojian
+ * @date   2016/11/18
+ */
+public interface MaterialService {
+    
+    public Map<String,Object> category(String type,Long id);
+    
+
+}

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.designer.dao.material.MaterialCategoryTagRelationDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.designer.entity.material.MaterialCategoryTagRelation" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="category_id" property="categoryId" jdbcType="BIGINT" />
+    <result column="material_tag_id" property="materialTagId" jdbcType="BIGINT" />
+    <result column="material_tag_val" property="materialTagVal" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="category_val" property="categoryVal" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, category_id, material_tag_id, material_tag_val, create_time,category_val
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from d_material_category_tag_relation
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+   <select id="selectByCategoryId" resultType="com.xmn.designer.entity.material.MaterialCategoryTagRelation" parameterType="java.lang.Long" >
+    select 
+    d.id id , d.category_id categoryId, d.material_tag_id materialTagId, d.material_tag_val materialTagVal, d.create_time createTime,d.category_val categoryVal,t.pic_url picUrl
+    from d_material_category_tag_relation d left join d_material_tag t on material_tag_id = t.id
+    where d.category_id = #{categoryId}  order by create_time desc
+  </select>
+   <select id="selectByMaterialTagId" resultType="com.xmn.designer.entity.material.MaterialCategoryTagRelation" parameterType="java.lang.Long" >
+    select 
+    d.id id , d.category_id categoryId, d.material_tag_id materialTagId, d.material_tag_val materialTagVal, d.create_time createTime,c.name  categoryVal,t.pic_url picUrl
+    from d_material_category_tag_relation d left join d_material_tag t on material_tag_id = t.id LEFT JOIN d_material_category c on d.category_id = c.id
+    where d.material_tag_id = #{materialTagId}  order by create_time desc
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from d_material_category_tag_relation
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmn.designer.entity.material.MaterialCategoryTagRelation" >
+    insert into d_material_category_tag_relation (id, category_id, material_tag_id, 
+      material_tag_val, create_time,category_val)
+    values (#{id,jdbcType=BIGINT}, #{categoryId,jdbcType=BIGINT}, #{materialTagId,jdbcType=BIGINT}, 
+      #{materialTagVal,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},#{categoryVal,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmn.designer.entity.material.MaterialCategoryTagRelation" >
+    insert into d_material_category_tag_relation
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="categoryId != null" >
+        category_id,
+      </if>
+      <if test="materialTagId != null" >
+        material_tag_id,
+      </if>
+      <if test="materialTagVal != null" >
+        material_tag_val,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="categoryVal != null" >
+        category_val,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="categoryId != null" >
+        #{categoryId,jdbcType=BIGINT},
+      </if>
+      <if test="materialTagId != null" >
+        #{materialTagId,jdbcType=BIGINT},
+      </if>
+      <if test="materialTagVal != null" >
+        #{materialTagVal,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="categoryVal != null" >
+        #{categoryVal,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.designer.entity.material.MaterialCategoryTagRelation" >
+    update d_material_category_tag_relation
+    <set >
+      <if test="categoryId != null" >
+        category_id = #{categoryId,jdbcType=BIGINT},
+      </if>
+      <if test="materialTagId != null" >
+        material_tag_id = #{materialTagId,jdbcType=BIGINT},
+      </if>
+      <if test="materialTagVal != null" >
+        material_tag_val = #{materialTagVal,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="categoryVal != null" >
+        category_val = #{categoryVal,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.designer.entity.material.MaterialCategoryTagRelation" >
+    update d_material_category_tag_relation
+    set category_id = #{categoryId,jdbcType=BIGINT},
+      material_tag_id = #{materialTagId,jdbcType=BIGINT},
+      material_tag_val = #{materialTagVal,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      category_val = #{categoryVal,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

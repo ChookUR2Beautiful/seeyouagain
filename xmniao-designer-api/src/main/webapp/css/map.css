@@ -1,0 +1,107 @@
+
+        .wrap{
+            width: 100%;
+            height: 100%;
+        }
+
+        .map{
+            width: 100%;
+            height: 100%;
+            padding-top:55px;
+            box-sizing: border-box;
+        }
+
+        .wrap-header{
+            position: fixed;
+            width: 100%;
+            height: 55px;
+            background: #fff;
+            padding:10px 15px;
+            box-sizing: border-box;
+            z-index: 9;
+        }
+
+        .wrap-header input{
+            width: 100%;
+            height: auto;
+            height: 34px;
+            border:1px solid #ddd;
+            outline: none;
+            box-sizing: border-box;
+            padding: 10px;
+            color:#666;
+            font-size: 14px;
+        }
+
+        .map-search-icon{
+            display: block;
+            position: absolute;
+            right: 25px;
+            top:16px;
+            width: 21px;
+            height: 21px;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            background-image: url(../imgs/search_icon.png);
+        }
+
+        
+     .info {
+            border: solid 1px silver;
+        }
+        div.info-top {
+            position: relative;
+            background: none repeat scroll 0 0 #F9F9F9;
+            border-bottom: 1px solid #CCC;
+            border-radius: 5px 5px 0 0;
+        }
+        div.info-top div {
+            display: inline-block;
+            color: #333333;
+            font-size: 14px;
+            font-weight: bold;
+            line-height: 31px;
+            padding: 0 10px;
+        }
+        div.info-top img {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            transition-duration: 0.25s;
+        }
+        div.info-top img:hover {
+            box-shadow: 0px 0px 5px #000;
+        }
+        div.info-middle {
+            font-size: 12px;
+            padding: 6px;
+            line-height: 20px;
+        }
+        div.info-bottom {
+            height: 0px;
+            width: 100%;
+            clear: both;
+            text-align: center;
+        }
+        div.info-bottom img {
+            position: relative;
+            z-index: 104;
+        }
+       
+
+        .info-confirmbox{
+            width: 100%;
+            height: 36px;
+            text-align: center;
+        }
+
+        .info-confirmbox a{
+            display: inline-block;
+            padding:5px 8px;
+            width: 80%;
+            border-radius: 3px;
+            background: #3692f6;
+            font-size: 14px;
+            color:#fff;
+        }

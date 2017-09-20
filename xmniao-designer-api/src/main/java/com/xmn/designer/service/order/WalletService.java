@@ -1,0 +1,36 @@
+package com.xmn.designer.service.order;
+
+import com.xmn.designer.entity.account.User;
+
+import java.util.Map;
+
+public interface WalletService {
+    /**
+     * 钱包余额
+     * 
+     * @param sellerAccount
+     * @return
+     */
+    public Map<String, String> getWalletBalance(User user);
+
+    /**
+     * 更新钱包余额
+     * @Title: updateWalletAmount 
+     * @param @param paramMap
+     * @param @return    设定文件 
+     * @return Map<String,String>    返回类型 
+     * @throws
+     */
+    public Map<String, String> updateWalletAmount(Map<String, String> paramMap);
+    
+    
+    /**
+     * 检查支付密码, 如果24小时内3次, 错误输入3次支付密码, "冻结" 该商户
+     * @param payPasswd
+     * @param sellerAccount
+     * @return
+     */
+    Map<String, Object> checkPayPasswd(String payPasswd, User user) throws Exception;
+    
+
+}

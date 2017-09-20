@@ -1,0 +1,65 @@
+package com.xmn.designer.controller.api.v1.material;
+
+
+import javax.validation.Valid;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.xmn.designer.base.AbstractController;
+import com.xmn.designer.controller.api.v1.material.vo.MaterialCategoryRequest;
+import com.xmn.designer.controller.api.v1.material.vo.MaterialListRequest;
+import com.xmn.designer.service.material.MaterialService;
+
+/**
+ * 平面物料controller
+ * @author zhouxiaojian
+ * @date 2016/11/18
+ *
+ */
+@Controller("api-v1-material-controller")
+@RequestMapping(value = "api/v1/material")
+public class MaterialController extends AbstractController{
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    
+    @Autowired
+    private MaterialService materialService;
+    
+    /**
+     * 分类接口
+     * @throws Exception 
+     */
+    @ResponseBody
+    @RequestMapping(value = "/category",method = RequestMethod.POST)
+    public void category(@Valid MaterialCategoryRequest request, BindingResult result) throws Exception {
+        logger.info("【访问物料分类页面显示接口】-【 post /api/v1/material/category】  参数："+request.toString());
+        if (!request.doValidate(result)) {
+            return;
+        }
+        success(materialService.category(request.getType(), request.getId()));
+        return;
+    }
+    
+    
+    /**
+     * 基础物料列表接口
+     * @throws Exception 
+     */
+    @ResponseBody
+    @RequestMapping(value = "/list",method = RequestMethod.POST)
+    public void list(@Valid MaterialListRequest request, BindingResult result) throws Exception {
+        logger.info("【访问物料分类页面显示接口】-【 post /api/v1/material/list】  参数："+request.toString());
+        if (!request.doValidate(result)) {
+            return;
+        }
+        success();
+        return;
+    }
+    
+}

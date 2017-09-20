@@ -1,0 +1,56 @@
+
+####################################
+# joint   Database Connectivity Propertie #
+#####################################
+jointDriver=com.mysql.jdbc.Driver
+jointUrl=jdbc\:mysql\://192.168.50.251\:3306/test_data4?characterEncoding\=utf-8&amp;zeroDateTimeBehavior\=convertToNull&amp;allowMultiQueries\=true
+jointUser=root
+jointPassword=xmn2014qwer
+
+
+
+####################################
+# burs  Database Connectivity Propertie #
+#####################################
+bursDriver=com.mysql.jdbc.Driver
+bursUrl=jdbc\:mysql\://192.168.50.251\:3306/test_data10?characterEncoding\=utf-8&amp;zeroDateTimeBehavior\=convertToNull&amp;allowMultiQueries\=true
+bursUser=root
+bursPassword=xmn2014qwer
+
+
+####################################
+# xmnpay Database Connectivity Propertie #
+#####################################
+xmnpayDriver=com.mysql.jdbc.Driver
+xmnpayUrl=jdbc\:mysql\://192.168.50.251\:3306/test_data9?characterEncoding\=utf-8&amp;zeroDateTimeBehavior\=convertToNull&amp;allowMultiQueries\=true
+xmnpayUser=root
+xmnpayPassword=xmn2014qwer
+
+
+
+
+
+##############################################
+# setting all Database is open  #
+##############################################
+isOpen=false
+
+############################################################
+# Business to consumer subsidies activities automatically  #
+############################################################
+isAutomatic=false
+
+####################
+sass_return_amount=108
+
+####################
+saas_pre=36
+
+
+
+
+
+
+
+
+

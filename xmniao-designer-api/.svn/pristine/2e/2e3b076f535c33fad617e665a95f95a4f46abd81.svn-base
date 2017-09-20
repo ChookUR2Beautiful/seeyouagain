@@ -1,0 +1,237 @@
+package com.xmn.designer.controller.api.v1.order;
+
+import com.xmn.designer.base.AbstractController;
+import com.xmn.designer.base.Response;
+import com.xmn.designer.base.ResponseCode;
+import com.xmn.designer.constants.PaymentTypeConsts;
+import com.xmn.designer.entity.order.DesignerOrder;
+import com.xmn.designer.controller.api.v1.order.vo.OrderListRequest;
+import com.xmn.designer.controller.api.v1.order.vo.PayCheckPayPasswdRequest;
+import com.xmn.designer.entity.account.User;
+import com.xmn.designer.entity.material.OrderMaterial;
+import com.xmn.designer.entity.material.OrderMaterialCarousel;
+import com.xmn.designer.entity.order.Order;
+import com.xmn.designer.service.base.RedisService;
+import com.xmn.designer.service.order.OrderService;
+import com.xmn.designer.service.order.WalletService;
+import com.xmn.designer.utils.CalendarUtil;
+import org.jsoup.helper.StringUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Controller(value="api-v1-order-controller")
+@RequestMapping(value="api/v1/order")
+public class OrderController extends AbstractController{
+	
+	private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
+
+	@Autowired
+	private OrderService orderService;
+
+	@Autowired
+	private RedisService redeRedisService;
+	
+	@Autowired
+	private WalletService walletService;
+	
+
+	/**
+	 *
+	 * 方法描述：物料下单接口
+	 * 创建人：jianming
+	 * 创建时间：2016年11月16日 上午9:28:39
+	 * @return 订单号
+	 * @throws IOException 
+	 *//*
+	@RequestMapping(value="palce_order",method=RequestMethod.POST)
+	@ResponseBody
+	public void placeOrder(MaterialRequest materialRequest) throws IOException{
+		try {
+			OrderMaterial orderMaterial = new OrderMaterial();
+			orderMaterial.setNums(materialRequest.getNum());
+//			orderMaterial.setType(materialRequest.getType());
+			User user = redeRedisService.getDesignerUser(this.getToken());
+			String orderNum = orderService.placeOrder(orderMaterial,materialRequest.getCarouselJson(),materialRequest.getMaterialAttrId(),1L);
+			new Response(ResponseCode.SUCCESS, "生成订单成功",orderNum).write();
+		} catch (Exception e) {
+			e.printStackTrace();
+			new Response(ResponseCode.FAILURE,"生成订单失败").write();
+		}
+	}
+*/
+	/**
+	 *
+	 * 方法描述：加载结算页面,显示订单详细信息
+	 * 创建人：jianming
+	 * 创建时间：2016年11月16日 上午9:31:50
+	 * @return  订单详细,价格
+	 * @throws IOException 
+	 */
+	@RequestMapping(value="detail_order",method=RequestMethod.POST)
+	@ResponseBody
+	public void  detailOrder(@RequestParam(value="orderNum",required=true)String orderNum) throws IOException{
+		try {
+			User user = redeRedisService.getDesignerUser(this.getToken());
+			//查询订单信息
+			Order order=orderService.getOrderByOrderNum(orderNum,user.getId());
+			//查询物料订单信息
+			OrderMaterial orderMaterial=orderService.getOrderMeterialByOrderNum(orderNum);
+			//查询首图
+			OrderMaterialCarousel carousel=orderService.getFristCarousel(orderMaterial.getId());
+			Map<String,Object> map=new HashMap<>();
+			map.put("title", orderMaterial.getTitle());
+			map.put("remork", orderMaterial.getRemark());
+			map.put("salePrice", orderMaterial.getSalePrice());
+			map.put("materialAttrGroupVal", orderMaterial.getMaterialAttrGroupVal());
+			map.put("nums", orderMaterial.getNums());
+			map.put("orderAmount", order.getOrderAmount());
+			map.put("orderNo", order.getOrderNo());
+			map.put("picUrl", carousel.getPicUrl());
+			map.put("createTime", CalendarUtil.getDateString(order.getCreateTime(),CalendarUtil.FORMAT1));
+			new Response(ResponseCode.SUCCESS, "获取订单信息成功",map).write();
+		} catch (Exception e) {
+			e.printStackTrace();
+			new Response(ResponseCode.FAILURE,"获取订单信息失败").write();
+		}
+
+	}
+
+    /**
+     *
+     * 方法描述：获取运费信息
+     * 创建人：jianming
+     * 创建时间：2016年11月16日 上午9:34:04
+     */
+	@RequestMapping(value="freight",method=RequestMethod.POST)
+	@ResponseBody
+	public void  freight(){
+
+	}
+
+	/**
+	 *
+	 * 方法描述：计算用户余额是否足够支付,调用显示页面价格接口,显示余额可低用跟网银需支付额度
+	 * 创建人：jianming
+	 * 创建时间：2016年11月16日 上午9:54:20
+	 */
+	@RequestMapping(value="verify_pay",method=RequestMethod.POST)
+	@ResponseBody
+	public Response verifyPay(@RequestParam(value="orderNum",required=true)String orderNum){
+		if(StringUtil.isBlank(orderNum)){
+			return	new Response(ResponseCode.FAILURE, "订单编号为空");
+		}
+		User user = redeRedisService.getDesignerUser(this.getToken());
+		if(user==null){
+			return new Response(ResponseCode.TOKENERR, "验证token失败");
+		}
+		//查询订单信息
+		Order order=orderService.getOrderByOrderNum(orderNum,user.getOutId());
+		if(null==order){
+			return new Response(ResponseCode.BILL_NO_NOT_EXIST, "订单号不存在");
+		}
+		if(null==order.getMobile()){
+			return new Response(ResponseCode.BILL_NO_NOT_EXIST, "订单信息不完整");
+		}
+		if(order.getStatus()!=0){
+			return new Response(ResponseCode.BILL_CAN_NOT_TRANSFER, "订单已支付");
+		}
+		//订单总额  ,商品名称 ,用户余额,邮费
+		//查询物料订单信息
+		OrderMaterial orderMaterial=orderService.getOrderMeterialByOrderNum(orderNum);
+		Map<String, String> walletMap = walletService.getWalletBalance(user);
+		BigDecimal walletAmount = new BigDecimal(walletMap.get("amount")).setScale(2, BigDecimal.ROUND_HALF_UP);// 商家钱包余额
+		Map<String,Object> resultMap=new HashMap<String, Object>();
+		resultMap.put("orderAmount", order.getOrderAmount().add(order.getFreight()));
+		resultMap.put("title", orderMaterial.getTitle());
+		resultMap.put("freight", order.getFreight());
+		resultMap.put("amount", walletAmount);
+		resultMap.put("orderNum", orderNum); // 订单编号
+		resultMap.put("sypay_type", PaymentTypeConsts.sypay); // 钱包余额类型
+		resultMap.put("wxpay_type", PaymentTypeConsts.wxpay); // 微信支付类型
+		resultMap.put("alipay_type", PaymentTypeConsts.alipay); // 支付宝类型
+		boolean isEnough=false;
+		if (walletAmount.subtract(order.getOrderAmount().add(order.getFreight())).doubleValue() > 0) { // 判断商家钱包余额是否足够支付红包总金额
+			isEnough = true;
+		}
+		resultMap.put("isEnough", isEnough);	// 是否足够支付
+		return new Response(ResponseCode.SUCCESS, "确认支付页面数据加载成功",resultMap);
+	}
+
+	
+	/**
+     * 校验支付密码,输入错误3次 "冻结" 该商户.
+     */
+    @ResponseBody
+    @RequestMapping(value = "check_pay_passwd",method = RequestMethod.POST)
+    public Response checkPayPasswd(@Valid PayCheckPayPasswdRequest request, BindingResult result) throws Exception {
+        if (!request.doValidate(result)) {
+        	return new Response(ResponseCode.PARAM_ERROR,"密码为空!");
+        }
+
+        User user = redeRedisService.getDesignerUser(this.getToken());
+        String payPasswd = request.getPayPasswd();
+
+        Map<String,Object> map;
+        try {
+            map = walletService.checkPayPasswd(payPasswd,user);
+        } catch (Exception e) {
+            logger.error("调用自设计校验支付密码接口出现异常:",e);
+            return  new Response(ResponseCode.FAILURE,"请求失败");
+        }
+
+       return new Response(ResponseCode.SUCCESS,"请求成功!",map);
+
+    }
+	
+	
+	/**
+	 *
+	 * 方法描述：第三方支付和余额支付接口,改变订单支付状态
+	 * 创建人：jianming
+	 * 创建时间：2016年11月16日 上午9:55:29
+	 */
+	@RequestMapping(value="order_pay",method=RequestMethod.POST )
+	@ResponseBody
+	public void orderPay(@RequestParam(value = "orderNum", required = true)  String orderNo,
+            @RequestParam(value = "payType", required = true) Integer payType){
+
+	}
+
+
+	/**
+	 * 获取订单列表
+	 */
+	@ResponseBody
+	@RequestMapping(value = "list",method = RequestMethod.POST)
+	public void list(@Valid OrderListRequest request, BindingResult result) throws IOException {
+		logger.info("调用[获取订单列表接口 /api/v1/order/list] 参数:" + request.toString());
+		try {
+			Order order = request.convertToOrder();
+            // 获取用户id
+			String sessionToken = this.getToken();
+			User designerUser = redeRedisService.getDesignerUser(sessionToken);
+			order.setUid(designerUser.getId());
+
+			//查询订单列表
+			List<DesignerOrder> orderList = orderService.queryOrderList(order);
+            success(orderList);
+		} catch (Exception e) {
+            logger.error("调用时[获取订单列表接口 /api/v1/order/list] 出现异常!",e);
+			failure();
+		}
+	}
+
+
+
+}

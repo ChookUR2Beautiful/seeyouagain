@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.designer.dao.material.OrderMaterialCarouselDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.designer.entity.material.OrderMaterialCarousel" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="order_material_id" property="orderMaterialId" jdbcType="BIGINT" />
+    <result column="pic_url" property="picUrl" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="order_val" property="orderVal" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, order_material_id, pic_url, remark, order_val, type
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from d_order_material_carousel
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from d_order_material_carousel
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmn.designer.entity.customize.OrderMaterialCarousel" >
+    insert into d_order_material_carousel (id, order_material_id, pic_url, 
+      remark, order_val, type
+      )
+    values (#{id,jdbcType=BIGINT}, #{orderMaterialId,jdbcType=BIGINT}, #{picUrl,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR}, #{orderVal,jdbcType=INTEGER}, #{type,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmn.designer.entity.customize.OrderMaterialCarousel" >
+    insert into d_order_material_carousel
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="orderMaterialId != null" >
+        order_material_id,
+      </if>
+      <if test="picUrl != null" >
+        pic_url,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="orderVal != null" >
+        order_val,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="orderMaterialId != null" >
+        #{orderMaterialId,jdbcType=BIGINT},
+      </if>
+      <if test="picUrl != null" >
+        #{picUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="orderVal != null" >
+        #{orderVal,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.designer.entity.customize.OrderMaterialCarousel" >
+    update d_order_material_carousel
+    <set >
+      <if test="orderMaterialId != null" >
+        order_material_id = #{orderMaterialId,jdbcType=BIGINT},
+      </if>
+      <if test="picUrl != null" >
+        pic_url = #{picUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="orderVal != null" >
+        order_val = #{orderVal,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.designer.entity.customize.OrderMaterialCarousel" >
+    update d_order_material_carousel
+    set order_material_id = #{orderMaterialId,jdbcType=BIGINT},
+      pic_url = #{picUrl,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      order_val = #{orderVal,jdbcType=INTEGER},
+      type = #{type,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

@@ -1,0 +1,10 @@
+#redis.HostName=192.168.50.113
+redis.HostName=192.168.50.50
+redis.Port=6379
+redis.Passwd=redispasswd
+
+# Redis\u5b58\u653e\u6570\u636e\u7f13\u5b58\u65f6\u95f4\u5355\u4f4d\u5168\u4e3a\u5206\u949f
+# 43200 = 60*24*30 // 30\u5929
+redis.time.sessionToken = 43200
+
+

@@ -1,0 +1,43 @@
+package com.xmn.designer.entity.other;
+
+public class MaterialCategoryAttrVal {
+    private Long id;
+
+    private Long categoryAttrId;
+
+    private String val;
+
+    private Integer sortVal;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getCategoryAttrId() {
+        return categoryAttrId;
+    }
+
+    public void setCategoryAttrId(Long categoryAttrId) {
+        this.categoryAttrId = categoryAttrId;
+    }
+
+    public String getVal() {
+        return val;
+    }
+
+    public void setVal(String val) {
+        this.val = val == null ? null : val.trim();
+    }
+
+    public Integer getSortVal() {
+        return sortVal;
+    }
+
+    public void setSortVal(Integer sortVal) {
+        this.sortVal = sortVal;
+    }
+}

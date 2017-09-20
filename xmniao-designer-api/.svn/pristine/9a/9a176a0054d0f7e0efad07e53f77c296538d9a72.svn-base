@@ -1,0 +1,23 @@
+package com.xmn.designer.service.material;
+
+import java.util.List;
+import java.util.Map;
+
+import com.xmn.designer.entity.material.Material;
+
+
+/**
+ * 平面物料服务类
+ * @author zhouxiaojian
+ * @date   2016/11/18
+ */
+public interface MaterialService {
+    
+    public Map<String,Object> category(String type,Long id);
+    
+    public List<Material> list(String minPrice,String maxPrice,String categoryId,String tagId,String orderType,Integer page ,Integer pageSize);
+    
+    
+    
+
+}

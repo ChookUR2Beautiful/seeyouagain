@@ -1,0 +1,103 @@
+package com.xmn.designer.service.order.impl;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.thrift.TException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.xmn.designer.base.ResponseCode;
+import com.xmn.designer.base.thrift.common.ResponseData;
+import com.xmn.designer.base.thrift.exception.FailureException;
+import com.xmn.designer.base.thrift.service.OrderPayService.Iface;
+import com.xmn.designer.constants.DesignerConsts;
+import com.xmn.designer.constants.PaymentTypeConsts;
+import com.xmn.designer.dao.account.UserDao;
+import com.xmn.designer.dao.material.MaterialDao;
+import com.xmn.designer.dao.material.OrderMaterialDao;
+import com.xmn.designer.entity.account.User;
+import com.xmn.designer.entity.material.OrderMaterial;
+import com.xmn.designer.entity.order.Order;
+import com.xmn.designer.service.order.OrderService;
+@Service
+public class OrderPayServiceImpl implements Iface {
+	@Autowired
+	private OrderService orderService;
+	
+	@Autowired
+	private UserDao userDao;
+	
+	@Autowired
+	private MaterialDao materialDao;
+	
+	@Autowired
+	private OrderMaterialDao orderMaterialDao;
+	
+	
+	@Transactional(propagation = Propagation.REQUIRED)
+	@Override
+	public ResponseData updateOrderInfo(Map<String, String> walletMap) throws FailureException, TException {
+		try {
+			String orderNo = walletMap.get("order_no");  //订单号
+			String status = walletMap.get("status");	//支付状态
+			String payType = walletMap.get("pay_type");	 //支付类型
+			String payId = walletMap.get("pay_id");	//支付Id
+			String payCode = walletMap.get("pay_code");  //第三方支付交易号/订单号
+			String totalAmount = walletMap.get("total_amount");  //订单总金额
+			String zbalance = walletMap.get("zbalance");  //余额支付赠送金额
+			String amount = walletMap.get("amount");  //余额支付金额
+			String balance = walletMap.get("balance");  //钱包支付分账金额
+			String commision = walletMap.get("commision");  //钱包支付佣金金额
+			String integral = walletMap.get("integral");  //钱包支付佣金金额
+			String profit = walletMap.get("profit");  //钱包支付收益金额
+			if(!("1".equals(status)||"2".equals(status))){
+				return new ResponseData(ResponseCode.FAILURE,"订单支付状态有误",null);
+			}
+			if(StringUtils.isBlank(orderNo)){
+				return new ResponseData(ResponseCode.FAILURE,"订单号不存在",null);
+			}
+			String sellerId = walletMap.get("sellerid");
+			User user = userDao.findUserByOutId(new Long(sellerId));
+			Order order = orderService.getOrderByOrderNum(orderNo, new Long(user.getId()));
+			if(order==null){
+				return new ResponseData(ResponseCode.FAILURE,"订单号不存在",null);
+			}
+			BigDecimal orderAmout = order.getOrderAmount().add(order.getFreight());
+			BigDecimal amout = new BigDecimal(totalAmount).setScale(2,   BigDecimal.ROUND_HALF_UP);
+			if(orderAmout.compareTo(amout)!=0){
+				return new ResponseData(ResponseCode.FAILURE,"支付金额跟订单总金额不一致",null);
+			}	
+			Order order1=new Order();
+			order1.setId(order.getId());
+			order1.setPayTime(new Date());
+			order1.setPayStatus(DesignerConsts.ORDER_STATUS_IS_PAYMENT);
+			order1.setStatus(2);
+			order1.setVersionLock(order.getVersionLock());
+			if(PaymentTypeConsts.sypay.equals(payType)){	//余额支付
+				order1.setPayType(PaymentTypeConsts.sypay);
+				BigDecimal decimal = (new BigDecimal(zbalance).add(new BigDecimal(amount)).add(new BigDecimal(balance)).add(new BigDecimal(commision))
+				.add(new BigDecimal(integral)).add(new BigDecimal(profit))).setScale(2,   BigDecimal.ROUND_HALF_UP);
+				if(orderAmout.compareTo(decimal)!=0){
+					return new ResponseData(ResponseCode.FAILURE,"余额支付金额跟订单总金额不一致",null);
+				}
+				order1.setBalance(decimal);
+			}else{
+				order1.setPayType(payType);
+				order1.setTradeNo(payCode);	
+			}
+			orderService.payOrder(order1);
+			OrderMaterial orderMaterial = orderMaterialDao.selectByOrderNum(orderNo);
+			materialDao.updateSoldTimes(orderMaterial.getMaterialId());
+			return new ResponseData(ResponseCode.SUCCESS,"更新支付状态成功",null);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseData(ResponseCode.FAILURE,"更新支付状态失败",null);
+		}
+	}
+
+}

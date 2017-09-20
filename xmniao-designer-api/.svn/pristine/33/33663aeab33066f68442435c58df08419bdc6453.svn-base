@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.designer.dao.postage.PostageConditionsDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.designer.entity.postage.PostageConditions" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="template_id" property="templateId" jdbcType="BIGINT" />
+    <result column="first_item" property="firstItem" jdbcType="DECIMAL" />
+    <result column="first_num" property="firstNum" jdbcType="INTEGER" />
+    <result column="continued_item" property="continuedItem" jdbcType="DECIMAL" />
+    <result column="continued_num" property="continuedNum" jdbcType="INTEGER" />
+    <result column="delivery_city_no" property="deliveryCityNo" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    d_postage_conditions.id, 
+    d_postage_conditions.template_id, 
+    d_postage_conditions.first_item, 
+    d_postage_conditions.first_num, 
+    d_postage_conditions.continued_item, 
+    d_postage_conditions.continued_num, 
+    d_postage_conditions.delivery_city_no, 
+    d_postage_conditions.type
+  </sql>
+  <select id="selectShippingPrice" resultMap="BaseResultMap"  >
+    select 
+    <include refid="Base_Column_List" />
+    from d_postage_conditions
+    where template_id = (select postage_template_id from d_supplier where  id = #{supplierId}) and delivery_city_no =#{deliveryCityNo}
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from d_postage_conditions
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from d_postage_conditions
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmn.designer.entity.postage.PostageConditions" >
+    insert into d_postage_conditions (id, template_id, first_item, 
+      first_num, continued_item, continued_num, 
+      delivery_city_no, type)
+    values (#{id,jdbcType=BIGINT}, #{templateId,jdbcType=BIGINT}, #{firstItem,jdbcType=DECIMAL}, 
+      #{firstNum,jdbcType=INTEGER}, #{continuedItem,jdbcType=DECIMAL}, #{continuedNum,jdbcType=INTEGER}, 
+      #{deliveryCityNo,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmn.designer.entity.postage.PostageConditions" >
+    insert into d_postage_conditions
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="templateId != null" >
+        template_id,
+      </if>
+      <if test="firstItem != null" >
+        first_item,
+      </if>
+      <if test="firstNum != null" >
+        first_num,
+      </if>
+      <if test="continuedItem != null" >
+        continued_item,
+      </if>
+      <if test="continuedNum != null" >
+        continued_num,
+      </if>
+      <if test="deliveryCityNo != null" >
+        delivery_city_no,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="templateId != null" >
+        #{templateId,jdbcType=BIGINT},
+      </if>
+      <if test="firstItem != null" >
+        #{firstItem,jdbcType=DECIMAL},
+      </if>
+      <if test="firstNum != null" >
+        #{firstNum,jdbcType=INTEGER},
+      </if>
+      <if test="continuedItem != null" >
+        #{continuedItem,jdbcType=DECIMAL},
+      </if>
+      <if test="continuedNum != null" >
+        #{continuedNum,jdbcType=INTEGER},
+      </if>
+      <if test="deliveryCityNo != null" >
+        #{deliveryCityNo,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.designer.entity.postage.PostageConditions" >
+    update d_postage_conditions
+    <set >
+      <if test="templateId != null" >
+        template_id = #{templateId,jdbcType=BIGINT},
+      </if>
+      <if test="firstItem != null" >
+        first_item = #{firstItem,jdbcType=DECIMAL},
+      </if>
+      <if test="firstNum != null" >
+        first_num = #{firstNum,jdbcType=INTEGER},
+      </if>
+      <if test="continuedItem != null" >
+        continued_item = #{continuedItem,jdbcType=DECIMAL},
+      </if>
+      <if test="continuedNum != null" >
+        continued_num = #{continuedNum,jdbcType=INTEGER},
+      </if>
+      <if test="deliveryCityNo != null" >
+        delivery_city_no = #{deliveryCityNo,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.designer.entity.postage.PostageConditions" >
+    update d_postage_conditions
+    set template_id = #{templateId,jdbcType=BIGINT},
+      first_item = #{firstItem,jdbcType=DECIMAL},
+      first_num = #{firstNum,jdbcType=INTEGER},
+      continued_item = #{continuedItem,jdbcType=DECIMAL},
+      continued_num = #{continuedNum,jdbcType=INTEGER},
+      delivery_city_no = #{deliveryCityNo,jdbcType=VARCHAR},
+      type = #{type,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="selectCondition" resultMap="BaseResultMap">
+  	SELECT <include refid="Base_Column_List" /> FROM `d_postage_conditions`  join d_postage_template tem on d_postage_conditions.template_id = tem.id join d_supplier sup on sup.postage_template_id = tem.id join d_material mat on mat.supplier_id = sup.id
+where mat.id=#{materialId} and (d_postage_conditions.delivery_city_no like '${areaId},%' or  d_postage_conditions.delivery_city_no like '%,${areaId},%' or  d_postage_conditions.delivery_city_no like '%,${areaId}');
+  </select> 
+</mapper>

@@ -1,0 +1,45 @@
+package com.xmn.designer.base;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
+import java.util.HashMap;
+
+/**
+ * create 2016/11/23
+ *
+ * @author yangQiang
+ */
+
+public class ExpressInfo {
+
+    private HashMap<String,String> expType;
+    private String expressTypeJson;
+
+    public String getExpressTypeJson() {
+        return expressTypeJson;
+    }
+
+    public void setExpressTypeJson(String expressTypeJson) {
+        this.expressTypeJson = expressTypeJson;
+    }
+
+    public HashMap<String, String> getExpType() {
+        return expType;
+    }
+
+    public void setExpType(HashMap<String, String> expType) {
+        this.expType = expType;
+    }
+
+    public void init(){
+        JSONObject jsonObject = JSONObject.fromObject(expressTypeJson);
+        JSONArray result = jsonObject.getJSONArray("result");
+
+        expType = new HashMap<>();
+        for (int i = 0; i < result.size(); i++) {
+            JSONObject itme = result.getJSONObject(i);
+            expType.put(itme.get("type").toString().toLowerCase(),itme.get("name").toString());
+        }
+    }
+}

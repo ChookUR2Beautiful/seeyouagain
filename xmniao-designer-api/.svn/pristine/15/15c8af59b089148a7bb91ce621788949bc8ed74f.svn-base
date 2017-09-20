@@ -1,0 +1,18 @@
+package com.xmn.designer.dao.other;
+
+
+import com.xmn.designer.entity.other.OrderMaterialCarousel;
+
+public interface OrderMaterialCarouselMapper {
+    int deleteByPrimaryKey(Long id);
+
+    int insert(OrderMaterialCarousel record);
+
+    int insertSelective(OrderMaterialCarousel record);
+
+    OrderMaterialCarousel selectByPrimaryKey(Long id);
+
+    int updateByPrimaryKeySelective(OrderMaterialCarousel record);
+
+    int updateByPrimaryKey(OrderMaterialCarousel record);
+}

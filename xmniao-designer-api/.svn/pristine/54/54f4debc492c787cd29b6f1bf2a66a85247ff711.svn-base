@@ -1,0 +1,17 @@
+package com.xmn.designer.dao.postage;
+
+import com.xmn.designer.entity.postage.PostageConditions;
+
+public interface PostageConditionsDao {
+    int deleteByPrimaryKey(Long id);
+
+    int insert(PostageConditions record);
+
+    int insertSelective(PostageConditions record);
+
+    PostageConditions selectByPrimaryKey(Long id);
+
+    int updateByPrimaryKeySelective(PostageConditions record);
+
+    int updateByPrimaryKey(PostageConditions record);
+}

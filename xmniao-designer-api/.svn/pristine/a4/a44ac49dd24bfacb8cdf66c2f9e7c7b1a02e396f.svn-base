@@ -1,0 +1,31 @@
+package com.xmn.designer.dao.other;
+
+
+import org.apache.ibatis.annotations.Param;
+
+import com.xmn.designer.entity.other.Order;
+
+public interface OrderDao {
+    int deleteByPrimaryKey(Long id);
+
+    int insert(Order record);
+
+    int insertSelective(Order record);
+
+    Order selectByPrimaryKey(Long id);
+
+    int updateByPrimaryKeySelective(Order record);
+
+    int updateByPrimaryKey(Order record);
+    
+    /**
+     * 
+     * 方法描述：根据订单号查询订单
+     * 创建人：jianming  
+     * 创建时间：2016年11月16日 下午6:01:20   
+     * @param orderNum
+     * @param outId
+     * @return
+     */
+	Order selectByOrderNum(@Param("orderNum")String orderNum,@Param("uid")Long uid);
+}

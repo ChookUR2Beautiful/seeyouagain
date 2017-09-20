@@ -1,0 +1,16 @@
+package com.xmn.designer.constants;
+
+public class DesignerConsts {
+
+    public static final String USER_INFO = "userinfo";          // 登录的用户信息
+
+    public static final String OUTER_TOKEN = "outertoken";      // 外部用户登录令牌
+
+    public static final String SESSION_TOKEN = "sessionToken";  // 内部注册用户登录令牌
+    // TODO 修改appid
+    public static final Object APP_ID = "998899";               // appId
+
+    // 不可以外部实例化该类
+    private DesignerConsts() {
+    }
+}

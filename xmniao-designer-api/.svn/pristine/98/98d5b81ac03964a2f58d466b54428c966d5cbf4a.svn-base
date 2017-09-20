@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:cache="http://www.springframework.org/schema/cache" xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+	http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-3.2.xsd
+	http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.2.xsd"
+       default-lazy-init="true">
+
+    <!-- 加载配置文件 -->
+    <context:property-placeholder location="classpath:/properties/conf-*.properties"
+                                  ignore-resource-not-found="true" ignore-unresolvable="true"/>
+
+
+    <!-- 业务数据库配置 -->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+          init-method="init" destroy-method="close">
+        <property name="driverClassName" value="${jointDriver}"/>
+        <property name="url" value="${jointUrl}"/>
+        <property name="username" value="${jointUser}"/>
+        <property name="password" value="${jointPassword}"/>
+        <!-- 配置过滤 -->
+        <property name="filters" value="stat"/>
+        <!-- 配置初始化大小、最小、最大 -->
+        <property name="initialSize" value="1"/>
+        <property name="minIdle" value="1"/>
+        <property name="maxActive" value="50"/>
+        <!-- 配置获取连接等待超时的时间 -->
+        <property name="maxWait" value="60000"/>
+        <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+        <property name="timeBetweenEvictionRunsMillis" value="60000"/>
+        <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+        <property name="minEvictableIdleTimeMillis" value="300000"/>
+        <!-- 检测连接是否有效的SQL -->
+        <property name="validationQuery" value="SELECT 'x'"/>
+        <property name="testWhileIdle" value="true"/>
+        <property name="testOnBorrow" value="false"/>
+        <property name="testOnReturn" value="false"/>
+    </bean>
+
+
+    <!-- 配置Mybatis SqlSessionFactoryBean 自动装配映射文件 -->
+    <bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="mapperLocations" value="classpath*:mapper/**/*.xml"/>
+    </bean>
+
+    <!-- 自动 映射DAO层 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.xmn.designer.dao.**"/>
+    </bean>
+
+    <!-- 自动扫描组件,这里不扫描 controller,它们是在ApplicationContext-mvc.xml中配置扫描的,如果不去除会影响事务管理 -->
+    <context:component-scan base-package="com.xmn">
+        <context:exclude-filter type="annotation"
+                                expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <!-- 事务处理 -->
+    <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!-- 使用annotation定义事务 -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <!-- 激活注册过的bean -->
+    <context:annotation-config/>
+
+
+    <!-- properties常量配置 -->
+    <bean id="configProperties"
+          class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="locations">
+            <list>
+                <value>classpath:/properties/*.properties</value>
+            </list>
+        </property>
+        <property name="fileEncoding" value="UTF-8"></property>
+    </bean>
+    <bean id="propertyConfigurer"
+          class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+        <property name="properties" ref="configProperties"/>
+    </bean>
+
+ 	<!-- sessionToken拦截器 -->
+    <bean name="sessionTokenFilter" class="com.xmn.designer.filter.SessionTokenFilter">
+        <property name="pathToBeIgnored" value="/common"></property>
+    </bean>
+
+
+    <!--配置FastDFS客户端-->
+    <bean id="uploadClientFactory" class="com.xmn.designer.base.UploadClientFactory" init-method="init">
+        <!--多个服务IP用逗号分隔-->
+        <property name="ip" value="${file.upload.fastDFS.tracker.server}:${file.upload.fastDFS.tracker.server.port}"/>
+        <!--初始化连接池大小-->
+        <property name="connectionPoolSize" value="20"/>
+        <property name="connectTimeout" value="4000"/>
+        <property name="networkTimeout" value="60000"/>
+        <property name="antiStealToken" value="false"/>
+        <property name="charset" value="UTF-8"/>
+        <property name="secretKey" value="11"/>
+    </bean>
+    
+    <!-- 加载thrift服务接口及实现 -->
+	<import resource="busine-thrift.xml"/>	
+	<bean id="thriftPoolExecutor" class="org.springframework.scheduling.concurrent.ScheduledExecutorTask">  
+	    <property name="runnable" ref="thriftServerFactory" />
+	    <!-- 容器加载1秒后开始执行 -->
+	    <property name="delay" value="1000" />
+	</bean>
+	
+	<!-- 线程池执行工厂 -->
+	<bean id="executorPoolFactory" class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean">  
+	    <property name="scheduledExecutorTasks"> 
+	      <list> 
+	        <ref bean="thriftPoolExecutor" />
+	      </list>  
+	    </property>
+	</bean>
+    
+    
+    <bean id="makeOrderNum" class="com.xmn.designer.utils.MakeOrderNum"></bean>
+
+    <import resource="spring-redis.xml"/>
+    <import resource="busine-thrift.xml"/>
+</beans>

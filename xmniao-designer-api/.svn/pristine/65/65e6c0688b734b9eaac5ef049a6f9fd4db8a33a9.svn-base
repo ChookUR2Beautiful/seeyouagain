@@ -1,0 +1,16 @@
+package com.xmn.designer.service.customize;
+
+import com.xmn.designer.entity.material.MaterialCategoryAttr;
+
+import java.util.List;
+
+/**
+ * create 2016/11/15
+ * 定制订单服务类
+ * @author yangQiang
+ */
+
+public interface CustomizeService {
+
+    List<MaterialCategoryAttr> getCustomStandard();
+}

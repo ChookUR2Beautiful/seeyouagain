@@ -1,0 +1,17 @@
+package com.xmn.designer.dao.material;
+
+import com.xmn.designer.entity.material.OrderMaterial;
+
+public interface OrderMaterialDao {
+    int deleteByPrimaryKey(Long id);
+
+    int insert(OrderMaterial record);
+
+    int insertSelective(OrderMaterial record);
+
+    OrderMaterial selectByPrimaryKey(Long id);
+
+    int updateByPrimaryKeySelective(OrderMaterial record);
+
+    int updateByPrimaryKey(OrderMaterial record);
+}

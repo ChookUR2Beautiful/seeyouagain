@@ -1,0 +1,16 @@
+#\u652F\u4ED8\u670D\u52A1
+thrift.pay.host=192.168.50.110
+thrift.pay.port=7911
+
+#\u4E1A\u52A1\u670D\u52A1
+thrift.bus.host=192.168.50.109
+thrift.bus.port=7911
+
+#\u5206\u8D26\u670D\u52A1
+thrift.ledger.host=192.168.50.244
+thrift.ledger.port=7912
+
+#\u5546\u6237\u7AEF\u5730\u5740
+thrift.saas.host=http\://localhost\:8081/xmniao-saas-api
+
+

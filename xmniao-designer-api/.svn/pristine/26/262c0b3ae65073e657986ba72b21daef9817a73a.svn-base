@@ -1,0 +1,14 @@
+package com.xmn.designer.service.customize;
+
+import java.util.Map;
+
+/**
+ * create 2016/11/15
+ * 定制订单服务类
+ * @author yangQiang
+ */
+
+public interface CustomService {
+
+    Map<String,Object> getCustomStandard();
+}

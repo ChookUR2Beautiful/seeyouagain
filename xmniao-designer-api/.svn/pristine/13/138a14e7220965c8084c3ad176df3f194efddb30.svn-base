@@ -1,0 +1,13 @@
+jointDriver=com.mysql.jdbc.Driver
+jointUrl=jdbc\:mysql\://192.168.50.251\:3306/designer?characterEncoding\=utf-8&zeroDateTimeBehavior\=convertToNull&allowMultiQueries\=true
+jointUser=root
+jointPassword=xmn2014qwer
+
+
+
+file.upload.fastDFS.http=http://gzdev.xmniao.com:88/
+file.upload.fastDFS.tracker.server=192.168.50.50
+file.upload.fastDFS.tracker.server.port=22122
+file.upload.fastDFS.tracker.http.port=80
+
+

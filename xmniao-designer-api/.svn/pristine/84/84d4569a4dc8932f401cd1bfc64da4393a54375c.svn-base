@@ -1,0 +1,166 @@
+package com.xmn.designer.entity.customize;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+public class OrderMaterialCustomize {
+    private Long id;
+
+    private Long categoryId;
+
+    private String customizeAttrIds;
+
+    private String customizeAttrVals;
+
+    private String title;
+
+    private String remark;
+
+    private BigDecimal price;
+
+    private String state;
+
+    private String deliveryAddress;
+
+    private String mobile;
+
+    private String consignee;
+
+    private Date finishTime;
+
+    private String creater;
+
+    private String updater;
+
+    private Date createTime;
+
+    private Date updateTime;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public String getCustomizeAttrIds() {
+        return customizeAttrIds;
+    }
+
+    public void setCustomizeAttrIds(String customizeAttrIds) {
+        this.customizeAttrIds = customizeAttrIds == null ? null : customizeAttrIds.trim();
+    }
+
+    public String getCustomizeAttrVals() {
+        return customizeAttrVals;
+    }
+
+    public void setCustomizeAttrVals(String customizeAttrVals) {
+        this.customizeAttrVals = customizeAttrVals == null ? null : customizeAttrVals.trim();
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title == null ? null : title.trim();
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark == null ? null : remark.trim();
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state == null ? null : state.trim();
+    }
+
+    public String getDeliveryAddress() {
+        return deliveryAddress;
+    }
+
+    public void setDeliveryAddress(String deliveryAddress) {
+        this.deliveryAddress = deliveryAddress == null ? null : deliveryAddress.trim();
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile == null ? null : mobile.trim();
+    }
+
+    public String getConsignee() {
+        return consignee;
+    }
+
+    public void setConsignee(String consignee) {
+        this.consignee = consignee == null ? null : consignee.trim();
+    }
+
+    public Date getFinishTime() {
+        return finishTime;
+    }
+
+    public void setFinishTime(Date finishTime) {
+        this.finishTime = finishTime;
+    }
+
+    public String getCreater() {
+        return creater;
+    }
+
+    public void setCreater(String creater) {
+        this.creater = creater == null ? null : creater.trim();
+    }
+
+    public String getUpdater() {
+        return updater;
+    }
+
+    public void setUpdater(String updater) {
+        this.updater = updater == null ? null : updater.trim();
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+}

@@ -1,0 +1,18 @@
+package com.xmn.designer.dao.customize;
+
+
+import com.xmn.designer.entity.custom.OrderMaterialCustomizeAttrVal;
+
+public interface OrderMaterialCustomizeAttrValMapper {
+    int deleteByPrimaryKey(Long id);
+
+    int insert(OrderMaterialCustomizeAttrVal record);
+
+    int insertSelective(OrderMaterialCustomizeAttrVal record);
+
+    OrderMaterialCustomizeAttrVal selectByPrimaryKey(Long id);
+
+    int updateByPrimaryKeySelective(OrderMaterialCustomizeAttrVal record);
+
+    int updateByPrimaryKey(OrderMaterialCustomizeAttrVal record);
+}

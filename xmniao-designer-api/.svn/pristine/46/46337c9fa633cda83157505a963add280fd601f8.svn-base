@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.designer.dao.material.OrderMaterialCarouselMapper" >
+  <resultMap id="BaseResultMap" type="com.xmn.designer.entity.material.OrderMaterialCarousel" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="order_material_id" property="orderMaterialId" jdbcType="BIGINT" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="order_val" property="orderVal" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, order_material_id, remark, order_val
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from d_order_material_carousel
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from d_order_material_carousel
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmn.designer.entity.material.OrderMaterialCarousel" >
+    insert into d_order_material_carousel (id, order_material_id, remark, 
+      order_val)
+    values (#{id,jdbcType=BIGINT}, #{orderMaterialId,jdbcType=BIGINT}, #{remark,jdbcType=VARCHAR}, 
+      #{orderVal,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmn.designer.entity.material.OrderMaterialCarousel" >
+    insert into d_order_material_carousel
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="orderMaterialId != null" >
+        order_material_id,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="orderVal != null" >
+        order_val,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="orderMaterialId != null" >
+        #{orderMaterialId,jdbcType=BIGINT},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="orderVal != null" >
+        #{orderVal,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.designer.entity.material.OrderMaterialCarousel" >
+    update d_order_material_carousel
+    <set >
+      <if test="orderMaterialId != null" >
+        order_material_id = #{orderMaterialId,jdbcType=BIGINT},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="orderVal != null" >
+        order_val = #{orderVal,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.designer.entity.material.OrderMaterialCarousel" >
+    update d_order_material_carousel
+    set order_material_id = #{orderMaterialId,jdbcType=BIGINT},
+      remark = #{remark,jdbcType=VARCHAR},
+      order_val = #{orderVal,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

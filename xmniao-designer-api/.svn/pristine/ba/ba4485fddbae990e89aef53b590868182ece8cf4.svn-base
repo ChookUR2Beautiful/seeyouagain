@@ -1,0 +1,30 @@
+package com.xmn.designer.dao.material;
+
+
+import com.xmn.designer.entity.material.OrderMaterialCarousel;
+
+public interface OrderMaterialCarouselDao {
+    int deleteByPrimaryKey(Long id);
+
+    int insert(OrderMaterialCarousel record);
+
+    int insertSelective(OrderMaterialCarousel record);
+
+    OrderMaterialCarousel selectByPrimaryKey(Long id);
+
+    int updateByPrimaryKeySelective(OrderMaterialCarousel record);
+
+    int updateByPrimaryKey(OrderMaterialCarousel record);
+    
+    /**
+     * 
+     * 方法描述：根据物料订单查首图
+     * 创建人：jianming  
+     * 创建时间：2016年11月16日 下午6:09:25   
+     * @param id
+     * @return
+     */
+	OrderMaterialCarousel selectFristCarousel(Long id);
+    
+    
+}

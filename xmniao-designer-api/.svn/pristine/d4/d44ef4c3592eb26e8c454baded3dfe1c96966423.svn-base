@@ -1,0 +1,22 @@
+package com.xmn.designer.dao.material;
+
+
+import com.xmn.designer.entity.material.MaterialCategoryAttr;
+
+import java.util.Map;
+
+public interface MaterialCategoryAttrDao {
+    int deleteByPrimaryKey(Long id);
+
+    int insert(MaterialCategoryAttr record);
+
+    int insertSelective(MaterialCategoryAttr record);
+
+    MaterialCategoryAttr selectByPrimaryKey(Long id);
+
+    int updateByPrimaryKeySelective(MaterialCategoryAttr record);
+
+    int updateByPrimaryKey(MaterialCategoryAttr record);
+
+    Map<String,Object> queryCustomStandard();
+}

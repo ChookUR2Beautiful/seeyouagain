@@ -1,0 +1,176 @@
+package com.xmn.designer.service.material.impl;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.xmn.designer.base.ResponseCode;
+import com.xmn.designer.dao.material.MaterialCategoryAttrDao;
+import com.xmn.designer.dao.material.MaterialCategoryAttrRelationDao;
+import com.xmn.designer.dao.material.MaterialCategoryAttrValDao;
+import com.xmn.designer.dao.material.MaterialCategoryDao;
+import com.xmn.designer.dao.material.MaterialDao;
+import com.xmn.designer.dao.material.MaterialTagDao;
+import com.xmn.designer.entity.material.Material;
+import com.xmn.designer.entity.material.MaterialCategory;
+import com.xmn.designer.entity.material.MaterialCategoryAttr;
+import com.xmn.designer.entity.material.MaterialCategoryAttrRelation;
+import com.xmn.designer.entity.material.MaterialCategoryAttrVal;
+import com.xmn.designer.entity.material.MaterialTag;
+import com.xmn.designer.service.material.MaterialService;
+
+
+/**
+ * 平面物料服务类实现
+ * 
+ * @author zhouxiaojian
+ * @date 2016/11/18
+ */
+@Service
+public class MaterialServiceImpl implements MaterialService {
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    @Autowired
+    private MaterialCategoryDao materialCategoryDao;
+
+    @Autowired
+    private MaterialCategoryAttrDao materialCategoryAttrDao;
+
+    @Autowired
+    private MaterialTagDao materialTagDao;
+    
+    @Autowired
+    private MaterialDao materialDao;
+
+    @Autowired
+    private MaterialCategoryAttrRelationDao materialCategoryAttrRelationDao;
+    
+    @Autowired
+    private MaterialCategoryAttrValDao materialCategoryAttrValDao;
+
+    /**
+     * 物料分类标签规格
+     */
+    @Override
+    public Map<String, Object> category(String type, Long id) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("msg", "请求成功");
+        result.put("code", ResponseCode.SUCCESS);
+        if (id == null) {
+            switch (type) {
+            // 分类
+                case "001":
+                    List<MaterialCategory> materialList = materialCategoryDao.findAll();
+                    result.put("dataList", materialList);
+                    break;
+                // 标签
+                case "002":
+                    List<MaterialTag> materialTagList = materialTagDao.findAll();
+                    result.put("dataList", materialTagList);
+                    break;
+                // 规格
+                case "003":
+                    List<MaterialCategoryAttr> materialCategoryAttrList =
+                            materialCategoryAttrDao.findAll();
+                    result.put("dataList", materialCategoryAttrList);
+                    break;
+                //价格
+                case "004":
+                    Map<String,BigDecimal> selectMaxAndMin = materialDao.selectMaxAndMin();
+                    List<Map<String,Integer>> list =new ArrayList<>();
+                    list.add(getMaxMin(selectMaxAndMin.get("min"),selectMaxAndMin.get("max"),0.00,0.33,1));
+                    list.add(getMaxMin(selectMaxAndMin.get("min"),selectMaxAndMin.get("max"),0.33,0.66,2));
+                    list.add(getMaxMin(selectMaxAndMin.get("min"),selectMaxAndMin.get("max"),0.66,1,3));
+                    result.put("dataList", list);
+                    break;
+
+                default:
+                    break;
+            }
+        } else {
+            switch (type) {
+                // 分类关联规格
+                case "001":
+                    List<MaterialCategoryAttrRelation> materialCategoryAttrRelationList =  materialCategoryAttrRelationDao.findRelation(id);
+                    result.put("dataList", materialCategoryAttrRelationList);
+                    break;
+                // 规格细项
+                case "003":
+                    List<MaterialCategoryAttrVal> materialCategoryAttrValList =
+                            materialCategoryAttrValDao.findByCategoryAttrId(id);
+                    result.put("dataList", materialCategoryAttrValList);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return result;
+    }
+
+    
+    
+    /**
+     * 基础物料列表接口
+     */
+    @Override
+    public List<Material> list(String minPrice, String maxPrice, String categoryId, String tagId,
+            String orderType, Integer page, Integer pageSize) {
+        List<Material>  list =new ArrayList<>();
+        //分页        
+        Integer pageOffset =  (page-1)*pageSize ;
+        if(StringUtils.isNotBlank(minPrice)|| StringUtils.isNotBlank(maxPrice)){
+            logger.info("访问minPrice："+minPrice+"maxPrice:"+maxPrice+" 的列表");
+            list =  materialDao.selectByMinAndMax(Integer.valueOf(minPrice), Integer.valueOf(maxPrice),pageOffset,pageSize);
+            return list;
+        }else if(StringUtils.isNotBlank(tagId)){
+            logger.info("访问tagId："+tagId+" 的列表");
+            list =  materialDao.selectByTagId(Long.valueOf(tagId),pageOffset,pageSize);
+            return list;
+        }else if(StringUtils.isNotBlank(categoryId)){
+            logger.info("访问categoryId："+categoryId+" 的列表");
+            list =  materialDao.selectByCategoryId(Long.valueOf(categoryId),pageOffset,pageSize);
+            return list;
+        }else if(StringUtils.isNotBlank(orderType)){
+            logger.info("访问orderType："+orderType+" 的列表   注：001：从高到低；002：从低到高");
+            list =  materialDao.selectByOrderType(orderType,pageOffset,pageSize);
+        }
+        return list;
+    }
+    
+    /**
+     * 获取物料基础价格最大最小值
+     * @param max
+     * @param min
+     * @return
+     */
+    public Map<String,Integer>  getMaxMin(BigDecimal min,BigDecimal max,double minPercent,double maxPercent,int id){
+        Map<String,Integer>  map = new HashMap<>();
+        BigDecimal bewteen =max.subtract(min);
+        BigDecimal Min = min.add(bewteen.multiply(BigDecimal.valueOf(minPercent)));
+        BigDecimal Max = min.add(bewteen.multiply(BigDecimal.valueOf(maxPercent)));
+        map.put("minPrice", Min.intValue());
+        map.put("maxPrice", Max.intValue());
+        map.put("id", id);
+        return map;
+    }
+
+
+    /**
+     * 平面物料详情
+     */
+    @Override
+    public Material detail(Long id, String deliveryCityNo) {
+        
+        
+        return null;
+    }
+
+}

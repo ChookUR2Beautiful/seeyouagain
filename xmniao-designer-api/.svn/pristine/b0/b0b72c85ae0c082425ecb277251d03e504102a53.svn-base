@@ -1,0 +1,273 @@
+package com.xmn.designer.service.address.impl;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.xmn.designer.base.GlobalConfig;
+import com.xmn.designer.base.ThriftBuilder;
+import com.xmn.designer.base.thrift.service.SellerAddressService;
+import com.xmn.designer.entity.account.User;
+import com.xmn.designer.entity.address.Area;
+import com.xmn.designer.entity.address.DesigberAddress;
+import com.xmn.designer.entity.postage.PostageConditions;
+import com.xmn.designer.service.address.DesignerAddressService;
+import com.xmn.designer.service.base.RedisService;
+import com.xmn.designer.service.postage.PostageService;
+
+@Service
+public class DesignerAddressServiceIimpl implements DesignerAddressService {
+	private static final Logger logger = LoggerFactory.getLogger(DesignerAddressServiceIimpl.class);
+
+
+	@Autowired
+	private GlobalConfig globalConfig;
+
+	@Autowired
+	private RedisService redisService;
+
+	@Autowired
+	private PostageService postageService;
+
+	public List<DesigberAddress> list(String sessionToken) {
+		logger.info("[调用收货地址列表接口]"+sessionToken);
+		try {
+			User designerUser = redisService.getDesignerUser(sessionToken);
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("sellerid", designerUser.getOutId() + "");
+			SellerAddressService.Client client = ThriftBuilder.build(globalConfig.getThriftBusHost(),
+					Integer.parseInt(globalConfig.getThriftBusPort()), "sellerAddressService",
+					SellerAddressService.Client.class);
+			ThriftBuilder.open();
+			List<Map<String, String>> sellerAddress = client.getSellerAddress(map);
+			LinkedList<DesigberAddress> list = new LinkedList<DesigberAddress>();
+			for (Map<String, String> tempAddress : sellerAddress) {
+				logger.info("[列表参数]:"+tempAddress.toString());
+				DesigberAddress desigberAddress = new DesigberAddress();
+				desigberAddress.setAddress(tempAddress.get("address"));
+				desigberAddress.setAreaId(new Integer(tempAddress.get("area_id")));
+				desigberAddress.setAreaName(tempAddress.get("area_name"));
+				desigberAddress.setCity(tempAddress.get("city"));
+				desigberAddress.setCityId(new Integer(tempAddress.get("city_id")));
+				desigberAddress.setId(new Integer(tempAddress.get("id")));
+				desigberAddress.setIsDefault(new Integer(tempAddress.get("is_default")));
+				desigberAddress.setNname(tempAddress.get("nname"));
+				desigberAddress.setPhone(tempAddress.get("phone"));
+				desigberAddress.setProvince(tempAddress.get("province"));
+				desigberAddress.setProvinceId(new Integer(tempAddress.get("province_id")));
+				desigberAddress.setSellerid(new Integer(tempAddress.get("sellerid")));
+				desigberAddress.setSex(new Integer(tempAddress.get("sex")));
+				if(new Integer(tempAddress.get("is_default"))==1){
+					list.addFirst(desigberAddress);
+				}else{
+					list.add(desigberAddress);
+				}
+			}
+			logger.info("[调用收货地址列表完毕]:"+list.toString());
+			return list;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("获取地址列表出错", e);
+			throw new RuntimeException();
+		} finally {
+			ThriftBuilder.close();
+		}
+	}
+
+	public DesigberAddress getDefaultAddress(String sessionToken) {
+		try {
+			User designerUser = redisService.getDesignerUser(sessionToken);
+			logger.info("[调用获取默认地址接口]:userId=" + designerUser.getOutId());
+			SellerAddressService.Client client = ThriftBuilder.build(globalConfig.getThriftBusHost(),
+					Integer.parseInt(globalConfig.getThriftBusPort()), "sellerAddressService",
+					SellerAddressService.Client.class);
+			ThriftBuilder.open();
+			Map<String, String> map = new HashMap<>();
+			map.put("sellerid", designerUser.getOutId() + "");
+			map.put("is_default", "1");
+			List<Map<String, String>> sellerAddress = client.getSellerAddress(map);
+			DesigberAddress desigberAddress = new DesigberAddress();
+			if (sellerAddress.size() > 0) {
+				Map<String, String> tempAddress = sellerAddress.get(0);
+				desigberAddress.setAddress(tempAddress.get("address"));
+				desigberAddress.setAreaId(new Integer(tempAddress.get("area_id")));
+				desigberAddress.setAreaName(tempAddress.get("area_name"));
+				desigberAddress.setCity(tempAddress.get("city"));
+				desigberAddress.setCityId(new Integer(tempAddress.get("city_id")));
+				desigberAddress.setId(new Integer(tempAddress.get("id")));
+				desigberAddress.setIsDefault(new Integer(tempAddress.get("is_default")));
+				desigberAddress.setNname(tempAddress.get("nname"));
+				desigberAddress.setPhone(tempAddress.get("phone"));
+				desigberAddress.setProvince(tempAddress.get("province"));
+				desigberAddress.setProvinceId(new Integer(tempAddress.get("province_id")));
+				desigberAddress.setSellerid(new Integer(tempAddress.get("sellerid")));
+				desigberAddress.setSex(new Integer(tempAddress.get("sex")));
+			}
+			return desigberAddress;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("获取默认地址出错", e);
+			return null;
+		} finally {
+			ThriftBuilder.close();
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public void add(DesigberAddress desigberAddress, String sessionToken) {
+		logger.info("[调用添加收货地址Thrift]");
+		try {
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("nname", desigberAddress.getNname());
+			map.put("sex", desigberAddress.getSex().toString());
+			map.put("phone", desigberAddress.getPhone().toString());
+			map.put("address", desigberAddress.getAddress());
+			map.put("is_default", desigberAddress.getIsDefault().toString());
+			map.put("area_id", desigberAddress.getAreaId().toString());
+			map.put("city_id", desigberAddress.getCityId().toString());
+			map.put("province_id", desigberAddress.getProvinceId().toString());
+			User designerUser = redisService.getDesignerUser(sessionToken);
+			map.put("sellerid", designerUser.getOutId() + "");
+			SellerAddressService.Client client = ThriftBuilder.build(globalConfig.getThriftBusHost(),
+					Integer.parseInt(globalConfig.getThriftBusPort()), "sellerAddressService",
+					SellerAddressService.Client.class);
+			ThriftBuilder.open();
+			
+			logger.info("调用地址参数"+map.toString());
+			Map<String, String> map2 = client.add(map);
+			logger.info("调用地址返回结果"+map2.toString());
+			String id = map2.get("id");
+			if(StringUtils.isBlank(id)){
+				throw new RuntimeException("业务服务没有返回地址id");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("收货地址添加失败", e);
+			throw new RuntimeException();
+		} finally {
+			ThriftBuilder.close();
+		}
+	}
+
+	@Override
+	public void edit(DesigberAddress desigberAddress, String sessionToken) {
+		try {
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("id", desigberAddress.getId().toString());
+			map.put("nname", desigberAddress.getNname());
+			map.put("sex", desigberAddress.getSex().toString());
+			map.put("phone", desigberAddress.getPhone().toString());
+			map.put("address", desigberAddress.getAddress());
+			map.put("is_default", desigberAddress.getIsDefault().toString());
+			map.put("area_id", desigberAddress.getAreaId()==null?"":desigberAddress.getAreaId().toString());
+			map.put("city_id", desigberAddress.getCityId().toString());
+			map.put("province_id", desigberAddress.getProvinceId().toString());
+			User designerUser = redisService.getDesignerUser(sessionToken);
+			map.put("sellerid", designerUser.getOutId() + "");
+			SellerAddressService.Client client = ThriftBuilder.build(globalConfig.getThriftBusHost(),
+					Integer.parseInt(globalConfig.getThriftBusPort()), "sellerAddressService",
+					SellerAddressService.Client.class);
+			ThriftBuilder.open();
+			client.update(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("收货地址修改失败", e);
+			throw new RuntimeException();
+		} finally {
+			ThriftBuilder.close();
+		}
+	}
+
+	@Override
+	public void delete(Integer id, String sessionToken) {
+		try {
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("id", id.toString());
+			User designerUser = redisService.getDesignerUser(sessionToken);
+			map.put("sellerid", designerUser.getOutId() + "");
+			SellerAddressService.Client client = ThriftBuilder.build(globalConfig.getThriftBusHost(),
+					Integer.parseInt(globalConfig.getThriftBusPort()), "sellerAddressService",
+					SellerAddressService.Client.class);
+			ThriftBuilder.open();
+			client.deleteSellerAddress(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("删除收货地址失败", e);
+			throw new RuntimeException();
+		} finally {
+			ThriftBuilder.close();
+		}
+
+	}
+
+	@Override
+	public List<Area> listArea(Integer pid) {
+		try {
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("area_id", pid.toString());
+			SellerAddressService.Client client = ThriftBuilder.build(globalConfig.getThriftBusHost(),
+					Integer.parseInt(globalConfig.getThriftBusPort()), "sellerAddressService",
+					SellerAddressService.Client.class);
+			ThriftBuilder.open();
+			List<Map<String, String>> areaChildren = client.getAreaChildren(map);
+			List<Area> areas = new ArrayList<>();
+			for (Map<String, String> areaTemp : areaChildren) {
+				Area area = new Area();
+				area.setId(new Integer(areaTemp.get("area_id")));
+				area.setName(areaTemp.get("title"));
+				areas.add(area);
+			}
+
+			return areas;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("获得下级地址出错", e);
+			throw new RuntimeException();
+		} finally {
+			ThriftBuilder.close();
+		}
+	}
+
+	@Override
+	public PostageConditions getCondition(Long materialId, Integer areaId) {
+		return postageService.getCondition(materialId, areaId);
+	}
+
+	@Override
+	public Area seachAreaName(String areaName) {
+		try {
+			if (areaName.indexOf("省") == areaName.length() - 1) {
+				areaName = areaName.substring(0, areaName.length() - 1);
+			}
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("title", areaName);
+			SellerAddressService.Client client = ThriftBuilder.build(globalConfig.getThriftBusHost(),
+					Integer.parseInt(globalConfig.getThriftBusPort()), "sellerAddressService",
+					SellerAddressService.Client.class);
+			ThriftBuilder.open();
+			Map<String, String> byName = client.getAreaByName(map);
+			Area area=new Area();
+			if(map!=null){
+				area.setId(new Integer(byName.get("area_id")));
+				area.setName(byName.get("title"));
+			}
+			return area;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("搜索区域地址出错", e);
+			throw new RuntimeException();
+		} finally {
+			ThriftBuilder.close();
+		}
+	}
+
+}

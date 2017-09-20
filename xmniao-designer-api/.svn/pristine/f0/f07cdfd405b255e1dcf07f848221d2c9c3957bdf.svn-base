@@ -1,0 +1,17 @@
+package com.xmn.designer.dao.material;
+
+import com.xmn.designer.entity.material.MaterialCategoryTagRelation;
+
+public interface MaterialCategoryTagRelationDao {
+    int deleteByPrimaryKey(Long id);
+
+    int insert(MaterialCategoryTagRelation record);
+
+    int insertSelective(MaterialCategoryTagRelation record);
+
+    MaterialCategoryTagRelation selectByPrimaryKey(Long id);
+
+    int updateByPrimaryKeySelective(MaterialCategoryTagRelation record);
+
+    int updateByPrimaryKey(MaterialCategoryTagRelation record);
+}

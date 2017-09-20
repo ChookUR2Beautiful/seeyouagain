@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.designer.dao.material.MaterialDao">
+	<resultMap id="BaseResultMap" type="com.xmn.designer.entity.material.Material">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="category_id" property="categoryId" jdbcType="BIGINT" />
+		<result column="supplier_id" property="supplierId" jdbcType="BIGINT" />
+		<result column="sold_times" property="soldTimes" jdbcType="INTEGER" />
+		<result column="base_price" property="basePrice" jdbcType="DECIMAL" />
+		<result column="sale_price" property="salePrice" jdbcType="DECIMAL" />
+		<result column="weight" property="weight" jdbcType="DECIMAL" />
+		<result column="title" property="title" jdbcType="VARCHAR" />
+		<result column="pic_url" property="picUrl" jdbcType="VARCHAR" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="finishTime" property="finishtime" jdbcType="INTEGER" />
+		<result column="no" property="no" jdbcType="VARCHAR" />
+		<result column="type" property="type" jdbcType="VARCHAR" />
+		<result column="monthly_sales" property="monthlySales"
+			jdbcType="INTEGER" />
+		<result column="payment_number" property="paymentNumber"
+			jdbcType="INTEGER" />
+	</resultMap>
+	<!-- 分页组件 -->
+	<sql id="pageInfoFilter">
+		<if test="pageOffset != null and pageSize != null">
+			LIMIT ${pageOffset},${pageSize}
+		</if>
+	</sql>
+
+	<resultMap id="ResultMapWithBLOBs" type="com.xmn.designer.entity.material.Material"
+		extends="BaseResultMap">
+		<result column="content" property="content" jdbcType="LONGVARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, category_id,supplier_id ,sold_times, base_price,
+		sale_price, weight,pic_url,
+		title, remark,
+		create_time, update_time,
+		finishTime, no, type,
+		monthly_sales,
+		payment_number
+	</sql>
+	<sql id="Blob_Column_List">
+		content
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from d_material
+		where id = #{id,jdbcType=BIGINT}
+	</select>
+
+
+	<select id="findByKey" resultMap="ResultMapWithBLOBs">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from d_material
+		where title like '%${keys}%' or remark like '%${keys}%'
+		<include refid="pageInfoFilter"></include>
+	</select>
+	
+	<select id="findByKeyCount" resultType="java.lang.Integer">
+		select
+		count(*)
+		from d_material
+		where title like '%${keys}%' or remark like '%${keys}%'
+	</select>
+
+	<select id="selectByMinAndMax" resultMap="ResultMapWithBLOBs">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from d_material
+		<![CDATA[
+		where #{minPrice}<= base_price and base_price<= #{maxPrice} order by base_price asc
+		]]>
+		<include refid="pageInfoFilter"></include>
+	</select>
+
+
+	<select id="selectByCategoryId" resultMap="ResultMapWithBLOBs">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from d_material
+		where category_id = #{categoryId} order by create_time
+		desc
+		<include refid="pageInfoFilter"></include>
+	</select>
+
+	<select id="selectByTagId" resultMap="ResultMapWithBLOBs">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from d_material
+		where category_id in (select category_id from
+		d_material_category_tag_relation where material_tag_id=#{tagId}) ORDER
+		BY create_time desc
+		<include refid="pageInfoFilter"></include>
+	</select>
+
+	<select id="selectByOrderType" resultMap="ResultMapWithBLOBs">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from d_material
+		where category_id
+		<if test="orderType != null and orderType == '001'">
+			order by sold_times desc
+		</if>
+		<if test="orderType != null and orderType == '002'">
+			order by sold_times asc
+		</if>
+		<include refid="pageInfoFilter"></include>
+	</select>
+
+
+	<select id="findAll" resultMap="ResultMapWithBLOBs">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from d_material order by id desc
+		<include refid="pageInfoFilter"></include>
+	</select>
+
+
+
+	<!-- 计算列表总数 start -->
+
+	<select id="findAllCount" resultType="java.lang.Integer">
+		select
+		count(*)
+		from
+		d_material
+	</select>
+
+	<select id="selectByMinAndMaxCount" resultType="java.lang.Integer">
+		select
+		count(*)
+		from d_material
+		<![CDATA[
+		where #{minPrice}<= base_price and base_price<= #{maxPrice} 
+		]]>
+	</select>
+
+	<select id="selectByCategoryIdCount" resultType="java.lang.Integer">
+		select
+		count(*)
+		from d_material
+		where category_id = #{categoryId}
+	</select>
+
+	<select id="selectByTagIdCount" resultType="java.lang.Integer">
+		select
+		count(*)
+		from
+		d_material
+		where category_id in (select category_id from
+		d_material_category_tag_relation where material_tag_id=#{tagId})
+	</select>
+
+	<select id="selectByOrderTypeCount" resultType="java.lang.Integer">
+		select
+		count(*)
+		from d_material
+		where category_id
+		<if test="orderType != null and orderType == '001'">
+			order by sold_times desc
+		</if>
+		<if test="orderType != null and orderType == '002'">
+			order by sold_times asc
+		</if>
+	</select>
+
+	<!-- 计算列表总数 end -->
+
+	<select id="selectMaxAndMin" resultType="map">
+		select max(base_price)
+		max,min(base_price) min from d_material
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		delete from
+		d_material
+		where id = #{id,jdbcType=BIGINT}
+	</delete>
+	<insert id="insert" parameterType="com.xmn.designer.entity.material.Material">
+		insert into d_material (id,
+		category_id, supplier_id
+		sold_times, base_price, sale_price,
+		weight,
+		title,pic_url, remark,
+		create_time,
+		update_time,
+		finishTime, no,
+		type, monthly_sales, payment_number,
+		content)
+		values
+		(#{id,jdbcType=BIGINT},
+		#{categoryId,jdbcType=BIGINT},
+		#{supplierId,jdbcType=BIGINT},
+		#{soldTimes,jdbcType=INTEGER},
+		#{basePrice,jdbcType=DECIMAL}, #{salePrice,jdbcType=DECIMAL},
+		#{weight,jdbcType=DECIMAL}, #{title,jdbcType=VARCHAR},
+		#{picUrl,jdbcType=VARCHAR},
+		#{remark,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{updateTime,jdbcType=TIMESTAMP},
+		#{finishtime,jdbcType=INTEGER},
+		#{no,jdbcType=VARCHAR},
+		#{type,jdbcType=VARCHAR}, #{monthlySales,jdbcType=INTEGER},
+		#{paymentNumber,jdbcType=INTEGER},
+		#{content,jdbcType=LONGVARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.xmn.designer.entity.material.Material">
+		insert into d_material
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="categoryId != null">
+				category_id,
+			</if>
+			<if test="supplierId != null">
+				supplier_id,
+			</if>
+			<if test="soldTimes != null">
+				sold_times,
+			</if>
+			<if test="basePrice != null">
+				base_price,
+			</if>
+			<if test="salePrice != null">
+				sale_price,
+			</if>
+			<if test="weight != null">
+				weight,
+			</if>
+			<if test="title != null">
+				title,
+			</if>
+			<if test="picUrl != null">
+				pic_url,
+			</if>
+			<if test="remark != null">
+				remark,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+			<if test="finishtime != null">
+				finishTime,
+			</if>
+			<if test="no != null">
+				no,
+			</if>
+			<if test="type != null">
+				type,
+			</if>
+			<if test="monthlySales != null">
+				monthly_sales,
+			</if>
+			<if test="paymentNumber != null">
+				payment_number,
+			</if>
+			<if test="content != null">
+				content,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=BIGINT},
+			</if>
+			<if test="categoryId != null">
+				#{categoryId,jdbcType=BIGINT},
+			</if>
+			<if test="supplierId != null">
+				#{supplierId,jdbcType=BIGINT},
+			</if>
+			<if test="soldTimes != null">
+				#{soldTimes,jdbcType=INTEGER},
+			</if>
+			<if test="basePrice != null">
+				#{basePrice,jdbcType=DECIMAL},
+			</if>
+			<if test="salePrice != null">
+				#{salePrice,jdbcType=DECIMAL},
+			</if>
+			<if test="weight != null">
+				#{weight,jdbcType=DECIMAL},
+			</if>
+			<if test="title != null">
+				#{title,jdbcType=VARCHAR},
+			</if>
+			<if test="picUrl != null">
+				#{picUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="finishtime != null">
+				#{finishtime,jdbcType=INTEGER},
+			</if>
+			<if test="no != null">
+				#{no,jdbcType=VARCHAR},
+			</if>
+			<if test="type != null">
+				#{type,jdbcType=VARCHAR},
+			</if>
+			<if test="monthlySales != null">
+				#{monthlySales,jdbcType=INTEGER},
+			</if>
+			<if test="paymentNumber != null">
+				#{paymentNumber,jdbcType=INTEGER},
+			</if>
+			<if test="content != null">
+				#{content,jdbcType=LONGVARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.xmn.designer.entity.material.Material">
+		update d_material
+		<set>
+			<if test="categoryId != null">
+				category_id = #{categoryId,jdbcType=BIGINT},
+			</if>
+			<if test="supplierId != null">
+				supplier_id = #{supplierId,jdbcType=BIGINT},
+			</if>
+			<if test="soldTimes != null">
+				sold_times = #{soldTimes,jdbcType=INTEGER},
+			</if>
+			<if test="basePrice != null">
+				base_price = #{basePrice,jdbcType=DECIMAL},
+			</if>
+			<if test="salePrice != null">
+				sale_price = #{salePrice,jdbcType=DECIMAL},
+			</if>
+			<if test="weight != null">
+				weight = #{weight,jdbcType=DECIMAL},
+			</if>
+			<if test="title != null">
+				title = #{title,jdbcType=VARCHAR},
+			</if>
+			<if test="picUrl != null">
+				pic_url = #{picUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				remark = #{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="finishtime != null">
+				finishTime = #{finishtime,jdbcType=INTEGER},
+			</if>
+			<if test="no != null">
+				no = #{no,jdbcType=VARCHAR},
+			</if>
+			<if test="type != null">
+				type = #{type,jdbcType=VARCHAR},
+			</if>
+			<if test="monthlySales != null">
+				monthly_sales = #{monthlySales,jdbcType=INTEGER},
+			</if>
+			<if test="paymentNumber != null">
+				payment_number = #{paymentNumber,jdbcType=INTEGER},
+			</if>
+			<if test="content != null">
+				content = #{content,jdbcType=LONGVARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKeyWithBLOBs" parameterType="com.xmn.designer.entity.material.Material">
+		update
+		d_material
+		set category_id = #{categoryId,jdbcType=BIGINT},
+		supplier_id
+		= #{supplierId,jdbcType=BIGINT},
+		sold_times =
+		#{soldTimes,jdbcType=INTEGER},
+		base_price =
+		#{basePrice,jdbcType=DECIMAL},
+		sale_price =
+		#{salePrice,jdbcType=DECIMAL},
+		weight = #{weight,jdbcType=DECIMAL},
+		title = #{title,jdbcType=VARCHAR},
+		pic_url =
+		#{picUrl,jdbcType=VARCHAR},
+		remark = #{remark,jdbcType=VARCHAR},
+		create_time =
+		#{createTime,jdbcType=TIMESTAMP},
+		update_time =
+		#{updateTime,jdbcType=TIMESTAMP},
+		finishTime =
+		#{finishtime,jdbcType=INTEGER},
+		no = #{no,jdbcType=VARCHAR},
+		type =
+		#{type,jdbcType=VARCHAR},
+		monthly_sales =
+		#{monthlySales,jdbcType=INTEGER},
+		payment_number =
+		#{paymentNumber,jdbcType=INTEGER},
+		content =
+		#{content,jdbcType=LONGVARCHAR}
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.xmn.designer.entity.material.Material">
+		update d_material
+		set category_id = #{categoryId,jdbcType=BIGINT},
+		supplier_id =
+		#{supplierId,jdbcType=BIGINT},
+		sold_times =
+		#{soldTimes,jdbcType=INTEGER},
+		base_price =
+		#{basePrice,jdbcType=DECIMAL},
+		sale_price =
+		#{salePrice,jdbcType=DECIMAL},
+		weight = #{weight,jdbcType=DECIMAL},
+		title = #{title,jdbcType=VARCHAR},
+		pic_url =
+		#{picUrl,jdbcType=VARCHAR},
+		remark = #{remark,jdbcType=VARCHAR},
+		create_time =
+		#{createTime,jdbcType=TIMESTAMP},
+		update_time =
+		#{updateTime,jdbcType=TIMESTAMP},
+		finishTime =
+		#{finishtime,jdbcType=INTEGER},
+		no = #{no,jdbcType=VARCHAR},
+		type =
+		#{type,jdbcType=VARCHAR},
+		monthly_sales =
+		#{monthlySales,jdbcType=INTEGER},
+		payment_number =
+		#{paymentNumber,jdbcType=INTEGER}
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+
+	<update id="updateSoldTimes">
+		update d_material set sold_times =
+		sold_times+1 where
+		id = #{id}
+
+	</update>
+</mapper>

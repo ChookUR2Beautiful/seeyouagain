@@ -1,0 +1,65 @@
+package com.xmn.designer.service.order;
+
+import com.xmn.designer.entity.material.MaterialAttrGroup;
+import com.xmn.designer.entity.material.OrderMaterial;
+import com.xmn.designer.entity.material.OrderMaterialCarousel;
+import com.xmn.designer.entity.order.Order;
+
+public interface OrderService {
+
+	/**
+	 *
+	 * 方法描述：获取物料链
+	 * 创建人：jianming
+	 * 创建时间：2016年11月16日 上午11:46:34
+	 * @param MaterialAttrId
+	 * @return
+	 */
+	MaterialAttrGroup getMaterialAttr(Long materialAttrId);
+
+	/**
+	 *
+	 * 方法描述：生成订单,订单物料,订单相册
+	 * 创建人：jianming
+	 * 创建时间：2016年11月16日 下午1:55:43
+	 * @param orderMaterial
+	 * @param carouselJson
+	 * @param materialAttrId
+	 * @param i
+	 * @return 订单号
+	 */
+	String placeOrder(OrderMaterial orderMaterial, String carouselJson, Long materialAttrId, Long UserId);
+
+	/**
+	 *
+	 * 方法描述：根据订单号查询物料订单
+	 * 创建人：jianming
+	 * 创建时间：2016年11月16日 下午5:38:16
+	 * @param orderNum
+	 * @return
+	 */
+	OrderMaterial getOrderMeterialByOrderNum(String orderNum);
+
+	/**
+	 *
+	 * 方法描述：根据订单号查询订单
+	 * 创建人：jianming
+	 * 创建时间：2016年11月16日 下午6:00:28
+	 * @param orderNum
+	 * @param outId
+	 * @return
+	 */
+	Order getOrderByOrderNum(String orderNum, Long outId);
+
+	/**
+	 *
+	 * 方法描述：根据物料订单查首图
+	 * 创建人：jianming
+	 * 创建时间：2016年11月16日 下午6:07:37
+	 * @param id
+	 * @return
+	 */
+	OrderMaterialCarousel getFristCarousel(Long id);
+
+
+}

@@ -1,0 +1,16 @@
+package com.xmn.designer.base;
+
+import com.xmn.designer.utils.CookieUtils;
+import com.xmn.designer.utils.WebUtils;
+
+public class AbstractController {
+	public final static String SESSION_TOKEN = "sessionToken";
+	
+	public String getToken(){
+		return WebUtils.getRequest().getParameter(SESSION_TOKEN);
+	}
+	//获取cookie的token
+	public String getCookieToken(){
+	    return CookieUtils.getVal(SESSION_TOKEN, WebUtils.getRequest());
+	}
+}

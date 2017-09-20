@@ -1,0 +1,68 @@
+package com.xmn.designer.constants;
+
+public class DesignerConsts {
+
+    // 物料规格_是定制物料
+    public static final String MATERIAL_CATEGORY_IS_CUSTIMIZE = "001";
+    // 物料规格_不是定制物料
+    public static final String MATERIAL_CATEGORY_NOT_CUSTOMIZE = "002";
+    // 物料规格_可多选
+    public static final String MATERIAL_CATEGORY_IS_MULTIPLE = "001";
+    // 物料规格_不可多选
+    public static final String MATERIAL_CATEGORY_NOT_MULTIPLE = "002";
+    // 物料规格_推荐
+    public static final String MATERIAL_CATEGORY_IS_RECOMMEND = "001";
+    // 物料规格_不是推荐
+    public static final String MATERIAL_CATEGORY_NOT_RECOMMEND = "002";
+
+
+    // 订单类型 : 平面物料
+    public static final String ORDER_TYPE_MATERIAL = "001";
+    // 订单类型 : 定制物料
+    public static final String ORDER_TYPE_CUSTOMIZE = "002";
+
+
+
+    public static final String POSTAGE_CONDITIONS_TYPE_ITEM = "001";
+    public static final String POSTAGE_CONDITIONS_TYPE_WEIGHT = "002";
+
+
+
+    // 订单状态 : 待支付/待协商
+    public static final Integer ORDER_STATUS_NO_PAYMENT = 1;
+    // 订单状态 : 待确定
+    public static final Integer ORDER_STATUS_IS_PAYMENT = 2;
+    
+    //订单状态:待发货
+    public static final int ORDER_STATUS_NO_DELIVER = 3;
+    
+    //订单状态:已发货
+    public static final int ORDER_STATUS_IS_DELIVER = 4;
+    
+    // 订单状态 : 交易完成
+    public static final int ORDER_STATUS_FINISHED = 5;
+    // 订单状态 : 已删除
+    public static final int ORDER_STATUS_DELETED = 8;
+    // 订单状态 : 已取消
+    public static final Integer ORDER_STATUS_CANCELED = 9;
+    
+    //订单状态:待确定
+    public static final int ORDER_STATUS_STATUS_CHECK = 2;
+    
+   
+
+    // 订单提醒发货 : 已提醒
+    public static Integer ORDER_REMIND_REMINDED = 1;
+    // 订单提醒发货 : 未提醒
+    public static final Integer ORDER_REMIND_NO_REMINDED = 0;
+    
+    //订制订单待付款状态
+	public static final String ORDER_CUSTOMIZE_STATUS_UNCHECKED = "002";
+	
+	
+
+    // 不可以外部实例化该类
+    private DesignerConsts() {
+    }
+
+}

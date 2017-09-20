@@ -1,0 +1,26 @@
+package com.xmn.designer.service.customize.impl;
+
+import com.xmn.designer.dao.material.MaterialCategoryAttrDao;
+import com.xmn.designer.service.customize.CustomService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
+
+/**
+ * create 2016/11/15
+ * 定制订单服务类
+ * @author yangQiang
+ */
+
+@Service
+public class CustomServiceImpl implements CustomService {
+
+    @Autowired
+    private MaterialCategoryAttrDao materialCategoryAttrMapper;
+
+    @Override
+    public Map<String, Object> getCustomStandard() {
+        return materialCategoryAttrMapper.queryCustomStandard();
+    }
+}

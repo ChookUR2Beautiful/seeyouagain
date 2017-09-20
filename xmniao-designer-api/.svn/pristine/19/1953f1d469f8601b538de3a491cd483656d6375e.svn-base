@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmn.designer.dao.order.OrderDao" >
+  <resultMap id="BaseResultMap" type="com.xmn.designer.entity.order.Order" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="uid" property="uid" jdbcType="BIGINT" />
+    <result column="order_amount" property="orderAmount" jdbcType="DECIMAL" />
+    <result column="balance" property="balance" jdbcType="DECIMAL" />
+    <result column="freight" property="freight" jdbcType="DECIMAL" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="trade_no" property="tradeNo" jdbcType="VARCHAR" />
+    <result column="out_trade_no" property="outTradeNo" jdbcType="VARCHAR" />
+    <result column="third_uid" property="thirdUid" jdbcType="VARCHAR" />
+    <result column="pay_type" property="payType" jdbcType="VARCHAR" />
+    <result column="pay_time" property="payTime" jdbcType="TIMESTAMP" />
+    <result column="delivery_address" property="deliveryAddress" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="consignee" property="consignee" jdbcType="VARCHAR" />
+    <result column="pay_status" property="payStatus" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="device_type" property="deviceType" jdbcType="INTEGER" />
+    <result column="leave_note" property="leaveNote" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="cancel_reason" property="cancelReason" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="courier_number" property="courierNumber" jdbcType="VARCHAR" />
+    <result column="main_image" property="mainImage" jdbcType="VARCHAR" />
+    <result column="version_lock" property="versionLock" jdbcType="BIGINT" />
+    <result column="remind_express" property="remindExpress" javaType="INTEGER"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, uid, order_amount, balance, freight, order_no, trade_no, out_trade_no, third_uid, 
+    pay_type, pay_time, delivery_address, mobile, consignee, pay_status, create_time, 
+    device_type, leave_note, type, cancel_reason, status, courier_number, main_image, 
+    version_lock,remind_express
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from d_order
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from d_order
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmn.designer.entity.order.Order" >
+    insert into d_order (id, uid, order_amount, 
+      balance, freight, order_no, 
+      trade_no, out_trade_no, third_uid, 
+      pay_type, pay_time, delivery_address, 
+      mobile, consignee, pay_status, 
+      create_time, device_type, leave_note, 
+      type, cancel_reason, status, 
+      courier_number, main_image, version_lock
+      )
+    values (#{id,jdbcType=BIGINT}, #{uid,jdbcType=BIGINT}, #{orderAmount,jdbcType=DECIMAL}, 
+      #{balance,jdbcType=DECIMAL}, #{freight,jdbcType=DECIMAL}, #{orderNo,jdbcType=VARCHAR}, 
+      #{tradeNo,jdbcType=VARCHAR}, #{outTradeNo,jdbcType=VARCHAR}, #{thirdUid,jdbcType=VARCHAR}, 
+      #{payType,jdbcType=VARCHAR}, #{payTime,jdbcType=TIMESTAMP}, #{deliveryAddress,jdbcType=VARCHAR}, 
+      #{mobile,jdbcType=VARCHAR}, #{consignee,jdbcType=VARCHAR}, #{payStatus,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{deviceType,jdbcType=INTEGER}, #{leaveNote,jdbcType=VARCHAR}, 
+      #{type,jdbcType=VARCHAR}, #{cancelReason,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, 
+      #{courierNumber,jdbcType=VARCHAR}, #{mainImage,jdbcType=VARCHAR}, #{versionLock,jdbcType=BIGINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmn.designer.entity.order.Order" >
+    insert into d_order
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="orderAmount != null" >
+        order_amount,
+      </if>
+      <if test="balance != null" >
+        balance,
+      </if>
+      <if test="freight != null" >
+        freight,
+      </if>
+      <if test="orderNo != null" >
+        order_no,
+      </if>
+      <if test="tradeNo != null" >
+        trade_no,
+      </if>
+      <if test="outTradeNo != null" >
+        out_trade_no,
+      </if>
+      <if test="thirdUid != null" >
+        third_uid,
+      </if>
+      <if test="payType != null" >
+        pay_type,
+      </if>
+      <if test="payTime != null" >
+        pay_time,
+      </if>
+      <if test="deliveryAddress != null" >
+        delivery_address,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="consignee != null" >
+        consignee,
+      </if>
+      <if test="payStatus != null" >
+        pay_status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="deviceType != null" >
+        device_type,
+      </if>
+      <if test="leaveNote != null" >
+        leave_note,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="cancelReason != null" >
+        cancel_reason,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="courierNumber != null" >
+        courier_number,
+      </if>
+      <if test="mainImage != null" >
+        main_image,
+      </if>
+      <if test="versionLock != null" >
+        version_lock,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=BIGINT},
+      </if>
+      <if test="orderAmount != null" >
+        #{orderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="balance != null" >
+        #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="freight != null" >
+        #{freight,jdbcType=DECIMAL},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeNo != null" >
+        #{tradeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="outTradeNo != null" >
+        #{outTradeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="thirdUid != null" >
+        #{thirdUid,jdbcType=VARCHAR},
+      </if>
+      <if test="payType != null" >
+        #{payType,jdbcType=VARCHAR},
+      </if>
+      <if test="payTime != null" >
+        #{payTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deliveryAddress != null" >
+        #{deliveryAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="consignee != null" >
+        #{consignee,jdbcType=VARCHAR},
+      </if>
+      <if test="payStatus != null" >
+        #{payStatus,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deviceType != null" >
+        #{deviceType,jdbcType=INTEGER},
+      </if>
+      <if test="leaveNote != null" >
+        #{leaveNote,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="cancelReason != null" >
+        #{cancelReason,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="courierNumber != null" >
+        #{courierNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="mainImage != null" >
+        #{mainImage,jdbcType=VARCHAR},
+      </if>
+      <if test="versionLock != null" >
+        #{versionLock,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmn.designer.entity.order.Order" >
+    update d_order
+    <set >
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=BIGINT},
+      </if>
+      <if test="orderAmount != null" >
+        order_amount = #{orderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="balance != null" >
+        balance = #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="freight != null" >
+        freight = #{freight,jdbcType=DECIMAL},
+      </if>
+      <if test="orderNo != null" >
+        order_no = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeNo != null" >
+        trade_no = #{tradeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="outTradeNo != null" >
+        out_trade_no = #{outTradeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="thirdUid != null" >
+        third_uid = #{thirdUid,jdbcType=VARCHAR},
+      </if>
+      <if test="payType != null" >
+        pay_type = #{payType,jdbcType=VARCHAR},
+      </if>
+      <if test="payTime != null" >
+        pay_time = #{payTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deliveryAddress != null" >
+        delivery_address = #{deliveryAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="consignee != null" >
+        consignee = #{consignee,jdbcType=VARCHAR},
+      </if>
+      <if test="payStatus != null" >
+        pay_status = #{payStatus,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deviceType != null" >
+        device_type = #{deviceType,jdbcType=INTEGER},
+      </if>
+      <if test="leaveNote != null" >
+        leave_note = #{leaveNote,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="cancelReason != null" >
+        cancel_reason = #{cancelReason,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="courierNumber != null" >
+        courier_number = #{courierNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="mainImage != null" >
+        main_image = #{mainImage,jdbcType=VARCHAR},
+      </if>
+      <if test="versionLock != null" >
+        version_lock = #{versionLock,jdbcType=BIGINT},
+      </if>
+      <if test="remindExpress != null" >
+        remind_express = #{remindExpress},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmn.designer.entity.order.Order" >
+    update d_order
+    set uid = #{uid,jdbcType=BIGINT},
+      order_amount = #{orderAmount,jdbcType=DECIMAL},
+      balance = #{balance,jdbcType=DECIMAL},
+      freight = #{freight,jdbcType=DECIMAL},
+      order_no = #{orderNo,jdbcType=VARCHAR},
+      trade_no = #{tradeNo,jdbcType=VARCHAR},
+      out_trade_no = #{outTradeNo,jdbcType=VARCHAR},
+      third_uid = #{thirdUid,jdbcType=VARCHAR},
+      pay_type = #{payType,jdbcType=VARCHAR},
+      pay_time = #{payTime,jdbcType=TIMESTAMP},
+      delivery_address = #{deliveryAddress,jdbcType=VARCHAR},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      consignee = #{consignee,jdbcType=VARCHAR},
+      pay_status = #{payStatus,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      device_type = #{deviceType,jdbcType=INTEGER},
+      leave_note = #{leaveNote,jdbcType=VARCHAR},
+      type = #{type,jdbcType=VARCHAR},
+      cancel_reason = #{cancelReason,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      courier_number = #{courierNumber,jdbcType=VARCHAR},
+      main_image = #{mainImage,jdbcType=VARCHAR},
+      version_lock = #{versionLock,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+   <select id="selectByOrderNum" resultMap="BaseResultMap">
+  	select
+    <include refid="Base_Column_List" />
+    from d_order
+    where order_no = #{orderNum,jdbcType=VARCHAR}  and uid=#{uid}
+  </select>
+  <select id="selectBySelective" resultMap="BaseResultMap" parameterType="com.xmn.designer.entity.order.Order">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM d_order
+    WHERE uid = #{order.uid}
+      and status not in(8,9)
+    <if test="order.status != null">
+      and status = #{order.status}
+    </if>
+    limit #{page.start},#{page.pageSize}
+
+  </select>
+  <select id="selectByOrderNoAndUid" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List"/>
+    from d_order
+    WHERE uid=#{uid} and order_no = #{orderNo}
+  </select>
+  <select id="countOrder" resultType="java.lang.Integer">
+    SELECT count(1)
+    FROM d_order
+    WHERE uid = #{order.uid}
+    and status not in(8,9)
+    <if test="order.status != null">
+      and status = #{order.status}
+    </if>
+  </select>
+
+  <update id="updatePayStatus"  parameterType="com.xmn.designer.entity.order.Order">
+  	 update d_order set
+  	 pay_time = #{payTime,jdbcType=TIMESTAMP},
+  	 pay_status = #{payStatus,jdbcType=INTEGER},
+  	 status = #{status,jdbcType=INTEGER},	
+  	 version_lock = #{versionLock,jdbcType=BIGINT}+1,
+  	 pay_type = #{payType,jdbcType=VARCHAR}
+  	 <if test="balance != null" >
+        ,balance = #{balance,jdbcType=DECIMAL}
+      </if>
+      <if test="tradeNo != null" >
+        ,trade_no = #{tradeNo,jdbcType=VARCHAR}
+      </if>
+     where id = #{id,jdbcType=BIGINT}  and version_lock = #{versionLock,jdbcType=BIGINT}
+  </update>
+</mapper>
