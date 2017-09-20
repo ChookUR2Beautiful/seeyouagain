@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.vstar.dao.TVstarRewardConfDao" >
+
+  <resultMap id="vstarRewardConfMap" type="com.xmniao.xmn.core.vstar.entity.TVstarRewardConf" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="pilot_time" property="pilotTime" jdbcType="INTEGER" />
+    <result column="reward_coin" property="rewardCoin" jdbcType="DECIMAL" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="vstarRewardConf_column_list" >
+    id, pilot_time, reward_coin, status, create_time, update_time
+  </sql>
+  
+  <select id="getObject" resultMap="vstarRewardConfMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="vstarRewardConf_column_list" />
+    from t_vstar_reward_conf
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getFirstObject" resultMap="vstarRewardConfMap">
+    select 
+    <include refid="vstarRewardConf_column_list" />
+    from t_vstar_reward_conf
+    limit 0,1
+  </select>
+  
+  <delete id="delete" parameterType="java.lang.Object" >
+    delete from t_vstar_reward_conf
+    where id in
+    <foreach collection="array" item="item" index="index" open="(" separator="," close=")">
+    	#{item}
+    </foreach>
+  </delete>
+  
+  
+  <insert id="add" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarRewardConf" >
+    insert into t_vstar_reward_conf
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="pilotTime != null" >
+        pilot_time,
+      </if>
+      <if test="rewardCoin != null" >
+        reward_coin,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="pilotTime != null" >
+        #{pilotTime,jdbcType=INTEGER},
+      </if>
+      <if test="rewardCoin != null" >
+        #{rewardCoin,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarRewardConf" >
+    update t_vstar_reward_conf
+    <set >
+      <if test="pilotTime != null" >
+        pilot_time = #{pilotTime,jdbcType=INTEGER},
+      </if>
+      <if test="rewardCoin != null" >
+        reward_coin = #{rewardCoin,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+</mapper>

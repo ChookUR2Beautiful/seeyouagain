@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TLiveSalaryDao">
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.live_anchor.entity.TLiveSalary">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="anchor_id" jdbcType="INTEGER" property="anchorId" />
+    <result column="sign_type" jdbcType="INTEGER" property="signType" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="balance" jdbcType="DECIMAL" property="balance" />
+    <result column="base_salary" jdbcType="DECIMAL" property="baseSalary" />
+    <result column="after_salary" jdbcType="DECIMAL" property="afterSalary" />
+    <result column="bout" jdbcType="INTEGER" property="bout" />
+    <result column="level_income" jdbcType="DECIMAL" property="levelIncome" />
+    <result column="float_performance" jdbcType="DECIMAL" property="floatPerformance" />
+    <result column="top_income" jdbcType="DECIMAL" property="topIncome" />
+    <result column="is_taxes" jdbcType="INTEGER" property="isTaxes" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="uid" jdbcType="INTEGER" property="uid" />
+    <result column="count_time" jdbcType="VARCHAR" property="countTime" />
+    <result column="percent" jdbcType="DECIMAL" property="percent" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, anchor_id, sign_type, status, balance, base_salary, after_salary
+    , bout, level_income, float_performance, top_income, is_taxes, create_time, 
+    update_time,uid,count_time,percent
+  </sql>
+  <sql id="whereSQL">
+  	<if test="id != null">
+  		and id = #{id}
+  	</if>
+  	 <if test="status != null">
+  	 	and status = #{status}
+  	 </if>
+  	 <if test="signType != null">
+  	 	and sign_type = #{signType}
+  	 </if>
+  	 <if test="anchorId != null">
+  	 	and anchor_id = #{anchorId} 
+  	 </if>
+  	 <if test="countTime != null and countTime != ''">
+  	 	and count_time = #{countTime} 
+  	 </if>
+  	 <if test="uids != null">
+  	 	and  uid in
+  	 	<foreach collection="uids" item="item" close=")" open="(" separator=",">
+  	 		#{item}
+  	 	</foreach>
+  	 </if>
+  </sql>
+  
+  <update id="confirmSalary">
+  	 update t_live_salary set status = 1 where id = #{id}
+  </update>
+  
+  <update id="update">
+  	  update t_live_salary 
+	<set>
+		<if test="isTaxes != null">
+        is_taxes = #{isTaxes,jdbcType=INTEGER},
+      </if>
+      <if test="afterSalary != null">
+        after_salary = #{afterSalary,jdbcType=DECIMAL},
+      </if>
+      update_time = now(),
+	</set>
+	 where id = #{id}
+  </update>
+  <select id="getList" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveSalary" resultMap="BaseResultMap">
+  	 select 
+  	 <include refid="Base_Column_List" />
+  	 from t_live_salary
+  	 where 1=1
+  	<include refid="whereSQL"></include>
+  	order by status asc,end_date desc,id desc
+  	<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <select id="count" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveSalary">
+  	 select count(1) from t_live_salary where 1=1
+  	 <include refid="whereSQL"></include>
+  </select>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_live_salary
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_live_salary
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveSalary">
+    insert into t_live_salary (id, anchor_id, sign_type, 
+      status, balance, base_salary, 
+      after_salary, begin_date, end_date, 
+      bout, level_income, float_performance, 
+      top_income, is_taxes, create_time, 
+      update_time)
+    values (#{id,jdbcType=INTEGER}, #{anchorId,jdbcType=INTEGER}, #{signType,jdbcType=INTEGER}, 
+      #{status,jdbcType=INTEGER}, #{balance,jdbcType=DECIMAL}, #{baseSalary,jdbcType=DECIMAL}, 
+      #{afterSalary,jdbcType=DECIMAL}, #{beginDate,jdbcType=DATE}, #{endDate,jdbcType=DATE}, 
+      #{bout,jdbcType=INTEGER}, #{levelIncome,jdbcType=DECIMAL}, #{floatPerformance,jdbcType=DECIMAL}, 
+      #{topIncome,jdbcType=DECIMAL}, #{isTaxes,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveSalary">
+    insert into t_live_salary
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="anchorId != null">
+        anchor_id,
+      </if>
+      <if test="signType != null">
+        sign_type,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="balance != null">
+        balance,
+      </if>
+      <if test="baseSalary != null">
+        base_salary,
+      </if>
+      <if test="afterSalary != null">
+        after_salary,
+      </if>
+      <if test="beginDate != null">
+        begin_date,
+      </if>
+      <if test="endDate != null">
+        end_date,
+      </if>
+      <if test="bout != null">
+        bout,
+      </if>
+      <if test="levelIncome != null">
+        level_income,
+      </if>
+      <if test="floatPerformance != null">
+        float_performance,
+      </if>
+      <if test="topIncome != null">
+        top_income,
+      </if>
+      <if test="isTaxes != null">
+        is_taxes,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="anchorId != null">
+        #{anchorId,jdbcType=INTEGER},
+      </if>
+      <if test="signType != null">
+        #{signType,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="balance != null">
+        #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="baseSalary != null">
+        #{baseSalary,jdbcType=DECIMAL},
+      </if>
+      <if test="afterSalary != null">
+        #{afterSalary,jdbcType=DECIMAL},
+      </if>
+      <if test="beginDate != null">
+        #{beginDate,jdbcType=DATE},
+      </if>
+      <if test="endDate != null">
+        #{endDate,jdbcType=DATE},
+      </if>
+      <if test="bout != null">
+        #{bout,jdbcType=INTEGER},
+      </if>
+      <if test="levelIncome != null">
+        #{levelIncome,jdbcType=DECIMAL},
+      </if>
+      <if test="floatPerformance != null">
+        #{floatPerformance,jdbcType=DECIMAL},
+      </if>
+      <if test="topIncome != null">
+        #{topIncome,jdbcType=DECIMAL},
+      </if>
+      <if test="isTaxes != null">
+        #{isTaxes,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveSalary">
+    update t_live_salary
+    <set>
+      <if test="anchorId != null">
+        anchor_id = #{anchorId,jdbcType=INTEGER},
+      </if>
+      <if test="signType != null">
+        sign_type = #{signType,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="balance != null">
+        balance = #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="baseSalary != null">
+        base_salary = #{baseSalary,jdbcType=DECIMAL},
+      </if>
+      <if test="afterSalary != null">
+        after_salary = #{afterSalary,jdbcType=DECIMAL},
+      </if>
+      <if test="beginDate != null">
+        begin_date = #{beginDate,jdbcType=DATE},
+      </if>
+      <if test="endDate != null">
+        end_date = #{endDate,jdbcType=DATE},
+      </if>
+      <if test="bout != null">
+        bout = #{bout,jdbcType=INTEGER},
+      </if>
+      <if test="levelIncome != null">
+        level_income = #{levelIncome,jdbcType=DECIMAL},
+      </if>
+      <if test="floatPerformance != null">
+        float_performance = #{floatPerformance,jdbcType=DECIMAL},
+      </if>
+      <if test="topIncome != null">
+        top_income = #{topIncome,jdbcType=DECIMAL},
+      </if>
+      <if test="isTaxes != null">
+        is_taxes = #{isTaxes,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveSalary">
+    update t_live_salary
+    set anchor_id = #{anchorId,jdbcType=INTEGER},
+      sign_type = #{signType,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      balance = #{balance,jdbcType=DECIMAL},
+      base_salary = #{baseSalary,jdbcType=DECIMAL},
+      after_salary = #{afterSalary,jdbcType=DECIMAL},
+      begin_date = #{beginDate,jdbcType=DATE},
+      end_date = #{endDate,jdbcType=DATE},
+      bout = #{bout,jdbcType=INTEGER},
+      level_income = #{levelIncome,jdbcType=DECIMAL},
+      float_performance = #{floatPerformance,jdbcType=DECIMAL},
+      top_income = #{topIncome,jdbcType=DECIMAL},
+      is_taxes = #{isTaxes,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

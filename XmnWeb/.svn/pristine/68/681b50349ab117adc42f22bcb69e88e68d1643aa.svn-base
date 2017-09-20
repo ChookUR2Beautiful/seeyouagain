@@ -1,0 +1,66 @@
+package com.xmniao.xmn.core.xmermanagerment.dao;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.util.proxy.annotation.DataSource;
+import com.xmniao.xmn.core.xmermanagerment.entity.TSaasOrder;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 
+ * 
+ * 项目名称：XmnWeb
+ * 
+ * 类名称：TSaasOrderDao
+ * 
+ * 类描述： 寻蜜客Saas套餐DAO
+ * 
+ * 创建人： Chen Bo
+ * 
+ * 创建时间：2016年6月3日 下午2:39:13 
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司
+ */
+public interface TSaasOrderDao extends BaseDao<TSaasOrder>{
+
+	/**
+	 * 
+	 * @Title: getSaasOrder 
+	 * @Description:获取Saas套餐订单信息
+	 */
+	@DataSource("savle")
+	TSaasOrder getSaasOrder(TSaasOrder saasOrder);
+	
+	/**
+	 * 
+	 * @Title: updateSaasOrderSaleInfo 
+	 * @Description:更新Saas套餐订单销售情况
+	 */
+	@DataSource("savle")
+	int updateSaasOrderSaleInfo(Map<String,Object> uMap);
+
+	/**
+	 * @Description: 
+	 * @Param:saasOrder
+	 * @return:List<TSaasOrder>
+	 * @author:lifeng
+	 * @time:2016年6月15日上午11:31:47
+	 */
+	@DataSource("joint")
+	List<TSaasOrder> getSaasOrderList(TSaasOrder saasOrder);
+
+	/**
+	 * @Description: 
+	 * @Param:saasOrder
+	 * @return:Long
+	 * @author:lifeng
+	 * @time:2016年6月15日上午11:32:05
+	 */
+	@DataSource("joint")
+	Long getCountByParam(TSaasOrder saasOrder);
+
+	@DataSource("joint")
+	String selectOrderRelations(@Param("saasOrdersn") String saasOrdersn);
+}

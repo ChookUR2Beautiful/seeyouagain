@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.reward_dividends.dao.TVerExcitationProjectDao" >
+  <parameterMap type="VerExcitationProject" id="verExcitationProject" />   
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.reward_dividends.entity.TVerExcitationProject" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="project_name" property="projectName" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="rank_id" property="rankId" jdbcType="INTEGER" />
+    <result column="period" property="period" jdbcType="TINYINT" />
+    <result column="single_value" property="singleValue" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, project_name, status, rank_id, period, single_value
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_ver_excitation_project
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_ver_excitation_project
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.reward_dividends.entity.TVerExcitationProject" >
+    insert into t_ver_excitation_project (id, project_name, status, 
+      rank_id, period, single_value
+      )
+    values (#{id,jdbcType=INTEGER}, #{projectName,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, 
+      #{rankId,jdbcType=INTEGER}, #{period,jdbcType=TINYINT}, #{singleValue,jdbcType=DECIMAL}
+      )
+  </insert>
+  <insert id="insertSelective" parameterMap="verExcitationProject" useGeneratedKeys="true" keyProperty="id" keyColumn="id" >
+    insert into t_ver_excitation_project
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="projectName != null" >
+        project_name,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="rankId != null" >
+        rank_id,
+      </if>
+      <if test="period != null" >
+        period,
+      </if>
+      <if test="singleValue != null" >
+        single_value,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="projectName != null" >
+        #{projectName,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="rankId != null" >
+        #{rankId,jdbcType=INTEGER},
+      </if>
+      <if test="period != null" >
+        #{period,jdbcType=TINYINT},
+      </if>
+      <if test="singleValue != null" >
+        #{singleValue,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.reward_dividends.entity.TVerExcitationProject" >
+    update t_ver_excitation_project
+    <set >
+      <if test="projectName != null" >
+        project_name = #{projectName,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="rankId != null" >
+        rank_id = #{rankId,jdbcType=INTEGER},
+      </if>
+      <if test="period != null" >
+        period = #{period,jdbcType=TINYINT},
+      </if>
+      <if test="singleValue != null" >
+        single_value = #{singleValue,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.reward_dividends.entity.TVerExcitationProject" >
+    update t_ver_excitation_project
+    set project_name = #{projectName,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      rank_id = #{rankId,jdbcType=INTEGER},
+      period = #{period,jdbcType=TINYINT},
+      single_value = #{singleValue,jdbcType=DECIMAL}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="getExcitationProjectByProjectName" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_ver_excitation_project
+    where project_name = #{projectName,jdbcType=VARCHAR}
+  </select>
+
+	<!-- 自定义区域 -->
+	<delete id="deleteByIds" parameterType="Object">
+		delete from t_ver_excitation_project
+		where id IN
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=") ">
+			#{item}
+		</foreach>
+	</delete>
+</mapper>

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.vstar.dao.DivisionRegionDao">
+	<resultMap id="BaseResultMap"
+		type="com.xmniao.xmn.core.vstar.entity.DivisionRegion">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="division_id" jdbcType="INTEGER" property="divisionId" />
+		<result column="province_id" jdbcType="INTEGER" property="provinceId" />
+		<result column="city_id" jdbcType="INTEGER" property="cityId" />
+		<result column="area_id" jdbcType="INTEGER" property="areaId" />
+		<result column="province_name" jdbcType="VARCHAR" property="provinceName" />
+		<result column="city_name" jdbcType="VARCHAR" property="cityName" />
+		<result column="area_name" jdbcType="VARCHAR" property="areaName" />
+		<result column="state" jdbcType="INTEGER" property="state" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, division_id, province_id, city_id, area_id, province_name, city_name,
+		area_name,
+		state
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_vstar_division_region
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from t_vstar_division_region
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.xmniao.xmn.core.vstar.entity.DivisionRegion">
+		insert into t_vstar_division_region (id, division_id, province_id,
+		city_id, area_id, province_name,
+		city_name, area_name, state
+		)
+		values (#{id,jdbcType=INTEGER}, #{divisionId,jdbcType=INTEGER},
+		#{provinceId,jdbcType=INTEGER},
+		#{cityId,jdbcType=INTEGER}, #{areaId,jdbcType=INTEGER}, #{provinceName,jdbcType=VARCHAR},
+		#{cityName,jdbcType=VARCHAR}, #{areaName,jdbcType=VARCHAR},
+		#{state,jdbcType=INTEGER}
+		)
+	</insert>
+
+	<insert id="addBatch" parameterType="java.util.List">
+		INSERT INTO t_vstar_division_region
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			division_id, province_id, city_id, area_id, province_name, city_name, area_name,
+			state
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list"
+			separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				#{item.divisionId},
+				#{item.provinceId},
+				#{item.cityId},
+				#{item.areaId},
+				#{item.provinceName},
+				#{item.cityName},
+				#{item.areaName},
+				#{item.state},
+			</trim>
+		</foreach>
+	</insert>
+
+	<insert id="insertSelective" parameterType="com.xmniao.xmn.core.vstar.entity.DivisionRegion">
+		insert into t_vstar_division_region
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="divisionId != null">
+				division_id,
+			</if>
+			<if test="provinceId != null">
+				province_id,
+			</if>
+			<if test="cityId != null">
+				city_id,
+			</if>
+			<if test="areaId != null">
+				area_id,
+			</if>
+			<if test="provinceName != null">
+				province_name,
+			</if>
+			<if test="cityName != null">
+				city_name,
+			</if>
+			<if test="areaName != null">
+				area_name,
+			</if>
+			<if test="state != null">
+				state,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="divisionId != null">
+				#{divisionId,jdbcType=INTEGER},
+			</if>
+			<if test="provinceId != null">
+				#{provinceId,jdbcType=INTEGER},
+			</if>
+			<if test="cityId != null">
+				#{cityId,jdbcType=INTEGER},
+			</if>
+			<if test="areaId != null">
+				#{areaId,jdbcType=INTEGER},
+			</if>
+			<if test="provinceName != null">
+				#{provinceName,jdbcType=VARCHAR},
+			</if>
+			<if test="cityName != null">
+				#{cityName,jdbcType=VARCHAR},
+			</if>
+			<if test="areaName != null">
+				#{areaName,jdbcType=VARCHAR},
+			</if>
+			<if test="state != null">
+				#{state,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.vstar.entity.DivisionRegion">
+		update t_vstar_division_region
+		<set>
+			<if test="divisionId != null">
+				division_id = #{divisionId,jdbcType=INTEGER},
+			</if>
+			<if test="provinceId != null">
+				province_id = #{provinceId,jdbcType=INTEGER},
+			</if>
+			<if test="cityId != null">
+				city_id = #{cityId,jdbcType=INTEGER},
+			</if>
+			<if test="areaId != null">
+				area_id = #{areaId,jdbcType=INTEGER},
+			</if>
+			<if test="provinceName != null">
+				province_name = #{provinceName,jdbcType=VARCHAR},
+			</if>
+			<if test="cityName != null">
+				city_name = #{cityName,jdbcType=VARCHAR},
+			</if>
+			<if test="areaName != null">
+				area_name = #{areaName,jdbcType=VARCHAR},
+			</if>
+			<if test="state != null">
+				state = #{state,jdbcType=INTEGER},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.vstar.entity.DivisionRegion">
+		update t_vstar_division_region
+		set division_id = #{divisionId,jdbcType=INTEGER},
+		province_id = #{provinceId,jdbcType=INTEGER},
+		city_id = #{cityId,jdbcType=INTEGER},
+		area_id = #{areaId,jdbcType=INTEGER},
+		province_name = #{provinceName,jdbcType=VARCHAR},
+		city_name = #{cityName,jdbcType=VARCHAR},
+		area_name = #{areaName,jdbcType=VARCHAR},
+		state = #{state,jdbcType=INTEGER}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+</mapper>

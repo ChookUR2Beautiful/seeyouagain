@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.CatehomeActivityDao">
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.businessman.entity.CatehomeActivity">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="image_url" jdbcType="VARCHAR" property="imageUrl" />
+    <result column="jump_url" jdbcType="VARCHAR" property="jumpUrl" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="province_id" jdbcType="INTEGER" property="provinceId" />
+    <result column="city_id" jdbcType="INTEGER" property="cityId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="province_name" jdbcType="VARCHAR" property="provinceName" />
+		<result column="city_name" jdbcType="VARCHAR" property="cityName" />
+		<result column="location" jdbcType="INTEGER" property="location" />
+		<result column="is_all" jdbcType="INTEGER" property="isAll" />
+		<result column="must_login" jdbcType="INTEGER" property="mustLogin" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    t_catehome_activity.id, 
+    t_catehome_activity.title, 
+    t_catehome_activity.image_url, 
+    t_catehome_activity.jump_url, 
+    t_catehome_activity.state, 
+    t_catehome_activity.sort, 
+    t_catehome_activity.province_id, 
+    t_catehome_activity.city_id, 
+    t_catehome_activity.create_time, 
+    t_catehome_activity.update_time,
+    t_catehome_activity.location,
+    t_catehome_activity.is_all,
+    t_catehome_activity.must_login
+  </sql>
+  
+  <update id="updateActivitySort">
+  	 update t_catehome_activity set sort =#{sort} where id = #{id}
+  </update>
+  
+  <update id="deleteActivity">
+	update   t_catehome_activity set state = 0 where id = #{id}
+  </update>
+  
+  <select id="getList" resultMap="BaseResultMap">
+	  select <include refid="Base_Column_List"/>,a.title as province_name,b.title as city_name  	
+	  from  t_catehome_activity
+	  left join t_area a on t_catehome_activity.province_id=a.area_id
+		left join t_area b on  t_catehome_activity.city_id=b.area_id
+	  where state = 1
+	  <if test="provinceId != null and cityId != null">
+				and province_id = #{provinceId,jdbcType=INTEGER}
+				and city_id = #{cityId,jdbcType=INTEGER}
+			</if>
+	  order by sort desc
+  </select>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_catehome_activity
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from t_catehome_activity
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="add" parameterType="com.xmniao.xmn.core.businessman.entity.CatehomeActivity">
+    insert into t_catehome_activity (id, title, image_url, 
+      jump_url, state, sort, 
+      province_id, city_id, create_time, 
+      update_time,location,is_all,must_login)
+    values (#{id,jdbcType=BIGINT}, #{title,jdbcType=VARCHAR}, #{imageUrl,jdbcType=VARCHAR}, 
+      #{jumpUrl,jdbcType=VARCHAR}, #{state,jdbcType=INTEGER}, #{sort,jdbcType=INTEGER}, 
+      #{provinceId,jdbcType=INTEGER}, #{cityId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP},#{location,jdbcType=INTEGER},#{isAll,jdbcType=INTEGER},#{mustLogin,jdbcType=INTEGER})
+  </insert> 
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.businessman.entity.CatehomeActivity">
+    insert into t_catehome_activity
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="imageUrl != null">
+        image_url,
+      </if>
+      <if test="jumpUrl != null">
+        jump_url,
+      </if>
+      <if test="state != null">
+        state,
+      </if>
+      <if test="sort != null">
+        sort,
+      </if>
+      <if test="provinceId != null">
+        province_id,
+      </if>
+      <if test="cityId != null">
+        city_id,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="imageUrl != null">
+        #{imageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="jumpUrl != null">
+        #{jumpUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null">
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="provinceId != null">
+        #{provinceId,jdbcType=INTEGER},
+      </if>
+      <if test="cityId != null">
+        #{cityId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.businessman.entity.CatehomeActivity">
+    update t_catehome_activity
+    <set>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="imageUrl != null">
+        image_url = #{imageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="jumpUrl != null">
+        jump_url = #{jumpUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null">
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="provinceId != null">
+        province_id = #{provinceId,jdbcType=INTEGER},
+      </if>
+      <if test="cityId != null">
+        city_id = #{cityId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.businessman.entity.CatehomeActivity">
+    update t_catehome_activity
+    set title = #{title,jdbcType=VARCHAR},
+      image_url = #{imageUrl,jdbcType=VARCHAR},
+      jump_url = #{jumpUrl,jdbcType=VARCHAR},
+      state = #{state,jdbcType=INTEGER},
+      sort = #{sort,jdbcType=INTEGER},
+      province_id = #{provinceId,jdbcType=INTEGER},
+      city_id = #{cityId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

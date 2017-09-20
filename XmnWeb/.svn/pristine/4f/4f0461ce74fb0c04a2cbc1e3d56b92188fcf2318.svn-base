@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.reward_dividends.dao.TVerExcitationDetailDao" >
+  <parameterMap type="VerExcitationDetail" id="verExcitationDetail" />    
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.reward_dividends.entity.TVerExcitationDetail" >
+    <id column="did" property="did" jdbcType="INTEGER" />
+    <result column="pid" property="pid" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="TINYINT" />
+    <result column="cid" property="cid" jdbcType="INTEGER" />
+    <result column="num" property="num" jdbcType="INTEGER" />
+    <result column="worth" property="worth" jdbcType="DOUBLE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    did, pid, type, cid, num, worth
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_ver_excitation_detail
+    where did = #{did,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_ver_excitation_detail
+    where did = #{did,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.reward_dividends.entity.TVerExcitationDetail" >
+    insert into t_ver_excitation_detail (did, pid, type, 
+      cid, num, worth)
+    values (#{did,jdbcType=INTEGER}, #{pid,jdbcType=INTEGER}, #{type,jdbcType=TINYINT}, 
+      #{cid,jdbcType=INTEGER}, #{num,jdbcType=INTEGER}, #{worth,jdbcType=DOUBLE})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.reward_dividends.entity.TVerExcitationDetail" >
+    insert into t_ver_excitation_detail
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="did != null" >
+        did,
+      </if>
+      <if test="pid != null" >
+        pid,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="cid != null" >
+        cid,
+      </if>
+      <if test="num != null" >
+        num,
+      </if>
+      <if test="worth != null" >
+        worth,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="did != null" >
+        #{did,jdbcType=INTEGER},
+      </if>
+      <if test="pid != null" >
+        #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=TINYINT},
+      </if>
+      <if test="cid != null" >
+        #{cid,jdbcType=INTEGER},
+      </if>
+      <if test="num != null" >
+        #{num,jdbcType=INTEGER},
+      </if>
+      <if test="worth != null" >
+        #{worth,jdbcType=DOUBLE},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.reward_dividends.entity.TVerExcitationDetail" >
+    update t_ver_excitation_detail
+    <set >
+      <if test="pid != null" >
+        pid = #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=TINYINT},
+      </if>
+      <if test="cid != null" >
+        cid = #{cid,jdbcType=INTEGER},
+      </if>
+      <if test="num != null" >
+        num = #{num,jdbcType=INTEGER},
+      </if>
+      <if test="worth != null" >
+        worth = #{worth,jdbcType=DOUBLE},
+      </if>
+    </set>
+    where did = #{did,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.reward_dividends.entity.TVerExcitationDetail" >
+    update t_ver_excitation_detail
+    set pid = #{pid,jdbcType=INTEGER},
+      type = #{type,jdbcType=TINYINT},
+      cid = #{cid,jdbcType=INTEGER},
+      num = #{num,jdbcType=INTEGER},
+      worth = #{worth,jdbcType=DOUBLE}
+    where did = #{did,jdbcType=INTEGER}
+  </update>
+  
+  <!--   自定义sql区域 -->
+	<delete id="deleteByPid" parameterType="java.lang.Integer">
+		delete from t_ver_excitation_detail
+		where pid =  #{pid}
+	</delete>  
+  
+	<delete id="deleteByPids" parameterType="Object">
+		delete from t_ver_excitation_detail
+		where pid IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+  
+  
+	<insert id="insertVerExcitationDetailBatch" parameterType="java.util.List">
+		INSERT INTO t_ver_excitation_detail
+		(pid, type, cid, num, worth)
+		VALUES
+		<foreach collection="list" item="coupon" separator="," index="index">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				#{coupon.pid,jdbcType=INTEGER},
+				#{coupon.type,jdbcType=INTEGER},
+				#{coupon.cid,jdbcType=INTEGER},
+				#{coupon.num,jdbcType=INTEGER},
+				#{coupon.worth,jdbcType=DECIMAL}
+			</trim>
+		</foreach>
+	</insert>
+
+
+	<select id="getVerExcitationDetail" resultType="com.xmniao.xmn.core.reward_dividends.entity.TVerExcitationDetail">
+		select
+		tr.*, t.project_name as projectName, rank_id as rankId, tc.cname as cname
+		from t_ver_excitation_project t INNER JOIN t_ver_excitation_detail tr
+		on t.id = tr.pid LEFT JOIN t_coupon tc ON tr.cid = tc.cid  where t.status = 0
+	</select>
+  
+  
+</mapper>

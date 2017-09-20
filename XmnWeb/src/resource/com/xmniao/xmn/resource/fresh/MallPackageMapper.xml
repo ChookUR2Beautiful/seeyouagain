@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.fresh.dao.MallPackageDao">
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.fresh.entity.MallPackage">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="original_price" jdbcType="DOUBLE" property="originalPrice" />
+    <result column="price" jdbcType="DOUBLE" property="price" />
+    <result column="only_live_coin" jdbcType="TINYINT" property="onlyLiveCoin" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="rank_type" jdbcType="INTEGER" property="rankType" />
+    <result column="rank_id" jdbcType="BIGINT" property="rankId" />
+    <result column="product_ids" jdbcType="VARCHAR" property="productIds" />
+    <result column="img_urls" jdbcType="VARCHAR" property="imgUrls" />
+    <result column="package_img_mine" jdbcType="VARCHAR" property="packageImgMine" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.xmniao.xmn.core.fresh.entity.MallPackage">
+    <result column="html" jdbcType="LONGVARCHAR" property="html" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, title, original_price, price, only_live_coin, status, sort, rank_type, rank_id
+  </sql>
+  <sql id="Blob_Column_List">
+    html
+  </sql>
+  <sql id="whereSQL">
+  	 <if test="title != null and title != ''">
+  	 	 and title like '%${title}%'
+  	 </if>
+  	 <if test="productName != null and productName != ''">
+  	 	and (select count(1) from  t_mall_package_product where package_id = t_mall_package.id and product_name like '%${productName}%' ) > 0
+  	 </if>
+  	 <if test="id != null">
+  	 	and id = #{id}
+  	 </if>
+  	 <if test="status != null">
+  	 	and status = #{status}
+  	 </if>
+  	 <if test="minPrice != null">
+  	 	and price >= #{minPrice}
+  	 </if>
+  	 <if test="maxPrice != null">
+  	 	and price &lt;= #{maxPrice}
+  	 </if>
+  </sql>
+  
+  <update id="updateStatusBatch">
+  	 update t_mall_package set status = #{status}
+  	 where id in <foreach collection="ids" item="item" open="(" close=")" separator="," >
+		  	 #{item}	
+  	 </foreach>
+  </update>
+  
+  <select id="getObject" resultMap="BaseResultMap">
+  		select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />,
+    (select group_concat(id) from t_mall_package_product where t_mall_package_product.package_id = t_mall_package.id) as product_ids,
+    (select  img_url from t_mall_package_img where t_mall_package_img.package_id = t_mall_package.id  and t_mall_package_img.img_type = 1 limit 0,1) as package_img_mine,
+    (select group_concat(img_url) from t_mall_package_img where t_mall_package_img.package_id = t_mall_package.id  and t_mall_package_img.img_type = 2  ) as img_urls
+    from t_mall_package
+    where id = #{id}
+  </select>
+  
+  <select id="getList" resultMap="BaseResultMap">
+  	   select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_mall_package
+    where 1=1
+    <include refid="whereSQL"/>
+    order by sort desc
+    <if test=" limit != -1 ">
+		LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <select id="count" resultType="java.lang.Long">
+  	 select count(1) from t_mall_package where 1=1
+  	 <include refid="whereSQL"/>
+  </select>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_mall_package
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from t_mall_package
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.fresh.entity.MallPackage">
+    insert into t_mall_package (id, title, original_price, 
+      price, only_live_coin, status, 
+      sort, rank_type, rank_id, 
+      html)
+    values (#{id,jdbcType=BIGINT}, #{title,jdbcType=VARCHAR}, #{originalPrice,jdbcType=DOUBLE}, 
+      #{price,jdbcType=DOUBLE}, #{onlyLiveCoin,jdbcType=TINYINT}, #{status,jdbcType=TINYINT}, 
+      #{sort,jdbcType=INTEGER}, #{rankType,jdbcType=INTEGER}, #{rankId,jdbcType=BIGINT}, 
+      #{html,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="add" parameterType="com.xmniao.xmn.core.fresh.entity.MallPackage" useGeneratedKeys="true" keyProperty="id">
+    insert into t_mall_package
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="originalPrice != null">
+        original_price,
+      </if>
+      <if test="price != null">
+        price,
+      </if>
+      <if test="onlyLiveCoin != null">
+        only_live_coin,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="sort != null">
+        sort,
+      </if>
+      <if test="rankType != null">
+        rank_type,
+      </if>
+      <if test="rankId != null">
+        rank_id,
+      </if>
+      <if test="html != null">
+        html,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="originalPrice != null">
+        #{originalPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="price != null">
+        #{price,jdbcType=DOUBLE},
+      </if>
+      <if test="onlyLiveCoin != null">
+        #{onlyLiveCoin,jdbcType=TINYINT},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="sort != null">
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="rankType != null">
+        #{rankType,jdbcType=INTEGER},
+      </if>
+      <if test="rankId != null">
+        #{rankId,jdbcType=BIGINT},
+      </if>
+      <if test="html != null">
+        #{html,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="update" parameterType="com.xmniao.xmn.core.fresh.entity.MallPackage">
+    update t_mall_package
+    <set>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="originalPrice != null">
+        original_price = #{originalPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="price != null">
+        price = #{price,jdbcType=DOUBLE},
+      </if>
+      <if test="onlyLiveCoin != null">
+        only_live_coin = #{onlyLiveCoin,jdbcType=TINYINT},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="sort != null">
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+        rank_type = #{rankType,jdbcType=INTEGER},
+        rank_id = #{rankId,jdbcType=BIGINT},
+      <if test="html != null">
+        html = #{html,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.xmniao.xmn.core.fresh.entity.MallPackage">
+    update t_mall_package
+    set title = #{title,jdbcType=VARCHAR},
+      original_price = #{originalPrice,jdbcType=DOUBLE},
+      price = #{price,jdbcType=DOUBLE},
+      only_live_coin = #{onlyLiveCoin,jdbcType=TINYINT},
+      status = #{status,jdbcType=TINYINT},
+      sort = #{sort,jdbcType=INTEGER},
+      rank_type = #{rankType,jdbcType=INTEGER},
+      rank_id = #{rankId,jdbcType=BIGINT},
+      html = #{html,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.fresh.entity.MallPackage">
+    update t_mall_package
+    set title = #{title,jdbcType=VARCHAR},
+      original_price = #{originalPrice,jdbcType=DOUBLE},
+      price = #{price,jdbcType=DOUBLE},
+      only_live_coin = #{onlyLiveCoin,jdbcType=TINYINT},
+      status = #{status,jdbcType=TINYINT},
+      sort = #{sort,jdbcType=INTEGER},
+      rank_type = #{rankType,jdbcType=INTEGER},
+      rank_id = #{rankId,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

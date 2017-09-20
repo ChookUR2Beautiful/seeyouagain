@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.user_terminal.dao.BannerDao">
+
+	<parameterMap type="TBanner" id="tbanner" />
+
+	<resultMap type="TBanner" id="tbannerMap">
+		<result column="id" property="id" />
+		<result column="position" property="position" />
+		<result column="banner_style" property="bannerStyle" />
+		<result column="obj_json" property="objJson" />
+		<result column="status" property="status" />
+		<result column="remarks" property="remarks" />
+		<result column="create_time" property="createTime" />
+		<result column="update_time" property="updateTime" />
+		<result column="province" property="province" />
+		<result column="city" property="city" />
+		<result column="provinceStr" property="provinceStr" />
+		<result column="cityStr" property="cityStr" />
+		<result column="isAll" property="isAll" />
+		<result column="sort" property="sort" />
+		<result column="is_emphasis" property="isEmphasis" />
+		<result column="begin_time" property="beginTime" />
+		<result column="end_time" property="endTime" />
+	</resultMap>
+
+	<!-- 查询导航图列表 -->
+	<select id="getBannerList" resultMap="tbannerMap" parameterMap="tbanner">
+		SELECT
+		t.id,t.position,t.banner_style,t.obj_json,t.status,t.remarks,t.create_time,t.update_time,t.sort,t.is_all
+		isAll,t.is_emphasis,t.begin_time,t.end_time,a.title provinceStr,b.title cityStr
+		FROM t_banner t
+		LEFT JOIN t_area a ON t.is_all = 0 AND t.province = a.area_id
+		LEFT JOIN
+		t_area b ON t.is_all = 0 AND t.city = b.area_id
+		<where>
+			1=1
+			<if test=" null != id">
+				AND t.id = #{id}
+			</if>
+			<if test=" null != position and ''!= position">
+				AND t.position = #{position}
+			</if>
+			<if test=" null != bannerStyle">
+				AND t.banner_style = #{bannerStyle}
+			</if>
+			<if test=" null != status">
+				AND t.status = #{status}
+			</if>
+			<if test=" null != remarks and ''!= remarks">
+				AND t.remarks LIKE '%${remarks}%'
+			</if>
+			<if test=" null != sdate and ''!= sdate">
+				AND t.begin_time &gt;= #{sdate}
+			</if>
+			<if test=" null != edate and ''!= edate">
+				AND t.end_time &lt; DATE_ADD(#{edate}, INTERVAL 1 DAY)
+			</if>
+			ORDER BY t.create_time DESC
+		</where>
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<!-- 查询导航图列表总条数 -->
+	<select id="getBannerCount" resultType="Long" parameterMap="tbanner">
+		SELECT COUNT(*) FROM t_banner t
+		<where>
+			1=1
+			<if test=" null != id">
+				AND t.id = #{id}
+			</if>
+			<if test=" null != position and ''!= position">
+				AND t.position = #{position}
+			</if>
+			<if test=" null != bannerStyle">
+				AND t.banner_style = #{bannerStyle}
+			</if>
+			<if test=" null != status">
+				AND t.status = #{status}
+			</if>
+			<if test=" null != remarks and ''!= remarks">
+				AND t.remarks LIKE '%${remarks}%'
+			</if>
+			<if test=" null != sdate and ''!= sdate">
+				AND t.create_time &gt;= #{sdate}
+			</if>
+			<if test=" null != edate and ''!= edate">
+				AND t.create_time &lt; DATE_ADD(#{edate}, INTERVAL 1 DAY)
+			</if>
+		</where>
+	</select>
+	<!-- 添加导航图 -->
+	<insert id="addReturnId" useGeneratedKeys="true" keyProperty="id"
+		keyColumn="id" parameterMap="tbanner">
+		INSERT INTO t_banner
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test=" null != position">
+				position,
+			</if>
+			<if test=" null != bannerStyle">
+				banner_style,
+			</if>
+			<if test=" null != objJson">
+				obj_json,
+			</if>
+			<if test=" null != status">
+				status,
+			</if>
+			<if test=" null != remarks">
+				remarks,
+			</if>
+			<if test=" null != createTime">
+				create_time,
+			</if>
+			<if test=" null != updateTime">
+				update_time,
+			</if>
+			<if test="null != sort">
+				sort,
+			</if>
+			<if test="null != province">
+				province,
+			</if>
+			<if test="null != city">
+				city,
+			</if>
+			<if test="null != isAll">
+				is_all,
+			</if>
+			<if test="null != isEmphasis">
+				is_emphasis,
+			</if>
+			<if test="null != beginTime">
+				begin_time,
+			</if>
+			<if test="null != endTime">
+				end_time,
+			</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			<if test=" null != position">
+				#{position},
+			</if>
+			<if test=" null != bannerStyle">
+				#{bannerStyle},
+			</if>
+			<if test=" null != objJson">
+				#{objJson},
+			</if>
+			<if test=" null != status">
+				#{status},
+			</if>
+			<if test=" null != remarks">
+				#{remarks},
+			</if>
+			<if test=" null != createTime">
+				#{createTime},
+			</if>
+			<if test=" null != updateTime">
+				#{updateTime},
+			</if>
+			<if test="null != sort">
+				#{sort},
+			</if>
+			<if test="null != province">
+				#{province},
+			</if>
+			<if test="null != city">
+				#{city},
+			</if>
+			<if test="null != isAll">
+				#{isAll},
+			</if>
+			<if test="null != isEmphasis">
+				#{isEmphasis},
+			</if>
+			<if test="null != beginTime">
+				#{beginTime},
+			</if>
+			<if test="null != endTime">
+				#{endTime},
+			</if>
+		</trim>
+	</insert>
+	<!-- 修改导航图 -->
+	<update id="updateBanner" parameterMap="tbanner">
+		UPDATE t_banner t
+		<set>
+			<if test=" null != position">
+				t.position = #{position},
+			</if>
+			<if test=" null != bannerStyle">
+				t.banner_style = #{bannerStyle},
+			</if>
+			<if test=" null != objJson">
+				t.obj_json = #{objJson},
+			</if>
+			<if test=" null != status">
+				t.status = #{status},
+			</if>
+			<if test=" null != remarks">
+				t.remarks = #{remarks},
+			</if>
+			<if test=" null != updateTime">
+				t.update_time = #{updateTime},
+			</if>
+			<if test="null != sort">
+				t.sort = #{sort},
+			</if>
+			<if test="null != province">
+				t.province = #{province},
+			</if>
+			<if test="null != city">
+				t.city = #{city},
+			</if>
+			<if test="null != isAll">
+				t.is_all = #{isAll},
+			</if>
+			<if test="null != isAll">
+				t.is_emphasis = #{isEmphasis},
+			</if>
+			<if test="null != beginTime">
+				t.begin_time = #{beginTime},
+			</if>
+			<if test="null != endTime">
+				t.end_time = #{endTime}
+			</if>
+		</set>
+		WHERE t.id = #{id}
+	</update>
+
+
+	<!-- 根据导航图编号查询导航图详情 -->
+	<select id="getBanner" resultMap="tbannerMap" parameterType="Integer">
+		SELECT
+		t.id,t.position,t.banner_style,t.obj_json,t.status,t.remarks,t.create_time,t.update_time,t.begin_time,t.end_time,t.sort,t.province,t.city,t.is_all
+		isAll,t.is_emphasis,a.title provinceStr,b.title cityStr
+		FROM t_banner t
+		LEFT JOIN t_area a ON t.is_all = 0 AND t.province = a.area_id
+		LEFT JOIN
+		t_area b ON t.is_all = 0 AND t.city = b.area_id
+		WHERE t.id = #{0}
+	</select>
+	<!-- 根据导航图id批量删除导航图信息 -->
+	<delete id="deleteBannerById" parameterType="Object">
+		DELETE FROM t_banner WHERE id IN
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=") ">
+			#{item}
+		</foreach>
+	</delete>
+</mapper>

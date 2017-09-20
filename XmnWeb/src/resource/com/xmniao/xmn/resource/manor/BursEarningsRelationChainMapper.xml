@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.manor.dao.BursEarningsRelationChainDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.manor.entity.BursEarningsRelationChain" >
+    <id column="uid" property="uid" jdbcType="BIGINT" />
+    <id column="object_oriented" property="objectOriented" jdbcType="TINYINT" />
+    <id column="parent_id" property="parentId" jdbcType="BIGINT" />
+  </resultMap>
+  
+  <sql id="Base_Column_List"> 
+  	  uid,object_oriented,parent_id
+  </sql>
+  
+  <insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_log
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						uid,
+						object_oriented,
+						parent_id,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.uid},
+						 #{item.objectOriented},
+						 #{item.parentId},
+			</trim>
+		</foreach>
+	</insert>
+  
+  <select id="getByUid" resultMap="BaseResultMap">
+  	 select  <include refid="Base_Column_List"/> from b_urs_earnings_relation_chain
+  	 where uid = #{childId} and object_oriented = #{objectOriented}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="com.xmniao.xmn.core.manor.entity.BursEarningsRelationChain" >
+    delete from b_urs_earnings_relation_chain
+    where uid = #{uid,jdbcType=BIGINT}
+      and object_oriented = #{objectOriented,jdbcType=TINYINT}
+      and parent_id = #{parentId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.manor.entity.BursEarningsRelationChain" >
+    insert into b_urs_earnings_relation_chain (uid, object_oriented, parent_id
+      )
+    values (#{uid,jdbcType=BIGINT}, #{objectOriented,jdbcType=TINYINT}, #{parentId,jdbcType=BIGINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.manor.entity.BursEarningsRelationChain" >
+    insert into b_urs_earnings_relation_chain
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="objectOriented != null" >
+        object_oriented,
+      </if>
+      <if test="parentId != null" >
+        parent_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="uid != null" >
+        #{uid,jdbcType=BIGINT},
+      </if>
+      <if test="objectOriented != null" >
+        #{objectOriented,jdbcType=TINYINT},
+      </if>
+      <if test="parentId != null" >
+        #{parentId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  
+  <!-- 自定义专区 -->
+  
+  	<sql id="baseSellerCondition">
+		<if test="objectOriented != null">
+			AND t.object_oriented = #{objectOriented,jdbcType=INTEGER}
+		</if>
+		<if test="parentId != null">
+			AND t.parent_id = #{parentId,jdbcType=INTEGER}
+		</if>
+	</sql>
+
+	<select id="getBursEarningsRelationChainList" resultMap="BaseResultMap" parameterType="com.xmniao.xmn.core.manor.entity.BursEarningsRelationChain">
+		select
+		t.*
+		from b_urs_earnings_relation_chain t 
+		<where>
+			1 = 1
+		    <if test="uid != null">
+			    AND t.uid != #{uid,jdbcType=INTEGER}
+		    </if>
+			<include refid="baseSellerCondition" />
+		</where>
+	</select>
+	
+	<select id="countBursEarningsRelationChain" resultType="Long" parameterType="com.xmniao.xmn.core.manor.entity.BursEarningsRelationChain">
+		SELECT COUNT(1) FROM 
+		b_urs_earnings_relation_chain t 
+		<where>
+			1 = 1
+			<if test="uid != null">
+			    AND t.uid != #{uid,jdbcType=INTEGER}
+		    </if>
+			<include refid="baseSellerCondition" />
+		</where>
+    </select>
+</mapper>

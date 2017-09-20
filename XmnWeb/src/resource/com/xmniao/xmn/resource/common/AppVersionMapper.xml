@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.common.dao.AppVersionDao">
+
+	<parameterMap type="AppVersion" id="appVersion" />
+	
+	<resultMap type="AppVersion" id="appVersionMap">
+		<result column="id" property="id" />
+		<result column="apptype" property="apptype" />
+		<result column="vtype" property="vtype" />
+		<result column="version" property="version" />
+		<result column="inside" property="inside" />
+		<result column="url" property="url" />
+		<result column="content" property="content" />
+		<result column="active_no" property="activeNo" />
+		<result column="status" property="status" />
+		<result column="sdate" property="sdate" />
+		<result column="must_update" property="mustUpdate" />
+	</resultMap>
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_app_version
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						apptype,
+						vtype,
+						version,
+						inside,
+						url,
+						content,
+						active_no,
+						status,
+						sdate,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.apptype},
+						 #{item.vtype},
+						 #{item.version},
+						 #{item.inside},
+						 #{item.url},
+						 #{item.content},
+						 #{item.activeNo},
+						 #{item.status},
+						 #{item.sdate},
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" parameterMap="appVersion" >
+		INSERT INTO t_app_version
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					id,
+				</if>
+			 	<if test=" null != apptype">
+					apptype,
+				</if>
+			 	<if test=" null != vtype">
+					vtype,
+				</if>
+			 	<if test=" null != version and '' != version ">
+					version,
+				</if>
+			 	<if test=" null != inside and '' != inside ">
+					inside,
+				</if>
+			 	<if test=" null != url and '' != url ">
+					url,
+				</if>
+			 	<if test=" null != content and '' != content ">
+					content,
+				</if>
+			 	<if test=" null != activeNo">
+					active_no,
+				</if>
+			 	<if test=" null != status">
+					status,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+			 	<if test=" null != mustUpdate">
+					must_update,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					 	#{id},
+				</if>
+			 	<if test=" null != apptype">
+					 	#{apptype},
+				</if>
+			 	<if test=" null != vtype">
+					 	#{vtype},
+				</if>
+			 	<if test=" null != version and '' != version ">
+					 	#{version},
+				</if>
+			 	<if test=" null != inside and '' != inside ">
+					 	#{inside},
+				</if>
+			 	<if test=" null != url and '' != url ">
+					 	#{url},
+				</if>
+			 	<if test=" null != content and '' != content ">
+					 	#{content},
+				</if>
+			 	<if test=" null != activeNo">
+					 	#{activeNo},
+				</if>
+			 	<if test=" null != status">
+					 	#{status},
+				</if>
+			 	<if test=" null != sdate">
+					 	#{sdate},
+				</if>
+			 	<if test=" null != mustUpdate">
+					 	#{mustUpdate},
+				</if>
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_app_version WHERE id IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="updateNewVersion" parameterMap="appVersion">
+		UPDATE t_app_version SET status = 2 WHERE vtype = #{vtype} AND apptype=#{apptype}
+	</update>
+	
+	<update id="update" parameterMap="appVersion">
+		UPDATE t_app_version
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != id">
+					id = #{id},
+				</if>
+				<if test=" null != apptype">
+					apptype = #{apptype},
+				</if>
+				<if test=" null != vtype">
+					vtype = #{vtype},
+				</if>
+				<if test=" null != version and '' != version ">
+					version = #{version},
+				</if>
+				<if test=" null != inside and '' != inside ">
+					inside = #{inside},
+				</if>
+				<if test=" null != url and '' != url ">
+					url = #{url},
+				</if>
+				<if test=" null != content and '' != content ">
+					content = #{content},
+				</if>
+				<if test=" null != activeNo">
+					active_no = #{activeNo},
+				</if>
+				<if test=" null != status">
+					status = #{status},
+				</if>
+				<if test=" null != sdate">
+					sdate = #{sdate},
+				</if>
+				<if test=" null != mustUpdate">
+					must_update = #{mustUpdate},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != id and '' != id">
+				id = #{id}
+			</if>
+		</where>
+	</update>
+	
+	<select id="getList" resultMap="appVersionMap" parameterMap="appVersion">
+		SELECT * FROM t_app_version
+		<where>
+			1=1
+			<if test=" null != id">
+				AND id = #{id}
+			</if>
+			<if test=" null != apptype">
+				AND apptype = #{apptype}
+			</if>
+			<if test=" null != vtype">
+				AND vtype = #{vtype}
+			</if>
+			<if test=" null != version and '' != version ">
+				AND version LIKE '%${version}%'
+			</if>
+			<if test=" null != inside and '' != inside ">
+				AND inside LIKE '%${inside}%'
+			</if>
+			<if test=" null != url and '' != url ">
+				AND url LIKE '%${url}%'
+			</if>
+			<if test=" null != content and '' != content ">
+				AND content LIKE '%${content}%'
+			</if>
+			<if test=" null != activeNo">
+				AND active_no = #{activeNo}
+			</if>
+			<if test=" null != status">
+				AND status = #{status}
+			</if>
+			
+	<!-- 		<if test=" null != sdateTappVersionStarts and '' != sdateTappVersionStarts">
+			
+				AND sdate&lt;= #{sdateTappVersionStarts}
+			</if>
+			<if test=" null != sdateTappVersionEnd and '' != sdateTappVersionEnd">
+				AND sdate&lt;= #{sdateTappVersionEnd}
+			</if>	 -->
+	 		<if test=" null != sdateTappVersionStarts and '' != sdateTappVersionStarts">
+			
+				AND DATE_FORMAT(sdate,'%Y-%m-%d')&gt;= DATE_FORMAT(#{sdateTappVersionStarts},'%Y-%m-%d')
+			</if>
+			<if test=" null != sdateTappVersionEnd and '' != sdateTappVersionEnd">
+				AND DATE_FORMAT(sdate,'%Y-%m-%d')&lt;=  DATE_FORMAT(#{sdateTappVersionEnd},'%Y-%m-%d')
+			</if>
+		</where>
+			ORDER BY id DESC 
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="appVersion">
+		SELECT COUNT(*) FROM t_app_version
+		<where>
+			1=1
+			<if test=" null != id">
+				AND id = #{id}
+			</if>
+			<if test=" null != apptype">
+				AND apptype = #{apptype}
+			</if>
+			<if test=" null != vtype">
+				AND vtype = #{vtype}
+			</if>
+			<if test=" null != version and '' != version ">
+				AND version LIKE '%${version}%'
+			</if>
+			<if test=" null != inside and '' != inside ">
+				AND inside LIKE '%${inside}%'
+			</if>
+			<if test=" null != url and '' != url ">
+				AND url LIKE '%${url}%'
+			</if>
+			<if test=" null != content and '' != content ">
+				AND content LIKE '%${content}%'
+			</if>
+			<if test=" null != activeNo">
+				AND active_no = #{activeNo}
+			</if>
+			<if test=" null != status">
+				AND status = #{status}
+			</if>
+			<if test=" null != sdateTappVersionStarts and '' != sdateTappVersionStarts">
+			
+				AND DATE_FORMAT(sdate,'%Y-%m-%d')&gt;= DATE_FORMAT(#{sdateTappVersionStarts},'%Y-%m-%d')
+			</if>
+			<if test=" null != sdateTappVersionEnd and '' != sdateTappVersionEnd">
+				AND DATE_FORMAT(sdate,'%Y-%m-%d')&lt;=  DATE_FORMAT(#{sdateTappVersionEnd},'%Y-%m-%d')
+			</if>
+			<!--  <if test=" null != sdate">
+				AND sdate = #{sdate}
+			</if> --> 
+		  <!--  <if test=" null != sdateTappVersionStarts and '' != sdateTappVersionStarts">
+				AND sdate&lt;= #{sdateTappVersionStarts}
+			</if>
+			<if test=" null != sdateTappVersionEnd and '' != sdateTappVersionEnd">
+				AND sdate&lt;= #{sdateTappVersionEnd}
+			</if>  -->
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Integer">
+		SELECT Max(id) AS VALUE FROM t_app_version
+	</select>
+	
+	<select id="getObject" resultMap="appVersionMap" parameterType="Long">
+		SELECT * FROM t_app_version WHERE id = #{0}
+	</select>
+	
+</mapper>

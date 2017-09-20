@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TLiveGiftDetailDao" >
+
+  <resultMap id="liveGiftDetailMap" type="com.xmniao.xmn.core.live_anchor.entity.TLiveGiftDetail" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="gid" property="gid" jdbcType="INTEGER" />
+    <result column="gift_kind" property="giftKind" jdbcType="INTEGER" />
+    <result column="codeId" property="codeid" jdbcType="BIGINT" />
+    <result column="pv_ids" property="pvIds" jdbcType="VARCHAR" />
+    <result column="pv_value" property="pvValue" jdbcType="VARCHAR" />
+    <result column="category" property="category" jdbcType="VARCHAR" />
+    <result column="genre" property="genre" jdbcType="VARCHAR" />
+    <result column="bird_coin" property="birdCoin" jdbcType="DECIMAL" />
+  </resultMap>
+  
+  
+  <sql id="liveGiftDetail_column_list" >
+    gd.id, gd.gid, gd.gift_kind,  gd.codeId, gd.pv_ids, gd.pv_value, gd.category, gd.genre
+  </sql>
+  
+  
+  <select id="selectById" resultMap="liveGiftDetailMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="liveGiftDetail_column_list" />
+    from t_live_gift_detail gd
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <!-- 获取套餐礼物详情 -->
+  <select id="selectByGid" resultMap="liveGiftDetailMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="liveGiftDetail_column_list" />
+    from t_live_gift_detail gd
+    	where gid = #{gid,jdbcType=BIGINT}
+    LIMIT 0,1
+  </select>
+  
+  <!-- 获取商品礼物详情 -->
+  <select id="getListByGid" resultMap="liveGiftDetailMap" parameterType="java.lang.Long" >
+    SELECT
+		<include refid="liveGiftDetail_column_list" />, pi.pname AS pname,
+		( IFNULL(pi.integral, 0) + IFNULL(pi.cash, 0) + IFNULL(sg.amount, 0) ) AS bird_coin
+	FROM
+		t_live_gift_detail gd
+	LEFT JOIN t_product_info pi ON gd.codeId = pi.codeId
+	LEFT JOIN t_sale_group sg ON gd.codeId = sg.codeId AND gd.pv_ids = sg.pv_ids
+	WHERE
+		gd.gid = #{gid}
+		and gd.gift_kind='2'
+  </select>
+  
+  
+  <delete id="deleteById" parameterType="java.lang.Long" >
+    delete from t_live_gift_detail
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  
+  <delete id="deleteByGid" parameterType="java.lang.Long" >
+    delete from t_live_gift_detail
+    where gid = #{gid,jdbcType=BIGINT}
+  </delete>
+  
+  
+  <insert id="add"  parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveGiftDetail" >
+    insert into t_live_gift_detail
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="gid != null" >
+        gid,
+      </if>
+      <if test="giftKind != null" >
+        gift_kind,
+      </if>
+      <if test="codeid != null" >
+        codeId,
+      </if>
+      <if test="pvIds != null" >
+        pv_ids,
+      </if>
+      <if test="pvValue != null" >
+        pv_value,
+      </if>
+      <if test="category != null" >
+        category,
+      </if>
+      <if test="genre != null" >
+        genre,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="gid != null" >
+        #{gid,jdbcType=INTEGER},
+      </if>
+      <if test="giftKind != null" >
+        #{giftKind,jdbcType=INTEGER},
+      </if>
+      <if test="codeid != null" >
+        #{codeid,jdbcType=BIGINT},
+      </if>
+      <if test="pvIds != null" >
+        #{pvIds,jdbcType=VARCHAR},
+      </if>
+      <if test="pvValue != null" >
+        #{pvValue,jdbcType=VARCHAR},
+      </if>
+      <if test="category != null" >
+        #{category,jdbcType=VARCHAR},
+      </if>
+      <if test="genre != null" >
+        #{genre,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveGiftDetail" >
+    update t_live_gift_detail
+    <set >
+      <if test="gid != null" >
+        gid = #{gid,jdbcType=INTEGER},
+      </if>
+       <if test="giftKind != null" >
+        gift_kind = #{giftKind,jdbcType=INTEGER},
+      </if>
+      <if test="codeid != null" >
+        codeId = #{codeid,jdbcType=BIGINT},
+      </if>
+      <if test="pvIds != null" >
+        pv_ids = #{pvIds,jdbcType=VARCHAR},
+      </if>
+      <if test="pvValue != null" >
+        pv_value = #{pvValue,jdbcType=VARCHAR},
+      </if>
+      <if test="category != null" >
+        category = #{category,jdbcType=VARCHAR},
+      </if>
+      <if test="genre != null" >
+        genre = #{genre,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+    <!-- 批量添加 	-->
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_live_gift_detail
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			id, gid,gift_kind,  codeId, pv_ids, pv_value, category, genre 
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				#{item.id},
+				#{item.gid},
+				#{item.giftKind},
+				#{item.codeid},
+				#{item.pvIds},
+				#{item.pvValue},
+				#{item.category},
+				#{item.genre}
+			</trim>
+		</foreach>
+	</insert>
+  
+</mapper>

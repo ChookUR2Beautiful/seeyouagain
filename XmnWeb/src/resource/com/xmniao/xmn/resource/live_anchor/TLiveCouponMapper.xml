@@ -1,0 +1,548 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TLiveCouponDao" >
+
+
+  <resultMap id="liveCouponMap" type="com.xmniao.xmn.core.live_anchor.entity.TLiveCoupon" >
+    <id column="cid" property="cid" jdbcType="INTEGER" />
+    <result column="cname" property="cname" jdbcType="VARCHAR" />
+    <result column="denomination" property="denomination" jdbcType="DECIMAL" />
+    <result column="validity_desc" property="validityDesc" jdbcType="VARCHAR" />
+    <result column="start_date" property="startDate" jdbcType="DATE" />
+    <result column="end_date" property="endDate" jdbcType="TIMESTAMP" />
+    <result column="condition" property="condition" jdbcType="DECIMAL" />
+    <result column="use_num" property="useNum" jdbcType="INTEGER" />
+    <result column="pic" property="pic" jdbcType="VARCHAR" />
+    <result column="breviary" property="breviary" jdbcType="VARCHAR" />
+    <result column="showall" property="showall" jdbcType="TINYINT" />
+    <result column="is_all_seller" property="isAllSeller" jdbcType="INTEGER" />
+    <result column="day_num" property="dayNum" jdbcType="INTEGER" />
+    <result column="ctype" property="ctype" jdbcType="INTEGER" />
+    <result column="invalid_today" property="invalidToday" jdbcType="INTEGER" />
+    <result column="default_max_num" property="defaultMaxNum" jdbcType="INTEGER" />
+    <result column="introduce" property="introduce" jdbcType="VARCHAR" />
+    <result column="rule" property="rule" jdbcType="LONGVARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="original_price" property="originalPrice" jdbcType="DECIMAL" />
+    <result column="is_recom" property="isRecom" jdbcType="INTEGER" />
+    
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="sellername" property="sellername" jdbcType="VARCHAR" />
+    <result column="sale_start_time" property="saleStartTime" jdbcType="TIMESTAMP" />
+    <result column="sale_end_time" property="saleEndTime" jdbcType="TIMESTAMP" />
+    <result column="forbid_start_time" property="forbidStartTime" jdbcType="TIMESTAMP" />
+    <result column="forbid_end_time" property="forbidEndTime" jdbcType="TIMESTAMP" />
+    <result column="fans_description" property="fansDescription" jdbcType="LONGVARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    
+  </resultMap>
+  
+  <sql id="liveCoupon_column_list" >
+    c.cid, c.cname, c.denomination, c.validity_desc, c.start_date, c.end_date, c.`condition`, c.use_num, 
+    c.pic, c.breviary, c.showall, c.is_all_seller, c.day_num, c.ctype, c.invalid_today, c.default_max_num, 
+    c.introduce, c.rule, c.update_time, c.original_price,c.is_recom,c.sellerid,c.sale_start_time,c.sale_end_time,
+    c.forbid_start_time,c.forbid_end_time,c.fans_description,c.status
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test=" null != useStatus and ''!= useStatus ">
+	  	and useStatus =#{useStatus}
+  	</if>
+  	<if test=" null != ctype and ''!= ctype ">
+	  	and ctype =#{ctype}
+  	</if>
+  	<if test=" null != cid and ''!= cid ">
+	  	and cid =#{cid}
+  	</if>
+  	<if test=" null != cname and ''!= cname ">
+	  	and cname like '%${cname}%'
+  	</if>
+  	<if test=" null != status and ''!= status ">
+	  	and status =#{status}
+  	</if>
+  	<if test=" null != status and ''!= status ">
+	  	and status =#{status}
+  	</if>
+  	<if test="saleStartTime !=null and saleStartTime !='' ">
+	  	<![CDATA[
+			AND	DATE_FORMAT(sale_start_time, '%Y-%m-%d %H:%i') >= DATE_FORMAT(#{saleStartTime}, '%Y-%m-%d %H:%i')
+	  	]]> 
+  	</if>
+  	<if test="saleEndTime !=null and saleEndTime !='' ">
+  		<![CDATA[
+			AND	DATE_FORMAT(sale_end_time, '%Y-%m-%d %H:%i') <= DATE_FORMAT(#{saleEndTime}, '%Y-%m-%d %H:%i')
+	  	]]>
+  	</if>
+  	<if test="startDate !=null and startDate !='' ">
+	  	<![CDATA[
+			AND	DATE_FORMAT(start_date, '%Y-%m-%d %H:%i') >= DATE_FORMAT(#{startDate}, '%Y-%m-%d %H:%i')
+	  	]]> 
+  	</if>
+  	<if test="endDate !=null and endDate !='' ">
+  		<![CDATA[
+			AND	DATE_FORMAT(end_date, '%Y-%m-%d %H:%i') <= DATE_FORMAT(#{endDate}, '%Y-%m-%d %H:%i')
+	  	]]>
+  	</if>
+  	
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="liveCouponMap" parameterType="java.lang.Integer" >
+    select 
+    	<include refid="liveCoupon_column_list" />,s.sellername
+    from t_coupon c LEFT JOIN t_seller s ON c.sellerid = s.sellerid
+    where cid = #{cid,jdbcType=INTEGER}
+  </select>
+  
+  <select id="getList" resultMap="liveCouponMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveCoupon" >
+    SELECT
+		*
+	FROM
+		(
+			SELECT
+				tc.*,
+				ts.sellername,
+				<!-- useStatus 001 未使用,002 使用中 -->
+				CASE
+			WHEN (
+				SELECT
+					count(1)
+				FROM
+					t_fans_coupon_anchor_ref tf
+				WHERE
+					tf.cid = tc.cid
+			) = 0 THEN
+				'001'
+			ELSE
+				'002'
+			END useStatus,
+			<!-- vouchers 抵扣券描述 :￥25,满100可用 -->
+			(
+				SELECT
+					group_concat(
+						tn.validity_desc SEPARATOR ';'
+					)
+				FROM
+					t_fans_coupon_issue_ref tf
+				LEFT JOIN t_coupon tn ON tf.gift_cid = tn.cid
+				WHERE
+					tf.cid = tc.cid
+			) vouchers
+			FROM
+				t_coupon tc  
+				LEFT JOIN (SELECT sellerid, sellername FROM t_seller WHERE ismultiple != 1) ts 
+                ON tc.sellerid = ts.sellerid
+			WHERE
+				ctype = '2'
+			ORDER BY
+				tc.update_time DESC
+		) result
+	<where>
+		1=1
+		<include refid="whereSQL"></include>
+	</where>
+		ORDER BY update_time DESC
+    <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <!-- 获取直播券 -->
+  <select id="getLiveCoupon" resultMap="liveCouponMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveCoupon">
+  	SELECT
+		<include refid="liveCoupon_column_list"></include>
+	FROM
+		t_coupon c
+	<where>
+		1=1
+		<include refid="whereSQL"></include>
+	</where>
+  </select>
+  
+  <select id="count" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveCoupon" >
+    SELECT
+		count(cid)
+	FROM
+		(
+			SELECT
+				tc.*,
+				<!-- useStatus 001 未使用,002 使用中 -->
+				CASE
+			WHEN (
+				SELECT
+					count(1)
+				FROM
+					t_fans_coupon_anchor_ref tf
+				WHERE
+					tf.cid = tc.cid
+			) = 0 THEN
+				'001'
+			ELSE
+				'002'
+			END useStatus,
+			<!-- vouchers 抵扣券描述 :￥25,满100可用 -->
+			(
+				SELECT
+					group_concat(
+						tn.validity_desc SEPARATOR ';'
+					)
+				FROM
+					t_fans_coupon_issue_ref tf
+				LEFT JOIN t_coupon tn ON tf.gift_cid = tn.cid
+				WHERE
+					tf.cid = tc.cid
+			) vouchers
+			FROM
+				t_coupon tc
+			WHERE
+				ctype = '2'
+			ORDER BY
+				tc.update_time DESC
+		) result
+	<where>
+		1=1
+		<include refid="whereSQL"></include>
+	</where>
+  </select>
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_coupon
+    where cid = #{cid,jdbcType=INTEGER}
+  </delete>
+  
+  
+  
+  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="cid" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveCoupon" >
+    insert into t_coupon
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="cid != null" >
+        cid,
+      </if>
+      <if test="cname != null" >
+        cname,
+      </if>
+      <if test="denomination != null" >
+        denomination,
+      </if>
+      <if test="validityDesc != null" >
+        validity_desc,
+      </if>
+      <if test="startDate != null" >
+        start_date,
+      </if>
+      <if test="endDate != null" >
+        end_date,
+      </if>
+      <if test="condition != null" >
+        `condition`,
+      </if>
+      <if test="useNum != null" >
+        use_num,
+      </if>
+      <if test="pic != null" >
+        pic,
+      </if>
+      <if test="breviary != null" >
+        breviary,
+      </if>
+      <if test="showall != null" >
+        showall,
+      </if>
+      <if test="isAllSeller != null" >
+        is_all_seller,
+      </if>
+      <if test="dayNum != null" >
+        day_num,
+      </if>
+      <if test="ctype != null" >
+        ctype,
+      </if>
+      <if test="invalidToday != null" >
+        invalid_today,
+      </if>
+      <if test="defaultMaxNum != null" >
+        default_max_num,
+      </if>
+      <if test="stock != null" >
+        stock,
+      </if>
+      <if test="introduce != null" >
+        introduce,
+      </if>
+      <if test="rule != null" >
+        rule,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="originalPrice != null" >
+        original_price,
+      </if>
+      <if test="isRecom != null" >
+        is_recom,
+      </if>
+      
+      <if test="sellerid != null" >
+        sellerid,
+      </if>
+      <if test="saleStartTime != null" >
+        sale_start_time,
+      </if>
+      <if test="saleEndTime != null" >
+        sale_end_time,
+      </if>
+      <if test="forbidStartTime != null" >
+        forbid_start_time,
+      </if>
+      <if test="forbidEndTime != null" >
+        forbid_end_time,
+      </if>
+      <if test="fansDescription != null" >
+        fans_description,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="cid != null" >
+        #{cid,jdbcType=INTEGER},
+      </if>
+      <if test="cname != null" >
+        #{cname,jdbcType=VARCHAR},
+      </if>
+      <if test="denomination != null" >
+        #{denomination,jdbcType=DECIMAL},
+      </if>
+      <if test="validityDesc != null" >
+        #{validityDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="startDate != null" >
+        #{startDate,jdbcType=DATE},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="condition != null" >
+        #{condition,jdbcType=DECIMAL},
+      </if>
+      <if test="useNum != null" >
+        #{useNum,jdbcType=INTEGER},
+      </if>
+      <if test="pic != null" >
+        #{pic,jdbcType=VARCHAR},
+      </if>
+      <if test="breviary != null" >
+        #{breviary,jdbcType=VARCHAR},
+      </if>
+      <if test="showall != null" >
+        #{showall,jdbcType=TINYINT},
+      </if>
+      <if test="isAllSeller != null" >
+        #{isAllSeller,jdbcType=INTEGER},
+      </if>
+      <if test="dayNum != null" >
+        #{dayNum,jdbcType=INTEGER},
+      </if>
+      <if test="ctype != null" >
+        #{ctype,jdbcType=INTEGER},
+      </if>
+      <if test="invalidToday != null" >
+        #{invalidToday,jdbcType=INTEGER},
+      </if>
+      <if test="defaultMaxNum != null" >
+        #{defaultMaxNum,jdbcType=INTEGER},
+      </if>
+       <if test="stock != null" >
+        #{stock,jdbcType=INTEGER},
+      </if>
+      <if test="introduce != null" >
+        #{introduce,jdbcType=VARCHAR},
+      </if>
+      <if test="rule != null" >
+        #{rule,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="originalPrice != null" >
+        #{originalPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="isRecom != null" >
+        #{isRecom,jdbcType=INTEGER},
+      </if>
+      
+      <if test="sellerid != null" >
+        #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="saleStartTime != null" >
+         #{saleStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="saleEndTime != null" >
+         #{saleEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="forbidStartTime != null" >
+        #{forbidStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="forbidEndTime != null" >
+         #{forbidEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="fansDescription != null" >
+        #{fansDescription,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+  	<!-- 批量添加抵用券,同步设置bean主键 	-->
+	<insert id="addBatchReturnId" useGeneratedKeys="true" keyProperty="cid" parameterType="java.util.ArrayList">
+		INSERT INTO t_coupon
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			cid, denomination, `condition`, validity_desc, day_num, ctype, invalid_today, update_time 
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				#{item.cid},
+				#{item.denomination},
+				#{item.condition},
+				#{item.validityDesc},
+				#{item.dayNum},
+				#{item.ctype},
+				#{item.invalidToday},
+				#{item.updateTime}
+			</trim>
+		</foreach>
+	</insert>
+  
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveCoupon" >
+    update t_coupon
+    <set >
+      <if test="cname != null" >
+        cname = #{cname,jdbcType=VARCHAR},
+      </if>
+      <if test="denomination != null" >
+        denomination = #{denomination,jdbcType=DECIMAL},
+      </if>
+      <if test="validityDesc != null" >
+        validity_desc = #{validityDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="startDate != null" >
+        start_date = #{startDate,jdbcType=DATE},
+      </if>
+      <if test="endDate != null" >
+        end_date = #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="condition != null" >
+        `condition` = #{condition,jdbcType=DECIMAL},
+      </if>
+      <if test="useNum != null" >
+        use_num = #{useNum,jdbcType=INTEGER},
+      </if>
+      <if test="pic != null" >
+        pic = #{pic,jdbcType=VARCHAR},
+      </if>
+      <if test="breviary != null" >
+        breviary = #{breviary,jdbcType=VARCHAR},
+      </if>
+      <if test="showall != null" >
+        showall = #{showall,jdbcType=TINYINT},
+      </if>
+      <if test="isAllSeller != null" >
+        is_all_seller = #{isAllSeller,jdbcType=INTEGER},
+      </if>
+      <if test="dayNum != null" >
+        day_num = #{dayNum,jdbcType=INTEGER},
+      </if>
+      <if test="ctype != null" >
+        ctype = #{ctype,jdbcType=INTEGER},
+      </if>
+      <if test="invalidToday != null" >
+        invalid_today = #{invalidToday,jdbcType=INTEGER},
+      </if>
+      <if test="defaultMaxNum != null" >
+        default_max_num = #{defaultMaxNum,jdbcType=INTEGER},
+      </if>
+      <if test="introduce != null" >
+        introduce = #{introduce,jdbcType=VARCHAR},
+      </if>
+      <if test="rule != null" >
+        rule = #{rule,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="originalPrice != null" >
+        original_price=#{originalPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="isRecom != null" >
+       is_recom= #{isRecom,jdbcType=INTEGER},
+      </if>
+      
+       <if test="sellerid != null" >
+       sellerid= #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="saleStartTime != null" >
+        sale_start_time= #{saleStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="saleEndTime != null" >
+        sale_end_time= #{saleEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="forbidStartTime != null" >
+       forbid_start_time= #{forbidStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="forbidEndTime != null" >
+        forbid_end_time= #{forbidEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="fansDescription != null" >
+       fans_description= #{fansDescription,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="status != null" >
+       status= #{status,jdbcType=INTEGER},
+      </if>
+    </set>
+    where cid = #{cid,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 批量更新上架及推荐状态 -->
+  <update id="updateBatch"  parameterType="map">
+	update t_coupon
+    <set >
+      <if test="isRecom != null" >
+       is_recom= #{isRecom,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+       status= #{status,jdbcType=INTEGER},
+      </if>
+    </set>
+     WHERE cid IN
+  	<foreach item="item" index="index" collection="cids"  open="(" separator="," close=") ">
+			 #{item}
+	</foreach>
+  </update>
+
+
+	<select id="getLiveCouponByCids" parameterType="Object">
+		select
+		<include refid="liveCoupon_column_list" />
+		from t_coupon c
+		where cid in
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=") ">
+			#{item}
+		</foreach>
+	</select>
+	
+	<delete id="deleteLiveCouponByCids" parameterType="Object">
+		delete from t_coupon
+		where cid in
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=") ">
+			#{item}
+		</foreach>
+	</delete>
+  
+  
+</mapper>

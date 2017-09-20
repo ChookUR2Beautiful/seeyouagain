@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.marketingmanagement.dao.TActivityManagermentDao">
+
+	<parameterMap type="TActivityRule" id="tActivityRule" />
+	<parameterMap type="TIntegralRule" id="tIntegralRule" /><!-- 积分活动规则 -->
+
+	<!-- 活动规则表 -->
+	<resultMap type="TActivityRule" id="tActivityRuleMap">
+		<result column="rid" property="rid" />
+		<result column="aid" property="aid" />
+		<result column="min_moeny" property="minMoeny" />
+		<result column="max_moeny" property="maxMoeny" />
+		<result column="give_moeny" property="giveMoney" />
+		<result column="add_user" property="addUser" />
+		<result column="add_time" property="addTime" />
+		<result column="update_user" property="updateUser" />
+		<result column="update_time" property="updateTime" />
+		<result column="award_name" property="awardName" />
+		<result column="isRelationSellerNum" property="isRelationSellerNum" />
+	</resultMap>
+	<!-- 积分活动表部分 -->
+	<resultMap type="TIntegralRule" id="tIntegralRuleMap">
+		<result column="rid" property="rid" />
+		<result column="aid" property="aid" />
+		<result column="grade" property="grade" />
+		<result column="stat_ladder" property="startLadder" />
+		<result column="end_ladder" property="endLadder" />
+		<result column="rdate" property="rdate" />
+		<result column="udate" property="udate" />
+		<result column="isRelationSellerNum" property="isRelationSellerNum" />
+	</resultMap>
+	
+	
+	<select id="getActivityRuleList" resultMap="tActivityRuleMap" parameterType="Long">
+		SELECT tar.*,
+		(SELECT
+		COUNT(1)
+		FROM
+		t_seller_marketing ts
+		WHERE ts.aid = tar.aid) isRelationSellerNum FROM t_activity_rule tar WHERE tar.aid = #{aid}
+	</select>
+	<!-- 查询积分活动规则 -->
+	<select id="getIntegralRuleList" resultMap="tIntegralRuleMap" parameterType="Long">
+		SELECT tir.*,
+		(SELECT
+		COUNT(1)
+		FROM
+		t_seller_marketing ts
+		WHERE ts.aid = tir.aid) isRelationSellerNum FROM t_integral_rule tir WHERE tir.aid = #{aid}
+	</select>
+	<!-- 查询积分活动规则中未添加的商家类别，用于显示在添加页面商家类别选项 -->
+	<!-- 此语句查询已经存在的商家类别 -->
+	<select id="getIntegralRulsPrade" resultMap="tIntegralRuleMap">
+	SELECT grade
+	FROM t_integral_rule
+	GROUP BY grade HAVING COUNT(grade)>=1
+	</select>
+	
+	
+	<select id="getList" resultMap="tActivityRuleMap" parameterMap="tActivityRule">
+		       SELECT * FROM t_activity_rule 
+		     <where>
+				1=1
+				<if test=" null != rid and '' != rid ">
+					AND rid = #{rid}
+				</if>	
+				<if test=" null != aid and '' != aid ">
+					AND aid = #{aid}
+				</if>			
+		</where>
+	</select>
+
+	
+	<!-- 更新 -->
+	<update id="updateActivityRule" parameterMap="tActivityRule">
+		UPDATE t_activity_rule
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != aid">
+					aid = #{aid},
+				</if>
+				<if test=" null != minMoeny ">
+					min_moeny = #{minMoeny},
+				</if>
+			 	<if test=" null != maxMoeny ">
+					max_moeny = #{maxMoeny},
+				</if>
+				<if test=" null != giveMoney ">
+					give_moeny = #{giveMoney},
+				</if>
+				<if test=" null != addUser and '' != addUser ">
+					add_user = #{addUser},
+				</if>
+				<if test=" null != addTime">
+					add_time = #{addTime},
+				</if>
+				<if test=" null != updateUser ">
+					update_user = #{updateUser},
+				</if>
+				<if test=" null != updateTime ">
+					update_time = #{updateTime},
+				</if>
+				<if test=" null != awardName and '' != awardName ">
+					award_name = #{awardName},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != rid and '' != rid">
+				rid = #{rid}
+			</if>
+		</where>
+	</update>
+	
+	<!-- 更新积分活动规则 -->
+	<update id="updateIntegraRule" parameterMap="tIntegralRule">
+		UPDATE t_integral_rule
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != aid">
+					aid = #{aid},
+				</if>
+				<if test=" null != grade ">
+					grade = #{grade},
+				</if>
+			 	<if test=" null != startLadder ">
+					stat_ladder = #{startLadder},
+				</if>
+				<if test=" null != endLadder ">
+					end_ladder = #{endLadder},
+				</if>
+				<if test=" null != rdate">
+					rdate = #{rdate},
+				</if>
+				<if test=" null != udate ">
+					udate = #{udate},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != rid and '' != rid">
+				rid = #{rid}
+			</if>
+		</where>
+	</update>
+	
+	
+	<insert id="addTActivityRule" parameterMap="tActivityRule" >
+		INSERT INTO t_activity_rule
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != rid">
+					rid,
+				</if>
+			 	<if test=" null != aid and '' != aid ">
+					aid,
+				</if>
+			 	<if test=" null != minMoeny ">
+					min_moeny,
+				</if>			 					
+			 	<if test=" null != maxMoeny ">
+					max_moeny,
+				</if>
+				<if test=" null != giveMoney">
+					give_moeny,
+				</if>
+				<if test=" null != addUser and '' != addUser ">
+					add_user,
+				</if>
+				<if test=" null != addTime ">
+					add_time,
+				</if>
+			 	<if test=" null != updateUser">
+					update_user,
+				</if>
+				<if test=" null != updateTime">
+					update_time,
+				</if>
+				<if test=" null != awardName and '' != awardName">
+					award_name,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != rid">
+					 	#{rid},
+				</if>
+			 	<if test=" null != aid and '' != aid ">
+					 	#{aid},
+				</if>
+			 	<if test=" null != minMoeny ">
+					 	#{minMoeny},
+				</if>
+			 	<if test=" null != maxMoeny ">
+					 	#{maxMoeny},
+				</if>
+				<if test=" null != giveMoney ">
+						#{giveMoney},
+				</if>
+				<if test=" null != addUser and '' != addUser ">
+						#{addUser},
+				</if>
+				<if test=" null != addTime ">
+						#{addTime},
+				</if>
+					<if test=" null != updateUser and '' != updateUser ">
+						#{updateUser},
+				</if>
+				<if test=" null != updateTime ">
+						#{updateTime},
+				</if>
+				<if test=" null != awardName and '' != awardName ">
+						#{awardName},
+				</if>
+		</trim>
+	</insert> 
+	
+	<!-- 添加积分活动规则 -->
+	<insert id="addJiFenTActivityRule" parameterMap="tActivityRule" >
+		INSERT INTO t_integral_rule
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != aid and '' != aid ">
+					aid,
+				</if>
+			 	<if test=" null != grade ">
+					grade,
+				</if>			 					
+			 	<if test=" null != startLadder ">
+					stat_ladder,
+				</if>
+				<if test=" null != endLadder">
+					end_ladder,
+				</if>
+				<if test=" null != rdate ">
+					rdate,
+				</if>
+				<if test=" null != udate">
+					udate,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != aid and '' != aid ">
+					 	#{aid},
+				</if>
+			 	<if test=" null != grade ">
+					 	#{grade},
+				</if>
+			 	<if test=" null != startLadder ">
+					 	#{startLadder},
+				</if>
+				<if test=" null != endLadder ">
+						#{endLadder},
+				</if>
+				<if test=" null != rdate ">
+						#{rdate},
+				</if>
+				<if test=" null != udate ">
+						#{udate},
+				</if>
+		</trim>
+	</insert> 
+	
+	
+	
+	<update id="updateDiscountActivity" parameterMap="tActivityRule">
+		UPDATE t_activity_rule
+		<set>
+			<trim suffixOverrides=",">
+			 	<if test=" null != minMoeny  and '' != minMoeny ">
+					min_moeny=#{minMoeny},
+				</if>			 					
+			 	<if test=" null != maxMoeny and '' != maxMoeny ">
+					max_moeny=#{maxMoeny},
+				</if>
+				<if test=" null != giveMoney and '' != giveMoney ">
+					give_moeny=#{giveMoney},
+				</if>
+				<if test=" null != addUser and '' != addUser ">
+					add_user=#{addUser},
+				</if>
+				<if test=" null != addTime ">
+					add_time=#{addTime},
+				</if>
+			 	<if test=" null != updateUser">
+					update_user=#{updateUser},
+				</if>
+				<if test=" null != updateTime">
+					update_time=#{updateTime},
+				</if>
+				<if test=" null != awardName and '' != awardName">
+					award_name=#{awardName},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test=" null != aid">
+					 aid = #{aid}
+			</if>
+		</where>
+	</update>
+	
+	<!-- 删除活动规则 -->
+	<delete id="deleteActivityRule" parameterType="Object">
+		DELETE FROM t_activity_rule WHERE rid IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	<!-- 删除积分活动规则 -->
+	<delete id="deleteIntegralRule" parameterType="Object">
+		DELETE FROM t_integral_rule WHERE rid IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	<select id="getTActivityRule" resultMap="tActivityRuleMap" parameterMap="tActivityRule">
+		       SELECT * FROM t_activity_rule 
+		     <where>
+				1=1
+				<if test=" null != rid and '' != rid ">
+					AND rid = #{rid}
+				</if>	
+				<if test=" null != aid and '' != aid ">
+					AND aid = #{aid}
+				</if>			
+		</where>
+	</select>
+</mapper>

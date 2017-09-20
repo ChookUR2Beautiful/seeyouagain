@@ -1,0 +1,100 @@
+/**
+ * 
+ */
+package com.xmniao.xmn.core.vstar.service;
+
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.base.BaseService;
+import com.xmniao.xmn.core.util.handler.AreaHandler;
+import com.xmniao.xmn.core.vstar.dao.TVstarPlayerInfoDao;
+import com.xmniao.xmn.core.vstar.entity.TVstarPlayerInfo;
+
+/**
+ * 
+ * 项目名称：XmnWeb_vstar
+ * 
+ * 类名称：TVstarPlayerInfoService
+ * 
+ * 类描述： 星食尚大赛选手信息表Service
+ * 
+ * 创建人：  huang'tao
+ * 
+ * 创建时间：2017-6-2 下午4:17:42 
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司 
+ */
+@Service
+public class TVstarPlayerInfoService extends BaseService<TVstarPlayerInfo> {
+
+	/**
+	 * 注入星食尚大赛选手信息DAO
+	 */
+	@Autowired
+	private TVstarPlayerInfoDao starPlayerInfoDao;
+	
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected BaseDao getBaseDao() {
+		return starPlayerInfoDao;
+	}
+
+	/**
+	 * 方法描述：获取选手信息列表 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-6-12下午3:49:04 <br/>
+	 * @param vstarPlayer
+	 * @return
+	 */
+	public List<TVstarPlayerInfo> getListInfo(TVstarPlayerInfo vstarPlayer) {
+		List<TVstarPlayerInfo> list = getList(vstarPlayer);
+		convertAreaInfo(list);//转换区域信息
+		return list;
+	}
+	
+	/**
+	 * 方法描述：将区域信息id转化为name <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-6-2上午11:25:31 <br/>
+	 * @param list
+	 */
+	private void convertAreaInfo(List<TVstarPlayerInfo> list) {
+		String province=null;
+		String city=null;
+		String area=null;
+		for(TVstarPlayerInfo playerInfo:list){
+			StringBuffer areaText=new StringBuffer();
+			Integer provinceId = playerInfo.getProvinceId();
+			Integer cityId = playerInfo.getCityId();
+			Integer areaId = playerInfo.getAreaId();
+			if(provinceId!=null){
+				province = AreaHandler.getAreaHandler().getAreaIdByTitle(provinceId);
+			}
+			if(cityId!=null){
+				city = AreaHandler.getAreaHandler().getAreaIdByTitle(cityId);
+			}
+			if(areaId != null){
+				area = AreaHandler.getAreaHandler().getAreaIdByTitle(areaId);
+			}
+			if(StringUtils.isNotBlank(province)){
+				areaText.append(province);
+			}
+			
+			if(StringUtils.isNotBlank(city)){
+				areaText.append("-"+city);
+			}
+			
+			if(StringUtils.isNotBlank(area)){
+				areaText.append("-"+area);
+			}
+			playerInfo.setAreaText(areaText.toString());
+		}
+		
+	}
+
+}

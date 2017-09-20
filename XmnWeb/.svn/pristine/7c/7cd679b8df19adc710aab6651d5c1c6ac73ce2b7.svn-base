@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.fresh.dao.FreshBrandDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.fresh.entity.FreshBrand" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="type_id" property="typeId" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="logo" property="logo" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="type_name" property="typeName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    t_fresh_brand.id, 
+    t_fresh_brand.type_id, 
+    t_fresh_brand.name, 
+    t_fresh_brand.logo,
+    t_fresh_brand.remark, 
+    t_fresh_brand.status, 
+    t_fresh_brand.create_time, 
+    t_fresh_brand.update_time
+  </sql>
+  <select id="getObject" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_fresh_brand
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_fresh_brand
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.fresh.entity.FreshBrand" >
+    insert into t_fresh_brand (type_id, name, 
+      logo, status, create_time, 
+      update_time,remark)
+    values (#{typeId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
+      #{logo,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP},#{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.fresh.entity.FreshBrand" >
+    insert into t_fresh_brand
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="typeId != null" >
+        type_id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="logo != null" >
+        logo,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="typeId != null" >
+        #{typeId,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="logo != null" >
+        #{logo,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.fresh.entity.FreshBrand" >
+    update t_fresh_brand
+    <set >
+      <if test="typeId != null" >
+        type_id = #{typeId,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="logo != null" >
+        logo = #{logo,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="getList" parameterType="com.xmniao.xmn.core.fresh.entity.FreshBrand" resultMap="BaseResultMap" >
+    select <include refid="Base_Column_List" /> from  t_fresh_brand where 1=1
+      <if test="typeId != null" >
+       and type_id = #{typeId,jdbcType=INTEGER}
+      </if>
+      <if test="name != null" >
+       and name = #{name,jdbcType=VARCHAR}
+      </if>
+      <if test="logo != null" >
+        and logo = #{logo,jdbcType=VARCHAR}
+      </if>
+      <if test="status != null" >
+       and  status = #{status,jdbcType=INTEGER}
+      </if>
+      <if test="createTime != null" >
+        and create_time = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="updateTime != null" >
+       and  update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="id != null" >
+       and  id = #{id,jdbcType=TIMESTAMP}
+      </if>
+  </select>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.fresh.entity.FreshBrand" >
+    update t_fresh_brand
+    set type_id = #{typeId,jdbcType=INTEGER},
+      name = #{name,jdbcType=VARCHAR},
+      logo = #{logo,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+       remark = #{remark,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="selectByPage" resultMap="BaseResultMap"> 
+  	  select <include refid="Base_Column_List" />,type_name from t_fresh_brand join (select name as type_name,id as fresh_type_id from t_fresh_type ) fr on type_id = fresh_type_id  where 1=1 and status=0
+  	   <trim  suffixOverrides="," >
+	  	  <if test="name!=null and name != ''" >
+	  	  	   and name like '%${name}%',
+	  	  </if>
+	  	  <if test="typeId != null" >
+	  	  	   and type_id=#{typeId},
+	  	  </if>
+  	  </trim>
+  	  <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+  </select>
+  
+  <select id="countTotal" resultType="java.lang.Long">
+  	 select count(1) from t_fresh_brand where 1=1  and status=0
+  	  <trim  suffixOverrides="," >
+	  	  <if test="name!=null and name!=''" >
+	  	  	   and name like '%${name}%',
+	  	  </if>
+	  	  <if test="typeId != null" >
+	  	  	   and type_id=#{typeId},
+	  	  </if>
+  	  </trim>
+  </select>
+  
+  <update id="deleteMine">
+		update t_fresh_brand set status = 1,update_time=now()  where id in (${ids})
+	</update>
+	
+	<select id="selectExport" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List" />,type_name from t_fresh_brand join (select name as type_name,id as fresh_type_id,fid from t_fresh_type ) fr on type_id = fresh_type_id
+    	where status=0
+    	<trim  suffixOverrides="," >
+          <if test="minNum!=null and maxNum!=null">
+          	   and id >=${minNum} and id &lt;= ${maxNum}
+          </if>
+	  	  <if test="typeId != null" >
+	  	  	   and ( type_id=#{typeId} or fr.fid = #{typeId})
+	  	  </if>
+	  	  <if test="minPage!=null and maxPage!=null">
+	  	  	   LIMIT ${(minPage-1)*limit},${(maxPage-minPage+1)*limit}
+	  	  </if>
+  	  </trim>	
+	</select>
+	
+	<insert id="addBatchMine" parameterType="java.util.ArrayList">
+	    insert into t_fresh_brand 
+	    <trim prefix="(" suffix=")" suffixOverrides=",">
+	    	type_id,
+	        name, 
+	        remark, 
+	        create_time,
+	        update_time, 
+	        status,
+		 </trim>
+	    values 
+	    <foreach item="item" index="index" collection="list" separator=",">
+		    <trim prefix="(" suffix=")" suffixOverrides=",">
+		      #{item.typeId}, 
+		      #{item.name}, 
+		      #{item.remark}, 
+		      #{item.createTime},  
+		      #{item.updateTime}, 
+		      0,
+		     </trim>
+	     </foreach>
+	</insert>
+	
+	<select id="findAll" resultMap="BaseResultMap">
+		select 	<include refid="Base_Column_List" />
+    from t_fresh_brand where status=0	
+	</select>
+	
+	<select id="hasProduct" resultMap="BaseResultMap">
+		select 	<include refid="Base_Column_List" />
+		from t_fresh_brand
+		join t_product_info info  on t_fresh_brand.id=info.brand_id where t_fresh_brand.id in (${ids})
+	</select>
+	
+</mapper>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.billmanagerment.dao.BillRecordDao">
+
+	<parameterMap type="BillRecord" id="billRecord" />
+	
+	<resultMap type="BillRecord" id="billRecordMap">
+		<result column="id" property="id" />                            
+		<result column="bid" property="bid" />    
+		<result column="explains" property="explains" />    
+		<result column="status" property="status" />
+		<result column="cdate" property="cdate" />
+		<result column="remarks" property="remarks" />
+		<result column="flat_agio" property="flatAgio" />
+		<result column="flat_money" property="flatMoney" />
+		<result column="is_activity" property="isactivity" />
+		<result column="profit" property="profit" />
+		<result column="payment" property="payment" />
+		<result column="give_money" property="giveMoney" />
+		<result column="activity_conent" property="activityConent" />
+		
+	</resultMap>
+	
+	<select id="getRefundBillHistoryList" resultMap="billRecordMap" parameterMap="billRecord">
+		
+		<!-- select r.*,b.money,b.codeid,b.nname,b.sellername,b.sdate as orderDate,b.paytype,f.qdate,f.sdate as refundDate,f.qdate,f.cancel,f.status as aprearStatus ,f.qppeal,f.adate  from t_bill_record r,t_bill b,t_refund f
+		<where>
+			r.bid=b.bid and r.bid=f.bid
+			and f.status in('1','4','5','6','7')
+			AND b.is_virtual=0 -->
+		SELECT b.bid ,b.flat_agio,b.flat_money,b.is_activity,b.activity_conent,b.profit,b.payment,b.give_money,b.payid,b.money,b.zdate,b.codeid,b.nname,b.sellername,b.sdate AS orderDate,b.paytype,f.cdate,
+				f.sdate AS refundDate,f.qdate,f.cancel,f.pdate,f.status AS aprearStatus ,b.activity_rest as activityRest,
+				f.qppeal,f.adate,f.remarks,f.processing  FROM t_bill b,t_refund f FORCE INDEX(index_status)
+			<where>
+			 b.bid=f.bid
+			AND f.status IN('5','6','7')
+			AND b.is_virtual=0
+			<if test=" null != bid and '' != bid ">
+				AND b.bid LIKE '%${bid}%'
+			</if>
+			<if test=" null != nname and '' != nname ">
+				AND b.nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND b.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != payid and '' != payid ">
+				AND b.payid LIKE '%${payid}%'
+			</if>
+			<if test=" null != zdateStart and '' != zdateStart">
+				AND  b.zdate &gt;= #{zdateStart}
+			</if>
+			<if test=" null != zdateEnd and ''!= zdateEnd">
+				AND  b.zdate &lt; #{zdateEnd}
+			</if>
+			
+			<if test=" null != paytype and '' != paytype ">
+				AND b.paytype = #{paytype}
+			</if>
+			<if test=" null != isPresidentHandle and '' != isPresidentHandle ">
+				AND f.is_president_handle = #{isPresidentHandle}
+			</if>
+		</where>
+			ORDER BY f.qdate DESC,f.sdate DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="refundBillHistoryCount" resultType="Long" parameterMap="billRecord">
+		select count(b.bid) from t_bill b,t_refund f FORCE INDEX(index_status)
+		<where>
+			 b.bid=f.bid
+			AND f.status IN('5','6','7')
+			AND b.is_virtual=0
+			<if test=" null != bid and '' != bid ">
+				AND b.bid LIKE '%${bid}%'
+			</if>
+			<if test=" null != nname and '' != nname ">
+				AND b.nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND b.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != payid and '' != payid ">
+				AND b.payid LIKE '%${payid}%'
+			</if>
+			<if test=" null != zdateStart and '' != zdateStart">
+				AND  b.zdate &gt;= #{zdateStart}
+			</if>
+			<if test=" null != zdateEnd and ''!= zdateEnd">
+				AND  b.zdate &lt; #{zdateEnd}
+			</if>
+			
+			<if test=" null != paytype and '' != paytype ">
+				AND b.paytype = #{paytype}
+			</if>
+			<if test=" null != isPresidentHandle and '' != isPresidentHandle ">
+				AND f.is_president_handle = #{isPresidentHandle}
+			</if>
+		</where>
+	</select>
+</mapper>

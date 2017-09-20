@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.xmermanagerment.dao.TSaasOrderDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.xmermanagerment.entity.TSaasOrder" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="ordersn" property="ordersn" jdbcType="VARCHAR" />
+    <result column="dpid" property="dpid" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="nums" property="nums" jdbcType="INTEGER" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="status" property="status" jdbcType="BIT" />
+    <result column="reason" property="reason" jdbcType="VARCHAR" />
+    <result column="sdate" property="sdate" jdbcType="TIMESTAMP" />
+    <result column="zdate" property="zdate" jdbcType="TIMESTAMP" />
+    <result column="pay_type" property="payType" jdbcType="INTEGER" />
+    <result column="samount" property="samount" jdbcType="DECIMAL" />
+    <result column="pay_id" property="payId" jdbcType="VARCHAR" />
+    <result column="pay_code" property="payCode" jdbcType="VARCHAR" />
+    <result column="agio" property="agio" jdbcType="DECIMAL"/>
+    <result column="price" property="price" jdbcType="DECIMAL"/>
+    <result column="soldnums" property="soldNums" jdbcType="INTEGER"/>
+    <result column="stock" property="stock" jdbcType="INTEGER"/>
+    <result column="parentid" property="parentid" jdbcType="INTEGER"/>
+    <result column="pay_money" property="pay_money" jdbcType="DECIMAL"/>
+	<result column="version" property="version" jdbcType="INTEGER"/>
+	<result column="returnnums" property="returnnums" jdbcType="INTEGER"/>
+    <result column="uid_relation_chain" property="uidRelationChain" jdbcType="VARCHAR"/>
+    <result column="saas_channel" property="saasChannel" jdbcType="INTEGER"/>
+    <result column="from_uid" property="fromUid" jdbcType="INTEGER"/>
+	<result column="mb_ecno" property="mbEcno" jdbcType="VARCHAR"/>
+	<result column="mb_trans_no" property="mbTransNo" jdbcType="VARCHAR"/>	
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, ordersn, dpid, uid, nums, amount, status, reason, sdate, zdate, pay_type, samount, 
+    pay_id, pay_code,agio,price,soldnums,stock,parentid,version,returnnums,uid_relation_chain,
+    saas_channel,from_uid,mb_ecno,mb_trans_no
+  </sql>
+
+	<select id="getSaasOrder" resultType="com.xmniao.xmn.core.xmermanagerment.entity.TSaasOrder" 
+							parameterType="com.xmniao.xmn.core.xmermanagerment.entity.TSaasOrder">
+		SELECT 
+		<include refid="Base_Column_List" />
+		FROM t_saas_order
+    	WHERE 1=1
+    	<if test="ordersn != null and ordersn != ''">AND ordersn=#{ordersn}</if>
+		<if test="payCode != null and payCode != ''">AND pay_code=#{payCode}</if>
+		<if test="payId != null and payId != ''">AND pay_id=#{payId}</if>
+		<if test="uid != null and uid != ''">AND uid=#{uid}</if>
+	    <if test="null != saasChannel">
+	    	AND saas_channel = #{saasChannel} 
+	    </if>
+	</select>
+ 
+ 	<!-- 更新寻蜜客SAAS销售库存信息 -->
+ 	<!-- isAddStock=true 销量+1，库存-1 -->
+ 	<!-- isAddStock=false 销量-1，库存+1  -->
+ 	<!-- isAddReturn=true 销量+1，退还库存-1 -->
+ 	<!-- isAddReturn=false 销量-1，退还库存+1  -->
+	<update id="updateSaasOrderSaleInfo" parameterType="map">
+		UPDATE t_saas_order
+		<set>
+			<trim suffixOverrides=",">
+				<if test="isAddStock!=null and isAddStock==true">
+					soldnums = soldnums-1,
+					stock = stock+1,
+				</if>
+				<if test="isAddStock!=null and isAddStock==false">
+					soldnums = soldnums+1,
+					stock = stock-1,
+				</if>
+				<if test="isAddReturn!=null and isAddReturn==true">
+					soldnums = soldnums-1,
+					returnnums = returnnums+1,
+				</if>
+				<if test="isAddReturn!=null and isAddReturn==false">
+					soldnums = soldnums+1,
+					returnnums = returnnums-1,
+				</if>
+				<if test="version != null">
+					version=version+1,
+				</if>
+			</trim>
+		</set>
+		<where>
+			ordersn=#{ordersn}
+			AND version=#{version}
+			<if test="isAddStock!=null and isAddStock==true">
+				AND soldnums &gt; 0
+			</if>
+			<if test="isAddStock!=null and isAddStock==false">
+				AND soldnums &lt; nums
+			</if>
+			<if test="isAddReturn!=null and isAddReturn==true">
+				AND soldnums &gt; 0
+			</if>
+			<if test="isAddReturn!=null and isAddReturn==false">
+				AND returnnums &gt; 0
+			</if>
+
+		</where>
+	</update>
+	
+	<!-- 查询条件 add by lifeng 2016年6月15日 11:55:10 -->
+	<sql id="querySaasOrderCondition">
+		<if test="null != id">
+	  		AND id = #{id}
+	  	</if>
+	  	<if test="null != ordersn and '' != ordersn">
+	  		AND ordersn LIKE '%${ordersn}%'
+	  	</if>
+	  	<if test="null != dpid">
+	  		AND  dpid = #{dpid}
+	  	</if>
+	  	<if test="null != uid">
+	  		AND uid = #{uid}
+	  	</if>
+	  	<if test="null != nums">
+	  		AND nums = #{nums}
+	  	</if>
+	  	<if test="amount != null" >
+	        AND amount = #{amount}
+	    </if>
+	  	 <if test="null != reason and '' != reason">
+	    	AND reason LIKE '%${reason}%'
+	    </if>
+	    <if test=" null != sDate and '' != sDate">
+			AND zdate &gt;= #{sDate} 
+		</if>
+		<if test=" null != eDate and ''!= eDate">
+			AND zdate &lt; DATE_ADD(#{eDate}, INTERVAL 1 DAY) 
+		</if>
+		<if test="null != payType">
+	    	AND pay_type = #{payType}
+	    </if>
+		<if test="null != payId and '' != payId">
+	    	AND pay_id LIKE '%${payId}%'
+	    </if>
+	    <if test="null != payCode and '' != payCode">
+	    	AND pay_code LIKE '%${payCode}%'
+	    </if>
+	    <if test="null != agio">
+	    	AND agio = #{agio}
+	    </if>
+	    <if test="null != price">
+	    	AND price = #{price}
+	    </if>
+	    <if test="null != stock">
+	    	AND stock = #{stock} 
+	    </if>
+	    <if test="null != parentid">
+	    	AND parentid = #{parentid} 
+	    </if>
+	    <if test="null != saasChannel">
+	    	AND saas_channel = #{saasChannel} 
+	    </if>
+	    <if test="null != fromUid">
+	    	AND from_uid = #{fromUid} 
+	    </if>
+	    <if test="null != mbEcno and '' != mbEcno">
+	    	AND mb_ecno = #{mbEcno} 
+	    </if>
+	    <if test="null != mbTransNo and '' != mbTransNo">
+	    	AND mb_trans_no = #{mbTransNo} 
+	    </if>
+	    <if test="null != status">
+	    	AND status = #{status} 
+	    </if>
+	</sql>
+	
+	<!-- 查询列表 add by lifeng 2016年6月15日上午11:36:20   ‘支付金额’ 为 个数乘以单价-->
+	<select id="getSaasOrderList" resultMap="BaseResultMap"  parameterType="com.xmniao.xmn.core.xmermanagerment.entity.TSaasOrder">
+		SELECT 
+			(ifnull(price,0)*IFNULL(nums,0)) as pay_money,<include refid="Base_Column_List"/>
+		FROM 
+			t_saas_order 
+    	<where>
+    		1=1 
+		    <include refid="querySaasOrderCondition"></include>
+    	</where>
+    	<if test="order == 1">
+			ORDER BY zdate DESC 
+		</if>
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<!-- 查询总记录数 add by lifeng 2016年6月15日上午11:36:20 -->
+	<select id="getCountByParam"  parameterType="com.xmniao.xmn.core.xmermanagerment.entity.TSaasOrder" resultType="long">
+		SELECT 
+			COUNT(id) 
+		FROM 
+			t_saas_order 
+		<where>
+			1=1
+		    <include refid="querySaasOrderCondition"></include>
+		</where>
+	</select>
+
+	<!--查询SAAS订单关系-->
+	<select id="selectOrderRelations" resultType="java.lang.String">
+		SELECT uid_relation_chain FROM t_saas_order WHERE ordersn = #{saasOrdersn}
+	</select>
+	
+	<select id="getSellerBelongSassOrder" resultMap="BaseResultMap">
+		SELECT <include refid="Base_Column_List" />
+		FROM t_saas_order 
+		WHERE ordersn IN ( 
+			SELECT saas_ordersn FROM `t_saas_sold_order` WHERE sellerid=#{sellerid} and uid=#{uid} and status=1
+		)
+	</select>
+
+	<!-- （V客）收回1套赠送给主播的SAAS -->
+	<update id="reduceAnchorSaasOrder" parameterType="java.lang.String">
+		update t_saas_order 
+		set nums=nums-1,soldnums=soldnums-1,version=version+1
+		where ordersn=#{ordersn}
+	</update>
+	
+	<!-- 获取V客已销售的SAAS订单 -->
+	<select id="getVerSaasOrer" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+		select 
+			<include refid="Base_Column_List" />
+		from t_saas_order 
+		where uid=#{uid} and saas_channel=3 and status=1 and (stock+returnnums) &lt; nums 
+		order by id desc limit 1
+	</select>
+
+    <!-- 退还V客赠送SAAS给主播名额数 -->
+	<update id="returnVkeSaasOrderNums" parameterType="map">
+		UPDATE t_saas_order
+		<set>
+			<trim suffixOverrides=",">
+				<if test="null != stock">
+				    stock = stock + #{stock},
+				</if>
+				<if test="null != nums">
+					nums = nums - #{nums},
+				</if>
+				<if test="version != null">
+					version=version+1,
+				</if>
+			</trim>
+		</set>
+		<where>
+			1 = 1
+			<if test="ordersn != null">
+				AND ordersn=#{ordersn}
+			</if>
+			<if test="version != null">
+				AND version=#{version}
+			</if>
+		</where>
+	</update>
+
+	<update id="updataLiveSaasOrderNums" parameterType="map">
+		UPDATE t_saas_order
+		<set>
+			nums = 0, stock = 0, soldnums = 0,
+			<trim suffixOverrides=",">
+				<if test="version != null">
+					version= version+1,
+				</if>
+			</trim>
+		</set>
+		<where>
+			1 = 1
+			<if test="ordersn != null">
+				AND ordersn=#{ordersn}
+			</if>
+			<if test="version != null">
+				AND version=#{version}
+			</if>
+		</where>
+	</update>
+	
+
+</mapper>

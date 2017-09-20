@@ -1,0 +1,196 @@
+package com.xmniao.xmn.core.util;
+
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.imageio.ImageIO;
+
+import org.apache.log4j.Logger;
+import org.csource.common.MyException;
+import org.csource.fastdfs.ClientGlobal;
+import org.csource.fastdfs.StorageClient1;
+import org.csource.fastdfs.StorageServer;
+import org.csource.fastdfs.TrackerClient;
+import org.csource.fastdfs.TrackerGroup;
+import org.csource.fastdfs.TrackerServer;
+import org.springframework.web.multipart.MultipartFile;
+
+/**
+ * 
+ * 项目名称：TravelingWeb
+ * 
+ * 类名称：FastFdsFile
+ * 
+ * 类描述： FastFDS 文件工具类
+ * 
+ * 创建人： zhou'sheng
+ * 
+ * 创建时间：2014年9月9日 下午2:48:29
+ * 
+ * Copyright (c) 深圳市XXX有限公司-版权所有
+ */
+public class FastFdsFile {
+
+	private final Logger log = Logger.getLogger(FastFdsFile.class);
+
+	private static FastFdsFile fastFdsFile;
+
+	private FastFdsFile() {
+		// 连接超时的时限，单位为毫秒
+		ClientGlobal.setG_connect_timeout(FastfdsConstant.FILE_UPLOAD_FASTDFS_CONNECT_TIMEOUT);
+		// 网络超时的时限，单位为毫秒
+		ClientGlobal.setG_network_timeout(FastfdsConstant.FILE_UPLOAD_FASTDFS_NETWORK_TIMEOUT);
+		ClientGlobal.setG_anti_steal_token(FastfdsConstant.FILE_UPLOAD_FASTDFS_ANTI_STEAL_TOKEN);
+		// 字符集
+		ClientGlobal.setG_charset(FastfdsConstant.FILE_UPLOAD_FASTDFS_CHARSET);
+		ClientGlobal.setG_secret_key(FastfdsConstant.FILE_UPLOAD_FASTDFS_SECRET_KEY);
+		// HTTP访问服务的端口号
+		ClientGlobal.setG_tracker_http_port(FastfdsConstant.FILE_UPLOAD_FASTDFS_TRACKER_HTTP_PORT);
+		// Tracker服务器列表
+		InetSocketAddress[] tracker_servers = new InetSocketAddress[1];
+		tracker_servers[0] = new InetSocketAddress(FastfdsConstant.FILE_UPLOAD_FASTDFS_TRACKER_SERVER, FastfdsConstant.FILE_UPLOAD_FASTDFS_TRACKER_SERVER_PORT);
+		ClientGlobal.setG_tracker_group(new TrackerGroup(tracker_servers));
+	}
+
+	public static FastFdsFile getInstance() {
+		if (null == fastFdsFile) {
+			synchronized (FastFdsFile.class) {
+				if (null == fastFdsFile) {
+					fastFdsFile = new FastFdsFile();
+				}
+			}
+		}
+		return fastFdsFile;
+	}
+
+	/**
+	 * 
+	 * upload(文件上传)
+	 * 
+	 * 
+	 * @param multipartFile
+	 * @return
+	 * @throws IOException
+	 * @throws MyException
+	 * 
+	 *             author：zhou'sheng
+	 */
+	public Map<String,String> upload(MultipartFile multipartFile,boolean sltflag) throws IOException, MyException {
+		Map<String,String> urlMap=new HashMap<String,String>();
+		if (null == multipartFile) {
+			return null;
+		}
+		TrackerClient trackerClient = new TrackerClient();
+		TrackerServer trackerServer = trackerClient.getConnection();
+		StorageServer storageServer = null;
+		StorageClient1 storageClient = new StorageClient1(trackerServer, storageServer);
+		String originalFilename = multipartFile.getOriginalFilename();
+
+		String result = storageClient.upload_appender_file1(multipartFile.getBytes(), originalFilename.substring(originalFilename.lastIndexOf(".") + 1, originalFilename.length()), null) + "." + multipartFile.getBytes().length;
+		urlMap.put("url", result);
+		if(sltflag){//生成缩略图
+			result=PropertiesUtil.readValue("file.upload.fastDFS.http")+result.split("\\.")[0]+"."+result.split("\\.")[1];
+			result = storageClient.upload_appender_file1(getCutPic(result,0,0), originalFilename.substring(originalFilename.lastIndexOf(".") + 1, originalFilename.length()), null) + "." + multipartFile.getBytes().length;
+			urlMap.put("breviary", result);	
+		}
+		if (null != storageServer) {
+			storageServer.close();
+		}
+
+		if (null != trackerServer) {
+			trackerServer.close();
+		}
+
+		return urlMap;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：生成缩略图 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2016-12-5上午10:10:42 <br/>
+	 * @param srcImageFile
+	 * @param defaultWidth 	默认宽度
+	 * @param defaultHeight	默认高度
+	 * @return
+	 */
+	public byte[] getCutPic(String srcImageFile,int defaultWidth,int defaultHeight) {//缩略图代码
+		  try {
+			  byte[] b = new byte[4096];
+			  if(defaultWidth==0){
+				  defaultWidth=240;
+			  }
+			  if(defaultHeight==0){
+				  defaultHeight=160;
+			  }
+			  URL url = new URL(srcImageFile);
+	          BufferedImage bi = ImageIO.read(url);
+	          int srcWidth = bi.getWidth();
+	          int srcHeight = bi.getHeight();
+	          if (srcWidth > 0 && srcHeight > 0) {
+	              Image img = bi.getScaledInstance(srcWidth, srcHeight,Image.SCALE_DEFAULT);
+	              ByteArrayOutputStream  out = new ByteArrayOutputStream();
+	      		  BufferedImage tag = new BufferedImage(defaultWidth, defaultHeight, BufferedImage.TYPE_INT_RGB);
+	              Graphics g = tag.getGraphics();
+	              g.drawImage(img, 0, 0, defaultWidth, defaultHeight, null);
+	              g.dispose();
+	              ImageIO.write(tag, "JPEG", out);
+	              b = out.toByteArray();
+	          }
+	         return b;
+	      } catch (Exception e) {
+	          log.error("缩略图片错误",e);
+	          return null;
+	      }
+	}
+	/**
+	 * 
+	 * delete(删除文件)
+	 * 
+	 * @param fileId
+	 * @return
+	 * @throws IOException
+	 * @throws MyException
+	 * 
+	 *             author：zhou'sheng
+	 */
+	public int delete(String fileId) throws IOException, MyException {
+
+		TrackerClient trackerClient = new TrackerClient();
+		TrackerServer trackerServer = trackerClient.getConnection();
+		StorageServer storageServer = null;
+		StorageClient1 storageClient = new StorageClient1(trackerServer, storageServer);
+
+		int result = storageClient.delete_file1(fileId);
+
+		if (null != storageServer) {
+			storageServer.close();
+		}
+
+		if (null != trackerServer) {
+			trackerServer.close();
+		}
+
+		return result;
+	}
+
+	public static void main(String[] args) {
+
+		try {
+			FastFdsFile.getInstance().delete("img/M00/00/00/wKgyMlQf9MmED8dXAAAAABQ0e4k889.gif");
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (MyException e) {
+			e.printStackTrace();
+		}
+	}
+
+}

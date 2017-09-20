@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.coupon.dao.CouponSellerDao">
+
+	<parameterMap type="CouponSeller" id="couponSeller" />
+
+	<resultMap type="CouponSeller" id="couponSellerMap">
+		<result column="csid" property="csid" />
+		<result column="cid" property="cid" />
+		<result column="include" property="include" />
+		<result column="ltype" property="ltype" />
+		<result column="category" property="category" />
+		<result column="sellerid" property="sellerid" />
+		<result column="status" property="status" />
+	</resultMap>
+
+	<!-- 可重用的Where 条件 -->
+	<sql id="whereSQL">
+		<if test=" null != cid">
+			AND cid = #{cid}
+		</if>
+		<if test=" null != include ">
+			AND include = #{include}
+		</if>
+		<if test=" null != ltype ">
+			AND ltype = #{ltype}
+		</if>
+		<if test=" null != status ">
+			AND status = #{status}
+		</if>
+	</sql>
+
+	<!-- 可重用的插入语句中表的列 -->
+	<sql id="insertColumnSQL">
+		<if test=" null != cid">
+			cid,
+		</if>
+		<if test=" null != sellerid and '' != sellerid ">
+			sellerid,
+		</if>
+		<if test=" null != include">
+			include,
+		</if>
+		<if test=" null != ltype">
+			ltype,
+		</if>
+		<if test=" null != category and '' != category">
+			category,
+		</if>
+		<if test=" null != status and '' != status ">
+			status,
+		</if>
+	</sql>
+	<!-- 可重用的插入语句中表的值 -->
+	<sql id="insertValuesSQL">
+		<if test=" null != cid and '' != cid">
+			#{cid},
+		</if>
+		<if test=" null != sellerid and '' != sellerid ">
+			#{sellerid},
+		</if>
+		<if test=" null != include">
+			#{include},
+		</if>
+		<if test=" null != ltype">
+			#{ltype},
+		</if>
+		<if test=" null != category and '' != category">
+			#{category},
+		</if>
+		<if test=" null != status and '' != status ">
+			#{status},
+		</if>
+	</sql>
+	<!-- 更新动态设置值 -->
+	<sql id="updateSetSQL">
+		<if test=" null != cid and '' != cid">
+			cid = #{cid},
+		</if>
+		<if test=" null != sellerid and '' != sellerid">
+			sellerid = #{sellerid},
+		</if>
+		<if test=" null != include">
+			include = #{include},
+		</if>
+		<if test=" null != ltype">
+			ltype = #{ltype},
+		</if>
+		<if test=" null != category and '' != category">
+			category = #{category},
+		</if>
+		<if test=" null != status and '' != status">
+			status = #{status},
+		</if>
+	</sql>
+
+	<insert id="addBatch" parameterType="java.util.ArrayList">
+		INSERT INTO t_coupon_seller
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			cname,
+			denomination,
+			validity_desc,
+			start_date,
+			end_date,
+			condition,
+			use_num,
+			pic,
+			breviary,
+			show_all
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list"
+			separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				#{item.cname},
+				#{item.denomination},
+				#{item.validityDesc},
+				#{item.startDate},
+				#{item.endDate},
+				#{item.condition},
+				#{item.useNum},
+				#{item.pic},
+				#{item.breviary},
+				#{item.showAll}
+			</trim>
+		</foreach>
+	</insert>
+
+	<insert id="add" parameterMap="couponSeller">
+		INSERT INTO t_coupon_seller
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<include refid="insertColumnSQL"></include>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			<include refid="insertValuesSQL"></include>
+		</trim>
+	</insert>
+
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_coupon_seller WHERE cid IN
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=") ">
+			#{item}
+		</foreach>
+	</delete>
+	<delete id="deleteAllByCid" parameterType="Long">
+		DELETE FROM
+		t_coupon_seller
+		WHERE cid =#{cid} ;
+	</delete>
+
+	<delete id="deleteAllIncludeSellerByCid" parameterType="Long">
+		DELETE
+		FROM
+		t_coupon_seller
+		WHERE include = 1 AND ltype = 1 AND cid =#{cid};
+	</delete>
+
+	<delete id="deleteAllExcludeSellerByCid" parameterType="Long">
+		DELETE
+		FROM
+		t_coupon_seller
+		WHERE include = 0 AND ltype = 1 AND cid =#{cid};
+	</delete>
+
+	<delete id="deleteAllIncludeTradeByCid" parameterType="Long">
+		DELETE
+		FROM
+		t_coupon_seller
+		WHERE include = 1 AND ltype = 2 AND cid =#{cid};
+	</delete>
+
+	<delete id="deleteAllExcludeTradeByCid" parameterType="Long">
+		DELETE
+		FROM
+		t_coupon_seller
+		WHERE include = 0 AND ltype = 2 AND cid =#{cid};
+	</delete>
+
+	<delete id="deleteByCidAndSellerids" parameterMap="couponSeller">
+		DELETE FROM
+		t_coupon_seller
+		WHERE cid =#{cid} AND
+		FIND_IN_SET(sellerid,#{sellerids});
+	</delete>
+
+
+
+	<update id="update" parameterMap="couponSeller">
+		UPDATE t_coupon_seller
+		<set>
+			<trim suffixOverrides=",">
+				<include refid="updateSetSQL"></include>
+			</trim>
+		</set>
+		<where>
+			<include refid="whereSQL"></include>
+		</where>
+	</update>
+
+	<select id="getList" resultMap="couponSellerMap" parameterMap="couponSeller">
+		SELECT
+		*
+		FROM
+		t_coupon_seller
+		<where>
+			1=1
+			<include refid="whereSQL"></include>
+		</where>
+		ORDER BY cid DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="getListByCid" resultMap="couponSellerMap"
+		parameterType="Long">
+		SELECT
+		*
+		FROM
+		t_coupon_seller
+		<where>
+			cid = #{cid}
+		</where>
+	</select>
+
+	<select id="getListByCidAndSellerids" resultMap="couponSellerMap"
+		parameterMap="couponSeller">
+		SELECT
+		tcs.*,
+		ts.sellername AS sellername
+		FROM
+		t_coupon_seller tcs
+		LEFT
+		JOIN t_seller ts
+		on tcs.sellerid
+		=
+		ts.sellerid
+		<where>
+			cid = #{cid} AND FIND_IN_SET (sellerid, #{sellerids});
+		</where>
+	</select>
+
+	<select id="getListByCidAndJoinSellerName" resultMap="couponSellerMap"
+		parameterType="couponSeller">
+		SELECT
+		tcs.*,
+		ts.sellername AS sellername
+		FROM
+		t_coupon_seller tcs
+		LEFT
+		JOIN t_seller ts
+		ON tcs.sellerid = ts.sellerid
+		<where>
+			1=1
+			<if test=" null != cid">
+				AND cid = #{cid}
+			</if>
+			<if test=" null != include ">
+				AND include = #{include}
+			</if>
+			<if test=" null != ltype ">
+				AND ltype = #{ltype}
+			</if>
+			<if test=" null != status ">
+				AND tcs.status = #{status}
+			</if>
+		</where>
+
+	</select>
+
+	<select id="count" resultType="Long" parameterMap="couponSeller">
+		SELECT COUNT(*) FROM t_coupon_seller
+		<where>
+			1=1
+			<include refid="whereSQL"></include>
+		</where>
+	</select>
+
+	<select id="getMaxId" resultType="Integer">
+		SELECT Max(cid) AS VALUE FROM
+		t_coupon_seller
+	</select>
+
+	<select id="getObject" resultMap="couponSellerMap"
+		parameterType="Long">
+		SELECT * FROM t_coupon_seller WHERE cid = #{0}
+	</select>
+
+</mapper>

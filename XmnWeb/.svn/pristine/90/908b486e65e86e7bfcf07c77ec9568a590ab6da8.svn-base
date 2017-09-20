@@ -1,0 +1,166 @@
+package com.xmniao.xmn.core.live_anchor.dao;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.live_anchor.entity.BLiver;
+import com.xmniao.xmn.core.live_anchor.entity.TLiveRecord;
+import com.xmniao.xmn.core.util.proxy.annotation.DataSource;
+import com.xmniao.xmn.core.xmnburs.entity.Burs;
+
+/**
+ * 
+ * 项目名称：XmnWeb_LVB
+ * 
+ * 类名称：TLiveRecordDao
+ *
+ * 类描述：直播安排纪录Dao
+ * 
+ * 创建人： huang'tao
+ * 
+ * 创建时间：2016-8-9下午2:41:58
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司
+ */
+public interface TLiveRecordDao extends BaseDao<TLiveRecord>{
+	
+	/**
+	 * 
+	 * 方法描述：根据主键删除纪录
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-9下午2:41:37
+	 * @param id
+	 * @return
+	 */
+	@DataSource("slave")
+    int deleteById(Integer id);
+
+	/**
+	 * 方法描述：对大于当前序号的记录重新排序(排序号-1),并更新t_sequence表中对应的sid
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-10上午11:56:55
+	 * @param liveRecord
+	 */
+	@DataSource("slave")
+	void updateSequenceNo(TLiveRecord liveRecord);
+	
+	/**
+	 * 
+	 * 方法描述：获取当前最大排序号
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-9下午2:41:37
+	 * @return
+	 */
+	@DataSource("slave")
+    Integer getMaxSequenceNo();
+	
+	/**
+	 * 
+	 * 方法描述：更新目录记录序列号,将A移动到B,则B为目标记录
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-9下午2:41:37
+	 * @return
+	 */
+	@DataSource("slave")
+    Integer updateTargetSequenceNo(TLiveRecord liveRecord);
+	
+	/**
+	 * 
+	 * 方法描述：根据主播分组统计直播时长等信息
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-9下午2:41:37
+	 * @return
+	 */
+	@DataSource("slave")
+    List<BLiver> getLiveInfoByAnchor();
+
+	/**
+	 * 方法描述：在此处添加方法描述
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-16上午9:50:53
+	 * @param liveRecord
+	 * @return
+	 */
+	@DataSource("slave")
+	BigDecimal getLiveTimeByAnchorId(TLiveRecord liveRecord);
+
+	/**
+	 * 方法描述：获取带行号的分页记录
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-16下午3:22:49
+	 * @param liveRecord
+	 * @return
+	 */
+	@DataSource("slave")
+	List<TLiveRecord> getListWithRowNum(TLiveRecord liveRecord);
+	
+	/**
+	 * 方法描述：获取带行号的分页记录
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-16下午3:22:49
+	 * @param liveRecord
+	 * @return
+	 */
+	@DataSource("slave")
+	TLiveRecord getSellerCityName(Integer sellerid);
+	
+	
+	/**
+	 * 
+	 * 方法描述：更新主播通告数据有效状态
+	 * 创建人：  huang'tao
+	 * 创建时间：2016-9-23下午3:00:21
+	 * @param anchorId
+	 * @return
+	 */
+	@DataSource("master")
+	int updateRecordStatus(Integer anchorId);
+	
+	/**
+	 * 方法描述：统计直播时长
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-16下午3:22:49
+	 * @param liveRecord
+	 * @return
+	 */
+	@DataSource("slave")
+	Long countZhiboDuration(TLiveRecord liveRecord);
+	
+	/**
+	 * 
+	 * 方法描述：更新首页推荐等信息 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-2-16下午2:10:50 <br/>
+	 * @param liveRecord
+	 * @return
+	 */
+	@DataSource("slave")
+	int updateRecommendedInfo(TLiveRecord liveRecord);
+
+	/**
+	 * 方法描述：在此处添加方法描述 <br/>
+	 * 创建人： jianming <br/>
+	 * 创建时间：2017年5月31日上午10:39:11 <br/>
+	 * @param liveRecordId
+	 * @param percentamount
+	 */
+	int updateIncomeEggNums(@Param("liveRecordId")Integer liveRecordId,@Param("percentamount") Double percentamount);
+
+	/**
+	 * 方法描述：在此处添加方法描述 <br/>
+	 * 创建人： jianming <br/>
+	 * 创建时间：2017年6月15日上午9:47:27 <br/>
+	 * @param ursListByUids
+	 * @return
+	 */
+	List<Map<String, Object>> countRecordByBurs(List<Burs> ursListByUids);
+	
+
+	
+	@DataSource("master")
+    List<TLiveRecord> getFreshmanRecordInfoList(TLiveRecord liveRecord);
+}

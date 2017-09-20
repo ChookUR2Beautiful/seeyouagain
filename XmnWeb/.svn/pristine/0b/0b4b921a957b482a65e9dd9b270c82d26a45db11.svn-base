@@ -1,0 +1,152 @@
+var livePayOrderList;
+var initListUrl = "livePayOrder/manage/init/list.jhtml";
+var imgRoot = $("#fastfdsHttp").val();
+$(function() {
+	inserTitle(
+			' > 直播频道管理 > <a href="livePayOrder/manage/init.jhtml" target="right">充值记录</a>',
+			'userSpan', true);
+	livePayOrderList = $("#livePayOrderList").page({
+		url : initListUrl,
+		success : success,
+		pageBtnNum : 10,
+		paramForm : 'searchForm',
+		param : {
+			activityType : "5"
+		}
+	});
+	
+	//导出
+	$("#export").click(function(){
+		var path="livePayOrder/manage/export.jhtml";
+		$form = $("#searchForm").attr("action",path);
+		$form[0].submit();
+	});	
+	
+});
+
+function success(data, obj) {
+	var formId = "shareForm", title = "充值列表", subtitle = "条充值记录";
+	var captionInfo = '<caption style="background:#EED8D8; text-align:left; color:#703636; font-size:16px; line-height:40px;">&nbsp;&nbsp;'
+			+ title
+			+ '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font>共计【'
+			+ data.total
+			+ '】' + subtitle + '&nbsp;</font></caption>';
+	var callbackParam = "isBackButton=true&callbackParam="
+			+ getFormParam($("#" + formId).serialize());
+
+	obj.find('div').eq(0).scrollTablel({
+		identifier : "id",
+		callbackParam : callbackParam,
+		data : data.content,
+		caption : captionInfo,
+	    checkable : false,
+		cols : [ {
+			title : "订单编号",
+			name : "orderNo",
+			type : "string",
+			width : 150,
+			customMethod : function(value, data) {
+				return value;
+			}
+		}, {
+			title : "用户手机号",
+			name : "phone",
+			type : "string",
+			width : 150
+		}, {
+			title : "昵称",
+			name : "nname",
+			type : "string",
+			width : 150
+		},{
+			title : "充值时间",
+			name : "payTimeStr",
+			type : "string",
+			width : 150
+		}, {
+			title : "充值金额",
+			name : "payment",
+			type : "string",
+			width : 150
+		} , {
+			title : "兑换鸟豆",
+			name : "realCoin",
+			type : "string",
+			width : 150
+		} , {
+			title : "支付方式",
+			name : "payTypeStr",
+			type : "string",
+			width : 150
+		} , {
+			title : "支付状态",
+			name : "payStateStr",
+			type : "string",
+			width : 150
+		} , {
+			title : "充值渠道",
+			name : "objectOrientedStr",
+			type : "string",
+			width : 150
+		}]
+	}, permissions);
+}
+
+/**
+ * 删除操作
+ */
+ function confirmDelete(id){
+	 showSmConfirmWindow(function (){
+		 $.ajax({
+			 url : "livePayOrder/manage/delete.jhtml",
+			 type : "post",
+			 dataType : "json",
+			 data:'id=' + id,
+			 success : function(result) {
+				 if (result.success) {
+					 showSmReslutWindow(result.success, result.msg);
+					 setTimeout(function() {
+						 livePayOrderList.reload();
+					 }, 3000);
+				 } else {
+					 window.messager.warning(result.msg);
+				 }
+			 }
+		 });
+	 },"确定要删除吗？");
+ }
+ 
+ 
+ /**
+  * 批量删除
+  */
+ $('#delete').click(function(){
+ 	var ids = livePayOrderList.getIds();
+ 	if(!ids){
+ 		showWarningWindow("warning","请至少选择一条记录！");
+ 		return;
+ 	}
+ 	showSmConfirmWindow(function() {
+ 		$.ajax({
+ 			type : 'post',
+ 			url : 'livePayOrder/manage/delete.jhtml' + '?t=' + Math.random(),
+ 			data : 'ids=' + ids,
+ 			dataType : 'json',
+ 			beforeSend : function(XMLHttpRequest) {
+ 				$('#prompt').show();
+ 			},
+ 			success : function(data) {
+ 				$('#prompt').hide();
+
+ 				if (data.success) {
+ 					livePayOrderList.reset();
+ 				}
+
+ 				showSmReslutWindow(data.success, data.msg);
+ 			},
+ 			error : function(XMLHttpRequest, textStatus, errorThrown) {
+ 				$('#prompt').hide();
+ 			}
+ 		});
+ 	});
+ });

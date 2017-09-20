@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.fresh.dao.ActivityGroupDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.fresh.entity.ActivityGroup" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="codeId" property="codeId" jdbcType="BIGINT" />
+    <result column="activity_id" property="activityId" jdbcType="INTEGER" />
+    <result column="pv_ids" property="pvIds" jdbcType="VARCHAR" />
+    <result column="pv_ids_sort" property="pvIdsSort" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="stock" property="stock" jdbcType="INTEGER" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+    <result column="sales" property="sales" jdbcType="INTEGER" />
+    <result column="pv_value" property="pvValue" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, codeId, activity_id, pv_ids, pv_ids_sort, amount, stock, sort, sales,pv_value
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_fresh_activity_group
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_fresh_activity_group
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.fresh.entity.ActivityGroup" >
+    insert into t_fresh_activity_group (id, codeId, activity_id, 
+      pv_ids, pv_ids_sort, amount, 
+      stock, sort, sales,pv_value)
+    values (#{id,jdbcType=INTEGER}, #{codeid,jdbcType=BIGINT}, #{activityId,jdbcType=INTEGER}, 
+      #{pvIds,jdbcType=VARCHAR}, #{pvIdsSort,jdbcType=VARCHAR}, #{amount,jdbcType=DECIMAL}, 
+      #{stock,jdbcType=INTEGER}, #{sort,jdbcType=INTEGER}, #{sales,jdbcType=INTEGER},#{pvValue,jdbcType=VARCHAR})
+  </insert>
+  <insert id="add" parameterType="com.xmniao.xmn.core.fresh.entity.ActivityGroup" >
+    insert into t_fresh_activity_group
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="codeId != null" >
+        codeId,
+      </if>
+      <if test="activityId != null" >
+        activity_id,
+      </if>
+      <if test="pvIds != null" >
+        pv_ids,
+      </if>
+      <if test="pvIdsSort != null" >
+        pv_ids_sort,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="stock != null" >
+        stock,
+      </if>
+      <if test="sort != null" >
+        sort,
+      </if>
+      <if test="sales != null" >
+        sales,
+      </if>
+      <if test="pvValue != null and pvValue != ''" >
+        pv_value,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="codeId != null" >
+        #{codeId,jdbcType=BIGINT},
+      </if>
+      <if test="activityId != null" >
+        #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="pvIds != null" >
+        #{pvIds,jdbcType=VARCHAR},
+      </if>
+      <if test="pvIdsSort != null" >
+        #{pvIdsSort,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="stock != null" >
+        #{stock,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null" >
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="sales != null" >
+        #{sales,jdbcType=INTEGER},
+      </if>
+      <if test="pvValue != null and pvValue != ''" >
+        #{pvValue,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.fresh.entity.ActivityGroup" >
+    update t_fresh_activity_group
+    <set >
+      <if test="codeid != null" >
+        codeId = #{codeid,jdbcType=BIGINT},
+      </if>
+      <if test="activityId != null" >
+        activity_id = #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="pvIds != null" >
+        pv_ids = #{pvIds,jdbcType=VARCHAR},
+      </if>
+      <if test="pvIdsSort != null" >
+        pv_ids_sort = #{pvIdsSort,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="stock != null" >
+        stock = #{stock,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null" >
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="sales != null" >
+        sales = #{sales,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.fresh.entity.ActivityGroup" >
+    update t_fresh_activity_group
+    set codeId = #{codeid,jdbcType=BIGINT},
+      activity_id = #{activityId,jdbcType=INTEGER},
+      pv_ids = #{pvIds,jdbcType=VARCHAR},
+      pv_ids_sort = #{pvIdsSort,jdbcType=VARCHAR},
+      amount = #{amount,jdbcType=DECIMAL},
+      stock = #{stock,jdbcType=INTEGER},
+      sort = #{sort,jdbcType=INTEGER},
+      sales = #{sales,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="getByCodeId" resultMap="BaseResultMap">
+  	 select 
+    <include refid="Base_Column_List" />
+    from t_fresh_activity_group
+    where activity_id=#{activityId} and codeId = #{codeId}
+  </select>
+  
+  <select id="getByCodeIdAndPvid" resultMap="BaseResultMap">
+  	 select 
+    <include refid="Base_Column_List" />
+    from t_fresh_activity_group
+    where codeId=#{codeId} and pv_ids=#{pvIds} and activity_id=#{activityId} 
+  </select>
+	
+   <update id="updateByKey">
+   	  update t_fresh_activity_group set
+   	  amount = #{amount,jdbcType=DECIMAL},
+      stock = #{stock,jdbcType=INTEGER},
+      sort = #{sort,jdbcType=INTEGER}
+      where id = #{id,jdbcType=INTEGER}
+   </update>  
+   
+   <update id="updateStockById">
+   	 update t_fresh_activity_group set
+   	 stock = #{stock}
+   	 where id = #{id,jdbcType=INTEGER}
+   </update>
+</mapper>

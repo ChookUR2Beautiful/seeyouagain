@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.cloud_design.dao.OrderManageDao">
+
+	<resultMap id="materialOrderMap" type="materialOrder">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="uid" property="uid" jdbcType="BIGINT" />
+		<result column="order_amount" property="orderAmount" jdbcType="DECIMAL" />
+		<result column="balance" property="balance" jdbcType="DECIMAL" />
+		<result column="freight" property="freight" jdbcType="DECIMAL" />
+		<result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+		<result column="trade_no" property="tradeNo" jdbcType="VARCHAR" />
+		<result column="out_trade_no" property="outTradeNo" jdbcType="VARCHAR" />
+		<result column="third_uid" property="thirdUid" jdbcType="VARCHAR" />
+		<result column="pay_type" property="payType" jdbcType="VARCHAR" />
+		<result column="pay_time" property="payTime" jdbcType="TIMESTAMP" />
+		<result column="delivery_address" property="deliveryAddress"
+			jdbcType="VARCHAR" />
+		<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+		<result column="consignee" property="consignee" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="pay_status" property="payStatus" jdbcType="INTEGER" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="device_type" property="deviceType" jdbcType="INTEGER" />
+		<result column="leave_note" property="leaveNote" jdbcType="VARCHAR" />
+		<result column="type" property="type" jdbcType="TIMESTAMP" />
+		<result column="sale_price" property="salePrice" jdbcType="DECIMAL" />
+		<result column="nums" property="nums" jdbcType="INTEGER" />
+		<result column="title" property="title" jdbcType="VARCHAR" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+		<result column="pic_url" property="url" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="material_id" property="materialId" jdbcType="BIGINT" />
+		<result column="supplier_id" property="supplierId" jdbcType="VARCHAR" />
+		<result column="post_company" property="postCompany" jdbcType="VARCHAR" />
+		<result column="description" property="description" jdbcType="VARCHAR" />
+		<result column="courier_number" property="courierNumber" jdbcType="VARCHAR" />
+		<result column="designer" property="designer" jdbcType="BIGINT" />
+		<result column="userName" property="userName" jdbcType="VARCHAR" />
+		<result column="endUrl" property="endUrl" jdbcType="VARCHAR" />
+		<result column="startUrl" property="startUrl" jdbcType="VARCHAR" />
+		<result column="version_lock" property="version" jdbcType="BIGINT" />
+	</resultMap>
+	
+	<resultMap type="afterSale" id="afterSale">
+	<id column="id" property="id" jdbcType="BIGINT" />
+	<result column="order_no" property="orderNo" jdbcType="VARCHAR"/>
+	<result column="deal_type" property="dealType" jdbcType="VARCHAR"/>
+	<result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+	<result column="create_time" property="updateTime" jdbcType="TIMESTAMP"/>
+	</resultMap>
+	
+	 <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.cloud_design.entity.CommonMaterial">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="material_id" jdbcType="BIGINT" property="materialId" />
+    <result column="material_carousel_id" jdbcType="BIGINT" property="materialCarouselId" />
+    <result column="pic_url" jdbcType="VARCHAR" property="picUrl" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="order_val" jdbcType="INTEGER" property="orderVal" />
+    <result column="creater" jdbcType="VARCHAR" property="creater" />
+    <result column="updater" jdbcType="VARCHAR" property="updater" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="font_coordinate" jdbcType="VARCHAR" property="fontCoordinate" />
+    <result column="img_coordinate" jdbcType="VARCHAR" property="imgCoordinate" />
+    <result column="img_size" jdbcType="VARCHAR" property="imgSize" />
+    <result column="font_size" jdbcType="VARCHAR" property="fontSize" />
+    <result column="font" jdbcType="VARCHAR" property="font" />
+    <result column="font_num" jdbcType="INTEGER" property="fontNum" />
+    <result column="font_text" jdbcType="VARCHAR" property="fontText" />
+    <result column="img_type" jdbcType="VARCHAR" property="imgType" />
+  </resultMap>
+	
+	<sql id="materialOrder_column_list">
+		id,uid,designer,startUrl,endUrl,order_amount,balance,freight,pay_status,order_no,trade_no,out_trade_no,third_uid,pay_type,pay_time,material_id,IFNULL(version_lock,0) version_lock,post_company,description,courier_number,
+		delivery_address,mobile,consignee,status,DATE_FORMAT(create_time,'%Y-%m-%d %H:%i:%s') create_time,device_type,leave_note,type,sale_price,nums,title,remark,pic_url,name,supplier_id,userName
+	</sql>
+	
+	<sql id="common_material">
+    id, material_id, material_carousel_id, pic_url, remark, order_val, creater, updater, 
+    create_time, update_time, type, font_coordinate, img_coordinate, img_size, font_size, 
+    font, font_num, font_text, img_type
+  </sql>
+	
+	<!-- 获取物料订单列表 -->
+	<select id="getList" parameterType="materialOrder" resultMap="materialOrderMap">
+		SELECT 
+		<include refid="materialOrder_column_list"/>
+		FROM 
+		(SELECT d.*,m.nums,m.title,m.remark,m.sale_price,dm.pic_url,m.material_id,dm.supplier_id,s.name,u.name userName FROM d_order d
+		LEFT JOIN d_order_material m ON d.order_no=m.order_no
+		LEFT JOIN d_material dm ON m.`material_id` = dm.id
+		LEFT JOIN d_supplier s ON s.id = dm.supplier_id 
+		LEFT JOIN d_user u ON d.uid=u.id
+		WHERE d.type = '001'
+		UNION ALL
+		SELECT d.*,NULL nums,m.title,m.remark,NULL sale_price,NULL material_id,NULL pic_url,NULL supplier_id,NULL NAME,u.name userName FROM d_order d
+		LEFT JOIN d_order_material_customize m ON d.order_no=m.order_no
+		LEFT JOIN d_user u ON d.uid=u.id
+		WHERE d.type = '002') t
+		WHERE 1=1
+		<if test="type != null and type !=''">
+		AND type = #{type}
+		</if>
+		<if test="status != null">
+		<if test="status == 6">
+		AND status IN (6,9)
+		</if>
+		<if test="status != 6">
+		AND status = #{status}
+		</if>
+		</if>
+		<if test="status == null">
+		AND status != 8
+		</if>
+		<if test="orderNo != null and orderNo != ''">
+		AND order_no = #{orderNo}
+		</if>
+		<if test="consignee != null and consignee != ''">
+		AND consignee = #{consignee}
+		</if>
+		<if test="createTimeStr != null and createTimeStr != ''">
+		AND create_time &gt;= #{createTimeStr}
+		</if>
+		<if test="createTimeEndStr != null and createTimeEndStr != ''">
+		AND create_time &lt;= #{createTimeEndStr}
+		</if>
+		<if test="mobile != null and mobile != ''">
+		AND mobile = #{mobile}
+		</if>
+		ORDER BY t.create_time DESC
+		<if test="limit != -1">
+		LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<!-- 统计订单总数 -->
+	<select id="count" parameterType="materialOrder" resultType="long">
+		SELECT COUNT(1) count
+		FROM d_order
+		WHERE 1=1
+		<if test="type != null and type !=''">
+		AND type = #{type}
+		</if>
+		<if test="status != null">
+		<if test="status == 6">
+		AND status IN (6,9)
+		</if>
+		<if test="status != 6">
+		AND status = #{status}
+		</if>
+		</if>
+		<if test="status == null">
+		AND status != 8
+		</if>
+		<if test="orderNo != null and orderNo != ''">
+		AND order_no = #{orderNo}
+		</if>
+		<if test="consignee != null and consignee != ''">
+		AND consignee = #{consignee}
+		</if>
+		<if test="createTimeStr != null and createTimeStr != ''">
+		AND create_time &gt;= #{createTimeStr}
+		</if>
+		<if test="createTimeEndStr != null and createTimeEndStr != ''">
+		AND create_time &lt;= #{createTimeEndStr}
+		</if>
+		<if test="mobile != null and mobile != ''">
+		AND mobile = #{mobile}
+		</if>
+	</select>
+	
+	<!-- 更新订单 -->
+	<update id="update" parameterType="materialOrder">
+	UPDATE d_order
+	SET version_lock = version_lock+1
+	<if test="orderAmount != null">
+	,order_amount = #{orderAmount}
+	</if>
+	WHERE order_no = #{orderNo}
+	AND version_lock = #{version}
+	</update>
+	
+	<!-- 更新物料订单初稿路径 -->
+	<update id="updateStartUrl" parameterType="materialOrder">
+	UPDATE d_order
+	SET startUrl = #{startUrl}
+	WHERE order_no = #{orderNo}
+	</update>
+	
+	<!-- 删除订单 -->
+	<update id="delete" parameterType="materialOrder">
+	UPDATE d_order
+	SET status = 8
+	WHERE order_no = #{orderNo}
+	</update>
+	
+	<!-- 更新定制订单定制状态 -->
+	<update id="updateCustomizeMaterial" parameterType="materialOrder">
+	UPDATE d_order_material_customize
+	SET state = '002'
+	WHERE order_no = #{orderNo}
+	</update>
+	
+	<!-- 更新订单状态为已发货 -->
+	<update id="deliverUpdate" parameterType="materialOrder">
+	UPDATE d_order
+	SET status = 4
+	<if test="description != null">
+	,description = #{description}
+	</if>
+	<if test="postCompany != null">
+	,post_company = #{postCompany}
+	</if>
+	<if test="courierNumber != null">
+	,courier_number = #{courierNumber}
+	</if>
+	WHERE order_no = #{orderNo}
+	</update>
+	
+	<!-- 更新订单状态 -->
+	<update id="updateOrderStatus">
+		UPDATE d_order
+		SET status = #{status}
+		WHERE order_no = #{orderNo}
+	</update>
+	
+	<!-- 插入售后记录 -->
+	<insert id="addAfterSale" parameterType="afterSale">
+	INSERT INTO d_order_after_sale(order_no,create_time,update_time)
+	 VALUES(#{orderNo},#{createTime},#{updateTime})
+	</insert>
+	
+	<!-- 更新售后记录 -->
+	<update id="updateAfterSale" parameterType="afterSale">
+		UPDATE d_order_after_sale
+		SET update_time = #{updateTime}
+		<if test="state != null and state != ''">
+		,state = #{state}
+		</if>
+		<if test="dealType != null and dealType != ''">
+		,deal_type = #{dealType}
+		</if>
+		<if test="amount != null and amount != ''">
+		,amount = #{amount}
+		</if>
+		<if test="plan != null and plan != ''">
+		,plan = #{plan}
+		</if>
+		WHERE order_no = #{orderNo}
+	</update>
+	
+	<!-- 根据订单号获取售后记录 -->
+	<select id="getAfterSale" resultType="afterSale">
+		SELECT id,order_no,state,deal_type,amount,plan,create_time,update_time
+		FROM d_order_after_sale
+		WHERE order_no = #{0}
+	</select>
+	
+	<!-- 查询订单物料详情 -->
+	<select id="getCommonMaterial" resultType="com.xmniao.xmn.core.cloud_design.entity.CommonMaterial">
+		SELECT m.id,m.order_no orderNo,m.nums,m.title,m.material_attr_group_val 'group' ,d.create_time createTime,IFNULL(d.order_amount,0.00) amount,IFNULL(d.freight,0.00) freight,d.balance,d.type
+		FROM d_order d
+		LEFT JOIN d_order_material m ON d.order_no =m.order_no
+		WHERE d.order_no = #{orderNo}
+	</select>
+	
+	<!-- 查询定制订单物料详情 -->
+	<select id="getCustomizeMaterial" resultType="com.xmniao.xmn.core.cloud_design.entity.CommonMaterial">
+		SELECT order_no orderNo,title,remark,spec_json jsonString,finish_time finishTime
+		FROM d_order_material_customize
+		WHERE order_no = #{orderNo}
+	</select>
+	
+	<!-- 查询物料订相册-->
+	<select id="getCommonUrls" resultType="com.xmniao.xmn.core.cloud_design.entity.MaterialGroup">
+		SELECT c.id FROM d_order_material m
+		LEFT JOIN d_order_material_carousel c ON m.id = c.order_material_id
+		WHERE m.order_no=#{orderNo}
+	</select>
+	
+	<select id="getPicUrls" resultType="com.xmniao.xmn.core.cloud_design.entity.CommonMaterialPics">
+		SELECT s.pic_url picUrl,s.type,s.font_coordinate fontCoordinate,s.img_coordinate imgCoordinate,s.img_size imgSize,s.font_size fontSize, 
+    	s.font font,s.font_num fontNum,s.font_text fontText,s.img_type imgType
+		FROM d_order_material_carousel c
+		LEFT JOIN d_order_material_carousel_source s ON c.id = s.material_carousel_id 
+		WHERE c.id= #{0}
+	</select>
+	
+	<!-- 查询定制订单图片 -->
+	<select id="getCustomizeUrls" resultType="string">
+		SELECT cc.pic_url
+		FROM d_order_material_customize c
+		LEFT JOIN d_order_material_customize_carousel cc ON c.id =cc.customize_material_id
+		WHERE c.order_no = #{orderNo}
+	</select>
+	
+	<!-- 更新设计信息 -->
+	<update id="saveMaterialPic"  parameterType="materialOrder">
+		UPDATE d_order
+		SET designer =#{designer}
+		<if test="startUrl != null and startUrl !=''">
+		,startUrl =#{startUrl}
+		</if>
+		<if test="endUrl != null and endUrl !=''">
+		,endUrl =#{endUrl}
+		</if>
+		WHERE order_no = #{orderNo}
+	</update>
+</mapper>

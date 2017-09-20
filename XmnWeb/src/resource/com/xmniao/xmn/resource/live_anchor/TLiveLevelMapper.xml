@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TLiveLevelDao" >
+  <parameterMap type="LiveLevel" id="liveLevel" />
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.live_anchor.entity.TLiveLevel" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="level_name" property="levelName" jdbcType="VARCHAR" />
+    <result column="level_income" property="levelIncome" jdbcType="DECIMAL" />
+    <result column="float_performance" property="floatPerformance" jdbcType="DECIMAL" />
+    <result column="top_income" property="topIncome" jdbcType="DECIMAL" />
+    <result column="gift_allot" property="giftAllot" jdbcType="DECIMAL" />
+    <result column="percent_complete" property="percentComplete" jdbcType="INTEGER" />
+    <result column="percent_complete_80" property="percentComplete80" jdbcType="INTEGER" />
+    <result column="percent_complete_60" property="percentComplete60" jdbcType="INTEGER" />
+    <result column="percent_complete_40" property="percentComplete40" jdbcType="INTEGER" />
+    <result column="live_hours" property="liveHours" jdbcType="DOUBLE" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, level_name, level_income, float_performance, top_income, gift_allot, percent_complete, 
+    percent_complete_80, percent_complete_60, percent_complete_40, live_hours, create_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from b_live_level
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from b_live_level
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveLevel" >
+    insert into b_live_level (id, level_name, level_income, 
+      float_performance, top_income, gift_allot, 
+      percent_complete, percent_complete_80, percent_complete_60, 
+      percent_complete_40, live_hours, create_time, update_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{levelName,jdbcType=VARCHAR}, #{levelIncome,jdbcType=DECIMAL}, 
+      #{floatPerformance,jdbcType=DECIMAL}, #{topIncome,jdbcType=DECIMAL}, #{giftAllot,jdbcType=DECIMAL}, 
+      #{percentComplete,jdbcType=INTEGER}, #{percentComplete80,jdbcType=INTEGER}, #{percentComplete60,jdbcType=INTEGER}, 
+      #{percentComplete40,jdbcType=INTEGER}, #{liveHours,jdbcType=DOUBLE}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveLevel" >
+    insert into b_live_level
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="levelName != null" >
+        level_name,
+      </if>
+      <if test="levelIncome != null" >
+        level_income,
+      </if>
+      <if test="floatPerformance != null" >
+        float_performance,
+      </if>
+      <if test="topIncome != null" >
+        top_income,
+      </if>
+      <if test="giftAllot != null" >
+        gift_allot,
+      </if>
+      <if test="percentComplete != null" >
+        percent_complete,
+      </if>
+      <if test="percentComplete80 != null" >
+        percent_complete_80,
+      </if>
+      <if test="percentComplete60 != null" >
+        percent_complete_60,
+      </if>
+      <if test="percentComplete40 != null" >
+        percent_complete_40,
+      </if>
+      <if test="liveHours != null" >
+        live_hours,
+      </if>      
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="levelName != null" >
+        #{levelName,jdbcType=VARCHAR},
+      </if>
+      <if test="levelIncome != null" >
+        #{levelIncome,jdbcType=DECIMAL},
+      </if>
+      <if test="floatPerformance != null" >
+        #{floatPerformance,jdbcType=DECIMAL},
+      </if>
+      <if test="topIncome != null" >
+        #{topIncome,jdbcType=DECIMAL},
+      </if>
+      <if test="giftAllot != null" >
+        #{giftAllot,jdbcType=DECIMAL},
+      </if>
+      <if test="percentComplete != null" >
+        #{percentComplete,jdbcType=INTEGER},
+      </if>
+      <if test="percentComplete80 != null" >
+        #{percentComplete80,jdbcType=INTEGER},
+      </if>
+      <if test="percentComplete60 != null" >
+        #{percentComplete60,jdbcType=INTEGER},
+      </if>
+      <if test="percentComplete40 != null" >
+        #{percentComplete40,jdbcType=INTEGER},
+      </if>
+      <if test="liveHours != null" >
+        #{liveHours,jdbcType=DOUBLE},
+      </if>      
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveLevel" >
+    update b_live_level
+    <set >
+      <if test="levelName != null" >
+        level_name = #{levelName,jdbcType=VARCHAR},
+      </if>
+      <if test="levelIncome != null" >
+        level_income = #{levelIncome,jdbcType=DECIMAL},
+      </if>
+      <if test="floatPerformance != null" >
+        float_performance = #{floatPerformance,jdbcType=DECIMAL},
+      </if>
+      <if test="topIncome != null" >
+        top_income = #{topIncome,jdbcType=DECIMAL},
+      </if>
+      <if test="giftAllot != null" >
+        gift_allot = #{giftAllot,jdbcType=DECIMAL},
+      </if>
+      <if test="percentComplete != null" >
+        percent_complete = #{percentComplete,jdbcType=INTEGER},
+      </if>
+      <if test="percentComplete80 != null" >
+        percent_complete_80 = #{percentComplete80,jdbcType=INTEGER},
+      </if>
+      <if test="percentComplete60 != null" >
+        percent_complete_60 = #{percentComplete60,jdbcType=INTEGER},
+      </if>
+      <if test="percentComplete40 != null" >
+        percent_complete_40 = #{percentComplete40,jdbcType=INTEGER},
+      </if>
+      <if test="liveHours != null" >
+        live_hours = #{liveHours,jdbcType=DOUBLE},
+      </if>      
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveLevel" >
+    update b_live_level
+    set level_name = #{levelName,jdbcType=VARCHAR},
+      level_income = #{levelIncome,jdbcType=DECIMAL},
+      float_performance = #{floatPerformance,jdbcType=DECIMAL},
+      top_income = #{topIncome,jdbcType=DECIMAL},
+      gift_allot = #{giftAllot,jdbcType=DECIMAL},
+      percent_complete = #{percentComplete,jdbcType=INTEGER},
+      percent_complete_80 = #{percentComplete80,jdbcType=INTEGER},
+      percent_complete_60 = #{percentComplete60,jdbcType=INTEGER},
+      percent_complete_40 = #{percentComplete40,jdbcType=INTEGER},
+      live_hours = #{liveHours,jdbcType=DOUBLE},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+    
+  <!-- 自定义查询数据区域 -->
+  
+  <!-- 商家列表查询条件 -->
+  <sql id="baseSellerCondition">
+      <if test="id != null" >
+          AND t.id = #{id}
+      </if>
+      <if test="createTime != null" >
+        AND t.create_time = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="updateTime != null" >
+        AND t.update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+      
+  </sql>  
+  
+  <select id="countLiveLevel" resultType="Long" parameterMap="liveLevel">
+		SELECT COUNT(1) FROM b_live_level t
+		<where>
+			1=1
+			<include refid="baseSellerCondition" />
+		</where>
+  </select>
+  
+   <!-- 主播等级列表 -->
+   <select id="getLiveLevelList" resultMap="BaseResultMap" parameterMap="liveLevel">
+		SELECT
+		<include refid="Base_Column_List" />
+		from b_live_level t
+		<where>
+			1 = 1
+			<include refid="baseSellerCondition" />
+			<if test="levelName !=null and '' != levelName">
+				AND t.level_name LIKE '%${levelName}%'
+			</if>
+		</where>
+		ORDER BY t.update_time DESC, t.id DESC
+
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit}, #{limit}
+		</if>
+	</select>
+	
+			<!-- 校验帐号Account唯一性 -->
+	<select id="checkLevelName" resultType="Long" parameterType="String">
+		SELECT COUNT(tt.level_name)
+		FROM(
+			SELECT t.level_name
+			FROM 
+			b_live_level t 
+			WHERE t.level_name=#{levelName} 
+		) tt
+	</select>
+
+
+	<select id="getLiveLevelDetail" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from b_live_level
+		<where>
+			1 = 1
+			AND level_name=#{levelName} 
+		</where>
+	</select>
+  
+  	
+  
+</mapper>

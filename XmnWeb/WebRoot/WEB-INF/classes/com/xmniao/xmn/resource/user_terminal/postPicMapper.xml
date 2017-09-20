@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.user_terminal.dao.TPostPicDao">
+
+	<parameterMap type="TPostPic" id="tPostPic" />
+	
+	<resultMap type="TPostPic" id="tPostPicMap">	
+		<result column="id" property="id" />
+		<result column="tid" property="tid" />
+		  <result column="picname" property="picname" />
+		  <result column="picurl" property="picurl" />
+		  <result column="picsurl" property="picsurl" />
+		<result column="sdate" property="sdate" />	
+	</resultMap>
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_post_pic
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						id,
+						tid,
+						picname,
+						picurl,
+						picsurl,
+						sdate,								
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.id},
+						 #{item.tid},
+						 #{item.picname},
+						 #{item.picurl},
+						 #{item.picsurl},
+						 #{item.sdate},					
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" parameterMap="tPostPic" >
+		INSERT INTO t_post_pic
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					id,
+				</if>
+			 	<if test=" null != tid">
+					tid,
+				</if>
+				<if test=" null != picname and '' != picname ">
+					picname,
+				</if>
+			 	<if test=" null != picurl and '' != picurl ">
+					picurl,
+				</if>			 					
+			 	<if test=" null != picsurl and '' != picsurl ">
+					picsurl,
+				</if>			 	
+			 	<if test=" null != sdate">
+					sdate,
+				</if>			 	
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					 	#{id},
+				</if>
+			 	<if test=" null != tid">
+					 	#{tid},
+				</if>				
+				<if test=" null != picname and '' != picname ">
+					 	#{picname},
+				</if>
+			 	<if test=" null != picurl and '' != picurl ">
+					 	#{picurl},
+				</if>
+			 	<if test=" null != picsurl and '' != picsurl ">
+					 	#{picsurl},
+				</if>
+			   <if test=" null != sdate">
+					 	#{sdate},
+				</if>			 				 	
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_post_pic WHERE id IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterMap="tPostPic">
+		UPDATE t_post_pic
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != id">
+					id = #{id},
+				</if>
+				<if test=" null != tid">
+					tid = #{tid},
+				</if>	
+				<if test=" null != picname and '' != picname ">
+					picname = #{picname},
+				</if>	
+				<if test=" null != picurl and '' != picurl ">
+					picurl = #{picurl},
+				</if>
+				<if test=" null != picsurl and '' != picsurl ">
+					picsurl = #{picsurl},
+				</if>						
+				<if test=" null != sdate">
+					sdate = #{sdate},
+				</if>				
+			</trim>
+		</set>
+		<where>
+			<if test="null != id and '' != id">
+				id = #{id}
+			</if>
+		</where>
+	</update>
+	
+	<select id="getList" resultMap="tPostPicMap" parameterMap="tPostPic">
+		SELECT * FROM t_post_pic
+		<where>
+			1=1
+			<if test=" null != id">
+				AND id = #{id}
+			</if>
+			<if test=" null != tid">
+				AND tid = #{tid}
+			</if>			
+			<if test=" null != picname and '' != picname ">
+				AND picname LIKE '%${picname}%'
+			</if>			
+			<if test=" null != picurl and '' != picurl ">
+				AND picurl LIKE '%${picurl}%'
+			</if>
+			<if test=" null != picsurl and '' != picsurl ">
+				AND picsurl LIKE '%${picsurl}%'
+			</if>			
+			<if test=" null != sdate ">
+				AND sdate = #{sdate}
+			</if>			
+		</where>
+			ORDER BY id DESC 
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="tPostPic">
+		SELECT COUNT(*) FROM t_post_pic
+		<where>
+			1=1
+			<if test=" null != id">
+				AND id = #{id}
+			</if>
+			<if test=" null != tid">
+				AND tid = #{tid}
+			</if>			
+			<if test=" null != picname and '' != picname ">
+				AND picname LIKE '%${picname}%'
+			</if>			
+			<if test=" null != picurl and '' != picurl ">
+				AND picurl LIKE '%${picurl}%'
+			</if>
+			<if test=" null != picsurl and '' != picsurl ">
+				AND picsurl LIKE '%${picsurl}%'
+			</if>			
+			<if test=" null != sdate ">
+				AND sdate = #{sdate}
+			</if>				
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Integer">
+		SELECT Max(id) AS VALUE FROM t_post_pic
+	</select>
+	
+	<select id="getObject" resultMap="tPostPicMap" parameterType="Long">
+		SELECT * FROM t_post_pic WHERE id = #{0}
+	</select>
+	<select id="getListpic" resultMap="tPostPicMap" parameterType="Long">
+		SELECT * FROM t_post_pic WHERE tid = #{0}
+	</select>
+</mapper>

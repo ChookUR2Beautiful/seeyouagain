@@ -1,0 +1,130 @@
+/*login-html-2*/
+.login-html .wrap {
+	width: 333px;
+	height: 500px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin: -250px 0 0 -162px;
+}
+
+.login-html {
+	background: url(../images/login-bg.jpg) top center no-repeat #2A416A;
+	background-size: 100%;
+}
+
+.login-html .logo .img {
+	width: 120px;
+	height: 120px;
+	background: #B96060;
+	margin: 0 auto;
+	text-align: center;
+	border: 2px solid #FFF;
+	overflow: hidden;
+	-moz-border-radius: 100px;
+	-webkit-border-radius: 100px;
+	border-radius: 100px;
+}
+
+.login-html .logo .img img {
+	width: 90px;
+	height: 90px;
+	overflow: hidden;
+	margin: 14px auto;
+}
+
+.login-html .logo h1 {
+	text-align: center;
+	color: #FFF;
+	padding: 20px 0 0;
+}
+
+.login-html .login {
+	padding: 40px 0 0;
+}
+
+.login-html .login .box label {
+	width: 333px;
+	height: 44px;
+	display: block;
+	background: #FFF;
+	margin: 0 0 20px;
+	overflow: hidden;
+}
+
+.login-html .login .box label.code {
+	background: none;
+}
+
+.login-html .login .box label span {
+	display: block;
+	width: 50px;
+	padding: 0 0 0 10px;
+	text-align: right;
+	float: left;
+	line-height: 44px;
+	color: #666;
+}
+
+.login-html .login .box label input {
+	width: 234px;
+	height: 14px;
+	float: left;
+	border: none;
+	padding: 15px;
+}
+
+.login-html .login .box label.code span {
+	background: #FFF;
+}
+
+.login-html .login .box label.code input {
+	width: 124px;
+}
+
+.login-html .login .box label img {
+	width: 90px;
+	height: 44px;
+	display: block; /* padding:6px; */
+	background: #FFF;
+	float: right;
+	cursor: pointer;
+}
+
+.login-html .login .forget {
+	padding: 15px 0 25px;
+}
+
+.login-html .login .forget span {
+	color: #FFF;
+}
+
+.login-html .login .forget a {
+	display: block;
+	float: right;
+	color: #C86E6E;
+}
+
+.login-html .login .submit input {
+	width: 333px;
+	line-height: 40px;
+	background: #C84D4D;
+	border: none;
+	color: #FFF;
+	font-size: 16px;
+	font-family: 'Microsoft Yahei', '微软雅黑';
+}
+
+.failure {
+	background: none repeat scroll 0 0 rgba(0, 0, 0, 0.1);
+	border-radius: 4px;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1) inset, 0 1px 0
+		rgba(255, 255, 255, 0.15);
+	color: #fff;
+	display: none;
+	text-align: center;
+	font-size: 13px;
+	margin: 18px 0;
+	padding: 20px;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
+}

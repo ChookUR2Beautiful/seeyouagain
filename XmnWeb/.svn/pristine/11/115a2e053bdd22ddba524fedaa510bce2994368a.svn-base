@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TLiveRobotDao" >
+
+  <resultMap id="liveRobotMap" type="com.xmniao.xmn.core.live_anchor.entity.TLiveRobot" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="robot_name" property="robotName" jdbcType="VARCHAR" />
+    <result column="avatar" property="avatar" jdbcType="VARCHAR" />
+    <result column="sex" property="sex" jdbcType="INTEGER" />
+    <result column="concern_nums" property="concernNums" jdbcType="INTEGER" />
+    <result column="give_gifts_nums" property="giveGiftsNums" jdbcType="INTEGER" />
+    <result column="rank_no" property="rankNo" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="liveRobot_column_list" >
+    id, robot_name, avatar, sex, concern_nums, give_gifts_nums, rank_no, status, create_time, 
+    update_time
+  </sql>
+  
+  <!-- Where 查询条件 -->
+  <sql id="whereSQL">
+		<if test=" null != robotName and '' != robotName">
+			AND robot_name like '%${robotName}%'
+		</if>
+  </sql>
+  
+  
+  <select id="selectById" resultMap="liveRobotMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="liveRobot_column_list" />
+    from t_live_robot
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="getList" resultMap="liveRobotMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRobot" >
+    select 
+    	<include refid="liveRobot_column_list" />
+    from t_live_robot
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+    <!-- order by update_time desc -->
+    order by id desc 
+    <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <select id="count" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRobot" >
+    select 
+    	count(1)
+    from t_live_robot
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+  </select>
+  
+  
+  <delete id="deleteById" parameterType="java.lang.Integer" >
+    delete from t_live_robot
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <delete id="delete" parameterType="Object">
+		DELETE FROM t_live_robot WHERE id IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 清除所有机器人信息 -->
+	<delete id="deleteAll" parameterType="Object">
+		DELETE FROM t_live_robot 
+	</delete>
+  
+  
+  <insert id="add" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRobot" >
+    insert into t_live_robot
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="robotName != null" >
+        robot_name,
+      </if>
+      <if test="avatar != null" >
+        avatar,
+      </if>
+      <if test="sex != null" >
+        sex,
+      </if>
+      <if test="concernNums != null" >
+        concern_nums,
+      </if>
+      <if test="giveGiftsNums != null" >
+        give_gifts_nums,
+      </if>
+      <if test="rankNo != null" >
+        rank_no,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="robotName != null" >
+        #{robotName,jdbcType=VARCHAR},
+      </if>
+      <if test="avatar != null" >
+        #{avatar,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        #{sex,jdbcType=BIT},
+      </if>
+      <if test="concernNums != null" >
+        #{concernNums,jdbcType=INTEGER},
+      </if>
+      <if test="giveGiftsNums != null" >
+        #{giveGiftsNums,jdbcType=INTEGER},
+      </if>
+      <if test="rankNo != null" >
+        #{rankNo,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  	<!-- 批量插入机器人信息 -->
+	<insert id="addBatch" parameterType="java.util.ArrayList">
+		INSERT INTO t_live_robot
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<include refid="liveRobot_column_list" /> 
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+			<!-- id, robot_name, avatar, sex, concern_nums, give_gifts_nums, rank_no, status, create_time, update_time -->
+				#{item.id},
+				#{item.robotName},
+				#{item.avatar},
+				#{item.sex},
+				#{item.concernNums},
+				#{item.giveGiftsNums},
+				#{item.rankNo},
+				#{item.status},
+				#{item.createTime},
+				#{item.updateTime}
+			</trim>
+		</foreach>
+	</insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRobot" >
+    update t_live_robot
+    <set >
+      <if test="robotName != null" >
+        robot_name = #{robotName,jdbcType=VARCHAR},
+      </if>
+      <if test="avatar != null" >
+        avatar = #{avatar,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        sex = #{sex,jdbcType=BIT},
+      </if>
+      <if test="concernNums != null" >
+        concern_nums = #{concernNums,jdbcType=INTEGER},
+      </if>
+      <if test="giveGiftsNums != null" >
+        give_gifts_nums = #{giveGiftsNums,jdbcType=INTEGER},
+      </if>
+      <if test="rankNo != null" >
+        rank_no = #{rankNo,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="getLiveRobotSum" resultType="java.lang.Integer">
+  	select count(*) from t_live_robot_view where live_record_id = #{id}
+  </select>
+  
+  <select id="getLiveRobotSum2" resultType="java.util.HashMap">
+  	 SELECT cast(t.live_record_id as CHAR) as liveRecordId,CAST(count(*) AS CHAR ) as liveRobotSum from t_live_robot_view t GROUP BY t.live_record_id
+  </select>
+  
+</mapper>

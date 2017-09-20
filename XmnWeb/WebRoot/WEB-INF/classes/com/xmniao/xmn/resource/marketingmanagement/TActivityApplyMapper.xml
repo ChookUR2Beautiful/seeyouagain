@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.marketingmanagement.dao.TActivityApplyDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.marketingmanagement.entity.TActivityApply" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="activity_id" property="activityId" jdbcType="INTEGER" />
+    <result column="eescription" property="eescription" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="reason" property="reason" jdbcType="VARCHAR" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    <result column="sdate" property="sdate" jdbcType="TIMESTAMP" />
+    <result column="edate" property="edate" jdbcType="TIMESTAMP" />
+    <result column="aname" property="activityName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, sellerid, type, activity_id, eescription, phone, status, reason, update_date, 
+    sdate, edate
+  </sql>
+  
+  <select id="getActivityApply" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    taa.*,ts.sellername
+    from t_activity_apply taa
+    LEFT JOIN t_seller ts
+    ON taa.sellerid=ts.sellerid
+    where taa.id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="getList" resultMap="BaseResultMap" parameterType="com.xmniao.xmn.core.marketingmanagement.entity.TActivityApply" >
+    SELECT 
+    	taa.*,ts.sellername,ta.aname
+    FROM t_activity_apply taa
+    LEFT JOIN t_seller ts
+    ON taa.sellerid=ts.sellerid
+    LEFT JOIN t_activity ta 
+    ON taa.activity_id=ta.aid
+    WHERE 1=1
+      <if test="sellerid != null" >
+        and taa.sellerid = #{sellerid}
+      </if>
+      <if test="type != null" >
+        and taa.type = #{type}
+      </if>
+      <if test="activityId != null" >
+        and taa.activity_id = #{activityId}
+      </if>
+      <if test="phone != null and phone != ''" >
+        and taa.phone = #{phone}
+      </if>
+      <if test="status != null" >
+        and taa.status = #{status}
+      </if>
+      <if test="activityName != null and activityName != ''" >
+        and ta.aname LIKE CONCAT("%",#{activityName},"%")
+      </if>
+      <if test="sellername != null and sellername != ''" >
+        and ts.sellername LIKE CONCAT("%",#{sellername},"%")
+      </if>
+      <if test=" null != sdateStart and '' != sdateStart">
+		AND taa.sdate&gt;= #{sdateStart}
+	  </if>
+	  <if test=" null != sdateEnd and ''!= sdateEnd">
+		AND taa.sdate&lt; DATE_ADD(#{sdateEnd}, INTERVAL 1 DAY)
+	  </if>
+	  <if test=" null != edateStart and '' != edateStart">
+		AND taa.edate&gt;= #{edateStart}
+	  </if>
+	  <if test=" null != edateEnd and ''!= edateEnd">
+		AND taa.edate&lt; DATE_ADD(#{edateEnd}, INTERVAL 1 DAY)
+	  </if>
+      <if test=" order == 1 ">
+		ORDER BY taa.sdate DESC
+	  </if>
+	  <if test=" limit != -1 ">
+		LIMIT ${(page-1)*limit},#{limit}
+	  </if>
+
+  </select>
+  
+    <select id="count" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.marketingmanagement.entity.TActivityApply" >
+   SELECT 
+    	COUNT(1)
+    FROM t_activity_apply taa
+    LEFT JOIN t_seller ts
+    ON taa.sellerid=ts.sellerid
+    LEFT JOIN t_activity ta 
+    ON taa.activity_id=ta.aid
+    WHERE 1=1
+      <if test="sellerid != null" >
+        and taa.sellerid = #{sellerid}
+      </if>
+      <if test="type != null" >
+        and taa.type = #{type}
+      </if>
+      <if test="activityId != null" >
+        and taa.activity_id = #{activityId}
+      </if>
+      <if test="phone != null and phone != ''" >
+        and taa.phone = #{phone}
+      </if>
+      <if test="status != null" >
+        and taa.status = #{status}
+      </if>
+      <if test="activityName != null and activityName != ''" >
+        and ta.aname LIKE CONCAT("%",#{activityName},"%")
+      </if>
+      <if test="sellername != null and sellername != ''" >
+        and ts.sellername LIKE CONCAT("%",#{sellername},"%")
+      </if>
+      <if test=" null != sdateStart and '' != sdateStart">
+		AND taa.sdate&gt;= #{sdateStart}
+	  </if>
+	  <if test=" null != sdateEnd and ''!= sdateEnd">
+		AND taa.sdate&lt; DATE_ADD(#{sdateEnd}, INTERVAL 1 DAY)
+	  </if>
+	  <if test=" null != edateStart and '' != edateStart">
+		AND taa.edate&gt;= #{edateStart}
+	  </if>
+	  <if test=" null != edateEnd and ''!= edateEnd">
+		AND taa.edate&lt; DATE_ADD(#{edateEnd}, INTERVAL 1 DAY)
+	  </if>
+  </select>
+  
+  <update id="updateAcivityApply" parameterType="com.xmniao.xmn.core.marketingmanagement.entity.TActivityApply" >
+    update t_activity_apply
+    <set >
+      <if test="sellerid != null" >
+        sellerid = #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="activityId != null" >
+        activity_id = #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="eescription != null" >
+        eescription = #{eescription,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="reason != null" >
+        reason = #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null" >
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sdate != null" >
+        sdate = #{sdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="edate != null" >
+        edate = #{edate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+    <update id="updateBatchByIds" parameterType="com.xmniao.xmn.core.marketingmanagement.entity.TActivityApply">
+	    update t_activity_apply
+	    <set >
+	      <if test="status != null" >
+	        status = #{status},
+	      </if>
+	      <if test="reason != null and reason !=''" >
+	        reason = #{reason},
+	      </if>
+	      <if test="edate != null" >
+	        edate = #{edate},
+	      </if>
+	    </set>
+	    where id in (${ids})
+	 </update>
+	 
+	 <select id="getListByIds" parameterType="com.xmniao.xmn.core.marketingmanagement.entity.TActivityApply" resultMap="BaseResultMap">
+		select 
+			<include refid="Base_Column_List" />
+		from t_activity_apply
+		where id in (${ids})
+	 </select> 
+	 
+</mapper>

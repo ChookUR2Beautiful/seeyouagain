@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.CommentMediaDao">
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.businessman.entity.CommentMedia">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="comment_id" jdbcType="INTEGER" property="commentId" />
+    <result column="media_type" jdbcType="INTEGER" property="mediaType" />
+    <result column="media_url" jdbcType="VARCHAR" property="mediaUrl" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, comment_id, media_type, media_url, sort, create_time
+  </sql>
+  
+  <select id="getListByCommentId" resultMap="BaseResultMap">
+  	 select 
+  	 <include refid="Base_Column_List" />
+  	  from t_experience_comment_media
+  	  where comment_id = #{commentId}
+  	  order by media_type desc,sort asc
+  </select>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_experience_comment_media
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_experience_comment_media
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.businessman.entity.CommentMedia">
+    insert into t_experience_comment_media (id, comment_id, media_type, 
+      media_url, sort, create_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{commentId,jdbcType=INTEGER}, #{mediaType,jdbcType=INTEGER}, 
+      #{mediaUrl,jdbcType=VARCHAR}, #{sort,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.businessman.entity.CommentMedia">
+    insert into t_experience_comment_media
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="commentId != null">
+        comment_id,
+      </if>
+      <if test="mediaType != null">
+        media_type,
+      </if>
+      <if test="mediaUrl != null">
+        media_url,
+      </if>
+      <if test="sort != null">
+        sort,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="commentId != null">
+        #{commentId,jdbcType=INTEGER},
+      </if>
+      <if test="mediaType != null">
+        #{mediaType,jdbcType=INTEGER},
+      </if>
+      <if test="mediaUrl != null">
+        #{mediaUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null">
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.businessman.entity.CommentMedia">
+    update t_experience_comment_media
+    <set>
+      <if test="commentId != null">
+        comment_id = #{commentId,jdbcType=INTEGER},
+      </if>
+      <if test="mediaType != null">
+        media_type = #{mediaType,jdbcType=INTEGER},
+      </if>
+      <if test="mediaUrl != null">
+        media_url = #{mediaUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null">
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.businessman.entity.CommentMedia">
+    update t_experience_comment_media
+    set comment_id = #{commentId,jdbcType=INTEGER},
+      media_type = #{mediaType,jdbcType=INTEGER},
+      media_url = #{mediaUrl,jdbcType=VARCHAR},
+      sort = #{sort,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

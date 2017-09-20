@@ -1,0 +1,339 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%
+	String path = request.getContextPath();
+	String basePath = request.getScheme() + "://"
+			+ request.getServerName() + ":" + request.getServerPort()
+			+ path + "/";
+%>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="zh-cn">
+<head>
+<base href="<%=basePath%>">
+<title>添加连锁店信息</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<link href="<%=path%>/resources/web/css/view.css" rel="stylesheet">
+<link href="<%=path%>/resources/zui/css/zui.css" rel="stylesheet">
+<link href="<%=path%>/resources/zui/lib/chosen/chosen.css"
+	rel="stylesheet">
+<link
+	href="<%=path%>/resources/zui/lib/datetimepicker/datetimepicker.min.css"
+	rel="stylesheet">
+<link href="<%=path%>/resources/webuploader/webuploader.css"
+	rel="stylesheet">
+<link href="<%=path%>/resources/upload/upload.css" rel="stylesheet">
+<style type="text/css">
+td {
+	border-bottom: none !important;
+}
+
+.bannerTitleCss {
+	width: 8% !important;
+}
+
+.bannerContentCss {
+	width: 23% !important;
+}
+</style>
+</head>
+<body
+	style="overflow-x: hidden;overflow-y: auto;min-width: 1024px;background:#EEE"
+	class="doc-views with-navbar">
+	<div id="main">
+		<div class="example">
+			<div class="panel panel-primary">
+				<div class="panel-heading">基本信息</div>
+				<div class="panel-body">
+					<form id="editBannerForm">
+						<input type="hidden" name="sellerSubsidyToken"
+							value="${sellerSubsidyToken}"> <input type="hidden"
+							id="isType" name="isType" value="${isType}" /> <input
+							type="hidden" id="bannerId" name="id" value="${banner.id}" />
+						<table class="table" style="width: 100%;">
+							<tr>
+								<td class="bannerTitleCss" style="text-align: right;">
+									<h5>导航图位置信息:</h5>
+								</td>
+								<td class="bannerContentCss"><select id="position"
+									name="position" initValue="${banner.position}"
+									class="form-control" style="width:60%;">
+										<option value="">请选择</option>
+										<%--
+										<option value="INDEX_001">首页上</option>
+										<option value="INDEX_002">首页中</option>
+										<option value="INDEX_003">首页下</option>
+										<option value="FRESH_001">生鲜页上</option>
+										<option value="FRESH_002">生鲜页中</option>
+										<option value="FRESH_003">生鲜页下</option>
+										 --%>
+										<option value="1">发现美食</option>
+										<option value="2">积分商城</option>
+										<option value="3">寻蜜客主页</option>
+										<option value="4">直播首页</option>
+										<option value="100">商家经营页</option>
+										<option value="5">积分超市竞拍活动</option>
+										<option value="6">积分超市夺宝活动</option>
+										<option value="7">首页活动</option>
+										<option value="8">充值界面</option>
+										<option value="9">我的首页</option>
+										<option value="10">脉宝云店</option>
+								</select></td>
+								<td class="bannerTitleCss" style="text-align: right;">
+									<h5>上线状态:</h5>
+								</td>
+								<td class="bannerContentCss"><select id="status"
+									name="status" initValue="${banner.status}" class="form-control"
+									style="width:60%;">
+										<option value="">请选择</option>
+										<option value="0">待上线</option>
+										<option value="1">已上线</option>
+										<option value="2">已下线</option>
+								</select></td>
+								<td class="bannerTitleCss" style="text-align: right;">
+									<h5>导航图描述:</h5>
+								</td>
+								<td class="bannerContentCss"><input type="text"
+									class="form-control" name="remarks" value="${banner.remarks}"
+									style="width:75%;"></td>
+
+							</tr>
+							<tr>
+								<td class="bannerTitleCss" style="text-align: right;">
+									<h5>展示风格:</h5>
+								</td>
+								<td class="bannerContentCss"><select id="bannerStyle"
+									name="bannerStyle" initValue="${banner.bannerStyle}"
+									class="form-control" style="width:60%;">
+										<option value="">请选择</option>
+										<option value="0">图片横排一格</option>
+										<option value="1">图片横排两格</option>
+										<option value="2">轮播图</option>
+								</select></td>
+								<td class="bannerTitleCss" style="text-align: right;">
+									<h5>排序:</h5>
+								</td>
+								<td class="bannerContentCss"><input name="sort"
+									value="${banner.sort}" placeholder="请输入整数" class="form-control"
+									style="width:59%;" /></td>
+								<td class="bannerTitleCss" style="text-align: right;">
+									<h5>区域：</h5>
+								</td>
+								<td class="bannerContentCss" style="padding:0px 8px">
+									<table width="100%" id="areaTable">
+										<tr>
+											<td style="padding:3px 8px"><label><h5>
+														&nbsp;&nbsp;全国：<input type="radio" name="isAll"
+															id="allArea" value="1"
+															<c:if test="${banner.isAll == '1'}"> checked="checked"</c:if>>
+													</h5></label></td>
+											<td style="padding:3px 8px"><label><h5>
+														&nbsp;&nbsp;特定区域：<input type="radio" name="isAll"
+															id="specifyArea" value="0"
+															<c:if test="${banner.isAll == '0'}">checked="checked"</c:if>>
+													</h5></label></td>
+											<td></td>
+										</tr>
+										<c:if
+											test="${ (!empty banner.province) && banner.isAll==0}">
+											<tr>
+												<td colspan="3">
+													<div class="input-group" id="areaInfo"
+														style="width: 80%;float:left;"
+														initValue="${banner.city}"></div>
+												</td>
+											</tr>
+										</c:if>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td></td>
+							</tr>
+							<tr>
+								<td class="bannerTitleCss" style="text-align: right;"></td>
+								<td class="bannerContentCss">
+									<div id="pic1Div" style="display: none">
+										<div class="input-group">
+											<input type="hidden" class="form-control" id="picURL1"
+												name="picurl1" value="${banner.picurl1}" />
+											<div id="pic1"
+												style="width: 130px; float: left;margin-left: 40%"></div>
+										</div>
+										<table>
+											<tr>
+												<td align="right"><span>导航图内容类型:</span></td>
+												<td><select id="type1" name="type1"
+													initValue="${banner.type1}" class="form-control"
+													style="width:96%;">
+														<option value="">请选择</option>
+														<option disabled="disabled" value="1">套餐列表</option>
+														<option disabled="disabled" value="2">套餐详情</option>
+														<option value="3" <c:if test="${banner.type1==3}">selected</c:if>>外部链接</option>
+														<option value="4" <c:if test="${banner.type1==4}">selected</c:if>>商家详情页</option>
+														<option value="5" <c:if test="${banner.type1==5}">selected</c:if>>积分商品详情</option>
+														<option value="6" <c:if test="${banner.type1==6}">selected</c:if>>寻蜜客主页</option>
+														<option value="7" <c:if test="${banner.type1==7}">selected</c:if>>积分超市主页</option>
+														<option value="8" <c:if test="${banner.type1==8}">selected</c:if>>直播列表</option>
+														<option value="9" <c:if test="${banner.type1==9}">selected</c:if>>直播间</option>
+														<option value="10" <c:if test="${banner.type1==10}">selected</c:if>>预告详情</option>
+														<option value="11" <c:if test="${banner.type1==11}">selected</c:if>>不跳转</option>
+												</select></td>
+											</tr>
+											<tr id="content1Tr">
+												<td align="right"><span>导航图内容:</span></td>
+												<td><input type="text" class="form-control"
+													style="width:95%;" id="content1" name="content1"
+													value="${banner.content1}" placeholder=""></td>
+											</tr>
+											
+											<tr id="recordId1Tr" style="display:none;">
+												<td align="right"><span>直播标题:</span></td>
+												<td>
+													<select class="form-control" id="recordId1" name="recordId1"
+														initValue="${banner.content1}" style="width:95%;">
+													</select> 
+												</td>
+											</tr>
+											<tr>
+												<td align="right"><span>导航图排序:</span></td>
+												<td><input type="text" class="form-control"
+													style="width:95%;" id="sort1" name="sort1"
+													value="${banner.sort1}"></td>
+											</tr>
+											<tr>
+												<td align="right"><span>是否需要登录:</span></td>
+												<td><select class="form-control" style="width:95%;"
+													name="logRequired1">
+														<option value="0"
+															<c:if test="${banner.logRequired1==0}">selected</c:if>>否</option>
+														<option value="1"
+															<c:if test="${banner.logRequired1==1}">selected</c:if>>是</option>
+												</select></td>
+											</tr>
+										</table>
+									</div>
+								</td>
+								<td class="bannerTitleCss" style="text-align: right;"></td>
+								<td class="bannerContentCss">
+									<div id="pic2Div" style="display: none">
+										<div class="input-group">
+											<input type="hidden" class="form-control" id="picURL2"
+												name="picurl2" value="${banner.picurl2}" />
+											<div id="pic2"
+												style="width: 130px; float: left;margin-left: 40%"></div>
+										</div>
+										<table>
+											<tr>
+												<td align="right"><span>导航图内容类型:</span></td>
+												<td><select id="type2" name="type2"
+													initValue="${banner.type2}" class="form-control"
+													style="width:96%;">
+														<option value="">请选择</option>
+														<option disabled="disabled" value="1">套餐列表</option>
+														<option disabled="disabled" value="2">套餐详情</option>
+														<option value="3"
+															<c:if test="${banner.type2==3}">selected</c:if>>外部链接</option>
+														<option value="4"
+															<c:if test="${banner.type2==4}">selected</c:if>>商家详情页</option>
+														<option value="5"
+															<c:if test="${banner.type2==5}">selected</c:if>>积分商品详情</option>
+														<option value="6"
+															<c:if test="${banner.type2==6}">selected</c:if>>寻蜜客主页</option>
+														<option value="7"
+															<c:if test="${banner.type2==7}">selected</c:if>>积分超市主页</option>
+														<option value="8"
+															<c:if test="${banner.type2==8}">selected</c:if>>直播列表</option>
+														<option value="9" <c:if test="${banner.type2==9}">selected</c:if>>直播间</option>
+														<option value="10" <c:if test="${banner.type2==10}">selected</c:if>>预告详情</option>
+														<option value="11" <c:if test="${banner.type2==11}">selected</c:if>>不跳转</option>
+												</select></td>
+											</tr>
+											<tr>
+												<td align="right"><span>导航图内容:</span></td>
+												<td><input type="text" class="form-control"
+													style="width:95%;" id="content2" name="content2"
+													value="${banner.content2}" placeholder=""></td>
+											</tr>
+											<tr id="recordId2Tr" style="display:none;">
+												<td align="right"><span>直播标题:</span></td>
+												<td>
+													<select class="form-control" id="recordId2" name="recordId2"
+														initValue="${banner.content2}" style="width:100%;">
+													</select> 
+												</td>
+											</tr>
+											<tr>
+												<td align="right"><span>导航图排序:</span></td>
+												<td><input type="text" class="form-control"
+													style="width:95%;" id="sort2" name="sort2"
+													value="${banner.sort2}"></td>
+											</tr>
+											<tr>
+												<td align="right"><span>是否需要登录:</span></td>
+												<td><select class="form-control" style="width:95%;"
+													name="logRequired2">
+														<option value="0"
+															<c:if test="${banner.logRequired2==0}">selected</c:if>>否</option>
+														<option value="1"
+															<c:if test="${banner.logRequired2==1}">selected</c:if>>是</option>
+												</select></td>
+											</tr>
+										</table>
+									</div>
+								</td>
+								<td class="bannerTitleCss" style="text-align: right;"></td>
+								<td class="bannerContentCss"></td>
+								<td class="bannerContentCss"></td>
+							</tr>
+							
+							<tr>
+								<td class="bannerTitleCss" style="text-align: right;"><h5>是否重点推荐：</h5></td>
+								<td><input type="checkbox" id="isEmphasis" ${banner.isEmphasis==1?'checked=checked':''}/></td>
+								<td class="bannerTitleCss" style="text-align: right;"><h5>开始时间：</h5></td>
+								<td><input type="text" id="begin_time" name="beginTime"
+									placeholder="yyyy-MM-dd hh:mm"
+									class="form-control form-datetime" style="width:41%;float:left"
+									value="<fmt:formatDate value="${banner.beginTime}" type="both" pattern="yyyy-MM-dd HH:mm"/>" readonly="readonly"/></td>
+								<td class="bannerTitleCss" style="text-align: right;"><h5>结束时间：</h5></td>
+								<td><input type="text" id="end_time" name="endTime"
+									placeholder="yyyy-MM-dd hh:mm"
+									class="form-control form-datetime" style="width:41%;float:left"
+									value="<fmt:formatDate value="${banner.endTime}" type="both" pattern="yyyy-MM-dd HH:mm"/>" readonly="readonly"/></td>
+							</tr>
+						</table>
+						<br>
+						<hr>
+						<div align="center">
+							<button class="btn btn-danger" type="submit">
+								<i class="icon-save"></i>&nbsp;保 存
+							</button>
+							&nbsp;&nbsp;
+							<button class="btn btn-warning" type="button" id="cancelId">
+								<i class="icon-reply"></i>&nbsp;取消
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		contextPath = '${pageContext.request.contextPath}'
+	</script>
+	<jsp:include page="../../common.jsp"></jsp:include>
+	<script src="<%=path%>/ux/js/searchChosen3.js"></script>
+	<script src="<%=path%>/resources/zui/lib/chosen/chosen.js"></script>
+	<script
+		src="<%=path%>/resources/zui/lib/datetimepicker/datetimepicker.min.js"></script>
+	<script src="<%=path%>/resources/webuploader/webuploader.js"></script>
+	<script src="<%=path%>/resources/upload/upload.js"></script>
+	<script src="<%=path%>/ux/js/ld2.js"></script>
+	<script src="<%=path%>/js/user_terminal/banner/addAndUpdateBanner.js"></script>
+</body>
+</html>

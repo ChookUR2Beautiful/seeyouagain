@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.cloud_design.dao.DMaterialAttrGroupDao" >
+
+  <resultMap id="materialAttrGroupMap" type="com.xmniao.xmn.core.cloud_design.entity.DMaterialAttrGroup" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="material_id" property="materialId" jdbcType="BIGINT" />
+    <result column="material_attr_ids" property="materialAttrIds" jdbcType="VARCHAR" />
+    <result column="material_attr_vals" property="materialAttrVals" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="sales" property="sales" jdbcType="INTEGER" />
+    <result column="sort_val" property="sortVal" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="materialAttrGroup_column_list" >
+    id, material_id, material_attr_ids, material_attr_vals, amount, sales,sort_val
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test=" null != materialId and '' != materialId ">
+  		AND material_id =#{materialId}
+  	</if>
+  
+  </sql>
+  
+  <select id="getList" resultMap="materialAttrGroupMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="materialAttrGroup_column_list" />
+    from d_material_attr_group
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+    ORDER BY sort_val ASC
+    <if test="limit != -1">
+    	LIMIT ${(page-1)*limit},#{limit}
+    </if>
+  </select>
+  
+  <!-- 批量插入商品物料规格分组信息 -->
+  <insert id="addBatch" parameterType="com.xmniao.xmn.core.cloud_design.entity.DMaterialAttrGroup" >
+    INSERT INTO d_material_attr_group
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <include refid="materialAttrGroup_column_list" /> 
+    </trim>
+    VALUES
+   	<foreach item="item" index="index" collection="list" separator=",">
+   		<!-- id, material_id, material_attr_ids, material_attr_vals, amount, sales,sort_val -->
+	   	<trim prefix="(" suffix=")" suffixOverrides=",">
+		        #{item.id},
+		        #{item.materialId},
+		        #{item.materialAttrIds},
+		        #{item.materialAttrVals},
+		        #{item.amount},
+		        #{item.sales},
+		        #{item.sortVal}
+	      </trim>
+     </foreach>
+  </insert>
+  
+  
+  <delete id="deleteByMaterialId" parameterType="java.lang.Long" >
+    delete from d_material_attr_group
+    where material_id = #{materialId,jdbcType=BIGINT}
+  </delete>
+  
+</mapper>

@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.manor.dao.ManorMarketTransDao" >
+  <parameterMap type="ManorMarketTrans" id="manorMarketTrans"></parameterMap>
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.manor.entity.TManorMarketTrans" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="trans_type" property="transType" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="nname" property="nname" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="trans_state" property="transState" jdbcType="INTEGER" />
+    <result column="prop_type" property="propType" jdbcType="INTEGER" />
+    <result column="prop_number" property="propNumber" jdbcType="INTEGER" />
+    <result column="unit_price" property="unitPrice" jdbcType="DOUBLE" />
+    <result column="ruling_price" property="rulingPrice" jdbcType="DOUBLE" />
+    <result column="initiate_date" property="initiateDate" jdbcType="TIMESTAMP" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, trans_type, uid, nname, phone, trans_state, prop_type, prop_number, unit_price, 
+    ruling_price, initiate_date, update_date
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_manor_market_trans
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_manor_market_trans
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.manor.entity.TManorMarketTrans" >
+    insert into t_manor_market_trans (id, trans_type, uid, 
+      nname, phone, title, trans_state, 
+      prop_type, prop_number, unit_price, 
+      ruling_price, initiate_date, update_date
+      )
+    values (#{id,jdbcType=BIGINT}, #{transType,jdbcType=INTEGER}, #{uid,jdbcType=INTEGER}, 
+      #{nname,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, #{transState,jdbcType=INTEGER}, 
+      #{propType,jdbcType=INTEGER}, #{propNumber,jdbcType=INTEGER}, #{unitPrice,jdbcType=DOUBLE}, 
+      #{rulingPrice,jdbcType=DOUBLE}, #{initiateDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.manor.entity.TManorMarketTrans" >
+    insert into t_manor_market_trans
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="transType != null" >
+        trans_type,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="nname != null" >
+        nname,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="transState != null" >
+        trans_state,
+      </if>
+      <if test="propType != null" >
+        prop_type,
+      </if>
+      <if test="propNumber != null" >
+        prop_number,
+      </if>
+      <if test="unitPrice != null" >
+        unit_price,
+      </if>
+      <if test="rulingPrice != null" >
+        ruling_price,
+      </if>
+      <if test="initiateDate != null" >
+        initiate_date,
+      </if>
+      <if test="updateDate != null" >
+        update_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="transType != null" >
+        #{transType,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="nname != null" >
+        #{nname,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="transState != null" >
+        #{transState,jdbcType=INTEGER},
+      </if>
+      <if test="propType != null" >
+        #{propType,jdbcType=INTEGER},
+      </if>
+      <if test="propNumber != null" >
+        #{propNumber,jdbcType=INTEGER},
+      </if>
+      <if test="unitPrice != null" >
+        #{unitPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="rulingPrice != null" >
+        #{rulingPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="initiateDate != null" >
+        #{initiateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.manor.entity.TManorMarketTrans" >
+    update t_manor_market_trans
+    <set >
+      <if test="transType != null" >
+        trans_type = #{transType,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="nname != null" >
+        nname = #{nname,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>      
+      <if test="transState != null" >
+        trans_state = #{transState,jdbcType=INTEGER},
+      </if>
+      <if test="propType != null" >
+        prop_type = #{propType,jdbcType=INTEGER},
+      </if>
+      <if test="propNumber != null" >
+        prop_number = #{propNumber,jdbcType=INTEGER},
+      </if>
+      <if test="unitPrice != null" >
+        unit_price = #{unitPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="rulingPrice != null" >
+        ruling_price = #{rulingPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="initiateDate != null" >
+        initiate_date = #{initiateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.manor.entity.TManorMarketTrans" >
+    update t_manor_market_trans
+    set trans_type = #{transType,jdbcType=INTEGER},
+      uid = #{uid,jdbcType=INTEGER},
+      nname = #{nname,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      title = #{title,jdbcType=VARCHAR},
+      trans_state = #{transState,jdbcType=INTEGER},
+      prop_type = #{propType,jdbcType=INTEGER},
+      prop_number = #{propNumber,jdbcType=INTEGER},
+      unit_price = #{unitPrice,jdbcType=DOUBLE},
+      ruling_price = #{rulingPrice,jdbcType=DOUBLE},
+      initiate_date = #{initiateDate,jdbcType=TIMESTAMP},
+      update_date = #{updateDate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  
+  <!-- 自定义查询专区 -->
+  
+   <!-- 市集管理列表查询条件 -->
+	<sql id="baseSellerCondition">
+		<if test="id != null">
+			AND id = #{id}
+		</if>
+		<if test="uid != null">
+			AND uid = #{uid,jdbcType=INTEGER}
+		</if>
+		<if test="transState != null">
+			AND trans_state = #{transState,jdbcType=INTEGER}
+		</if>
+        <if test="transType != null" >
+        	AND trans_type = #{transType,jdbcType=INTEGER}
+        </if>
+		<if test="initiateDate != null">
+			AND t.initiate_date = #{initiateDate,jdbcType=TIMESTAMP}
+		</if>
+		<if test="updateDate != null">
+			AND t.update_date = #{updateDate,jdbcType=TIMESTAMP}
+		</if>
+
+	</sql>  
+  
+   <!-- 市集管理列表 -->
+	<select id="getManorMarketTransList" resultMap="BaseResultMap" parameterMap="manorMarketTrans">
+		SELECT
+		t.*
+		, (SELECT COUNT(1) FROM t_manor_market_trans_dynamic tr WHERE t.id = tr.trans_id ) AS chatNumber
+		From t_manor_market_trans t
+		<where>
+			1 = 1
+			<include refid="baseSellerCondition" />
+			<if test="nname !=null and '' != nname">
+				AND nname LIKE '%${nname}%'
+			</if>
+			<if test="title !=null and '' != title">
+				AND title LIKE '%${title}%'
+			</if>
+			<if test="phone !=null and '' != phone">
+				AND phone = #{phone,jdbcType=VARCHAR}
+			</if>
+		</where>
+		ORDER BY t.update_date DESC, t.id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit}, #{limit}
+		</if>
+	</select>
+
+	<select id="countManorMarket" resultType="Long" parameterMap="manorMarketTrans">
+		SELECT
+		COUNT(1)
+		From t_manor_market_trans t
+		<where>
+			1 = 1
+			<include refid="baseSellerCondition" />
+			<if test="nname !=null and '' != nname">
+				AND nname LIKE '%${nname}%'
+			</if>
+			<if test="phone !=null and '' != phone">
+				AND phone = #{phone,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+  
+  
+</mapper>

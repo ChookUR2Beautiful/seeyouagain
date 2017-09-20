@@ -1,0 +1,802 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.marketingmanagement.dao.TActivityDao">
+
+	<parameterMap type="TActivity" id="tActivity" />
+	<parameterMap type="TGiveMoneyInfo" id="tGiveMoneyInfo" />
+
+	<resultMap type="TActivity" id="tActivityMap">
+		<result column="aid" property="aid" />
+		<result column="aname" property="aname" />
+		<result column="sname" property="sname" />
+		<result column="start_date" property="startDate" />
+		<result column="end_date" property="endDate" />
+		<result column="start_time" property="startTime" />
+		<result column="end_time" property="endTime" />
+		<result column="repel" property="repel" />
+		<result column="hit_ratio" property="hitRatio" />
+		<result column="set_way" property="setWay" />
+		<result column="rule" property="rule" />
+		<result column="eescription" property="eescription" />
+		<result column="type" property="type" />
+		<result column="is_relate" property="isRelationSeller" />
+		<result column="minMoeny" property="minMoeny" />
+		<result column="maxMoeny" property="maxMoeny" />
+		<result column="nname" property="nname" />
+		<result column="giveMoneyCount" property="giveMoneyCount" />
+		<result column="participateNum" property="participateNum" />
+		<result column="billNum" property="billNum" />
+		<result column="giveMoney" property="giveMoney" />
+		<result column="hit_ratio" property="hitRatio" />
+		<result column="set_type" property="setType" />
+	</resultMap>
+	<resultMap type="TGiveMoneyInfo" id="tGiveMoneyInfoMap">
+		<result column="aid" property="aid" />
+		<result column="bid" property="bid" />
+		<result column="nname" property="nname" />
+		<result column="genusname" property="genusname" />
+		<result column="fdate" property="fdate" />
+		<result column="baseagio" property="baseagio" />
+		<result column="money" property="money" />
+		<result column="paytype" property="paytype" />
+		<result column="isaccount" property="isaccount" />
+		<result column="giveMoney" property="giveMoney" />
+	</resultMap>
+
+	<!-- 添加营销活动 -->
+	<insert id="add" useGeneratedKeys="true" keyProperty="aid"
+		parameterMap="tActivity">
+		INSERT INTO t_activity
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test=" null != aname and '' != aname ">
+				aname,
+			</if>
+			<if test=" null != startDate ">
+				start_date,
+			</if>
+			<if test=" null != endDate ">
+				end_date,
+			</if>
+			<if test=" null != startTime ">
+				start_time,
+			</if>
+			<if test=" null != endDate ">
+				end_time,
+			</if>
+			<if test=" null != rule and '' != rule ">
+				rule,
+			</if>
+			<if test=" null != rate  and '' != rate ">
+				rate,
+			</if>
+			<if test=" null != repel  and '' != repel ">
+				repel,
+			</if>
+
+			<if test=" null != type ">
+				type,
+			</if>
+			<if test=" null != eescription and '' != eescription ">
+				eescription,
+			</if>
+			<if test=" null != hitRatio ">
+				hit_ratio,
+			</if>
+			<if test=" null != setWay ">
+				set_way,
+			</if>
+
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			<if test=" null != aname and '' != aname ">
+				#{aname},
+			</if>
+			<if test=" null != startDate ">
+				#{startDate},
+			</if>
+			<if test=" null != endDate ">
+				#{endDate},
+			</if>
+			<if test=" null != startTime ">
+				#{startTime},
+			</if>
+			<if test=" null != endTime ">
+				CONCAT(#{endTime},":59"),
+			</if>
+			<if test=" null != rule and '' != rule ">
+				#{rule},
+			</if>
+			<if test=" null != rate  and '' != rate ">
+				#{rate},
+			</if>
+			<if test=" null != repel  and '' != repel ">
+				#{repel},
+			</if>
+			<if test=" null != type ">
+				#{type},
+			</if>
+			<if test=" null != eescription and '' != eescription ">
+				#{eescription},
+			</if>
+			<if test=" null != hitRatio ">
+				#{hitRatio},
+			</if>
+			<if test=" null != setWay ">
+				#{setWay},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="update" parameterMap="tActivity">
+		UPDATE t_activity
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != aname and '' != aname ">
+					aname=#{aname},
+				</if>
+				<if test=" null != startDate ">
+					start_date=#{startDate},
+				</if>
+				<if test=" null != endDate ">
+					end_date=#{endDate},
+				</if>
+				<if test=" null != startTime ">
+					start_time=#{startTime},
+				</if>
+				<if test=" null != endTime ">
+					end_time=CONCAT(#{endTime},":59"),
+				</if>
+				<if test=" null != rule and '' != rule ">
+					rule=#{rule},
+				</if>
+				<if test=" null != rate  and '' != rate ">
+					rate=#{ratenmber},
+				</if>
+				<if test=" null != repel  and '' != repel ">
+					repel=#{repel},
+				</if>
+
+				<if test=" null != type ">
+					type=#{type},
+				</if>
+				<if test=" null != eescription">
+					eescription=#{eescription},
+				</if>
+				<if test=" null != type ">
+					type=#{type},
+				</if>
+				<if test=" null != hitRatio ">
+					hit_ratio = #{hitRatio},
+				</if>
+				<if test=" null != setWay ">
+					set_way= #{setWay},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test=" null != aid">
+				aid = #{aid}
+			</if>
+		</where>
+	</update>
+
+
+
+	<!-- 删除话题 -->
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_activity WHERE aid IN
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=") ">
+			#{item}
+		</foreach>
+	</delete>
+
+
+
+	<!-- 更新 -->
+	<update id="updateDataByAid" parameterMap="tActivity">
+		UPDATE t_seller_marketing
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != sDate  and '' != sDate ">
+					sdate = #{sDate},
+				</if>
+				<if test=" null != eDate  and '' != eDate ">
+					edate = #{eDate},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != aid and '' != aid">
+				aid = #{aid}
+			</if>
+		</where>
+	</update>
+
+	<!-- 商家上线时 查询指定活动 关联商家 -->
+	<select id="getSpecifiedActivity" resultType="Integer">
+		SELECT aid FROM
+		t_activity WHERE TYPE = 4 LIMIT 1
+	</select>
+
+	<!-- 查询所有满赠(金额/积分)活动，可以有条件过滤 -->
+	<select id="getList" resultMap="tActivityMap" parameterMap="tActivity">
+		SELECT t.*,
+		(SELECT
+		COUNT(1)
+		FROM
+		t_seller_marketing ts
+		WHERE ts.aid =
+		t.aid) isRelationSeller,
+		a.totalAmount AS giveMoneyCount,
+		a.userNum AS
+		participateNum,
+		a.billNum AS billNum
+		FROM
+		t_activity t
+		<choose>
+			<when test="type == 2">
+				LEFT JOIN v_activity_prize a
+			</when>
+			<when test="type == 7">
+				LEFT JOIN v_billfresh_activity a
+			</when>
+			<otherwise>
+				LEFT JOIN v_activity_prize a
+			</otherwise>
+		</choose>
+		ON a.aid = t.aid
+		<where>
+			1=1
+			<if test=" null != aid">
+				AND t.aid = #{aid}
+			</if>
+			<if test=" null != aname and '' != aname ">
+				AND t.aname LIKE '%${aname}%'
+			</if>
+			<if test=" null != sDateBegin and '' != sDateBegin ">
+				AND t.start_date &gt;= #{sDateBegin}
+			</if>
+			<if test=" null != eDateEnd  and '' != eDateEnd ">
+				AND t.start_date &lt;= #{eDateEnd}
+			</if>
+			<if test=" null != endDate and '' != endDate">
+				AND t.end_date = #{endDate}
+			</if>
+
+			<if test=" null != rule and '' != rule ">
+				AND t.rule LIKE '%${rule}%'
+			</if>
+			<if test=" null != eescription and '' != eescription ">
+				AND t.eescription LIKE '%${eescription}%'
+			</if>
+			<if test=" null != type ">
+				AND t.type = #{type}
+			</if>
+		</where>
+		ORDER BY t.aid DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<!-- 统计 -->
+	<select id="count" resultType="Long" parameterMap="tActivity">
+		SELECT COUNT(*)
+		FROM
+		t_activity t
+		LEFT JOIN v_bill_activity a ON a.aid=t.aid
+		<where>
+			1=1
+			<if test=" null != aid">
+				AND t.aid = #{aid}
+			</if>
+			<if test=" null != aname and '' != aname ">
+				AND t.aname LIKE '%${aname}%'
+			</if>
+			<if test=" null != sDateBegin and '' != sDateBegin ">
+				AND t.start_date &gt;= #{sDateBegin}
+			</if>
+			<if test=" null != eDateEnd  and '' != eDateEnd ">
+				AND t.start_date &lt;= #{eDateEnd}
+			</if>
+			<if test=" null != endDate and '' != endDate">
+				AND t.end_date = #{endDate}
+			</if>
+
+			<if test=" null != rule and '' != rule ">
+				AND t.rule LIKE '%${rule}%'
+			</if>
+			<if test=" null != eescription and '' != eescription ">
+				AND t.eescription LIKE '%${eescription}%'
+			</if>
+			<if test=" null != type ">
+				AND t.type = #{type}
+			</if>
+		</where>
+	</select>
+
+	<select id="getMaxId" resultType="Long">
+		SELECT Max(aid) AS VALUE FROM
+		t_activity
+	</select>
+
+	<select id="getType" resultType="Long">
+		SELECT count(*) FROM t_activity
+		<where>
+			1=1
+			<if test=" null != type ">
+				AND type = #{type}
+			</if>
+		</where>
+	</select>
+
+
+
+	<select id="getAid" resultType="String">
+		SELECT aname AS COUNT FROM t_activity
+		<where>
+			1=1
+			<if test=" null != aid and '' != aid ">
+				AND aid = '${aid}'
+			</if>
+			<if test=" null != type ">
+				AND type = #{type}
+			</if>
+		</where>
+	</select>
+
+	<select id="getObject" resultMap="tActivityMap" parameterType="Long">
+		SELECT * FROM t_activity WHERE aid = #{0}
+	</select>
+	<select id="getObjectType" resultMap="tActivityMap"
+		parameterType="Long">
+		SELECT * FROM t_activity WHERE type = #{0}
+	</select>
+
+	<select id="getDiscountList" resultMap="tActivityMap"
+		parameterMap="tActivity">
+		SELECT
+		t.*,
+		IFNULL(r.give_moeny,0) as giveMoney,
+		(SELECT
+		COUNT(1)
+		FROM
+		t_seller_marketing ts
+		WHERE ts.aid = t.aid) isRelationSeller,
+		IFNULL(a.flatMoney,0) AS giveMoneyCount,
+		a.userNum AS participateNum
+		FROM
+		t_activity t
+		LEFT JOIN v_bill_activity a
+		ON a.aid = t.aid
+		LEFT JOIN t_activity_rule r ON r.aid=t.aid
+		<where>
+			1 = 1
+			AND t.type = 5
+			<if test=" null != aname and '' != aname ">
+				AND t.aname LIKE '%${aname}%'
+			</if>
+			<if test=" null != aid">
+				AND t.aid = #{aid}
+			</if>
+			<if test=" null != sDateBegin and '' != sDateBegin ">
+				AND t.start_date &gt;= #{sDateBegin}
+			</if>
+			<if test=" null != eDateEnd and '' != eDateEnd ">
+				AND t.start_date &lt;= #{eDateEnd}
+			</if>
+		</where>
+		ORDER BY t.aid DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+
+	<select id="getDiscountListCount" resultType="long"
+		parameterMap="tActivity">
+		SELECT
+		count(1)
+		FROM
+		t_activity t
+		LEFT JOIN v_bill_activity a
+		ON a.aid = t.aid
+		LEFT JOIN t_activity_rule r ON r.aid=t.aid
+		<where>
+			1=1
+			and t.type = 5
+			<if test=" null != aname and '' != aname ">
+				AND t.aname LIKE '%${aname}%'
+			</if>
+			<if test=" null != aid">
+				AND t.aid = #{aid}
+			</if>
+			<if test=" null != sDateBegin and '' != sDateBegin ">
+				AND t.start_date &gt;= #{sDateBegin}
+			</if>
+			<if test=" null != eDateEnd and '' != eDateEnd ">
+				AND t.start_date &lt;= #{eDateEnd}
+			</if>
+		</where>
+	</select>
+
+
+
+
+	<!-- 折扣补贴活动中 已补贴金额 记录明细 -->
+	<select id="getDiscountGiveMoneyList" resultMap="tGiveMoneyInfoMap"
+		parameterMap="tGiveMoneyInfo">
+		SELECT
+		b.bid,
+		b.money,
+		b.paytype,
+		b.baseagio,
+		b.nname,
+		b.phoneid,
+		b.sellername as genusname,
+		b.zdate,
+		b.flat_agio,
+		IFNULL (b.flat_money,0) AS giveMoney,
+		IFNULL(b.ratio_money, 0) AS ratioMoney
+		FROM
+		t_bill b
+		LEFT JOIN t_seller_marketing m
+		ON b.sellerid = m.sellerid
+		LEFT JOIN t_activity a
+		ON a.aid = m.aid
+		<where>
+			1=1 AND b.flat_money>0 AND b.zdate &gt;= m.rdate AND b.zdate &lt;
+			m.edate
+			<if test=" null != aid">
+				AND m.aid = #{aid}
+			</if>
+			<if test=" null != bid">
+				AND b.bid = #{bid}
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				AND b.phoneid LIKE '%${phoneid}%'
+			</if>
+			<if test=" null != genusname and '' != genusname ">
+				AND b.genusname LIKE '%${genusname}%'
+			</if>
+			<if test=" null != isaccount ">
+				AND b.isaccount = #{isaccount}
+			</if>
+			<if test=" null != zdateStart ">
+				AND b.zdate &gt;= #{zdateStart}
+			</if>
+			<if test=" null != zdateEnd">
+				AND b.zdate &lt;= #{zdateEnd}
+			</if>
+			<if test=" null != paytype and '' != paytype ">
+				AND b.paytype = #{paytype}
+			</if>
+		</where>
+		ORDER BY b.fdate DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+
+	<select id="getDiscountGiveMoneyListCount" resultType="long"
+		parameterMap="tGiveMoneyInfo">
+		SELECT
+		count(bid)
+		FROM
+		t_bill b
+		LEFT JOIN t_seller_marketing m
+		ON b.sellerid = m.sellerid
+		LEFT JOIN t_activity a
+		ON a.aid = m.aid
+		<where>
+			1=1 AND b.flat_money>0 AND b.zdate &gt;= m.rdate AND b.zdate &lt;
+			m.edate
+			<if test=" null != aid">
+				AND m.aid = #{aid}
+			</if>
+			<if test=" null != bid">
+				AND b.bid = #{bid}
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				AND b.phoneid LIKE '%${phoneid}%'
+			</if>
+			<if test=" null != genusname and '' != genusname ">
+				AND b.sellername LIKE '%${genusname}%'
+			</if>
+			<if test=" null != isaccount ">
+				AND b.isaccount = #{isaccount}
+			</if>
+			<if test=" null != zdateStart ">
+				AND b.zdate &gt;= #{zdateStart}
+			</if>
+			<if test=" null != zdateEnd">
+				AND b.zdate &lt;= #{zdateEnd}
+			</if>
+			<if test=" null != paytype and '' != paytype ">
+				AND b.paytype = #{paytype}
+			</if>
+		</where>
+	</select>
+
+	<!-- 折扣补贴活动中 已补贴金额 记录总数 add by wangzhimin 2015/08/28 12:16:30 -->
+	<select id="getDiscountGiveMoneyListCountNumber" resultType="long"
+		parameterMap="tGiveMoneyInfo">
+		SELECT
+		count(bid)
+		FROM
+		t_bill b
+		LEFT JOIN t_seller_marketing m
+		ON b.sellerid = m.sellerid
+		LEFT JOIN t_activity a
+		ON a.aid = m.aid
+		<where>
+			1=1 AND b.flat_money>0 AND b.zdate &gt;= m.rdate AND b.zdate &lt;
+			m.edate
+			<if test=" null != aid">
+				AND m.aid = #{aid}
+			</if>
+			<if test=" null != bid">
+				AND b.bid = #{bid}
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				AND b.phoneid LIKE '%${phoneid}%'
+			</if>
+			<if test=" null != genusname and '' != genusname ">
+				AND b.sellername LIKE '%${genusname}%'
+			</if>
+			<if test=" null != isaccount ">
+				AND b.isaccount = #{isaccount}
+			</if>
+			<if test=" null != zdateStart ">
+				AND b.zdate &gt;= #{zdateStart}
+			</if>
+			<if test=" null != zdateEnd">
+				AND b.zdate &lt;= #{zdateEnd}
+			</if>
+			<if test=" null != paytype and '' != paytype ">
+				AND b.paytype = #{paytype}
+			</if>
+		</where>
+	</select>
+
+
+	<select id="getDiscountInfo" parameterType="long" resultMap="tActivityMap">
+		SELECT
+		* ,(SELECT
+		COUNT(1)
+		FROM
+		t_seller_marketing ts
+		WHERE ts.aid = tar.aid)
+		is_relate
+		FROM
+		(SELECT
+		aid,
+		aname,
+		eescription,
+		start_date AS startDate,
+		start_time AS startTime,
+		end_date AS endDate,
+		end_time AS endTime,
+		rate,
+		repel
+		FROM
+		t_activity
+		WHERE aid = #{0}
+		AND TYPE = 5) ta
+		INNER JOIN
+		(SELECT
+		aid,
+		give_moeny AS giveMoney,
+		min_moeny AS minMoeny,
+		max_moeny AS maxMoeny
+		FROM
+		t_activity_rule) tar
+		ON ta.aid = tar.aid
+		LIMIT 1
+	</select>
+
+
+
+
+
+
+
+
+	<!-- 佣金补贴 -->
+	<select id="getCommissionList" resultMap="tActivityMap"
+		parameterMap="tActivity">
+		SELECT
+		t.*,
+		IFNULL(r.give_moeny,0) as giveMoney,
+		(SELECT
+		COUNT(1)
+		FROM
+		t_seller_marketing ts
+		WHERE ts.aid = t.aid) isRelationSeller,
+		IFNULL(a.ratioMoney,0) AS giveMoneyCount,
+		a.userNum AS participateNum
+		FROM
+		t_activity t
+		LEFT JOIN v_bill_activity a
+		ON a.aid = t.aid
+		LEFT JOIN t_activity_rule r ON r.aid=t.aid
+		<where>
+			1 = 1
+			AND t.type = 4
+			<if test=" null != aname and '' != aname ">
+				AND t.aname LIKE '%${aname}%'
+			</if>
+			<if test=" null != aid">
+				AND t.aid = #{aid}
+			</if>
+			<if test=" null != sDateBegin and '' != sDateBegin ">
+				AND t.start_date &gt;= #{sDateBegin}
+			</if>
+			<if test=" null != eDateEnd and '' != eDateEnd ">
+				AND t.start_date &lt;= #{eDateEnd}
+			</if>
+		</where>
+		ORDER BY t.aid DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="getCommissionCount" resultType="long" parameterMap="tActivity">
+		SELECT
+		count(1)
+		FROM
+		t_activity t
+		LEFT JOIN v_bill_activity a
+		ON a.aid = t.aid
+		LEFT JOIN t_activity_rule r ON r.aid=t.aid
+		<where>
+			1=1
+			and t.type = 4
+			<if test=" null != aname and '' != aname ">
+				AND t.aname LIKE '%${aname}%'
+			</if>
+			<if test=" null != aid">
+				AND t.aid = #{aid}
+			</if>
+			<if test=" null != sDateBegin and '' != sDateBegin ">
+				AND t.start_date &gt;= #{sDateBegin}
+			</if>
+			<if test=" null != eDateEnd and '' != eDateEnd ">
+				AND t.start_date &lt;= #{eDateEnd}
+			</if>
+		</where>
+	</select>
+
+	<select id="getCommissionInfo" parameterType="long" resultMap="tActivityMap">
+		SELECT
+		* ,(SELECT
+		COUNT(1)
+		FROM
+		t_seller_marketing ts
+		WHERE ts.aid = tar.aid)
+		is_relate
+		FROM
+		(SELECT
+		aid,
+		aname,
+		eescription,
+		start_date AS startDate,
+		start_time AS startTime,
+		end_date AS endDate,
+		end_time AS endTime,
+		rate,
+		repel
+		FROM
+		t_activity
+		WHERE aid = #{0}
+		AND TYPE = 4) ta
+		INNER JOIN
+		(SELECT
+		aid,
+		give_moeny AS giveMoney,
+		min_moeny AS minMoeny,
+		max_moeny AS maxMoeny
+		FROM
+		t_activity_rule) tar
+		ON ta.aid = tar.aid
+		LIMIT 1
+	</select>
+
+	<!-- 佣金补贴活动中 已补贴金额 记录明细 -->
+	<select id="getCommissionGiveMoneyList" resultMap="tGiveMoneyInfoMap"
+		parameterMap="tGiveMoneyInfo">
+		SELECT
+		b.bid,
+		b.money,
+		b.paytype,
+		b.baseagio,
+		b.nname,
+		b.phoneid,
+		b.sellername as genusname,
+		b.zdate,
+		b.flat_agio,
+		IFNULL (b.flat_money,0) AS giveMoney,
+		IFNULL(b.ratio_money, 0) AS ratioMoney
+		FROM
+		t_bill b
+		LEFT JOIN t_seller_marketing m
+		ON b.sellerid = m.sellerid
+		LEFT JOIN t_activity a
+		ON a.aid = m.aid
+		<where>
+			1=1 AND b.ratio_money>0 AND b.zdate &gt;= m.rdate AND b.zdate &lt;
+			m.edate
+			<if test=" null != aid">
+				AND m.aid = #{aid}
+			</if>
+			<if test=" null != bid">
+				AND b.bid = #{bid}
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				AND b.phoneid LIKE '%${phoneid}%'
+			</if>
+			<if test=" null != genusname and '' != genusname ">
+				AND b.genusname LIKE '%${genusname}%'
+			</if>
+			<if test=" null != isaccount ">
+				AND b.isaccount = #{isaccount}
+			</if>
+			<if test=" null != zdateStart ">
+				AND b.zdate &gt;= #{zdateStart}
+			</if>
+			<if test=" null != zdateEnd">
+				AND b.zdate &lt;= #{zdateEnd}
+			</if>
+			<if test=" null != paytype and '' != paytype ">
+				AND b.paytype = #{paytype}
+			</if>
+		</where>
+		ORDER BY b.fdate DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<!-- 佣金补贴活动中 已补贴金额 记录总数 -->
+	<select id="getCommissionGiveMoneyListCount" resultType="long"
+		parameterMap="tGiveMoneyInfo">
+		SELECT
+		count(bid)
+		FROM
+		t_bill b
+		LEFT JOIN t_seller_marketing m
+		ON b.sellerid = m.sellerid
+		LEFT JOIN t_activity a
+		ON a.aid = m.aid
+		<where>
+			1=1 AND b.ratio_money>0 AND b.zdate &gt;= m.rdate AND b.zdate &lt;
+			m.edate
+			<if test=" null != aid">
+				AND m.aid = #{aid}
+			</if>
+			<if test=" null != bid">
+				AND b.bid = #{bid}
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				AND b.phoneid LIKE '%${phoneid}%'
+			</if>
+			<if test=" null != genusname and '' != genusname ">
+				AND b.sellername LIKE '%${genusname}%'
+			</if>
+			<if test=" null != isaccount ">
+				AND b.isaccount = #{isaccount}
+			</if>
+			<if test=" null != zdateStart ">
+				AND b.zdate &gt;= #{zdateStart}
+			</if>
+			<if test=" null != zdateEnd">
+				AND b.zdate &lt;= #{zdateEnd}
+			</if>
+			<if test=" null != paytype and '' != paytype ">
+				AND b.paytype = #{paytype}
+			</if>
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,146 @@
+package com.xmniao.xmn.core.xmnburs.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.xmniao.xmn.core.util.NMD5;
+import com.xmniao.xmn.core.xmnburs.dao.BursDao;
+import com.xmniao.xmn.core.xmnburs.dao.BursInfoDao;
+import com.xmniao.xmn.core.xmnburs.entity.Burs;
+import com.xmniao.xmn.core.xmnburs.entity.BursInfo;
+
+/**
+ * 
+ * 
+ * 项目名称：XmnWeb
+ * 
+ * 类名称：BursService
+ * 
+ * 类描述： 直连业务库-寻蜜鸟账号服务类
+ * 
+ * 创建人： Chen Bo
+ * 
+ * 创建时间：2016年3月24日 下午4:59:07 
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司
+ */
+@Service
+public class BursService{
+
+	@Autowired
+	private BursDao bursDao;
+	
+	@Autowired
+	private BursInfoDao bursInfoDao;
+	
+	/*
+	 * 获取当前账号的用户数
+	 */
+	public long checkAccount(String account){
+		Burs burs = new Burs();
+		burs.setUname(account);
+		return bursDao.checkAccount(burs);
+	}
+
+	/*
+	 * 添加用户，且返回uid
+	 */
+	public Burs addUrs(Burs burs){
+		
+	  bursDao.addUrs(burs);
+	  return burs;
+	}
+	
+	/*
+	 * 获取用户信息
+	 */
+	public Burs getUrs(Burs burs){
+		return bursDao.getUrs(burs);
+	}
+	
+	public List<Burs> getUrsList(Burs burs){
+		return bursDao.getList(burs);
+	}
+	
+	/**
+	 * 
+	 * 方法描述：添加用户详细信息
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-15上午11:37:39
+	 * @param record
+	 * @return
+	 */
+    public int insertBursInfo(BursInfo record){
+    	return bursInfoDao.insertBursInfo(record);
+    }	
+    
+    /**
+     * 
+     * 方法描述：删除用户详细信息
+     * 创建人： huang'tao
+     * 创建时间：2016-8-15上午11:39:25
+     * @param uid
+     * @return
+     */
+    public int deleteBursInfo(Integer uid){
+    	return bursInfoDao.deleteBursInfo(uid);
+    }
+	
+    /**
+     * 
+     * 方法描述：更新用户详细信息
+     * 创建人： huang'tao
+     * 创建时间：2016-8-15上午11:42:52
+     * @param record
+     * @return
+     */
+    public int updateBursInfo(BursInfo record){
+    	return bursInfoDao.updateBursInfo(record);
+    }
+    
+    
+    public List<Burs> getUrsListByUids(Object[] uids){
+    	return bursDao.getUrsListByUids(uids);
+    }
+    
+    /**
+	 * 
+	 * 方法描述：根据UIDS获取会员活动收益等级
+	 * 创建人：  huang'tao
+	 * 创建时间：2016-9-2上午11:24:46
+	 * @param uids
+	 * @return
+	 */
+	public List<Map<String,Object>> getUrsEarningsRankByUids(Object[] uids){
+		return bursDao.getUrsEarningsRankByUids(uids);
+	}
+	
+	public String usrPasswordMD5(String password){
+		String pwdMD5 = NMD5.Encode(password, "utf-8");
+		System.out.println("前期："+pwdMD5);
+		StringBuffer pwdSb = new StringBuffer("");
+		pwdSb.append(pwdMD5.substring(pwdMD5.length()-6));
+		pwdSb.append(pwdMD5.substring(6, (pwdMD5.length()-6)));
+		pwdSb.append(pwdMD5.substring(0,6));
+		System.out.println("后期："+pwdSb);
+		return pwdSb.toString();
+	}
+	public static void main(String[] args) {
+		BursService bs = new BursService();
+		bs.usrPasswordMD5("125434");
+	}
+
+	/**
+	 * 方法描述：获取包含等级信息的用户列表
+	 * 创建人： jianming <br/>
+	 * 创建时间：2017年4月5日下午8:03:46 <br/>
+	 * @param array
+	 * @return
+	 */
+	public List<Burs> getUrsListAndLevelByUids(Object[] array) {
+		return bursDao.getUrsListAndLevelByUids(array);
+	}
+}

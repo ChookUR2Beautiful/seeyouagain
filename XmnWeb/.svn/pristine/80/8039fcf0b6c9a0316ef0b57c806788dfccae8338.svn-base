@@ -1,0 +1,84 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+li{
+    list-style: none;
+}
+a{
+    text-decoration: none;
+}
+em,i{
+    font-style: normal;
+}
+body{
+    font-family: "Microsoft YaHei", sans-serif;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button{
+    -webkit-appearance: none !important;
+    margin: 0;
+}
+input[type="number"]{-moz-appearance:textfield;}
+.list-box{
+    width: 1200px;
+    font-size: 16px;
+    text-align: center;
+    margin: auto;
+}
+.list-box table{
+    width: 100%;
+    border: 1px solid #999999;
+    border-collapse: collapse;
+    text-align:center;
+}
+.list-box table th{
+    font-weight: normal;
+    border: 1px solid #999999;
+    text-align:center;
+}
+.list-box table tr{
+    height: 30px;
+}
+.list-box table td{
+    border: 1px solid #999999;
+}
+.chart-box{
+    width: 1200px;
+    margin: auto;
+    font-size: 0;
+}
+.chart-box .child-box{
+    width: 1200px;
+    vertical-align: top;
+    border: 1px solid #dddddd;
+    margin-right: 16px;
+    margin-top: 20px;
+    padding-top: 10px;
+}
+.chart-box .child-box:nth-child(2n){
+    margin-right: 0;
+}
+.chart-box p{
+    font-size: 12px;
+    text-align: center;
+    height: 30px;
+    line-height: 30px;
+}
+.chart-box h2{
+    font-size: 18px;
+    color: #2e2e2e;
+    text-align: center;
+}
+.chart-box .list-box{
+    font-size: 14px;
+    display: inline-block;
+    vertical-align: top;
+    width: 500px;
+    margin-right: 5px;
+    margin-top: 20px;
+    margin-left: 10px;
+}
+#canvasDiv2,#canvasDiv3{
+    display:inline-block ;
+}

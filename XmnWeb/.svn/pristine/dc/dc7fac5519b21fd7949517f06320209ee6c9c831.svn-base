@@ -1,0 +1,3565 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.SellerDao">
+	<parameterMap type="Seller" id="seller" />
+	<parameterMap type="AllianceRelation" id="allianceRelation" />
+	<parameterMap type="TSellerTraderRef" id="tSellerTraderRef" />
+	<resultMap type="Seller" id="sellerMap">
+		<result column="sellerid" property="sellerid" />
+		<result column="staffid" property="staffid" />
+		<result column="jointid" property="jointid" />
+		<result column="sellername" property="sellername" />
+		<result column="province" property="province" />
+		<result column="city" property="city" />
+		<result column="area" property="area" />
+		<result column="zoneid" property="zoneid" />
+		<result column="category" property="category" />
+		<result column="genre" property="genre" />
+		<result column="genre_ids" property="genreIds" />
+		<result column="bewrite" property="bewrite" />
+		<result column="address" property="address" />
+		<result column="tel" property="tel" />
+		<result column="fullname" property="fullname" />
+		<result column="identity" property="identity" />
+		<result column="phoneid" property="phoneid" />
+		<result column="orgid" property="orgid" />
+		<result column="licenseid" property="licenseid" />
+		<result column="licenseurl" property="licenseurl" />
+		<result column="sdate" property="sdate" />
+		<result column="sexplain" property="sexplain" />
+		<result column="svalidity" property="svalidity" />
+		<result column="evalidity" property="evalidity" />
+		<result column="status" property="status" />
+		<result column="examineinfo" property="examineinfo" />
+		<result column="signdate" property="signdate" />
+		<result column="udate" property="udate" />
+		<result column="give" property="give" />
+		<result column="fatherid" property="fatherid" />
+		<result column="remarks" property="remarks" />
+		<result column="email" property="email" />
+		<result column="identityzurl" property="identityzurl" />
+		<result column="identityfurl" property="identityfurl" />
+		<result column="identitynurl" property="identitynurl" />
+		<result column="licensefurl" property="licensefurl" />
+		<result column="typename" property="typename" />
+		<result column="tradename" property="tradename" />
+		<result column="agreement" property="agreement" />
+		<result column="lssellername" property="lssellername" />
+		<result column="nname" property="nname" />
+		<result column="title" property="title" />
+		<result column="areaTitle" property="areaTitle" />
+		<result column="baseagio" property="baseagio" />
+		<result column="corporate" property="corporate" />
+		<result column="salesman" property="salesman" />
+		<result column="commentCount" property="commentCount" />
+		<result column="isprotocol" property="isprotocol" />
+		<result column="isforce" property="isforce" />
+		<result column="agio_type" property="agioType" />
+		<result column="agio" property="baseagio" />
+		<result column="yledger" property="yledger" />
+		<result column="agio_time" property="agioTime" />
+		<result column="entry" property="entry" />
+		<result column="flat_agio" property="flatAgio" />
+		<result column="is_virtual" property="isVirtual" />
+		<result column="btitle" property="btitle" />
+		<result column="ptitle" property="ptitle" />
+		<result column="ctitle" property="ctitle" />
+		<result column="atitle" property="atitle" />
+		<result column="agio_agio" property="agioAgio" />
+		<result column="agio_instruction" property="agioInstruction" />
+		<result column="account" property="account" />
+		<result column="aid" property="accountid" />
+		<result column="iostoken" property="iostoken" />
+		<result column="id" property="allianceId" />
+		<result column="seller_grade" property="sellerGrade" />
+		<result column="type" property="type" />
+		<result column="phone" property="phone" />
+		<result column="date_operate" property="dateOperate" />
+		<result column="data_source" property="dataSource" />
+		<result column="offline_reason" property="offlineReason" />
+		<result column="isattend" property="isattend" />
+		<result column="islock" property="isLock" />
+
+		<result column="ratio" property="ratio" />
+		<result column="isfees" property="isfees" />
+		<result column="debit" property="debit" />
+		<result column="brand_id" property="brandId" />
+		<result column="agio_agio_num" property="agioAgioNum" />
+		<result column="is_ka" property="isKa" />
+		<result column="save_money" property="saveMoney" />
+		
+		<result column="longitude" property="longitude" />
+		<result column="latitude" property="latitude" />
+		<result column="ledger_mode" property="ledgerMode" />
+		<result column="live_coin_pay" property="liveCoinPay" />
+		<result column="is_public" property="isPublic" />
+		<result column="is_paid" property="isPaid" />
+		<result column="join_dividend" property="joinDividend" />
+		<result column="total_limit_turnover" property="totalLimitTurnover" />
+		<result column="daily_limit_turnover" property="dailyLimitTurnover" />
+		<result column="daily_limit_withdraw" property="dailyLimitWithdraw" />
+		<result column="saas_type" property="saasType"/>
+	</resultMap>
+	<resultMap type="TSellerTraderRef" id="sellerTraderRefMap">
+		<result column="id" property="id" />
+		<result column="sellerid" property="sellerid" />
+		<result column="category" property="category" />
+		<result column="genre" property="genre" />
+		<result column="category_name" property="categoryName" />
+		<result column="genre_name" property="genreName" />
+		<result column="creator" property="creator" />
+		<result column="date_created" property="dateCreated" />
+		<result column="updator" property="updator" />
+		<result column="date_updated" property="dateUpdated" />
+	</resultMap>
+	<resultMap type="MSeller" id="msellerMap">
+		<result column="sellerid" property="sellerid" />
+		<result column="staffid" property="staffid" />
+		<result column="jointid" property="jointid" />
+		<result column="sellername" property="sellername" />
+		<result column="province" property="province" />
+		<result column="city" property="city" />
+		<result column="area" property="area" />
+		<result column="zoneid" property="zoneid" />
+		<result column="category" property="category" />
+		<result column="genre" property="genre" />
+		<result column="bewrite" property="bewrite" />
+		<result column="address" property="address" />
+		<result column="tel" property="tel" />
+		<result column="fullname" property="fullname" />
+		<result column="identity" property="identity" />
+		<result column="phoneid" property="phoneid" />
+		<result column="orgid" property="orgid" />
+		<result column="licenseid" property="licenseid" />
+		<result column="licenseurl" property="licenseurl" />
+		<result column="sdate" property="sdate" />
+		<result column="sexplain" property="sexplain" />
+		<result column="svalidity" property="svalidity" />
+		<result column="evalidity" property="evalidity" />
+		<result column="status" property="status" />
+		<result column="examineinfo" property="examineinfo" />
+		<result column="signdate" property="signdate" />
+		<result column="udate" property="udate" />
+		<result column="give" property="give" />
+		<result column="fatherid" property="fatherid" />
+		<result column="remarks" property="remarks" />
+		<result column="email" property="email" />
+		<result column="identityzurl" property="identityzurl" />
+		<result column="identityfurl" property="identityfurl" />
+		<result column="licensefurl" property="licensefurl" />
+		<result column="typename" property="typename" />
+		<result column="tradename" property="tradename" />
+		<result column="agreement" property="agreement" />
+		<result column="lssellername" property="lssellername" />
+		<result column="isprotocol" property="isprotocol" />
+		<result column="agio_type" property="agio_type" />
+		<result column="baseagio" property="agio" />
+		<result column="yledger" property="yledger" />
+		<result column="agio_time" property="agio_time" />
+		<result column="entry" property="entry" />
+		<result column="is_virtual" property="is_virtual" />
+		<result column="flat_agio" property="flat_agio" />
+		<result column="isforce" property="isforce" />
+		<result column="isonline" property="isonline" />
+		<result column="agio_agio" property="agio_agio" />
+		<result column="seller_grade" property="seller_grade" />
+		<result column="atitle" property="areaname" />
+		<result column="btitle" property="business" />
+		<result column="date_operate" property="date_operate" />
+		<result column="data_source" property="data_source" />
+		<result column="offline_reason" property="offlineReason" />
+		<result column="commentCount" property="commentnum" />
+		<result column="is_pay" property="is_pay" />
+		<result column="landmark" property="landmark" />
+		<result column="introduce" property="introduce" />
+		<result column="dishes" property="dishes" />
+		<result column="rule" property="rule" />
+		<result column="tips" property="tips" />
+		<result column="iswifi" property="iswifi" />
+		<result column="isparking" property="isparking" />
+		<result column="consume" property="consume" />
+		<result column="ssid" property="ssid" />
+		<result column="wifi_pwd" property="wifi_pwd" />
+		<result column="returnrmb" property="returnrmb" />
+		<result column="business" property="business" />
+		<result column="areaname" property="areaname" />
+		<result column="is_open_booking" property="is_open_booking"></result>
+		<result column="islock" property="islock"></result>
+
+		<result column="ratio" property="ratio" />
+		<result column="debit" property="debit" />
+		<result column="ledger_mode" property="ledgerMode" />
+	</resultMap>
+
+	<select id="checkIdAtArea" resultType="java.lang.Long">
+		 select count(1) from t_seller where sellerid = #{id} and province = #{province} and city = #{city}
+	</select>
+
+	<select id="getCommentParam" resultType="java.util.Map">
+		select  title as zoneName,address,phoneid phone  from t_seller 
+		left join t_business on t_seller.zoneid = t_business.bid
+		where sellerid = #{sellerid}
+	</select>
+
+	<!-- 活动管理 参与活动商家 -->
+	<select id="getActivitySentList" resultMap="sellerMap"
+		parameterMap="seller">
+		SELECT
+		s.sellerid,
+		s.sellername,
+		s.phoneid,
+		s.status,
+		s.isonline,
+		s.agio_type,
+		s.agio,
+		s.yledger,
+		s.ratio,
+		m.isattend,
+		m.id AS
+		sellerMaketingId,
+		m.aid
+		FROM
+		t_seller_marketing m
+		INNER JOIN t_seller s ON
+		m.sellerid = s.sellerid
+		<where>
+			1=1
+			<if test="null != aid">
+				AND m.aid = #{aid}
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND s.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != jointid">
+				AND s.jointid = #{jointid}
+			</if>
+			<if test=" null != province and '' != province ">
+				AND s.province = #{province}
+			</if>
+			<if test=" null != city and '' != city ">
+				AND s.city = #{city}
+			</if>
+			<if test=" null != area and '' != area ">
+				AND s.area = #{area}
+			</if>
+			<if test=" null != zoneid">
+				AND s.zoneid = #{zoneid}
+			</if>
+			<if test=" null != sellerid">
+				AND s.sellerid = #{sellerid}
+			</if>
+			<if test=" null != category and '' != category ">
+				AND s.category = #{category}
+			</if>
+			<if test=" null != genre and '' != genre ">
+				AND s.genre = #{genre}
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				AND s.phoneid LIKE '%${phoneid}%'
+			</if>
+		</where>
+		ORDER BY m.rdate DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+
+	<!-- 活动管理 参与商家列表Count -->
+	<select id="getActivitySentCount" resultType="Long"
+		parameterMap="seller">
+		SELECT
+		count(1)
+		FROM
+		t_seller_marketing m
+		INNER JOIN t_seller s ON
+		m.sellerid = s.sellerid
+		<where>
+			1=1
+			<if test="null != aid">
+				AND m.aid = #{aid}
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND s.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != jointid">
+				AND s.jointid = #{jointid}
+			</if>
+			<if test=" null != province and '' != province ">
+				AND s.province = #{province}
+			</if>
+			<if test=" null != city and '' != city ">
+				AND s.city = #{city}
+			</if>
+			<if test=" null != area and '' != area ">
+				AND s.area = #{area} 
+			</if>
+			<if test=" null != zoneid">
+				AND s.zoneid = #{zoneid}
+			</if>
+			<if test=" null != sellerid">
+				AND s.sellerid = #{sellerid}
+			</if>
+			<if test=" null != category and '' != category ">
+				AND s.category = #{category}
+			</if>
+			<if test=" null != genre and '' != genre ">
+				AND s.genre = #{genre}
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				AND s.phoneid LIKE '%${phoneid}%'
+			</if>
+		</where>
+	</select>
+
+	<insert id="addBatch" parameterType="java.util.ArrayList">
+		INSERT INTO t_seller
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			staffid,
+			jointid,
+			sellername,
+			province,
+			city,
+			area,
+			zoneid,
+			category,
+			genre,
+			bewrite,
+			address,
+			tel,
+			fullname,
+			identity,
+			phoneid,
+			orgid,
+			licenseid,
+			licenseurl,
+			sdate,
+			sexplain,
+			svalidity,
+			evalidity,
+			status,
+			examineinfo,
+			signdate,
+			udate,
+			give,
+			fatherid,
+			remarks,
+			email,
+			identityzurl,
+			identityfurl,
+			identitynurl,
+			licensefurl,
+			agreement,
+			lssellername,
+			typename,
+			tradename,
+			isprotocol,
+			isforce,
+			agio_type,
+			<!-- agio, yledger, -->
+			agio_time,
+			entry,
+			is_virtual,
+			flat_agio,
+			isonline,
+			agio_agio,
+			`label`,
+			`order`,
+			agioAgioNum,
+			isKa,
+			brandId,
+			saveMoney,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list"
+			separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				#{item.staffid},
+				#{item.jointid},
+				#{item.sellername},
+				#{item.province},
+				#{item.city},
+				#{item.area},
+				#{item.zoneid},
+				#{item.category},
+				#{item.genre},
+				#{item.bewrite},
+				#{item.address},
+				#{item.tel},
+				#{item.fullname},
+				#{item.identity},
+				#{item.phoneid},
+				#{item.orgid},
+				#{item.licenseid},
+				#{item.licenseurl},
+				#{item.sdate},
+				#{item.sexplain},
+				#{item.svalidity},
+				#{item.evalidity},
+				#{item.status},
+				#{item.examineinfo},
+				#{item.signdate},
+				#{item.udate},
+				#{item.give},
+				#{item.fatherid},
+				#{item.remarks},
+				#{item.email},
+				#{item.identityzurl},
+				#{item.identityfurl},
+				#{item.identitynurl},
+				#{item.licensefurl},
+				#{item.agreement},
+				#{item.lssellername},
+				#{item.typename},
+				#{item.tradename},
+				#{item.isprotocol},
+				#{item.isforce},
+				#{item.agioType},
+				<!-- #{item.baseagio}, #{item.yledger}, -->
+				#{item.agioTime},
+				#{item.entry},
+				#{item.isVirtual},
+				#{item.flatAgio},
+				#{item.isonline},
+				#{item.agioAgio},
+				#{item.label},
+				#{item.order},
+				#{item.agioAgioNum},
+				#{item.isKa},
+				#{item.brandId},
+				#{item.saveMoney},
+			</trim>
+		</foreach>
+	</insert>
+
+	<insert id="addReturnId" useGeneratedKeys="true" keyProperty="sellerid"
+		keyColumn="sellerid" parameterMap="seller">
+		INSERT INTO t_seller
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test=" null != sellerid">
+				sellerid,
+			</if>
+			<if test=" null != staffid">
+				staffid,
+			</if>
+			<if test=" null != jointid">
+				jointid,
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				sellername,
+			</if>
+			<if test=" null != province and '' != province ">
+				province,
+			</if>
+			<if test=" null != city and '' != city ">
+				city,
+			</if>
+			<if test=" null != area and '' != area ">
+				area,
+			</if>
+			<if test=" null != zoneid">
+				zoneid,
+			</if>
+			<if test=" null != category and '' != category ">
+				category,
+			</if>
+			<if test=" null != genre and '' != genre ">
+				genre,
+			</if>
+			<if test=" null != bewrite and '' != bewrite ">
+				bewrite,
+			</if>
+			<if test=" null != address and '' != address ">
+				address,
+			</if>
+			<if test=" null != tel and '' != tel ">
+				tel,
+			</if>
+			<if test=" null != fullname and '' != fullname ">
+				fullname,
+			</if>
+			<if test=" null != identity and '' != identity ">
+				identity,
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				phoneid,
+			</if>
+			<if test=" null != orgid and '' != orgid ">
+				orgid,
+			</if>
+			<if test=" null != licenseid and '' != licenseid ">
+				licenseid,
+			</if>
+			<if test=" null != licenseurl and '' != licenseurl ">
+				licenseurl,
+			</if>
+			<if test=" null != sdate and '' != sdate ">
+				sdate,
+			</if>
+			<if test=" null != sexplain and '' != sexplain ">
+				sexplain,
+			</if>
+			<if test=" null != svalidity">
+				svalidity,
+			</if>
+			<if test=" null != evalidity">
+				evalidity,
+			</if>
+			<if test=" null != status">
+				status,
+			</if>
+			<if test=" null != examineinfo and '' != examineinfo ">
+				examineinfo,
+			</if>
+			<if test=" null != signdate">
+				signdate,
+			</if>
+			<if test=" null != udate">
+				udate,
+			</if>
+			<if test=" null != give">
+				give,
+			</if>
+			<if test=" null != fatherid">
+				fatherid,
+			</if>
+			<if test=" null != remarks and '' != remarks ">
+				remarks,
+			</if>
+			<if test=" null != email and '' != email ">
+				email,
+			</if>
+			<if test=" null != identityzurl and '' != identityzurl ">
+				identityzurl,
+			</if>
+			<if test=" null != identityfurl and '' != identityfurl ">
+				identityfurl,
+			</if>
+			<if test=" null != identitynurl and '' != identitynurl ">
+				identitynurl,
+			</if>
+			<if test=" null != licensefurl and '' != licensefurl ">
+				licensefurl,
+			</if>
+
+			<if test=" null != agreement and '' != agreement ">
+				agreement,
+			</if>
+			<if test=" null != agreement2 and '' != agreement2 ">
+				agreement2,
+			</if>
+			<if test=" null != agreement3 and '' != agreement3 ">
+				agreement3,
+			</if>
+			<if test=" null != agreement4 and '' != agreement4 ">
+				agreement4,
+			</if>
+			<if test=" null != lssellername and '' != lssellername ">
+				lssellername,
+			</if>
+
+			<if test=" null != typename and '' != typename ">
+				typename,
+			</if>
+			<if test=" null != tradename and '' != tradename ">
+				tradename,
+			</if>
+			<if test=" null != isprotocol ">
+				isprotocol,
+			</if>
+			<if test=" null != isforce  ">
+				isforce,
+			</if>
+			<if test=" null != agioType ">
+				agio_type,
+			</if>
+			<if test=" null != baseagio  ">
+				agio,
+			</if>
+			<if test=" null != yledger ">
+				yledger,
+			</if>
+			<if test=" null != agioTime and '' != agioTime  ">
+				agio_time,
+			</if>
+			<if test=" null != entry ">
+				entry,
+			</if>
+			<if test=" null != isVirtual and '' != isVirtual  ">
+				is_virtual,
+			</if>
+			<if test=" null != flatAgio ">
+				flat_agio,
+			</if>
+			<if test=" null != isonline ">
+				isonline,
+			</if>
+			<if test=" null != agioAgio ">
+				agio_agio,
+			</if>
+			<if test=" null != agioInstruction ">
+				agio_instruction,
+			</if>
+			<if test=" null != ismultiple">
+				ismultiple,
+			</if>
+			<if test=" null != dataSource">
+				data_source,
+			</if>
+			<if test=" null != isfees">
+				isfees,
+			</if>
+			<if test=" null != debit">
+				debit,
+			</if>
+			<if test=" null != label">
+				`label`,
+			</if>
+			<if test=" null != order">
+				`order`,
+			</if>
+			<if test=" null != agioAgioNum">
+				agio_agio_num,
+			</if>
+			<if test=" null != isKa">
+				is_ka,
+			</if>
+			<if test=" null != brandId">
+				brand_id,
+			</if>
+			<if test=" null != saveMoney">
+				save_money,
+			</if>
+			<if test=" null != uid">
+				uid,
+			</if>
+			<if test=" null != ledgerMode">
+				ledger_mode,
+			</if>
+			<if test=" null != liveCoinPay">
+				live_coin_pay,
+			</if>
+			<if test=" null != totalLimitTurnover">
+				total_limit_turnover,
+			</if>
+			<if test=" null != dailyLimitTurnover">
+				daily_limit_turnover,
+			</if>
+			<if test=" null != dailyLimitWithdraw">
+				daily_limit_withdraw,
+			</if>
+			<if test=" null != isPublic">
+				is_public,
+			</if>
+			<if test=" null != isPaid">
+				is_paid,
+			</if>
+			<if test=" null != joinDividend">
+				join_dividend
+			</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			<if test=" null != sellerid">
+				#{sellerid},
+			</if>
+			<if test=" null != staffid">
+				#{staffid},
+			</if>
+			<if test=" null != jointid">
+				#{jointid},
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				trim(#{sellername}),
+			</if>
+			<if test=" null != province and '' != province ">
+				#{province},
+			</if>
+			<if test=" null != city and '' != city ">
+				#{city},
+			</if>
+			<if test=" null != area and '' != area ">
+				#{area},
+			</if>
+			<if test=" null != zoneid">
+				#{zoneid},
+			</if>
+			<if test=" null != category and '' != category ">
+				#{category},
+			</if>
+			<if test=" null != genre and '' != genre ">
+				#{genre},
+			</if>
+			<if test=" null != bewrite and '' != bewrite ">
+				#{bewrite},
+			</if>
+			<if test=" null != address and '' != address ">
+				#{address},
+			</if>
+			<if test=" null != tel and '' != tel ">
+				#{tel},
+			</if>
+			<if test=" null != fullname and '' != fullname ">
+				#{fullname},
+			</if>
+			<if test=" null != identity and '' != identity ">
+				#{identity},
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				#{phoneid},
+			</if>
+			<if test=" null != orgid and '' != orgid ">
+				#{orgid},
+			</if>
+			<if test=" null != licenseid and '' != licenseid ">
+				#{licenseid},
+			</if>
+			<if test=" null != licenseurl and '' != licenseurl ">
+				#{licenseurl},
+			</if>
+			<if test=" null != sdate and '' != sdate ">
+				#{sdate},
+			</if>
+			<if test=" null != sexplain and '' != sexplain ">
+				#{sexplain},
+			</if>
+			<if test=" null != svalidity">
+				#{svalidity},
+			</if>
+			<if test=" null != evalidity">
+				#{evalidity},
+			</if>
+			<if test=" null != status">
+				#{status},
+			</if>
+			<if test=" null != examineinfo and '' != examineinfo ">
+				#{examineinfo},
+			</if>
+			<if test=" null != signdate">
+				#{signdate},
+			</if>
+			<if test=" null != udate">
+				#{udate},
+			</if>
+			<if test=" null != give">
+				#{give},
+			</if>
+			<if test=" null != fatherid">
+				#{fatherid},
+			</if>
+			<if test=" null != remarks and '' != remarks ">
+				#{remarks},
+			</if>
+			<if test=" null != email and '' != email ">
+				#{email},
+			</if>
+			<if test=" null != identityzurl and '' != identityzurl ">
+				#{identityzurl},
+			</if>
+			<if test=" null != identityfurl and '' != identityfurl ">
+				#{identityfurl},
+			</if>
+			<if test=" null != identitynurl and '' != identitynurl ">
+				#{identitynurl},
+			</if>
+			<if test=" null != licensefurl and '' != licensefurl ">
+				#{licensefurl},
+			</if>
+
+			<if test=" null != agreement and '' != agreement ">
+				#{agreement},
+			</if>
+			<if test=" null != agreement2 and '' != agreement2 ">
+				#{agreement2},
+			</if>
+			<if test=" null != agreement3 and '' != agreement3 ">
+				#{agreement3},
+			</if>
+			<if test=" null != agreement4 and '' != agreement4 ">
+				#{agreement4},
+			</if>
+			
+			<if test=" null != lssellername and '' != lssellername ">
+				#{lssellername},
+			</if>
+			<if test=" null != typename and '' != typename ">
+				#{typename},
+			</if>
+			<if test=" null != tradename and '' != tradename ">
+				#{tradename},
+			</if>
+			<if test=" null != isprotocol ">
+				#{isprotocol},
+			</if>
+			<if test=" null != isforce  ">
+				#{isforce},
+			</if>
+			<if test=" null != agioType ">
+				#{agioType},
+			</if>
+			<if test=" null != baseagio  ">
+				#{baseagio},
+			</if>
+			<if test=" null != yledger">
+				#{yledger},
+			</if>
+			<if test=" null != agioTime and '' != agioTime ">
+				#{agioTime},
+			</if>
+			<if test=" null != entry  ">
+				#{entry},
+			</if>
+			<if test=" null != isVirtual and '' != isVirtual  ">
+				#{isVirtual},
+			</if>
+			<if test=" null != flatAgio ">
+				#{flatAgio},
+			</if>
+			<if test=" null != isonline ">
+				#{isonline},
+			</if>
+			<if test=" null != agioAgio ">
+				#{agioAgio},
+			</if>
+			<if test=" null != agioInstruction ">
+				#{agioInstruction},
+			</if>
+			<if test=" null != ismultiple">
+				#{ismultiple},
+			</if>
+			<if test=" null != dataSource">
+				#{dataSource},
+			</if>
+			<if test=" null != isfees">
+				#{isfees},
+			</if>
+			<if test=" null != debit">
+				#{debit},
+			</if>
+			<if test=" null != label">
+				#{label},
+			</if>
+			<if test=" null != order">
+				#{order},
+			</if>
+			<if test=" null != agioAgioNum">
+				#{agioAgioNum},
+			</if>
+			<if test=" null != isKa">
+				#{isKa},
+			</if>
+			<if test=" null != brandId">
+				#{brandId},
+			</if>
+			<if test=" null != saveMoney">
+				#{saveMoney},
+			</if>
+			<if test=" null != uid">
+				#{uid},
+			</if>
+			<if test=" null != ledgerMode">
+				#{ledgerMode},
+			</if>
+			<if test=" null != liveCoinPay">
+				#{liveCoinPay},
+			</if>
+			<if test=" null != totalLimitTurnover">
+				#{totalLimitTurnover},
+			</if>
+			<if test=" null != dailyLimitTurnover">
+				#{dailyLimitTurnover},
+			</if>
+			<if test=" null != dailyLimitWithdraw">
+				#{dailyLimitWithdraw},
+			</if>
+			<if test=" null != isPublic">
+				#{isPublic},
+			</if>
+			<if test=" null != isPaid">
+				#{isPaid},
+			</if>
+			<if test=" null != joinDividend">
+				#{joinDividend}
+			</if>
+		</trim>
+	</insert>
+
+	<insert id="add" parameterMap="seller">
+		INSERT INTO t_seller
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test=" null != sellerid">
+				sellerid,
+			</if>
+			<if test=" null != staffid">
+				staffid,
+			</if>
+			<if test=" null != jointid">
+				jointid,
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				sellername,
+			</if>
+			<if test=" null != province and '' != province ">
+				province,
+			</if>
+			<if test=" null != city and '' != city ">
+				city,
+			</if>
+			<if test=" null != area and '' != area ">
+				area,
+			</if>
+			<if test=" null != zoneid">
+				zoneid,
+			</if>
+			<if test=" null != category and '' != category ">
+				category,
+			</if>
+			<if test=" null != genre and '' != genre ">
+				genre,
+			</if>
+			<if test=" null != bewrite and '' != bewrite ">
+				bewrite,
+			</if>
+			<if test=" null != address and '' != address ">
+				address,
+			</if>
+			<if test=" null != tel and '' != tel ">
+				tel,
+			</if>
+			<if test=" null != fullname and '' != fullname ">
+				fullname,
+			</if>
+			<if test=" null != identity and '' != identity ">
+				identity,
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				phoneid,
+			</if>
+			<if test=" null != orgid and '' != orgid ">
+				orgid,
+			</if>
+			<if test=" null != licenseid and '' != licenseid ">
+				licenseid,
+			</if>
+			<if test=" null != licenseurl and '' != licenseurl ">
+				licenseurl,
+			</if>
+			<if test=" null != sdate and '' != sdate ">
+				sdate,
+			</if>
+			<if test=" null != sexplain and '' != sexplain ">
+				sexplain,
+			</if>
+			<if test=" null != svalidity">
+				svalidity,
+			</if>
+			<if test=" null != evalidity">
+				evalidity,
+			</if>
+			<if test=" null != status">
+				status,
+			</if>
+			<if test=" null != examineinfo and '' != examineinfo ">
+				examineinfo,
+			</if>
+			<if test=" null != signdate">
+				signdate,
+			</if>
+			<if test=" null != udate">
+				udate,
+			</if>
+			<if test=" null != give">
+				give,
+			</if>
+			<if test=" null != fatherid">
+				fatherid,
+			</if>
+			<if test=" null != remarks and '' != remarks ">
+				remarks,
+			</if>
+			<if test=" null != email and '' != email ">
+				email,
+			</if>
+			<if test=" null != identityzurl and '' != identityzurl ">
+				identityzurl,
+			</if>
+			<if test=" null != identityfurl and '' != identityfurl ">
+				identityfurl,
+			</if>
+			<if test=" null != licensefurl and '' != licensefurl ">
+				licensefurl,
+			</if>
+
+			<if test=" null != agreement and '' != agreement ">
+				agreement,
+			</if>
+			<if test=" null != agreement2 and '' != agreement2 ">
+				agreement2,
+			</if>
+			<if test=" null != agreement3 and '' != agreement3 ">
+				agreement3,
+			</if>
+			<if test=" null != agreement4 and '' != agreement4 ">
+				agreement4,
+			</if>
+			<if test=" null != lssellername and '' != lssellername ">
+				lssellername,
+			</if>
+
+			<if test=" null != typename and '' != typename ">
+				typename,
+			</if>
+			<if test=" null != tradename and '' != tradename ">
+				tradename,
+			</if>
+			<if test=" null != isprotocol ">
+				isprotocol,
+			</if>
+			<if test=" null != isforce  ">
+				isforce,
+			</if>
+			<if test=" null != agioType ">
+				agio_type,
+			</if>
+			<if test=" null != baseagio  ">
+				agio,
+			</if>
+			<if test=" null != yledger ">
+				yledger,
+			</if>
+			<if test=" null != agioTime and '' != agioTime  ">
+				agio_time,
+			</if>
+			<if test=" null != entry ">
+				entry,
+			</if>
+			<if test=" null != isVirtual and '' != isVirtual  ">
+				is_virtual,
+			</if>
+			<if test=" null != flatAgio ">
+				flat_agio,
+			</if>
+			<if test=" null != isonline ">
+				isonline,
+			</if>
+			<if test=" null != agioAgio ">
+				agio_agio,
+			</if>
+			<if test=" null != agioInstruction ">
+				agio_instruction,
+			</if>
+			<if test=" null != ismultiple">
+				ismultiple,
+			</if>
+			<if test=" null != dataSource">
+				data_source,
+			</if>
+			<if test=" null != isfees">
+				isfees,
+			</if>
+			<if test=" null != debit">
+				debit,
+			</if>
+			<if test=" null != label">
+				`label`,
+			</if>
+			<if test=" null != order">
+				`order`,
+			</if>
+			<if test=" null != agioAgioNum">
+				agio_agio_num,
+			</if>
+			<if test=" null != isKa">
+				is_ka,
+			</if>
+			<if test=" null != brandId">
+				brand_id,
+			</if>
+			<if test=" null != saveMoney">
+				save_money,
+			</if>
+			<if test=" null != ledgerMode">
+				ledger_mode,
+			</if>
+			<if test=" null != liveCoinPay">
+				live_coin_pay,
+			</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			<if test=" null != sellerid">
+				#{sellerid},
+			</if>
+			<if test=" null != staffid">
+				#{staffid},
+			</if>
+			<if test=" null != jointid">
+				#{jointid},
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				trim(#{sellername}),
+			</if>
+			<if test=" null != province and '' != province ">
+				#{province},
+			</if>
+			<if test=" null != city and '' != city ">
+				#{city},
+			</if>
+			<if test=" null != area and '' != area ">
+				#{area},
+			</if>
+			<if test=" null != zoneid">
+				#{zoneid},
+			</if>
+			<if test=" null != category and '' != category ">
+				#{category},
+			</if>
+			<if test=" null != genre and '' != genre ">
+				#{genre},
+			</if>
+			<if test=" null != bewrite and '' != bewrite ">
+				#{bewrite},
+			</if>
+			<if test=" null != address and '' != address ">
+				#{address},
+			</if>
+			<if test=" null != tel and '' != tel ">
+				#{tel},
+			</if>
+			<if test=" null != fullname and '' != fullname ">
+				#{fullname},
+			</if>
+			<if test=" null != identity and '' != identity ">
+				#{identity},
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				#{phoneid},
+			</if>
+			<if test=" null != orgid and '' != orgid ">
+				#{orgid},
+			</if>
+			<if test=" null != licenseid and '' != licenseid ">
+				#{licenseid},
+			</if>
+			<if test=" null != licenseurl and '' != licenseurl ">
+				#{licenseurl},
+			</if>
+			<if test=" null != sdate and '' != sdate ">
+				#{sdate},
+			</if>
+			<if test=" null != sexplain and '' != sexplain ">
+				#{sexplain},
+			</if>
+			<if test=" null != svalidity">
+				#{svalidity},
+			</if>
+			<if test=" null != evalidity">
+				#{evalidity},
+			</if>
+			<if test=" null != status">
+				#{status},
+			</if>
+			<if test=" null != examineinfo and '' != examineinfo ">
+				#{examineinfo},
+			</if>
+			<if test=" null != signdate">
+				#{signdate},
+			</if>
+			<if test=" null != udate">
+				#{udate},
+			</if>
+			<if test=" null != give">
+				#{give},
+			</if>
+			<if test=" null != fatherid">
+				#{fatherid},
+			</if>
+			<if test=" null != remarks and '' != remarks ">
+				#{remarks},
+			</if>
+			<if test=" null != email and '' != email ">
+				#{email},
+			</if>
+			<if test=" null != identityzurl and '' != identityzurl ">
+				#{identityzurl},
+			</if>
+			<if test=" null != identityfurl and '' != identityfurl ">
+				#{identityfurl},
+			</if>
+			<if test=" null != licensefurl and '' != licensefurl ">
+				#{licensefurl},
+			</if>
+
+			<if test=" null != agreement and '' != agreement ">
+				#{agreement},
+			</if>
+			<if test=" null != agreement2 and '' != agreement2 ">
+				#{agreement2},
+			</if>
+			<if test=" null != agreement3 and '' != agreement3 ">
+				#{agreement3},
+			</if>
+			<if test=" null != agreement4 and '' != agreement4 ">
+				#{agreement4},
+			</if>
+			<if test=" null != lssellername and '' != lssellername ">
+				#{lssellername},
+			</if>
+			<if test=" null != typename and '' != typename ">
+				#{typename},
+			</if>
+			<if test=" null != tradename and '' != tradename ">
+				#{tradename},
+			</if>
+			<if test=" null != isprotocol ">
+				#{isprotocol},
+			</if>
+			<if test=" null != isforce  ">
+				#{isforce},
+			</if>
+			<if test=" null != agioType ">
+				#{agioType},
+			</if>
+			<if test=" null != baseagio  ">
+				#{baseagio},
+			</if>
+			<if test=" null != yledger">
+				#{yledger},
+			</if>
+			<if test=" null != agioTime and '' != agioTime ">
+				#{agioTime},
+			</if>
+			<if test=" null != entry  ">
+				#{entry},
+			</if>
+			<if test=" null != isVirtual and '' != isVirtual  ">
+				#{isVirtual},
+			</if>
+			<if test=" null != flatAgio ">
+				#{flatAgio},
+			</if>
+			<if test=" null != isonline ">
+				#{isonline},
+			</if>
+			<if test=" null != agioAgio ">
+				#{agioAgio},
+			</if>
+			<if test=" null != agioInstruction ">
+				#{agioInstruction},
+			</if>
+			<if test=" null != ismultiple">
+				#{ismultiple},
+			</if>
+			<if test=" null != dataSource">
+				#{dataSource},
+			</if>
+			<if test=" null != isfees">
+				#{isfees},
+			</if>
+			<if test=" null != debit">
+				#{debit},
+			</if>
+			<if test=" null != label">
+				#{label},
+			</if>
+			<if test=" null != order">
+				#{order},
+			</if>
+			<if test=" null != agioAgioNum">
+				#{agioAgioNum},
+			</if>
+			<if test=" null != isKa">
+				#{isKa},
+			</if>
+			<if test=" null != brandId">
+				#{brandId},
+			</if>
+			<if test=" null != saveMoney">
+				#{saveMoney},
+			</if>
+			<if test=" null != ledgerMode">
+				#{ledgerMode},
+			</if>
+			<if test=" null != liveCoinPay">
+				#{liveCoinPay},
+			</if>
+		</trim>
+	</insert>
+
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_seller WHERE sellerid IN
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<update id="update" parameterMap="seller">
+		UPDATE t_seller
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != fatherid">
+					fatherid = #{fatherid},
+				</if>
+				<if test=" null != staffid and -1 != staffid">
+					staffid = #{staffid},
+				</if>
+				<if test=" null != jointid and -1 != jointid">
+					jointid = #{jointid},
+				</if>
+				<if test=" -1 == staffid">
+					staffid = null,
+				</if>
+				<if test=" -1 == jointid">
+					jointid = null,
+				</if>
+				<if test=" null != sellername and '' != sellername ">
+					sellername = trim(#{sellername}),
+				</if>
+				<if test=" null != province and '' != province ">
+					province = #{province},
+				</if>
+				<if test=" null != city and '' != city ">
+					city = #{city},
+				</if>
+				<if test=" null != area and '' != area ">
+					area = #{area},
+				</if>
+				<if test=" null != zoneid">
+					zoneid = #{zoneid},
+				</if>
+				<if test=" null != category and '' != category ">
+					category = #{category},
+				</if>
+				<if test=" null != genre and '' != genre ">
+					genre = #{genre},
+				</if>
+				<!-- 
+				<if test=" null != genreIds and '' != genreIds ">
+					genre_ids = #{genreIds},
+				</if>
+				 -->
+				<if test=" null != bewrite and '' != bewrite ">
+					bewrite = #{bewrite},
+				</if>
+				<if test=" null != typename and '' != typename ">
+					typename = #{typename},
+				</if>
+				<if test=" null != tradename and '' != tradename ">
+					tradename = #{tradename},
+				</if>
+				<if test=" null != address and '' != address ">
+					address = #{address},
+				</if>
+				<if test=" null != tel and '' != tel ">
+					tel = #{tel},
+				</if>
+				<if test=" null != fullname and '' != fullname ">
+					fullname = #{fullname},
+				</if>
+				<if test=" null != identity and '' != identity ">
+					identity = #{identity},
+				</if>
+				<if test=" null != phoneid and '' != phoneid ">
+					phoneid = #{phoneid},
+				</if>
+				<if test=" null != orgid and '' != orgid ">
+					orgid = #{orgid},
+				</if>
+				<if test=" null != licenseid ">
+					licenseid = #{licenseid},
+				</if>
+				<if test=" null != licenseurl ">
+					licenseurl = #{licenseurl},
+				</if>
+				<if test=" null != sdate and '' != sdate ">
+					sdate = #{sdate},
+				</if>
+				<if test=" null != sexplain and '' != sexplain ">
+					sexplain = #{sexplain},
+				</if>
+				<if test=" null != svalidity">
+					svalidity = #{svalidity},
+				</if>
+				<if test=" null != evalidity">
+					evalidity = #{evalidity},
+				</if>
+				<if test=" null != status">
+					status = #{status},
+				</if>
+				<if test=" null != examineinfo and '' != examineinfo ">
+					examineinfo = #{examineinfo},
+				</if>
+				<if test=" null != signdate">
+					signdate = #{signdate},
+				</if>
+				<if test=" null != udate">
+					udate = #{udate},
+				</if>
+				<if test=" null != give">
+					give = #{give},
+				</if>
+
+				<if test=" null != remarks and '' != remarks ">
+					remarks = #{remarks},
+				</if>
+				<if test=" null != email and '' != email ">
+					email = #{email},
+				</if>
+				<if test=" null != identityzurl ">
+					identityzurl = #{identityzurl},
+				</if>
+				<if test=" null != identityfurl ">
+					identityfurl = #{identityfurl},
+				</if>
+				<if test=" null != identitynurl ">
+					identitynurl = #{identitynurl},
+				</if>
+				<if test=" null != licensefurl ">
+					licensefurl = #{licensefurl},
+				</if>
+
+				<if test=" null != agreement">
+					agreement = #{agreement},
+				</if>
+				<if test=" null != agreement2">
+					agreement2 = #{agreement2},
+				</if>
+				<if test=" null != agreement3">
+					agreement3 = #{agreement3},
+				</if>
+				<if test=" null != agreement4">
+					agreement4 = #{agreement4},
+				</if>
+				<if test=" null != lssellername">
+					lssellername = #{lssellername} ,
+				</if>
+
+				<if test=" null != typename and '' != typename ">
+					typename = #{typename},
+				</if>
+				<if test=" null != tradename and '' != tradename ">
+					tradename = #{tradename},
+				</if>
+				<if test=" null != isprotocol">
+					isprotocol = #{isprotocol},
+				</if>
+				<if test=" null != isforce">
+					isforce = #{isforce},
+				</if>
+				<if test=" null != agioType">
+					agio_type = #{agioType},
+				</if>
+				<if test=" null != baseagio">
+					agio = #{baseagio},
+				</if>
+				<if test=" null != yledger">
+					yledger = #{yledger},
+				</if>
+				<if test=" null != agioTime and '' != agioTime">
+					agio_time = #{agioTime},
+				</if>
+				<if test=" null != entry">
+					entry = #{entry},
+				</if>
+				<if test=" null != isVirtual and '' != isVirtual  ">
+					is_virtual = #{isVirtual},
+				</if>
+				<if test=" null != flatAgio ">
+					flat_agio = #{flatAgio},
+				</if>
+				<if test=" null != ratio ">
+					ratio = #{ratio},
+				</if>
+				<if test=" null != agioAgio ">
+					agio_agio = #{agioAgio},
+				</if>
+				<if test=" null != agioInstruction ">
+					agio_instruction = #{agioInstruction},
+				</if>
+				<if test=" null != ismultiple">
+					ismultiple = #{ismultiple},
+				</if>
+				<if test=" null != isLock">
+					islock = #{isLock},
+				</if>
+				<if test="null != isonline">
+					isonline = #{isonline},
+				</if>
+				<if test="null != isfees">
+					isfees = #{isfees},
+				</if>
+				<if test="null != debit">
+					debit = #{debit},
+				</if>
+				<if test=" null != label">
+					`label` = #{label},
+				</if>
+				<if test=" null != order">
+					`order` = #{order},
+				</if>
+				<if test=" null != agioAgioNum">
+					agio_agio_num = #{agioAgioNum},
+				</if>
+				<if test=" null != isKa">
+					is_ka = #{isKa},
+				</if>
+				<if test=" null != brandId">
+					brand_id = #{brandId},
+				</if>
+				<if test=" null != saveMoney">
+					save_money = #{saveMoney},
+				</if>
+				<if test=" null != uid">
+					uid = #{uid},
+				</if>
+				<if test=" null != ledgerMode">
+					ledger_mode=#{ledgerMode},
+				</if>
+				<if test=" null != liveCoinPay">
+					live_coin_pay=#{liveCoinPay},
+				</if>
+				<if test=" null != totalLimitTurnover">
+					total_limit_turnover=#{totalLimitTurnover},
+				</if>
+				<if test=" null != dailyLimitTurnover">
+					daily_limit_turnover=#{dailyLimitTurnover},
+				</if>
+				<if test=" null != dailyLimitWithdraw">
+					daily_limit_withdraw=#{dailyLimitWithdraw},
+				</if>
+				
+				<if test=" null != isPublic">
+					is_public=#{isPublic},
+				</if>
+				<if test=" null != isPaid">
+					is_paid=#{isPaid},
+				</if>
+				<if test=" null != joinDividend">
+					join_dividend=#{joinDividend}
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != sellerid and '' != sellerid">
+				sellerid = #{sellerid}
+			</if>
+		</where>
+	</update>
+
+	<select id="getList" resultMap="sellerMap" parameterMap="seller">
+		SELECT t.*,
+		tp.title AS ptitle,
+		tc.title AS ctitle,
+		ta.title AS atitle,
+		tb.title AS btitle,
+		sa.account,
+		sa.iostoken,
+		sa.aid,
+		td.seller_grade
+		FROM
+		t_seller t
+		LEFT JOIN t_area tp ON t.province = tp.area_id
+		LEFT JOIN
+		t_area tc ON t.city = tc.area_id
+		LEFT JOIN t_area ta ON t.area =
+		ta.area_id
+		LEFT JOIN t_business tb ON t.zoneid = tb.bid
+		LEFT JOIN
+		(SELECT * FROM t_seller_account t WHERE t.type = 1 and userstatus=0)
+		sa ON sa.sellerid = t.sellerid
+		LEFT JOIN t_seller_detailed td ON
+		td.sellerid=t.sellerid
+		<where>
+			1=1
+			AND t.is_virtual = 0
+			<if test=" null != isonline">
+				AND t.isonline = #{isonline}
+			</if>
+			<if test=" null != ismultiple">
+				AND t.ismultiple = #{ismultiple}
+			</if>
+			<if test=" null != array">
+				AND t1.sellerid IN
+				<foreach item="item" index="index" collection="array" open="("
+					separator="," close=") ">
+					#{item}
+				</foreach>
+			</if>
+			<if test=" null != isonlines">
+				AND t.isonline IN
+				<foreach item="item" index="index" collection="isonlines"
+					open="(" separator="," close=") ">
+					#{item}
+				</foreach>
+			</if>
+			<if test=" null != sellerid">
+				AND t.sellerid = #{sellerid}
+			</if>
+			<if test=" null != staffid">
+				AND t.staffid = #{staffid}
+			</if>
+			<if test=" null != jointid">
+				AND t.jointid = #{jointid}
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND t.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != province and '' != province ">
+				AND t.province = #{province}
+			</if>
+			<if test=" null != city and '' != city ">
+				AND t.city = #{city}
+			</if>
+			<if test=" null != area and '' != area ">
+				AND t.area = #{area}
+			</if>
+
+			<if test=" null != account and '' != account ">
+				AND sa.account = #{account}
+			</if>
+
+			<if test=" null != zoneid">
+				AND t.zoneid = #{zoneid}
+			</if>
+			<if test=" null != category and '' != category ">
+				AND t.category LIKE '%${category}%'
+			</if>
+			<if test=" null != genre and '' != genre ">
+				AND t.genre LIKE '%${genre}%'
+			</if>
+			<if test=" null != bewrite and '' != bewrite ">
+				AND t.bewrite LIKE '%${bewrite}%'
+			</if>
+			<if test=" null != address and '' != address ">
+				AND t.address LIKE '%${address}%'
+			</if>
+			<if test=" null != tel and '' != tel ">
+				AND t.tel LIKE '%${tel}%'
+			</if>
+			<if test=" null != fullname and '' != fullname ">
+				AND t.fullname LIKE '%${fullname}%'
+			</if>
+			<if test=" null != identity and '' != identity ">
+				AND t.identity LIKE '%${identity}%'
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				AND t.phoneid LIKE '%${phoneid}%'
+			</if>
+			<if test=" null != orgid and '' != orgid ">
+				AND t.orgid LIKE '%${orgid}%'
+			</if>
+			<if test=" null != licenseid and '' != licenseid ">
+				AND t.licenseid LIKE '%${licenseid}%'
+			</if>
+			<if test=" null != licenseurl and '' != licenseurl ">
+				AND t.licenseurl LIKE '%${licenseurl}%'
+			</if>
+			<if test=" null != sdate and '' != sdate ">
+				AND t.sdate LIKE '%${sdate}%'
+			</if>
+			<if test=" null != sexplain and '' != sexplain ">
+				AND t.sexplain LIKE '%${sexplain}%'
+			</if>
+			<if test=" null != svalidity">
+				AND t.svalidity = #{svalidity}
+			</if>
+			<if test=" null != evalidity">
+				AND t.evalidity = #{evalidity}
+			</if>
+			<if test=" null != status">
+				AND t.status = #{status}
+			</if>
+			<if test=" null != examineinfo and '' != examineinfo ">
+				AND t.examineinfo LIKE '%${examineinfo}%'
+			</if>
+			<if test=" null != signdate">
+				AND t.signdate = #{signdate}
+			</if>
+			<if test=" null != udate">
+				AND t.udate = #{udate}
+			</if>
+			<if test=" null != give">
+				AND t.give = #{give}
+			</if>
+			<if test=" null != fatherid">
+				AND t.fatherid = #{fatherid}
+			</if>
+			<if test=" null != remarks and '' != remarks ">
+				AND t.remarks LIKE '%${remarks}%'
+			</if>
+			<if test=" null != email and '' != email ">
+				AND t.email LIKE '%${email}%'
+			</if>
+			<if test=" null != identityzurl and '' != identityzurl ">
+				AND t.identityzurl LIKE '%${identityzurl}%'
+			</if>
+			<if test=" null != identityfurl and '' != identityfurl ">
+				AND t.identityfurl LIKE '%${identityfurl}%'
+			</if>
+			<if test=" null != licensefurl and '' != licensefurl ">
+				AND t.licensefurl LIKE '%${licensefurl}%'
+			</if>
+
+			<if test=" null != agreement and '' != agreement ">
+				AND t.agreement LIKE '%${agreement}%'
+			</if>
+			<if test=" null != lssellername and '' != lssellername ">
+				AND t.lssellername LIKE '%${lssellername}%'
+			</if>
+			<if test=" null != sellerGrade and '' != sellerGrade ">
+				AND td.seller_grade = #{sellerGrade}
+			</if>
+			<if test=" null != cityids and '' != cityids ">
+				AND FIND_IN_SET(t.city,#{cityids})
+			</if>
+			<if test=" null != isChain and isChain == 0 ">
+				AND (td.is_chain = #{isChain} OR td.is_chain IS NULL)
+			</if>
+			<if test=" null != isChain and isChain == 1 ">
+				AND td.is_chain = #{isChain}
+			</if>
+		</where>
+		ORDER BY t.sellerid DESC,t.udate DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="count" resultType="Long" parameterMap="seller">
+		SELECT COUNT(*) FROM t_seller t LEFT JOIN t_seller_detailed td ON
+		td.sellerid=t.sellerid
+		<where>
+			1=1
+			AND is_virtual = 0
+			<if test=" null != isonline">
+				AND isonline = #{isonline}
+			</if>
+			<if test=" null != ismultiple">
+				AND ismultiple = #{ismultiple}
+			</if>
+			<if test=" null != array">
+				AND sellerid IN
+				<foreach item="item" index="index" collection="array" open="("
+					separator="," close=") ">
+					#{item}
+				</foreach>
+			</if>
+			<if test=" null != isonlines">
+				AND t.isonline IN
+				<foreach item="item" index="index" collection="isonlines"
+					open="(" separator="," close=") ">
+					#{item}
+				</foreach>
+			</if>
+			<if test=" null != sellerid">
+				AND t.sellerid = #{sellerid}
+			</if>
+			<if test=" null != staffid">
+				AND staffid = #{staffid}
+			</if>
+			<if test=" null != jointid">
+				AND jointid = #{jointid}
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != province and '' != province ">
+				AND province = #{province}
+			</if>
+			<if test=" null != city and '' != city ">
+				AND city = #{city}
+			</if>
+			<if test=" null != area and '' != area ">
+				AND area = #{area}
+			</if>
+			<if test=" null != zoneid">
+				AND zoneid = #{zoneid}
+			</if>
+			<if test=" null != category and '' != category ">
+				AND category LIKE '%${category}%'
+			</if>
+			<if test=" null != genre and '' != genre ">
+				AND genre LIKE '%${genre}%'
+			</if>
+			<if test=" null != bewrite and '' != bewrite ">
+				AND bewrite LIKE '%${bewrite}%'
+			</if>
+			<if test=" null != address and '' != address ">
+				AND address LIKE '%${address}%'
+			</if>
+			<if test=" null != tel and '' != tel ">
+				AND tel LIKE '%${tel}%'
+			</if>
+			<if test=" null != fullname and '' != fullname ">
+				AND fullname LIKE '%${fullname}%'
+			</if>
+			<if test=" null != identity and '' != identity ">
+				AND identity LIKE '%${identity}%'
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				AND phoneid LIKE '%${phoneid}%'
+			</if>
+			<if test=" null != orgid and '' != orgid ">
+				AND orgid LIKE '%${orgid}%'
+			</if>
+			<if test=" null != licenseid and '' != licenseid ">
+				AND licenseid LIKE '%${licenseid}%'
+			</if>
+			<if test=" null != licenseurl and '' != licenseurl ">
+				AND licenseurl LIKE '%${licenseurl}%'
+			</if>
+			<if test=" null != sdate and '' != sdate ">
+				AND sdate LIKE '%${sdate}%'
+			</if>
+			<if test=" null != sexplain and '' != sexplain ">
+				AND sexplain LIKE '%${sexplain}%'
+			</if>
+			<if test=" null != svalidity">
+				AND svalidity = #{svalidity}
+			</if>
+			<if test=" null != evalidity">
+				AND evalidity = #{evalidity}
+			</if>
+			<if test=" null != status">
+				AND status = #{status}
+			</if>
+			<if test=" null != examineinfo and '' != examineinfo ">
+				AND examineinfo LIKE '%${examineinfo}%'
+			</if>
+			<if test=" null != signdate">
+				AND signdate = #{signdate}
+			</if>
+			<if test=" null != udate">
+				AND udate = #{udate}
+			</if>
+			<if test=" null != give">
+				AND give = #{give}
+			</if>
+			<if test=" null != fatherid">
+				AND fatherid = #{fatherid}
+			</if>
+			<if test=" null != remarks and '' != remarks ">
+				AND remarks LIKE '%${remarks}%'
+			</if>
+			<if test=" null != email and '' != email ">
+				AND email LIKE '%${email}%'
+			</if>
+			<if test=" null != identityzurl and '' != identityzurl ">
+				AND identityzurl LIKE '%${identityzurl}%'
+			</if>
+			<if test=" null != identityfurl and '' != identityfurl ">
+				AND identityfurl LIKE '%${identityfurl}%'
+			</if>
+			<if test=" null != licensefurl and '' != licensefurl ">
+				AND licensefurl LIKE '%${licensefurl}%'
+			</if>
+
+			<if test=" null != agreement and '' != agreement ">
+				AND agreement LIKE '%${agreement}%'
+			</if>
+			<if test=" null != lssellername and '' != lssellername ">
+				AND lssellername LIKE '%${lssellername}%'
+			</if>
+			<if test=" null != sellerGrade and '' != sellerGrade ">
+				AND td.seller_grade = #{sellerGrade}
+			</if>
+			<if test=" null != cityids and '' != cityids ">
+				AND FIND_IN_SET(t.city,#{cityids})
+			</if>
+			<if test=" null != isChain and isChain == 0 ">
+				AND (td.is_chain = #{isChain} OR td.is_chain IS NULL)
+			</if>
+			<if test=" null != isChain and isChain == 1 ">
+				AND td.is_chain = #{isChain}
+			</if>
+		</where>
+	</select>
+
+	<select id="getMaxId" resultType="Long">
+		<!-- SELECT Max(sellerid) AS VALUE FROM t_seller -->
+		SELECT LAST_INSERT_ID()
+	</select>
+	<select id="getCurrentId">
+		SELECT LAST_INSERT_ID()
+	</select>
+
+	<select id="getObject" resultMap="sellerMap" parameterType="Long">
+		SELECT
+			ts.*, ta.account AS account
+		FROM
+			t_seller ts
+		LEFT JOIN t_seller_account ta ON ts.sellerid = ta.sellerid
+		AND ta.type = 1
+		AND ta.userstatus = 0
+		LEFT JOIN t_seller_detailed tsd ON ts.sellerid = tsd.sellerid
+		WHERE
+			ts.sellerid =#{0}
+	</select>
+
+
+	<!-- 查询商家经纬度等信息 -->
+	<select id="getSellerLandmarkInfoById" resultMap="sellerMap" parameterType="Long">
+		SELECT
+			ts.*,
+			tsl.longitude AS longitude,
+			tsl.latitude AS latitude,
+			tb.title AS areaTitle
+		FROM
+			t_seller ts
+		LEFT JOIN t_seller_landmark tsl 
+		ON ts.sellerid = tsl.sellerid
+		LEFT JOIN t_business tb
+		ON ts.zoneid = tb.bid
+		WHERE
+			ts.sellerid =#{0} 
+			AND tsl.seller_type=0
+	</select>
+
+	<select id="getMSellerInfo" resultMap="msellerMap"
+		parameterType="int">
+		SELECT
+		ts.*,
+		tsd.*,
+		tc.*,
+		tb.title AS business,
+		ta.title AS
+		areaname
+		FROM
+		(SELECT
+		sellerid,
+		staffid,
+		jointid,
+		sellername,
+		province,
+		city,
+		AREA,
+		zoneid,
+		category,
+		genre,
+		bewrite,
+		address,
+		tel,
+		fullname,
+		identity,
+		phoneid,
+		orgid,
+		licenseid,
+		licenseurl,
+		sdate,
+		sexplain,
+		svalidity,
+		evalidity,
+		STATUS,
+		examineinfo,
+		signdate,
+		udate,
+		give,
+		fatherid,
+		remarks,
+		email,
+		identityzurl,
+		identityfurl,
+		licensefurl,
+		agreement,
+		lssellername,
+		typename,
+		tradename,
+		isprotocol,
+		agio_type,
+		agio,
+		agio_time,
+		entry,
+		is_virtual,
+		flat_agio,
+		yledger,
+		ratio,
+		isforce,
+		isonline,
+		agio_agio,
+		ismultiple,
+		label,
+		recommend,
+		recom_num,
+		data_source,
+		offline_reason,
+		date_operate,
+		islock ,
+		isfees,
+		debit,uid,ledger_mode,live_coin_pay,
+		is_public,
+		is_paid,
+		join_dividend,
+		total_limit_turnover,
+		daily_limit_turnover,
+		daily_limit_withdraw
+		FROM
+		t_seller
+		WHERE sellerid = #{0}) ts
+		LEFT JOIN (select bid,title from t_business) tb ON ts.zoneid = tb.bid
+		LEFT JOIN (SELECT title,area_id FROM t_area) ta ON ts.area =
+		ta.area_id
+		LEFT JOIN
+		(SELECT
+		sellerid AS sid,
+		seller_grade,
+		is_pay,
+		landmark,
+		introduce,
+		dishes,
+		rule,
+		tips,
+		iswifi,
+		isparking,
+		consume,
+		ssid,
+		wifi_pwd,
+		returnrmb,
+		is_open_booking
+		FROM
+		t_seller_detailed) tsd
+		ON
+		ts.sellerid = tsd.sid
+		LEFT JOIN (SELECT COUNT(cid)
+		commentnum,B.sellerid csellerid FROM
+		t_comment B GROUP BY B.sellerid)
+		tc
+		ON ts.sellerid = tc.csellerid
+
+	</select>
+
+	<!-- 总店列表 -->
+	<select id="getSellerList" resultMap="sellerMap" parameterMap="seller">
+		SELECT
+		t1.*,
+		t2.corporate,
+		t3.fullname AS salesman,
+		CONCAT(t5.title,'-',t4.title) title,
+		tb.title AS btitle,
+		t6.seller_grade,
+		t6.landmark,
+		tsd.is_first AS isFirst,
+		tsd.is_open_booking AS isOpenBooking,
+		(SELECT COUNT(*) FROM t_food tf
+		WHERE tf.sellerid = t1.sellerid AND
+		tf.datastatus!=2) AS foodNum,
+		(SELECT COUNT(*) FROM t_food_class tfc WHERE tfc.sellerid =
+		t1.sellerid AND
+		tfc.status !=2 ) AS foodClassNum,
+		(SELECT COUNT(*) FROM t_seller ts WHERE ts.fatherid = t1.sellerid 
+		AND ts.ismultiple != 1 ) AS subShopNum
+		FROM
+		t_seller t1
+		LEFT
+		JOIN t_joint t2
+		ON t1.jointid = t2.jointid
+		LEFT JOIN t_staff t3
+		ON
+		t1.staffid = t3.staffid
+		LEFT JOIN t_area t4
+		ON t1.area = t4.area_id
+		LEFT
+		JOIN t_area t5
+		ON t1.city = t5.area_id
+		LEFT JOIN t_business tb
+		ON
+		t1.zoneid = tb.bid
+		LEFT JOIN t_seller_detailed t6
+		ON
+		t1.sellerid=t6.sellerid
+		LEFT JOIN t_seller_detailed tsd
+		ON t1.sellerid =
+		tsd.sellerid
+		<where>
+			1=1
+			AND t1.is_virtual = 0
+			<include refid="baseSellerCondition" />
+			<if test="landmark !=null and '' != landmark">
+				AND t6.landmark LIKE '%${landmark}%'
+			</if>
+		</where>
+		ORDER BY t1.udate DESC,t1.sellerid DESC
+
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+
+	<!-- 总店Count -->
+	<select id="sellerCount" resultType="Long" parameterMap="seller">
+		SELECT COUNT(1) FROM t_seller t1
+		LEFT JOIN t_joint t2
+		ON t1.jointid =
+		t2.jointid
+		LEFT JOIN t_staff t3
+		ON t1.staffid = t3.staffid
+		LEFT JOIN
+		t_area t4
+		ON t1.area = t4.area_id
+		LEFT JOIN t_area t5
+		ON t1.city =
+		t5.area_id
+		LEFT JOIN t_business tb
+		ON t1.zoneid = tb.bid
+		LEFT JOIN
+		t_seller_detailed t6
+		ON t1.sellerid=t6.sellerid
+		<where>
+			1=1
+			AND t1.is_virtual = 0
+			<include refid="baseSellerCondition" />
+			<if test="landmark !=null and '' != landmark">
+				AND t6.landmark LIKE '%${landmark}%'
+			</if>
+		</where>
+	</select>
+
+	<!-- 批量更改状态 -->
+	<update id="updateSellerStatus" parameterMap="seller">
+		UPDATE t_seller SET STATUS = #{status},
+		udate = #{udate}
+		<if test=" null != status and 3 == status">
+			,signdate = #{signdate}
+		</if>
+		<if test=" null != examineinfo and '' != examineinfo">
+			,examineinfo = #{examineinfo}
+		</if>
+		WHERE sellerid IN
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=") ">
+			#{item}
+		</foreach>
+	</update>
+
+
+	<!-- 评论里面商户查询 -->
+	<select id="getCommnetSellerList" resultMap="sellerMap"
+		parameterMap="seller">
+		SELECT
+		t1.*,
+		t2.corporate,
+		t3.fullname as salesman,
+		CONCAT(t5.title,'-',t4.title) title,
+		C.*
+		FROM
+		t_seller t1
+		LEFT JOIN
+		t_joint t2
+		ON t1.jointid = t2.jointid
+		LEFT JOIN t_staff t3
+		ON t1.staffid
+		= t3.staffid
+		LEFT JOIN t_area t4
+		ON t1.area = t4.area_id
+		LEFT JOIN t_area
+		t5
+		ON t1.city = t5.area_id
+		LEFT JOIN (select count(cid)
+		commentCount,B.sellerid sellerid1 from
+		t_comment B WHERE B.is_del = 1
+		GROUP BY B.sellerid) C
+		ON C.sellerid1 = t1.sellerid
+		<where>
+			1=1
+			AND t1.is_virtual = 0
+			<if test=" null != sellerid">
+				AND t1.sellerid = #{sellerid}
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND t1.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != status">
+				AND t1.status = #{status}
+			</if>
+			<if test=" null != title and '' != title ">
+				AND t4.title LIKE '%${title}%'
+			</if>
+			<if test=" null != signdateStart and '' != signdateStart">
+				AND t1.signdate &gt; #{signdateStart}
+			</if>
+			<if test=" null != signdateEnd and '' !=signdateEnd">
+				AND t1.signdate &lt;= #{signdateEnd}
+			</if>
+			<if test=" null != commentCountStart and '' != commentCountStart">
+				AND commentCount &gt;= #{commentCountStart}
+			</if>
+			<if test=" null != commentCountEnd and '' !=commentCountEnd">
+				AND commentCount &lt;= #{commentCountEnd}
+			</if>
+			<if test=" null != province and '' != province ">
+				AND t1.province = #{province}
+			</if>
+			<if test=" null != city and '' != city ">
+				AND t1.city = #{city}
+			</if>
+			<if test=" null != area and '' != area ">
+				AND t1.area = #{area}
+			</if>
+		</where>
+		ORDER BY C.commentCount DESC, sellerid DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="getCommnetSellerCount" resultType="Long"
+		parameterMap="seller">
+		SELECT
+		count(1)
+		FROM
+		t_seller t1
+		LEFT JOIN t_joint t2
+		ON t1.jointid =
+		t2.jointid
+		LEFT JOIN t_staff t3
+		ON t1.staffid = t3.staffid
+		LEFT JOIN
+		t_area t4
+		ON t1.area = t4.area_id
+		LEFT JOIN (select count(cid)
+		commentCount,B.sellerid sellerid1 from
+		t_comment B WHERE B.is_del = 1
+		GROUP BY B.sellerid) C
+		ON C.sellerid1 =t1.sellerid
+		<where>
+			1=1
+			AND t1.is_virtual = 0
+			<if test=" null != sellerid">
+				AND t1.sellerid = #{sellerid}
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND t1.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != status">
+				AND t1.status = #{status}
+			</if>
+			<if test=" null != title and '' != title ">
+				AND t4.title LIKE '%${title}%'
+			</if>
+			<if test=" null != signdateStart and '' != signdateStart">
+				AND t1.signdate &gt; #{signdateStart}
+			</if>
+			<if test=" null != signdateEnd and '' !=signdateEnd">
+				AND t1.signdate &lt;= #{signdateEnd}
+			</if>
+			<if test=" null != commentCountStart and '' != commentCountStart">
+				AND commentCount &gt;= #{commentCountStart}
+			</if>
+			<if test=" null != commentCountEnd and '' !=commentCountEnd">
+				AND commentCount &lt;= #{commentCountEnd}
+			</if>
+			<if test=" null != province and '' != province ">
+				AND t1.province = #{province}
+			</if>
+			<if test=" null != city and '' != city ">
+				AND t1.city = #{city}
+			</if>
+			<if test=" null != area and '' != area ">
+				AND t1.area = #{area}
+			</if>
+		</where>
+	</select>
+
+
+	<!-- 分店列表 -->
+	<select id="getsplitShopList" resultMap="sellerMap"
+		parameterMap="seller">
+		SELECT
+		t.*,
+		t2.corporate,
+		t3.fullname AS salesman,
+		CONCAT(t5.title,'-',t4.title) title,
+		tb.title AS btitle
+		FROM
+		t_seller t1
+		JOIN t_seller t
+		ON t.sellerid = t1.fatherid
+		LEFT JOIN t_joint t2
+		ON
+		t.jointid = t2.jointid
+		LEFT JOIN t_staff t3
+		ON t.staffid = t3.staffid
+		LEFT JOIN t_area t4
+		ON t.area = t4.area_id
+		LEFT JOIN t_area t5
+		ON t1.city
+		= t5.area_id
+		LEFT JOIN t_business tb
+		ON t1.zoneid = tb.bid
+		<where>
+			1=1
+			AND t1.is_virtual = 0
+			AND t.ismultiple = 1
+			<if test=" null != sellerid">
+				AND t1.sellerid = #{sellerid}
+			</if>
+			<if test=" null != jointid">
+				AND t.jointid = #{jointid}
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND t.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != status">
+				AND t.status = #{status}
+			</if>
+			<if test=" null != title and '' != title ">
+				AND t4.title LIKE '%${title}%'
+			</if>
+			<if test=" null != signdateStart and '' != signdateStart">
+				AND t.signdate &gt;= #{signdateStart}
+			</if>
+			<if test=" null != signdateEnd and '' !=signdateEnd">
+				AND t.signdate &lt;= #{signdateEnd}
+			</if>
+			<if test=" null != province and '' != province ">
+				AND t.province = #{province}
+			</if>
+			<if test=" null != city and '' != city ">
+				AND t.city = #{city}
+			</if>
+			<if test=" null != area and '' != area ">
+				AND t.area = #{area}
+			</if>
+			<if test=" null != zoneid">
+				AND t.zoneid = #{zoneid}
+			</if>
+		</where>
+		ORDER BY t.udate DESC,sellerid DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<!-- 分店Count -->
+	<select id="splitShopCount" resultType="Long" parameterMap="seller">
+		SELECT COUNT(1) FROM
+		t_seller t1 JOIN t_seller t
+		ON t.sellerid =
+		t1.fatherid
+		LEFT JOIN t_joint t2
+		ON t.jointid = t2.jointid
+		LEFT JOIN
+		t_staff t3
+		ON t.staffid = t3.staffid
+		LEFT JOIN t_area t4
+		ON t.area =
+		t4.area_id
+		<where>
+			1=1
+			AND t1.is_virtual = 0
+			AND t.ismultiple = 1
+			<if test=" null != sellerid">
+				AND t1.sellerid = #{sellerid}
+			</if>
+			<if test=" null != jointid">
+				AND t.jointid = #{jointid}
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND t.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != status">
+				AND t.status = #{status}
+			</if>
+			<if test=" null != title and '' != title ">
+				AND t4.title LIKE '%${title}%'
+			</if>
+			<if test=" null != signdateStart and '' != signdateStart">
+				AND t.signdate &gt;= #{signdateStart}
+			</if>
+			<if test=" null != signdateEnd and '' !=signdateEnd">
+				AND t.signdate &lt;= #{signdateEnd}
+			</if>
+			<if test=" null != province and '' != province ">
+				AND t.province = #{province}
+			</if>
+			<if test=" null != city and '' != city ">
+				AND t.city = #{city}
+			</if>
+			<if test=" null != area and '' != area ">
+				AND t.area = #{area}
+			</if>
+			<if test=" null != zoneid">
+				AND t.zoneid = #{zoneid}
+			</if>
+		</where>
+	</select>
+
+	<!-- 下拉框查寻所有总店 -->
+	<select id="getFatherSeller" resultMap="sellerMap" parameterMap="seller">
+		SELECT sellerid,
+		sellername,
+		fatherid
+		FROM t_seller
+		<where>
+			1=1
+			AND is_virtual = 0
+			AND ismultiple = 1
+			<if test=" null != sellerid">
+				AND sellerid = #{sellerid}
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != status">
+				AND status = #{status}
+			</if>
+		</where>
+		ORDER BY sellerid DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<!-- 下拉框查寻所有总店 -->
+	<select id="getSellerIdAndSellerName" resultMap="sellerMap"
+		parameterMap="seller">
+		SELECT sellerid,
+		sellername,
+		fatherid
+		FROM t_seller
+		<where>
+			1=1
+			AND is_virtual = 0
+			AND STATUS = 3 AND isonline =1
+			<if test=" null != sellername and '' != sellername ">
+				AND sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != sellerid">
+				AND sellerid = #{sellerid}
+			</if>
+		</where>
+		ORDER BY sellerid DESC LIMIT 0,50;
+	</select>
+	
+	<!-- 查询已上线签约商家 -->
+	<select id="getSellerIdAndName" resultMap="sellerMap"
+		parameterMap="seller">
+		SELECT sellerid,
+		sellername,
+		fatherid
+		FROM t_seller
+		<where>
+			1=1
+			AND is_virtual = 0
+			AND STATUS = 3 AND isonline =1
+			<if test=" null != sellername and '' != sellername ">
+				AND sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != sellerid">
+				AND sellerid = #{sellerid}
+			</if>
+		</where>
+		ORDER BY sellerid DESC LIMIT 0,50;
+	</select>
+	
+	<!-- 查询商家的所有服务员 -->
+	<select id="getWaiterList" resultMap="sellerMap" parameterType="Integer">
+		SELECT
+		t_seller_account.`fullname`,t_seller_account.`remarks`,t_seller_account.`account`,t_seller_account.`aid`,t_seller.`sellername`
+		FROM t_seller_account LEFT JOIN t_seller ON t_seller_account.sellerid=t_seller.sellerid
+		<where>
+			1=1
+			AND t_seller_account.`sellerid` = #{sellerid}
+		</where>
+	</select>
+	<!-- 批量上线 -->
+	<update id="beachOnLine" parameterMap="seller">
+		UPDATE
+		t_seller
+		SET
+		isonline = #{isonline},
+		date_operate = #{dateOperate},
+		udate = #{udate}
+		<if test=" null != offlineReason and '' != offlineReason ">
+			,offline_reason=#{offlineReason}
+		</if>
+		WHERE sellerid IN
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=") ">
+			#{item}
+		</foreach>
+	</update>
+
+	<!-- 批量修改商家   公开商户，参与分红，付费商家  状态 -->
+	<update id="statusOption" parameterMap="seller">
+		UPDATE
+		t_seller
+		SET
+		udate = #{udate}
+		<if test="isPublic != null">
+			,is_public = #{isPublic}
+		</if>
+		<if test="isPaid != null">
+			,is_paid = #{isPaid}
+		</if>
+		<if test="joinDividend != null">
+			,join_dividend = #{joinDividend}
+		</if>
+		WHERE sellerid IN
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=") ">
+			#{item}
+		</foreach>
+	</update>
+	
+
+	<!-- 关联子店 -->
+	<update id="beachRelationShop" parameterMap="seller">
+		UPDATE t_seller
+		SET fatherid = #{fatherid},
+		<if test=" null != lssellername and '' != lssellername ">
+			lssellername = #{lssellername},
+		</if>
+		udate = #{udate}
+		WHERE sellerid IN
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=") ">
+			#{item}
+		</foreach>
+	</update>
+
+	<!-- 根据fatherid清空 连锁店对应的子店 -->
+	<update id="deleteRelationShop" parameterType="Long">
+		UPDATE t_seller
+		SET fatherid = NULL,
+		lssellername = NULL
+		WHERE fatherid = #{fatherid}
+	</update>
+
+	<!-- 查询指定商家是否是a等级商家 -->
+	<select id="getSellerGradeBySellerid" resultType="int"
+		parameterType="Object">
+		SELECT d.sellerid FROM t_seller_detailed d WHERE d.seller_grade=1 AND
+		d.sellerid IN
+		<foreach item="sid" index="index" collection="array" open="("
+			separator="," close=")">
+			#{sid}
+		</foreach>
+	</select>
+
+	<!-- 连锁店编辑初始化商家信息 -->
+	<select id="findSellerByFatherid" resultMap="sellerMap"
+		parameterMap="seller">
+		SELECT t.sellerid,t.sellername
+		FROM t_seller t
+		WHERE
+		t.fatherid = #{fatherid}
+		AND t.is_virtual = 0
+		AND
+		t.status = 3
+	</select>
+
+	<!-- 查询根据联盟店id查询商家信息 -->
+	<select id="findSellerByAllianceShopId" resultMap="sellerMap"
+		parameterType="Long">
+		SELECT t.sellerid,t.sellername
+		FROM t_seller t
+		WHERE
+		t.sellerid IN (SELECT sellerid FROM
+		t_alliance_relation WHERE id=#{id})
+		AND t.is_virtual=0 AND t.status=3
+	</select>
+
+	<!-- 查询根据联盟店id查询商家信息 -->
+	<select id="getAllianceSeller" resultMap="sellerMap"
+		parameterType="map">
+		SELECT t.sellerid,t.sellername,t.phoneid,t.address,t.udate,
+		tp.title AS
+		ptitle,
+		tc.title AS ctitle,
+		ta.title AS atitle,
+		tb.title AS btitle
+		FROM (
+
+		select
+		t.sellerid,t.sellername,t.phoneid,t.address,t.province,t.city,t.area,t.zoneid,t.udate
+		FROM t_seller t
+		<where>
+			t.is_virtual = 0 AND t.status=3 AND t.ismultiple!=1
+			<if test=" null != seller.sellerid">
+				AND t.sellerid = #{seller.sellerid}
+			</if>
+			<if test=" null != seller.sellername and '' != seller.sellername ">
+				AND t.sellername LIKE '%' #{seller.sellername} '%'
+			</if>
+			<if test=" null != seller.phoneid and '' != seller.phoneid ">
+				AND t.phoneid LIKE '%' #{seller.phoneid} '%'
+			</if>
+			<if test=" null != allianceId and '' != allianceId ">
+				AND t.sellerid NOT IN(SELECT sellerid FROM
+				t_alliance_relation WHERE
+				id=#{allianceId})
+			</if>
+		</where>
+		) t
+		LEFT JOIN (SELECT t.`area_id`,t.`title` FROM t_area t) tp ON
+		t.province = tp.area_id
+		LEFT JOIN (SELECT t.`area_id`,t.`title`,
+		t.`pid` FROM t_area t) tc ON t.city = tc.area_id
+		LEFT JOIN (SELECT
+		t.`area_id`,t.`title`, t.`pid` FROM t_area t) ta ON t.area =
+		ta.area_id
+		LEFT JOIN (SELECT t.`bid`,t.`title` FROM t_business t)tb ON
+		t.zoneid = tb.bid
+		ORDER BY t.sellerid,t.udate DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(seller.page-1)*seller.limit},#{seller.limit}
+		</if>
+	</select>
+
+
+	<!-- 查询根据联盟店id查询商家信息 -->
+	<select id="getAllianceSellerCount" resultType="Long"
+		parameterType="map">
+		SELECT count(*) FROM t_seller t
+		<where>
+			t.is_virtual = 0 AND t.status=3 AND t.ismultiple!=1
+			<if test=" null != seller.sellerid">
+				AND t.sellerid = #{seller.sellerid}
+			</if>
+			<if test=" null != seller.sellername and '' != seller.sellername ">
+				AND t.sellername LIKE '%' #{seller.sellername} '%'
+			</if>
+			<if test=" null != seller.phoneid and '' != seller.phoneid ">
+				AND t.phoneid LIKE '%' #{seller.phoneid} '%'
+			</if>
+			<if test=" null != allianceId and '' != allianceId ">
+				AND t.sellerid NOT IN(SELECT sellerid FROM
+				t_alliance_relation WHERE
+				id=#{allianceId})
+			</if>
+		</where>
+	</select>
+
+
+	<!-- 添加联盟店和商家关联表信息 -->
+	<insert id="addAllianceRelation" parameterMap="allianceRelation">
+		INSERT INTO t_alliance_relation
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test=" null != allianceId">
+				id,
+			</if>
+			<if test=" null != sellerId">
+				sellerid,
+			</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			<if test=" null != allianceId">
+				#{allianceId},
+			</if>
+			<if test=" null != sellerId">
+				#{sellerId},
+			</if>
+		</trim>
+	</insert>
+
+
+	<!-- 查询联盟店和商家关联表信息 -->
+	<select id="getAllianceRelation" resultMap="sellerMap"
+		parameterType="Long">
+		SELECT t.*
+		FROM t_alliance_relation t
+		WHERE t.sellerid =
+		#{sellerid}
+		GROUP BY t.sellerid
+	</select>
+	<!-- 商家(商户账号)信息 -->
+	<select id="gettSellerAndSellerAccount" resultMap="sellerMap"
+		parameterType="seller">
+		SELECT
+		tt.sellerid,ts.zoneid,ts.area,ts.city,tt.aid,tt.account,tt.nname,tt.password,tt.uid,tt.phone
+
+		FROM t_seller ts INNER JOIN t_seller_account tt
+
+		ON
+		ts.sellerid=tt.sellerid WHERE tt.type in(2,3) and tt.userstatus=0 and
+		ts.sellerid=#{sellerid}
+
+
+	</select>
+
+
+	<!-- 根据商家id更新商家对应的联盟店信息 -->
+	<update id="updateAllianceRelation" parameterMap="seller">
+		UPDATE t_alliance_relation
+		set sellerid = #{sellerid},id =
+		#{allianceId}
+		<where>
+			<if test="null != sellerid">
+				sellerid = #{sellerid}
+			</if>
+		</where>
+	</update>
+
+	<!-- 根据区域查商家 -->
+	<select id="getSellerByAreas" parameterType="Object" resultMap="sellerMap">
+		select * from t_seller where jointid is null
+		and area in
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=") ">
+			#{item}
+		</foreach>
+	</select>
+
+
+	<!-- 导出商家列表 -->
+	<select id="exportSellerList" resultMap="sellerMap"
+		parameterMap="seller">
+		SELECT
+		t1.*,
+		t2.corporate,
+		t3.fullname AS salesman,
+		CONCAT(t5.title,'-',t4.title) title,
+		tb.title AS
+		btitle,t6.seller_grade,
+		(SELECT MAX(baseagio) FROM t_seller_agio ts
+		WHERE ts.sellerid = t1.sellerid
+		AND ts.type = 1 ) AS baseagio,
+		(SELECT
+		MAX(baseagio) FROM t_seller_agio ts WHERE ts.sellerid = t1.sellerid
+		AND ts.type = 2 ) AS weekend,
+		(SELECT MAX(baseagio) FROM t_seller_agio
+		ts WHERE ts.sellerid = t1.sellerid
+		AND ts.type = 3 ) AS special,
+		t6.is_first as isFirst
+		FROM
+		t_seller t1
+		LEFT JOIN t_joint t2
+		ON t1.jointid
+		= t2.jointid
+		LEFT JOIN t_staff t3
+		ON t1.staffid = t3.staffid
+		LEFT JOIN
+		t_area t4
+		ON t1.area = t4.area_id
+		LEFT JOIN t_area t5
+		ON t1.city =
+		t5.area_id
+		LEFT JOIN t_business tb
+		ON t1.zoneid = tb.bid
+		LEFT JOIN
+		t_seller_detailed t6
+		ON t1.sellerid=t6.sellerid
+		<where>
+			1=1
+			AND t1.is_virtual = 0
+			<include refid="baseSellerCondition" />
+		</where>
+		ORDER BY t1.udate DESC,t1.sellerid DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<select id="getPhoneIdBySellerId" resultType="string"
+		parameterType="string">
+		SELECT t.sellerid FROM t_seller_account t WHERE
+		t.account = #{phoneid} and t.userstatus=0
+	</select>
+	<select id="getSellerMsg" resultMap="sellerMap" parameterMap="seller">
+		SELECT
+		t.sellerid,t.sellername,
+		a1.title AS ptitle,
+		a2.title AS ctitle,
+		a3.title AS atitle,
+		b.title AS
+		btitle,
+		c.account,
+		c.iostoken,
+		c.aid
+		FROM
+		t_seller t
+		LEFT JOIN t_seller_account c ON t.sellerid=c.sellerid AND
+		c.type=1 and
+		c.userstatus=0
+		LEFT JOIN t_area a1 ON t.province=a1.area_id
+		LEFT JOIN
+		t_area a2 ON t.city=a2.area_id
+		LEFT JOIN t_area a3 ON
+		t.area=a3.area_id
+		LEFT JOIN t_business b ON t.zoneid=b.bid
+		<where>
+			t.status = 3
+			AND t.isonline IN (1, 2)
+			AND t.is_virtual = 0
+			<if test=" null != account and '' != account ">
+				AND c.account LIKE '%${account}%'
+			</if>
+			<if test=" null != sellerid">
+				AND t.sellerid = #{sellerid}
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND t.sellername LIKE '%${sellername}%'
+			</if>
+
+			<if test=" null != province and '' != province ">
+				AND t.province = #{province}
+			</if>
+			<if test=" null != city and '' != city ">
+				AND t.city = #{city}
+			</if>
+			<if test=" null != area and '' != area ">
+				AND t.area = #{area}
+			</if>
+			<if test=" null != zoneid">
+				AND t.zoneid = #{zoneid}
+			</if>
+		</where>
+		ORDER BY t.sellerid DESC,t.udate DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<select id="getSellerMsgCount" resultType="Long" parameterMap="seller">
+		SELECT
+		count(*)
+		FROM t_seller t
+		LEFT JOIN t_seller_account c ON
+		t.sellerid=c.sellerid AND c.type=1 and
+		c.userstatus=0
+		LEFT JOIN t_area
+		a1 ON t.province=a1.area_id
+		LEFT JOIN
+		t_area a2 ON t.city=a2.area_id
+		LEFT JOIN t_area a3 ON t.area=a3.area_id
+		LEFT JOIN t_business b ON
+		t.zoneid=b.bid
+		<where>
+			t.status = 3
+			AND t.isonline IN (1, 2)
+			AND t.is_virtual = 0
+			<if test=" null != account and '' != account ">
+				AND c.account LIKE '%${account}%'
+			</if>
+			<if test=" null != sellerid">
+				AND t.sellerid = #{sellerid}
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND t.sellername LIKE '%${sellername}%'
+			</if>
+
+			<if test=" null != province and '' != province ">
+				AND t.province = #{province}
+			</if>
+			<if test=" null != city and '' != city ">
+				AND t.city = #{city}
+			</if>
+			<if test=" null != area and '' != area ">
+				AND t.area = #{area}
+			</if>
+			<if test=" null != zoneid">
+				AND t.zoneid = #{zoneid}
+			</if>
+		</where>
+	</select>
+	<!-- 商家列表查询条件 -->
+	<sql id="baseSellerCondition">
+		<if test=" null != ismultiple">
+			AND t1.ismultiple = #{ismultiple}
+		</if>
+		<if test=" null != isonline">
+			AND t1.isonline = #{isonline}
+		</if>
+		<if test=" null != jointid">
+			AND t1.jointid = #{jointid}
+		</if>
+		<if test=" null != province and '' != province ">
+			AND t1.province = #{province}
+		</if>
+		<if test=" null != city and '' != city ">
+			AND t1.city = #{city}
+		</if>
+		<if test=" null != area and '' != area ">
+			AND t1.area = #{area}
+		</if>
+		<if test=" null != zoneid">
+			AND t1.zoneid = #{zoneid}
+		</if>
+		<if test=" null != sellerid">
+			AND t1.sellerid = #{sellerid}
+		</if>
+		<if test=" null != category and '' != category ">
+			AND t1.category = #{category}
+		</if>
+		<if test=" null != genre and '' != genre ">
+			AND t1.genre = #{genre}
+		</if>
+		<if test=" null != phoneid and '' != phoneid ">
+			AND t1.phoneid LIKE '%${phoneid}%'
+		</if>
+		<if test=" null != bewrite and '' != bewrite ">
+			AND bewrite LIKE '%${bewrite}%'
+		</if>
+		<if test=" null != address and '' != address ">
+			AND address LIKE '%${address}%'
+		</if>
+		<if test=" null != tel and '' != tel ">
+			AND tel LIKE '%${tel}%'
+		</if>
+		<if test=" null != fullname and '' != fullname ">
+			AND fullname LIKE '%${fullname}%'
+		</if>
+		<if test=" null != identity and '' != identity ">
+			AND identity LIKE '%${identity}%'
+		</if>
+		<if test=" null != orgid and '' != orgid ">
+			AND orgid LIKE '%${orgid}%'
+		</if>
+		<if test=" null != licenseid and '' != licenseid ">
+			AND licenseid LIKE '%${licenseid}%'
+		</if>
+		<if test=" null != licenseurl and '' != licenseurl ">
+			AND licenseurl LIKE '%${licenseurl}%'
+		</if>
+		<if test=" null != sdate and '' != sdate ">
+			AND sdate LIKE '%${sdate}%'
+		</if>
+		<if test=" null != sexplain and '' != sexplain ">
+			AND sexplain LIKE '%${sexplain}%'
+		</if>
+		<if test=" null != svalidity">
+			AND svalidity = #{svalidity}
+		</if>
+		<if test=" null != evalidity">
+			AND evalidity = #{evalidity}
+		</if>
+		<if test=" null != examineinfo and '' != examineinfo ">
+			AND examineinfo LIKE '%${examineinfo}%'
+		</if>
+		<if test=" null != signdate">
+			AND signdate = #{signdate}
+		</if>
+		<if test=" null != udate">
+			AND udate = #{udate}
+		</if>
+		<if test=" null != give">
+			AND give = #{give}
+		</if>
+		<if test=" null != fatherid">
+			AND fatherid = #{fatherid}
+		</if>
+		<if test=" null != remarks and '' != remarks ">
+			AND remarks LIKE '%${remarks}%'
+		</if>
+		<if test=" null != email and '' != email ">
+			AND email LIKE '%${email}%'
+		</if>
+		<if test=" null != identityzurl and '' != identityzurl ">
+			AND identityzurl LIKE '%${identityzurl}%'
+		</if>
+		<if test=" null != identityfurl and '' != identityfurl ">
+			AND identityfurl LIKE '%${identityfurl}%'
+		</if>
+		<if test=" null != licensefurl and '' != licensefurl ">
+			AND licensefurl LIKE '%${licensefurl}%'
+		</if>
+
+		<if test=" null != agreement and '' != agreement ">
+			AND agreement LIKE '%${agreement}%'
+		</if>
+		<if test=" null != lssellername and '' != lssellername ">
+			AND lssellername LIKE '%${lssellername}%'
+		</if>
+		<if test=" null != sellername and '' != sellername ">
+			AND t1.sellername LIKE '%${sellername}%'
+		</if>
+		<if test=" null != status">
+			AND t1.status = #{status}
+		</if>
+		<if test=" null != title and '' != title ">
+			AND t4.title LIKE '%${title}%'
+		</if>
+		<if test=" null != signdateStart and '' != signdateStart">
+			AND t1.signdate &gt;= #{signdateStart}
+		</if>
+		<if test=" null != signdateEnd and '' !=signdateEnd">
+			AND t1.signdate &lt; #{signdateEnd}
+		</if>
+
+		<if test=" null != sellerGrade and ''!= sellerGrade">
+			AND t6.seller_grade = #{sellerGrade}
+		</if>
+		<if test=" null != isFirst">
+			AND t6.is_first = #{isFirst}
+		</if>
+		<if test=" null != ledgerMode">
+			AND t1.ledger_mode = #{ledgerMode}
+		</if>
+	</sql>
+
+	<!-- 查询商家的常规折扣 -->
+	<select id="getSellerAndSellerAgio" parameterType="seller"
+		resultMap="sellerMap">
+		SELECT
+		ts.sellerid,
+		ts.sellername,
+		ts.status,
+		ts.isonline,
+		tsa.yledger,
+		tsa.flat_agio,
+		tsa.type
+		FROM
+		t_seller ts
+		LEFT JOIN t_seller_agio tsa
+		ON
+		tsa.sellerid = ts.sellerid
+		WHERE tsa.type = 1 AND ts.sellerid IN
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=") ">
+			#{item}
+		</foreach>
+		<!-- ORDER BY ts.sellerid DESC; -->
+		ORDER BY ts.udate DESC,ts.sellerid DESC
+	</select>
+
+	<select id="getSellerAndSellerDetailed" parameterType="seller"
+		resultMap="sellerMap">
+		SELECT
+		ts.sellerid,
+		ts.sellername,
+		ts.status,
+		ts.isonline,
+		tsd.is_first AS
+		isFirst
+		FROM
+		t_seller ts
+		LEFT JOIN t_seller_detailed tsd
+		ON tsd.sellerid =
+		ts.sellerid
+		WHERE ts.sellerid IN
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=") ">
+			#{item}
+		</foreach>
+	</select>
+
+	<select id="getSellerByCidAndSeller" resultMap="sellerMap"
+		parameterMap="seller">
+		SELECT
+		ts.sellerid,
+		ts.sellername,
+		ts.address,
+		CONCAT(ta1.title, '-',
+		ta2.title) AS title,
+		ts.tradename,
+		ts.phoneid,
+		ts.isonline,
+		tsd.seller_grade AS sellerGrade,
+		b.title AS btitle,
+		ts.date_operate as
+		dateOperate
+		FROM
+		t_seller ts
+		LEFT JOIN t_area ta1
+		ON ts.city = ta1.area_id
+		LEFT JOIN t_area ta2
+		ON ts.area = ta2.area_id
+		LEFT JOIN
+		t_seller_detailed tsd
+		ON tsd.sellerid = ts.sellerid
+		LEFT JOIN t_business
+		b
+		ON b.area_id = ts.area
+		AND ts.zoneid = b.bid
+		RIGHT JOIN t_coupon_seller
+		tcs
+		ON tcs.sellerid = ts.sellerid
+		<where>
+			tcs.cid = #{cid} AND tcs.ltype=1 AND tcs.include = 1
+			<if test=" null != sellername and '' != sellername">
+				AND ts.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != sellerid and '' != sellerid">
+				AND ts.sellerid = #{sellerid}
+			</if>
+			<if test=" null != sellerid and '' != sellerid">
+				AND ts.sellerid = #{sellerid}
+			</if>
+			<if test=" null != phoneid and '' != phoneid">
+				AND ts.phoneid = #{phoneid}
+			</if>
+			<if test=" null != province and '' != province">
+				AND ts.province = #{province}
+			</if>
+			<if test=" null != city and '' != city">
+				AND ts.city = #{city}
+			</if>
+			<if test=" null != area and '' != area">
+				AND ts.area = #{area}
+			</if>
+			<if test=" null != category and '' != category">
+				AND ts.category LIKE '%${category}%'
+			</if>
+			<if test=" null != genre and '' != genre">
+				AND ts.genre LIKE '%${genre}%'
+			</if>
+			<if test=" null != sellerGrade and '' != sellerGrade">
+				AND tsd.seller_grade = #{sellerGrade}
+			</if>
+		</where>
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<select id="countOfGetSellerByCidAndSeller" resultType="Long"
+		parameterMap="seller">
+		SELECT
+		count(*)
+		FROM
+		t_seller ts
+		LEFT JOIN t_area ta1
+		ON ts.city =
+		ta1.area_id
+		LEFT JOIN t_area ta2
+		ON ts.area = ta2.area_id
+		LEFT JOIN
+		t_seller_detailed tsd
+		ON tsd.sellerid = ts.sellerid
+		LEFT JOIN t_business
+		b
+		ON b.area_id = ts.area
+		AND ts.zoneid = b.bid
+		RIGHT JOIN t_coupon_seller
+		tcs
+		ON tcs.sellerid = ts.sellerid
+		<where>
+			tcs.cid = #{cid} AND tcs.ltype=1 AND tcs.include = 1
+			<if test=" null != sellername and '' != sellername">
+				AND ts.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != sellerid and '' != sellerid">
+				AND ts.sellerid = #{sellerid}
+			</if>
+			<if test=" null != sellerid and '' != sellerid">
+				AND ts.sellerid = #{sellerid}
+			</if>
+			<if test=" null != phoneid and '' != phoneid">
+				AND ts.phoneid = #{phoneid}
+			</if>
+			<if test=" null != province and '' != province">
+				AND ts.province = #{province}
+			</if>
+			<if test=" null != city and '' != city">
+				AND ts.city = #{city}
+			</if>
+			<if test=" null != area and '' != area">
+				AND ts.area = #{area}
+			</if>
+			<if test=" null != category and '' != category">
+				AND ts.category = #{category}
+			</if>
+			<if test=" null != genre and '' != genre">
+				AND ts.genre = #{category}
+			</if>
+			<if test=" null != sellerGrade and '' != sellerGrade">
+				AND tsd.seller_grade = #{sellerGrade}
+			</if>
+		</where>
+	</select>
+
+	<select id="getSelect" resultMap="sellerMap" parameterMap="seller">
+		SELECT t.sellerid,t.sellername FROM t_seller t
+		<where>
+			1=1
+			<if test=" null != sellername and '' != sellername ">
+				AND t.sellername LIKE '%${sellername}%'
+			</if>
+		</where>
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="getBrandSubSeller" resultMap="sellerMap"
+		parameterMap="seller">
+		SELECT
+		ts.* ,
+		tbs.brand_name AS brandName
+		FROM
+		t_seller ts
+		LEFT JOIN
+		t_brand_seller tbs
+		ON tbs.brand_id = ts.brand_id
+		<where>
+			ts.isonline = 1 AND ts.STATUS = 3
+			<if test="null != brandId">
+				AND ts.brand_id = #{brandId}
+			</if>
+			<if test="null == brandId">
+				AND ts.brand_id IS NULL
+			</if>
+			<if test="null != sellerid">
+				AND ts.sellerid = #{sellerid}
+			</if>
+			<if test="null != sellername and '' != sellername">
+				AND ts.sellername = #{sellername}
+			</if>
+		</where>
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<select id="countOfBrandSubSeller" resultType="Long"
+		parameterMap="seller">
+		SELECT
+		COUNT(*)
+		FROM
+		t_seller ts
+		LEFT JOIN t_brand_seller tbs
+		ON
+		tbs.brand_id = ts.brand_id
+		<where>
+			ts.isonline = 1 AND ts.STATUS = 3
+			<if test="null != brandId">
+				AND ts.brand_id = #{brandId}
+			</if>
+			<if test="null == brandId">
+				AND ts.brand_id IS NULL
+			</if>
+			<if test="null != sellerid">
+				AND ts.sellerid = #{sellerid}
+			</if>
+			<if test="null != sellername and '' != sellername">
+				AND ts.sellername = #{sellername}
+			</if>
+		</where>
+	</select>
+
+	<update id="addBrandSeller" parameterMap="seller">
+		UPDATE t_seller
+		SET
+		brand_id = #{brandId}
+		WHERE sellerid = #{sellerid}
+	</update>
+	<update id="deleteBrandSeller" parameterMap="seller">
+		UPDATE t_seller
+		SET
+		brand_id = null
+		WHERE sellerid = #{sellerid}
+	</update>
+	<!-- 添加商家行业关联表信息 -->
+	<insert id="addTSellerTraderRef" parameterMap="tSellerTraderRef">
+		INSERT INTO t_seller_trader_ref
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test=" null != id and '' != id ">
+				id,
+			</if>
+			<if test=" null != sellerid">
+				sellerid,
+			</if>
+			<if test=" null != category and '' != category ">
+				category,
+			</if>
+			<if test=" null != genre and '' != genre ">
+				genre,
+			</if>
+			<if test=" null != categoryName and '' != categoryName ">
+				category_name,
+			</if>
+			<if test=" null != genreName and '' != genreName ">
+				genre_name,
+			</if>
+			<if test=" null != creator and '' != creator ">
+				creator,
+			</if>
+			<if test=" null != dateCreated and '' != dateCreated ">
+				date_created,
+			</if>
+			<if test=" null != updator and '' != updator ">
+				updator,
+			</if>
+			<if test=" null != dateUpdated and '' != dateUpdated ">
+				date_updated,
+			</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			<if test=" null != id and '' != id ">
+				#{id},
+			</if>
+			<if test=" null != sellerid">
+				#{sellerid},
+			</if>
+			<if test=" null != category and '' != category ">
+				#{category},
+			</if>
+			<if test=" null != genre and '' != genre ">
+				#{genre},
+			</if>
+			<if test=" null != categoryName and '' != categoryName ">
+				#{categoryName},
+			</if>
+			<if test=" null != genreName and '' != genreName ">
+				#{genreName},
+			</if>
+			<if test=" null != creator and '' != creator ">
+				#{creator},
+			</if>
+			<if test=" null != dateCreated and '' != dateCreated ">
+				#{dateCreated},
+			</if>
+			<if test=" null != updator and '' != updator ">
+				#{updator},
+			</if>
+			<if test=" null != dateUpdated and '' != dateUpdated ">
+				#{dateUpdated},
+			</if>
+		</trim>
+	</insert>
+
+	<select id="getTraderRefsBySellerId" resultMap="sellerTraderRefMap"
+		parameterType="Long">
+		SELECT
+		*
+		FROM
+		t_seller_trader_ref
+		<where>
+			sellerid = #{sellerid}
+		</where>
+	</select>
+
+	<delete id="deleteTSellerTraderRefBySellerid" parameterType="Long">
+		DELETE
+		FROM
+		t_seller_trader_ref
+		WHERE sellerid =#{sellerid};
+	</delete>
+
+	<!-- 获取连锁店子店的列表 -->
+	<select id="getChildShopList" resultMap="sellerMap"
+		parameterMap="seller">
+		SELECT t.sellerid,t.sellername
+		FROM t_seller t
+		WHERE
+		t.fatherid =
+		#{fatherid}
+		AND t.is_virtual = 0
+		AND t.status = 3
+		ORDER BY t.sellerid
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<!-- 获取连锁店子店的个数 -->
+	<select id="getChildShopCount" resultType="Long" parameterMap="seller">
+		SELECT COUNT(1)
+		FROM t_seller t
+		WHERE
+		t.fatherid = #{fatherid}
+		AND
+		t.is_virtual = 0
+		AND t.status = 3
+	</select>
+
+	<select id="getSellerName" resultType="map">
+		SELECT sellerid,sellername
+		FROM t_seller
+		WHERE sellerid IN
+		<foreach collection="idList" item="item" index="index" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	
+	<select id="getSellerBySellerAccount" resultMap="sellerMap" parameterType="String">
+	SELECT ts.* 
+	FROM t_seller ts,t_seller_account  tsa
+	WHERE ts.sellerid=tsa.sellerid 
+		AND tsa.account=#{account}
+	</select>
+	
+	<update id="updateSellerDate" parameterType="seller">
+		UPDATE t_seller
+		SET
+		udate = #{udate}
+		WHERE sellerid IN (${ids})
+	</update>
+	
+	<!-- 查询商家的信息（条件查询） -->
+	<select id="getSellerByWhere" resultMap="sellerMap" parameterType="seller">
+	SELECT 
+		t1.* 
+	FROM 
+		t_seller t1 
+	WHERE 1=1  
+		<include refid="baseSellerCondition"/>
+	</select>
+	
+	<!-- 查询 区域信息 -->
+	<select id="getSellerArea" resultType="map">
+		SELECT t1.title province,t2.title city,t3.title area
+		FROM t_area t1 
+		LEFT JOIN t_area t2 ON t1.area_id=t2.pid 
+		LEFT JOIN t_area t3 ON t2.area_id=t3.pid
+		WHERE t3.area_id=#{areaId} 
+	</select>
+	
+	<!-- 查询物料发送状态 -->
+	<!-- <select id="getMaterialStatus" resultType="integer">
+		SELECT 
+		status 
+		FROM 
+		t_seller_materiel
+		WHERE
+		sellerid=#{sellerid}
+		AND
+		uid=#{uid}
+	</select> -->
+	
+	<!-- 修改物料发送状态 -->
+	<!-- <update id="changeMaterielStatus">
+		UPDATE t_seller_materiel
+		SET status=1
+		WHERE sellerid=#{sellerid}
+		AND uid=#{uid}
+	</update> -->
+	
+	<insert id="addSellerLiveLedger" parameterType="com.xmniao.xmn.core.businessman.entity.TLiveSellerLedger" useGeneratedKeys="true" keyProperty="id">
+		insert into t_live_seller_ledger
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="id != null" >
+	        id,
+	      </if>
+	      <if test="sellerid != null" >
+	        sellerid,
+	      </if>
+	      <if test="ledgerStyle != null" >
+	        ledger_style,
+	      </if>
+	      <if test="ledgerMode != null" >
+	        ledger_mode,
+	      </if>
+	      <if test="ledgerRatio != null" >
+	        ledger_ratio,
+	      </if>
+	      <if test="startDate != null" >
+	        start_date,
+	      </if>
+	      <if test="endDate != null" >
+	        end_date,
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="id != null" >
+	        #{id,jdbcType=INTEGER},
+	      </if>
+	      <if test="sellerid != null" >
+	        #{sellerid,jdbcType=INTEGER},
+	      </if>
+	      <if test="ledgerStyle != null" >
+	        #{ledgerStyle,jdbcType=INTEGER},
+	      </if>
+	      <if test="ledgerMode != null" >
+	        #{ledgerMode,jdbcType=INTEGER},
+	      </if>
+	      <if test="ledgerRatio != null" >
+	        #{ledgerRatio,jdbcType=DOUBLE},
+	      </if>
+	      <if test="startDate != null" >
+	        #{startDate,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="endDate != null" >
+	        #{endDate,jdbcType=TIMESTAMP},
+	      </if>
+	    </trim>
+	</insert>
+	
+	<update id="updateSellerLiveLedger" parameterType="com.xmniao.xmn.core.businessman.entity.TLiveSellerLedger">
+		update t_live_seller_ledger
+	    <set >
+	      <if test="ledgerStyle != null" >
+	        ledger_style = #{ledgerStyle,jdbcType=INTEGER},
+	      </if>
+	      <if test="ledgerMode != null" >
+	        ledger_mode = #{ledgerMode,jdbcType=INTEGER},
+	      </if>
+	      <if test="ledgerRatio != null" >
+	        ledger_ratio = #{ledgerRatio,jdbcType=DOUBLE},
+	      </if>
+	      <if test="startDate != null" >
+	        start_date = #{startDate,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="endDate != null" >
+	        end_date = #{endDate,jdbcType=TIMESTAMP},
+	      </if>
+	    </set>
+	    where id = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<select id="getSellerLiveLeger" resultType="com.xmniao.xmn.core.businessman.entity.TLiveSellerLedger">
+	    select 
+	        id, sellerid, ledger_style ledgerStyle, ledger_mode ledgerMode, ledger_ratio ledgerRatio, start_date startDate, end_date endDate
+	    from t_live_seller_ledger
+	    where sellerid = #{sellerid,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteSellerLiveLedger">
+		delete from t_live_seller_ledger
+		where sellerid=#{sellerid}
+	</delete>
+	
+	<!-- 查询已上线签约商家 -->
+	<select id="getOnlineSellerList" resultMap="sellerMap"
+		parameterMap="seller">
+		SELECT sellerid,
+		sellername
+		FROM t_seller
+		<where>
+			1=1
+			AND is_virtual = 0
+			AND STATUS = 3 AND isonline =1
+			<if test=" null != sellername and '' != sellername ">
+				AND sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != sellerid">
+				AND sellerid = #{sellerid}
+			</if>
+		</where>
+		ORDER BY sellerid DESC LIMIT ${start},#{limit};
+	</select>
+	
+	<!-- 更新商家鸟币支付状态 -->
+	<update id="updateCoinStatus" parameterType="Seller">
+		UPDATE t_seller
+		SET live_coin_pay = #{liveCoinPay}
+		WHERE sellerid = #{sellerid}
+	</update>
+	
+	<!-- 通过代码编号查询联盟店列表 -->
+	<select id="getSellerListByAlliance" resultMap="sellerMap" parameterType="com.xmniao.xmn.core.businessman.entity.AllianceShop">
+        SELECT t.sellerid, t.sellername, t.address, t.udate FROM t_seller t 
+           WHERE sellerid IN (SELECT t1.sellerid FROM t_alliance t, t_alliance_relation t1 
+               WHERE t.id = t1.id AND t.id = #{id})
+
+		ORDER BY t.udate DESC, t.sellerid DESC
+
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+
+	<!-- 总店Count -->
+	<select id="getSellerListByAllianceCount" resultType="Long" parameterType="com.xmniao.xmn.core.businessman.entity.AllianceShop">
+		SELECT COUNT(1)  FROM t_seller 
+		   WHERE sellerid IN (SELECT t1.sellerid FROM t_alliance t, t_alliance_relation t1
+		      WHERE t.id = t1.id AND t.id = #{id});
+		
+	</select>
+	
+	
+	<!-- 查询指定商家名称 -->
+	<select id="getSellerBaseList" resultMap="sellerMap"
+		parameterType="string">
+		SELECT sellerid,
+		sellername
+		FROM t_seller
+		where sellerid in (${sellerids})
+	</select>
+	
+	<update id="xmerAbandonSeller" parameterType="Seller">
+		UPDATE t_seller
+		SET 
+		uid = #{uid},
+		saas_type = #{saasType},
+		udate = #{udate}
+		WHERE sellerid = #{sellerid}
+	</update>
+</mapper>

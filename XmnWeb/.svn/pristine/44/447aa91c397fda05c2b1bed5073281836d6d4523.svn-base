@@ -1,0 +1,189 @@
+/**
+ * 
+ */
+package com.xmniao.xmn.core.live_anchor.controller;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.alibaba.fastjson.JSON;
+import com.xmniao.xmn.core.base.BaseController;
+import com.xmniao.xmn.core.base.Pageable;
+import com.xmniao.xmn.core.live_anchor.entity.BLiver;
+import com.xmniao.xmn.core.live_anchor.entity.TLiveGivedGift;
+import com.xmniao.xmn.core.live_anchor.service.TLiveGivedGiftService;
+import com.xmniao.xmn.core.util.PageConstant;
+import com.xmniao.xmn.core.util.handler.annotation.RequestLogging;
+import com.xmniao.xmn.core.xmnburs.entity.Burs;
+import com.xmniao.xmn.core.xmnburs.service.BursService;
+
+/**
+ * 
+ * 项目名称：XmnWeb
+ * 
+ * 类名称：LiveAnchorVideoController
+ * 
+ * 类描述： 直播打赏礼物Controller
+ * 
+ * 创建人：  huang'tao
+ * 
+ * 创建时间：2016-12-8 下午8:38:04 
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司 
+ */
+@RequestLogging(name="直播打赏礼物管理")
+@Controller
+@RequestMapping(value = "liveGivedGift/manage")
+public class LiveGivedGiftController extends BaseController {
+	
+	@Autowired
+	private TLiveGivedGiftService liveGivedGiftService;
+	
+	@Autowired
+	private BursService bursService;
+	
+	/**
+	 * 跳转到直播打赏礼物列表页面
+	 * 
+	 * @author huang'tao
+	 * @date 2015年8月12日 下午4:34:01
+	 * @return
+	 */
+	@RequestMapping(value = "init")
+	public String init(TLiveGivedGift liveGivedGift,Model model) {
+		model.addAttribute("eUid", liveGivedGift.getUid());
+		return "live_anchor/liveGivedGiftManage";
+	}
+	
+	/**
+	 * 
+	 * 方法描述：加载直播打赏礼物列表<br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2016-12-8下午8:50:02 <br/>
+	 * @param liveGivedGift
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = { "init/list" })
+	@ResponseBody
+	public Object anchorImageList(TLiveGivedGift liveGivedGift, Model model) {
+		Pageable<TLiveGivedGift> pageabel = new Pageable<TLiveGivedGift>(liveGivedGift);
+		try {
+			List<TLiveGivedGift> list = liveGivedGiftService.getGivedGiftList(liveGivedGift);
+			Long count = liveGivedGiftService.count(liveGivedGift);
+			pageabel.setContent(list);
+			pageabel.setTotal(count);
+			JSON.toJSON(pageabel);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return pageabel;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：跳转到导出直播打赏纪录页面
+	 * 创建人：  huang'tao
+	 * 创建时间：2016-9-2下午2:00:47
+	 * @param livePayOrder
+	 * @param request
+	 * @param response
+	 */
+	@RequestMapping(value="export/init")
+	public ModelAndView exportInit(TLiveGivedGift liveGivedGift){
+		ModelAndView modelAndView=new ModelAndView();
+		modelAndView.setViewName("live_anchor/liveGiftExport");
+		return modelAndView;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：导出直播打赏纪录
+	 * 创建人：  huang'tao
+	 * 创建时间：2016-9-2下午2:00:47
+	 * @param livePayOrder
+	 * @param request
+	 * @param response
+	 */
+	@RequestMapping(value="export")
+	public void export(TLiveGivedGift liveGivedGift,HttpServletRequest request,HttpServletResponse response){
+		liveGivedGift.setLimit(PageConstant.PAGE_LIMIT_NO);
+		Map<String,Object> params = new HashMap<String,Object>();
+		params.put("list", liveGivedGiftService.getGivedGiftList(liveGivedGift));
+		doExport(request,response,"live_anchor/liveGivedGift.xls",params);
+	}
+	
+	
+	@RequestMapping(value="salary/init")
+	public Object salaryInit(Integer anchorId,Model model){
+		if(anchorId!=null){
+			model.addAttribute("anchorId", anchorId);
+		}
+		return "live_anchor/liveGivedGiftSalaryList";
+	}
+	
+	/**
+	 * 
+	 * 方法描述：主播工资活动礼物列表
+	 * 创建人： jianming <br/>
+	 * 创建时间：2017年3月29日上午11:12:09 <br/>
+	 * @param liveGivedGift
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = { "salary/init/list" })
+	@ResponseBody
+	public Object salaryList(TLiveGivedGift liveGivedGift) {
+		Pageable<TLiveGivedGift> pageabel = new Pageable<>(liveGivedGift);
+		try {
+			if(!liveGivedGiftService.setLiver(liveGivedGift)){
+				return pageabel;
+			}
+			List<TLiveGivedGift> list = liveGivedGiftService.getGivedGiftList(liveGivedGift);
+			Long count = liveGivedGiftService.count(liveGivedGift);
+			pageabel.setContent(list);
+			pageabel.setTotal(count);
+			JSON.toJSON(pageabel);
+		} catch (Exception e) {
+			log.info("获取主播工资列表出现异常",e);
+		}
+		return pageabel;
+	}
+
+
+	
+	/**
+	 * 
+	 * 方法描述：导出直播打赏工资纪录
+	 * 创建人：  huang'tao
+	 * 创建时间：2016-9-2下午2:00:47
+	 * @param livePayOrder
+	 * @param request
+	 * @param response
+	 */
+	@RequestMapping(value="salary/export")
+	public void salaryExport(TLiveGivedGift liveGivedGift,HttpServletRequest request,HttpServletResponse response){
+		liveGivedGift.setLimit(PageConstant.PAGE_LIMIT_NO);
+		Map<String,Object> params = new HashMap<>();
+		if(!liveGivedGiftService.setLiver(liveGivedGift)){
+			return;
+		}
+		List<TLiveGivedGift> list = liveGivedGiftService.getGivedGiftList(liveGivedGift);
+		params.put("list", list);
+		doExport(request,response,"live_anchor/liveSalaryGivedGift.xls",params);
+	}
+	
+}

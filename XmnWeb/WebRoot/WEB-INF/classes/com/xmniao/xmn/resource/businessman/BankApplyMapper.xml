@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.BankApplyDao">
+
+	<parameterMap type="TbankApply" id="bankApply" />
+	
+	<resultMap type="TbankApply" id="bankApplyMap">	
+		<result column="appid" property="appid" />
+		<result column="aid" property="aid" />
+		<result column="accounttype" property="accounttype" />
+		<result column="fullname" property="fullname" />
+		<result column="bank" property="bank" />
+		<result column="location" property="location" />		
+		<result column="cityname" property="cityname" />
+		<result column="idtype" property="idtype" />		
+		<result column="idcard" property="idcard" />
+		<result column="bankid" property="bankid" />
+		<result column="type" property="type" />
+		<result column="bdate" property="bdate" />
+		<result column="bankphone" property="bankphone" />
+		<result column="remark" property="remark" />		
+		<result column="handletype" property="handletype" />
+		<result column="handleremark" property="handleremark" />
+		<result column="modifitype" property="modifitype" />
+		<result column="abbrev" property="abbrev" />
+		<result column="ispublic" property="ispublic" />
+		<result column="bankname" property="bankname" />
+        <result column="license" property="license" />
+		<result column="upidcard" property="upidcard" />
+		<result column="dwidcard" property="dwidcard" />
+		<result column="applytype" property="applytype" />
+	</resultMap>
+	
+	
+	<select id="getList" resultMap="bankApplyMap" parameterMap="bankApply">
+		SELECT * FROM t_bank_apply
+		<where>
+			1=1
+			<if test=" null != appid">
+				AND appid = #{appid}
+			</if>
+			<if test=" null != aid">
+				<!-- AND aid = #{aid} -->
+				AND aid LIKE '%${aid}%'
+			</if>
+			<if test=" null != accounttype">
+				AND accounttype = #{accounttype}
+			</if>
+			<if test=" null != fullname and '' != fullname ">
+				AND fullname LIKE '%${fullname}%'
+			</if>
+			<if test=" null != bank and '' != bank ">
+				AND bank LIKE '%${bank}%'
+			</if>
+			<if test=" null != location and '' != location ">
+				AND location LIKE '%${location}%'
+			</if>
+			<if test=" null != cityname and '' != cityname ">
+				AND cityname LIKE '%${cityname}%'
+			</if>			
+			<if test=" null != idtype">
+				AND idtype = #{idtype}
+			</if>			
+			<if test=" null != idcard and '' != idcard ">
+				AND idcard LIKE '%${idcard}%'
+			</if>
+			<if test=" null != bankid and '' != bankid ">
+				AND bankid LIKE '%${bankid}%'
+			</if>			
+			<if test=" null != type">
+				AND type = #{type}
+			</if>
+			<!-- <if test=" null != bdate">
+				AND bdate = #{bdate}
+			</if> -->
+			<if test=" null != bdateStart and '' != bdateStart">
+				AND  bdate&gt;= #{bdateStart}
+			</if>
+			<if test=" null != bdateEnd and ''!= bdateEnd">
+				AND  bdate&lt;= #{bdateEnd}
+			</if>
+			
+			<if test=" null != bankphone and '' != bankphone ">
+				AND bankphone LIKE '%${bankphone}%'
+			</if>
+			<if test=" null != remark and '' != remark ">
+				AND remark LIKE '%${remark}%'
+			</if>			
+			<if test=" null != handletype ">
+				AND handletype = #{handletype}
+			</if>
+			<if test=" null != handleremark and '' != handleremark ">
+				AND handleremark LIKE '%${handleremark}%'
+			</if>
+			<if test=" null != modifitype">
+				AND modifitype = #{modifitype}
+			</if>			
+			<if test=" null != abbrev and '' != abbrev ">
+				AND abbrev LIKE '%${abbrev}%'
+			</if>
+			<if test=" null != ispublic">
+				AND ispublic = #{ispublic}
+			</if>
+			<if test=" null != bankname and '' != bankname ">
+				AND bankname LIKE '%${bankname}%'
+			</if>
+			<if test=" null != applytype">
+				AND  applytype = #{applytype}
+		  	</if>
+		</where>
+			ORDER BY bdate DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+		
+	<select id="count" resultType="Long" parameterMap="bankApply">
+		SELECT COUNT(1) FROM t_bank_apply
+		<where>
+			1=1
+			<if test=" null != appid">
+				AND appid = #{appid}
+			</if>
+			<if test=" null != aid">
+				<!-- AND aid = #{aid} -->
+				AND aid LIKE '%${aid}%'
+			</if>
+			<if test=" null != accounttype">
+				AND accounttype = #{accounttype}
+			</if>
+			<if test=" null != fullname and '' != fullname ">
+				AND fullname LIKE '%${fullname}%'
+			</if>
+			<if test=" null != bank and '' != bank ">
+				AND bank LIKE '%${bank}%'
+			</if>
+			<if test=" null != location and '' != location ">
+				AND location LIKE '%${location}%'
+			</if>
+			<if test=" null != cityname and '' != cityname ">
+				AND cityname LIKE '%${cityname}%'
+			</if>			
+			<if test=" null != idtype">
+				AND idtype = #{idtype}
+			</if>			
+			<if test=" null != idcard and '' != idcard ">
+				AND idcard LIKE '%${idcard}%'
+			</if>
+			<if test=" null != bankid and '' != bankid ">
+				AND bankid LIKE '%${bankid}%'
+			</if>			
+			<if test=" null != type">
+				AND type = #{type}
+			</if>
+			<!-- <if test=" null != bdate">
+				AND bdate = #{bdate}
+			</if> -->
+			<if test=" null != bdateStart and '' != bdateStart">
+				AND  bdate&gt;= #{bdateStart}
+			</if>
+			<if test=" null != bdateEnd and ''!= bdateEnd">
+				AND  bdate&lt;= #{bdateEnd}
+			</if>
+			<if test=" null != bankphone and '' != bankphone ">
+				AND bankphone LIKE '%${bankphone}%'
+			</if>
+			<if test=" null != remark and '' != remark ">
+				AND remark LIKE '%${remark}%'
+			</if>			
+			<if test=" null != handletype ">
+				AND handletype = #{handletype}
+			</if>
+			<if test=" null != handleremark and '' != handleremark ">
+				AND handleremark LIKE '%${handleremark}%'
+			</if>
+			<if test=" null != modifitype">
+				AND modifitype = #{modifitype}
+			</if>			
+			<if test=" null != abbrev and '' != abbrev ">
+				AND abbrev LIKE '%${abbrev}%'
+			</if>
+			<if test=" null != ispublic">
+				AND ispublic = #{ispublic}
+			</if>
+			<if test=" null != bankname and '' != bankname ">
+				AND bankname LIKE '%${bankname}%'
+			</if>
+			<if test=" null != applytype">
+				AND  applytype = #{applytype}
+		  	</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Integer">
+		SELECT Max(appid) AS VALUE FROM t_bank_apply
+	</select>
+	
+	<select id="getObject" resultMap="bankApplyMap" parameterType="Long">
+		SELECT * FROM t_bank_apply WHERE appid = #{0}
+	</select>
+	
+	
+	
+	<update id="update" parameterMap="bankApply">
+		UPDATE t_bank_apply
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != handletype">
+				    handletype = #{handletype},
+		  	    </if>
+		  	    <if test=" null != applytype">
+				    applytype = #{applytype},
+		  	    </if>
+		  	    <if test=" null != handleremark and '' != handleremark ">
+					handleremark = #{handleremark},
+				</if>									
+			</trim>
+		</set>
+		<where>
+			<if test="null != appid and '' != appid">
+				appid = #{appid}
+			</if>
+		</where>
+	</update> 
+	
+	 	
+</mapper>

@@ -1,0 +1,702 @@
+var formId = "editFrom";
+var imgRoot = $("#fastfdsHttp").val();
+var jsonTextInit;
+var anchorImageChooser;
+var tagIds=[];
+$(function() {
+	
+	var dataformInit = $("#" + formId).serializeArray();
+	jsonTextInit = JSON.stringify({
+		dataform : dataformInit
+	});
+	validate(formId, {
+		rules : {
+			zhiboTitle : {
+				required : true
+			},
+			zhiboAddress : {
+				required : true
+			},
+			sequenceNo  :{
+				required :true,
+				digits:true,
+				range:[1,999]
+			},
+			zhiboPlaybackUrl :{
+				required: true
+			},
+			telphones :{
+				required:true,
+				telRule :true
+			}
+		},
+		messages:{
+			store:{
+				sequenceNo:"请输入直播推荐排序",
+				digits:"排序必须为数字类型",
+				range:"推荐排序须设定为1-999之间的整数"
+			},
+			zhiboPlaybackUrl :{
+				required :"请填写回放地址"
+			},
+			telphones :{
+				required: "请填写手机号码",
+				telRule : "多个手机号以英文逗号分隔"
+			}
+		}
+	}, liveRecordSave);
+	
+	
+	//初始化日期控件
+	initDate();
+	
+	//初始化主播下拉框
+	initAnchorId();
+	
+	//初始化商家下拉框
+	initSellerid();
+	
+	//指定观众手机号码初始化
+	telphonesInit();
+	
+	//直播类型初始化
+	liveTopicInit();
+	
+	//初始化直播标签分类
+	liveRecordClassifyIdInit();
+	
+	//初始化已保存标签数组
+	initTagsId();
+	
+	//初始化提供粉丝券设置,保存后此项不可变更。注意：必须初始化直播券单选框后执行
+	initHaveCouponSet();
+	
+	//加载粉丝券信息
+	loadAdvanceCouponInfo();
+	
+	//编辑控制
+	editControl();
+	
+	//是否自定义分享描述
+	initCustomShareSet();
+	
+});
+
+
+/**
+ * 保存通告信息
+ */
+function liveRecordSave() {
+//	debugger;
+	var url;
+	var suffix = ".jhtml";
+	var isAdd = $("#" + formId).find("input[name='id']").length == 0 ? true : false;
+	if (isAdd) {// 添加操作
+		url = "liveRecord/manage/add" + suffix;
+	} else {// 修改操作
+		url = "liveRecord/manage/update" + suffix;
+	}
+	var dataform = $("#" + formId).serializeArray();
+	var jsonText = JSON.stringify({
+		dataform : dataform
+	});
+	
+	//将标签及图片数组转化为字符串
+	convertData();
+	
+	var result=validateCustomer(isAdd);
+	if(!result){//自定义校验不通过
+		return ;
+	}
+	
+	
+	if (isAdd || jsonTextInit != jsonText) {// 添加或者修改改了东西才会发送请求
+		$.ajax({
+			type : 'post',
+			url : url,
+			data : jsonFromt($('#' + formId).serializeArray()),
+			dataType : 'json',
+			beforeSend : function(XMLHttpRequest) {
+				$('#prompt').show();
+			},
+			success : function(data) {
+				$('#prompt').hide();
+				$('#triggerModal').modal('hide');
+				if (data.success) {
+					var targetUrl=$("#targetUrl").val();
+					var url = contextPath +'/'+targetUrl;
+					setTimeout(function() {
+						location.href = url;
+					}, 1000);
+				}
+				showSmReslutWindow(data.success, data.msg);
+			},
+			error : function(XMLHttpRequest, textStatus, errorThrown) {
+				$('#prompt').hide();
+				$('#triggerModal').modal('hide');
+			}
+		});
+	} else {
+		$('#prompt').hide();
+		$('#triggerModal').modal('hide');
+		showSmReslutWindow(false, "没做任何修改！");
+	}
+}
+
+/**
+ * 提供粉丝券设置
+ */
+function initHaveCouponSet(){
+//	debugger;
+	var haveCoupon=$("input[name='haveCoupon']:checked").val();
+	if(haveCoupon==undefined){
+		haveCoupon=0;//未设置，默认不提供
+		$("input[name='haveCoupon']")[1].checked=true;
+	}
+	
+	if(haveCoupon=='0'||haveCoupon=='1'){
+		if(haveCoupon=='1'){
+			$(".on-off").css('display','block');
+		}else{
+			$(".on-off").css('display','none');
+		}
+		$("input[name='haveCoupon']").attr("disabled",true);
+		loadAdvanceCouponInfo();
+	}
+}
+
+/**
+ * 加载预告直播券信息
+ */
+function loadAdvanceCouponInfo(){
+	var cid =  $("#cid").val();
+	$.ajax({
+		type: "POST",
+		url : "liveRecord/manage/setAdvance/getLiveCouponInfoById.jhtml?t=new Date()",
+		dataType : "json",
+		data: {"cid":cid},
+		success : function(data){
+//			console.log(data);
+			if(data != null){
+				$("#cname").text(data.cname);//券名
+				$("#couponSellerName").text(data.sellername);//关联商户名称
+				$("#denomination").text(data.denomination);//设置价格
+				$("#originalPrice").text(data.originalPrice);//原价
+				$("#defaultMaxNum").text(data.defaultMaxNum);//粉丝券数量
+				var useTimeZone="";
+				if(data.startDateStr){
+					useTimeZone+=data.startDateStr;
+				}
+				if(data.endDateStr){
+					useTimeZone+=" 至 "+data.endDateStr;
+				}
+				$("#useTimeZone").text(useTimeZone);
+				
+//				初始化赠送预售抵用券情况
+				initHaveFree(data.haveFree,data.voucherList);
+			}
+		}
+	});
+}
+
+/**
+ * 初始化赠送抵用券 
+ */
+
+function initHaveFree(haveFree,voucherList){
+//	debugger;
+	if(haveFree=='1'){//有抵用券
+		$("input[name='haveFree']")[0].checked=true;
+		//加载抵用券列表详情
+		loadVouchers(voucherList);
+		$("#voucherDiv").css("display","block");
+		
+	}else{//无抵用券
+		$("input[name='haveFree']")[1].checked=true;
+		$("#voucherDiv").css("display","none");
+	}
+	
+}
+
+/**
+ * 加载抵用券列表详情
+ */
+function loadVouchers(data){
+	var content='';
+	//加载活动列表
+	 $.each(data, function (n, obj) {  
+		 content +="<div class='input-group'>"
+				 + "￥"+ obj.denomination +" ，满 " + obj.condition + " 元可用 "
+				 + "</div>";
+      });  
+    $("#plandiv").html(content);
+}
+
+/**
+ * 将标签，图片数组信息转化为字符串数据
+ */
+function convertData(){
+	
+	if(tagIds.length>0){
+		$("#tagIds").val(tagIds.join(";"));
+	}
+	
+	
+	var picUrls=[];
+	$("#datas .img-list img").each(function(index){
+		var srcTemp=$(this).attr("src");
+		srcTemp=srcTemp.replace(imgRoot,"");
+		picUrls.push(srcTemp);
+	});
+	
+	if(picUrls.length>0){
+		$("#datas .pic-url-list").val(picUrls.join(";"));
+	}
+}
+
+
+/**
+ * 初始化直播标签数组
+ */
+function initTagsId(){
+	var tagIdVals=$("#tagIds").val();
+	if(tagIdVals){
+		tagIds=tagIdVals.split(";");
+//		console.log("tagIds="+tagIds);
+	}
+	
+}
+
+
+//初始化主播下拉框
+function initAnchorId(){
+//	debugger;
+	$("#anchorId_").chosenObject({
+		hideValue : "id",
+		showValue : "nickname",
+		url : "anchor/manage/initAnchorId.jhtml",
+		isChosen:true,//是否支持模糊查询
+		isCode:true,//是否显示编号
+		isHistorical:false,//是否使用历史已加载数据
+		width:"100%"
+	});
+}
+
+//选择主播后，修改主播昵称隐藏域的值
+$('body').on("click",'#anchorId__chosen .chosen-results li',function(){
+//	debugger;
+	var anchorId =  $("#anchorId_").find("option:selected").val();
+	$.ajax({
+		type: "POST",
+		url : "anchor/manage/getAnchorById.jhtml?t=new Date()",
+		dataType : "json",
+		data: {"id":anchorId},
+		success : function(data){
+			if(data != null){
+				/*$("#uid").val(data.uid);*/
+				$("#nname").val(data.nickname);
+				$("#sex").val(data.sex);
+				
+			}
+		}
+	});
+});
+
+
+//初始化商家下拉框
+function initSellerid(){
+	$("#sellerid").chosenObject({
+		hideValue : "sellerid",
+		showValue : "sellername",
+		url : "businessman/seller/getSellerIdAndName.jhtml",
+		isChosen:true,//是否支持模糊查询
+		isCode:true,//是否显示编号
+		isHistorical:false,//是否使用历史已加载数据
+		width:"100%"
+	});
+}
+
+//选择商家后，修改商家名称 (to fix 编辑无法触发,暂时后台同步数据)
+$('body').on("click",'#sellerid_chosen .chosen-results li',function(){
+//	debugger;
+	var sellerid =  $("#sellerid").find("option:selected").val();
+	$.ajax({
+		type: "POST",
+		url : "businessman/seller/getSellerLandmarkInfoById.jhtml?t=new Date()",
+		dataType : "json",
+		data: {"sellerid":sellerid},
+		success : function(data){
+			if(data != null){
+				$("#sellername").val(data.sellername);
+				$("#sellerAlias").val(data.sellername);
+				$("#longitude").val(data.longitude);
+				$("#latitude").val(data.latitude);
+				$("#zhiboAddress").val(data.address);
+			}
+		}
+	});
+});
+
+
+
+/**
+ * 绑定"是否指定观众"单击事件
+ */
+$("input[name='isAppoint']").on("change",function(){
+	telphonesInit();
+});
+
+/**
+ * 指定观众手机号码显示初始化
+ */
+function telphonesInit(){
+	var isAppoint = $("input[name='isAppoint']:checked").val();
+	if (isAppoint == 1) {
+		$("#telphonesDiv").css("display","block");
+	} else {
+		$("#telphonesDiv").css("display","none");
+		$("#telphones").val('');
+	}
+}
+
+/**
+ * 绑定"直播类型,1商家、2活动"change事件
+ */
+$("input[name='liveTopic']").on("change",function(){
+	liveTopicInit();
+});
+
+/**
+ * 商家别名 / 活动主题初始化
+ * 
+ */
+function liveTopicInit(){
+	var liveTopic = $("input[name='liveTopic']:checked").val();
+	if (liveTopic == 1) {
+		$("#sellerDiv").css("display","block");
+		$("#sellerAliasLabel").text("商家别名：");
+	} else {
+		$("#sellerDiv").css("display","none");
+		$("#sellerAliasLabel").text("活动主题：");
+	}
+}
+
+/**
+ * 初始化直播标签分类
+ */
+function liveRecordClassifyIdInit(){
+	$("#classifyId").chosenObject({
+		hideValue : "id",
+		showValue : "classifyName",
+		url : "businessman/classify/liveRecordClassifyInit.jhtml",
+		isChosen:true,//是否支持模糊查询
+		isCode:true,//是否显示编号
+		isHistorical:false,//是否使用历史已加载数据
+		width:"40%"
+	});
+}
+
+//选择分类后，初始化标签
+$('body').on("click",'#classifyId_chosen .chosen-results li',function(){
+	//初始化联动标签
+	liveRecordTagInit();
+});
+
+/**
+ * 初始化直播标签
+ */
+function liveRecordTagInit(){
+	var classifyId=$("#classifyId").val();
+	$("#tagId_chosen,#tagId").remove();
+	$("#addTagBtn").before('<select class="form-control" id="tagId" style="width:45%;"></select>');
+//	$('#tagId').trigger('chosen:close');
+	$("#tagId").chosenObject({
+		hideValue : "id",
+		showValue : "tagName",
+		url : "businessman/classify/liveRecordTagInit.jhtml",
+		isChosen:true,//是否支持模糊查询
+		isCode:true,//是否显示编号
+		filterVal:classifyId,////过滤的值 (classifyId=1)
+		isHistorical:false,//是否使用历史已加载数据
+		width:"40%"
+	});
+	
+	// 当原始select中的选项发生变化时通知chosen更新选项列表
+	$('#tagId').trigger('chosen:updated');
+//	$('#tagId').trigger('chosen:open');
+}
+
+
+/**
+ * 自定义校验方法
+ */
+function validateCustomer(isAdd){
+//	debugger;
+	var result=true;
+	var anchorId=$("#anchorId_").val()||$("#anchorId_").attr("initValue");
+	if(anchorId == null || anchorId==""){
+		showWarningWindow("warning","请选择主播!",9999);
+		result=false;
+		return ;
+	}
+	
+	var planStartDate=$("#planStartDate").val();
+	if(planStartDate == null || planStartDate==""){
+		showWarningWindow("warning","请选择直播计划开始时间!",9999);
+		result=false;
+		return ;
+	}
+	
+	var planEndDate=$("#planEndDate").val();
+	if(planEndDate == null || planEndDate==""){
+		showWarningWindow("warning","请选择直播计划结束时间!",9999);
+		result=false;
+		return ;
+	}
+	
+	var liveTopic=$("input[name='liveTopic']:checked").val();
+	if(liveTopic==1){
+		var sellerid=$("#sellerid").val()||$("#sellerid").attr("initValue");
+		if(sellerid == null || sellerid==""){
+			showWarningWindow("warning","请选择商铺!",9999);
+			result=false;
+			return ;
+		}
+	}
+	
+	if(isAdd){
+		var zhiboCover=$("#datas .pic-url-list").val();
+		if(zhiboCover == null || zhiboCover==""){
+			showWarningWindow("warning","请上传封面!",9999);
+			result=false;
+			return ;
+		}
+	}
+	
+	return result;
+}
+
+/**
+ * 编辑控制，1,3,5 状态的通告只允许修改直播推荐排序
+ * 直播类型 -1 初始 0 预告 1 正在直播  2暂停直播 3 回放  4 历史通告 5 结束直播
+ */
+function editControl(){
+//	debugger;
+	var zhiboType=$("#zhiboTypeEdit").val();
+	var setSellerSequNo=$("#setSellerSequNo").val();
+	if(zhiboType==1||zhiboType==3||zhiboType==4||zhiboType==5){
+		$("#zhoboTitle").attr("disabled",true);
+		$("#planStartDate").attr("disabled",true);
+		$("#planEndDate").attr("disabled",true);
+		$("#zhiboAddress").attr("disabled",true);
+		
+		$("#anchorDiv").css("display","none");
+		$("#liveTopicDiv").css("display","none");
+		$("#sellerDiv").css("display","none");
+		$("#zhiboCoverDiv").css("display","none");
+		$("#sequenceNo").attr("disabled",false);
+		$("#liveRecordTagDiv").css("display","none");
+		if(setSellerSequNo=='Y'){
+			$("#sellerSequNoDiv").css("display","block");
+			$("#sequenceNoDiv").css("display","none");
+		}
+		
+		//隐藏直播券信息
+		$("input[name='haveCoupon']").attr("disabled",true);
+		$(".on-off").css('display','none');
+	}
+	
+	//3,4,5状态的通告才可编辑回放地址
+	if(zhiboType==3||zhiboType==4||zhiboType==5){
+		$("#zhiboPlaybackUrlDiv").css("display","block");
+	}
+	
+	var isAdd = $("#" + formId).find("input[name='id']").length == 0 ? true : false;
+	if(!isAdd){
+		$("#passwordDiv").css("display","none");
+	}
+}
+
+
+/**
+ * 手机号校验(只做长度校验)
+ */
+$.validator.addMethod("telRule", function(value, element) {
+	var phone =  /^\d{11}(,\d{11})*$/;//多个手机号已逗号分隔
+	return this.optional(element) || (phone.test(value));
+}, "请输入正确的手机号！");
+
+
+
+/**
+ * 绑定"上传封面图"单击事件
+ */
+$(".upload-btn").on("click",function(){
+	if($(this).next().find("li").length>=5){
+		showWarningWindow("warning","最多添加5张图片!",9999);
+		return false;
+	}
+	$("#datas .active").removeClass("active");
+	$(this).next().addClass("active");
+	var addImgId="zhiboCover";
+	var anchorId=$("#anchorId_").val();
+	if(anchorId==undefined || anchorId==""){
+		showWarningWindow("warning","请选择主播!",9999);
+	}else{
+		anchorImageChooser = new ModalTrigger({
+ 			title:'主播相册',
+			type : 'ajax',
+			width:'800px',
+			position:'10px',//距顶部的偏移
+			url : 'anchorBusiness/manage/anchorImage/anchorImageChooser.jhtml?id=' + anchorId+"&addImgId="+addImgId ,
+			toggle : 'modal'
+		});
+		anchorImageChooser.show();
+	}
+});
+
+//删除图片
+$("#datas .img-list").on("click","em",function(){
+	$(this).parent().remove();
+});
+
+
+/**
+ * 绑定确认添加标签按钮click事件
+ */
+
+$("#addTagBtn").on("click",function(){
+	var tagText=$("#tagId_chosen").find(".chosen-single span").text();
+	var tagId=$("#tagId").val();
+	if(tagId){
+		if(tagIds.length<2){
+			for(var i=0;i<tagIds.length;i++){
+				if(tagId==tagIds[i]){
+					showWarningWindow("warning","该标签已添加!",9999);
+					return false;
+				}
+			}
+			tagIds.push(tagId);
+			$("#box").append("<span name='"+tagId+"'>"+tagText+"<em class='icon-remove'></em></span>");
+		}else{
+			showWarningWindow("warning","最多添加2个标签!",9999);
+		}
+	}else{
+		showWarningWindow("warning","请选择标签!",9999);
+	}
+	
+});
+
+//删除标签
+$("#box").on("click","em",function(){
+	for(var i=0;i<tagIds.length;i++){
+		if($(this).parent().attr("name")==tagIds[i]){
+			tagIds.splice($.inArray(tagIds[i], tagIds), 1);
+		}
+	}
+	$(this).parent().remove();
+});
+
+
+//初始化日期控件
+function initDate(){
+	
+	
+	$('input[name="planStartDate"]').datetimepicker({
+		weekStart : 0,
+		todayBtn : 0,
+		autoclose : 1,
+		todayHighlight : 1,
+		startView : 2,
+		minView : 0,
+		minuteStep :30,
+		forceParse : 0,
+		showMeridian : 1,
+		format : 'yyyy-mm-dd hh:ii',
+		startDate : new Date(),
+		endDate: $("input[name='planEndDate']").val()
+	}).on("changeDate",function() {
+			$("input[name='planEndDate']").datetimepicker("setStartDate",$("input[name='planStartDate']").val());
+		});
+	
+	$('input[name="planEndDate').datetimepicker({
+		weekStart : 0,
+		todayBtn : 0,
+		autoclose : 1,
+		todayHighlight : 1,
+		startView : 2,
+		minView : 0,
+		minuteStep :30,
+		forceParse : 0,
+		showMeridian : 1,
+		format : 'yyyy-mm-dd hh:ii',
+		startDate: $("input[name='planStartDate']").val()
+	}).on( "changeDate", function() {
+				$("input[name='planStartDate']").datetimepicker("setEndDate", $("input[name='planEndDate']").val());
+			});
+	
+	$('.form_datetime').datetimepicker({
+		weekStart : 0,
+		todayBtn : 0,
+		autoclose : 1,
+		todayHighlight : 1,
+		startView : 2,
+		minView : 0,
+		minuteStep :30,
+		forceParse : 0,
+		showMeridian : 1,
+		format : 'yyyy-mm-dd hh:ii',
+		startDate : new Date(),
+	});
+	
+};
+
+//删除标签
+$("#datas").on("click","em.remove-tag",function(){
+	var tagId=$(this).parent().attr("name");
+	var spans=$(this).parent().parent().next().find("span");
+	for(var i=0;i<spans.length;i++){
+		if(spans.eq(i).text()==tagId){
+			spans.eq(i).remove();
+		}
+	}
+	$(this).parent().remove();
+});
+
+
+/**
+ * 是否自定义分享描述设置
+ */
+function initCustomShareSet(){
+//	debugger;
+	var customShare=$("input[name='isCustomShare']:checked").val();
+	if(customShare==undefined){
+//		customShare=1;//未设置，默认不提供
+		$("input[name='isCustomShare']")[1].checked=true;
+	}
+	customShareChange();
+}
+
+/**
+ * 绑定"是否自定义分享描述"单击事件
+ */
+$("input[name='isCustomShare']").on("change",function(){
+	customShareChange();
+});
+
+/**
+ * 是否自定义分享描述初始化
+ */
+function customShareChange(){
+	var isCustomShare = $("input[name='isCustomShare']:checked").val();
+	if (isCustomShare == 1) {
+		$("#customShareTitleInfo").css("display","block");
+		$("#customShareDescInfo").css("display","block");
+	} else {
+		$("#customShareTitleInfo").css("display","none");
+		$("#customShareDescInfo").css("display","none");
+//		$("input[name='customShareTitle']").val('');
+//		$("input[name='customShareDesc']").val('');
+	}
+}
+

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.manor.dao.ManorFlowerDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.manor.entity.TManorFlower" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="branch_id" property="branchId" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="florist_uid" property="floristUid" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="perish_time" property="perishTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, branch_id, type, florist_uid, uid, perish_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_manor_flower
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_manor_flower
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.manor.entity.TManorFlower" >
+    insert into t_manor_flower (id, branch_id, type, 
+      florist_uid, uid, perish_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{branchId,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, 
+      #{floristUid,jdbcType=INTEGER}, #{uid,jdbcType=INTEGER}, #{perishTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.manor.entity.TManorFlower" >
+    insert into t_manor_flower
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="branchId != null" >
+        branch_id,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="floristUid != null" >
+        florist_uid,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="perishTime != null" >
+        perish_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="branchId != null" >
+        #{branchId,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="floristUid != null" >
+        #{floristUid,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="perishTime != null" >
+        #{perishTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.manor.entity.TManorFlower" >
+    update t_manor_flower
+    <set >
+      <if test="branchId != null" >
+        branch_id = #{branchId,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="floristUid != null" >
+        florist_uid = #{floristUid,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="perishTime != null" >
+        perish_time = #{perishTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.manor.entity.TManorFlower" >
+    update t_manor_flower
+    set branch_id = #{branchId,jdbcType=VARCHAR},
+      type = #{type,jdbcType=INTEGER},
+      florist_uid = #{floristUid,jdbcType=INTEGER},
+      uid = #{uid,jdbcType=INTEGER},
+      perish_time = #{perishTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 自定义sql专区 -->
+  
+      <!-- 当前在种的花朵 -->
+	<select id="getCurrentFlowerCount" parameterType="Object" resultMap="BaseResultMap">
+		SELECT COUNT(1) as currentFlowerRelationCount, florist_uid
+		FROM `t_manor_flower` t
+		<where>
+			1 = 1
+			AND t.type = 1 
+			AND t.florist_uid IN
+			<foreach item="item" index="index" collection="array" open="("
+				separator="," close=") ">
+				#{item}
+			</foreach>
+			<![CDATA[
+			    AND perish_time > NOW()
+		  	]]>
+		  	GROUP BY florist_uid
+		</where>
+	</select>
+
+	<!-- 当前在种的花朵+历史枯萎的花朵 -->
+	<select id="getTotalFlowerCount" parameterType="Object" resultMap="BaseResultMap">
+		SELECT COUNT(1) as totalFlowerRelationCount, florist_uid
+		FROM `t_manor_flower` t
+		<where>
+			1 = 1
+			AND t.type = 1
+            AND t.florist_uid IN
+            <foreach item="item" index="index" collection="array" open="("
+				separator="," close=") ">
+				#{item}
+			</foreach>
+		  	GROUP BY florist_uid
+		</where>
+	</select>
+  
+</mapper>

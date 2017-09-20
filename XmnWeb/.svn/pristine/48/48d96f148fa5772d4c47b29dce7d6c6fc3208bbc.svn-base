@@ -1,0 +1,120 @@
+package com.xmniao.xmn.core.vstar.entity;
+
+import java.util.Date;
+
+import com.xmniao.xmn.core.util.StringUtils;
+
+public class TVstarContentAttachment {
+	private Long id;
+
+	private Long contentId;
+
+	private String fileType;
+
+	private String fileName;
+
+	private String fileUrl;
+
+	private Integer sortVal;
+
+	private Integer status;
+
+	private Date createTime;
+
+	private Date updateTime;
+
+	private Long fileSize;
+	
+	private String fileSizeStr;
+	
+	public String getFileSizeStr() {
+		if(fileSize==null){
+			return null;
+		}
+		return StringUtils.getPrintSize(fileSize);
+	}
+
+	public void setFileSizeStr(String fileSizeStr) {
+		this.fileSizeStr = fileSizeStr;
+	}
+
+	public Long getFileSize() {
+		return fileSize;
+	}
+
+	public void setFileSize(Long fileSize) {
+		this.fileSize = fileSize;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Long getContentId() {
+		return contentId;
+	}
+
+	public void setContentId(Long contentId) {
+		this.contentId = contentId;
+	}
+
+	public String getFileType() {
+		return fileType;
+	}
+
+	public void setFileType(String fileType) {
+		this.fileType = fileType == null ? null : fileType.trim();
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName == null ? null : fileName.trim();
+	}
+
+	public String getFileUrl() {
+		return fileUrl;
+	}
+
+	public void setFileUrl(String fileUrl) {
+		this.fileUrl = fileUrl == null ? null : fileUrl.trim();
+	}
+
+	public Integer getSortVal() {
+		return sortVal;
+	}
+
+	public void setSortVal(Integer sortVal) {
+		this.sortVal = sortVal;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+
+	public Date getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(Date updateTime) {
+		this.updateTime = updateTime;
+	}
+}

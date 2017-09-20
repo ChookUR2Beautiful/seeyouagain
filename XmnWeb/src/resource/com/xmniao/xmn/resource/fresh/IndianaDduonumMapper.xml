@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.fresh.dao.IndianaDduonumDao">
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.fresh.entity.IndianaDduonum">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="bout_id" jdbcType="INTEGER" property="boutId" />
+    <result column="uid" jdbcType="INTEGER" property="uid" />
+    <result column="nname" jdbcType="VARCHAR" property="nname" />
+    <result column="robot_id" jdbcType="INTEGER" property="robotId" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, bout_id, uid, nname, robot_id, type, create_time,phone
+  </sql>
+  <update id="setWinner" parameterType="com.xmniao.xmn.core.fresh.entity.IndianaDduonum">
+  	  update t_fresh_activity_indiana_dduonum set type= 2 where id = #{id}
+  </update>
+  <update id="cancelWinner" parameterType="com.xmniao.xmn.core.fresh.entity.IndianaDduonum">
+  		update t_fresh_activity_indiana_dduonum set type = 0 where bout_id = #{boutId} and type = 2
+  		<if test="id != null">
+  			and id = #{id}
+  		</if>
+  </update>
+  <select id="getLastFifty" resultMap="BaseResultMap">
+  	   SELECT <include refid="Base_Column_List" /> from t_fresh_activity_indiana_dduonum GROUP BY order_no ORDER BY id desc LIMIT 0,50
+  </select>
+  <select id="getHasWinnerNum" resultMap="BaseResultMap">
+  	 select 
+  	<include refid="Base_Column_List" />
+    from t_fresh_activity_indiana_dduonum
+    where bout_id=#{boutId} and type = 2
+  </select>
+   <select id="getList" parameterType="com.xmniao.xmn.core.fresh.entity.IndianaDduonum" resultMap="BaseResultMap">
+    select 
+  	<include refid="Base_Column_List" />
+    from t_fresh_activity_indiana_dduonum where 1=1 
+       and (type = 0 or type = 2)
+       and  bout_id = #{boutId,jdbcType=INTEGER}
+      <if test="phone != null">
+      	 and (phone = #{phone} or id like '%${phone}%')
+      </if>
+  </select>
+   <select id="count" parameterType="com.xmniao.xmn.core.fresh.entity.IndianaDduonum" resultType="java.lang.Long">
+    select 
+  	count(1)
+    from t_fresh_activity_indiana_dduonum where 1=1 
+       and (type = 0 or type = 2)
+       and  bout_id = #{boutId,jdbcType=INTEGER}
+      <if test="phone != null">
+      	 and (phone = #{phone} or id like '%${phone}%')
+      </if>
+  </select>
+  <select id="countWinnerVeces" resultType="java.lang.Long">
+  		select count(1)
+  		from t_fresh_activity_indiana_dduonum
+  		where bout_id = #{boutId}
+  		<if test="robotId !=null">
+  			and robot_id = #{robotId}
+  		</if>
+  		<if test="uid !=null">
+  			and uid = #{uid}
+  		</if>
+  </select>
+  <select id="getWinnerRobot" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List" />
+    from t_fresh_activity_indiana_dduonum
+    where bout_id=#{boutId} and type=1 and uid is null
+    limit #{nextInt},1
+  </select>
+  <select id="getWinnerUid" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List" />
+    from t_fresh_activity_indiana_dduonum
+    where bout_id=#{boutId} and type=0 and robot_id is null
+    limit #{nextInt},1
+  </select>
+  <select id="countRobot" resultType="java.lang.Long">
+  	select count(1) 
+  	from t_fresh_activity_indiana_dduonum
+  	where bout_id=#{boutId} and type=1
+  </select>
+  <select id="countUid" resultType="java.lang.Long">
+  	select count(1) 
+  	from t_fresh_activity_indiana_dduonum
+  	where bout_id=#{boutId} and type=0
+  </select>
+  <select id="getByBoutIsNotReal" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+  	 select
+  	 <include refid="Base_Column_List" />
+    from t_fresh_activity_indiana_dduonum
+    where bout_id=#{boutId} and type=1
+    limit 10
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_fresh_activity_indiana_dduonum
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from t_fresh_activity_indiana_dduonum
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.fresh.entity.IndianaDduonum">
+    insert into t_fresh_activity_indiana_dduonum (id, bout_id, uid, 
+      nname, robot_id, type, 
+      create_time)
+    values (#{id,jdbcType=BIGINT}, #{boutId,jdbcType=INTEGER}, #{uid,jdbcType=INTEGER}, 
+      #{nname,jdbcType=VARCHAR}, #{robotId,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="add" parameterType="com.xmniao.xmn.core.fresh.entity.IndianaDduonum" >
+    insert into t_fresh_activity_indiana_dduonum
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="boutId != null">
+        bout_id,
+      </if>
+      <if test="uid != null">
+        uid,
+      </if>
+      <if test="nname != null">
+        nname,
+      </if>
+      <if test="robotId != null">
+        robot_id,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="boutId != null">
+        #{boutId,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null">
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="nname != null">
+        #{nname,jdbcType=VARCHAR},
+      </if>
+      <if test="robotId != null">
+        #{robotId,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.fresh.entity.IndianaDduonum">
+    update t_fresh_activity_indiana_dduonum
+    <set>
+      <if test="boutId != null">
+        bout_id = #{boutId,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null">
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="nname != null">
+        nname = #{nname,jdbcType=VARCHAR},
+      </if>
+      <if test="robotId != null">
+        robot_id = #{robotId,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.fresh.entity.IndianaDduonum">
+    update t_fresh_activity_indiana_dduonum
+    set bout_id = #{boutId,jdbcType=INTEGER},
+      uid = #{uid,jdbcType=INTEGER},
+      nname = #{nname,jdbcType=VARCHAR},
+      robot_id = #{robotId,jdbcType=INTEGER},
+      type = #{type,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

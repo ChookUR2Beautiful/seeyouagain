@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TCouponOrderDao" >
+
+
+  <resultMap id="couponOrderMap" type="com.xmniao.xmn.core.live_anchor.entity.TCouponOrder" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="order_sn" property="orderSn" jdbcType="VARCHAR" />
+    <result column="anchor_cid" property="anchorCid" jdbcType="INTEGER" />
+    <result column="cid_num" property="cidNum" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="BIGINT" />
+    <result column="nname" property="nname" jdbcType="VARCHAR" />
+    <result column="phoneid" property="phoneid" jdbcType="VARCHAR" />
+    <result column="record_id" property="recordId" jdbcType="INTEGER" />
+    <result column="sellerid" property="sellerid" jdbcType="BIGINT" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="payid" property="payid" jdbcType="VARCHAR" />
+    <result column="payment_type" property="paymentType" jdbcType="VARCHAR" />
+    <result column="third_uid" property="thirdUid" jdbcType="VARCHAR" />
+    <result column="third_serial" property="thirdSerial" jdbcType="VARCHAR" />
+    <result column="total_amount" property="totalAmount" jdbcType="DECIMAL" />
+    <result column="cash" property="cash" jdbcType="DECIMAL" />
+    <result column="balance" property="balance" jdbcType="DECIMAL" />
+    <result column="commision" property="commision" jdbcType="DECIMAL" />
+    <result column="zbalance" property="zbalance" jdbcType="DECIMAL" />
+    <result column="beans" property="beans" jdbcType="DECIMAL" />
+    <result column="integral" property="integral" jdbcType="DECIMAL" />
+    <result column="cuser" property="cuser" jdbcType="DECIMAL" />
+    <result column="cdid" property="cdid" jdbcType="INTEGER" />
+    <result column="return_integral" property="returnIntegral" jdbcType="DECIMAL" />
+    <result column="retrun_coupon_amount" property="retrunCouponAmount" jdbcType="DECIMAL" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="order_source" property="orderSource" jdbcType="INTEGER" />
+    <result column="buy_source" property="buySource" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  
+  <sql id="couponOrder_column_list" >
+    c.id, c.order_sn, c.anchor_cid, c.cid_num, c.uid, c.nname, c.phoneid, c.record_id, c.sellerid, c.status, 
+    c.payid, c.payment_type, c.third_uid, c.third_serial, c.total_amount, c.cash, c.balance, c.commision, 
+    c.zbalance, c.beans, c.integral, c.cuser, c.cdid, c.return_integral, c.retrun_coupon_amount, c.create_time, 
+    c.modify_time, c.version, c.order_source,c.buy_source
+  </sql>
+  
+  <sql id="liveReocrd_column_list" >
+    l.sellername,
+    l.anchor_id AS anchorId,
+    l.nname AS anchorName
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test=" null != id and '' != id">
+  		AND id =#{id}
+  	</if>
+  	<if test=" null != orderSn and '' != orderSn">
+  		AND order_sn=#{orderSn}
+  	</if>
+  	<if test=" null != paymentType and '' != paymentType">
+  		AND payment_type=#{paymentType}
+  	</if>
+  	<if test=" null != orderSource and '' != orderSource">
+  		AND order_source=#{orderSource}
+  	</if>
+  	<if test=" null != buySource and '' != buySource">
+  		AND buy_source=#{buySource}
+  	</if>
+  	<if test=" null != status">
+  		AND c.status=#{status}
+  	</if>
+  	<if test=" null != sellerid">
+  		AND c.sellerid=#{sellerid}
+  	</if>
+  	<!-- 用户昵称 -->
+  	<if test=" null != nname and '' != nname">
+  		AND c.nname like '%${nname}%'
+  	</if>
+  	<!-- 用户手机 -->
+  	<if test=" null != phoneid and '' != phoneid">
+  		AND c.phoneid=#{phoneid}
+  	</if>
+  	<!-- 主播昵称 -->
+  	<if test=" null != anchorName and '' != anchorName">
+  		AND l.nname like '%${anchorName}%'
+  	</if>
+  	<!-- 商家名称 -->
+  	<if test=" null != sellername and '' != sellername">
+  		AND l.sellername like '%${sellername}%'
+  	</if>
+  	<!-- 粉丝券ID -->
+  	<if test=" null != cid and '' != cid">
+  		AND cn.cid = #{cid}
+  	</if>
+  	<!-- 粉丝券名称 -->
+  	<if test=" null != cname and '' != cname">
+  		AND cn.cname like '%${cname}%'
+  	</if>
+  	<!-- <if test=" null != eUid and '' != eUid">
+  		AND c.uid != #{eUid} AND c.uid_relation_chain like '%${eUid}%'
+  	</if> -->
+  	
+  	<if test=" null != juniorUids and '' != juniorUids ">
+			AND c.uid IN
+			<foreach item="item" index="index" collection="juniorUids"  open="(" separator="," close=") ">
+			 	#{item}
+			</foreach>
+	</if>
+  </sql>
+  
+  
+  <select id="getObject" resultMap="couponOrderMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="couponOrder_column_list" />
+    from t_coupon_order c
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  
+  <select id="getList" resultMap="couponOrderMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.TCouponOrder" >
+    select 
+    <include refid="couponOrder_column_list" />,
+    <include refid="liveReocrd_column_list" />,
+    cn.cid,cn.cname
+    from 
+    	t_coupon_order c
+    left join t_live_record l on c.record_id = l.id
+    LEFT JOIN t_fans_coupon_anchor_ref fs on fs.anchor_cid =  c.anchor_cid
+	LEFT JOIN t_coupon cn on cn.cid = fs.cid
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+    ORDER BY create_time DESC
+    <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <!-- 获取标题栏统计信息 -->
+  <select id="getTitleInfo" resultType="java.util.Map" parameterType="com.xmniao.xmn.core.live_anchor.entity.TCouponOrder" >
+    select 
+    	IFNULL(SUM(c.cid_num),0) AS cidNumSum,
+			IFNULL(SUM(c.total_amount),0) AS totalAmountSum
+    from 
+    	t_coupon_order c
+    left join t_live_record l on c.record_id = l.id
+    LEFT JOIN t_fans_coupon_anchor_ref fs on fs.anchor_cid =  c.anchor_cid
+	LEFT JOIN t_coupon cn on cn.cid = fs.cid
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+  </select>
+  
+  <!-- 获取指定订单编号的粉丝券使用状态，使用时间，锁定时间 -->
+  <select id="getDetailInfoListByOrderNo" resultType="com.xmniao.xmn.core.live_anchor.entity.TCouponOrder" parameterType="Object">
+  	SELECT
+		user_status AS userStatus,
+		user_time AS userTime,
+		lock_time AS lockTime,
+		order_no AS orderSn
+	FROM
+		t_coupon_detail
+	WHERE
+		ctype = '2'
+	AND order_no IN
+	<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+		 	#{item}
+	</foreach>
+  
+  </select>
+  
+  <!-- 获取指定订单ID的粉丝券使用状态，使用时间，分账状态-->
+  <select id="getDetailInfoById" resultType="com.xmniao.xmn.core.live_anchor.entity.TCouponOrder" parameterType="com.xmniao.xmn.core.live_anchor.entity.TCouponOrder">
+  	SELECT
+		tco.id AS id,
+		tcd.cid AS cid,
+		tcd.user_status AS userStatus,
+		tcd.user_time AS userTime,
+		CASE
+		WHEN tb.isaccount = 0 THEN
+			'未分账'
+		WHEN tb.isaccount = 1 THEN
+			'已分账'
+		ELSE
+			'未分账'
+		END AS accountStatus
+	FROM
+		t_coupon_order tco
+	LEFT JOIN t_coupon_detail tcd ON tco.order_sn = tcd.order_no
+	 	AND tcd.ctype = '2'
+	LEFT JOIN t_bill tb ON tcd.bid = tb.bid
+	WHERE
+	 	tco.id = #{id}
+  </select>
+  
+  
+  <select id="count" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.live_anchor.entity.TCouponOrder" >
+    select 
+    	count(1)
+    from 
+    	t_coupon_order c
+   	left join t_live_record l on c.record_id = l.id
+   	LEFT JOIN t_fans_coupon_anchor_ref fs on fs.anchor_cid =  c.anchor_cid
+	LEFT JOIN t_coupon cn on cn.cid = fs.cid
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+  </select>
+  
+</mapper>

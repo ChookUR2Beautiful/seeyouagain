@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.dataDictionary.dao.BRecruitTagDao" >
+
+  <resultMap id="BRecruitTagMap" type="BRecruitTag" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="tagname" property="tagname" jdbcType="VARCHAR" />
+    <result column="tagtype" property="tagtype" jdbcType="INTEGER" />
+    <result column="tagstatus" property="tagstatus" jdbcType="TINYINT" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    <result column="operator" property="operator" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  	<!-- 查询结果返回列 -->
+	<sql id="Base_Column_List" >
+	  id, tagname, tagtype, tagstatus, update_date, operator
+	</sql>
+  
+  	<!-- Where查询条件 -->
+	<sql id="whereSQL">
+		<if test=" null != id">
+			AND id =#{id}
+		</if>
+		<if test=" null != tagname and '' != tagname">
+			AND tagname LIKE '%${tagname}%'
+		</if>
+		<if test=" null != tagtype and '' != tagtype or 0 == tagtype">
+			AND tagtype = #{tagtype}
+		</if>
+	</sql>
+  
+  <insert id="add" parameterType="BRecruitTag" >
+    insert into b_recruit_tag
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="tagname != null" >
+        tagname,
+      </if>
+      <if test="tagtype != null" >
+        tagtype,
+      </if>
+      <if test="tagstatus != null" >
+        tagstatus,
+      </if>
+      <if test="updateDate != null" >
+        update_date,
+      </if>
+      <if test="operator != null" >
+        operator,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="tagname != null" >
+        #{tagname,jdbcType=VARCHAR},
+      </if>
+      <if test="tagtype != null" >
+        #{tagtype,jdbcType=INTEGER},
+      </if>
+      <if test="tagstatus != null" >
+        #{tagstatus,jdbcType=TINYINT},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operator != null" >
+        #{operator,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <delete id="delete" parameterType="java.lang.Integer" >
+    delete from b_recruit_tag
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <update id="update" parameterType="BRecruitTag" >
+    update b_recruit_tag
+    <set >
+      <if test="tagname != null" >
+        tagname = #{tagname,jdbcType=VARCHAR},
+      </if>
+      <if test="tagtype != null" >
+        tagtype = #{tagtype,jdbcType=INTEGER},
+      </if>
+      <if test="tagstatus != null" >
+        tagstatus = #{tagstatus,jdbcType=TINYINT},
+      </if>
+      <if test="updateDate != null" >
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operator != null" >
+        operator = #{operator,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+   <select id="getList" resultMap="BRecruitTagMap" parameterType="BRecruitTag" >
+	    select 
+	    <include refid="Base_Column_List" />
+	    ,( SELECT count(1) FROM b_tag_entity entity WHERE tag.id = entity.tag_id ) AS tagCount
+	    from b_recruit_tag tag
+	    <where>
+			1=1
+			<include refid="whereSQL"></include>
+		</where>
+		ORDER BY id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+   </select>
+   
+   <select id="count" resultType="Long" parameterType="BRecruitTag">
+		SELECT COUNT(1) FROM b_recruit_tag
+		<where>
+			1=1
+			<include refid="whereSQL"></include>
+		</where>
+	</select>
+	
+	<select id="getRecruitTag" resultMap="BRecruitTagMap" parameterType="java.lang.Long">
+		SELECT 
+			<include refid="Base_Column_List" />
+		FROM b_recruit_tag WHERE id = #{0}
+	</select>
+  
+</mapper>

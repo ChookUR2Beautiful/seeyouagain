@@ -1,0 +1,53 @@
+package com.xmniao.xmn.core.xmermanagerment.dao;
+
+import java.util.List;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.xmermanagerment.entity.TSaasSoldOrder;
+
+/**
+ * 
+ * 
+ * 项目名称：XmnWeb
+ * 
+ * 类名称：TSaasSoldOrderDao
+ * 
+ * 类描述： 商家签约订单DAO
+ * 
+ * 创建人： Chen Bo
+ * 
+ * 创建时间：2016年5月31日 下午2:55:33 
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司
+ */
+public interface TSaasSoldOrderDao extends BaseDao<TSaasSoldOrder>{
+
+	/**
+	 * 获取saas签约订单
+	 */
+    TSaasSoldOrder getSaasSoldOrder(TSaasSoldOrder tSaasSoldOrder);
+
+    /**
+     * 更新Saas签约订单状态
+     */
+    int updateSaasSoldOrder(TSaasSoldOrder tSaasSoldOrder);
+
+    /**
+     * @Description: 
+     * @Param:
+     * @return:List<TSaasSoldOrder>
+     * @author:lifeng
+     * @time:2016年6月15日上午11:34:00
+     */
+	List<TSaasSoldOrder> getSaasSoldOrderList(TSaasSoldOrder saasSoldOrder);
+
+	/**
+	 * @Description: 
+	 * @Param:
+	 * @return:Long
+	 * @author:lifeng
+	 * @time:2016年6月15日上午11:34:04
+	 */
+	Long getCountByParam(TSaasSoldOrder saasSoldOrder);
+
+}

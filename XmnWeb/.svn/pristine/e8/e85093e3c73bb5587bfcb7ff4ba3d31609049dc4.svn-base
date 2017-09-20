@@ -1,0 +1,45 @@
+package com.xmniao.xmn.core.reward_dividends.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.xmniao.xmn.core.base.BaseController;
+import com.xmniao.xmn.core.base.Pageable;
+import com.xmniao.xmn.core.reward_dividends.entity.TLiveGivedGiftVke;
+import com.xmniao.xmn.core.reward_dividends.service.VerProfitCountService;
+import com.xmniao.xmn.core.util.handler.annotation.RequestLogging;
+
+/**
+ * V客充值奖励
+ * 
+ * @author Administrator
+ *
+ */
+@RequestLogging(name = "V客收益统计")
+@Controller
+@RequestMapping(value = "verProfitCount/manage")
+public class VerProfitCountController extends BaseController {
+	
+	@Autowired
+	private VerProfitCountService verProfitCountService;
+
+	@RequestMapping(value = "init")
+	public String init() {
+		return "reward_dividends/verProfitCountManage";
+	}
+	
+	@RequestMapping(value = "init/list")
+	@ResponseBody
+	public Object list(TLiveGivedGiftVke liveGivedGiftVke){
+		Pageable<TLiveGivedGiftVke> pageable = new Pageable<TLiveGivedGiftVke>(liveGivedGiftVke);
+		
+		pageable = verProfitCountService.getLiveGivedGiftVkeInfoList(liveGivedGiftVke);
+		this.log.info("RecommendMemberController-->list pageable=" + pageable);
+		
+		return pageable;
+	}
+	
+
+}

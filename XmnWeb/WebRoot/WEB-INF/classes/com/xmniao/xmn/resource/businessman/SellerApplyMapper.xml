@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.SellerApplyDao">
+
+	<parameterMap type="SellerApply" id="sellerApply" />
+	<parameterMap type="TSellerPicApply" id="sellerPicApply" />
+	
+	<resultMap type="SellerApply" id="sellerApplyMap">
+		<result column="id" property="id" />
+		<result column="sellerid" property="sellerid" />
+		<result column="sellername" property="sellername" />
+		<result column="sellerNameStr" property="sellerNameStr" />
+		<result column="logo" property="logo" />
+		<result column="province" property="province" />
+		<result column="city" property="city" />
+		<result column="area" property="area" />
+		<result column="zoneid" property="zoneid" />
+		<result column="status" property="status" />
+		<result column="reason" property="reason" />
+		<result column="address" property="address" />
+		<result column="landmark" property="landmark" />
+		<result column="sdate" property="sdate" />
+		<result column="edate" property="edate" />
+		<result column="areaTitle" property="areaTitle" />
+		<result column="businessTitle" property="businessTitle" />
+		<result column="agio_agio" property="agioAgio" />
+		<result column="longitude" property="longitude"/>
+		<result column="latitude" property="latitude"/>
+		<result column="source" property="source" />
+		<result column="sexplain" property="sexplain" />
+		<result column="phone" property="phone" />
+	</resultMap>
+	
+	<resultMap type="TSellerPicApply" id="sellerPicApply">
+		<result column="id" property="id" />
+		<result column="sellerid" property="sellerid" />
+		<result column="said" property="said" />
+		<result column="type" property="type" />
+		<result column="pic_url" property="picurl" />
+		<result column="pic_name" property="picname" />
+		<result column="update_date" property="updateDate" />
+		<result column="op_type" property="optype" />
+		<result column="picid" property="picid" />
+	</resultMap>
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_log
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						sellerid,
+						sellername,
+						logo,
+						province,
+						city,
+						area,
+						status,
+						reason,
+						address,
+						landmark,
+						sdate,
+						edate,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.sellerid},
+						 #{item.sellername},
+						 #{item.logo},
+						 #{item.province},
+						 #{item.city},
+						 #{item.area},
+						 #{item.status},
+						 #{item.reason},
+						 #{item.address},
+						 #{item.landmark},
+						 #{item.sdate},
+						 #{item.edate},
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" parameterMap="sellerApply" >
+		INSERT INTO t_seller_apply
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					id,
+				</if>
+			 	<if test=" null != sellerid">
+					sellerid,
+				</if>
+			 	<if test=" null != sellername and '' != sellername ">
+					sellername,
+				</if>
+			 	<if test=" null != logo and '' != logo ">
+					logo,
+				</if>
+			 	<if test=" null != province and '' != province ">
+					province,
+				</if>
+			 	<if test=" null != city and '' != city ">
+					city,
+				</if>
+			 	<if test=" null != area and '' != area ">
+					area,
+				</if>
+			 	<if test=" null != status">
+					status,
+				</if>
+			 	<if test=" null != reason and '' != reason ">
+					reason,
+				</if>
+			 	<if test=" null != address and '' != address ">
+					address,
+				</if>
+			 	<if test=" null != landmark and '' != landmark ">
+					landmark,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+			 	<if test=" null != edate">
+					edate,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					 	#{id},
+				</if>
+			 	<if test=" null != sellerid">
+					 	#{sellerid},
+				</if>
+			 	<if test=" null != sellername and '' != sellername ">
+					 	#{sellername},
+				</if>
+			 	<if test=" null != logo and '' != logo ">
+					 	#{logo},
+				</if>
+			 	<if test=" null != province and '' != province ">
+					 	#{province},
+				</if>
+			 	<if test=" null != city and '' != city ">
+					 	#{city},
+				</if>
+			 	<if test=" null != area and '' != area ">
+					 	#{area},
+				</if>
+			 	<if test=" null != status">
+					 	#{status},
+				</if>
+			 	<if test=" null != reason and '' != reason ">
+					 	#{reason},
+				</if>
+			 	<if test=" null != address and '' != address ">
+					 	#{address},
+				</if>
+			 	<if test=" null != landmark and '' != landmark ">
+					 	#{landmark},
+				</if>
+			 	<if test=" null != sdate">
+					 	#{sdate},
+				</if>
+			 	<if test=" null != edate">
+					 	#{edate},
+				</if>
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_seller_apply WHERE id IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterMap="sellerApply">
+		UPDATE t_seller_apply
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != id">
+					id = #{id},
+				</if>
+				<if test=" null != sellerid">
+					sellerid = #{sellerid},
+				</if>
+				<if test=" null != sellername and '' != sellername ">
+					sellername = #{sellername},
+				</if>
+				<if test=" null != logo and '' != logo ">
+					logo = #{logo},
+				</if>
+				<if test=" null != province and '' != province ">
+					province = #{province},
+				</if>
+				<if test=" null != city and '' != city ">
+					city = #{city},
+				</if>
+				<if test=" null != area and '' != area ">
+					area = #{area},
+				</if>
+				<if test=" null != status">
+					status = #{status},
+				</if>
+				<if test=" null != reason and '' != reason ">
+					reason = #{reason},
+				</if>
+				<if test=" null != address and '' != address ">
+					address = #{address},
+				</if>
+				<if test=" null != landmark and '' != landmark ">
+					landmark = #{landmark},
+				</if>
+				<if test=" null != sdate">
+					sdate = #{sdate},
+				</if>
+				<if test=" null != edate">
+					edate = #{edate},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != id and '' != id">
+				id = #{id}
+			</if>
+		</where>
+	</update>
+	
+	<select id="getList" resultMap="sellerApplyMap" parameterMap="sellerApply">
+		SELECT t.*,
+			   CONCAT(tc.title,'-',ta.title) AS areaTitle,
+		 	   tp.title AS businessTitle ,ts.sellername sellerNameStr   
+		 FROM t_seller_apply t
+		 LEFT JOIN t_area ta ON ta.area_id = t.area
+		 LEFT JOIN t_area tc  ON tc.area_id = ta.pid
+		 LEFT JOIN t_business tp ON t.zoneid = tp.bid
+		 LEFT JOIN t_seller ts ON t.sellerid = ts.sellerid
+		<where>
+			1=1
+			<if test=" null != id">
+				AND t.id = #{id}
+			</if>
+			<if test=" null != sellerid">
+				AND t.sellerid = #{sellerid}
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND t.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != logo and '' != logo ">
+				AND t.logo LIKE '%${logo}%'
+			</if>
+			<if test=" null != province and '' != province ">
+				AND t.province LIKE '%${province}%'
+			</if>
+			<if test=" null != city and '' != city ">
+				AND t.city LIKE '%${city}%'
+			</if>
+			<if test=" null != area and '' != area ">
+				AND t.area LIKE '%${area}%'
+			</if>
+			<if test=" null != status">
+				AND t.status = #{status}
+			</if>
+			<if test=" null != reason and '' != reason ">
+				AND t.reason LIKE '%${reason}%'
+			</if>
+			<if test=" null != address and '' != address ">
+				AND t.address LIKE '%${address}%'
+			</if>
+			<if test=" null != landmark and '' != landmark ">
+				AND t.landmark LIKE '%${landmark}%'
+			</if>
+			<if test=" null != stdateStart">
+				AND t.sdate &gt;= #{stdateStart}
+			</if>
+			<if test=" null != stdateEnd">
+				AND t.sdate &lt;= #{stdateEnd}
+			</if>
+			<if test=" null != endateStart">
+				AND t.edate &gt;= #{endateStart}
+			</if>
+			<if test=" null != endateEnd">
+				AND t.edate &lt;= #{endateEnd}
+			</if>
+			
+		</where>
+			ORDER BY sdate DESC,id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="sellerApply">
+		SELECT COUNT(*) FROM t_seller_apply t
+		<where>
+			1=1
+			<if test=" null != id">
+				AND t.id = #{id}
+			</if>
+			<if test=" null != sellerid">
+				AND t.sellerid = #{sellerid}
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND t.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != logo and '' != logo ">
+				AND t.logo LIKE '%${logo}%'
+			</if>
+			<if test=" null != province and '' != province ">
+				AND t.province LIKE '%${province}%'
+			</if>
+			<if test=" null != city and '' != city ">
+				AND t.city LIKE '%${city}%'
+			</if>
+			<if test=" null != area and '' != area ">
+				AND t.area LIKE '%${area}%'
+			</if>
+			<if test=" null != status">
+				AND t.status = #{status}
+			</if>
+			<if test=" null != reason and '' != reason ">
+				AND t.reason LIKE '%${reason}%'
+			</if>
+			<if test=" null != address and '' != address ">
+				AND t.address LIKE '%${address}%'
+			</if>
+			<if test=" null != landmark and '' != landmark ">
+				AND t.landmark LIKE '%${landmark}%'
+			</if>
+			<if test=" null != stdateStart">
+				AND t.sdate &gt;= #{stdateStart}
+			</if>
+			<if test=" null != stdateEnd">
+				AND t.sdate &lt;= #{stdateEnd}
+			</if>
+			<if test=" null != endateStart">
+				AND t.edate &gt;= #{endateStart}
+			</if>
+			<if test=" null != endateEnd">
+				AND t.edate &lt;= #{endateEnd}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Integer">
+		SELECT Max(id) AS VALUE FROM t_seller_apply
+	</select>
+	
+	<select id="getObject" resultMap="sellerApplyMap" parameterType="Long">
+		SELECT * FROM t_seller_apply WHERE id = #{0}
+	</select>
+	
+	<!-- 根据商家查询申请修改信息 -->
+	<select id="findSellerApplyById" resultMap="sellerApplyMap" parameterMap="sellerApply">
+		SELECT * FROM t_seller_apply
+		<where>
+			1=1
+			<if test=" null != sellerid">
+				AND sellerid = #{sellerid}
+			</if>
+		</where>
+	</select>
+	<!-- 根据商家id删除商家修改信息 -->
+	<delete id="deleteApplyBySellerid" parameterType="Object">
+		DELETE FROM t_seller_apply WHERE sellerid IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<!--  批量更改状态 -->
+	<update id="updateApplyStatus" parameterMap="sellerApply">
+		UPDATE t_seller_apply 
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != status">
+					status = #{status},
+				</if>
+				<if test=" null != reason and '' != reason ">
+					reason = #{reason},
+				</if>
+				<if test=" null != edate">
+					edate = #{edate},
+				</if>
+			</trim>
+		</set>
+		WHERE id IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</update>
+	
+	<!-- 查询申请信息 -->
+		<select id="getsellerApplyList" resultMap="sellerApplyMap" parameterMap="sellerApply">
+			SELECT * FROM t_seller_apply WHERE id IN
+			<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+				 #{item}
+			</foreach>
+		</select>
+	<!-- 查询图片信息 -->
+	    <select id="getPicApplyList" resultMap="sellerPicApply" parameterMap="sellerPicApply">
+			SELECT * FROM t_seller_pic_apply WHERE said = #{said} ORDER BY picid
+		</select>
+</mapper>

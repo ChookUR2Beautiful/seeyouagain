@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TLiveAnchorDao" >
+
+  <resultMap id="liveAnchorMap" type="com.xmniao.xmn.core.live_anchor.entity.TLiveAnchor" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="anchor_room_no" property="anchorRoomNo" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="nickname" property="nickname" jdbcType="VARCHAR" />
+    <result column="avatar" property="avatar" jdbcType="VARCHAR" />
+    <result column="sex" property="sex" jdbcType="INTEGER" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="idcard" property="idcard" jdbcType="VARCHAR" />
+    <result column="birthday" property="birthday" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="weixin" property="weixin" jdbcType="VARCHAR" />
+    <result column="age" property="age" jdbcType="INTEGER" />
+    <result column="height" property="height" jdbcType="DECIMAL" />
+    <result column="weight" property="weight" jdbcType="DECIMAL" />
+    <result column="three_dimensional" property="threeDimensional" jdbcType="VARCHAR" />
+    <!-- 个人说明 -->
+    <result column="self_comment" property="selfComment" jdbcType="VARCHAR" />
+    <result column="self_signature" property="selfSignature" jdbcType="VARCHAR" />
+    <result column="regcity" property="regcity" jdbcType="INTEGER" />
+    <result column="achievement" property="achievement" jdbcType="VARCHAR" />
+    <result column="ledger_ratio" property="ledgerRatio" jdbcType="DECIMAL" />
+    <result column="rank_id" property="rankId" jdbcType="INTEGER" />
+    <result column="rank_no" property="rankNo" jdbcType="INTEGER" />
+    <result column="concerned_nums" property="concernedNums" jdbcType="INTEGER" />
+    <result column="concern_nums" property="concernNums" jdbcType="INTEGER" />
+    <result column="gived_gifts_nums" property="givedGiftsNums" jdbcType="INTEGER" />
+    <result column="praised_nums" property="praisedNums" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <!-- 商家是否可见 -->
+    <result column="seller_look_status" property="sellerLookStatus" jdbcType="INTEGER" />
+    <result column="tls_set_status" property="tlsSetStatus" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  
+  <sql id="anchor_column_list" >
+    id, uid, anchor_room_no, name, nickname, avatar, sex,password, phone, idcard, birthday , email, weixin, 
+    age, height, weight, three_dimensional, self_comment , self_signature, regcity, achievement, ledger_ratio, rank_id, rank_no,
+    concerned_nums, concern_nums, gived_gifts_nums, praised_nums, status, seller_look_status , tls_set_status, create_time, 
+    update_time
+  </sql>
+  
+  <!-- Where 查询条件 -->
+  <sql id="whereSQL">
+		<if test=" null != nickname and '' != nickname">
+			AND nickname =#{nickname}
+		</if>
+		<if test=" null != phone and '' != phone">
+			AND phone =#{phone}
+		</if>
+		<if test=" null != sellerLookStatus and '' != sellerLookStatus">
+			AND seller_look_status =#{sellerLookStatus}
+		</if>
+	</sql>
+  
+  
+  <select id="selectByPrimaryKey" resultMap="liveAnchorMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="anchor_column_list" />
+    from b_live_anchor
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from b_live_anchor
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveAnchor" >
+    insert into b_live_anchor
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="anchorRoomNo != null" >
+        anchor_room_no,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="nickname != null" >
+        nickname,
+      </if>
+      <if test="avatar != null" >
+        avatar,
+      </if>
+      <if test="sex != null" >
+        sex,
+      </if>
+      <if test="password != null" >
+        password,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="idcard != null" >
+        idcard,
+      </if>
+      <if test="birthday != null" >
+        birthday,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="weixin != null" >
+        weixin,
+      </if>
+      <if test="age != null" >
+        age,
+      </if>
+      <if test="height != null" >
+        height,
+      </if>
+      <if test="weight != null" >
+        weight,
+      </if>
+      <if test="threeDimensional != null" >
+        three_dimensional,
+      </if>
+      <if test="selfComment != null" >
+        self_comment,
+      </if>
+      <if test="selfSignature != null" >
+        self_signature,
+      </if>
+      <if test="regcity != null" >
+        regcity,
+      </if>
+      <if test="achievement != null" >
+        achievement,
+      </if>
+      <if test="ledgerRatio != null" >
+        ledger_ratio,
+      </if>
+      <if test="rankId != null" >
+        rank_id,
+      </if>
+      <if test="rankNo != null" >
+        rank_no,
+      </if>
+      <if test="concernedNums != null" >
+        concerned_nums,
+      </if>
+      <if test="concernNums != null" >
+        concern_nums,
+      </if>
+      <if test="givedGiftsNums != null" >
+        gived_gifts_nums,
+      </if>
+      <if test="praisedNums != null" >
+        praised_nums,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="sellerLookStatus != null" >
+        seller_look_status,
+      </if>
+      <if test="tlsSetStatus != null" >
+        tls_set_status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="anchorRoomNo != null" >
+        #{anchorRoomNo,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="nickname != null" >
+        #{nickname,jdbcType=VARCHAR},
+      </if>
+      <if test="avatar != null" >
+        #{avatar,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        #{sex,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="idcard != null" >
+        #{idcard,jdbcType=VARCHAR},
+      </if>
+      <if test="birthday != null" >
+        #{birthday,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="weixin != null" >
+        #{weixin,jdbcType=VARCHAR},
+      </if>
+      <if test="age != null" >
+        #{age,jdbcType=INTEGER},
+      </if>
+      <if test="height != null" >
+        #{height,jdbcType=DECIMAL},
+      </if>
+      <if test="weight != null" >
+        #{weight,jdbcType=DECIMAL},
+      </if>
+      <if test="threeDimensional != null" >
+        #{threeDimensional,jdbcType=VARCHAR},
+      </if>
+      <if test="selfComment != null" >
+        #{selfComment,jdbcType=VARCHAR},
+      </if>
+      <if test="selfSignature != null" >
+        #{selfSignature,jdbcType=VARCHAR},
+      </if>
+      <if test="regcity != null" >
+        #{regcity,jdbcType=INTEGER},
+      </if>
+      <if test="achievement != null" >
+        #{achievement,jdbcType=VARCHAR},
+      </if>
+      <if test="ledgerRatio != null" >
+        #{ledgerRatio,jdbcType=DECIMAL},
+      </if>
+      <if test="rankId != null" >
+        #{rankId,jdbcType=INTEGER},
+      </if>
+      <if test="rankNo != null" >
+        #{rankNo,jdbcType=INTEGER},
+      </if>
+      <if test="concernedNums != null" >
+        #{concernedNums,jdbcType=INTEGER},
+      </if>
+      <if test="concernNums != null" >
+        #{concernNums,jdbcType=INTEGER},
+      </if>
+      <if test="givedGiftsNums != null" >
+        #{givedGiftsNums,jdbcType=INTEGER},
+      </if>
+      <if test="praisedNums != null" >
+        #{praisedNums,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="sellerLookStatus != null" >
+        #{sellerLookStatus,jdbcType=INTEGER},
+      </if>
+      <if test="tlsSetStatus != null" >
+        #{tlsSetStatus,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveAnchor" >
+    update b_live_anchor
+    <set >
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="anchorRoomNo != null" >
+        anchor_room_no = #{anchorRoomNo,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="nickname != null" >
+        nickname = #{nickname,jdbcType=VARCHAR},
+      </if>
+      <if test="avatar != null" >
+        avatar = #{avatar,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        sex = #{sex,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="idcard != null" >
+        idcard = #{idcard,jdbcType=VARCHAR},
+      </if>
+      <if test="birthday != null" >
+        birthday = #{birthday,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="weixin != null" >
+        weixin = #{weixin,jdbcType=VARCHAR},
+      </if>
+      <if test="age != null" >
+        age = #{age,jdbcType=INTEGER},
+      </if>
+      <if test="height != null" >
+        height = #{height,jdbcType=DECIMAL},
+      </if>
+      <if test="weight != null" >
+        weight = #{weight,jdbcType=DECIMAL},
+      </if>
+      <if test="threeDimensional != null" >
+        three_dimensional = #{threeDimensional,jdbcType=VARCHAR},
+      </if>
+      <if test="selfComment != null" >
+        self_comment = #{selfComment,jdbcType=VARCHAR},
+      </if>
+      <if test="selfSignature != null" >
+        self_signature = #{self_signature,jdbcType=VARCHAR},
+      </if>
+      <if test="regcity != null" >
+        regcity = #{regcity,jdbcType=INTEGER},
+      </if>
+      <if test="achievement != null" >
+        achievement = #{achievement,jdbcType=VARCHAR},
+      </if>
+      <if test="ledgerRatio != null" >
+        ledger_ratio = #{ledgerRatio,jdbcType=DECIMAL},
+      </if>
+      <if test="rankId != null" >
+        rank_id = #{rankId,jdbcType=INTEGER},
+      </if>
+      <if test="rankNo != null" >
+        rank_no = #{rankNo,jdbcType=INTEGER},
+      </if>
+      <if test="concernedNums != null" >
+        concerned_nums = #{concernedNums,jdbcType=INTEGER},
+      </if>
+      <if test="concernNums != null" >
+        concern_nums = #{concernNums,jdbcType=INTEGER},
+      </if>
+      <if test="givedGiftsNums != null" >
+        gived_gifts_nums = #{givedGiftsNums,jdbcType=INTEGER},
+      </if>
+      <if test="praisedNums != null" >
+        praised_nums = #{praisedNums,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="sellerLookStatus != null" >
+        seller_look_status = #{sellerLookStatus,jdbcType=INTEGER},
+      </if>
+      <if test="tlsSetStatus != null" >
+        tls_set_status = #{tlsSetStatus,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="getList" resultMap="liveAnchorMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveAnchor" >
+    select 
+    <include refid="anchor_column_list" />
+    from b_live_anchor
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+    order by update_time desc
+    <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <select id="count" resultType="Long" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveAnchor">
+		SELECT COUNT(1) FROM b_live_anchor
+		<where>
+			1=1
+			<include refid="whereSQL"></include>
+		</where>
+  </select>
+  
+  <!-- 根据用户id数组查询主播信息 -->
+	<select id="selectLiversByUids" resultMap="liveAnchorMap" parameterType="Object">
+		 SELECT
+			<include refid="anchor_column_list"></include>
+		FROM
+			b_live_anchor
+		WHERE
+			uid IN
+		 <foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+		 	#{item}
+		</foreach>
+	</select>
+  
+</mapper>

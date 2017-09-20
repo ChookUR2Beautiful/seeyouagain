@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.fresh.dao.TFreshActivityAuctionBiddingDao" >
+
+  <resultMap id="freshActivityAuctionBiddingMap" type="com.xmniao.xmn.core.fresh.entity.TFreshActivityAuctionBidding" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="activity_id" property="activityId" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="rise_price" property="risePrice" jdbcType="DECIMAL" />
+    <result column="rise_num" property="riseNum" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="freshActivityAuctionBidding_column_list" >
+    id, activity_id, uid, phone, rise_price, rise_num, create_time
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test="null != activityId and '' != activityId">
+  		AND activity_id =#{activityId}
+  	</if>
+  </sql>
+  
+  
+  <select id="getObject" resultMap="freshActivityAuctionBiddingMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="freshActivityAuctionBidding_column_list" />
+    from t_fresh_activity_auction_bidding
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="getList" resultMap="freshActivityAuctionBiddingMap" parameterType="com.xmniao.xmn.core.fresh.entity.TFreshActivityAuctionBidding" >
+    select 
+    <include refid="freshActivityAuctionBidding_column_list" />
+    from t_fresh_activity_auction_bidding
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+    <if test="order != -1">
+     	ORDER BY create_time DESC
+    </if>
+    <if test="limit != -1">
+    	LIMIT ${(page-1)*limit},#{limit}
+    </if>
+  </select>
+  
+  <select id="count" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.fresh.entity.TFreshActivityAuctionBidding" >
+    select 
+     count(id)
+    from t_fresh_activity_auction_bidding
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+  </select>
+  
+  
+  <delete id="deleteById" parameterType="java.lang.Integer" >
+    delete from t_fresh_activity_auction_bidding
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <insert id="add" parameterType="com.xmniao.xmn.core.fresh.entity.TFreshActivityAuctionBidding" >
+    insert into t_fresh_activity_auction_bidding
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="activityId != null" >
+        activity_id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="risePrice != null" >
+        rise_price,
+      </if>
+      <if test="riseNum != null" >
+        rise_num,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="activityId != null" >
+        #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="risePrice != null" >
+        #{risePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="riseNum != null" >
+        #{riseNum,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.fresh.entity.TFreshActivityAuctionBidding" >
+    update t_fresh_activity_auction_bidding
+    <set >
+      <if test="activityId != null" >
+        activity_id = #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="risePrice != null" >
+        rise_price = #{risePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="riseNum != null" >
+        rise_num = #{riseNum,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+</mapper>

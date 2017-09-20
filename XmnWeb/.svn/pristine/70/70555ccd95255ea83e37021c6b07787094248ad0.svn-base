@@ -1,0 +1,1081 @@
+
+$('.form-time').datetimepicker({
+    language:  'zh-CN',
+    weekStart: 1,
+    todayBtn:  1,
+    autoclose: 1,
+    todayHighlight: 1,
+    startView: 1,
+    minView: 0,
+    maxView: 1,
+    forceParse: 0,
+    minuteStep:1,
+    format: 'hh:ii'
+});
+$('.form-datetime').datetimepicker({
+	weekStart : 1,
+	todayBtn : 1,
+	autoclose : 1,
+	todayHighlight : 1,
+	startView : 2,
+	forceParse : 0,
+	minuteStep:1,
+	showMeridian : 1,
+	format : 'yyyy-mm-dd hh:ii'
+});
+$('input[name="liveLedger.startDate"]').datetimepicker({
+	weekStart : 0,
+	todayBtn : 0,
+	autoclose : 1,
+	todayHighlight : 1,
+	startView : 2,
+	minView : 0,
+	minuteStep :1,
+	forceParse : 0,
+	showMeridian : 1,
+	format : 'yyyy-mm-dd hh:ii',
+	startDate : new Date(),
+	endDate: $("input[name='liveLedger.endDate']").val()
+}).on("changeDate",function() {
+		$("input[name='liveLedger.endDate']").datetimepicker("setStartDate",$("input[name='liveLedger.startDate']").val());
+	});
+
+$('input[name="liveLedger.endDate').datetimepicker({
+	weekStart : 0,
+	todayBtn : 0,
+	autoclose : 1,
+	todayHighlight : 1,
+	startView : 2,
+	minView : 0,
+	minuteStep :1,
+	forceParse : 0,
+	showMeridian : 1,
+	format : 'yyyy-mm-dd hh:ii',
+	startDate: $("input[name='liveLedger.endDate']").val()
+}).on( "changeDate", function() {
+			$("input[name='liveLedger.startDate']").datetimepicker("setEndDate", $("input[name='liveLedger.endDate']").val());
+		});
+
+/**
+ ** 乘法函数，用来得到精确的乘法结果
+ ** 说明：javascript的乘法结果会有误差，在两个浮点数相乘的时候会比较明显。这个函数返回较为精确的乘法结果。
+ ** 调用：accMul(arg1,arg2)
+ ** 返回值：arg1乘以 arg2的精确结果
+ **/
+function accMul(arg1, arg2) {
+    var m = 0, s1 = arg1.toString(), s2 = arg2.toString();
+    try {
+        m += s1.split(".")[1].length;
+    }
+    catch (e) {
+    }
+    try {
+        m += s2.split(".")[1].length;
+    }
+    catch (e) {
+    }
+    return Number(s1.replace(".", "")) * Number(s2.replace(".", "")) / Math.pow(10, m);
+}
+
+//给Number类型增加一个mul方法，调用起来更加方便。
+Number.prototype.mul = function (arg) {
+    return accMul(arg, this);
+};
+
+/**
+ ** 减法函数，用来得到精确的减法结果
+ ** 说明：javascript的减法结果会有误差，在两个浮点数相减的时候会比较明显。这个函数返回较为精确的减法结果。
+ ** 调用：accSub(arg1,arg2)
+ ** 返回值：arg1加上arg2的精确结果
+ **/
+function accSub(arg1, arg2) {
+    var r1, r2, m, n;
+    try {
+        r1 = arg1.toString().split(".")[1].length;
+    }
+    catch (e) {
+        r1 = 0;
+    }
+    try {
+        r2 = arg2.toString().split(".")[1].length;
+    }
+    catch (e) {
+        r2 = 0;
+    }
+    m = Math.pow(10, Math.max(r1, r2)); //last modify by deeka //动态控制精度长度
+    n = (r1 >= r2) ? r1 : r2;
+    return ((arg1 * m - arg2 * m) / m).toFixed(n);
+}
+
+//给Number类型增加一个sub方法，调用起来更加方便。
+Number.prototype.sub = function (arg) {
+    return accSub(arg, this);
+};
+
+
+/**
+ * 获取折扣信息
+ */
+function getAgio(){
+	$("input[name='baseagio']").on("blur",function(){
+		var baseagio = $(this).val();
+		if(!isNaN(baseagio)){
+				var income =  baseagio;
+				var b = new Number(baseagio).sub(100);
+				var sledger=  accMul(b,0.25);
+				if(sledger >=10){
+					sledger = sledger.toString().substring(0,5);
+				}else{
+					sledger = sledger.toString().substring(0,4);
+				}
+				var yledger = accMul(b,0.6);
+				if(yledger >= 10){
+					yledger = yledger.toString().substring(0,5)
+				}else{
+					yledger = yledger.toString().substring(0,4)
+				}
+				var pledger = new Number(sledger).sub(b); 
+				    pledger = new Number(yledger).sub(pledger);
+				$("input[name='income']").val(income);
+				$("input[name='sledger']").val(sledger);
+				$("input[name='yledger']").val(yledger);
+				$("input[name='pledger']").val(pledger); 
+				
+		}
+	});
+	
+	/*$("input[name='baseagio']").on("change",function(){
+		var baseagio = $(this).val();
+		if(!isNaN(baseagio)){
+			if(baseagio==100){
+				$("input[name='debit'").attr("readonly",false);
+			}else{
+				$("input[name='debit'").attr("readonly",true);
+				$("input[name='debit'").val("0.0");
+				$("input[name='debit'").attr("value","0.0");
+			}
+		}
+	});*/
+}
+
+/**
+ * 联动数据
+ */
+function uniteArea(){
+	
+	$("#tradeSelect").tradeLd({
+		showConfig : [{name:"category",tipTitle:"请选择",width:"50%"},{name:"genre",tipTitle:"请选择",width:"50%"}],
+		commonChange : function($dom, level){
+			if(level == 0){
+				$(":input[name=typename]").val($dom.find("option:selected").text());//
+				var isOpenBook = '<td class="sellerTitleCss" id="isOpenBookTTd">'
+				+'<h5>是否开通点菜:</h5>'
+				+'</td>'
+				+'<td class="sellerContentCss" id="isOpenBookCTd"><select '
+				+	'class="form-control" name="sellerDetailed.isOpenBooking"'
+				+	'value="${detailed.sellerDetailed.isOpenBooking}">'
+				+		'<option value="">请选择</option>'
+				+		'<option value="1">是</option>'
+				+		'<option value="0" >否</option>'
+				+'</select></td>';
+				if($dom.find("option:selected").val()==1){//当美食行业时显示是否开通点菜功能
+					$("#wifiCTd").after(isOpenBook);
+				}else{
+					$("#isOpenBookTTd").remove();
+					$("#isOpenBookCTd").remove();
+				}
+				$(":input[name=tradename]").val("");
+			}else if(level == 1){
+				$(":input[name=tradename]").val($dom.find("option:selected").text());
+			}
+		}
+	});
+		
+	var isInit = true;
+	var jointChosen = undefined;
+	/*var url;
+	if($('#viewType').val() == "editSellerPending"){
+		url = "businessman/sellerPending/init/ld.jhtml";
+	}else{
+		url = "businessman/seller/init/ld.jhtml";
+	}*/
+	$("#areaSelect").areaLd({
+		//url : url,
+		commonChange : function($dom, level){
+			if(level != 2 || !$dom.val()){
+				$("#zoneid").empty().append('<option value="">请先选择区域再选择商圈</option>');
+			}
+		},
+		showConfig : [{name:"province",tipTitle:"--省--",width:'33.3%'},{name:"city",tipTitle:"--市--",width:'33.3%'},{name:"area",tipTitle:"--区--",width:'33.4%'}],
+		lastChange : function($dom){
+			if($dom.val()){
+				$.ajax({
+					url : "common/business/BusinessList.jhtml?areaId="+($dom.val()),
+					dataType:"json",
+					method : "get", 
+					success:function(data){
+						var businessV = $("#zoneid").attr("initValue");
+						$("#zoneid").empty().append('<option value="">请选择商圈</option>');
+						for(var i=0;i<data.length;i++){
+							$("#zoneid").append('<option value="'+data[i].bid+'" '+(data[i].bid==businessV?'selected':'')+'>'+data[i].title+'</option>');
+						}
+					}
+				});
+				$.ajax({
+					url : "businessman/seller/getJointInfoByArea.jhtml?areaId="+($dom.val()),
+					dataType:"json",
+					method : "get", 
+					success:function(data){
+						if(!isInit){
+							$("#jointid").attr("initValue", "");
+						}
+						if(data){
+							$("#jointid").empty().append('<option value="'+data.jointid+'" selected>'+data.corporate+'</option>').attr("readonly", true);
+							$("#jointid_chosen").hide();
+							$("#jointid").show();
+							getStaffs(data.jointid);
+							$("#staffid").attr("readonly", false);
+						}else{
+							$("#jointid").empty().append('<option value="">此区域暂无合作商</option>').attr("readonly", true);
+							$("#staffid").empty().append('<option value="">此区域暂无合作商</option>').attr("readonly", true);
+//							if(!jointChosen){
+//								jointChosen = $("#jointid").chosenObject({
+//									id : "jointid",
+//									hideValue : "jointid",
+//									showValue : "corporate",
+//									url : "business_cooperation/joint/jointList.jhtml",
+//									isChosen:true
+//								});
+//							}else{
+//								jointChosen.initData();
+//								$("#jointid_chosen").show();
+//								$("#jointid").hide().trigger('chosen:updated');
+//							}
+							/*if(isInit){
+								getStaffs($("#jointid").attr("initValue"));
+							}else{
+								$("#staffid").empty().append('<option value="">请先选择合作商</option>');
+							}*/
+						}
+						isInit = false;
+					}
+				});
+			}else{
+				$("#jointid").empty().append('<option value="">请先选择区域</option>').attr("readonly", true);
+				$("#staffid").empty().append('<option value="">请先选择区域</option>').attr("readonly", true);
+//				$("#jointid_chosen").hide();
+//				$("#jointid").show();
+			}
+		}
+	});
+	
+	$("#jointid").change(function(){
+		getStaffs(this.value);
+	});
+	
+	//总店商家
+	$("#fatherid").chosenObject({
+		hideValue : "sellerid",
+		showValue : "sellername",
+		url : "businessman/seller/getFatherSeller.jhtml",
+		isChosen:true,
+		isCode:true,
+		width:"100%"
+	});
+	
+	//联盟店
+	$("#allianceId").chosenObject({
+		hideValue : "id",
+		showValue : "allianceName",
+		url : "businessman/allianceShop/init/list.jhtml",
+		isChosen:true,
+		width:"100%"
+	});
+	
+	$("#fatherid").on("change",function(){
+		var value =  $(this).find("option:selected").text().replace(/[[1-9]\d*]/,"");
+		$("input[name='lssellername']").val(value);
+	});
+}
+
+function getStaffs(jointid){
+	var initValue = $("#staffid").attr("initValue");
+	$.ajax({
+		url : "business_cooperation/staff/getStaffsByJointid.jhtml?jointid=" + jointid,
+		dataType:"json",
+		method : "get", 
+		success:function(data){
+			$("#staffid").empty().append('<option value="">请选择业务员</option>');
+			for(var i=0;i<data.length;i++){
+				$("#staffid").append('<option value="'+data[i].staffid+'" '+(initValue == data[i].staffid ? 'selected' : '')+'>'+data[i].fullname+'</option>');
+			}
+		}
+	});
+}
+/**
+ * 商家信息上传
+ */
+function uploadImg(){
+	//营业执照正面
+	$("#sellerHead2").uploadImg({
+		urlId : "licenseurlid",
+		showImg : $('#licenseurlid').val()
+	});
+	//营业执照反面	
+	$("#sellerHead3").uploadImg({
+		urlId : "licensefurlid",
+		showImg : $('#licensefurlid').val()
+	});
+	
+	//商家LOGO
+	$("#sellerLogoId").uploadImg({
+		urlId : "url",
+		showImg : $('#url').val()
+	});
+	
+	//商家LOGO
+	$("#sellerPicId").uploadImg({
+		urlId : "picUrl"
+	});
+	
+		
+	//身份证附件正面=======
+	$("#identityzurldivid").uploadImg({
+		urlId : "identityzurleditid",
+		showImg : $('#identityzurleditid').val()
+	});
+	//身份证附件反面	
+	$("#licensefurldivid").uploadImg({
+		urlId : "licensefurleditid",
+		showImg : $('#licensefurleditid').val()
+	});
+	//手持身份证正面照	
+	$("#identitynurldivid").uploadImg({
+		urlId : "identitynurleditid",
+		showImg : $('#identitynurleditid').val()
+	});
+	//商户协议URL 
+	$("#agreementdivid").uploadFile({
+		urlId : "agreementids"/*,
+		showImg : $('#agreementids').val()*/
+	});
+	//商家合同一
+	$("#agreementid").uploadImg({
+		urlId : "agreement",
+		showImg : $('#agreement').val()
+	});
+	//商家合同二
+	$("#agreement2id").uploadImg({
+		urlId : "agreement2",
+		showImg : $('#agreement2').val()
+	});
+	//商家合同三
+	$("#agreement3id").uploadImg({
+		urlId : "agreement3",
+		showImg : $('#agreement3').val()
+	});
+	//商家合同四
+	$("#agreement4id").uploadImg({
+		urlId : "agreement4",
+		showImg : $('#agreement4').val()
+	});
+	
+	//增加环境图片
+	$("#addPic").click(function(){
+		if($("#sellerPics>div").length > 9){
+			showWarningWindow("warning","最多只能添加10张图片！");
+		}else{
+			var temp = $("#sellerPicTemp").clone(true).removeAttr("id").show();
+			temp.find("input[name='picurl']").attr("name", "sellerPics[" + picNum + "].picurl").attr("id","sellerPicUrl" + picNum);
+			temp.find("input[name='breviary']").attr("name", "sellerPics[" + picNum + "].breviary").attr("id","breviary" + picNum);
+			temp.find("input[name='bewrite']").attr("name","sellerPics[" + picNum + "].bewrite");
+			temp.find("input[name='picid']").attr("name","sellerPics[" + picNum + "].picid");
+			temp.find(".pic").uploadImg({
+				urlId : "sellerPicUrl" + picNum,
+				breviaryId : "breviary" + picNum
+			});
+			temp.find(".removebtn").click(function(){
+				$(this).parent().remove();
+			});
+			$("#sellerPics").append(temp);
+			picNum++;
+		}
+	});
+	
+	//环境图片初始化
+	$("#sellerPics>div").each(function(i,n){
+		$(this).find(".pic").uploadImg({
+			urlId : "sellerPicUrl" + i
+		});
+		$(this).find(".removebtn").click(function(){
+			$(this).parent().remove();
+		});
+	});
+}
+
+
+
+
+/**========================================================================================================
+ * 初始化验证方法
+ */
+function initValidator(){
+	//平台补贴校验
+	$.validator.addMethod("checkFlatAgio",function(value,element,params){
+		if(value >= 0){
+			value = parseFloat(value);
+			if(value <= $("input[name=yledger]").val()){
+	 			return  false;
+	 		}else{
+	 			return true;
+	 		}
+		}else{
+			return true;
+		}
+   },"平台补贴必须大于用户占比！");
+	
+	$.validator.addMethod("accountBy",function(value,element,params){
+ 		if(value.length > 5){
+ 			return  false;
+ 		}
+ 		if(value >= params[0] && value <= params[1]){
+ 			return true;
+ 		}else{
+ 			return false;
+ 		}
+   },"请输入0-100之间的数");
+	$.validator.addMethod("percentageAgio",function(value,element,params){
+ 		if(value >= params[0] && value <= params[1]){
+ 			var indexOf = value.indexOf(".");
+ 			console.info("indexOf="+indexOf);
+ 			 if(indexOf>0){
+ 				 var numStr = value.substr(indexOf+1);
+ 				console.info("numStr="+numStr);
+ 				 if(numStr.length>2){
+ 					 return false;
+ 				 }
+ 			 }
+ 			return true;
+ 		}else{
+ 			return false;
+ 		}
+	 },"请输入0-100不超过2位小数点的数");
+	
+	 $.validator.addMethod("consume",function(value,element,params){
+		var len = value.length;
+		 if(len>10){return false;
+		 }else if( value >= 10000000 || value < 0){
+			 return false;
+		 }else {
+			 var indexOf = value.indexOf(".");
+			 if(indexOf>0){
+				 var numStr = value.substr(indexOf+1);
+				 return !(numStr.length > 2);
+			 }
+			 return true;
+		 }
+	 },"请填写数值,最大值为9999999.99");
+	 //店面面积校验
+	 $.validator.addMethod("shopArea",function(value,element,params){
+			var len = value.length;
+			 if(len>12){return false;
+			 }else if( value >= 1000000000 || value < 0){
+				 return false;
+			 }else {
+				 var indexOf = value.indexOf(".");
+				 if(indexOf>0){
+					 var numStr = value.substr(indexOf+1);
+					 return !(numStr.length > 2);
+				 }
+				 return true;
+			 }
+		 },"请填写数值,最大值为999999999.99");
+	 //服务员人数校验
+	 $.validator.addMethod("staffNumber",function(value,element,params){
+			var len = value.length;
+			 if(len>10){return false;
+			 }else if( value >= 1000000000 || value < 0){
+				 return false;
+			 }else {
+				 var indexOf = value.indexOf(".");
+				 if(indexOf>0){
+					 var numStr = value.substr(indexOf+1);
+					 return false;
+				 }
+				 return true;
+			 }
+		 },"请填写数值,最大值为999999999");
+	 //月流水校验
+	 $.validator.addMethod("monthlyTurnover",function(value,element,params){
+			var len = value.length;
+			 if(len>12){return false;
+			 }else if( value >= 1000000000 || value < 0){
+				 return false;
+			 }else {
+				 var indexOf = value.indexOf(".");
+				 if(indexOf>0){
+					 var numStr = value.substr(indexOf+1);
+					 return !(numStr.length > 2);
+				 }
+				 return true;
+			 }
+		 },"请填写数值,最大值为999999999.99");
+	 /*
+	 	验证身份证合法性
+	 */
+	 $.validator.addMethod("isIdCardNo", function(value, element) {
+		  return this.optional(element) || idCardNoUtil.checkIdCardNo(value);    
+		}, "请正确输入您的身份证号码,长度为15位或者18位");
+	 /*
+	 	校验经纬度数据,double(16,12)
+	 	经度范围0-180(东经与西京),纬度范围0-90(南纬与北纬)
+	 */
+	 $.validator.addMethod("landmarkCheck", function(value, element,params) {
+		 var len = value.length;
+		 if(len > 16){
+			 return false;
+		 }else if((value <= params[0]) || (value >= params[1]) ){
+			 return false;
+		 }else {
+			 var indexOf = value.indexOf(".");
+			 if(indexOf>0){
+				 var numStr = value.substr(indexOf+1);
+				 return !(numStr.length > 12);
+			 }
+			 return true;
+		 }  
+		}, "请输入有效的经纬度!");
+		
+	 /*
+	 	校验推荐菜品数量，以‘;' 分开
+	 */
+	 $.validator.addMethod("dishesNum", function(value, element) {
+		  var str = value.split(/;|；/);
+		  return (this.optional(element) || (str.length <= 10));    
+		}, "请输入10个推荐菜品，并用;分开");
+	 
+	 /*
+	 	验证帐号唯一性，异步检验
+	 */
+	 $.validator.addMethod("checkAccount", function(value, element) {
+		// var $("#tableinfo").find();
+		   var result = false;
+	        // 设置同步
+	        $.ajaxSetup({
+	            async: false
+	        });
+	        var param = {
+	        	account: value
+	        };
+	        $.post("businessman/sellerAccount/checkAccount.jhtml", param, function(data){
+	        	result = data;
+	        	if($('#oldAccount').val() == value){
+	        		result = true;
+	        	}
+	        });
+	        // 恢复异步
+	        $.ajaxSetup({
+	            async: true
+	        });
+	        return result;    
+		}, "帐号已存在");
+	 
+	 /*
+	  * 验证手机唯一性
+	 */
+	 $.validator.addMethod("checkPhoneid", function(value, element) {
+		   var result = true;
+	        // 设置同步
+	        $.ajaxSetup({
+	            async: false
+	        });
+	        var param = {
+	        		phoneid: value
+	        };
+	        var oldPhoneid = $("input[name=oldPhoneid]").val();
+	        if(oldPhoneid != value){
+	        	$.post("businessman/seller/init/checkPhone.jhtml", param, function(data){
+		        	if(data <= 0){
+		        		result = true;
+		        	}else{
+		        		result = false;
+		        	}
+		        });
+        	}else{
+        		result = true;
+        	}
+	        // 恢复异步
+	        $.ajaxSetup({
+	            async: true
+	        });
+	        return result;    
+		}, "联系人手机已存在！");
+	 
+	 
+	/**
+	  * 校验必须为手机号
+	 */
+	 $.validator.addMethod("phoneNumber", function(value, element) {
+		    var result = true;
+	        if(value.length!=11)
+	        {
+	        	result =  false;
+	        }
+	     /*   var myreg = /^(((13[0-9]{1})|159|153)+\d{8})$/;
+	        if(!myreg.test(value))
+	        {
+	        	result = false;
+	        }*/
+	        return result;    
+	}, "请输入正确的手机号码！");
+	 
+	 
+	 /**
+	  * 校验电话格式
+	 */
+	 $.validator.addMethod("checkTel", function(value, element) {
+		 if(value){
+			 var reg = /^[0-9\-]{6,20}$/; 
+			 if(reg.test(value)){
+				 return true;
+			 }
+		 }
+	}, "请输入正确的电话号码！");
+	 
+	 /**
+	  * 校验商家名称不能包含特殊字符
+	  */
+	 $.validator.addMethod("checkSellername", function(value, element) {
+		  // "[\`\~\!\@\#\$\^\&\*\(\)\=\|\{\}\'\:\;\'\,\\\[\\\]\.\<\>\/\?\~\！\@\#\￥\……\&\*\（\）\——\|\{\}\【\】\‘\；\：\”\“\'\。\，\、\？]"
+		  //"[^\`\~\!\#\$\^\*\=\|\{\}\:\;\,\\\[\\\]\<\>\/\?\~\！\#\￥\……\*\——\|\{\}\【\】\‘\；\：\”\“\'\。\，\？]"
+		    var result = true;
+	        var myreg = /^[^\`\~\!\#\$\^\*\=\|\{\}\:\;\,\\\[\\\]\<\>\/\?\~\！\#\￥\……\*\——\|\{\}\【\】\；\：\”\“\。\，\？]{0,}$/;
+	        result = myreg.test(value);
+	        return result;    
+	 }, "商家名称不可以包含特殊字符！");
+	 
+	
+	for(var i=0;i<formId.length;i++){
+		validate(formId[i],valiinfo[formId[i]],formSubmit(formId[i]));
+	}
+};	
+
+/**
+ * 验证方法
+ */
+var valiinfo={"sellerForm":{rules:{
+	sellername:{
+		required:true, 
+		rangelength:[2,50],
+		checkSellername :true
+	},
+	address:{
+		 required:true, 
+		maxlength:300
+	}, 
+	fullname:{
+		required:true, 
+		rangelength:[2,20]
+	},
+	province:{
+		required:true
+	},
+	city:{
+		required:true
+	},
+	area:{
+		required:true
+	},
+	zoneid:{
+		required:true
+	},
+	category:{
+		required:true
+	},
+	genre:{
+		required:true
+	},
+	
+	fatherid:{
+		number:true
+	},
+	
+	
+	phoneid:{
+		required:true, 
+		digits:true,
+		phoneNumber:true/*,
+		checkPhoneid:true,
+		checkAccount:true */
+	},
+	tel:{
+		required:true, 
+		rangelength:[8,20],
+		checkTel:true
+	},
+	orgid:{
+		/* required:true, */
+		rangelength:[1,20]
+	},
+	identity:{
+		/* required:true, */
+		isIdCardNo:true
+	},
+	email:{
+		/* required:true, */
+		email:true,
+		maxlength:50
+	},
+	licenseid:{
+		/* required:true, */
+		maxlength:20
+	},
+	lssellername:{
+		/* required:true,  */
+		maxlength:100
+	},
+	baseagio:{
+		required:true,
+		number:true,
+		accountBy:[0,100]
+	},
+	
+	agioAgio:{
+		required:true
+	},
+	agioAgioNum:{
+		required:true,
+		percentageAgio:[0,100]
+	},
+/*	flatAgio:{
+		number:true,
+		accountBy:[0,100]
+	},*/
+	
+	examineinfo:{
+		/* required:true, */
+		maxlength:300
+	},
+	remarks:{
+		maxlength:300
+	},
+	licenseurl:{
+		/* required:true, */
+		maxlength:100
+	},
+	licensefurl:{
+		/* required:true, */
+		maxlength:100
+	},
+	agreement:{
+		/* required:true, */
+		length:100
+	},
+	debit : {
+		number:true,
+		accountBy:[0,100]
+	},
+	'liveLedger.ledgerRatio':{
+		required:true,
+		percentageAgio:[0,100]
+	}
+	
+},messages:{
+	sellername:{
+		 required:"商家名称未填写", 
+		 rangelength:"商家名称长度为  2-50  个字符",
+		 checkSellername :"商家名称不能包含@&+().°-·'之外的特殊字符"
+	},
+	address:{
+		 required:"地址未填写", 
+		 maxlength:"地址最多300个字符"
+	},
+	fullname:{
+		required:"法人姓名未填写", 
+		rangelength:"法人姓名2-20个字符"
+	},
+	province:{
+		required:"省未填写"
+	},
+	city:{
+		required:"市未填写"
+	},
+	area:{
+		required:"区未填写"
+	},
+	zoneid:{
+		required:"商圈未填写,如果没有相应商圈，请先在【系统管理】——【商圈管理】中添加商圈！"
+	},
+	category:{
+		required:"一级类别未填写"
+	},
+	genre:{
+		required:"二级类别未填写"
+	},
+	
+	fatherid:{
+		number:"总店编号必须为数字！"
+	},
+	
+	phoneid:{
+		required:"联系人号码未填写", 
+		digits:"请输入整数",
+		phoneNumber:"请输入正确的手机号！"/*,
+		checkPhoneid:"联系人手机已存在！",
+		checkAccount:"你的手机号已经被其他人注册为登录帐号，请更换，谢谢！"*/
+	},
+	tel:{
+		required:"联系人号码未填写", 
+		rangelength:"电话的长度为8-20的数字",
+		checkTel:"无效的值"
+	},
+	orgid:{
+		/* required:"机构代码未填写", */
+		rangelength:"机构代码长度为1-20字符"
+	},
+	identity:{
+		/* required:"身份证号码未填写", */
+		isIdCardNo:"请正确输入您的身份证号码,长度为15位或者18位"
+	},
+	email:{
+		/* required:"邮箱地址不能缺省", */
+		email:"请填写正确的邮箱格式",
+		maxlength:"地址长度最大为50字符!"
+	},
+	licenseid:{
+		/* required:"营业执照信息未填写", */
+		maxlength:"最大长度为20字符"
+	},
+	lssellername:{
+		/* required:"连锁店名称不能缺省!", */
+		maxlength:"名称最大长度为100字符!"
+	},
+	baseagio:{
+		required:"请填写折扣数",
+		number:"请输入合理数字",
+		accountBy:"请输入0-100之间的数"
+	},
+	
+	agioAgio:{
+		required:"请选择折上折"
+	},
+	agioAgioNum:{
+		required:"请输入折上折的折扣"
+	},
+	examineinfo:{
+		/* required:"审批说明不可缺省!", */
+		maxlength:"说明长度最大长度为300字符!"
+	},
+	remarks:{
+		maxlength:"备注最大长度为300字符!"
+	},
+	agreement:{
+		/* required:"协议图片不能为空", */
+		length:"协议图片的链接太长,最大100字符!"
+	},
+	'liveLedger.ledgerRatio':{
+		required:"直播分账比例必填"
+	}
+}},
+"sellerLandmarkFromId":{
+	rules:{longitude :{
+				required:true,
+				number:true,
+				landmarkCheck:[73.240,135.150]
+			},
+			latitude :{
+				required:true,
+				number:true,
+				landmarkCheck:[3.3120,53.1980]
+			}
+	},messages:{
+		longitude:{
+			required:"商家经度未填写",
+			number:"地标请输入数字类型"
+		},
+		latitude:{
+			required:"商家纬度未填写",
+			number:"地标请输入数字类型"
+		}
+	}
+}, 
+		"sellerDetailedForm":{
+			rules:{
+				'sellerDetailed.consume':{
+					number:true,
+					consume:[10,2]
+					
+				},
+				
+				'sellerDetailed.shopArea':{
+					number:true,
+					shopArea:[12,2]
+					
+				},
+				'sellerDetailed.staffNumber':{
+					number:true,
+					staffNumber:[10,0]
+					
+				},
+				'sellerDetailed.monthlyTurnover':{
+					number:true,
+					monthlyTurnover:[12,2]
+					
+				},
+				'sellerDetailed.landmark':{
+					rangelength:[1,300]
+				},
+				'sellerDetailed.amountLimit':
+				{
+//					required : true,
+					number : true,
+					gt : 0
+				},
+				'sellerDetailed.returnrmb':{
+					rangelength:[1,100]
+				}, 
+				'sellerDetailed.dishes':{
+					rangelength:[1,300],
+					dishesNum:true
+				},
+				'sellerDetailed.introduce':{
+					maxlength:300
+				},
+				'sellerDetailed.tips':{
+					maxlength:300
+				},
+				'sellerDetailed.rule':{
+					maxlength:300
+				},
+				'sellerDetailed.adjustReason':{
+					maxlength:300
+				},
+				'sellerDetailed.sellerGradeStr':{
+					required:true
+				},
+				'extensionSet.sort0':{
+					digits:true,
+					max:10
+	        	},
+	        	'extensionSet.sort1':{
+	        		digits:true,
+					max:10
+	        	},
+	        	'extensionSet.sort2':{
+	        		digits:true,
+					max:10
+	        	}
+			},
+			messages:{
+				'sellerDetailed.consume' :{
+					 /*required:"人均消费未填写", */
+					number:"人均消费需为数字",
+					consume:"请输入2位小数的数值,最大值为9999999.99"
+				},
+				'sellerDetailed.shopArea' :{
+					 /*required:"门店面积未填写", */
+					number:"门店面积需为数字",
+					shopArea:"请输入数值,最大值为999999999.99"
+				},
+				'sellerDetailed.staffNumber' :{
+					 /*required:"服务员人数填写", */
+					number:"服务员人数需为数字",
+					staffNumber:"请输入数值,最大值为999999999"
+				},
+				'sellerDetailed.monthlyTurnover' :{
+					 /*required:"月流水未填写", */
+					number:"月流水需为数字",
+					monthlyTurnover:"请输入数值,最大值为999999999.99"
+				},
+				'sellerDetailed.landmark':{
+					 /*required:"参考地标未填写", */
+					rangelength:"最大长度为300字符"
+				},
+				'sellerDetailed.returnrmb':{
+					 /*required:"返现描述未填写", */
+					rangelength:"长度为1-100个字符"
+				}, 
+				'sellerDetailed.dishes':{
+					 /*required:"推荐菜品未填写!",  */
+					rangelength:"最大长度为300字符",
+					dishesNum:"请输入10个推荐菜品并用；或者;分开，不要以分号结束!"
+				},
+				'sellerDetailed.introduce':{
+					 required:true, 
+					maxlength:"最大长度为300字符"
+				},
+				'sellerDetailed.tips':{
+					 required:true, 
+					maxlength:"最大长度为300字符"
+				},
+				'sellerDetailed.rule':{
+					 required:true, 
+					maxlength:"最大长度为300字符"
+				},
+				'sellerDetailed.adjustReason':{
+					maxlength:"最大长度为300字符"
+				},
+				'sellerDetailed.sellerGradeStr':{
+					required:"请补充商家等级信息！"
+				},
+				'extensionSet.sort0':{
+	        		digits:"请输入正整数",
+	        		max:"数字不能大于10",
+	        	},
+	        	'extensionSet.sort1':{
+	        		digits:"请输入正整数",
+	        		max:"数字不能大于10",	
+	        	},
+	        	'extensionSet.sort2':{
+	        		digits:"请输入正整数",
+	        		max:"数字不能大于10",
+	        	}
+			}
+		} };
+
+var formId=["sellerForm", "sellerLandmarkFromId" ,"sellerDetailedForm"];
+var formHandle={
+		"sellerForm":UpdateSavaSeller,
+		"sellerDetailedForm" : sellerDetailedUpdate,
+		"sellerLandmarkFromId" : sellerLandmarkUpdate
+}
+
+function formSubmit(form){
+	return formHandle[form];
+}
+//选择日期
+
+
+$("[name='extensionSet.dateStart0']").datetimepicker({"setStartDate": new Date().format("yyyy-MM-dd"),format:'yyyy-mm-dd',//日期显示格式
+		minView :2,
+		autoclose : 1,
+		maxView :3,
+		startView : 2});
+$("[name='extensionSet.dateEnd0']").datetimepicker({"setStartDate" : $("[name='extensionSet.dateStart0']").val(),format:'yyyy-mm-dd',//日期显示格式
+		minView :2,
+		autoclose : 1,
+		maxView :3,
+		startView : 2});
+
+$("[name='extensionSet.dateStart1']").datetimepicker({"setStartDate":new Date().format("yyyy-MM-dd"),format:'yyyy-mm-dd',//日期显示格式
+		minView :2,
+		autoclose : 1,
+		maxView :3,
+		startView : 2});
+$("[name='extensionSet.dateEnd2']").datetimepicker({"setStartDate":$("[name='extensionSet.dateStart1']").val(),format:'yyyy-mm-dd',//日期显示格式
+		minView :2,
+		autoclose : 1,
+		autoclose : 1,
+		maxView :3,
+		startView : 2});
+
+$("[name='extensionSet.dateStart2']").datetimepicker({"setStartDate":new Date().format("yyyy-MM-dd"),format:'yyyy-mm-dd',//日期显示格式
+		minView :2,
+		autoclose : 1,
+		maxView :3,
+		startView : 2});
+$("[name='extensionSet.dateEnd2']").datetimepicker({"setStartDate":$("[name='extensionSet.dateStart2']").val(),format:'yyyy-mm-dd',//日期显示格式
+		minView :2,
+		maxView :3,
+		autoclose : 1,
+		startView : 2});

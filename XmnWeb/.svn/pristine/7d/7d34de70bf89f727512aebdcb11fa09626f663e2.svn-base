@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.service_management.dao.PhoneRecordDao">
+
+    <!-- 订单map -->
+	<parameterMap type="Order" id="order" />
+	<resultMap type="Order" id="orderMap">
+		<result column="bid" property="bid" />
+		<result column="bid" property="stringBid" />
+		<result column="codeid" property="codeid" />
+		<result column="sellerid" property="sellerid" />
+		<result column="sellername" property="sellername" />
+		<result column="consume_jointid" property="consumejointid" />
+		<result column="consume_corporate" property="consumecorporate" />
+		<result column="genussellerid" property="genussellerid" />
+		<result column="genusname" property="genusname" />
+		<result column="jointid" property="jointid" />
+		<result column="corporate" property="corporate" />
+		<result column="mike_type" property="miketype" />
+		<result column="uid" property="uid" />
+		<result column="nname" property="nname" />
+		<result column="money" property="money" />
+		<result column="profit" property="profit" />
+		<result column="commision" property="commision" />
+		<result column="payment" property="payment" />
+		<result column="rebate" property="rebate" />
+		<result column="aid" property="aid" />
+		<result column="fullname" property="fullname" />
+		<result column="phoneid" property="phoneid" />
+		<result column="status" property="status" />
+	<!-- 	<result column="status" property="strStatus" /> -->
+		<result column="sdate" property="sdate" />
+		<result column="zdate" property="zdate" />
+		<result column="ydate" property="ydate" />
+		<result column="number" property="number" />
+		<result column="paytype" property="paytype" />
+		<result column="isaccount" property="isaccount" />
+		<result column="baseagio" property="baseagio" />
+		<result column="hstatus" property="hstatus" />
+		<result column="commission" property="commission" />
+		<result column="type" property="type" />
+		<result column="area" property="area" />
+		<result column="is_virtual" property="isVirtual" />
+		<result column="payid" property="payid" />
+		<result column="tatitle" property="tatitle" />
+	</resultMap>
+	
+	<!-- 记录 -->
+	<parameterMap type="PhoneRecord" id="phoneRecord" />
+	<resultMap type="PhoneRecord" id="phoneRecordMap">
+		<result column="id" property="id" />
+		<result column="bid" property="bid" />
+		<result column="name" property="name" />
+		<result column="phoneid" property="phone" />
+		<result column="issue_type" property="issueType" />
+		<result column="user_type" property="userType" />
+		<result column="issue_record" property="issueRecord" />
+		<result column="result" property="result" />
+		<result column="is_send" property="isSend" />
+		<result column="date_create" property="dateCreate" />
+		<result column="remark" property="remark" />
+	</resultMap>
+	<!-- 会员 -->
+
+	<!-- 查询订单 -->
+	<select id="getOrderList" resultMap="orderMap" parameterMap="order">
+		SELECT 
+		  tb.bid,
+		  tb.money,
+		  tb.rebate,
+		  tb.baseagio,
+		  tb.sellername,
+		  tb.status,
+		  tb.sdate 
+		FROM
+		  t_bill tb 
+		<where>
+			<if test=" null != stringBid and '' != stringBid ">
+				 tb.bid LIKE '%${stringBid}%'
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				AND tb.phoneid LIKE '%${phoneid}%'
+			</if>
+		</where>
+		ORDER BY tb.sdate DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<!-- 查询所有订单条数(除待支付) -->
+	<select id="orderCount" resultType="Long" parameterMap="order">
+		SELECT 
+		   count(*)
+		FROM
+		  t_bill tb 
+		<where>
+			<if test=" null != stringBid and '' != stringBid ">
+				 tb.bid LIKE '%${stringBid}%'
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				AND tb.phoneid LIKE '%${phoneid}%'
+			</if>
+		</where>
+	</select>
+	
+	<insert id="add" parameterMap="phoneRecord" >
+		INSERT INTO t_customer
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != bid">
+					bid,
+				</if>
+			 	<if test=" null != name and '' != name ">
+					name,
+				</if>
+			 	<if test=" null != phone and '' != phone">
+					phoneid,
+				</if>
+			 	<if test=" null != issueType">
+					issue_type,
+				</if>
+			 	<if test=" null != userType">
+					user_type,
+				</if>
+			 	<if test=" null != issueRecord and '' != issueRecord">
+					issue_record,
+				</if>
+			 	<if test=" null != result">
+					result,
+				</if>
+			 	<if test=" null != isSend">
+					is_send,
+				</if>
+			 	<if test=" null != dateCreate and '' !=dateCreate">
+					date_create,
+				</if>
+			 	<if test=" null != remark and '' != remark">
+					remark
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != bid">
+					 	#{bid},
+				</if>
+			 	<if test=" null != name and '' != name ">
+					 	#{name},
+				</if>
+			 	<if test=" null != phone and '' != phone ">
+					 	#{phone},
+				</if>
+			 	<if test=" null != issueType">
+					 	#{issueType},
+				</if>
+			 	<if test=" null != userType">
+					 	#{userType},
+				</if>
+			 	<if test=" null != issueRecord and '' != issueRecord ">
+					 	#{issueRecord},
+				</if>
+			 	<if test=" null != result">
+					 	#{result},
+				</if>
+			 	<if test=" null != isSend">
+					 	#{isSend},
+				</if>
+			 	<if test=" null != dateCreate and '' != dateCreate">
+					 	#{dateCreate},
+				</if>
+			 	<if test=" null != remark and '' != remark">
+					 	#{remark}
+				</if>
+		</trim>
+	</insert>
+
+</mapper>

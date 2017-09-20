@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.cloud_design.dao.TransportFeeDao">
+
+	<resultMap type="postTemplate" id="postTemplateMap">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="name" property="templateName" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="supplierId" property="supplierId" jdbcType="BIGINT" />
+		<result column="supplierName" property="supplierName" jdbcType="VARCHAR" />
+		<result column="type" property="type" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap type="postCondition" id="postCondition">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="template_id" property="templateId" jdbcType="BIGINT" />
+		<result column="first_item" property="firstItem" jdbcType="DECIMAL" />
+		<result column="first_num" property="firstNums" jdbcType="INTEGER" />
+		<result column="continued_item" property="continueItem"
+			jdbcType="DECIMAL" />
+		<result column="continued_num" property="continueNums"
+			jdbcType="INTEGER" />
+		<result column="delivery_city_no" property="deliveryNo"
+			jdbcType="VARCHAR" />
+		<result column="delivery_city" property="deliveryCity"
+			jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+	</resultMap>
+	<!-- 查询运费模板 -->
+	<select id="getList" parameterType="postTemplate" resultMap="postTemplateMap">
+		SELECT id,name,status,supplierId,supplierName,type
+		FROM d_postage_template
+		WHERE status = 1
+		<if test="id != null and id != ''">
+		AND id = #{id}
+		</if>
+		ORDER BY createTime DESC
+		<if test="limit != -1">
+		LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<!-- 查询运费详情列表 -->
+	<select id="getConditions" resultMap="postCondition">
+		SELECT
+		id,template_id,first_item,first_num,continued_item,continued_num,delivery_city_no,delivery_city,create_time,update_time
+		FROM d_postage_conditions
+		WHERE template_id = #{0}
+	</select>
+	
+	<!-- 统计模板总数 -->
+	<select id="count" resultType="long">
+		SELECT count(1) count
+		FROM d_postage_template
+		WHERE status = 1
+	</select>
+	
+	<!-- 获取全国省级区域地址 -->
+	<select id="getAreaList" resultType="map">
+		SELECT area_id,title
+		FROM t_area
+		WHERE pid = 0
+	</select>
+	
+	<!-- 插入运费条件 -->
+	<insert id="addCondition" parameterType="postCondition">
+	 	INSERT INTO d_postage_conditions(
+	 	template_id,first_item,first_num,continued_item,continued_num,delivery_city_no,delivery_city,create_time,update_time
+	 	)
+	 	VALUES(#{templateId},#{firstItem},#{firstNums},#{continueItem},#{continueNums},#{deliveryNo},#{deliveryCity},#{createTime},#{updateTime})
+	</insert>
+	
+	<!-- 插入运费模板 -->
+	<insert id="addTemplate" parameterType="postTemplate" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+		INSERT INTO d_postage_template(name
+		<if test="supplierId != null and supplierId != ''">
+		,supplierId,supplierName
+		</if>
+		,type,createTime)
+		VALUES(#{templateName}
+		<if test="supplierId != null and supplierId != ''">
+		,#{supplierId},#{supplierName}
+		</if>
+		,#{type},#{createTime})
+	</insert>
+	
+	<update id="deleteTemplate" parameterType="postTemplate">
+		UPDATE d_postage_template
+		SET status = 2
+		WHERE id = #{id}
+	</update>
+	
+	<delete id="deleteConditions" parameterType="postCondition">
+		DELETE FROM d_postage_conditions
+		WHERE 
+		template_id = #{0}
+	</delete>
+	
+	<update id="update" parameterType="postTemplate">
+		UPDATE d_postage_template
+		SET name=#{templateName}
+		<if test="supplierId != null and supplierId != ''">
+		,supplierId=#{supplierId},supplierName=#{supplierName}
+		</if>
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateSupplier" parameterType="postTemplate">
+		UPDATE d_postage_template
+		SET 
+		supplierId=#{supplierId},
+		supplierName=#{supplierName}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="deleteOldTemplate" parameterType="postTemplate">
+		UPDATE d_postage_template
+		SET status = 2
+		WHERE supplierId = #{supplierId}
+		AND id != #{id}
+	</update>
+</mapper>

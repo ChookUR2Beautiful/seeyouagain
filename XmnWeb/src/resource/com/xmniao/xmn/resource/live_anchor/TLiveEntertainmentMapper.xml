@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TLiveEntertainmentDao" >
+  <parameterMap type="LiveEntertainment" id="liveEntertainment"></parameterMap>
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.live_anchor.entity.TLiveEntertainment" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="sub_title" property="subTitle" jdbcType="VARCHAR" />
+    <result column="activity_time" property="activityTime" jdbcType="TIMESTAMP" />
+    <result column="image_url" property="imageUrl" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="number" property="number" jdbcType="INTEGER" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, title, sub_title, activity_time, image_url, url, number, sort, type, create_time, 
+    update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_live_entertainment
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_live_entertainment
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveEntertainment" >
+    insert into t_live_entertainment (id, title, sub_title, 
+      activity_time, image_url, url, 
+      number, sort, type, 
+      create_time, update_time)
+    values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{subTitle,jdbcType=VARCHAR}, 
+      #{activityTime,jdbcType=TIMESTAMP}, #{imageUrl,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, 
+      #{number,jdbcType=INTEGER}, #{sort,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveEntertainment" >
+    insert into t_live_entertainment
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="subTitle != null" >
+        sub_title,
+      </if>
+      <if test="activityTime != null" >
+        activity_time,
+      </if>
+      <if test="imageUrl != null" >
+        image_url,
+      </if>
+      <if test="url != null" >
+        url,
+      </if>
+      <if test="number != null" >
+        number,
+      </if>
+      <if test="sort != null" >
+        sort,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="subTitle != null" >
+        #{subTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="activityTime != null" >
+        #{activityTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="imageUrl != null" >
+        #{imageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null" >
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="number != null" >
+        #{number,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null" >
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveEntertainment" >
+    update t_live_entertainment
+    <set >
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="subTitle != null" >
+        sub_title = #{subTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="activityTime != null" >
+        activity_time = #{activityTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="imageUrl != null" >
+        image_url = #{imageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null" >
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="number != null" >
+        number = #{number,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null" >
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveEntertainment" >
+    update t_live_entertainment
+    set title = #{title,jdbcType=VARCHAR},
+      sub_title = #{subTitle,jdbcType=VARCHAR},
+      activity_time = #{activityTime,jdbcType=TIMESTAMP},
+      image_url = #{imageUrl,jdbcType=VARCHAR},
+      url = #{url,jdbcType=VARCHAR},
+      number = #{number,jdbcType=INTEGER},
+      sort = #{sort,jdbcType=INTEGER},
+      type = #{type,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+	<!-- ..自定义sql区域 -->
+	<sql id="baseEntertainmentCondition">
+		<if test="id != null">
+			AND id = #{id}
+		</if>
+		<if test="type != null">
+			AND type = #{type}
+		</if>
+
+		<if test="createTime != null">
+			AND create_time = #{createTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="updateTime != null">
+			AND update_time = #{updateTime,jdbcType=TIMESTAMP}
+		</if>
+	</sql>
+
+	<!-- 查询缤纷娱乐数据 -->
+	<select id="getLiveEntertainmentList" resultMap="BaseResultMap" parameterMap="liveEntertainment">
+		select
+		<include refid="Base_Column_List" />
+		From t_live_entertainment t
+		<where>
+			1 = 1
+			<include refid="baseEntertainmentCondition"></include>
+			<if test="title !=null and '' != title">
+				AND title LIKE '%${title}%'
+			</if>
+			
+		</where>
+		ORDER BY update_time DESC, id DESC
+
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit}, #{limit}
+		</if>
+	</select>
+
+	<select id="countLiveEntertainment" resultType="Long" parameterMap="liveEntertainment">
+		SELECT COUNT(1) FROM t_live_entertainment t
+		<where>
+			1=1
+			<include refid="baseEntertainmentCondition" />
+			<if test="title !=null and '' != title">
+				AND title LIKE '%${title}%'
+			</if>
+		</where>
+	</select>
+  
+  
+</mapper>

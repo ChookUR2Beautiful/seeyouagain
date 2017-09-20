@@ -1,0 +1,935 @@
+package com.xmniao.xmn.core.coupon.controller;
+
+import com.alibaba.fastjson.JSON;
+import com.xmniao.xmn.core.base.BaseController;
+import com.xmniao.xmn.core.base.Pageable;
+import com.xmniao.xmn.core.base.ResultFile;
+import com.xmniao.xmn.core.base.Resultable;
+import com.xmniao.xmn.core.business_cooperation.util.PartnerConstants;
+import com.xmniao.xmn.core.coupon.controller.vo.CouponIssueSystemPushAddRequest;
+import com.xmniao.xmn.core.coupon.entity.TCoupon;
+import com.xmniao.xmn.core.coupon.entity.TCouponDetail;
+import com.xmniao.xmn.core.coupon.entity.TCouponIssue;
+import com.xmniao.xmn.core.coupon.entity.TCouponIssueRef;
+import com.xmniao.xmn.core.coupon.service.CouponIssueService;
+import com.xmniao.xmn.core.coupon.service.CouponService;
+import com.xmniao.xmn.core.coupon.service.SystemPushCouponService;
+import com.xmniao.xmn.core.live_anchor.entity.BLiveFansRank;
+import com.xmniao.xmn.core.util.FastfdsConstant;
+import com.xmniao.xmn.core.util.handler.annotation.RequestLogging;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ *
+ * @author dong'jietao
+ * @date 2015年6月1日 下午3:49:51
+ * @TODO 优惠券发放管理Controller
+ */
+@RequestLogging(name="优惠券发放管理")
+@Controller
+@RequestMapping(value = "/coupon/couponissue")
+public class CouponIssueController extends BaseController {
+	@Autowired
+	private CouponIssueService couponIssueService;
+	@Autowired
+	private CouponService couponService;
+
+	/**
+	 * 注入系统推送发放优惠券服务
+	 */
+	@Autowired
+	private SystemPushCouponService systemPushConponService;
+
+	/**
+	 * @author dong'jietao
+	 * @date 2015年6月1日 下午4:04:57
+	 * @TODO 优惠券列表初始化页面
+	 * @return
+	 */
+	@RequestMapping(value = "init")
+	public String init() {
+		return "coupon/couponissue/couponissueList";
+	}
+
+	/**
+	 * @author dong'jietao
+	 * @date 2015年6月1日 下午4:04:41
+	 * @TODO 优惠券list
+	 * @param tCouponIssue
+	 * @return
+	 */
+	@RequestMapping(value = "yaoyiyao/init/list")
+	@ResponseBody
+	public Object yaoYiYaoList(TCouponIssue tCouponIssue) {
+		Pageable<TCouponIssue> pageable = new Pageable<TCouponIssue>(tCouponIssue);
+		couponIssueService.putPageable(tCouponIssue, pageable);
+		return pageable;
+	}
+	/**
+	 * @author dong'jietao
+	 * @date 2015年6月1日 下午4:04:41
+	 * @TODO 优惠券list
+	 * @param tCouponIssue
+	 * @return
+	 */
+	@RequestMapping(value = "mansong/init/list")
+	@ResponseBody
+	public Object manSongList(TCouponIssue tCouponIssue) {
+		Pageable<TCouponIssue> pageable = new Pageable<TCouponIssue>(tCouponIssue);
+		couponIssueService.putPageable(tCouponIssue, pageable);
+		return pageable;
+	}
+	/**
+	 * @author dong'jietao
+	 * @date 2015年6月5日 下午2:10:44
+	 * @TODO 短信发送
+	 * @param tCouponIssue
+	 * @return
+	 */
+	@RequestMapping(value = "sendshortmessage/init/list")
+	@ResponseBody
+	public Object sendShortMessageList(TCouponIssue tCouponIssue) {
+		Pageable<TCouponIssue> pageable = new Pageable<TCouponIssue>(tCouponIssue);
+		couponIssueService.getListOfSendShortMessage(tCouponIssue, pageable);
+		return pageable;
+	}
+
+	/**
+	 *
+	 * 方法描述：加载系统推送，发放的优惠券详情(t_coupon_detail) <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-4-19下午3:06:05 <br/>
+	 * @param tCouponIssue
+	 * @return
+	 */
+	@RequestMapping(value="systemPush/init/list")
+	@ResponseBody
+	public Object systemPushList(TCouponDetail tCouponDetail){
+		Pageable<TCouponDetail> pageable = new Pageable<TCouponDetail>(tCouponDetail);
+		couponIssueService.getCouponDetailContainBursList(tCouponDetail,pageable);
+		return pageable;
+	}
+
+	/**
+	 *
+	 * 方法描述：跳转到系统推送优惠券发放页面<br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-4-19下午4:06:56 <br/>
+	 * @param issueId
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value="systemPush/add/init")
+	public String systemPushAddInit(Model model){
+		return "coupon/couponissue/systemPushAddInit2";
+	}
+
+    /**
+     * 方法描述：添加[系统推送]发放优惠券详细信息(t_coupon_detail) <br/>
+     * 创建人：  huang'tao <br/>
+     * 创建时间：2017-4-19下午7:25:08 <br/>
+     * @return
+     */
+    @RequestMapping(value = "systemPush/add")
+    @ResponseBody
+    public Resultable systemPushAdd(CouponIssueSystemPushAddRequest request) {
+        Resultable result = new Resultable();
+        log.info("调用添加[系统推送]发放优惠券详细信息(t_coupon_detail) 接口, 参数="+request.toString());
+        try {
+
+            List<TCoupon> couponsList = request.convertCouponList();
+            systemPushConponService.saveSystemPushInfo(couponsList,request.getSelectUsers(),request.getLevelSelect(),request.getUserType());
+            result.setSuccess(true);
+            result.setMsg("保存成功!");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setSuccess(false);
+            result.setMsg("保存失败!");
+        }
+        return result;
+    }
+
+
+    /**
+     * 统计优惠劵发放[系统推送]张数
+     * @param request
+     * @return
+     */
+    @RequestMapping("systemPush/count-add")
+    @ResponseBody
+    public Resultable countSystemPushAdd(CouponIssueSystemPushAddRequest request){
+        Resultable result = new Resultable();
+        log.info("调用统计优惠劵发放[系统推送]张数 接口, 参数="+request.toString());
+        try {
+            List<TCoupon> couponsList = request.convertCouponList();
+            int count = 0;
+            ArrayList<HashMap<String, String>> selectUser = systemPushConponService.analysingSelectUsers(request.getSelectUsers());
+            for (TCoupon tCoupon : couponsList) {
+                if (request.getUserType() == 1) {
+                    count += tCoupon.getUseNum() * selectUser.size();
+                } else if(request.getUserType() == 0) {
+                    count += tCoupon.getUseNum() * systemPushConponService.countRankUsers(request.getLevelSelect(),selectUser);
+                }
+            }
+            result.setData(count);
+            result.setSuccess(true);
+            result.setMsg("保存成功!");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setSuccess(false);
+            result.setMsg("保存失败!");
+        }
+        return result;
+
+    }
+
+    /**
+	 *
+	 * 方法描述：批量更新优惠券使用状态 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-4-20下午2:16:07 <br/>
+	 * @param couponDetail
+	 * @return
+	 */
+	@RequestMapping(value="systemPush/update/updateStatusBatch")
+	@ResponseBody
+	public Resultable updateStatusBatch(@RequestParam("cdids") String cdids,@RequestParam("userStatus") String userStatus){
+		Resultable result=new Resultable();
+		result=systemPushConponService.updateStatusBatch(cdids,userStatus);
+		return result;
+	}
+
+	/**
+	 * @author dong'jietao
+	 * @date 2015年6月2日 上午10:57:10
+	 * @TODO 优惠券发放管理添加初始化页面
+	 * @param tCouponIssue
+	 * @return
+	 */
+	@RequestMapping(value = "yaoyiyao/add/init")
+	@ResponseBody
+	public ModelAndView yaoYiYaoAddInit(){
+		ModelAndView modelAndView=new ModelAndView();
+		couponIssueService.goToAddInitPage(modelAndView);
+		modelAndView.setViewName("coupon/couponissue/addyaoyiyao");
+		return modelAndView;
+	}
+	/**
+	 * @author dong'jietao
+	 * @date 2015年6月2日 上午11:04:07
+	 * @TODO 优惠券发放管理摇一摇添加
+	 * @param tCouponIssue
+	 * @return
+	 */
+	@RequestLogging(name="摇一摇优惠券添加")
+	@RequestMapping(value = "yaoyiyao/add")
+	@ResponseBody
+	public Object addYaoYiYao(HttpServletRequest request,TCouponIssue tCouponIssue){
+		Resultable resultable=new Resultable();
+		try {
+			couponIssueService.addTCouponIssue(request,tCouponIssue,resultable);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultable.setSuccess(false);
+			resultable.setMsg("操作异常");
+		}
+		String[] s={"摇一摇优惠发放编号",String.valueOf(tCouponIssue.getIssueId()),"摇一摇优惠券添加","添加"};
+		couponIssueService.fireLoginEvent(s, resultable.getSuccess()?1:0);
+		return resultable;
+	}
+	/**
+	 * @author dong'jietao
+	 * @date 2015年6月4日 下午3:01:54
+	 * @TODO 满就送优惠券增加初始化
+	 * @return
+	 */
+	@RequestMapping(value = "mansong/add/init")
+	@ResponseBody
+	public ModelAndView manSongAddInit(){
+		ModelAndView modelAndView=new ModelAndView();
+		couponIssueService.goToAddInitPage(modelAndView);
+		modelAndView.setViewName("coupon/couponissue/addmansong");
+		return modelAndView;
+	}
+	/**
+	 * @author dong'jietao
+	 * @date 2015年6月4日 下午4:24:13
+	 * @TODO 满就送送优惠券添加
+	 * @param request
+	 * @param tCouponIssue
+	 * @return
+	 */
+	@RequestLogging(name="满就送优惠券添加")
+	@RequestMapping(value = "mansong/add")
+	@ResponseBody
+	public Object addManSong(HttpServletRequest request,TCouponIssue tCouponIssue){
+		Resultable resultable=new Resultable();
+		try {
+			couponIssueService.addTCouponIssue(request,tCouponIssue,resultable);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultable.setSuccess(false);
+			resultable.setMsg("操作异常");
+		}
+		String[] s={"满就送优惠发放编号",String.valueOf(tCouponIssue.getIssueId()),"满就送优惠券添加","添加"};
+		couponIssueService.fireLoginEvent(s, resultable.getSuccess()?1:0);
+		return resultable;
+	}
+
+	/**
+	 * @author dong'jietao
+	 * @date 2015年6月5日 下午3:54:54
+	 * @TODO 短信发送添加初始化
+	 * @return
+	 */
+	@RequestMapping(value = "sendshortmessage/add/init")
+	@ResponseBody
+	public ModelAndView sendShortMessageAddInit(){
+		ModelAndView modelAndView=new ModelAndView();
+		couponIssueService.goToAddInitPage(modelAndView);
+		modelAndView.setViewName("coupon/couponissue/addsendshortmessage");
+		return modelAndView;
+	}
+	/**
+	 * @author dong'jietao
+	 * @date 2015年6月5日 下午4:16:21
+	 * @TODO  添加短信发送优惠券
+	 * @param request
+	 * @param tCouponIssue
+	 * @return
+	 */
+	@RequestLogging(name=" 添加短信发送优惠券")
+	@RequestMapping(value = "sendshortmessage/add")
+	@ResponseBody
+	public Object addSendShortMessage(HttpServletRequest request,TCouponIssue tCouponIssue){
+		Resultable resultable=new Resultable();
+		try {
+			couponIssueService.addTCouponIssue(request,tCouponIssue,resultable);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultable.setSuccess(false);
+			resultable.setMsg("操作异常");
+		}
+		String[] s={" 添加短信发送优惠券编号",String.valueOf(tCouponIssue.getIssueId())," 添加短信发送优惠券添加","添加"};
+		couponIssueService.fireLoginEvent(s, resultable.getSuccess()?1:0);
+		return resultable;
+	}
+	/**
+	 * @author dong'jietao
+	 * @date 2015年6月3日 下午2:01:44
+	 * @TODO 摇一摇更新初始化
+	 * @param tCouponIssue
+	 * @return
+	 */
+	@RequestMapping(value = "yaoyiyao/update/init")
+	public ModelAndView updateYaoYiYaoInit(TCouponIssue tCouponIssue){
+		ModelAndView modelAndView = new ModelAndView();
+		couponIssueService.getUpdate(modelAndView,tCouponIssue);
+		return modelAndView;
+	}
+	/**
+	 * @author dong'jietao
+	 * @date 2015年6月3日 下午2:10:59
+	 * @TODO 摇一摇更新操作执行
+	 * @param tCouponIssue
+	 * @return
+	 */
+	@RequestLogging(name="摇一摇优惠券修改")
+	@RequestMapping(value = "yaoyiyao/update")
+	@ResponseBody
+	public Object updateYaoYiYao(HttpServletRequest request,TCouponIssue tCouponIssue){
+		Resultable resultable = new Resultable();
+		try {
+			couponIssueService.UpdateTCouponIssue(request,resultable,tCouponIssue);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultable.setSuccess(false);
+			resultable.setMsg("操作异常");
+		}
+		String[] s={"摇一摇优惠券发放编号",String.valueOf(tCouponIssue.getIssueId()),"摇一摇优惠券修改","修改"};
+		couponIssueService.fireLoginEvent(s, resultable.getSuccess()?1:0);
+		return resultable;
+	}
+	/**
+	 * @author dong'jietao
+	 * @date 2015年6月4日 下午3:21:43
+	 * @TODO 满送初始化
+	 * @param tCouponIssue
+	 * @return
+	 */
+	@RequestMapping(value = "mansong/update/init")
+	public ModelAndView updateManSongInit(TCouponIssue tCouponIssue){
+		ModelAndView modelAndView = new ModelAndView();
+		couponIssueService.getUpdate(modelAndView,tCouponIssue);
+		modelAndView.setViewName("coupon/couponissue/updatemansong");
+		return modelAndView;
+	}
+	/**
+	 * @author dong'jietao
+	 * @date 2015年6月4日 下午3:23:28
+	 * @TODO 满送优惠券修改
+	 * @param request
+	 * @param tCouponIssue
+	 * @return
+	 */
+	@RequestLogging(name="满就送优惠券修改")
+	@RequestMapping(value = "mansong/update")
+	@ResponseBody
+	public Object updateManSong(HttpServletRequest request,TCouponIssue tCouponIssue){
+		Resultable resultable = new Resultable();
+		try {
+			couponIssueService.UpdateTCouponIssue(request,resultable,tCouponIssue);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultable.setSuccess(false);
+			resultable.setMsg("操作异常");
+		}
+		String[] s={"满就送优惠券发放编号",String.valueOf(tCouponIssue.getIssueId()),"满就送优惠券修改","修改"};
+		couponIssueService.fireLoginEvent(s, resultable.getSuccess()?1:0);
+		return resultable;
+	}
+
+	/**
+	 * @author dong'jietao
+	 * @date 2015年6月5日 下午4:18:32
+	 * @TODO 短信发送优惠券修改初始化页面
+	 * @param tCouponIssue
+	 * @return
+	 */
+	@RequestMapping(value = "sendshortmessage/update/init")
+	public ModelAndView updateSendShortMessageInit(TCouponIssue tCouponIssue){
+		ModelAndView modelAndView = new ModelAndView();
+		couponIssueService.getUpdate(modelAndView,tCouponIssue);
+		modelAndView.setViewName("coupon/couponissue/updatesendshortmessage");
+		return modelAndView;
+	}
+	/**
+	 * @author dong'jietao
+	 * @date 2015年6月5日 下午4:21:40
+	 * @TODO 短信发送优惠券修改
+	 * @param request
+	 * @param tCouponIssue
+	 * @return
+	 */
+	@RequestLogging(name="短信发送优惠券修改")
+	@RequestMapping(value = "sendshortmessage/update")
+	@ResponseBody
+	public Object updateSendShortMessage(HttpServletRequest request,TCouponIssue tCouponIssue){
+		Resultable resultable = new Resultable();
+		try {
+			couponIssueService.UpdateTCouponIssue(request,resultable,tCouponIssue);
+		} catch (Exception e) {
+			log.error("操作异常",e);
+			resultable.setSuccess(false);
+			resultable.setMsg("操作异常");
+		}finally{
+			String[] s={"短信发送优惠券编号",String.valueOf(tCouponIssue.getIssueId()),"短信发送优惠券修改","修改"};
+			couponIssueService.fireLoginEvent(s, resultable.getSuccess()?1:0);
+		}
+
+		return resultable;
+	}
+
+	/**
+	 * 短信发送优惠券添加用户
+	 * @author zhang'zhiwen
+	 * @date 2015年6月9日 下午5:16:06
+	 * @TODO
+	 * @param issueId
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value="sendshortmessage/addUsers/init")
+	public String addUsersOfSendShortMessageInit(Integer issueId,Model model){
+		model.addAttribute("issue", couponIssueService.getObject(issueId.longValue()));
+		return "coupon/couponissue/sendShortMessageAddUsers";
+	}
+
+	/**
+	 * 导入页面初始化
+	 * @param issueId
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value="sendshortmessage/importUsers/init")
+	public String ImportUsersSendShortMessageInit(Integer issueId,Model model){
+		model.addAttribute("issue", couponIssueService.getObject(issueId.longValue()));
+		return "coupon/couponissue/sendshortmessage/importUser";
+	}
+	/**
+	 * 导入模版下载
+	 * @param request
+	 * @param response
+	 */
+	@RequestMapping(value="sendshortmessage/importUsers/downloadTemplate")
+	public void downloadTemplate(HttpServletRequest request,HttpServletResponse response) {
+		super.downloadTemplate(request, response, "coupons/couponsUserMsgTemplate.xls", "优惠卷发放用户模版");
+	}
+
+	/**
+	 * 用户导入
+	 * @throws IOException
+	 */
+	@RequestLogging(name="优惠劵发放用户信息导入")
+	@RequestMapping(value = "sendshortmessage/importUsers/importData",method=RequestMethod.POST)
+	public void importData(@RequestParam("importData")MultipartFile multipartFile,TCouponIssue couponIssue,HttpServletRequest request,HttpServletResponse response) throws IOException {
+		PrintWriter printWriter = response.getWriter();
+		try {
+			printWriter.println(JSON.toJSON(couponIssueService.importCouponDetail(multipartFile, couponIssue)));
+		} catch (Exception e) {
+			printWriter.println(JSON.toJSON(new ResultFile(FastfdsConstant.FILE_UPLOAD_FASTDFS_FAILURE, "导入失败,请重新导入")));
+			log.error("文件上传失败", e);
+		}
+
+
+	}
+
+	/**
+	 *
+	 * @author zhang'zhiwen
+	 * @date 2015年6月9日 下午5:17:24
+	 * @TODO 短信发送优惠券添加商家，商家添加成功后，就会生成一张具体的优惠券（CouponDetail的实例）
+	 * @param tCouponIssue
+	 * @return
+	 */
+	@RequestMapping(value="sendshortmessage/addUsers")
+	@RequestLogging(name="短信发送优惠券添加商家")
+	@ResponseBody
+	public Object addUsersOfSendShortMessage(TCouponIssue couponIssue){
+		Resultable resultable = new Resultable();
+		this.log.info(couponIssue);
+		couponIssue.setActivityType(3);
+		try{
+			couponIssueService.batchAddCouponDetail(couponIssue,resultable);
+			if(resultable.getData()!=null){
+				resultable.setSuccess(false);
+				resultable.setMsg("选择的商家中有已经存在，请更正信息！");
+			}else{
+				resultable.setSuccess(true);
+				resultable.setMsg("添加用户成功！");
+				String[] couponInfo = { "短信发送优惠券",couponIssue.getIssueId().toString(),"添加商家并生成具体的优惠券", "添加" };
+				couponIssueService.fireLoginEvent(couponInfo,PartnerConstants.FIRELOGIN_NUMA );
+			}
+		}catch (Exception e){
+			this.log.error(e);
+			resultable.setSuccess(false);
+			resultable.setMsg("添加用户失败！");
+			String[] couponInfo = { "短信发送优惠券",couponIssue.getIssueId().toString(),"添加商家并生成具体的优惠券", "添加" };
+			couponIssueService.fireLoginEvent(couponInfo,PartnerConstants.FIRELOGIN_NUMB );
+		}
+		return resultable;
+	}
+
+	/**
+	 *
+	 * @author zhang'zhiwen
+	 * @date 2015年6月10日 下午2:45:57
+	 * @TODO
+	 * @return
+	 */
+	@RequestMapping(value="sendshortmessage/userlist/init")
+	public String userListInit(Long issueId,Model model){
+		model.addAttribute("issueId", issueId);
+		return "coupon/couponissue/sendshortmessage/userList";
+	}
+
+	@RequestMapping(value="sendshortmessage/userlist")
+	@ResponseBody
+	public Object userList(TCouponDetail couponDetail){
+		Pageable<TCouponDetail> pageable = new Pageable<TCouponDetail>(couponDetail);
+		couponIssueService.getUserListByIssueId(couponDetail,pageable);
+		return pageable ;
+	}
+
+	/**
+	 * @author zhang'zhiwen
+	 * @date 2015年6月17日 上午11:05:34
+	 * @TODO 发送短信
+	 * @param couponDetail
+	 * @return
+	 */
+	@RequestMapping(value="sendshortmessage/sendMessage")
+	@ResponseBody
+	@RequestLogging(name="短信发送优惠券活动 >>发送短信")
+	public Object sendMessage(TCouponDetail couponDetail){
+		Resultable resultable = new Resultable();
+		try {
+			couponIssueService.sendMessage(couponDetail);
+			resultable.setSuccess(true);
+			resultable.setMsg("短信发送成功");
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultable.setSuccess(false);
+			resultable.setMsg("短信发送失败");
+			if(couponDetail.getCdids()==null){
+				String[] couponInfo = {"短信发送优惠券活动编号为",couponDetail.getIssueId().toString(),"按活动发送短信", "发送短信" };
+				couponIssueService.fireLoginEvent(couponInfo,PartnerConstants.FIRELOGIN_NUMB );
+			}else{
+				String[] couponInfo = {"短信发送优惠券活动编号为",couponDetail.getIssueId().toString(),"按用户发送短信", "发送短信" };
+				couponIssueService.fireLoginEvent(couponInfo,PartnerConstants.FIRELOGIN_NUMB );
+			}
+		}
+		return resultable;
+	}
+
+	/**
+	 *
+	 * @author zhang'zhiwen
+	 * @date 2015年6月5日 上午10:40:23
+	 * @TODO 获取优惠码列表
+	 * @return
+	 */
+	@RequestMapping(value="/youhuima/init/list")
+	@ResponseBody
+	public Object youhuimaList(TCouponDetail tCouponDetail){
+		Pageable<TCouponDetail> pageable = new Pageable<TCouponDetail>(tCouponDetail);
+		couponIssueService.getCouponDetailList(tCouponDetail,pageable);
+		return pageable;
+	}
+
+
+	@RequestMapping(value = "user-level",method = RequestMethod.GET)
+    @ResponseBody
+	public Object userLevel(Integer rankType){
+	    log.info("查询粉丝等级 rankType="+rankType);
+	    List<BLiveFansRank> rankList =  couponService.queryLevelList(rankType);
+	    return JSON.toJSON(rankList);
+    }
+
+	/**
+	 *
+	 * @author zhang'zhiwen
+	 * @date 2015年6月5日 下午2:26:51
+	 * @TODO 发行优惠券
+	 * @return
+	 */
+	@RequestMapping(value="/youhuima/add/init")
+	public String addCouponDetailInit(Model model){
+		//model.addAttribute("coupons", couponService.getList(new TCoupon()));
+		return "coupon/couponissue/addCouponDetail";
+	}
+	@RequestMapping(value="/youhuimaexport/init")
+	public String youhuimaexportInit(){
+		return "coupon/couponissue/youhuimaExportForm";
+	}
+	/**
+	 *
+	 * @author dong'jt
+	 * 创建时间：2015年9月18日 上午11:15:22
+	 * 描述：优惠码数据导出
+	 * @param tCouponDetail
+	 * @param request
+	 * @param response
+	 */
+	@RequestMapping(value = "youhuimaexport")
+	public void youhuimaexport(TCouponDetail tCouponDetail, HttpServletRequest request, HttpServletResponse response){
+		Map<String, Object> params = new HashMap<String, Object>();
+		couponIssueService.getCouponDetailExportList(tCouponDetail, params);
+		doExport(request, response, "coupons/youhuima.xls", params);
+	}
+	/**
+	 *
+	 * 查询优惠券
+	 *
+	 * @author：huangpingqiang
+	 */
+	@RequestMapping(value = "queryYouHuiQuan")
+	@ResponseBody
+	public Object queryYouHuiQuan(TCoupon coupon) {
+		Pageable<TCoupon> pageable = new Pageable<TCoupon>(coupon);
+		String filterVal = coupon.getFilterVal();
+		if(StringUtils.isNotBlank(filterVal)){
+			coupon.setCtype(new Integer(filterVal));
+		}
+		coupon.setStatus(1);  //状态 1.上架 2.下架 3.售罄
+		coupon.setLimit(-1);
+		pageable.setContent(couponService.getSelect(coupon));
+		return pageable;
+	}
+
+	@RequestMapping(value="/youhuima/add")
+	@RequestLogging(name="发行优惠券")
+	@ResponseBody
+	public Object addCouponDetail(TCouponIssue couponIssue){
+		Resultable resultable = new Resultable();
+		this.log.info("发行优惠券---------->");
+		try{
+			couponIssueService.batchAddCouponDetail(couponIssue,resultable);
+			resultable.setSuccess(true);
+			resultable.setMsg("发行成功");
+		}catch (Exception e){
+			this.log.error(e);
+			resultable.setSuccess(false);
+			resultable.setMsg("发行失败");
+
+			if(couponIssue.getCid()!=null){
+				String[] couponInfo = { "优惠券编号为",couponIssue.getCid().toString(),"发行"+couponIssue.getTotalVolume()+"张", "发行" };
+				couponIssueService.fireLoginEvent(couponInfo,PartnerConstants.FIRELOGIN_NUMB );
+			}
+			if(couponIssue.getIssueId()!=null){
+				String[] couponInfo = {"活动优惠券编号",couponIssue.getIssueId().toString(),"发行", "发行" };
+				couponIssueService.fireLoginEvent(couponInfo,PartnerConstants.FIRELOGIN_NUMB );
+			}
+		}
+		this.log.info("<----------发行优惠券");
+		return resultable;
+	}
+
+	@RequestMapping(value="/updateCouponIssueStatus")
+	@ResponseBody
+	public Object updateCouponIssueStatus(TCouponIssue couponIssue,HttpServletRequest request){
+		Resultable resultable = new Resultable();
+		try{
+			couponIssueService.updateCouponIssueStatus(couponIssue,request);
+			resultable.setSuccess(true);
+			resultable.setMsg("操作成功");
+		}catch(Exception e){
+			this.log.error(e.getStackTrace());
+			resultable.setSuccess(false);
+			resultable.setMsg("操作异常");
+		}
+		return resultable;
+	}
+
+	/**
+	 *
+	 * @author cao'yingde
+	 * @date 2015年6月10日 下午2:26:51
+	 * @TODO 优惠券查看详细
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "viewCoupon/viewCouponInit/list")
+	public Object getViewCoupon(TCouponDetail couponDetail) {
+		Pageable<TCouponDetail> pageable = new Pageable<TCouponDetail>(couponDetail);
+		pageable = couponIssueService.getViewCoupon(couponDetail);
+		return pageable;
+	}
+	@RequestMapping(value = "viewCoupon/viewCouponInit")
+	public ModelAndView activityUnUseInitList(@RequestParam("issueId")Integer issueId){
+		ModelAndView modelAndView = new ModelAndView("coupon/couponissue/viewCoupon");
+		modelAndView.addObject("issueId", issueId);
+		modelAndView.addObject("requestInit", "viewCoupon/viewCouponInit/list");
+		return modelAndView;
+	}
+	/**
+	 * @author dong'jietao
+	 * @date 2015年6月11日 上午10:56:35
+	 * @TODO 摇一摇明细初始化
+	 * @return
+	 */
+	@RequestMapping(value="/yaoyiyaomingxi/initlist")
+	public ModelAndView yaoyiyaoMingXiInit(){
+		ModelAndView modelAndView=new ModelAndView();
+		modelAndView.setViewName("coupon/couponissue/yaoyiyaomingxi");
+		return modelAndView;
+	}
+	/**
+	 * @author dong'jietao
+	 * @date 2015年6月11日 上午10:51:11
+	 * @TODO 摇一摇明细列表
+	 * @param tCouponDetail
+	 * @return
+	 */
+	@RequestMapping(value="/yaoyiyaomingxi/init/list")
+	@ResponseBody
+	public Object yaoyiyaoMingXi(TCouponDetail tCouponDetail){
+		Pageable<TCouponDetail> pageable = new Pageable<TCouponDetail>(tCouponDetail);
+		couponIssueService.getCouponDetailList(tCouponDetail,pageable);
+		return pageable;
+	}
+	/**
+	 * @author dong'jietao
+	 * @date 2015年6月11日 上午11:46:36
+	 * @TODO 满送明细初始化
+	 * @return
+	 */
+	@RequestMapping(value="/mansongmingxi/initlist")
+	public ModelAndView mansongMingXiInit(){
+		ModelAndView modelAndView=new ModelAndView();
+		modelAndView.setViewName("coupon/couponissue/mansongmingxi");
+		return modelAndView;
+	}
+	/**
+	 * @author dong'jietao
+	 * @date 2015年6月11日 上午11:47:01
+	 * @TODO 满送明细List
+	 * @param tCouponDetail
+	 * @return
+	 */
+	@RequestMapping(value="/mansongmingxi/init/list")
+	@ResponseBody
+	public Object mansongMingXi(TCouponDetail tCouponDetail){
+		Pageable<TCouponDetail> pageable = new Pageable<TCouponDetail>(tCouponDetail);
+		couponIssueService.getCouponDetailList(tCouponDetail,pageable);
+		return pageable;
+	}
+
+	 /**
+	    * 签约数详细信跳转页面
+	    * @param staffid
+	    * @return
+	    */
+		@RequestMapping(value = "mansong/youhuiquan/list")
+		public ModelAndView manSongYouHuiQuanInit(@RequestParam("issueId") Long issueId) {
+			ModelAndView modelAndView = new ModelAndView("coupon/couponissue/mansongyouhuiquan");
+			modelAndView.addObject("requestInit",
+					"coupon/couponissue/mansong/youhuiquan");
+			modelAndView.addObject("issueId", issueId);
+			return modelAndView;
+		}
+	    /**
+	     * 签约数详细信息获取
+	     * @param tstaffRanking
+	     * @return
+	     */
+		@RequestMapping(value = "mansong/youhuiquan")
+		public ModelAndView manSongYouHuiQuan(TCouponIssueRef tCouponIssueRef) {
+			ModelAndView modelAndView = new ModelAndView(
+					"coupon/couponissue/mansongyouhuiquanlist");
+			modelAndView.addObject("page", tCouponIssueRef.getPage());
+			couponIssueService.putTCouponIssueRefModel(tCouponIssueRef, modelAndView);
+			return modelAndView;
+
+		}
+	/**
+	 * 分享发放优惠列表
+	 * @author zhang'zhiwen
+	 * @date 2015年7月21日 上午9:45:25
+	 * @return
+	 */
+	@RequestMapping(value="share/init/list")
+	@ResponseBody
+	public Object share(TCouponIssue couponIssue) {
+		Pageable<TCouponIssue> pageable = new Pageable<TCouponIssue>(couponIssue);
+		couponIssueService.getShareList(couponIssue, pageable);
+		return pageable;
+	}
+
+	/**
+	 * 添加分享发放优惠初始化页面
+	 * @author zhang'zhiwen
+	 * @date 2015年7月21日 上午10:56:38
+	 * @return
+	 */
+	@RequestMapping(value="share/add/init")
+	public ModelAndView addShare(){
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.setViewName("coupon/couponissue/share/addShare");
+		couponIssueService.goToAddInitPage(modelAndView);
+		return modelAndView;
+	}
+
+	/**
+	 * 修改分享发放优惠初始化页面
+	 * @author zhang'zhiwen
+	 * @date 2015年7月22日 下午1:51:12
+	 * @return
+	 */
+	@RequestMapping(value="share/update/init")
+	public ModelAndView updateShare(TCouponIssue couponIssue){
+		ModelAndView modelAndView = new ModelAndView();
+		couponIssueService.getUpdate(modelAndView,couponIssue);
+		modelAndView.setViewName("coupon/couponissue/share/updateShare");
+		return modelAndView;
+	}
+
+	/**
+	 * * 添加分享发放优惠
+	 * @author zhang'zhiwen
+	 * @date 2015年7月21日 上午10:56:45
+	 * @param couponIssue
+	 * @return
+	 */
+	@RequestMapping(value="share/add")
+	@RequestLogging(name="添加刮刮卡")
+	@ResponseBody
+	public Object addShare(TCouponIssue couponIssue,HttpServletRequest request){
+		Resultable resultable=new Resultable();
+		try{
+			couponIssue.setActivityType(5);
+			couponIssueService.addTCouponIssue(request,couponIssue,resultable);
+			String[] s={"分享发放优惠券编号",String.valueOf(couponIssue.getIssueId()),"分享发放优惠券","添加"};
+			couponIssueService.fireLoginEvent(s, resultable.getSuccess()?1:0);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return resultable;
+	}
+
+	/**
+	 * 修改分享发放优惠
+	 * @author zhang'zhiwen
+	 * @date 2015年7月22日 下午1:52:04
+	 * @param couponIssue
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value="share/update")
+	@RequestLogging(name="修改刮刮卡")
+	@ResponseBody
+	public Object updateShare(TCouponIssue couponIssue,HttpServletRequest request){
+		Resultable resultable=new Resultable();
+		try{
+			couponIssue.setActivityType(5);
+			couponIssueService.UpdateCouponIssueAndUpdateCouponIssueRef(request,resultable,couponIssue);
+			String[] s={"分享发放优惠券编号",String.valueOf(couponIssue.getIssueId()),"分享发放优惠券","修改"};
+			resultable.setMsg("操作成功！");
+			couponIssueService.fireLoginEvent(s, resultable.getSuccess()?1:0);
+		}catch(Exception e){
+			e.printStackTrace();
+			resultable.setSuccess(false);
+			resultable.setMsg("操作异常！");
+		}
+		return resultable;
+	}
+	@RequestMapping(value="share/mingxi/init")
+	public String shareMingXiInit(Integer issueId,Integer type,Model model){
+		model.addAttribute("issueId", issueId);
+		model.addAttribute("type", type);
+		return "coupon/couponissue/share/sharemingxi";
+	}
+
+	@RequestMapping(value="share/mingxi/init/list")
+	@ResponseBody
+	public Object shareMingXiList(TCouponDetail couponDetail,Integer type){
+		if(type==1){
+			couponDetail.setGetWay(5);
+		}
+		if(type==2){
+			couponDetail.setGetWay(6);
+		}
+		Pageable<TCouponDetail> pageable = new Pageable<TCouponDetail>(couponDetail);
+		couponIssueService.getCouponDetailList(couponDetail,pageable);
+		return pageable;
+	}
+
+	@RequestMapping(value="share/view")
+	public ModelAndView viewShare(TCouponIssue couponIssue){
+		ModelAndView modelAndView = new ModelAndView();
+		couponIssueService.getUpdate(modelAndView,couponIssue);
+		modelAndView.setViewName("coupon/couponissue/share/viewShare");
+		return modelAndView;
+	}
+
+}

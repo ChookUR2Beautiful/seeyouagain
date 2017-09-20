@@ -1,0 +1,452 @@
+/**
+ * 
+ */
+package com.xmniao.xmn.core.live_anchor.service;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Service;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.base.BaseService;
+import com.xmniao.xmn.core.base.MapBeanUtil;
+import com.xmniao.xmn.core.businessman.dao.ClassifyTagDao;
+import com.xmniao.xmn.core.businessman.entity.ClassifyTag;
+import com.xmniao.xmn.core.live_anchor.constant.LiveConstant;
+import com.xmniao.xmn.core.live_anchor.dao.BLiverDao;
+import com.xmniao.xmn.core.live_anchor.dao.TLiveRecordAddBatchDao;
+import com.xmniao.xmn.core.live_anchor.dao.TLiveRecordBannerDao;
+import com.xmniao.xmn.core.live_anchor.dao.TLiveRecordTagConfDao;
+import com.xmniao.xmn.core.live_anchor.entity.BLiver;
+import com.xmniao.xmn.core.live_anchor.entity.LiveAnchorAddBatchBean;
+import com.xmniao.xmn.core.live_anchor.entity.LiveRecordAddBatchBean;
+import com.xmniao.xmn.core.live_anchor.entity.TFansCouponAnchorRef;
+import com.xmniao.xmn.core.live_anchor.entity.TLiveRecord;
+import com.xmniao.xmn.core.live_anchor.entity.TLiveRecordBanner;
+import com.xmniao.xmn.core.live_anchor.entity.TLiveRecordTagConf;
+import com.xmniao.xmn.core.live_anchor.entity.TLiveRobotSet;
+import com.xmniao.xmn.core.util.NMD5;
+
+/**
+ * 
+ * 项目名称：XmnWeb
+ * 
+ * 类名称：LiveRecordAddBatchService
+ * 
+ * 类描述： 批量添加通告Service
+ * 
+ * 创建人：  huang'tao
+ * 
+ * 创建时间：2017-3-7 上午11:04:50 
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司 
+ */
+@Service
+public class LiveRecordAddBatchService extends BaseService<TLiveRecord> {
+	
+	/**
+	 * 注入直播通告Dao
+	 */
+	@Autowired
+	private TLiveRecordAddBatchDao liveRecordAddBatchDao;
+	
+	/**
+	 * 注入主播Dao
+	 */
+	@Autowired
+	private BLiverDao anchorDao;
+	
+	/**
+	 * 注入通告轮播图Dao
+	 */
+	@Autowired
+	private TLiveRecordBannerDao recordBannerDao;
+	
+	/**
+	 * 注入直通通告标签Dao
+	 */
+	@Autowired
+	private ClassifyTagDao liveRecordTagDao;
+	
+	/**
+	 * 注入直通通告标签配置关系Dao
+	 */
+	@Autowired
+	private TLiveRecordTagConfDao liveRecordTagConfDao;
+	
+	/**
+	 * 注入直播粉丝券发放配置服务
+	 */
+	@Autowired
+	private TFansCouponAnchorRefService couponAnchorRefService;
+	
+	/**
+	 * 注入通告机器人设置服务
+	 */
+	@Autowired
+	private TLiveRobotSetService robotSetService;
+	
+	/**
+	 * 注入redisTemplate
+	 */
+	@Autowired
+	private StringRedisTemplate redisTemplate;
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected BaseDao getBaseDao() {
+		return liveRecordAddBatchDao;
+	}
+	
+
+	/**
+	 * 方法描述：批量添加通告 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-3-7上午11:11:56 <br/>
+	 * @param liveRecordAddBatchBean
+	 */
+	public void addBatchInfo(LiveRecordAddBatchBean liveRecordAddBatchBean) {
+		List<TLiveRecord> liveRecordList =new ArrayList<TLiveRecord>();
+		try {
+			List<LiveAnchorAddBatchBean> anchorList = liveRecordAddBatchBean.getAnchorList();
+			if(anchorList!=null && anchorList.size()>0){
+				for(LiveAnchorAddBatchBean anchorAddBatchBean:anchorList){
+					Integer anchorId = anchorAddBatchBean.getAnchorId();
+					if(anchorId!=null){
+						TLiveRecord liveRecord=new TLiveRecord();
+						convertLiveRecord(liveRecord,liveRecordAddBatchBean,anchorAddBatchBean);
+						liveRecordAddBatchDao.addReturnId(liveRecord);
+						liveRecordList.add(liveRecord);
+						
+						saveAnchorRefInfo(liveRecord,liveRecordAddBatchBean,anchorAddBatchBean);
+					}
+					
+				}
+//			liveRecordAddBatchDao.addBatch(liveRecordList); 批量添加通告不支持返回通告ID,逐条插入
+			}
+			
+			if(liveRecordList!=null && liveRecordList.size()>0){
+				syncLiveRecordBannerInfo(liveRecordList);
+				syncLiveRecordTagInfo(liveRecordList);
+				syncLiveRecordRobotInfo(liveRecordList);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			this.log.error("批量新增通告失败："+e.getMessage(), e);
+		}
+		
+	}
+
+
+	/**
+	 * 方法描述：在此处添加方法描述 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-7-21下午4:03:49 <br/>
+	 * @param liveRecordList
+	 */
+	private void syncLiveRecordRobotInfo(List<TLiveRecord> liveRecordList) {
+		// TODO Auto-generated method stub
+		if(liveRecordList!=null && liveRecordList.size()>0){
+			List<TLiveRobotSet> liveRobotSetList=new ArrayList<TLiveRobotSet>();
+			for(TLiveRecord liveRecord:liveRecordList){
+				TLiveRobotSet robotSet=new TLiveRobotSet();
+				
+				Integer recordId = liveRecord.getId();
+				Integer robotSetMixNums = liveRecord.getRobotSetMixNums();
+				Integer robotSetMaxNums = liveRecord.getRobotSetMaxNums();
+				Integer robotMinNums = liveRecord.getRobotMinNums();
+				Integer robotMaxNums = liveRecord.getRobotMaxNums();
+				
+				Integer isRobotInit = liveRecord.getIsRobotInit();
+				if(isRobotInit!=null && isRobotInit.intValue()==1){
+					robotSet.setRecordId(recordId);
+					robotSet.setRobotSetMixNums(robotSetMixNums);
+					robotSet.setRobotSetMaxNums(robotSetMaxNums);
+					robotSet.setRobotMinNums(robotMinNums);
+					robotSet.setRobotMaxNums(robotMaxNums);
+					robotSet.setStatus(1);
+					robotSet.setIsCommon(0);
+					robotSet.setCreateTime(new Date());
+					robotSet.setUpdateTime(new Date());
+					redisTemplate.opsForHash().putAll(LiveConstant.LIVE_ROBOT_SET_KEY+recordId, MapBeanUtil.convertMap(robotSet, "robotSetMixNums","robotSetMaxNums","robotMinNums","robotMaxNums"));
+					liveRobotSetList.add(robotSet);
+				}
+			}
+			
+			if(liveRobotSetList!=null && liveRobotSetList.size()>0){
+				//18:37
+				robotSetService.addBatch(liveRobotSetList);
+			}
+		}
+	}
+
+
+	/**
+	 * 方法描述：保存通告粉丝券配置信息 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-3-11下午5:06:54 <br/>
+	 * @param liveRecord
+	 * @param liveRecordAddBatchBean
+	 * @param anchorAddBatchBean
+	 * @param fansAnchorRef
+	 */
+	private void saveAnchorRefInfo(TLiveRecord liveRecord, LiveRecordAddBatchBean liveRecordAddBatchBean, LiveAnchorAddBatchBean anchorAddBatchBean) {
+		String haveCoupon = liveRecordAddBatchBean.getHaveCoupon();//1绑定粉丝券，0否
+		if("1".equals(haveCoupon)){
+			Integer recordId = liveRecord.getId();
+			Integer cid = liveRecordAddBatchBean.getCid();
+			Integer anchorId = anchorAddBatchBean.getAnchorId();
+			if(anchorId!=null){
+				BLiver anchorBean = anchorDao.selectByPrimaryKey(anchorId);
+				Integer uid = anchorBean.getUid();
+				BigDecimal saleCouponRation = anchorBean.getSaleCouponRatio();//粉丝券销售比例
+				BigDecimal useCouponRation = anchorBean.getUseCouponRation();//粉丝券使用比例
+				
+				TFansCouponAnchorRef fansAnchorRef=new TFansCouponAnchorRef();
+				fansAnchorRef.setCid(cid);
+				fansAnchorRef.setUid(uid);
+				fansAnchorRef.setRecordId(recordId);
+				fansAnchorRef.setSaleCouponRation(saleCouponRation);
+				fansAnchorRef.setUseCouponRation(useCouponRation);
+				fansAnchorRef.setSdate(new Date());
+				couponAnchorRefService.add(fansAnchorRef);
+			}
+		}
+	}
+
+
+	/**
+	 * 方法描述：同步通告标签信息 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-3-8上午10:30:36 <br/>
+	 * @param liveRecordList
+	 */
+	private void syncLiveRecordTagInfo(List<TLiveRecord> liveRecordList) {
+		List<TLiveRecordTagConf> liveRecordTagConfList=new ArrayList<TLiveRecordTagConf>();
+		if(liveRecordList!=null && liveRecordList.size()>0){
+			for(TLiveRecord liveRecord:liveRecordList){
+				Integer recordId = liveRecord.getId();
+				String tagIds = liveRecord.getTagIds();
+				if(StringUtils.isNotBlank(tagIds)){
+					String[] tagIdArray = tagIds.split(";");
+					for(String tagId:tagIdArray){
+						ClassifyTag liveRecordTag = liveRecordTagDao.selectByPrimaryKey(new Integer(tagId));
+						if(liveRecordTag!=null){
+							TLiveRecordTagConf liveRecordTagConf=new TLiveRecordTagConf();
+							liveRecordTagConf.setRecordId(recordId);
+							liveRecordTagConf.setClassifyId(liveRecordTag.getClassifyId());
+							liveRecordTagConf.setTagId(liveRecordTag.getId());
+							liveRecordTagConf.setTagName(liveRecordTag.getTagName());
+							liveRecordTagConf.setCreateTime(new Date());
+							liveRecordTagConf.setUpdateTime(new Date());
+							liveRecordTagConfList.add(liveRecordTagConf);
+						}
+					}
+				}
+			}
+			
+			if(liveRecordTagConfList!=null && liveRecordTagConfList.size()>0){
+				liveRecordTagConfDao.addBatch(liveRecordTagConfList);
+			}
+		}
+	}
+
+
+	/**
+	 * 方法描述：同步通告Banner图 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-3-8上午10:30:33 <br/>
+	 * @param liveRecordList
+	 */
+	private void syncLiveRecordBannerInfo(List<TLiveRecord> liveRecordList) {
+		List<TLiveRecordBanner> liveRecordBannerList=new ArrayList<TLiveRecordBanner>();
+		if(liveRecordList!=null && liveRecordList.size()>0){
+			for(TLiveRecord liveRecord:liveRecordList){
+				Integer recordId = liveRecord.getId();
+				String picUrls = liveRecord.getPicUrls();
+				if(StringUtils.isNotBlank(picUrls)){
+					String[] picUrlArray = picUrls.split(";");
+					int sortVal =0;
+					for(String picUrl:picUrlArray){
+						TLiveRecordBanner liveRecordBanner=new TLiveRecordBanner();
+						liveRecordBanner.setRecordId(recordId);
+						liveRecordBanner.setPicUrl(picUrl);
+						liveRecordBanner.setType("001");//图片类型 默认001 通告封面轮播图
+						liveRecordBanner.setCreateTime(new Date());
+						liveRecordBanner.setSortVal(sortVal);
+						liveRecordBannerList.add(liveRecordBanner);
+						sortVal++;
+					}
+				}
+			}
+		}
+		
+		if(liveRecordBannerList!=null && liveRecordBannerList.size()>0){
+			recordBannerDao.addBatch(liveRecordBannerList);
+		}
+	}
+
+
+	/**
+	 * 
+	 * 方法描述： 将源数据信息转化为目标数据信息<br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-3-7下午3:41:19 <br/>
+	 * @param liveRecord			 目标通告信息
+	 * @param liveRecordAddBatchBean 源通告信息
+	 * @param anchorAddBatchBean	  源主播信息
+	 */
+	private void convertLiveRecord(TLiveRecord liveRecord, LiveRecordAddBatchBean liveRecordAddBatchBean, LiveAnchorAddBatchBean anchorAddBatchBean) {
+		String zhiboTitle = liveRecordAddBatchBean.getZhiboTitle();
+		Integer liveTopic = liveRecordAddBatchBean.getLiveTopic();
+		Integer sellerid = liveRecordAddBatchBean.getSellerid();
+		String sellername = liveRecordAddBatchBean.getSellername();
+		String sellerAlias = liveRecordAddBatchBean.getSellerAlias();
+		String zhiboAddress = liveRecordAddBatchBean.getZhiboAddress();
+		Integer advanceDefault = liveRecordAddBatchBean.getAdvanceDefault();
+		Date planStartDate = liveRecordAddBatchBean.getPlanStartDate();
+		Date planEndDate = liveRecordAddBatchBean.getPlanEndDate();
+		Integer isAppoint = liveRecordAddBatchBean.getIsAppoint();
+		String telphones = liveRecordAddBatchBean.getTelphones();
+		String anchorRoomPassword = liveRecordAddBatchBean.getAnchorRoomPassword();
+		Integer showOtherSeller = liveRecordAddBatchBean.getShowOtherSeller();
+		String haveCoupon = liveRecordAddBatchBean.getHaveCoupon();
+		
+		
+		Integer anchorId = anchorAddBatchBean.getAnchorId();
+		if(anchorId!=null){
+			BLiver anchorBean = anchorDao.selectByPrimaryKey(anchorId);
+			String nickname = anchorBean.getNickname();
+			String anchorRoomNo = anchorBean.getAnchorRoomNo();
+			String avatar = anchorBean.getAvatar();
+			Integer signType = anchorBean.getSignType();
+			Integer rootRole = anchorBean.getRootRole();
+			
+			
+			liveRecord.setAnchorId(anchorId);
+			liveRecord.setNname(nickname);
+			liveRecord.setAnchorRoomNo(anchorRoomNo);
+			liveRecord.setAvatar(avatar);
+			liveRecord.setSignType(signType);
+			liveRecord.setRootRole(rootRole);
+		}
+		Integer sequenceNo = anchorAddBatchBean.getSequenceNo();
+		
+		liveRecord.setZhiboTitle(zhiboTitle);
+		liveRecord.setLiveTopic(liveTopic);
+		liveRecord.setSellerid(sellerid);
+		liveRecord.setSellername(sellername);
+		liveRecord.setSellerAlias(sellerAlias);
+		liveRecord.setZhiboAddress(zhiboAddress);
+		Integer zhiboType=-1;
+		if(advanceDefault!=null){
+			switch (advanceDefault) {
+			case 0:
+				zhiboType=-1;
+				break;
+			case 1:
+				zhiboType=0;
+				break;
+			default:
+				zhiboType=-1;
+				break;
+			}
+		}
+		liveRecord.setZhiboType(zhiboType);
+		liveRecord.setPlanStartDate(planStartDate);
+		liveRecord.setPlanEndDate(planEndDate);
+		liveRecord.setIsAppoint(isAppoint);
+		liveRecord.setTelphones(telphones);
+		if(StringUtils.isNotBlank(anchorRoomPassword)){
+			String password = NMD5.EncodeSwap(anchorRoomPassword);
+			liveRecord.setAnchorRoomPassword(password);
+		}
+		liveRecord.setShowOtherSeller(showOtherSeller);
+		liveRecord.setHaveCoupon(haveCoupon);
+		liveRecord.setSequenceNo(sequenceNo);
+		
+		
+		
+		
+		String picUrls = anchorAddBatchBean.getPicUrls();
+		String tagIds = anchorAddBatchBean.getTagIds();
+		
+		liveRecord.setPicUrls(picUrls);
+		// 维护直播封面
+		if(StringUtils.isNotBlank(picUrls)){
+			String[] picUrlArray = picUrls.split(";");
+			if(picUrlArray!=null && picUrlArray.length>0){
+				liveRecord.setZhiboCover(picUrlArray[0]);
+			}
+		}
+		
+		liveRecord.setTagIds(tagIds);
+		liveRecord.setCreateTime(new Date());
+
+		Integer isCustomShare = anchorAddBatchBean.getIsCustomShare();
+		String customShareTitle = anchorAddBatchBean.getCustomShareTitle();
+		String customShareDesc = anchorAddBatchBean.getCustomShareDesc();
+		
+		liveRecord.setIsCustomShare(isCustomShare);  //是否自定义分享描述
+		liveRecord.setCustomShareTitle(customShareTitle); //分享标题
+		liveRecord.setCustomShareDesc(customShareDesc); //分享描述
+		
+		//机器人设置
+		
+		Integer isRobotInit = anchorAddBatchBean.getIsRobotInit();//是否设置机器人
+		Integer robotSetMixNums = anchorAddBatchBean.getRobotSetMixNums();//单次最少新增机器人个数
+		Integer robotSetMaxNums = anchorAddBatchBean.getRobotSetMaxNums();//单次最多新增机器人个数
+		Integer robotMinNums = anchorAddBatchBean.getRobotMinNums();//初始化机器人数量
+		Integer robotMaxNums = anchorAddBatchBean.getRobotMaxNums();//最高上限机器人数量
+		
+		liveRecord.setIsRobotInit(isRobotInit);
+		liveRecord.setRobotSetMixNums(robotSetMixNums);
+		liveRecord.setRobotSetMaxNums(robotSetMaxNums);
+		liveRecord.setRobotMinNums(robotMinNums);
+		liveRecord.setRobotMaxNums(robotMaxNums);
+		
+	}
+
+	/**
+	 * 
+	 * 方法描述：批量更新通告 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-3-13下午12:02:01 <br/>
+	 * @param liveRecord
+	 * @return
+	 */
+	public Integer updateBatch(TLiveRecord liveRecord){
+		Integer count=0;
+		String ids = liveRecord.getIds();
+		if(StringUtils.isNotBlank(ids)){
+			String[] idList = ids.split(",");
+			liveRecord.setIdList(idList);
+			count = liveRecordAddBatchDao.updateBatch(liveRecord);
+		}
+		return count;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：批量删除通告 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-3-14下午2:32:54 <br/>
+	 * @param ids
+	 * @return
+	 */
+	public int deleteBatch(Object[] ids){
+		int count=0;
+		if(ids!=null){
+			count = liveRecordAddBatchDao.deleteBatch(ids);
+		}
+		return count;
+	}
+	
+	
+}

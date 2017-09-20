@@ -1,0 +1,774 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.common.dao.AdvertisingDao">
+
+	<parameterMap type="Advertising" id="advertising" />
+
+	<resultMap type="Advertising" id="advertisingMap">
+		<result column="id" property="id" />
+		<result column="adbpic" property="adbpic" />
+		<result column="pic_low" property="picLow" />
+		<result column="pic_middle" property="picMiddle" />
+		<result column="content" property="content" />
+		<result column="adburl" property="adburl" />
+		<result column="sort" property="sort" />
+		<result column="isshow" property="isshow" />
+		<result column="type" property="type" />
+		<result column="remarks" property="remarks" />
+		<result column="is_all" property="isall" />
+		<result column="province" property="province" />
+		<result column="city" property="city" />
+		<result column="area" property="area" />
+		<result column="share_img" property="share_img" />
+		<result column="share_cont" property="share_cont" />
+		<result column="pic_middle" property="picMiddle" />
+		<result column="pic_low" property="picLow" />
+		<result column="share_url" property="shareUrl" />
+		<result column="share_title" property="shareTitle" />
+		<result column="start_time" property="startTime" />
+		<result column="end_time" property="endTime" />
+	</resultMap>
+
+	<insert id="addBatch" parameterType="java.util.ArrayList">
+		INSERT INTO t_advertising
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			adbpic,
+			pic_low,
+			pic_middle,
+			content,
+			adburl,
+			sort,
+			isshow,
+			type,
+			remarks,
+			is_all,
+			province,
+			city,
+			area,
+			share_cont,
+			start_time,
+			endTime,
+			share_url,
+			share_title,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list"
+			separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				#{item.adbpic},
+				#{item.content},
+				#{item.adburl},
+				#{item.sort},
+				#{item.isshow},
+				#{item.type},
+				#{item.remarks},
+				#{item.isall},
+				#{item.province},
+				#{item.city},
+				#{item.area},
+				#{item.share_cont},
+				#{item.startTime},
+				#{item.endTime},
+				#{item.shareUrl},
+				#{item.shareTitle},
+			</trim>
+		</foreach>
+	</insert>
+
+	<insert id="add" parameterMap="advertising">
+		INSERT INTO t_advertising
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test=" null != id">
+				id,
+			</if>
+			<if test=" null != adbpic and '' != adbpic ">
+				adbpic,
+			</if>
+			<if test=" null != share_img and '' != share_img ">
+				share_img,
+			</if>
+			<if test=" null != content and '' != content ">
+				content,
+			</if>
+			<if test=" null != adburl and '' != adburl ">
+				adburl,
+			</if>
+			<if test=" null != sort">
+				sort,
+			</if>
+			<if test=" null != isshow">
+				isshow,
+			</if>
+			<if test=" null != type">
+				type,
+			</if>
+			<if test=" null != share_cont and '' != share_cont">
+				share_cont,
+			</if>
+			<if test=" null != remarks and '' != remarks">
+				remarks,
+			</if>
+			<if test=" null != startTime">
+				start_time,
+			</if>
+			<if test=" null != endTime">
+				end_time,
+			</if>
+			<if test=" null != isall">
+				is_all,
+			</if>
+			<if test=" null != province and '' != province">
+				province,
+			</if>
+			<if test=" null != city and '' != city">
+				city,
+			</if>
+			<if test=" null != area and '' != area">
+				area,
+			</if>
+			<if test=" null != picLow and '' != picLow">
+				pic_low,
+			</if>
+			<if test=" null != picMiddle and '' != picMiddle">
+				pic_middle,
+			</if>
+			<if test=" null != shareUrl and '' != shareUrl">
+				share_url,
+			</if>
+			<if test=" null != shareTitle and '' != shareTitle">
+				share_title,
+			</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			<if test=" null != id">
+				#{id},
+			</if>
+			<if test=" null != adbpic and '' != adbpic ">
+				#{adbpic},
+			</if>
+			<if test=" null != share_img and '' != share_img ">
+				#{share_img},
+			</if>
+			<if test=" null != content and '' != content ">
+				#{content},
+			</if>
+			<if test=" null != adburl and '' != adburl ">
+				#{adburl},
+			</if>
+			<if test=" null != sort">
+				#{sort},
+			</if>
+			<if test=" null != isshow">
+				#{isshow},
+			</if>
+			<if test=" null != type">
+				#{type},
+			</if>
+			<if test=" null != share_cont and '' != share_cont ">
+				#{share_cont},
+			</if>
+			<if test=" null != remarks and '' != remarks">
+				#{remarks},
+			</if>
+			<if test=" null != startTime">
+				#{startTime},
+			</if>
+			<if test=" null != endTime">
+				#{endTime},
+			</if>
+			<if test=" null != isall">
+				#{isall},
+			</if>
+			<if test=" null != province and '' != province">
+				#{province},
+			</if>
+			<if test=" null != city and '' != city">
+				#{city},
+			</if>
+			<if test=" null != area and '' != area">
+				#{area},
+			</if>
+			<if test=" null != picLow and '' != picLow">
+				#{picLow},
+			</if>
+			<if test=" null != picMiddle and '' != picMiddle">
+				#{picMiddle},
+			</if>
+			<if test=" null != shareUrl and '' != shareUrl">
+				#{shareUrl},
+			</if>
+			<if test=" null != shareTitle and '' != shareTitle">
+				#{shareTitle},
+			</if>
+		</trim>
+	</insert>
+
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_advertising WHERE id IN
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=") ">
+			#{item}
+		</foreach>
+	</delete>
+
+	<update id="update" parameterMap="advertising">
+		UPDATE t_advertising
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != id">
+					id = #{id},
+				</if>
+				<if test=" null != adbpic">
+					adbpic = #{adbpic},
+				</if>
+				<if test=" null != share_img">
+					share_img = #{share_img},
+				</if>
+				<if test=" null != content and '' != content ">
+					content = #{content},
+				</if>
+				<if test=" null != adburl and '' != adburl ">
+					adburl = #{adburl},
+				</if>
+				<if test=" null != sort">
+					sort = #{sort},
+				</if>
+				<if test=" null != isshow">
+					isshow = #{isshow},
+				</if>
+				<if test=" null != type">
+					type = #{type},
+				</if>
+				<if test=" null != startTime">
+					start_time = #{startTime},
+				</if>
+				<if test=" null != endTime">
+					end_time = #{endTime},
+				</if>
+				<if test=" null != share_cont">
+					share_cont = #{share_cont},
+				</if>
+				<if test=" null != remarks">
+					remarks = #{remarks},
+				</if>
+				<if test=" null != isall">
+					is_all=#{isall},
+				</if>
+				<if test=" null != province ">
+					province=#{province},
+				</if>
+				<if test=" null != city">
+					city=#{city},
+				</if>
+				<if test=" null != area">
+					area= #{area},
+				</if>
+				<if test=" null != picLow and '' != picLow ">
+					pic_low = #{picLow},
+				</if>
+				<if test=" null != picMiddle and '' != picMiddle">
+					pic_middle = #{picMiddle},
+				</if>
+				<if test=" null != picLow and '' != picLow">
+					pic_low = #{picLow},
+				</if>
+				<if test=" null != shareUrl and '' != shareUrl">
+					share_url = #{shareUrl},
+				</if>
+				<if test=" null != shareTitle and '' != shareTitle">
+					share_title = #{shareTitle},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != id and '' != id">
+				id = #{id}
+			</if>
+		</where>
+	</update>
+
+	<select id="getList" resultMap="advertisingMap" parameterMap="advertising">
+		SELECT id,adbpic,content,adburl,sort,isshow,type,remarks,is_all AS isall,province,city,area  FROM t_advertising ta
+		<where>
+			1=1
+			<if test=" null != id">
+				AND ta.id = #{id}
+			</if>
+			<if test=" null != adbpic and '' != adbpic ">
+				AND ta.adbpic LIKE '%${adbpic}%'
+			</if>
+			<if test=" null != content and '' != content ">
+				AND ta.content LIKE '%${content}%'
+			</if>
+			<if test=" null != adburl and '' != adburl ">
+				AND ta.adburl LIKE '%${adburl}%'
+			</if>
+			<if test=" null != sort">
+				AND ta.sort = #{sort}
+			</if>
+			<if test=" null != isshow">
+				AND ta.isshow = #{isshow}
+			</if>
+			<if test=" null != type">
+				AND ta.type = #{type}
+			</if>
+			<if test=" null != remarks and '' != remarks ">
+				AND ta.remarks LIKE '%${remarks}%'
+			</if>
+
+			<if test=" null != isall">
+				AND ta.is_all=#{isall}
+			</if>
+			<if test=" null != province and '' != province">
+				AND ta.province=#{province}
+			</if>
+			<if test=" null != city and '' != city">
+				AND ta.city=#{city}
+			</if>
+			<if test=" null != area and '' != area">
+				AND ta.area LIKE '%${area}%'
+			</if>
+
+		</where>
+		ORDER BY ta.id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="count" resultType="Long" parameterMap="advertising">
+		SELECT COUNT(*) FROM t_advertising ta
+		<where>
+			1=1
+			<if test=" null != id">
+				AND ta.id = #{id}
+			</if>
+			<if test=" null != adbpic and '' != adbpic ">
+				AND ta.adbpic LIKE '%${adbpic}%'
+			</if>
+			<if test=" null != content and '' != content ">
+				AND ta.content LIKE '%${content}%'
+			</if>
+			<if test=" null != adburl and '' != adburl ">
+				AND ta.adburl LIKE '%${adburl}%'
+			</if>
+			<if test=" null != sort">
+				AND ta.sort = #{sort}
+			</if>
+			<if test=" null != isshow">
+				AND ta.isshow = #{isshow}
+			</if>
+			<if test=" null != type">
+				AND ta.type = #{type}
+			</if>
+			<if test=" null != remarks and '' != remarks ">
+				AND ta.remarks LIKE '%${remarks}%'
+			</if>
+
+			<if test=" null != isall">
+				AND ta.is_all=#{isall}
+			</if>
+			<if test=" null != province and '' != province">
+				AND ta.province=#{province}
+			</if>
+			<if test=" null != city and '' != city">
+				AND ta.city=#{city}
+			</if>
+			<if test=" null != area and '' != area">
+				AND ta.area LIKE '%${area}%'
+			</if>
+
+		</where>
+	</select>
+
+	<select id="getMaxId" resultType="Integer">
+		SELECT Max(id) AS VALUE FROM
+		t_advertising
+	</select>
+
+	<select id="getObject" resultMap="advertisingMap" parameterType="Long">
+		SELECT id,adbpic,pic_low,pic_middle,share_img,content,adburl,sort,isshow,type,share_cont,share_url,share_title,remarks,is_all AS isall,province,city,area FROM t_advertising WHERE id = #{0}
+	</select>
+
+	<!-- 选择客户端广告数据，只包含客户端数据、蜜客圈数据 author:@yangxu -->
+	<select id="getUserADList" resultMap="advertisingMap"
+		parameterMap="advertising">
+		SELECT
+		id,
+		adbpic,
+		share_img,
+		content,
+		adburl,
+		sort,
+		isshow,
+		TYPE,
+		share_cont,
+		remarks,
+		is_all AS isall,
+		province,
+		city,
+		AREA,
+		share_title AS shareTitle,
+		share_url AS shareUrl,
+		FROM
+		t_advertising
+		<where>
+			type in (1,4,6)
+			<if test=" null != id">
+				AND id = #{id}
+			</if>
+			<if test=" null != adbpic and '' != adbpic ">
+				AND adbpic LIKE '%${adbpic}%'
+			</if>
+			<if test=" null != content and '' != content ">
+				AND content LIKE '%${content}%'
+			</if>
+			<if test=" null != adburl and '' != adburl ">
+				AND adburl LIKE '%${adburl}%'
+			</if>
+			<if test=" null != sort">
+				AND sort = #{sort}
+			</if>
+			<if test=" null != isshow">
+				AND isshow = #{isshow}
+			</if>
+			<if test=" null != type">
+				AND type = #{type}
+			</if>
+			<if test=" null != remarks and '' != remarks ">
+				AND remarks LIKE '%${remarks}%'
+			</if>
+
+			<if test=" null != isall">
+				AND is_all=#{isAll}
+			</if>
+			<if test=" null != province and '' != province">
+				AND province=#{province}
+			</if>
+			<if test=" null != city and '' != city">
+				AND city=#{city}
+			</if>
+			<if test=" null != area and '' != area">
+				AND area LIKE '%${area}%'
+			</if>
+
+		</where>
+		ORDER BY id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<!-- 统计客户端数据记录数 author:@yangxu -->
+	<select id="getUserADListcount" resultType="Long" parameterMap="advertising">
+		SELECT COUNT(1) FROM t_advertising
+		<where>
+			type in (1,4,6,7,8,9)
+			<if test=" null != id">
+				AND id = #{id}
+			</if>
+			<if test=" null != adbpic and '' != adbpic ">
+				AND adbpic LIKE '%${adbpic}%'
+			</if>
+			<if test=" null != content and '' != content ">
+				AND content LIKE '%${content}%'
+			</if>
+			<if test=" null != adburl and '' != adburl ">
+				AND adburl LIKE '%${adburl}%'
+			</if>
+			<if test=" null != sort">
+				AND sort = #{sort}
+			</if>
+			<if test=" null != isshow">
+				AND isshow = #{isshow}
+			</if>
+			<if test=" null != type">
+				AND type = #{type}
+			</if>
+			<if test=" null != remarks and '' != remarks ">
+				AND remarks LIKE '%${remarks}%'
+			</if>
+
+			<if test=" null != isall">
+				AND is_all=#{isall}
+			</if>
+			<if test=" null != province and '' != province">
+				AND province=#{province}
+			</if>
+			<if test=" null != city and '' != city">
+				AND city=#{city}
+			</if>
+			<if test=" null != area and '' != area">
+				AND area LIKE '%${area}%'
+			</if>
+
+			<if test="null != startTime">
+				AND start_time  <![CDATA[>=]]> #{startTime}
+			</if>
+			<if test="null != endTime">
+				AND end_time  <![CDATA[<=]]> #{endTime}
+			</if>
+		</where>
+	</select>
+
+
+	<select id="getSellerADList" resultMap="advertisingMap"
+		parameterMap="advertising">
+		SELECT
+		id,
+		adbpic,
+		content,
+		adburl,
+		ta.sort,
+		isshow,
+		TYPE,
+		remarks,
+		is_all AS isall,
+		province,
+		city,
+		area,
+		city.title AS cityTitle,
+		tarea.title,
+		(SELECT
+		GROUP_CONCAT(a.title)
+		FROM
+		t_area a
+		WHERE FIND_IN_SET(
+		a.area_id,
+		ta.AREA
+		)) AS areaTitle
+		FROM
+		t_advertising ta
+		LEFT JOIN t_area tarea
+		ON ta.AREA = tarea.area_id
+		LEFT JOIN t_area city
+		ON ta.city = city.area_id
+		<where>
+			type = 2
+			<if test=" null != id">
+				AND id = #{id}
+			</if>
+			<if test=" null != adbpic and '' != adbpic ">
+				AND adbpic LIKE '%${adbpic}%'
+			</if>
+			<if test=" null != content and '' != content ">
+				AND content LIKE '%${content}%'
+			</if>
+			<if test=" null != adburl and '' != adburl ">
+				AND adburl LIKE '%${adburl}%'
+			</if>
+			<if test=" null != sort">
+				AND sort = #{sort}
+			</if>
+			<if test=" null != isshow">
+				AND isshow = #{isshow}
+			</if>
+			<if test=" null != remarks and '' != remarks ">
+				AND remarks LIKE '%${remarks}%'
+			</if>
+			<if test=" null != isall">
+				AND is_all=#{isall}
+			</if>
+			<if test=" null != province and '' != province">
+				AND province=#{province}
+			</if>
+			<if test=" null != city and '' != city">
+				AND city=#{city}
+			</if>
+			<if test=" null != area and '' != area">
+				AND FIND_IN_SET('${area}',area)
+			</if>
+		</where>
+		ORDER BY id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<!-- 用户端广告轮番图片管理:只查询类别为1,4,6,7,8的广告信息 author：@wangzhimin -->
+	<select id="getADListForUser" resultMap="advertisingMap"
+		parameterMap="advertising">
+		<!-- SELECT id,adbpic,share_img,content,adburl,sort,isshow,type,share_cont,remarks,is_all 
+			AS isall,province,city,area FROM t_advertising -->
+		SELECT
+		id,
+		adbpic,
+		share_img,
+		content,
+		adburl,
+		sort,
+		isshow,
+		TYPE,
+		share_cont,
+		remarks,
+		is_all AS isall,
+		province,
+		city,
+		AREA,
+		start_time AS startTime ,
+		end_time AS endTime ,
+		share_title AS shareTitle,
+		share_url AS shareUrl
+		FROM
+		t_advertising
+		<where>
+			type in (1,4,6,7,8,9)
+			<if test=" null != id">
+				AND id = #{id}
+			</if>
+			<if test=" null != adbpic and '' != adbpic ">
+				AND adbpic LIKE '%${adbpic}%'
+			</if>
+			<if test=" null != share_img and '' != share_img ">
+				AND share_img LIKE '%${share_img}%'
+			</if>
+			<if test=" null != content and '' != content ">
+				AND content LIKE '%${content}%'
+			</if>
+			<if test=" null != adburl and '' != adburl ">
+				AND adburl LIKE '%${adburl}%'
+			</if>
+			<if test=" null != sort">
+				AND sort = #{sort}
+			</if>
+			<if test=" null != isshow">
+				AND isshow = #{isshow}
+			</if>
+			<if test=" null != type">
+				AND type = #{type}
+			</if>
+			<if test=" null != share_cont and '' != share_cont ">
+				AND share_cont LIKE '%${share_cont}%'
+			</if>
+			<if test=" null != remarks and '' != remarks ">
+				AND remarks LIKE '%${remarks}%'
+			</if>
+
+			<if test=" null != isall">
+				AND is_all=#{isall}
+			</if>
+			<if test=" null != province and '' != province">
+				AND province=#{province}
+			</if>
+			<if test=" null != city and '' != city">
+				AND city=#{city}
+			</if>
+			<if test=" null != area and '' != area">
+				AND area LIKE '%${area}%'
+			</if>
+
+			<if test="null != startTimeStart">
+				AND start_time  <![CDATA[>=]]> #{startTimeStart}
+			</if>
+			<if test="null != startTimeEnd">
+				AND start_time  <![CDATA[<=]]> #{startTimeEnd}
+			</if>
+			
+		</where>
+		ORDER BY id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+</select>
+	<select id="getADList" resultMap="advertisingMap" parameterMap="advertising">
+		SELECT id,adbpic,pic_low,pic_middle,share_img,content,adburl,sort,isshow,type,share_cont,share_url,share_title,remarks,is_all AS isall,province,city,area  FROM t_advertising
+		<where>
+		    1=1
+			<if test=" null != id">
+				AND type = #{type}
+			</if>
+			<if test=" null != id">
+				AND id = #{id}
+			</if>
+			<if test=" null != adbpic and '' != adbpic ">
+				AND adbpic LIKE '%${adbpic}%'
+			</if>
+			<if test=" null != share_img and '' != share_img ">
+				AND share_img LIKE '%${share_img}%'
+			</if>
+			<if test=" null != content and '' != content ">
+				AND content LIKE '%${content}%'
+			</if>
+			<if test=" null != adburl and '' != adburl ">
+				AND adburl LIKE '%${adburl}%'
+			</if>
+			<if test=" null != sort">
+				AND sort = #{sort}
+			</if>
+			<if test=" null != isshow">
+				AND isshow = #{isshow}
+			</if>
+			<if test=" null != type">
+				AND type = #{type}
+			</if>
+			<if test=" null != share_cont and '' != share_cont ">
+				AND share_cont LIKE '%${share_cont}%'
+			</if>
+			<if test=" null != remarks and '' != remarks ">
+				AND remarks LIKE '%${remarks}%'
+			</if>
+			
+			<if test=" null != isall">
+				AND	is_all=#{isall}
+			</if>
+			<if test=" null != province and '' != province">
+				AND	province=#{province}
+			</if>
+			<if test=" null != city and '' != city">
+				AND	city=#{city}
+			</if>
+			<if test=" null != area and '' != area">
+				AND area LIKE '%${area}%'
+			</if>
+		</where>
+			ORDER BY id DESC 
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<select id="getADListcount" resultType="Long" parameterMap="advertising">
+		SELECT COUNT(1) FROM t_advertising  
+		<where>
+			1=1
+			<if test=" null != id">
+				AND type = #{type}
+			</if>
+			<if test=" null != id">
+				AND id = #{id}
+			</if>
+			<if test=" null != adbpic and '' != adbpic ">
+				AND adbpic LIKE '%${adbpic}%'
+			</if>
+			<if test=" null != content and '' != content ">
+				AND content LIKE '%${content}%'
+			</if>
+			<if test=" null != adburl and '' != adburl ">
+				AND adburl LIKE '%${adburl}%'
+			</if>
+			<if test=" null != sort">
+				AND sort = #{sort}
+			</if>
+			<if test=" null != isshow">
+				AND isshow = #{isshow}
+			</if>
+			<if test=" null != type">
+				AND type = #{type}
+			</if>
+			<if test=" null != remarks and '' != remarks ">
+				AND remarks LIKE '%${remarks}%'
+			</if>
+			
+			<if test=" null != isall">
+				AND	is_all=#{isall}
+			</if>
+			<if test=" null != province and '' != province">
+				AND	province=#{province}
+			</if>
+			<if test=" null != city and '' != city">
+				AND	city=#{city}
+			</if>
+			<if test=" null != area and '' != area">
+				AND area LIKE '%${area}%'
+			</if>
+		</where>
+	</select>
+</mapper>

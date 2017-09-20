@@ -1,0 +1,406 @@
+var anchorList;
+var initListUrl = "shopExchange/manage/init/list.jhtml";
+var imgRoot = $("#fastfdsHttp").val();	
+$(function() {
+	inserTitle(
+			' > 黄金庄园 > <a href="shopExchange/manage/init.jhtml" target="right">商店兑换管理</a>',
+			'userSpan', true);
+	anchorList = $("#anchorList").page({
+		url : initListUrl,
+		success : success,
+		pageBtnNum : 10,
+		paramForm : 'searchForm',
+		param : {
+			activityType : "5"
+		}
+	});
+	
+	$("#dates").on("click", ".icon-plus", function(event) {
+		if ($(this).parents(".col-md-10").find(".input-group")) {
+			addExchangeData(event);
+		}
+	});
+	
+	//导出
+	$("#exportAnchor").click(function(){
+		/*var size=getCurrentDataSize();
+		if(size>1000){
+			showWarningWindow("warning", "单次最多可导出1000条数据，请输入查询条件！",9999);
+			return ;
+		}*/
+		
+		var path="shopExchange/manage/export.jhtml";
+		$form = $("#searchForm").attr("action",path);
+		$form[0].submit();
+	});	
+	
+});
+
+function success(data, obj) {
+	var formId = "searchForm";
+	var title = "商店兑换列表", subtitle = "个商店兑换";
+	var captionInfo = '<caption style="background:#EED8D8; text-align:left; color:#703636; font-size:16px; line-height:40px;">&nbsp;&nbsp;'
+			+ title
+			+ '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font>共计【'
+			+ data.total
+			+ '】' + subtitle + '&nbsp;</font></caption>';
+	var callbackParam = "isBackButton=true&callbackParam="+ getFormParam($("#" + formId).serialize());
+
+	obj.find('div').eq(0).scrollTablel({
+		identifier : "id",
+		callbackParam : callbackParam,
+		data : data.content,
+		caption : captionInfo,
+		// checkable : checkable,
+		cols : [ {
+			title : "会员编号",
+			name : "uid",
+			type : "string",
+			width : 100
+		},{
+			title : "会员昵称",
+			name : "nickname",
+			type : "string",
+			width : 120
+		}, {
+			title : "手机号码",
+			name : "phone",
+			type : "string",
+			width : 120
+		}, {
+			title : "类型",
+			name : "manorStatus",
+			type : "string",
+			width : 120,
+			customMethod:function(value,data){
+				var result = "-";
+				var channel = data.channel;  //庄园状态 1:启用 2:停用
+				if(channel == 34){
+					result = "兑换蜜罐获取鸟币";//替换所有逗号
+				}else if(channel == 35){
+					result = "兑换鸟币购买花朵";//替换所有逗号
+				}
+				
+				return result;
+			}
+		},{
+			title : "兑换",
+			name : "num",
+			type : "string",
+			width : 100,
+			customMethod:function(value,data){
+				var result = data.outlay == null ? '-' : data.outlay;
+				return result;
+			}
+		}, {
+			title : "获得",
+			name : "exchangeNumber",
+			type : "string",
+			width : 100,
+			customMethod:function(value,data){
+				var result = "-";
+				var channel = data.channel;  
+				if(channel == 34){  //阳光兑换抵用劵 +"鸟币";
+					result = data.income ;
+				}else if(channel == 35){  //花蜜兑换红包 +"朵";
+					result = data.income ;
+				}
+				return result;
+			}
+		}, {
+			title : "兑换时间",
+			name : "createTime",
+			type : "string",
+			width : 80
+		}]
+	}, permissions);
+}
+ 
+ /**
+  * 获取当前查询记录数
+  */
+ function getCurrentDataSize(){
+	 var formId = "searchForm";
+	 var total=0;
+	// 设置同步
+    $.ajaxSetup({
+        async: false
+    });
+	 
+	 $.ajax({
+		 url : "shopExchange/manage/init/getCurrentDataSize.jhtml",
+		 type : "post",
+		 dataType : "json",
+		 data:jsonFromt($('#' + formId).serializeArray()),
+		 success : function(result) {
+			 total=result;
+		 }
+	 });
+	 
+	// 恢复异步
+    $.ajaxSetup({
+        async: true
+    });
+    
+    return total;
+ }
+ 
+/* $("select[name='ctype']").on("change", function() {
+	// 优惠券下拉选择
+//    var $cid=$("select[name='tCoupon["+id+"].cid']");
+//    var $cidDiv = $("#cidDiv["+id+"]");
+//    $cidDiv.empty().append($cid);
+	$("#cid").chosenObject({
+		id : "cid",
+		hideValue : "value",
+		showValue : "cname",
+        filterVal : $(this).val(),
+		url : "coupon/couponissue/queryYouHuiQuan.jhtml",
+		isChosen : true
+	});
+ });*/
+
+ 
+ 
+ /* ********************兑换管理*********** */
+ var operateId = 0;
+
+ function exchangeManageView() {
+ 	// 初始化值清空栏位
+ 	$("#exchangeManageModal :input").each(function() {
+ 		$(this).val("");
+ 	});
+ 	
+ 	//初始化表格中的数据
+ 	$("#exchangeTB").html(""); 
+ 	
+ 	//加载数据
+ 	var url='shopExchange/manage/list/viewDetail.jhtml';
+ 	$.ajax({
+ 		type : 'post',
+ 		url : url,
+// 		data :[id],
+ 		dataType : 'json',
+ 		success : exchangeSuccess,
+ 		error : function(XMLHttpRequest, textStatus, errorThrown) {
+ 			$('#prompt').hide();
+ 			$('#exchangeManageModal').modal('hide');
+ 		}
+ 	});
+ }
+
+ function exchangeSuccess(data) {
+ 	if (data.data){//获取到数据
+ 		var rate = data.data.rate;
+ 		var sellPotLimit = data.data.sellPotLimit;
+ 		var potHoney = data.data.potHoney; 		
+ 		$("input[name='id']").val(data.data.id);
+ 		$("input[name='rate']").val(rate);
+ 		$("#exchangeManageModal :input[name='sellPotLimit']").val(sellPotLimit);
+ 		$("#exchangeManageModal input[name='potHoney']").val(potHoney);
+ 		
+        //循环阳光兑换优惠券信息
+ 		for(var i = 0;i<data.data.manorFlowerConvertList.length;i++){
+ 			operateId ++ ;
+ 			//加载
+ 			var flowers = data.data.manorFlowerConvertList[i].flowers;
+ 			var lifeCycle = data.data.manorFlowerConvertList[i].lifeCycle;
+ 			var coin = data.data.manorFlowerConvertList[i].coin;
+ 		    var content = data.data.manorFlowerConvertList[i].content;  //套餐描述
+
+ 			var map = {
+ 					"coin" : coin,
+ 					"flowers" : flowers,
+ 					"lifeCycle":lifeCycle,
+ 					"content":content
+ 			};
+ 			var tr = $("<tr id=" +operateId + " class='text-center' >").append($("<td>").text(flowers)).append($("<td>").text(lifeCycle)).append($("<td>").text(coin)).append($("<td>").text(content));
+ 			tr.append($('<td data-row="0" data-index="0" data-flex="false" data-type="string" style="width: 130px; height: 59px;">')
+ 					  .html('<a href="javascript:;" onclick="deleteGroup(' +operateId + ')">删除</a>')).append($("<input >").attr("type", "hidden").attr("name", "exchangeInfo").val($.toJSON(map)));
+ 			//添加仓库储存收益信息 $("#areaTable tr:last").after(tr);
+ 			$("#exchangeTB").append(tr);
+ 		}
+ 	}
+ 	
+ 	// 显示模态框数据
+ 	$('#exchangeManageModal').modal();
+ 	
+ 	// 点击关闭遮罩层
+ 	$(".close-shade").on("click", function() {
+ 		$(".shade-box,.shade-content").hide();
+ 	});
+ }
+
+ $("#editExchangeManageSubmit").on("click", function() {
+	 saveExchangeManage();
+ });
+
+ 
+ function saveExchangeManage(){
+	 	//获取表格中数据
+	 	getRelationInfo();
+	 	if(hiddens.length==0){
+	 		showWarningWindow("warning", "请添加仓库储存收益信息!", 9999);
+	 		return;
+	 	}
+	 	//转换成数组
+	 	var json = new Array();
+	 	$.each(hiddens, function(i,item){
+	 		json.push($(item).val());
+	 	});
+	 	//转换成json串
+	 	var obj={json:json};
+	 	json=$.toJSON(obj);
+	 	
+	 	var reg = /^\d+$/;
+ 		var rate = $("input[name='rate']").val();
+ 		if (!reg.test(rate)) {
+ 			submitDataError($("input[name='rate']"),
+ 					"请输入整数数值!");
+ 			return false;
+ 		}
+ 		var sellPotLimit = $("#exchangeManageModal :input[name='sellPotLimit']").val();
+ 		if (!reg.test(sellPotLimit)) {
+ 			submitDataError($("input[name='sellPotLimit']"),
+ 					"请输入整数数值!");
+ 			return false;
+ 		}
+ 		var potHoney = $("#exchangeManageModal input[name='potHoney']").val();
+ 		if (!reg.test(potHoney)) {
+ 			submitDataError($("input[name='potHoney']"),
+ 					"请输入整数数值!");
+ 			return false;
+ 		}
+	 	
+	 	//序列化表单数据
+		var data = $('#exchangeForm').serializeArray();
+		data = jsonFromt(data);
+		data.sunshineCouponJson = json;
+	 	
+	    //保存数据
+	 	$.ajax({
+	 		url : "shopExchange/manage/update.jhtml",
+	 		type : "post",
+	 		dataType : "json",
+	 		data : data,
+	 		success : function(result) {
+	 			if (result.success) {
+	 				showSmReslutWindow(result.success, result.msg);
+	 				setTimeout(function() {
+	 					pageInit();
+	 				}, 1000);
+	 			}
+	 		}
+	 	});
+
+	 	//隐藏模态框
+	 	$('#exchangeManageModal').modal('hide');
+ }
+
+ function addExchangeData(event) {
+ 	// t = event.target;
+ 	var flowers = $("input[name='flowers']").val();
+ 	if (!flowers) {
+		submitDataError($("input[name='flowers']"),
+				"请输入花朵数量!");
+ 		return false;
+ 	} else {
+ 		var reg = /^\d+$/;
+ 		if (!reg.test(flowers)) {
+ 			submitDataError($("input[name='flowers']"),
+ 					"请输入整数数值!");
+ 			return false;
+ 		}
+ 	}
+ 	var lifeCycle = $("input[name='lifeCycle']").val();
+ 	if (!lifeCycle) {
+		submitDataError($("input[name='lifeCycle']"),
+				"请输入生命周期!");
+ 		return false;
+ 	} else {
+ 		var reg = /^\d+$/;
+ 		if (!reg.test(lifeCycle)) {
+ 			submitDataError($("input[name='lifeCycle']"),
+ 					"请输入整数数值!");
+ 			return false;
+ 		}
+ 	}
+ 	
+	var coin = $("input[name='coin']").val();
+	if (!coin) {
+		submitDataError($("input[name='coin']"), "请输入购买价格!");
+		return false;
+	}
+    var reg = new RegExp("^[0-9]+(.[0-9]{2})?$", "g");
+    if (!reg.test(coin)) {
+    	submitDataError($("input[name='coin']"), "请输入一个数字，最多只能有两位小数！");
+	    return false;
+    }
+    var content = $("textarea[name='content']").val();  //套餐描述
+    if (!content) {
+		submitDataError($("textarea[name='content']"),
+				"请输入套餐描述!");
+ 		return false;
+ 	} 
+ 	var map = {
+ 		"flowers" : flowers,
+ 		"lifeCycle" : lifeCycle,
+ 		"coin" : coin,
+ 		"content" : content
+ 	};
+ 	var tr = $("<tr id=" + operateId + " class='text-center' >").append($("<td>").text(flowers)).append($("<td>").text(lifeCycle)).append($("<td>").text(coin)).append($("<td>").text(content));
+ 	tr.append($('<td data-row="0" data-index="0" data-flex="false" data-type="string" style="width: 130px; height: 59px;">')
+ 			  .html('<a href="javascript:;" onclick="deleteGroup(' + operateId+  ')">删除</a>')).append($("<input >").attr("type", "hidden").attr("name", "exchangeInfo").val($.toJSON(map)));
+ 	
+ 	//添加仓库储存收益信息 $("#areaTable tr:last").after(tr);
+ 	$("#exchangeTB").append(tr);
+ 	
+ 	operateId++;
+ }
+
+ function deleteGroup(pid){
+ 	$("#"+pid).remove();
+ 	cid--;
+ }
+
+ function getRelationInfo(){
+ 	hiddens=$("#exchangeTB").find("input[type=hidden][name=exchangeInfo]");
+ }
+
+ 
+ /* ********************购买管理*********** */
+ function purchaseManageView() {
+ 	// 初始化值清空栏位
+ 	$("#purchaseManageModal :input").each(function() {
+ 		$(this).val("");
+ 	});
+ 	
+ 	//加载数据
+ 	var url='shopExchange/manage/list/viewDetail.jhtml';
+ 	$.ajax({
+ 		type : 'post',
+ 		url : url,
+// 		data :[id],
+ 		dataType : 'json',
+ 		success : purchaseSuccess,
+ 		error : function(XMLHttpRequest, textStatus, errorThrown) {
+ 			$('#prompt').hide();
+ 			$('#purchaseManageModal').modal('hide');
+ 		}
+ 	});
+ }
+ 
+
+ function purchaseSuccess(data) {
+	if (data.data) {// 获取到数据
+		// 循环仓库储存收益信息
+	}
+
+	// 显示模态框数据
+	$('#purchaseManageModal').modal();
+
+	// 点击关闭遮罩层
+	$(".close-shade").on("click", function() {
+		$(".shade-box,.shade-content").hide();
+	});
+}

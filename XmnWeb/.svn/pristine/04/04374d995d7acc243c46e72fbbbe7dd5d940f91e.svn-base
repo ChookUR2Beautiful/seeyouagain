@@ -1,0 +1,83 @@
+package com.xmniao.xmn.core.manor.controller;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.xmniao.xmn.core.base.BaseController;
+import com.xmniao.xmn.core.base.Pageable;
+import com.xmniao.xmn.core.coupon.entity.TCouponDetail;
+import com.xmniao.xmn.core.manor.service.RecommendRewardProfitService;
+import com.xmniao.xmn.core.util.PageConstant;
+import com.xmniao.xmn.core.util.handler.annotation.RequestLogging;
+
+@RequestLogging(name="推荐奖励收益")
+@Controller
+@RequestMapping(value = "recommendRewardProfit/manage")
+public class RecommendRewardProfitController extends BaseController {
+	
+	@Autowired
+	private RecommendRewardProfitService recommendRewardProfitService;
+	
+	
+	@RequestMapping(value = "init")
+	public String init() {
+		return "golden_manor/recommendRewardProfit";
+	}
+	
+	@RequestMapping(value = "init/list")
+	@ResponseBody
+	public Object initList(TCouponDetail tCouponDetail ) {
+		Pageable<TCouponDetail> pageable = new Pageable<TCouponDetail>(tCouponDetail);
+		try {
+			pageable =	recommendRewardProfitService.getRecommendRewardProfitList(tCouponDetail);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return pageable;
+	}
+	
+	
+	@RequestMapping(value = "init/getCurrentDataSize")
+	@ResponseBody
+	public Object getCurrentDataSize(TCouponDetail tCouponDetail) {
+		long count=0l;
+		try {
+//			count = shopExchangeService.count(manorInfo);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return count;
+	}
+	
+	/**
+	 * 方法描述：导出庄园会员 <br/>
+	 * 创建人： Administrator <br/>
+	 * 创建时间：2017年6月7日下午2:39:46 <br/>
+	 * @param anchor
+	 * @param request
+	 * @param response
+	 */
+	@RequestMapping(value="export")
+	public void export(TCouponDetail tCouponDetail,HttpServletRequest request,HttpServletResponse response){
+		tCouponDetail.setOrder(PageConstant.NOT_ORDER);
+		tCouponDetail.setLimit(PageConstant.PAGE_LIMIT_NO);
+		
+		Map<String,Object> params=new HashMap<String,Object>();
+//		anchor.setUtype(LiveConstant.UTYPE_COMMON);
+		tCouponDetail.setGetWay(8);//庄园推荐奖励收益
+		params.put("list", recommendRewardProfitService.getRecommendRewardProfitDataList(tCouponDetail));
+		doExport(request, response, "golden_manor/recommendRewardProfit.xls", params);
+		
+	}
+	
+	
+}

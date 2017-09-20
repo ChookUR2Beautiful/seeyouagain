@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.fresh.dao.MallPackageProductDao">
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.fresh.entity.MallPackageProduct">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="package_id" jdbcType="BIGINT" property="packageId" />
+    <result column="code_id" jdbcType="BIGINT" property="codeId" />
+    <result column="product_name" jdbcType="VARCHAR" property="productName" />
+    <result column="number" jdbcType="INTEGER" property="number" />
+    <result column="pv_ids" jdbcType="VARCHAR" property="pvIds" />
+    <result column="pv_value" jdbcType="VARCHAR" property="pvValue" />
+    <result column="pv_value" jdbcType="VARCHAR" property="pvValue" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, package_id, code_id, product_name, number, pv_ids, pv_value
+  </sql>
+  
+  <select id="countPvIds" resultType="java.lang.Integer" >
+  	 select count(1) from t_mall_package_product where code_id = #{codeId} and pv_ids = #{pvIds}
+  </select>
+  
+  <select id="getListByPackageId" resultMap="BaseResultMap" >
+  	select <include refid="Base_Column_List"/>
+  	  from t_mall_package_product 
+  	  where package_id = #{id}
+  </select>
+  
+  <update id="updatePackageIdByIds" >
+  	 update t_mall_package_product set package_id = #{id}
+  	 where id in <foreach collection="productIds" open="(" close=")" separator="," item="item" >
+  	 	 #{item}
+  	 </foreach>
+  </update>
+  
+  <select id="getByIds" resultMap="BaseResultMap">
+  	  select <include refid="Base_Column_List"/>
+  	  from t_mall_package_product
+  	  where id in 
+  	  <foreach collection="ids" item="item" open="(" close=")" separator=",">
+  	  	#{item}
+  	  </foreach>
+   </select>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_mall_package_product
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from t_mall_package_product
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.fresh.entity.MallPackageProduct">
+    insert into t_mall_package_product (id, package_id, code_id, 
+      product_name, number, pv_ids, 
+      pv_value)
+    values (#{id,jdbcType=BIGINT}, #{packageId,jdbcType=BIGINT}, #{codeId,jdbcType=BIGINT}, 
+      #{productName,jdbcType=VARCHAR}, #{number,jdbcType=INTEGER}, #{pvIds,jdbcType=VARCHAR}, 
+      #{pvValue,jdbcType=VARCHAR})
+  </insert>
+  <insert id="add" parameterType="com.xmniao.xmn.core.fresh.entity.MallPackageProduct" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_mall_package_product
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="packageId != null">
+        package_id,
+      </if>
+      <if test="codeId != null">
+        code_id,
+      </if>
+      <if test="productName != null">
+        product_name,
+      </if>
+      <if test="number != null">
+        number,
+      </if>
+      <if test="pvIds != null">
+        pv_ids,
+      </if>
+      <if test="pvValue != null">
+        pv_value,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="packageId != null">
+        #{packageId,jdbcType=BIGINT},
+      </if>
+      <if test="codeId != null">
+        #{codeId,jdbcType=BIGINT},
+      </if>
+      <if test="productName != null">
+        #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="number != null">
+        #{number,jdbcType=INTEGER},
+      </if>
+      <if test="pvIds != null">
+        #{pvIds,jdbcType=VARCHAR},
+      </if>
+      <if test="pvValue != null">
+        #{pvValue,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.fresh.entity.MallPackageProduct">
+    update t_mall_package_product
+    <set>
+      <if test="packageId != null">
+        package_id = #{packageId,jdbcType=BIGINT},
+      </if>
+      <if test="codeId != null">
+        code_id = #{codeId,jdbcType=BIGINT},
+      </if>
+      <if test="productName != null">
+        product_name = #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="number != null">
+        number = #{number,jdbcType=INTEGER},
+      </if>
+      <if test="pvIds != null">
+        pv_ids = #{pvIds,jdbcType=VARCHAR},
+      </if>
+      <if test="pvValue != null">
+        pv_value = #{pvValue,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.fresh.entity.MallPackageProduct">
+    update t_mall_package_product
+    set package_id = #{packageId,jdbcType=BIGINT},
+      code_id = #{codeId,jdbcType=BIGINT},
+      product_name = #{productName,jdbcType=VARCHAR},
+      number = #{number,jdbcType=INTEGER},
+      pv_ids = #{pvIds,jdbcType=VARCHAR},
+      pv_value = #{pvValue,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

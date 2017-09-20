@@ -1,0 +1,86 @@
+package com.xmniao.xmn.core.manor.controller;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.xmniao.xmn.core.base.BaseController;
+import com.xmniao.xmn.core.base.Pageable;
+import com.xmniao.xmn.core.manor.entity.TManorLevelEarningRecord;
+import com.xmniao.xmn.core.manor.service.NectarProfitService;
+import com.xmniao.xmn.core.util.PageConstant;
+import com.xmniao.xmn.core.util.handler.annotation.RequestLogging;
+
+@RequestLogging(name="花蜜收益管理")
+@Controller
+@RequestMapping(value = "nectarProfit/manage")
+public class nectarProfitController extends BaseController {
+	
+	/**
+	 * 庄园会员管理服务
+	 */
+	@Autowired
+	private NectarProfitService nectarProfitService;
+	
+	
+	@RequestMapping(value = "init")
+	public String init() {
+		return "golden_manor/nectarProfitManage";
+	}
+	
+	@RequestMapping(value = "init/list")
+	@ResponseBody
+	public Object initList(TManorLevelEarningRecord manorLevelEarningRecord) {
+		Pageable<TManorLevelEarningRecord> pageable = new Pageable<TManorLevelEarningRecord>(manorLevelEarningRecord);
+		
+		//用户类型 1 主播 2 普通用户
+		try {
+			pageable = nectarProfitService.getManorLevelEarningRecordList(manorLevelEarningRecord);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return pageable;
+	}
+	
+	@RequestMapping(value = "init/getCurrentDataSize")
+	@ResponseBody
+	public Object getCurrentDataSize(TManorLevelEarningRecord manorLevelEarningRecord) {
+		long count = 0l;
+		try {
+			count = nectarProfitService.countManorLevelEarningRecord(manorLevelEarningRecord);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return count;
+	}
+
+	
+	/**
+	 * 方法描述：导出花蜜收益 <br/>
+	 * 创建人： Administrator <br/>
+	 * 创建时间：2017年6月7日下午2:39:46 <br/>
+	 * @param anchor
+	 * @param request
+	 * @param response
+	 */
+	@RequestMapping(value="export")
+	public void export(TManorLevelEarningRecord manorLevelEarningRecord, HttpServletRequest request, HttpServletResponse response){
+		manorLevelEarningRecord.setOrder(PageConstant.NOT_ORDER);
+		manorLevelEarningRecord.setLimit(PageConstant.PAGE_LIMIT_NO);
+		
+		Map<String,Object> params=new HashMap<String,Object>();
+//		manorLevelEarningRecord.setUtype(LiveConstant.UTYPE_COMMON);
+		params.put("list", nectarProfitService.searchManorLevelEarningRecordList(manorLevelEarningRecord));
+		doExport(request, response, "golden_manor/liveMember.xls", params);
+		
+	}
+	
+	
+}

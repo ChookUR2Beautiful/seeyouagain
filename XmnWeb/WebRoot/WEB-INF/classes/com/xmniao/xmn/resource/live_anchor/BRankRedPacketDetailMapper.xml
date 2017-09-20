@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.BRankRedPacketDetailDao" >
+
+  <resultMap id="rankRedPacketDetailMap" type="com.xmniao.xmn.core.live_anchor.entity.BRankRedPacketDetail" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="rank_detail_id" property="rankDetailId" jdbcType="INTEGER" />
+    <result column="dividends_role" property="dividendsRole" jdbcType="INTEGER" />
+    <result column="consume_limit_lowest" property="consumeLimitLowest" jdbcType="DECIMAL" />
+    <result column="consume_limit_highest" property="consumeLimitHighest" jdbcType="DECIMAL" />
+    <result column="cash_lowest" property="cashLowest" jdbcType="DECIMAL" />
+    <result column="cash_highest" property="cashHighest" jdbcType="DECIMAL" />
+    <result column="coin_lowest" property="coinLowest" jdbcType="DECIMAL" />
+    <result column="coin_highest" property="coinHighest" jdbcType="DECIMAL" />
+  </resultMap>
+  
+  <sql id="rankRedPacketDetail_column_list" >
+    id, rank_detail_id, dividends_role, consume_limit_lowest, consume_limit_highest, 
+    cash_lowest, cash_highest, coin_lowest, coin_highest
+  </sql>
+  
+  <sql id="whereSQL">
+  		<if test=" null != id and '' != id">
+  			AND id=#{id}
+  		</if>
+  		<if test=" null != rankDetailId and '' != rankDetailId ">
+  			AND rank_detail_id=#{rankDetailId}
+  		</if>
+  		<if test=" null != dividendsRole and '' != dividendsRole ">
+  			AND dividends_role=#{dividendsRole}
+  		</if>
+  		<if test="rankDetailIds != null and rankDetailIds != ''">
+			AND  rank_detail_id IN
+			<foreach item="item" index="index" collection="rankDetailIds"  open="(" separator="," close=") ">
+		 		#{item}
+			</foreach>
+		</if>
+  </sql>
+  
+  <select id="selectById" resultMap="rankRedPacketDetailMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="rankRedPacketDetail_column_list" />
+    from b_rank_red_packet_detail
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="getList" resultMap="rankRedPacketDetailMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.BRankRedPacketDetail" >
+    select 
+    <include refid="rankRedPacketDetail_column_list" />,
+    CONCAT(consume_limit_lowest,'-',consume_limit_highest) AS consumeZone,
+	CONCAT(cash_lowest,'-',cash_highest) AS cashZone,
+	CONCAT(coin_lowest,'-',coin_highest) AS coinZone
+    from b_rank_red_packet_detail
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+    ORDER BY consume_limit_lowest ASC
+  </select>
+  
+  
+  <delete id="deleteByRankDetailId" parameterType="java.lang.Integer" >
+    delete from b_rank_red_packet_detail
+    where rank_detail_id = #{rankDetailId,jdbcType=INTEGER}
+  </delete>
+  
+  
+  <insert id="add" parameterType="com.xmniao.xmn.core.live_anchor.entity.BRankRedPacketDetail" >
+    insert into b_rank_red_packet_detail
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="rankDetailId != null" >
+        rank_detail_id,
+      </if>
+      <if test="dividendsRole != null" >
+        dividends_role,
+      </if>
+      <if test="consumeLimitLowest != null" >
+        consume_limit_lowest,
+      </if>
+      <if test="consumeLimitHighest != null" >
+        consume_limit_highest,
+      </if>
+      <if test="cashLowest != null" >
+        cash_lowest,
+      </if>
+      <if test="cashHighest != null" >
+        cash_highest,
+      </if>
+      <if test="coinLowest != null" >
+        coin_lowest,
+      </if>
+      <if test="coinHighest != null" >
+        coin_highest,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="rankDetailId != null" >
+        #{rankDetailId,jdbcType=INTEGER},
+      </if>
+      <if test="dividendsRole != null" >
+        #{dividendsRole,jdbcType=INTEGER},
+      </if>
+      <if test="consumeLimitLowest != null" >
+        #{consumeLimitLowest,jdbcType=DECIMAL},
+      </if>
+      <if test="consumeLimitHighest != null" >
+        #{consumeLimitHighest,jdbcType=DECIMAL},
+      </if>
+      <if test="cashLowest != null" >
+        #{cashLowest,jdbcType=DECIMAL},
+      </if>
+      <if test="cashHighest != null" >
+        #{cashHighest,jdbcType=DECIMAL},
+      </if>
+      <if test="coinLowest != null" >
+        #{coinLowest,jdbcType=DECIMAL},
+      </if>
+      <if test="coinHighest != null" >
+        #{coinHighest,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  
+  	<!-- 批量插入返还模式比例配置信息 -->
+	<insert id="addBatch" parameterType="java.util.ArrayList">
+		INSERT INTO b_rank_red_packet_detail
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<include refid="rankRedPacketDetail_column_list" /> 
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+			<!-- id, rank_detail_id, dividends_role, consume_limit_lowest, consume_limit_highest, cash_lowest, cash_highest, coin_lowest, coin_highest -->
+				#{item.id},
+				#{item.rankDetailId},
+				#{item.dividendsRole},
+				#{item.consumeLimitLowest},
+				#{item.consumeLimitHighest},
+				#{item.cashLowest},
+				#{item.cashHighest},
+				#{item.coinLowest},
+				#{item.coinHighest}
+			</trim>
+		</foreach>
+	</insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.live_anchor.entity.BRankRedPacketDetail" >
+    update b_rank_red_packet_detail
+    <set >
+      <if test="rankDetailId != null" >
+        rank_detail_id = #{rankDetailId,jdbcType=INTEGER},
+      </if>
+      <if test="dividendsRole != null" >
+        dividends_role = #{dividendsRole,jdbcType=INTEGER},
+      </if>
+      <if test="consumeLimitLowest != null" >
+        consume_limit_lowest = #{consumeLimitLowest,jdbcType=DECIMAL},
+      </if>
+      <if test="consumeLimitHighest != null" >
+        consume_limit_highest = #{consumeLimitHighest,jdbcType=DECIMAL},
+      </if>
+      <if test="cashLowest != null" >
+        cash_lowest = #{cashLowest,jdbcType=DECIMAL},
+      </if>
+      <if test="cashHighest != null" >
+        cash_highest = #{cashHighest,jdbcType=DECIMAL},
+      </if>
+      <if test="coinLowest != null" >
+        coin_lowest = #{coinLowest,jdbcType=DECIMAL},
+      </if>
+      <if test="coinHighest != null" >
+        coin_highest = #{coinHighest,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+</mapper>

@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.marketingmanagement.dao.ActivityPrizeDao">
+
+	<parameterMap type="TActivityPrize" id="tActivityPrize" />
+	
+	<resultMap type="TActivityPrize" id="tActivityPrizeMap">
+		<result column="pid" property="pid" />
+		<result column="aid" property="aid" />
+		<result column="prize_type" property="prizeType" />
+		<result column="prize_num" property="prizeNum" />
+		<result column="uid" property="uid" />
+		<result column="nname" property="nname" />
+		<result column="phone" property="phone" />
+		<result column="ptime" property="ptime" />
+		<result column="pi_id" property="piId" />
+		<result column="sellerid" property="sellerid" />
+		<result column="sellername" property="sellername" />
+		<result column="order_no" property="orderNo" />
+		<result column="status" property="status" />
+		<result column="aname" property="aname" />
+		<result column="paytype" property="paytype" />
+		<result column="money" property="money" />
+		<result column="baseagio" property="baseagio" />
+		<result column="zdate" property="zdate" />
+		<result column="fdate" property="fdate" />
+	
+	</resultMap>
+
+	<!-- 添加营销活动 -->
+	<!-- <insert id="add" parameterMap="tActivityPrize" >
+		INSERT INTO t_activity_prize
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != aid">
+					aid,
+				</if>
+			 	<if test=" null != aname and '' != aname ">
+					aname,
+				</if>
+			 	<if test=" null != startDate ">
+					start_date,
+				</if>			 					
+			 	<if test=" null != endDate ">
+					end_date,
+				</if>
+				<if test=" null != rule and '' != rule ">
+					rule,
+				</if>
+				<if test=" null != eescription and '' != eescription ">
+					eescription,
+				</if>
+				<if test=" null != type ">
+					type,
+				</if>
+			 	
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != aid">
+					 	#{aid},
+				</if>
+			 	<if test=" null != aname and '' != aname ">
+					 	#{aname},
+				</if>
+			 	<if test=" null != startDate ">
+					 	#{startDate},
+				</if>
+			 	<if test=" null != endDate ">
+					 	#{endDate},
+				</if>
+				
+				<if test=" null != rule and '' != rule ">
+						#{rule},
+				</if>
+				<if test=" null != eescription and '' != eescription ">
+						#{eescription},
+				</if>
+				<if test=" null != type ">
+						#{type},
+				</if>
+		</trim>
+	</insert>
+	
+	删除话题
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_activity_prize WHERE aid IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	更新
+	<update id="update" parameterMap="tActivityPrize">
+		UPDATE t_activity_prize
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != aid and '' != aid ">
+					aid = #{aid},
+				</if>
+				<if test=" null != aname and '' != aname ">
+					aname = #{aname},
+				</if>			
+				<if test=" null != startDate ">
+					start_date = #{startDate},
+				</if>
+			 	<if test=" null != endDate ">
+					end_date = #{endDate},
+				</if>
+				
+				<if test=" null != rule and '' != rule ">
+					rule = #{rule},
+				</if>
+				<if test=" null != eescription and '' != eescription ">
+					eescription = #{eescription},
+				</if>
+				<if test=" null != type ">
+					type = #{type},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != aid and '' != aid">
+				aid = #{aid}
+			</if>
+		</where>
+	</update> -->
+	<!-- 查询所有话题，可以有条件过滤  -->
+	<select id="getList" resultMap="tActivityPrizeMap" parameterMap="tActivityPrize">
+		  SELECT
+		  t.pid,
+		  t.aid,
+		  t.prize_type,
+		  t.prize_num,
+		  t.uid,
+		  t.phone,
+		  t.pi_id,
+		  t.sellerid,
+		  t.order_no,
+		  t.status,
+		  a.aname,
+		  b.paytype,
+		  b.money,
+		  b.baseagio,
+		  b.zdate,
+		  b.fdate,
+		  b.nname,
+		  b.sellername,
+		  t.ptime 
+		FROM
+		  t_activity_prize t 
+		  LEFT JOIN t_activity a 
+		    ON a.aid = t.aid 
+		  LEFT JOIN t_bill b 
+		    ON b.bid = t.order_no 
+		<where>
+			1=1
+			<if test=" null != pid">
+				AND t.pid = #{pid}
+			</if>
+			<if test=" null != aid">
+				AND t.aid = #{aid}
+			</if>
+			<if test=" null != prizeType">
+				AND t.prize_type = #{prizeType}
+			</if>
+			<if test=" null != prizeNum">
+				AND t.prize_num = #{prizeNum}
+			</if>
+			<if test=" null != uid">
+				AND t.uid = #{uid}
+			</if>
+			<if test=" null != ptime">
+				AND t.ptime = #{ptime}
+			</if>
+			<if test=" null != piId">
+				AND t.pi_id = #{piId}
+			</if>
+			<if test=" null != status">
+				AND t.status = #{status}
+			</if>
+			<if test=" null != sellerid">
+				AND t.sellerid = #{sellerid}
+			</if>
+			<if test=" null != nname and '' != nname ">
+				AND b.nname LIKE '%${nname}%'
+			</if>			
+			<if test=" null != phone and '' != phone ">
+				AND t.phone LIKE '%${phone}%'
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND b.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != orderNo and '' != orderNo ">
+				AND t.order_no LIKE '%${orderNo}%'
+			</if>
+			<if test=" null != paytype and '' != paytype ">
+				AND b.paytype = #{paytype}
+			</if>
+			<if test=" null != zdateStart and '' != zdateStart">
+				AND b.zdate&gt;= #{zdateStart}
+			</if>
+			<if test=" null != zdateEnd and '' != zdateEnd">
+				AND b.zdate&lt;= #{zdateEnd}
+			</if>
+		</where>
+			ORDER BY pid DESC 
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<!-- 统计 -->
+	<select id="count" resultType="Long" parameterMap="tActivityPrize">
+		SELECT COUNT(*) FROM t_activity_prize t LEFT JOIN t_bill b ON b.bid = t.order_no
+		<where>
+			1=1
+			<if test=" null != pid">
+				AND t.pid = #{pid}
+			</if>
+			<if test=" null != aid">
+				AND t.aid = #{aid}
+			</if>
+			<if test=" null != prizeType">
+				AND t.prize_type = #{prizeType}
+			</if>
+			<if test=" null != prizeNum">
+				AND t.prize_num = #{prizeNum}
+			</if>
+			<if test=" null != uid">
+				AND t.uid = #{uid}
+			</if>
+			<if test=" null != ptime">
+				AND t.ptime = #{ptime}
+			</if>
+			<if test=" null != piId">
+				AND t.pi_id = #{piId}
+			</if>
+			<if test=" null != status">
+				AND t.status = #{status}
+			</if>
+			<if test=" null != sellerid">
+				AND t.sellerid = #{sellerid}
+			</if>
+			<if test=" null != nname and '' != nname ">
+				AND t.nname LIKE '%${nname}%'
+			</if>			
+			<if test=" null != phone and '' != phone ">
+				AND t.phone LIKE '%${phone}%'
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND t.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != orderNo and '' != orderNo ">
+				AND t.order_no LIKE '%${orderNo}%'
+			</if>
+			<if test=" null != paytype and '' != paytype ">
+				AND b.paytype = #{paytype}
+			</if>
+			<if test=" null != zdateStart and '' != zdateStart">
+				AND b.zdate&gt;= #{zdateStart}
+			</if>
+			<if test=" null != zdateEnd and '' != zdateEnd">
+				AND b.zdate&lt;= #{zdateEnd}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Long">
+		SELECT Max(id) AS VALUE FROM t_activity_prize
+	</select>
+	
+	<select id="getObject" resultMap="tActivityPrizeMap" parameterType="Long">
+		SELECT * FROM t_activity_prize WHERE aid = #{0}
+	</select>
+	
+	
+	<select id="getStatistics" resultType="java.util.HashMap" parameterType="tActivityPrize">
+		SELECT a.*,m.joinseller,p.* FROM t_activity a LEFT JOIN (SELECT aid,COUNT(distinct sellerid) sellerC,COUNT(distinct uid) uC,COUNT(order_no) orderC,
+		COUNT(pid) allC,COUNT(if(status='1',true,null)) yC,COUNT(if(status='0',true,null)) wC,
+		SUM(prize_num) allS,SUM(if(status='1',prize_num,0)) yS,SUM(if(status='0',prize_num,0)) wS
+		from t_activity_prize GROUP BY aid) p ON p.aid = a.aid 
+		left join (select aid,count(distinct sellerid) joinseller from t_seller_marketing where isattend = 0 group by aid) m on m.aid = a.aid
+		<where>
+			<if test=" null != aid">
+				AND a.aid = #{aid}
+			</if>
+		</where>
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="getStatisticsCount" resultType="Long" parameterMap="tActivityPrize">
+		SELECT COUNT(aid) FROM t_activity a
+		<where>
+			<if test=" null != aid">
+				AND a.aid = #{aid}
+			</if>
+		</where>
+	</select>
+</mapper>

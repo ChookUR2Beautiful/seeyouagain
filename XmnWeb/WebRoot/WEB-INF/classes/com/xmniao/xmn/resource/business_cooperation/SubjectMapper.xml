@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.business_cooperation.dao.SubjectDao">
+
+	<parameterMap type="Subject" id="subject" />
+	
+	<resultMap type="Subject" id="subjectMap">
+		<result column="subjectid" property="subjectid" />
+		<result column="content" property="content" />
+		<result column="number" property="number" />
+		<result column="staffid" property="staffid" />
+		<result column="fullname" property="fullname" />
+		<result column="sdate" property="sdate" />
+		<result column="remarks" property="remarks" />
+		
+		
+		<result column="phoneid" property="phoneid" />
+		<result column="title" property="area" />
+	</resultMap>
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_subject
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						content,
+						number,
+						staffid,
+						fullname,
+						sdate,
+						remarks,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.content},
+						 #{item.number},
+						 #{item.staffid},
+						 #{item.fullname},
+						 #{item.sdate},
+						 #{item.remarks},
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" parameterMap="subject" >
+		INSERT INTO t_subject
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != subjectid">
+					subjectid,
+				</if>
+			 	<if test=" null != content and '' != content ">
+					content,
+				</if>
+			 	<if test=" null != number">
+					number,
+				</if>
+			 	<if test=" null != staffid">
+					staffid,
+				</if>
+			 	<if test=" null != fullname and '' != fullname ">
+					fullname,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+			 	<if test=" null != remarks and '' != remarks ">
+					remarks,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != subjectid">
+					 	#{subjectid},
+				</if>
+			 	<if test=" null != content and '' != content ">
+					 	#{content},
+				</if>
+			 	<if test=" null != number">
+					 	#{number},
+				</if>
+			 	<if test=" null != staffid">
+					 	#{staffid},
+				</if>
+			 	<if test=" null != fullname and '' != fullname ">
+					 	#{fullname},
+				</if>
+			 	<if test=" null != sdate">
+					 	#{sdate},
+				</if>
+			 	<if test=" null != remarks and '' != remarks ">
+					 	#{remarks},
+				</if>
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_subject WHERE subjectid IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterMap="subject">
+		UPDATE t_subject
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != subjectid">
+					subjectid = #{subjectid},
+				</if>
+				<if test=" null != content and '' != content ">
+					content = #{content},
+				</if>
+				<if test=" null != number">
+					number = #{number},
+				</if>
+				<if test=" null != staffid">
+					staffid = #{staffid},
+				</if>
+				<if test=" null != fullname and '' != fullname ">
+					fullname = #{fullname},
+				</if>
+				<if test=" null != sdate">
+					sdate = #{sdate},
+				</if>
+				<if test=" null != remarks and '' != remarks ">
+					remarks = #{remarks},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != subjectid and '' != subjectid">
+				subjectid = #{subjectid}
+			</if>
+		</where>
+	</update>
+	
+	<select id="getList" resultMap="subjectMap" parameterMap="subject">
+		SELECT a.*,b.phoneid,c.title FROM t_subject a left join t_staff b on a.staffid = b.staffid 
+		left join t_area c on c.area_id = b.area 
+		<where>
+			1=1
+			<if test=" null != subjectid">
+				AND a.subjectid = #{subjectid}
+			</if>
+			<if test=" null != content and '' != content ">
+				AND a.content LIKE '%${content}%'
+			</if>
+			<if test=" null != number">
+				AND a.number = #{number}
+			</if>
+			<if test=" null != staffid">
+				AND a.staffid = #{staffid}
+			</if>
+			<if test=" null != fullname and '' != fullname ">
+				AND a.fullname LIKE '%${fullname}%'
+			</if>
+			<if test=" null != sdate">
+				AND a.sdate = #{sdate}
+			</if>
+			<if test=" null != remarks and '' != remarks ">
+				AND a.remarks LIKE '%${remarks}%'
+			</if>
+			<if test=" null != sdateStart and '' != sdateStart">
+				AND a.sdate &gt;= #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd and '' != sdateEnd">
+				AND a.sdate &lt;= #{sdateEnd}
+			</if>
+		</where>
+			ORDER BY subjectid DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="subject">
+		SELECT COUNT(*) FROM t_subject
+		<where>
+			1=1
+			<if test=" null != subjectid">
+				AND subjectid = #{subjectid}
+			</if>
+			<if test=" null != content and '' != content ">
+				AND content LIKE '%${content}%'
+			</if>
+			<if test=" null != number">
+				AND number = #{number}
+			</if>
+			<if test=" null != staffid">
+				AND staffid = #{staffid}
+			</if>
+			<if test=" null != fullname and '' != fullname ">
+				AND fullname LIKE '%${fullname}%'
+			</if>
+			<if test=" null != sdate">
+				AND sdate = #{sdate}
+			</if>
+			<if test=" null != remarks and '' != remarks ">
+				AND remarks LIKE '%${remarks}%'
+			</if>
+			<if test=" null != sdateStart and '' != sdateStart">
+				AND sdate &gt;= #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd and '' != sdateEnd">
+				AND sdate &lt;= #{sdateEnd}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Integer">
+		SELECT Max(subjectid) AS VALUE FROM t_subject
+	</select>
+	
+	<select id="getObject" resultMap="subjectMap" parameterType="Long">
+		SELECT a.*,b.phoneid,c.title FROM t_subject a left join t_staff b on a.staffid = b.staffid 
+		left join t_area c on c.area_id = b.area
+		WHERE subjectid = #{0}
+	</select>
+	
+</mapper>

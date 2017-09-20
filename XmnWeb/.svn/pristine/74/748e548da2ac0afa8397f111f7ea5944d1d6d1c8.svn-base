@@ -1,0 +1,562 @@
+package com.xmniao.xmn.core.coupon.entity;
+
+import com.alibaba.fastjson.annotation.JSONField;
+import com.xmniao.xmn.core.base.BaseEntity;
+
+import java.util.Date;
+
+/**
+ * 
+ * @项目名称：XmnWeb20150513E
+ * 
+ * @类名称：TCouponDetail
+ * 
+ * @类描述： 优惠券详情
+ * 
+ * @创建人：zhang'zhiwen
+ * 
+ * @创建时间 ：2015年5月29日 下午5:16:39
+ * 
+ */
+public class TCouponDetail extends BaseEntity {
+
+	private static final long serialVersionUID = 9181378050620574435L;
+
+	private Integer cdid;//
+	private Integer cid;// 优惠劵ID
+	private String serial;// 优惠劵序列码
+	private Double denomination;// 优惠劵面额
+	private Integer getWay;// 获取方式，1摇一摇，2满返，3短信获取
+	private Date startDate;//起始有效期
+	private Date endDate;//起始有效期
+	private Integer getStatus;// 获取状态，0未获取，1已获取
+	private Date getTime;// 获取时间
+	private Integer uid;// 获取用户ID
+	private String phone;// 获取用户手机号码
+	private Integer userStatus;// 使用状态，0未使用，1锁定，2已使用
+	private String  userStatusStr;//使用状态，0未使用，1锁定，2已使用  3  已过期并退款
+	private Double userMoney;// 使用金额
+	private Date lockTime;// 锁定时间
+	private Date userTime;// 使用时间
+	private Integer issueId;// 发放表Id
+	private Date dateIssue;// 发行时间
+	private Integer sendStatus;// 发送状态(短信发送专用)，0 待发送 1 已发送
+
+	private String cname;// 优惠券名称
+	private Date dateIssueStart;// 优惠券发行时间开始，用于查询
+	private Date dateIssueEnd;// 优惠券发行时间结束，用于查询
+	private Date getTimeStart;// 优惠券获取时间开始，用于查询
+	private Date getTimeEnd;// 优惠券获取时间开始，用于查询
+	private String uids;// 用户id
+	private String issuevolume;//发行量
+	private String activityName;//活动名称
+	private String cdids;//优惠券详情Ids
+	
+	private Integer ctype;// 优惠券类型(用于接收sql操作结果)，0本地生活类优惠卷(不可使用积分组合支付) 1生鲜类现金卷(可以和积分组合支付)
+	private String ctypeStr;//优惠券类型(用于页面显示)
+	
+	private String nname;//用户昵称
+	
+	private Integer sourceUid ;  //提供的uid(庄园下级)
+	
+	private String sourceName ; //提供的用户昵称(庄园下级)
+	
+	private String sourcePhone ;  //提供的用户手机号(庄园下级)
+
+	/**
+	 * @return the nname
+	 */
+	public String getNname() {
+		return nname;
+	}
+	/**
+	 * @param nname the nname to set
+	 */
+	public void setNname(String nname) {
+		this.nname = nname;
+	}
+	public Integer getCtype() {
+		return ctype;
+	}
+	public void setCtype(Integer ctype) {
+		this.ctype = ctype;
+	}
+	
+	public String getCtypeStr() {
+		if(null == ctype) return "--";
+		if(ctype==0) return "消费优惠劵";
+		if(ctype==1) return "商城优惠劵";
+		if(ctype==5) return "平台通用优惠劵";
+		return ctypeStr;
+	}
+	public void setCtypeStr(String ctypeStr) {
+		this.ctypeStr = ctypeStr;
+	}
+	
+	public enum SendStatus {
+		UNSEND("待发送", 0), SENDED("已发送", 1);
+		private String name;
+		private int index;
+
+		private SendStatus(String name, Integer index) {
+			this.index = index;
+			this.name = name;
+		}
+
+		public static String getName(int index) {
+			for (SendStatus c : SendStatus.values()) {
+				if (c.getIndex() == index) {
+					return c.name;
+				}
+			}
+			return null;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public int getIndex() {
+			return index;
+		}
+
+		public void setIndex(int index) {
+			this.index = index;
+		}
+	}
+
+	public enum GetWay {
+		YAOYIYAO("摇一摇", 1), MANFAN("满返", 2), DUANXIN("短信获取", 3),DIRECT("直接发放",4),ORDERGUAGUAKA("订单后刮刮卡",5),SHAREGUAGUAKA("分享后刮刮卡",6),SYSTEMPUSH("系统推送",7),
+		VSTAR_REWARD("新时尚大赛发放",9);
+		private String name;
+		private int index;
+
+		private GetWay(String name, Integer index) {
+			this.index = index;
+			this.name = name;
+		}
+
+		public static String getName(int index) {
+			for (GetWay c : GetWay.values()) {
+				if (c.getIndex() == index) {
+					return c.name;
+				}
+			}
+			return null;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public int getIndex() {
+			return index;
+		}
+
+		public void setIndex(int index) {
+			this.index = index;
+		}
+
+	}
+
+	public enum GetStatus {
+		UNGET("未获取", 0), GOT("已获取", 1),LOCKED("已锁定",2);
+		private String name;
+		private int index;
+
+		private GetStatus(String name, Integer index) {
+			this.index = index;
+			this.name = name;
+		}
+
+		public static String getName(int index) {
+			for (GetStatus c : GetStatus.values()) {
+				if (c.getIndex() == index) {
+					return c.name;
+				}
+			}
+			return null;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public int getIndex() {
+			return index;
+		}
+
+		public void setIndex(int index) {
+			this.index = index;
+		}
+	}
+
+	public enum UserStatus {
+		UNUSE("未使用", 0), LOCKED("已锁定", 1), USED("已使用", 2);
+		private String name;
+		private int index;
+
+		private UserStatus(String name, Integer index) {
+			this.index = index;
+			this.name = name;
+		}
+
+		public static String getName(int index) {
+			for (UserStatus c : UserStatus.values()) {
+				if (c.getIndex() == index) {
+					return c.name;
+				}
+			}
+			return null;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public int getIndex() {
+			return index;
+		}
+
+		public void setIndex(int index) {
+			this.index = index;
+		}
+	}
+	
+	
+
+	/**
+	 * 使用状态，0未使用，1锁定，2已使用  3  已过期并退款
+	 * @return the userStatusStr
+	 */
+	public String getUserStatusStr() {
+		if(userStatus==null){
+			return null;
+		}
+		switch (userStatus) {
+		case 0:
+			userStatusStr="未使用";
+			break;
+		case 1:
+			userStatusStr="锁定";
+			break;
+		case 2:
+			userStatusStr="已使用";
+			break;
+		case 3:
+			userStatusStr="已过期并退款";
+			break;
+		default:
+			userStatusStr="未使用";
+			break;
+		}
+		
+		return userStatusStr;
+	}
+	/**
+	 * @param userStatusStr the userStatusStr to set
+	 */
+	public void setUserStatusStr(String userStatusStr) {
+		this.userStatusStr = userStatusStr;
+	}
+	public String getGetWayText() {
+		if (this.getWay != null) {
+			return GetWay.getName(this.getWay);
+		} else {
+			return null;
+		}
+	}
+
+	public String getSendStatusText() {
+		if (this.sendStatus != null) {
+			return SendStatus.getName(this.sendStatus);
+		} else {
+			return null;
+		}
+	}
+
+	public String getGetStatusText() {
+		if (this.getStatus != null) {
+			return GetStatus.getName(this.getStatus);
+		} else {
+			return null;
+		}
+	}
+
+	public String getUserStatusText() {
+		if (this.userStatus != null) {
+			return UserStatus.getName(this.userStatus);
+		} else {
+			return null;
+		}
+	}
+
+	public Integer getCdid() {
+		return cdid;
+	}
+
+	public void setCdid(Integer cdid) {
+		this.cdid = cdid;
+	}
+
+	public Integer getCid() {
+		return cid;
+	}
+
+	public void setCid(Integer cid) {
+		this.cid = cid;
+	}
+
+	public String getSerial() {
+		return serial;
+	}
+
+	public void setSerial(String serial) {
+		this.serial = serial;
+	}
+
+	public Double getDenomination() {
+		return denomination;
+	}
+
+	public void setDenomination(Double denomination) {
+		this.denomination = denomination;
+	}
+
+	public Integer getGetWay() {
+		return getWay;
+	}
+
+	public void setGetWay(Integer getWay) {
+		this.getWay = getWay;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+	public Integer getGetStatus() {
+		return getStatus;
+	}
+
+	public void setGetStatus(Integer getStatus) {
+		this.getStatus = getStatus;
+	}
+
+	@JSONField(format = "yyyy-MM-dd HH:mm")
+	public Date getGetTime() {
+		return getTime;
+	}
+
+	public void setGetTime(Date getTime) {
+		this.getTime = getTime;
+	}
+
+	public Integer getUid() {
+		return uid;
+	}
+
+	public void setUid(Integer uid) {
+		this.uid = uid;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public Integer getUserStatus() {
+		return userStatus;
+	}
+
+	public void setUserStatus(Integer userStatus) {
+		this.userStatus = userStatus;
+	}
+
+	public Double getUserMoney() {
+		return userMoney;
+	}
+
+	public void setUserMoney(Double userMoney) {
+		this.userMoney = userMoney;
+	}
+
+	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
+	public Date getLockTime() {
+		return lockTime;
+	}
+
+	public void setLockTime(Date lockTime) {
+		this.lockTime = lockTime;
+	}
+
+	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
+	public Date getUserTime() {
+		return userTime;
+	}
+
+	public void setUserTime(Date userTime) {
+		this.userTime = userTime;
+	}
+
+	public Integer getIssueId() {
+		return issueId;
+	}
+
+	public void setIssueId(Integer issueId) {
+		this.issueId = issueId;
+	}
+
+	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
+	public Date getDateIssue() {
+		return dateIssue;
+	}
+
+	public void setDateIssue(Date dateIssue) {
+		this.dateIssue = dateIssue;
+	}
+
+	public Integer getSendStatus() {
+		return sendStatus;
+	}
+
+	public void setSendStatus(Integer sendStatus) {
+		this.sendStatus = sendStatus;
+	}
+
+	public String getCname() {
+		return cname;
+	}
+
+	public void setCname(String cname) {
+		this.cname = cname;
+	}
+
+	public Date getDateIssueStart() {
+		return dateIssueStart;
+	}
+
+	public void setDateIssueStart(Date dateIssueStart) {
+		this.dateIssueStart = dateIssueStart;
+	}
+
+	public Date getDateIssueEnd() {
+		return dateIssueEnd;
+	}
+
+	public void setDateIssueEnd(Date dateIssueEnd) {
+		this.dateIssueEnd = dateIssueEnd;
+	}
+
+	public Date getGetTimeStart() {
+		return getTimeStart;
+	}
+
+	public void setGetTimeStart(Date getTimeStart) {
+		this.getTimeStart = getTimeStart;
+	}
+
+	public Date getGetTimeEnd() {
+		return getTimeEnd;
+	}
+
+	public void setGetTimeEnd(Date getTimeEnd) {
+		this.getTimeEnd = getTimeEnd;
+	}
+
+	public String getUids() {
+		return uids;
+	}
+
+	public void setUids(String uids) {
+		this.uids = uids;
+	}
+
+	public String getIssuevolume() {
+		return issuevolume;
+	}
+
+	public void setIssuevolume(String issuevolume) {
+		this.issuevolume = issuevolume;
+	}
+
+	public String getActivityName() {
+		return activityName;
+	}
+
+	public void setActivityName(String activityName) {
+		this.activityName = activityName;
+	}
+
+	public String getCdids() {
+		return cdids;
+	}
+
+	public void setCdids(String cdids) {
+		this.cdids = cdids;
+	}
+	
+	public Integer getSourceUid() {
+		return sourceUid;
+	}
+	public void setSourceUid(Integer sourceUid) {
+		this.sourceUid = sourceUid;
+	}
+	
+	public String getSourceName() {
+		return sourceName;
+	}
+	
+	public void setSourceName(String sourceName) {
+		this.sourceName = sourceName;
+	}
+	
+	public String getSourcePhone() {
+		return sourcePhone;
+	}
+	
+	public void setSourcePhone(String sourcePhone) {
+		this.sourcePhone = sourcePhone;
+	}
+	@Override
+	public String toString() {
+		return "TCouponDetail [cdid=" + cdid + ", cid=" + cid + ", serial="
+				+ serial + ", denomination=" + denomination + ", getWay="
+				+ getWay + ", getStatus=" + getStatus + ", getTime=" + getTime
+				+ ", uid=" + uid + ", phone=" + phone + ", userStatus="
+				+ userStatus + ", userMoney=" + userMoney + ", lockTime="
+				+ lockTime + ", userTime=" + userTime +  ", issuevolume=" + issuevolume+"]";
+	}
+
+}

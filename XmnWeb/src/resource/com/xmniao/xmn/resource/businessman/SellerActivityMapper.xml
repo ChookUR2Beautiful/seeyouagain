@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.SellerActivityDao" >
+
+ 	<sql id="base_sql">
+ 		a.id,a.sellerid,a.name activityName,a.begin_date startDate,a.end_date endDate,a.status,a.create_time createTime,a.join_number joinNum
+ 	</sql>
+ 	
+ 	<!-- 获取活动列表 -->
+ 	<select id="getList" resultType="com.xmniao.xmn.core.businessman.entity.SellerActivity">
+ 		SELECT 
+ 		<include refid="base_sql"></include>
+ 		,s.sellername sellerName
+ 		<if test="type != 4">
+ 		,a.newuser_num newVip,#{type} type
+ 		</if>
+ 		<if test="type == 4">
+ 		,0 newVip,4 type
+ 		</if>
+ 		<if test="type == 1 or type == null">
+ 		FROM t_activity_kill a
+ 		</if>
+ 		<if test="type == 2">
+ 		FROM t_activity_freetry a
+ 		</if>
+ 		<if test="type == 3">
+ 		FROM t_activity_roullete a
+ 		</if>
+ 		<if test="type == 4">
+ 		FROM t_activity_fcouspoints a
+ 		</if>
+ 		LEFT JOIN t_seller s ON s.sellerid = a.sellerid
+ 		WHERE 1=1
+ 		<if test="activityName != null and activityName !=''">
+ 		AND a.name = #{activityName}
+ 		</if>
+ 		<if test="sellerName != null and sellerName !=''">
+ 		AND s.sellername = #{sellerName}
+ 		</if>
+ 		<if test="status != null">
+ 		AND a.status = #{status}
+ 		</if>
+ 		<if test="sDate != null and sDate !=''">
+ 		AND a.begin_date &gt; #{sDate}
+ 		</if>
+ 		<if test="eDate != null and eDate !=''">
+ 		AND a.end_date &lt; #{eDate}
+ 		</if>
+ 		ORDER BY a.create_time DESC
+ 		<if test="limit != -1">
+		LIMIT ${(page-1)*limit},#{limit}
+		</if>
+ 	</select>
+ 	
+ 	<!-- 统计总数 -->
+ 	<select id="count" resultType="long">
+ 		SELECT COUNT(1)
+ 		<if test="type == 1">
+ 		FROM t_activity_kill a
+ 		</if>
+ 		<if test="type == 2">
+ 		FROM t_activity_freetry a
+ 		</if>
+ 		<if test="type == 3">
+ 		FROM t_activity_roullete a
+ 		</if>
+ 		<if test="type == 4">
+ 		FROM t_activity_fcouspoints a
+ 		</if>
+ 		LEFT JOIN t_seller s ON s.sellerid = a.sellerid
+ 		WHERE 1=1
+ 		<if test="activityName != null and activityName !=''">
+ 		AND a.name = #{activityName}
+ 		</if>
+ 		<if test="sellerName != null and sellerName !=''">
+ 		AND s.sellername = #{sellerName}
+ 		</if>
+ 		<if test="status != null">
+ 		AND a.status = #{status}
+ 		</if>
+ 		<if test="sDate != null and sDate !=''">
+ 		AND a.begin_date &gt; #{sDate}
+ 		</if>
+ 		<if test="eDate != null and eDate !=''">
+ 		AND a.end_date &lt; #{eDate}
+ 		</if>
+ 	</select>
+ 	
+ 	<!-- 免费尝新 -->
+ 	<select id="freeRecordList" resultType="com.xmniao.xmn.core.businessman.entity.FreetryRecord">
+ 		SELECT a.id,a.cid,c.cname,a.serial_no serialNo,a.get_time getTime,a.uid,a.phone,a.use_status useStatus,a.use_time useTime 
+ 		FROM t_activity_freetry_record a
+		LEFT JOIN t_coupon c ON c.cid = a.cid
+ 		WHERE a.activity_id = #{activityId}
+ 		<if test="phone != null and phone !=''">
+ 		AND a.phone = #{phone}
+ 		</if>
+ 		<if test="useStatus != null">
+ 		AND a.use_status = #{useStatus}
+ 		</if>
+ 		<if test="sTime != null and sTime !=''">
+ 		AND a.get_time &gt; #{sTime}
+ 		</if>
+ 		<if test="eTime != null and eTime !=''">
+ 		AND a.get_time &lt; #{eTime}
+ 		</if>
+ 		<if test="sTimeStr != null and sTimeStr !=''">
+ 		AND a.use_time &gt; #{sTimeStr}
+ 		</if>
+ 		<if test="eTimeStr != null and eTimeStr !=''">
+ 		AND a.use_time &lt; #{eTimeStr}
+ 		</if>
+		ORDER BY a.get_time DESC
+		<if test="limit != -1">
+		LIMIT ${(page-1)*limit},#{limit}
+		</if>
+ 	</select>
+ 	
+ 	<select id="countFreeRecord" resultType="long">
+ 		SELECT COUNT(1)
+ 		FROM t_activity_freetry_record
+ 		WHERE activity_id = #{activityId}
+ 		<if test="phone != null and phone !=''">
+ 		AND phone = #{phone}
+ 		</if>
+ 		<if test="useStatus != null and useStatus !=''">
+ 		AND use_status = #{useStatus}
+ 		</if>
+ 		<if test="sTime != null and sTime !=''">
+ 		AND get_time &gt; #{sTime}
+ 		</if>
+ 		<if test="eTime != null and eTime !=''">
+ 		AND get_time &lt; #{eTime}
+ 		</if>
+ 		<if test="sTimeStr != null and sTimeStr !=''">
+ 		AND use_time &gt; #{sTimeStr}
+ 		</if>
+ 		<if test="eTimeStr != null and eTimeStr !=''">
+ 		AND use_time &lt; #{eTimeStr}
+ 		</if>
+ 	</select>
+ 	
+ 	<!-- 轮盘详情列表 -->
+ 	<select id="roullRecordList" resultType="com.xmniao.xmn.core.businessman.entity.RoulleteRecord">
+ 		SELECT  id, activity_id activityId, cid, serial_no serialNo, denomination, get_time getTime, uid, phone, use_status useStatus, 
+   		 start_date startDate, end_date endDate, use_time useTime
+		FROM t_activity_roullete_record
+		WHERE activity_id = #{activityId}
+		ORDER BY get_time DESC
+		<if test="limit != -1">
+		LIMIT ${(page-1)*limit},#{limit}
+		</if>
+ 	</select>
+ 	
+ 	<select id="countRoullRecord" resultType="long">
+ 	SELECT COUNT(1)
+ 	FROM t_activity_roullete_record
+	WHERE activity_id = #{activityId} 
+ 	</select>
+ 	
+ 	<!-- 终止进行中的活动 -->
+ 	<update id="shutdown">
+ 		UPDATE
+ 		<if test="type == 1">
+ 		t_activity_kill
+ 		</if>
+ 		<if test="type == 2">
+ 		t_activity_freetry
+ 		</if>
+ 		<if test="type == 3">
+ 		t_activity_roullete
+ 		</if>
+ 		<if test="type == 4">
+ 		t_activity_fcouspoints
+ 		</if>
+ 		SET status = 1
+ 		WHERE id = #{id}
+ 	</update>
+ 	
+ 	<!-- 秒杀详情 -->
+ 	<select id="killRecordList" resultType="com.xmniao.xmn.core.businessman.entity.KillRecord">
+ 		SELECT c.serial_no serialNo,r.activity_id activityId, r.get_time getTime,r.uid,r.phone,r.pay_status payStatus,r.pay_time payTime,r.number
+		,r.sec_kill_amount secKillAmount,r.pay_amount payAmount,r.pay_type payType,c.bid,c.use_status useStatus,c.denomination,c.use_time useTime
+		FROM t_activity_kill_record r
+		LEFT JOIN t_user_coupon c ON r.id=c.activity_id
+		WHERE r.activity_id = #{activityId} 
+		<if test="phone != null and phone !=''">
+ 		AND r.phone = #{phone}
+ 		</if>
+ 		<if test="useStatus != null">
+ 		AND c.use_status = #{useStatus}
+ 		</if>
+ 		<if test="sgetTime != null and sgetTime !=''">
+ 		AND r.get_time &gt; #{sgetTime}
+ 		</if>
+ 		<if test="egetTime != null and egetTime !=''">
+ 		AND r.egetTime &lt; #{egetTime}
+ 		</if>
+ 		<if test="suseTime != null and suseTime !=''">
+ 		AND c.use_time &gt; #{suseTime}
+ 		</if>
+ 		<if test="euseTime != null and euseTime !=''">
+ 		AND c.use_time &lt; #{euseTime}
+ 		</if>
+		ORDER BY r.get_time DESC
+		<if test="limit != -1">
+		LIMIT ${(page-1)*limit},#{limit}
+		</if>
+ 	</select>
+ 	
+ 	<select id="countKillRecord" resultType="long">
+ 		SELECT COUNT(1)
+ 		FROM t_activity_kill_record r
+		LEFT JOIN t_user_coupon c ON r.id=c.activity_id
+		WHERE r.activity_id = #{activityId}
+		<if test="phone != null and phone !=''">
+ 		AND r.phone = #{phone}
+ 		</if>
+ 		<if test="useStatus != null">
+ 		AND c.use_status = #{useStatus}
+ 		</if>
+ 		<if test="sgetTime != null and sgetTime !=''">
+ 		AND r.get_time &gt; #{sgetTime}
+ 		</if>
+ 		<if test="egetTime != null and egetTime !=''">
+ 		AND r.egetTime &lt; #{egetTime}
+ 		</if>
+ 		<if test="suseTime != null and suseTime !=''">
+ 		AND c.use_time &gt; #{suseTime}
+ 		</if>
+ 		<if test="euseTime != null and euseTime !=''">
+ 		AND c.use_time &lt; #{euseTime}
+ 		</if>
+ 	</select>
+ 	
+ 	<!-- 集点活动详情列表 -->
+ 	<select id="focusRecordList" resultType="com.xmniao.xmn.core.businessman.entity.FcouspointRecord">
+ 		SELECT r.uid,r.phone,r.bid,r.give_points givePoints,r.get_time getTime,p.points,c.conver_points converPoints
+		FROM t_activity_fcouspoints_record r
+		LEFT JOIN t_activity_fcouspoints_points p ON r.uid = p.uid AND r.activity_id=p.activity_id
+		LEFT JOIN t_activity_fcouspoints_conver c ON r.uid = c.uid AND r.activity_id=c.activity_id
+		WHERE r.activity_id = #{activityId}
+		<if test="phone != null and phone !=''">
+ 		AND r.phone = #{phone}
+ 		</if>
+		ORDER BY r.get_time DESC
+		<if test="limit != -1">
+		LIMIT ${(page-1)*limit},#{limit}
+		</if>
+ 	</select>
+ 	
+ 	<select id="countFocusRecord" resultType="long">
+ 		SELECT COUNT(1)
+ 		FROM t_activity_fcouspoints_record
+ 		WHERE activity_id = #{activityId}
+		<if test="phone != null and phone !=''">
+ 		AND phone = #{phone}
+ 		</if>
+ 	</select>
+</mapper>

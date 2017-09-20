@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.vstar.dao.TicketsOrderDao">
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.vstar.entity.TicketsOrder">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="activity_id" jdbcType="INTEGER" property="activityId" />
+    <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
+    <result column="uid" jdbcType="INTEGER" property="uid" />
+    <result column="nname" jdbcType="VARCHAR" property="nname" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="num" jdbcType="INTEGER" property="num" />
+    <result column="total_amount" jdbcType="DECIMAL" property="totalAmount" />
+    <result column="pay_state" jdbcType="INTEGER" property="payState" />
+    <result column="pay_id" jdbcType="VARCHAR" property="payId" />
+    <result column="pay_type" jdbcType="VARCHAR" property="payType" />
+    <result column="balance" jdbcType="DECIMAL" property="balance" />
+    <result column="cash" jdbcType="DECIMAL" property="cash" />
+    <result column="coin" jdbcType="DECIMAL" property="coin" />
+    <result column="preferential" jdbcType="DECIMAL" property="preferential" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="guest_name" jdbcType="VARCHAR" property="guestName" />
+    <result column="guest_phone" jdbcType="VARCHAR" property="guestPhone" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    t_vstar_tickets_order.id, 
+    t_vstar_tickets_order.activity_id, 
+    t_vstar_tickets_order.order_no, 
+    t_vstar_tickets_order.uid, 
+    t_vstar_tickets_order.nname, 
+    t_vstar_tickets_order.phone, 
+    t_vstar_tickets_order.num, 
+    t_vstar_tickets_order.total_amount, 
+    t_vstar_tickets_order.pay_state, 
+    t_vstar_tickets_order.pay_id, 
+    t_vstar_tickets_order.pay_type, 
+    t_vstar_tickets_order.balance, 
+    t_vstar_tickets_order.cash, 
+    t_vstar_tickets_order.coin, 
+    t_vstar_tickets_order.preferential, 
+    t_vstar_tickets_order.create_time, 
+    t_vstar_tickets_order.pay_time, 
+    t_vstar_tickets_order.description, 
+    t_vstar_tickets_order.guest_name, 
+    t_vstar_tickets_order.guest_phone, 
+    t_vstar_tickets_order.guest_group
+  </sql>
+  
+  <sql id="whereSQL">
+  	 and pay_state =1
+  	 <if test="title !=null and title != ''">
+  	 	and t_vstar_tickets.title like '%${title}%'
+  	 </if>
+  	 <if test="phone != null and phone != ''">
+  	 	and t_vstar_tickets_order.phone = #{phone}
+  	 </if>
+  	 <if test="orderNo != null and orderNo != ''">
+  	 	and t_vstar_tickets_order.orderNo = #{orderNo}
+  	 </if>
+  	 <if test="detailNo != null">
+  	 	and (select count(1) from t_vstar_tickets_detail where t_vstar_tickets_detail.order_no = t_vstar_tickets_order.order_no and t_vstar_tickets_detail.id = #{detailNo} ) > 0
+  	 </if>
+  </sql>
+  
+  <insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_vstar_tickets_order
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						activity_id,
+						order_no,
+						uid,
+						nname,
+						phone,
+						num,
+						total_amount,
+						pay_state,
+						balance,
+						cash,
+						coin,
+						preferential,
+						create_time,
+						pay_time,
+						description,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.activityId},
+						 #{item.orderNo},
+						 #{item.uid},
+						 #{item.nname},
+						 #{item.phone},
+						 #{item.num},
+						 #{item.totalAmount},
+						 #{item.payState},
+						 #{item.balance},
+						 #{item.cash},
+						 #{item.coin},
+						 #{item.preferential},
+						 #{item.createTime},
+						 #{item.payTime},
+						 #{item.description},
+			</trim>
+		</foreach>
+	</insert>
+  
+  <select id="getList" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List" />,t_vstar_tickets.title
+    from t_vstar_tickets_order
+    left join t_vstar_tickets on t_vstar_tickets_order.activity_id = t_vstar_tickets.id
+    where 1=1
+    <include refid="whereSQL"/>
+    order by pay_time desc
+    <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+  </select>
+  
+  <select id="count" resultType="java.lang.Long">
+  	 select count(1) from t_vstar_tickets_order
+  	  left join t_vstar_tickets on t_vstar_tickets_order.activity_id = t_vstar_tickets.id
+  	 where 1=1
+  	 <include refid="whereSQL"/>
+  </select>
+   
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_vstar_tickets_order
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_vstar_tickets_order
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.vstar.entity.TicketsOrder">
+    insert into t_vstar_tickets_order (id, activity_id, order_no, 
+      uid, nname, phone, 
+      num, total_amount, pay_state, 
+      pay_id, pay_type, balance, 
+      cash, coin, preferential, 
+      create_time, pay_time, description,  
+      guest_name, guest_phone, guest_group
+      )
+    values (#{id,jdbcType=INTEGER}, #{activityId,jdbcType=INTEGER}, #{orderNo,jdbcType=VARCHAR}, 
+      #{uid,jdbcType=INTEGER}, #{nname,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, 
+      #{num,jdbcType=INTEGER}, #{totalAmount,jdbcType=DECIMAL}, #{payState,jdbcType=INTEGER}, 
+      #{payId,jdbcType=VARCHAR}, #{payType,jdbcType=VARCHAR}, #{balance,jdbcType=DECIMAL}, 
+      #{cash,jdbcType=DECIMAL}, #{coin,jdbcType=DECIMAL}, #{preferential,jdbcType=DECIMAL}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{payTime,jdbcType=TIMESTAMP}, #{description,jdbcType=VARCHAR}, 
+      #{guestName,jdbcType=VARCHAR}, #{guestPhone,jdbcType=VARCHAR}, #{guestGroup,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.vstar.entity.TicketsOrder">
+    insert into t_vstar_tickets_order
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="activityId != null">
+        activity_id,
+      </if>
+      <if test="orderNo != null">
+        order_no,
+      </if>
+      <if test="uid != null">
+        uid,
+      </if>
+      <if test="nname != null">
+        nname,
+      </if>
+      <if test="phone != null">
+        phone,
+      </if>
+      <if test="num != null">
+        num,
+      </if>
+      <if test="totalAmount != null">
+        total_amount,
+      </if>
+      <if test="payState != null">
+        pay_state,
+      </if>
+      <if test="payId != null">
+        pay_id,
+      </if>
+      <if test="payType != null">
+        pay_type,
+      </if>
+      <if test="balance != null">
+        balance,
+      </if>
+      <if test="cash != null">
+        cash,
+      </if>
+      <if test="coin != null">
+        coin,
+      </if>
+      <if test="preferential != null">
+        preferential,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="payTime != null">
+        pay_time,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+      <if test="guestName != null">
+        guest_name,
+      </if>
+      <if test="guestPhone != null">
+        guest_phone,
+      </if>
+      <if test="guestGroup != null">
+        guest_group,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="activityId != null">
+        #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="orderNo != null">
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="uid != null">
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="nname != null">
+        #{nname,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="num != null">
+        #{num,jdbcType=INTEGER},
+      </if>
+      <if test="totalAmount != null">
+        #{totalAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="payState != null">
+        #{payState,jdbcType=INTEGER},
+      </if>
+      <if test="payId != null">
+        #{payId,jdbcType=VARCHAR},
+      </if>
+      <if test="payType != null">
+        #{payType,jdbcType=VARCHAR},
+      </if>
+      <if test="balance != null">
+        #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="cash != null">
+        #{cash,jdbcType=DECIMAL},
+      </if>
+      <if test="coin != null">
+        #{coin,jdbcType=DECIMAL},
+      </if>
+      <if test="preferential != null">
+        #{preferential,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="payTime != null">
+        #{payTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="guestName != null">
+        #{guestName,jdbcType=VARCHAR},
+      </if>
+      <if test="guestPhone != null">
+        #{guestPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="guestGroup != null">
+        #{guestGroup,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.vstar.entity.TicketsOrder">
+    update t_vstar_tickets_order
+    <set>
+      <if test="activityId != null">
+        activity_id = #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="orderNo != null">
+        order_no = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="uid != null">
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="nname != null">
+        nname = #{nname,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="num != null">
+        num = #{num,jdbcType=INTEGER},
+      </if>
+      <if test="totalAmount != null">
+        total_amount = #{totalAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="payState != null">
+        pay_state = #{payState,jdbcType=INTEGER},
+      </if>
+      <if test="payId != null">
+        pay_id = #{payId,jdbcType=VARCHAR},
+      </if>
+      <if test="payType != null">
+        pay_type = #{payType,jdbcType=VARCHAR},
+      </if>
+      <if test="balance != null">
+        balance = #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="cash != null">
+        cash = #{cash,jdbcType=DECIMAL},
+      </if>
+      <if test="coin != null">
+        coin = #{coin,jdbcType=DECIMAL},
+      </if>
+      <if test="preferential != null">
+        preferential = #{preferential,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="payTime != null">
+        pay_time = #{payTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="guestName != null">
+        guest_name = #{guestName,jdbcType=VARCHAR},
+      </if>
+      <if test="guestPhone != null">
+        guest_phone = #{guestPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="guestGroup != null">
+        guest_group = #{guestGroup,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.vstar.entity.TicketsOrder">
+    update t_vstar_tickets_order
+    set activity_id = #{activityId,jdbcType=INTEGER},
+      order_no = #{orderNo,jdbcType=VARCHAR},
+      uid = #{uid,jdbcType=INTEGER},
+      nname = #{nname,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      num = #{num,jdbcType=INTEGER},
+      total_amount = #{totalAmount,jdbcType=DECIMAL},
+      pay_state = #{payState,jdbcType=INTEGER},
+      pay_id = #{payId,jdbcType=VARCHAR},
+      pay_type = #{payType,jdbcType=VARCHAR},
+      balance = #{balance,jdbcType=DECIMAL},
+      cash = #{cash,jdbcType=DECIMAL},
+      coin = #{coin,jdbcType=DECIMAL},
+      preferential = #{preferential,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      pay_time = #{payTime,jdbcType=TIMESTAMP},
+      description = #{description,jdbcType=VARCHAR},
+      guest_name = #{guestName,jdbcType=VARCHAR},
+      guest_phone = #{guestPhone,jdbcType=VARCHAR},
+      guest_group = #{guestGroup,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

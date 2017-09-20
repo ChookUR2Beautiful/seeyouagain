@@ -1,0 +1,199 @@
+/**
+ * 
+ */
+package com.xmniao.xmn.test.live_anchor;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import com.xmniao.xmn.core.base.Resultable;
+import com.xmniao.xmn.core.live_anchor.entity.AnchorRatioBean;
+import com.xmniao.xmn.core.live_anchor.entity.BLiver;
+import com.xmniao.xmn.core.live_anchor.entity.FansConfigureRequest;
+import com.xmniao.xmn.core.live_anchor.entity.TLiveRecord;
+import com.xmniao.xmn.core.live_anchor.service.TLiveAnchorService;
+import com.xmniao.xmn.core.live_anchor.service.TLiveRecordService;
+
+/**
+ * 项目名称：XmnWeb_LVB
+ * 
+ * 类名称：LiveAnchorServiceTest
+ *
+ * 类描述：主播服务测试类
+ * 
+ * 创建人： huang'tao
+ * 
+ * 创建时间：2016-8-6下午3:47:30
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司
+ */
+public class LiveAnchorServiceTest {
+	private ApplicationContext application;
+	
+	private TLiveAnchorService liveAnchorService;
+	
+	private TLiveRecordService liveRecordService;
+	
+
+	@Before
+	public void before() {
+		application = new ClassPathXmlApplicationContext("classpath:/com/xmniao/xmn/resource/config/spring-context.xml");
+		liveAnchorService = application.getBean(TLiveAnchorService.class);
+		liveRecordService = application.getBean(TLiveRecordService.class);
+	}
+	
+//	@Test
+	public void insertTest(){
+		Calendar calendar=Calendar.getInstance();
+		calendar.set(Calendar.HOUR, Calendar.HOUR+1);
+		Date planStartDate = calendar.getTime();
+		calendar.set(Calendar.HOUR, Calendar.HOUR+2);
+		Date planEndDate = calendar.getTime();
+		TLiveRecord liveRecord = new TLiveRecord();
+		liveRecord.setZhiboTitle("t-ara 七夕情人节直播秀");
+		liveRecord.setAnchorId(1);
+		liveRecord.setAnchorRoomNo("1001");
+		liveRecord.setPlanStartDate(planStartDate);
+		liveRecord.setPlanEndDate(planEndDate);
+		liveRecord.setSellerid(118);
+		liveRecord.setSellername("逅街美食");
+		liveRecord.setSellerAlias("遇见美食");
+		liveRecord.setLongitude(73.241d);
+		liveRecord.setLatitude(3.3121d);
+		liveRecord.setSellerCity("3223");
+		liveRecord.setZhiboAddress("珠江新城CBD");
+		liveRecord.setCreateTime(new Date());
+		liveRecord.setUpdateTime(new Date());
+		
+		liveRecord.setSequenceNo(99);
+		
+		liveRecordService.add(liveRecord);
+	}
+	
+//	@Test
+	public void selectTest(){
+		BLiver liveAnchor = liveAnchorService.selectByPrimaryKey(1);
+		System.out.println(liveAnchor.toString());
+		
+	}
+	
+//	@Test
+	public void getListTest(){
+		BLiver liveAnchor=new BLiver();
+		
+		List<BLiver> list = liveAnchorService.getList(liveAnchor);
+		for(BLiver anchor:list){
+			System.out.println(anchor.toString());
+		}
+		
+		System.out.println("主播数量："+liveAnchorService.count(liveAnchor));
+	}
+	
+//	@Test
+	public void getListOfRecordTest(){
+		TLiveRecord liveRecord = new TLiveRecord();
+		liveRecord.setZhiboTitle("t-ara 七夕情人节直播秀");
+		List<TLiveRecord> list = liveRecordService.getList(liveRecord);
+		for(TLiveRecord record:list){
+			System.out.println(record.toString());
+		}
+		
+		System.out.println("直播安排纪录数量:"+liveRecordService.count(liveRecord));
+	}
+	
+//	@Test
+	public void setAnchorAndSellerInfo(){
+		//31428
+		Integer sellerid=31428;
+		TLiveRecord liveRecord=new TLiveRecord();
+		liveRecord.setSellerid(sellerid);
+		liveRecordService.setAnchorAndSellerInfo(liveRecord);
+		System.out.println(liveRecord);
+	}
+	
+//	@Test
+	public void getLiverStartId(){
+		Integer anchorId=105;
+		List<String> liverStartId = liveAnchorService.getLiverStartId(anchorId);
+		for(String startId:liverStartId){
+			System.out.println(startId);
+		}
+	}
+	
+//	@Test
+	public void  updateConcernNums(){
+		Integer anchorId=104;
+		int updateConcernNums = 0;
+		List<String> ids = liveAnchorService.getLiverStartId(anchorId);
+		
+		int count = liveAnchorService.deleteFocusByAnchorId(anchorId);
+		if(ids !=null && ids.size()>0){
+			updateConcernNums =liveAnchorService.updateConcernNums(ids.toArray());
+		}
+		System.out.println("成功删除关注记录:" + count +"，更新用户关注记录数：" + updateConcernNums );
+	}
+	
+//	@Test
+	public void updateRatioBatchByIds(){
+		String ids="382,384";
+		AnchorRatioBean anchorRatioBean=new AnchorRatioBean();
+		anchorRatioBean.setIds(ids);
+		anchorRatioBean.setSaleCouponRatio(new BigDecimal(0.5));
+		Resultable result = liveAnchorService.updateBatchRatio(anchorRatioBean);
+		System.out.println(result.toString());
+		
+	}
+	
+//	@Test
+	public void countAnchor(){
+		 Map<String, Object> countAnchor = liveAnchorService.countAnchor();
+		 System.out.println(countAnchor.toString());
+	}
+	
+//	@Test
+	public void getRealFansList(){
+		Map<String,Object> params= new HashMap<String,Object>();
+		List<Integer> uidList= new ArrayList<Integer>();
+		uidList.add(607005);
+		params.put("uidList", uidList);
+		List<BLiver> realFansList = liveAnchorService.getRealFansList(params);
+		for(BLiver liver:realFansList){
+			System.out.println(liver.getUid()+":"+liver.getRealFansNum());
+		}
+	}
+	
+//	@Test
+	public void getRobotFansList(){
+		Map<String,Object> params= new HashMap<String,Object>();
+		List<Integer> uidList= new ArrayList<Integer>();
+		uidList.add(604863);
+		params.put("uidList", uidList);
+		List<BLiver> realFansList = liveAnchorService.getRobotFansList(params);
+		for(BLiver liver:realFansList){
+			System.out.println(liver.getUid()+":"+liver.getRobotFansNum());
+		}
+	}
+	
+	@Test
+	public void saveFansConf(){
+		FansConfigureRequest configureRequest = new FansConfigureRequest();
+		
+		configureRequest.setIds("984,500");
+		configureRequest.setUids("606001,604939");
+		configureRequest.setFansMin(5);
+		configureRequest.setFansMax(10);
+		
+		liveAnchorService.saveFansConf(configureRequest );
+	}
+	
+}

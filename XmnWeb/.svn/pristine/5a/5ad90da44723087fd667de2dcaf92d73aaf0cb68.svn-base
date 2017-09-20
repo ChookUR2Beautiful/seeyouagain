@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TLiveRecordBannerDao" >
+
+  <resultMap id="liveRecordBannerMap" type="com.xmniao.xmn.core.live_anchor.entity.TLiveRecordBanner" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="record_id" property="recordId" jdbcType="INTEGER" />
+    <result column="pic_url" property="picUrl" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="sort_val" property="sortVal" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="liveRecordBanner_column_list" >
+    id, record_id, pic_url, type, create_time, sort_val
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test=" null != recordId and '' != recordId">
+  		AND	record_id = #{recordId,jdbcType=INTEGER}
+  	</if>
+  </sql>
+  
+  <select id="getList" resultMap="liveRecordBannerMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="liveRecordBanner_column_list" />
+    from t_live_record_banner
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+    ORDER BY sort_val ASC
+  </select>
+  
+  
+  <delete id="delete" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRecordBanner" >
+    delete from t_live_record_banner
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+  </delete>
+  
+	<insert id="addBatch" parameterType="java.util.ArrayList">
+		INSERT INTO t_live_record_banner
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<include refid="liveRecordBanner_column_list" /> 
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+			<!-- id, record_id, pic_url, type, create_time, sort_val -->
+				#{item.id},
+				#{item.recordId},
+				#{item.picUrl},
+				#{item.type},
+				#{item.createTime},
+				#{item.sortVal}
+			</trim>
+		</foreach>
+	</insert>
+	  
+</mapper>

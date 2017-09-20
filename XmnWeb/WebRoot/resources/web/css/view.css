@@ -1,0 +1,105 @@
+body {
+	margin: 0;
+	font-size: 12px;
+	font-family: 'Microsoft Yahei', '微软雅黑';
+	overflow-y: auto;
+	padding: 10px 30px;
+}
+
+table.info tr td {
+	text-align: center;
+	font-size: 14px
+}
+
+table,info {
+	word-break: break-all;
+	word-wrap: break-word;
+}
+
+table.info tr th {
+	text-align: center;
+	font-size: 14px;
+	line-height: 15px;
+}
+
+table.info tr td a {
+	color: #CC3333;
+}
+
+table.info tr td a:hover {
+	color: #CC3333;
+	text-decoration: underline;
+}
+
+input {
+	margin: 0;
+}
+
+.radius-3 {
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+}
+
+.submit {
+	text-align: right;
+}
+
+.submit input {
+	width: 200px;
+	margin-right: 20px;
+	background: #036;
+	border: 1px solid #FF5C5C;
+	line-height: 30px;
+	text-align: center;
+	font-family: 'Microsoft Yahei', '微软雅黑';
+}
+
+.submit input.submit {
+	background: #FF5C5C;
+	color: #FFF;
+}
+
+.submit input.reset {
+	background: #F9F9F9;
+	color: #FF5C5C;
+}
+
+.borderBottom th,.borderBottom td {
+	font-size: 12px;
+	border-bottom: none !important;
+}
+
+.radius {
+	border-radius: 12px !important;
+	display: inline-block;
+	min-width: 10px;
+	-moz-border-radius: 12px !important;
+	-webkit-border-radius: 12px !important;
+	outline: none !important;
+}
+
+/*商家信息css start*/
+.sellerTitleCss {
+	width: 7% !important;
+}
+
+.sellerContentCss {
+	width: 23% !important;
+}
+/*商家信息css end*/
+
+/*寻蜜客信息css start*/
+.xmerContentCss {
+	width: 23% !important;
+}
+/*寻蜜客信息css end*/
+
+
+.table-wrap table thead tr th {
+  text-align: center;
+}
+
+.table-wrap table tr td {
+  vertical-align: middle;
+}

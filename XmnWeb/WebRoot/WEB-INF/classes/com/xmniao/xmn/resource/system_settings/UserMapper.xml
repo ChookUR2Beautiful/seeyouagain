@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.system_settings.dao.UserDao">
+
+	<parameterMap type="User" id="user" />
+	
+	
+	
+	<resultMap type="User" id="userMap">
+		<result column="user_id" property="userId" />
+		<result column="role_id" property="roleId" />
+		<result column="username" property="username" />
+		<result column="password" property="password" />
+		<result column="email" property="email" />
+		<result column="name" property="name" />
+		<result column="is_enabled" property="isEnabled" />
+		<result column="is_locked" property="isLocked" />
+		<result column="locked_date" property="lockedDate" />
+		<result column="login_date" property="loginDate" />
+		<result column="login_ip" property="loginIp" />
+		<result column="roleName" property="roleName" />
+		
+	</resultMap>
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_user
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						role_id,
+						username,
+						password,
+						email,
+						name,
+						is_enabled,
+						is_locked,
+						locked_date,
+						login_date,
+						login_ip,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.roleId},
+						 #{item.username},
+						 #{item.password},
+						 #{item.email},
+						 #{item.name},
+						 #{item.isEnabled},
+						 #{item.isLocked},
+						 #{item.lockedDate},
+						 #{item.loginDate},
+						 #{item.loginIp},
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" parameterMap="user" >
+		INSERT INTO t_user
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != userId">
+					user_id,
+				</if>
+			 	<if test=" null != roleId">
+					role_id,
+				</if>
+			 	<if test=" null != username and '' != username ">
+					username,
+				</if>
+			 	<if test=" null != password and '' != password ">
+					password,
+				</if>
+			 	<if test=" null != email and '' != email ">
+					email,
+				</if>
+			 	<if test=" null != name and '' != name ">
+					name,
+				</if>
+			 	<if test=" null != isEnabled">
+					is_enabled,
+				</if>
+			 	<if test=" null != isLocked">
+					is_locked,
+				</if>
+			 	<if test=" null != lockedDate">
+					locked_date,
+				</if>
+			 	<if test=" null != loginDate">
+					login_date,
+				</if>
+			 	<if test=" null != loginIp and '' != loginIp ">
+					login_ip,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != userId">
+					 	#{userId},
+				</if>
+			 	<if test=" null != roleId">
+					 	#{roleId},
+				</if>
+			 	<if test=" null != username and '' != username ">
+					 	#{username},
+				</if>
+			 	<if test=" null != password and '' != password ">
+					 	#{password},
+				</if>
+			 	<if test=" null != email and '' != email ">
+					 	#{email},
+				</if>
+			 	<if test=" null != name and '' != name ">
+					 	#{name},
+				</if>
+			 	<if test=" null != isEnabled">
+					 	#{isEnabled},
+				</if>
+			 	<if test=" null != isLocked">
+					 	#{isLocked},
+				</if>
+			 	<if test=" null != lockedDate">
+					 	#{lockedDate},
+				</if>
+			 	<if test=" null != loginDate">
+					 	#{loginDate},
+				</if>
+			 	<if test=" null != loginIp and '' != loginIp ">
+					 	#{loginIp},
+				</if>
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_user WHERE user_id IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	
+	<update id="deleteRole" parameterType="Object">
+		UPDATE t_user SET role_id=NULL WHERE role_id IN 
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</update>
+	
+	<update id="update" parameterMap="user">
+		UPDATE t_user
+		<set>
+			<trim suffixOverrides=",">
+				<!-- <if test=" null != userId">
+					user_id = #{userId},
+				</if> -->
+				<if test=" null != roleId">
+					role_id = #{roleId},
+				</if>
+				<if test=" null != username and '' != username ">
+					username = #{username},
+				</if>
+				<if test=" null != password and '' != password ">
+					password = #{password},
+				</if>
+				<if test=" null != email and '' != email ">
+					email = #{email},
+				</if>
+				<if test=" null != name and '' != name ">
+					name = #{name},
+				</if>
+				<if test=" null != isEnabled">
+					is_enabled = #{isEnabled},
+				</if>
+				<if test=" null != isLocked">
+					is_locked = #{isLocked},
+				</if>
+				<if test=" null != lockedDate">
+					locked_date = #{lockedDate},
+				</if>
+				<if test=" null != loginDate">
+					login_date = #{loginDate},
+				</if>
+				<if test=" null != loginIp and '' != loginIp ">
+					login_ip = #{loginIp},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != userId and '' != userId">
+				user_id = #{userId}
+			</if>
+		</where>
+	</update>
+	
+	
+	<select id="loginCheck" resultType="User" parameterMap="user">
+		SELECT 
+			user_id AS userId,
+			role_id AS roleId,
+			username AS username,
+			email AS email,
+			name AS name,
+			is_enabled AS isEnabled,
+			is_locked AS isLocked,
+			locked_date AS lockedDate,
+			login_date AS loginDate,
+			login_ip AS loginIp 
+		FROM t_user WHERE username = #{username}  AND  password = #{password}
+	</select>
+	
+	<select id="getList" resultMap="userMap" parameterMap="user">
+		select tu.*,tr.role_name AS roleName from (SELECT user_id AS userId,
+			role_id AS roleId,
+			username AS username,
+			email AS email,
+			is_enabled AS isEnabled,
+			is_locked AS isLocked,
+			locked_date AS lockedDate,
+			login_date AS loginDate,
+			login_ip AS loginIp  FROM t_user
+		<where>
+			1=1 AND user_id !=1
+			<if test=" null != userId">
+				AND user_id = #{userId}
+			</if>
+			<if test=" null != roleId">
+				AND role_id = #{roleId}
+			</if>
+			<if test=" null != username and '' != username ">
+				AND username LIKE  '%' #{username} '%'
+			</if>
+			
+			<if test=" null != email and '' != email ">
+				AND email LIKE '%' #{email} '%'
+			</if>
+			<if test=" null != name and '' != name ">
+				AND name LIKE '%' #{name} '%'
+			</if>
+			<if test=" null != isEnabled">
+				AND is_enabled = #{isEnabled}
+			</if>
+			<if test=" null != isLocked">
+				AND is_locked = #{isLocked}
+			</if>
+			<if test=" null != lockedDate">
+				AND locked_date = #{lockedDate}
+			</if>
+			<if test=" null != loginDate">
+				AND login_date = #{loginDate}
+			</if>
+			<if test=" null != loginIp and '' != loginIp ">
+				AND login_ip LIKE '%' #{loginIp} '%'
+			</if>
+		</where>
+		)tu LEFT JOIN (SELECT role_id,role_name FROM t_role WHERE role_id !=1)tr ON tu.roleId=tr.role_id
+		<where>
+		     1=1
+		    <if test=" null != roleName and '' != roleName ">
+				AND role_name LIKE '%${roleName}%'
+			</if>
+		</where>
+			ORDER BY tu.loginDate,tu.userId DESC  LIMIT ${(page-1)*limit},#{limit}
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="user">
+			select count(tu.userId) from (SELECT user_id AS userId,
+			role_id AS roleId,
+			username AS username,
+			email AS email,
+			is_enabled AS isEnabled,
+			is_locked AS isLocked,
+			locked_date AS lockedDate,
+			login_date AS loginDate,
+			login_ip AS loginIp  FROM t_user
+		<where>
+			1=1 AND user_id !=1
+			<if test=" null != userId">
+				AND user_id = #{userId}
+			</if>
+			<if test=" null != roleId">
+				AND role_id = #{roleId}
+			</if>
+			<if test=" null != username and '' != username ">
+				AND username LIKE  '%' #{username} '%'
+			</if>
+			
+			<if test=" null != email and '' != email ">
+				AND email LIKE '%' #{email} '%'
+			</if>
+			<if test=" null != name and '' != name ">
+				AND name LIKE '%' #{name} '%'
+			</if>
+			<if test=" null != isEnabled">
+				AND is_enabled = #{isEnabled}
+			</if>
+			<if test=" null != isLocked">
+				AND is_locked = #{isLocked}
+			</if>
+			<if test=" null != lockedDate">
+				AND locked_date = #{lockedDate}
+			</if>
+			<if test=" null != loginDate">
+				AND login_date = #{loginDate}
+			</if>
+			<if test=" null != loginIp and '' != loginIp ">
+				AND login_ip LIKE '%' #{loginIp} '%'
+			</if>
+		</where>
+		)tu LEFT JOIN (SELECT role_id,role_name FROM t_role WHERE role_id !=1)tr ON tu.roleId=tr.role_id
+		<where>
+		     1=1
+		    <if test=" null != roleName and '' != roleName ">
+				AND role_name LIKE '%${roleName}%'
+			</if>
+		</where>
+	</select>
+	
+	<!-- 校验用户名唯一性 -->
+	<select id="getUsernameCount" resultType="Long" parameterType="String">
+		SELECT COUNT(user_id) FROM t_user WHERE username = #{username}
+		
+	</select>
+	
+	<select id="getMaxId"   resultType="Long">
+		SELECT Max(user_id) AS VALUE FROM t_user
+	</select>
+	
+	<select id="getObject" resultMap="userMap" parameterType="Long">
+		SELECT user_id AS userId,
+			role_id AS roleId,
+			username ,
+			email,
+			name,
+			is_enabled AS isEnabled,
+			is_locked AS isLocked,
+			locked_date AS lockedDate,
+			login_date AS loginDate,
+			login_ip AS loginIp FROM t_user WHERE user_id = #{0}
+	</select>
+	
+</mapper>

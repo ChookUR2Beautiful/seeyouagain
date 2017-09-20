@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.fresh.dao.SalePropertyValueDao">
+	<!-- 添加一条数据 -->
+	<insert id="add" parameterType="com.xmniao.xmn.core.fresh.entity.TSalePropertyValue" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO 
+			`t_sale_property_value` 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test=" null != propertyId">
+				property_id,
+			</if>
+			<if test=" null != value and '' != value">
+				value,
+			</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			<if test=" null != propertyId">
+				#{propertyId},
+			</if>
+			<if test=" null != value and '' != value">
+				#{value},
+			</if>
+		</trim>	
+	</insert>
+	
+	<!-- 根据主键id更新一条数据 -->
+	<update id="update" parameterType="com.xmniao.xmn.core.fresh.entity.TSalePropertyValue">
+		UPDATE 
+			`t_sale_property_value` 
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != propertyId">
+					property_id = #{propertyId},
+				</if>
+				<if test=" null != value and '' != value">
+					value = #{value}, 
+				</if>
+			</trim>
+		</set>
+		WHERE 
+			id = #{id}
+	</update>
+	
+	<!-- 条件查询一条记录 -->
+	<select id="getObject" resultType="com.xmniao.xmn.core.fresh.entity.TSalePropertyValue" 
+		parameterType="Long">
+		SELECT
+			`id`,
+			`property_id` AS propertyId,
+			`value` 
+		FROM
+			`t_sale_property_value`  
+		<where>
+			id = #{0} 
+		</where>
+	</select>
+	
+	<!-- 查询列表 -->
+	<select id="getList" resultType="com.xmniao.xmn.core.fresh.entity.TSalePropertyValue" parameterType="com.xmniao.xmn.core.fresh.entity.TSalePropertyValue">
+		SELECT
+			`id`,
+			`property_id` AS propertyId,
+			`value` 
+		FROM
+			`t_sale_property_value`  
+		<where>
+			1=1 
+			<if test="null != propertyId">
+				AND property_id = #{propertyId} 
+			</if>
+			<if test="null != value and '' != value">
+				AND value = #{value} 
+			</if>
+		</where>
+	</select>
+	<!-- 批量删除记录 -->
+	<delete id="batchDelete" parameterType="java.util.List">  
+    	DELETE FROM `t_sale_property_value` WHERE property_id IN  
+	    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+	        #{item}   
+	    </foreach>  
+    </delete>
+    <!-- 根据id删除一条记录 -->
+	<delete id="deleteById" parameterType="int">
+		DELETE FROM `t_sale_property_value` WHERE id = #{0} 
+	</delete>
+</mapper>

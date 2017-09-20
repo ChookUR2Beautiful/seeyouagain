@@ -1,0 +1,87 @@
+package com.xmniao.xmn.core.xmermanagerment.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.util.proxy.annotation.DataSource;
+import com.xmniao.xmn.core.xmermanagerment.entity.TSaasSoldOrder;
+
+/**
+ * 
+ * 
+ * 项目名称：XmnWeb
+ * 
+ * 类名称：TSaasSoldOrderDao
+ * 
+ * 类描述： 商家签约订单DAO
+ * 
+ * 创建人： Chen Bo
+ * 
+ * 创建时间：2016年5月31日 下午2:55:33 
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司
+ */
+public interface TSaasSoldOrderDao extends BaseDao<TSaasSoldOrder>{
+
+	/**
+	 * 获取saas签约订单
+	 */
+    TSaasSoldOrder getSaasSoldOrder(TSaasSoldOrder tSaasSoldOrder);
+    
+    
+    /**
+     * 方法描述：保存签约店铺关系 <br/>
+     * 创建人： Administrator <br/>
+     * 创建时间：2017年8月11日上午11:13:23 <br/>
+     * @param tSaasSoldOrder
+     * @return
+     */
+    int insertSelective(TSaasSoldOrder tSaasSoldOrder);
+
+    /**
+     * 更新Saas签约订单状态
+     */
+    int updateSaasSoldOrder(TSaasSoldOrder tSaasSoldOrder);
+
+    /**
+     * @Description: 
+     * @Param:
+     * @return:List<TSaasSoldOrder>
+     * @author:lifeng
+     * @time:2016年6月15日上午11:34:00
+     */
+	List<TSaasSoldOrder> getSaasSoldOrderList(TSaasSoldOrder saasSoldOrder);
+
+	/**
+	 * @Description: 
+	 * @Param:
+	 * @return:Long
+	 * @author:lifeng
+	 * @time:2016年6月15日上午11:34:04
+	 */
+	Long getCountByParam(TSaasSoldOrder saasSoldOrder);
+	
+	public List<Map<String, String>> getRecommendSellerCountList(Object[] objects);
+	
+	public List<TSaasSoldOrder> getRecommendSellerList(Object[] objects);
+
+	/**
+	 * 
+	 * 方法描述：放弃签约商铺 <br/>
+	 * 创建人： Administrator <br/>
+	 * 创建时间：2017年8月8日下午6:13:49 <br/>
+	 * @param saasSoldOrder
+	 * @return
+	 */
+	public int cancelOrder(TSaasSoldOrder saasSoldOrder);
+	
+	/**
+	 * 方法描述：转多主播店铺给V客<br/>
+	 * 创建人： Administrator <br/>
+	 * 创建时间：2017年8月14日下午4:50:57 <br/>
+	 * @param saasSoldOrder
+	 * @return
+	 */
+	public int transferSellerToVke(TSaasSoldOrder saasSoldOrder);
+}

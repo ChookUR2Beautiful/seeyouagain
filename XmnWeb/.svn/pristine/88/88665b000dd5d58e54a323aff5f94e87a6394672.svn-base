@@ -1,0 +1,40 @@
+/**
+ * 
+ */
+package com.xmniao.xmn.core.vstar.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.base.BaseService;
+import com.xmniao.xmn.core.vstar.dao.TVstarRewardRecordDao;
+import com.xmniao.xmn.core.vstar.entity.TVstarRewardRecord;
+
+/**
+ * 
+ * 项目名称：XmnWeb_vstar
+ * 
+ * 类名称：TVstarRewardRecordService
+ * 
+ * 类描述： 在此处添加类描述
+ * 
+ * 创建人：  huang'tao
+ * 
+ * 创建时间：2017-7-17 下午6:28:07 
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司 
+ */
+@Service
+public class TVstarRewardRecordService extends BaseService<TVstarRewardRecord> {
+	
+	@Autowired
+	private TVstarRewardRecordDao rewardRecordDao;
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected BaseDao getBaseDao() {
+		return rewardRecordDao;
+	}
+
+}

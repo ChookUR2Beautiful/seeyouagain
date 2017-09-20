@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.CommentReplyDao">
+
+	<parameterMap type="CommentReply" id="commentReply" />
+	
+	<resultMap type="CommentReply" id="commentReplyMap">
+		<result column="id" property="id" />
+		<result column="cid" property="cid" />
+		<result column="content" property="content" />
+		<result column="fid" property="fid" />
+		<result column="sdate" property="sdate" />
+		<result column="uid" property="uid" />
+		<result column="nname" property="nname" />
+	</resultMap>
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_log
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						cid,
+						content,
+						fid,
+						sdate,
+						uid,
+						nname,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.cid},
+						 #{item.content},
+						 #{item.fid},
+						 #{item.sdate},
+						 #{item.uid},
+						 #{item.nname},
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" parameterMap="commentReply" >
+		INSERT INTO t_comment_reply
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					id,
+				</if>
+			 	<if test=" null != cid">
+					cid,
+				</if>
+			 	<if test=" null != content and '' != content ">
+					content,
+				</if>
+			 	<if test=" null != fid">
+					fid,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+			 	<if test=" null != uid">
+					uid,
+				</if>
+			 	<if test=" null != nname and '' != nname ">
+					nname,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					 	#{id},
+				</if>
+			 	<if test=" null != cid">
+					 	#{cid},
+				</if>
+			 	<if test=" null != content and '' != content ">
+					 	#{content},
+				</if>
+			 	<if test=" null != fid">
+					 	#{fid},
+				</if>
+			 	<if test=" null != sdate">
+					 	#{sdate},
+				</if>
+			 	<if test=" null != uid">
+					 	#{uid},
+				</if>
+			 	<if test=" null != nname and '' != nname ">
+					 	#{nname},
+				</if>
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_comment_reply WHERE id IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterMap="commentReply">
+		UPDATE t_comment_reply
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != id">
+					id = #{id},
+				</if>
+				<if test=" null != cid">
+					cid = #{cid},
+				</if>
+				<if test=" null != content and '' != content ">
+					content = #{content},
+				</if>
+				<if test=" null != fid">
+					fid = #{fid},
+				</if>
+				<if test=" null != sdate">
+					sdate = #{sdate},
+				</if>
+				<if test=" null != uid">
+					uid = #{uid},
+				</if>
+				<if test=" null != nname and '' != nname ">
+					nname = #{nname},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != id and '' != id">
+				id = #{id}
+			</if>
+		</where>
+	</update>
+	
+	<select id="getList" resultMap="commentReplyMap" parameterMap="commentReply">
+		SELECT * FROM t_comment_reply
+		<where>
+			1=1
+			<if test=" null != id">
+				AND id = #{id}
+			</if>
+			<if test=" null != cid">
+				AND cid = #{cid}
+			</if>
+			<if test=" null != content and '' != content ">
+				AND content LIKE '%${content}%'
+			</if>
+			<if test=" null != fid">
+				AND fid = #{fid}
+			</if>
+			<if test=" null != sdate">
+				AND sdate = #{sdate}
+			</if>
+			<if test=" null != uid">
+				AND uid = #{uid}
+			</if>
+			<if test=" null != nname and '' != nname ">
+				AND nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != sdateStart and '' != sdateStart">
+				AND sdate&gt;= #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd and '' != sdateEnd">
+				AND sdate&lt;= #{sdateEnd}
+			</if>
+		</where>
+			ORDER BY id DESC 
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="commentReply">
+		SELECT COUNT(*) FROM t_comment_reply
+		<where>
+			1=1
+			<if test=" null != id">
+				AND id = #{id}
+			</if>
+			<if test=" null != cid">
+				AND cid = #{cid}
+			</if>
+			<if test=" null != content and '' != content ">
+				AND content LIKE '%${content}%'
+			</if>
+			<if test=" null != fid">
+				AND fid = #{fid}
+			</if>
+			<if test=" null != sdate">
+				AND sdate = #{sdate}
+			</if>
+			<if test=" null != uid">
+				AND uid = #{uid}
+			</if>
+			<if test=" null != nname and '' != nname ">
+				AND nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != sdateStart and '' != sdateStart">
+				AND sdate&gt;= #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd and '' != sdateEnd">
+				AND sdate&lt;= #{sdateEnd}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Integer">
+		SELECT Max(id) AS VALUE FROM t_comment_reply
+	</select>
+	
+	<select id="getObject" resultMap="commentReplyMap" parameterType="Long">
+		SELECT * FROM t_comment_reply WHERE id = #{0}
+	</select>
+	
+</mapper>

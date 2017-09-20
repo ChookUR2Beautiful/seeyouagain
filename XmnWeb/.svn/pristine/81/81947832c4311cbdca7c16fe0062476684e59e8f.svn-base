@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TExperienceofficerOrderDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.live_anchor.entity.TExperienceofficerOrder" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="nname" property="nname" jdbcType="VARCHAR" />
+    <result column="is_free" property="isFree" jdbcType="INTEGER" />
+    <result column="nums" property="nums" jdbcType="INTEGER" />
+    <result column="days" property="days" jdbcType="INTEGER" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="pay_type" property="payType" jdbcType="VARCHAR" />
+    <result column="payid" property="payid" jdbcType="VARCHAR" />
+    <result column="live_coin" property="liveCoin" jdbcType="DECIMAL" />
+    <result column="wallet_amount" property="walletAmount" jdbcType="DECIMAL" />
+    <result column="samount" property="samount" jdbcType="DECIMAL" />
+    <result column="pay_state" property="payState" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="pay_time" property="payTime" jdbcType="TIMESTAMP" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, order_no, uid, phone, nname, is_free, nums, days, amount, pay_type, payid, live_coin, 
+    wallet_amount, samount, pay_state, create_time, pay_time, description, version
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_experienceofficer_order
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="getList" resultMap="BaseResultMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.TExperienceofficerOrder" >
+    select 
+    	<include refid="Base_Column_List" />
+    from t_experienceofficer_order
+    where 1=1
+    <if test=" uid!=null">and uid=#{uid}</if>
+    <if test=" phone!=null and phone!=''">and phone like concat(#{phone},"%")</if>
+    <if test=" nname!=null and nname!=''">and nname like concat(#{nname},"%")</if>
+    <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <select id="count" resultType="Long" parameterType="com.xmniao.xmn.core.live_anchor.entity.TExperienceofficerOrder" >
+    select 
+    count(*)
+    from t_experienceofficer_order
+    where 1=1
+    <if test=" uid!=null">and uid=#{uid}</if>
+    <if test=" phone!=null and phone!=''">and phone like concat(#{phone},"%")</if>
+    <if test=" nname!=null and nname!=''">and nname like concat(#{nname},"%")</if>
+  </select>
+  
+  <select id="getExperienceofficerUser" resultType="com.xmniao.xmn.core.live_anchor.entity.TExperienceofficerUser" parameterType="com.xmniao.xmn.core.live_anchor.entity.TExperienceofficerUser">
+    select 
+    	uid,phone,nname,pay_time buyTime
+    from t_experienceofficer_order
+    where pay_state=1
+    <if test=" uid!=null">and uid=#{uid}</if>
+    <if test=" phone!=null and phone!=''">and phone = #{phone}</if>
+    <if test=" nname!=null and nname!=''">and nname = #{nname}</if>
+    group by uid
+  </select>
+
+  <select id="getExperienceofficerUserList" resultType="com.xmniao.xmn.core.live_anchor.entity.TExperienceofficerUser" parameterType="com.xmniao.xmn.core.live_anchor.entity.TExperienceofficerUser" >
+    select 
+    	uid,phone,nname,pay_time buyTime
+    from t_experienceofficer_order
+    where pay_state=1
+    <if test="uids !=null and uid !=''">and uid in (${uids})</if>
+    <if test=" uid!=null">and uid=#{uid}</if>
+    <if test=" phone!=null and phone!=''">and phone like concat(#{phone},"%")</if>
+    <if test=" nname!=null and nname!=''">and nname like concat(#{nname},"%")</if>
+    group by uid
+    <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <select id="countExperienceofficerUser" resultType="Long" parameterType="com.xmniao.xmn.core.live_anchor.entity.TExperienceofficerUser" >
+    SELECT 
+   		COUNT(DISTINCT uid)
+    FROM t_experienceofficer_order
+    WHERE pay_state=1
+    <if test=" uid!=null">and uid=#{uid}</if>
+    <if test=" phone!=null and phone!=''">and phone like concat(#{phone},"%")</if>
+    <if test=" nname!=null and nname!=''">and nname like concat(#{nname},"%")</if>
+  </select>
+
+
+  <insert id="add" parameterType="com.xmniao.xmn.core.live_anchor.entity.TExperienceofficerOrder" >
+    insert into t_experienceofficer_order
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="orderNo != null" >
+        order_no,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="nname != null" >
+        nname,
+      </if>
+      <if test="isFree != null" >
+        is_free,
+      </if>
+      <if test="nums != null" >
+        nums,
+      </if>
+      <if test="days != null" >
+        days,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="payType != null" >
+        pay_type,
+      </if>
+      <if test="payid != null" >
+        payid,
+      </if>
+      <if test="liveCoin != null" >
+        live_coin,
+      </if>
+      <if test="walletAmount != null" >
+        wallet_amount,
+      </if>
+      <if test="samount != null" >
+        samount,
+      </if>
+      <if test="payState != null" >
+        pay_state,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="payTime != null" >
+        pay_time,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="version != null" >
+        version,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="nname != null" >
+        #{nname,jdbcType=VARCHAR},
+      </if>
+      <if test="isFree != null" >
+        #{isFree,jdbcType=INTEGER},
+      </if>
+      <if test="nums != null" >
+        #{nums,jdbcType=INTEGER},
+      </if>
+      <if test="days != null" >
+        #{days,jdbcType=INTEGER},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="payType != null" >
+        #{payType,jdbcType=VARCHAR},
+      </if>
+      <if test="payid != null" >
+        #{payid,jdbcType=VARCHAR},
+      </if>
+      <if test="liveCoin != null" >
+        #{liveCoin,jdbcType=DECIMAL},
+      </if>
+      <if test="walletAmount != null" >
+        #{walletAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="samount != null" >
+        #{samount,jdbcType=DECIMAL},
+      </if>
+      <if test="payState != null" >
+        #{payState,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="payTime != null" >
+        #{payTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null" >
+        #{version,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+  <select id="getUrs" parameterType="Map" resultType="Map">
+  	select uid,uname,nname,phone
+  	from b_urs 
+  	where 1=1
+  	<if test="uid!=null">and uid=#{uid}</if>
+  	<if test="uname!=null and uname!=''">and uname like concat(#{uname},"%")</if>
+  	<if test="phone!=null and phone!=''">and phone like concat(#{phone},"%")</if>
+  	<if test="nname!=null and nname!=''">and nname like concat(#{nname},"%")</if>
+  	order by uid desc
+  	limit 50
+  </select>
+</mapper>

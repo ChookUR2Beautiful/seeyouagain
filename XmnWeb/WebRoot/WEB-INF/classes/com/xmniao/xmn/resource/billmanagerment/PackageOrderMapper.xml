@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.billmanagerment.dao.PackageOrderDao" >
+
+ 	<resultMap id="BaseResultMap" type="PackageOrder" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="pid" property="pid" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="uname" property="uname" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="pay_time" property="payTime" jdbcType="TIMESTAMP" />
+    <result column="last_time" property="lastTime" jdbcType="TIMESTAMP" />
+    <result column="nums" property="nums" jdbcType="INTEGER" />
+    <result column="original_price" property="originalPrice" jdbcType="DECIMAL" />
+    <result column="selling_price" property="sellingPrice" jdbcType="DECIMAL" />
+    <result column="selling_coin_price" property="sellingCoinPrice" jdbcType="DECIMAL" />
+    <result column="total_amount" property="totalAmount" jdbcType="DECIMAL" />
+    <result column="total_coin_amount" property="totalCoinAmount" jdbcType="DECIMAL" />
+    <result column="cash" property="cash" jdbcType="DECIMAL" />
+    <result column="balance" property="balance" jdbcType="DECIMAL" />
+    <result column="commision" property="commision" jdbcType="DECIMAL" />
+    <result column="zbalance" property="zbalance" jdbcType="DECIMAL" />
+    <result column="beans" property="beans" jdbcType="DECIMAL" />
+    <result column="seller_coin" property="sellerCoin" jdbcType="DECIMAL" />
+    <result column="cuser" property="cuser" jdbcType="DECIMAL" />
+    <result column="cdid" property="cdid" jdbcType="INTEGER" />
+    <result column="retrun_coupon_amount" property="retrunCouponAmount" jdbcType="DECIMAL" />
+    <result column="payment_type" property="paymentType" jdbcType="VARCHAR" />
+    <result column="payid" property="payid" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="order_source" property="orderSource" jdbcType="INTEGER" />
+    <result column="sellername" property="sellername" jdbcType="VARCHAR" />
+    <result column="base_agio" property="base" jdbcType="DECIMAL" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, order_no, pid, title, sellerid, uid, phone, uname, create_time, pay_time, last_time, 
+    nums, original_price, selling_price, selling_coin_price, total_amount,total_coin_amount, cash, balance, 
+    commision, zbalance,seller_coin, beans, cuser, cdid, retrun_coupon_amount, payment_type, payid, 
+    status, update_time,order_source,base_agio
+  </sql>
+  
+  <select id="getList" parameterType="PackageOrder" resultMap="BaseResultMap">
+  	SELECT 
+  	o.*
+  	,s.sellername
+  	FROM t_seller_package_order o
+  	LEFT JOIN t_seller s ON s.sellerid = o.sellerid 
+  	WHERE o.status = 1
+  	<if test="orderNo != null and orderNo !=''">
+  		AND o.order_no = #{orderNo}
+  	</if>
+  	<if test="uname != null and uname !=''">
+  		AND o.uname = #{uname}
+  	</if>
+  	<if test="phone != null and phone !=''">
+  		AND o.phone = #{phone}
+  	</if>
+  	<if test="sellername != null and sellername !=''">
+  		AND s.sellername = #{sellername}
+  	</if>
+  	<if test="paymentType != null and paymentType !=''">
+  		AND o.payment_type = #{paymentType}
+  	</if>
+  	<if test="title != null and title !=''">
+  		AND o.title = #{title}
+  	</if>
+  	<if test="orderSource != null">
+  		AND o.order_source = #{orderSource}
+  	</if>
+  	ORDER BY create_time DESC
+  	<if test=" limit != -1 ">
+		LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <select id="count" parameterType="PackageOrder" resultType="long">
+  	SELECT 
+  	COUNT(1)
+  	FROM t_seller_package_order o
+  	LEFT JOIN t_seller s ON s.sellerid = o.sellerid 
+  	WHERE o.status = 1
+  	<if test="orderNo != null and orderNo !=''">
+  		AND o.order_no = #{orderNo}
+  	</if>
+  	<if test="uname != null and uname !=''">
+  		AND o.uname = #{uname}
+  	</if>
+  	<if test="phone != null and phone !=''">
+  		AND o.phone = #{phone}
+  	</if>
+  	<if test="sellername != null and sellername !=''">
+  		AND s.sellername = #{sellername}
+  	</if>
+  	<if test="paymentType != null and paymentType !=''">
+  		AND o.payment_type = #{paymentType}
+  	</if>
+  	<if test="title != null and title !=''">
+  		AND o.title = #{title}
+  	</if>
+  	<if test="orderSource != null">
+  		AND o.order_source = #{orderSource}
+  	</if>
+  </select>
+  
+  <select id="getPackageList" parameterType="PackageOrder" resultType="map">
+  	SELECT pid,serial,denomination,get_time,DATE_FORMAT(user_time,'%Y-%m-%d %H:%i:%S') user_time,user_status
+  	FROM t_seller_package_grant
+  	WHERE 
+  	order_no = #{orderNo}
+  </select>
+  
+  <select id="titleInfo" parameterType="PackageOrder" resultType="map">
+  	SELECT IFNULL(SUM(o.total_amount),0.00) totalAmount,IFNULL(SUM(o.cash+o.balance+o.commision+o.zbalance+o.beans),0.00) realAmount
+  	FROM t_seller_package_order o
+  	LEFT JOIN t_seller s ON s.sellerid = o.sellerid 
+  	WHERE o.status = 1
+  	<if test="orderNo != null and orderNo !=''">
+  		AND o.order_no = #{orderNo}
+  	</if>
+  	<if test="uname != null and uname !=''">
+  		AND o.uname = #{uname}
+  	</if>
+  	<if test="phone != null and phone !=''">
+  		AND o.phone = #{phone}
+  	</if>
+  	<if test="sellername != null and sellername !=''">
+  		AND s.sellername = #{sellername}
+  	</if>
+  	<if test="paymentType != null and paymentType !=''">
+  		AND o.payment_type = #{paymentType}
+  	</if>
+  	<if test="title != null and title !=''">
+  		AND o.title = #{title}
+  	</if>
+  	<if test="orderSource != null">
+  		AND o.order_source = #{orderSource}
+  	</if>
+  </select>
+  
+  <update id="updateOrderStatus" parameterType="map">
+  	UPDATE t_seller_package_order
+  	SET status = 4
+  	,update_time = #{updateTime}
+  	,description = #{description}
+  	WHERE order_no = #{orderNo}
+  	AND status = 1
+  </update>
+  
+  <update id="updateGrantStatus" parameterType="map" >
+  	UPDATE t_seller_package_grant
+	SET user_status = 3
+	,user_time = #{updateTime}
+	WHERE order_no = #{orderNo}
+	AND user_status = 0
+  </update>
+  
+  <select id="countCouponNum" parameterType="map" resultType="long">
+  	SELECT COUNT(1)
+  	FROM t_coupon_detail
+  	WHERE order_no = #{orderNo}
+  </select>
+  
+   <update id="updateCouponStatus" parameterType="map" >
+  	UPDATE t_coupon_detail
+	SET user_status = 3
+	,user_time = #{updateTime}
+	WHERE order_no = #{orderNo}
+	AND user_status = 0
+  </update>
+</mapper>

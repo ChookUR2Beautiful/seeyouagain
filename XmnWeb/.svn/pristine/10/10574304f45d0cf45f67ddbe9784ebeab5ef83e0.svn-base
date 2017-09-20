@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.BLiveAnchorImageDao" >
+
+  <resultMap id="liveAnchorImageMap" type="com.xmniao.xmn.core.live_anchor.entity.BLiveAnchorImage" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="anchor_id" property="anchorId" jdbcType="INTEGER" />
+    <result column="image_type" property="imageType" jdbcType="INTEGER" />
+    <result column="anchor_image" property="anchorImage" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="image_comment" property="imageComment" jdbcType="LONGVARCHAR" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+  </resultMap>
+  
+ 
+  <sql id="liveAnchorImage_column_list" >
+    id, anchor_id, image_type , anchor_image, status, create_time, update_time,image_comment,sort
+  </sql>
+  
+  <!-- Where 查询条件 -->
+  <sql id="whereSQL">
+		<if test=" null != anchorId and '' != anchorId">
+			AND anchor_id =#{anchorId}
+		</if>
+		<!-- 相册类型  1 主播  2 机器人 -->
+		<if test=" null != imageType and '' != imageType">
+			AND image_type =#{imageType}
+		</if>
+  </sql>
+  
+  <select id="selectById" resultMap="liveAnchorImageMap" parameterType="java.lang.Integer" >
+    select 
+    	<include refid="liveAnchorImage_column_list" />
+    from b_live_anchor_image
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="getList" resultMap="liveAnchorImageMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.BLiveAnchorImage" >
+    select 
+    	<include refid="liveAnchorImage_column_list" />
+    from b_live_anchor_image
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+    order by sort desc
+    <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <select id="count" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.live_anchor.entity.BLiveAnchorImage" >
+    select 
+    	count(1)
+    from b_live_anchor_image
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+  </select>
+  
+  
+  <delete id="deleteById" parameterType="java.lang.Integer" >
+    delete from b_live_anchor_image
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 删除机器人相册 -->
+  <delete id="deleteImages" parameterType="java.lang.Integer" >
+    delete from b_live_anchor_image
+    where image_type = #{imageType,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 根据条件删除相册 -->
+  <delete id="deleteImagesByBean" parameterType="java.lang.Integer" >
+    delete from b_live_anchor_image
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+  </delete>
+  
+  
+  <insert id="add" parameterType="com.xmniao.xmn.core.live_anchor.entity.BLiveAnchorImage" >
+    insert into b_live_anchor_image
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="anchorId != null" >
+        anchor_id,
+      </if>
+      <if test="imageType != null" >
+        image_type,
+      </if>
+      <if test="anchorImage != null" >
+        anchor_image,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="imageComment != null" >
+        image_comment,
+      </if>
+      <if test="sort != null" >
+        sort,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="anchorId != null" >
+        #{anchorId,jdbcType=INTEGER},
+      </if>
+      <if test="imageType != null" >
+        #{imageType,jdbcType=INTEGER},
+      </if>
+      <if test="anchorImage != null" >
+        #{anchorImage,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="imageComment != null" >
+        #{imageComment,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="sort != null" >
+        #{sort,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+  <!-- 批量插入机器人头像 -->
+	<insert id="addBatch" parameterType="java.util.ArrayList">
+		INSERT INTO b_live_anchor_image
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<include refid="liveAnchorImage_column_list" /> 
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				#{item.id},
+				#{item.anchorId},
+				#{item.imageType},
+				#{item.anchorImage},
+				#{item.status},
+				#{item.createTime},
+				#{item.updateTime},
+				#{item.imageComment},
+				#{item.sort}
+			</trim>
+		</foreach>
+	</insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.live_anchor.entity.BLiveAnchorImage" >
+    update b_live_anchor_image
+    <set >
+      <if test="anchorId != null" >
+        anchor_id = #{anchorId,jdbcType=INTEGER},
+      </if>
+      <if test="imageType != null" >
+        image_type = #{imageType,jdbcType=INTEGER},
+      </if>
+      <if test="anchorImage != null" >
+        anchor_image = #{anchorImage,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="imageComment != null" >
+        image_comment = #{imageComment,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="sort != null" >
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+</mapper>

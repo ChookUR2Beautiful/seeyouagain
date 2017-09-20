@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.coupon.dao.CouponIssueRefDao">
+
+
+	<parameterMap type="CouponIssueRef" id="couponIssueRef" />
+	<resultMap type="CouponIssueRef" id="couponIssueRefMap">
+		<result column="ref_id" property="refId" />
+		<result column="issue_id" property="issueId" />
+		<result column="cid" property="cid" />
+		<result column="amount" property="amount" />
+		<result column="num" property="num" />
+		<result column="issue_volume" property="issueVolume" />
+		<result column="creator" property="creator" />
+		<result column="date_created" property="dateCreated" />
+		<result column="updator" property="updator" />
+		<result column="date_updated" property="dateUpdated" />
+		<result column="hit_ratio" property="hitRatio" />
+		<result column="type" property="type" />
+	</resultMap>
+	<insert id="addReturnId" useGeneratedKeys="true" keyProperty="refId" keyColumn="ref_id" parameterMap="couponIssueRef" >
+		INSERT INTO t_coupon_issue_ref
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != issueId">
+					issue_id,
+				</if>
+			 	<if test=" null != cid ">
+					cid,
+				</if>
+			 	<if test=" null != amount">
+					amount,
+				</if>
+			 	<if test=" null != num">
+					num,
+				</if>
+			 	<if test=" null != issueVolume">
+					issue_volume,
+				</if>
+			 	<if test=" null != creator and '' != creator">
+					creator,
+				</if>
+			 	<if test=" null != dateCreated and '' != dateCreated">
+					date_created,
+				</if>
+			 	<if test=" null != updator and '' != updator">
+					updator,
+				</if>
+			 	<if test=" null != dateUpdated and '' != dateUpdated">
+					date_updated,
+				</if>
+				<if test=" null != hitRatio">
+					hit_ratio,
+				</if>
+				<if test=" null != type">
+					type,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != issueId">
+					#{issueId},
+				</if>
+			 	<if test=" null != cid ">
+					#{cid},
+				</if>
+			 	<if test=" null != amount">
+					#{amount},
+				</if>
+			 	<if test=" null != num">
+					#{num},
+				</if>
+			 	<if test=" null != issueVolume">
+					#{issueVolume},
+				</if>
+			 	<if test=" null != creator and '' != creator">
+					#{creator},
+				</if>
+			 	<if test=" null != dateCreated and '' != dateCreated">
+					#{dateCreated},
+				</if>
+			 	<if test=" null != updator and '' != updator">
+					#{updator},
+				</if>
+			 	<if test=" null != dateUpdated and '' != dateUpdated">
+					#{dateUpdated},
+				</if>
+				<if test=" null != hitRatio">
+					${hitRatio},
+				</if>
+				<if test=" null != type">
+					#{type},
+				</if>
+				</trim>
+	 </insert>
+	 
+	 <select id="getCouponIssueRefs" resultMap="couponIssueRefMap" parameterMap="couponIssueRef">
+		       SELECT tr.*,tn.* FROM t_coupon_issue_ref tr LEFT JOIN t_coupon tn ON tr.cid=tn.cid
+		 <where>
+			   1=1
+		     <include refid="whereSQL"></include>
+		 </where>
+		 ORDER BY ref_id DESC
+	</select>
+	
+
+	<select id="getCouponIssueRefsCount" resultType="Long" parameterMap="couponIssueRef">
+	          SELECT count(1) FROM t_coupon_issue_ref tr LEFT JOIN t_coupon tn ON tr.cid=tn.cid
+		<where>
+			   1=1
+		     <include refid="whereSQL"></include>
+        </where>
+    </select>
+    <!-- 可重用的Where 条件 -->
+	<sql id="whereSQL">
+	    <if test=" null != refId">
+			AND tr.ref_id = #{refId}
+		</if>
+		<if test=" null != issueId">
+			AND tr.issue_id = #{issueId}
+		</if>
+		<if test=" null != cid and '' != cid">
+			AND tr.cid=#{cid}
+		</if>
+	</sql>
+    
+   <update id="update" parameterMap="couponIssueRef">
+		UPDATE t_coupon_issue_ref
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != issueId">
+					issue_id = #{issueId},
+				</if>
+				<if test=" null != cid and '' != cid ">
+					cid = #{cid},
+				</if>
+				<if test=" null != amount and '' != amount ">
+					amount = #{amount},
+				</if>
+				<if test=" null != num and '' != num ">
+					num = #{num},
+				</if>
+				<if test=" null != issueVolume ">
+					issue_volume = #{issueVolume},
+				</if>
+				<if test=" null != updator and '' != updator ">
+					updator = #{updator},
+				</if>
+				<if test=" null != dateUpdated and '' != dateUpdated ">
+					date_updated = #{dateUpdated},
+				</if>	
+				<if test=" null != hitRatio ">
+					hit_ratio = #{hitRatio},
+				</if>	
+				<if test=" null != type ">
+					type = #{type},
+				</if>	
+			</trim>
+		</set>
+		<where>
+			<if test="null != refId">
+				ref_id = #{refId}
+			</if>
+		</where>
+	</update>
+	
+	<delete id="deleteNotInTheIds" parameterType="couponIssueRef">
+		DELETE FROM t_coupon_issue_ref
+		<where>
+			1=1
+			<if test="null != issueId and null != refIds and '' != refIds">
+				AND issue_id = #{issueId} AND !FIND_IN_SET(ref_id,#{refIds})
+			</if>
+			<if test="null == issueId or null == refIds">
+				AND 1=0
+			</if>
+		</where>
+	</delete>
+</mapper>

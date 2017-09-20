@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.BVerAnchorRelationDao" >
+  <parameterMap type="VerAnchorRelation" id="verAnchorRelation" />
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.live_anchor.entity.BVerAnchorRelation" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="recharge_id" property="rechargeId" jdbcType="INTEGER" />
+    <result column="anchor_uid" property="anchorUid" jdbcType="INTEGER" />
+    <result column="recommend_status" property="recommendStatus" jdbcType="INTEGER" />
+    <result column="refuse_reason" property="refuseReason" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, recharge_id, anchor_uid, recommend_status, refuse_reason, create_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from b_ver_anchor_relation
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from b_ver_anchor_relation
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.live_anchor.entity.BVerAnchorRelation" >
+    insert into b_ver_anchor_relation (id, uid, recharge_id, 
+      anchor_uid, recommend_status, refuse_reason, 
+      create_time, update_time)
+    values (#{id,jdbcType=INTEGER}, #{uid,jdbcType=INTEGER}, #{rechargeId,jdbcType=INTEGER}, 
+      #{anchorUid,jdbcType=INTEGER}, #{recommendStatus,jdbcType=INTEGER}, #{refuseReason,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.live_anchor.entity.BVerAnchorRelation" >
+    insert into b_ver_anchor_relation
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="rechargeId != null" >
+        recharge_id,
+      </if>
+      <if test="anchorUid != null" >
+        anchor_uid,
+      </if>
+      <if test="recommendStatus != null" >
+        recommend_status,
+      </if>
+      <if test="refuseReason != null" >
+        refuse_reason,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="rechargeId != null" >
+        #{rechargeId,jdbcType=INTEGER},
+      </if>
+      <if test="anchorUid != null" >
+        #{anchorUid,jdbcType=INTEGER},
+      </if>
+      <if test="recommendStatus != null" >
+        #{recommendStatus,jdbcType=INTEGER},
+      </if>
+      <if test="refuseReason != null" >
+        #{refuseReason,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.live_anchor.entity.BVerAnchorRelation" >
+    update b_ver_anchor_relation
+    <set >
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="rechargeId != null" >
+        recharge_id = #{rechargeId,jdbcType=INTEGER},
+      </if>
+      <if test="anchorUid != null" >
+        anchor_uid = #{anchorUid,jdbcType=INTEGER},
+      </if>
+      <if test="recommendStatus != null" >
+        recommend_status = #{recommendStatus,jdbcType=INTEGER},
+      </if>
+      <if test="refuseReason != null" >
+        refuse_reason = #{refuseReason,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.live_anchor.entity.BVerAnchorRelation" >
+    update b_ver_anchor_relation
+    set uid = #{uid,jdbcType=INTEGER},
+      recharge_id = #{rechargeId,jdbcType=INTEGER},
+      anchor_uid = #{anchorUid,jdbcType=INTEGER},
+      recommend_status = #{recommendStatus,jdbcType=INTEGER},
+      refuse_reason = #{refuseReason,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  
+  <!-- 自定义查询数据区域 -->
+  <sql id="baseCondition">
+      <if test="id != null" >
+          AND t.id = #{id, jdbcType=INTEGER}
+      </if>
+      <if test="anchorUid != null" >
+          AND t.anchor_uid = #{anchorUid, jdbcType=VARCHAR}
+      </if>
+      <if test="recommendStatus != null" >
+          AND t.recommend_status = #{recommendStatus, jdbcType=VARCHAR}
+      </if>
+      <if test="createTime != null" >
+          AND t.create_time = #{createTime, jdbcType=TIMESTAMP}
+      </if>
+      <if test="updateTime != null" >
+          AND t.update_time = #{updateTime, jdbcType=TIMESTAMP}
+      </if>
+      
+  </sql>  
+  
+  <select id="getAnchorRecruitDataList" resultMap="BaseResultMap" parameterMap="verAnchorRelation" >
+    select 
+    t.*
+    , b.phone, b.name, b.sex, tr.root_role as liveType, tu.nname as nickname
+    , tver.phone AS verPhone, tver.nname AS verNname
+    from b_ver_anchor_relation t INNER JOIN b_urs_info b
+    ON b.uid = t.anchor_uid 
+    LEFT JOIN b_liver tr on tr.uid = t.anchor_uid
+    LEFT JOIN b_urs tu on tu.uid = t.anchor_uid 
+    LEFT JOIN b_urs tver ON tver.uid = t.uid 
+    where 1 = 1
+    <trim >  
+    <!-- <where> -->
+		<include refid="baseCondition" />
+		<if test="name !=null and '' != name">
+			AND b.name LIKE '%${name}%'
+		</if>
+		<if test="phone !=null and '' != phone">
+			AND b.phone LIKE '%${phone}%'
+		</if>
+		<if test="liveType != null" >
+            AND tr.root_role = #{liveType, jdbcType=INTEGER}
+        </if>
+	    ORDER BY t.recommend_status, t.update_time
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit}, #{limit}
+		</if>
+	</trim> 
+  </select>
+  
+   <select id="countAnchorRecruit" resultType="Long" parameterMap="verAnchorRelation">
+	 SELECT COUNT(1) FROM b_ver_anchor_relation t, b_urs_info b
+		<where>
+			1=1
+			and b.uid = t.anchor_uid
+			<include refid="baseCondition" />
+			<if test="name !=null and '' != name">
+			    AND b.name LIKE '%${name}%'
+			</if>
+			<if test="phone !=null and '' != phone">
+				AND b.phone LIKE '%${phone}%'
+			</if>
+		</where>
+  </select>
+
+	<select id="getVerAnchorRelationList" resultMap="BaseResultMap" parameterType="verAnchorRelation">
+		select
+		t.*
+		from b_ver_anchor_relation t
+		<where>
+			1=1
+			<include refid="baseCondition"></include>
+		</where>
+		<if test="order != -1 ">
+			order by update_time desc
+		</if>
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+
+
+	<update id="updateOptionState" parameterType="com.xmniao.xmn.core.live_anchor.entity.BVerAnchorRelation">
+		update b_ver_anchor_relation
+		<set>
+			<if test="recommendStatus != null">
+				recommend_status = #{recommendStatus,jdbcType=INTEGER},
+			</if>
+			<if test="refuseReason != null">
+				refuse_reason = #{refuseReason,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where recommend_status = 1 AND anchor_uid = #{anchorUid,jdbcType=INTEGER}
+	</update>
+  
+</mapper>

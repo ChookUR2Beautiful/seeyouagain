@@ -1,0 +1,85 @@
+package com.xmniao.xmn.core.coupon.dao;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.base.Page;
+import com.xmniao.xmn.core.coupon.entity.TCouponDetail;
+import com.xmniao.xmn.core.util.proxy.annotation.DataSource;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ *
+ * @项目名称：XmnWeb20150513E
+ * 
+ * @类名称：CouponDetail
+ *
+ * @类描述： 
+ *
+ * @创建人：zhang'zhiwen
+ *
+ * @创建时间 ：2015年5月29日 下午5:37:44
+ *
+ */
+public interface CouponDetailDao extends BaseDao<TCouponDetail> {
+
+
+	/**
+	 * @author zhang'zhiwen
+	 * @date 2015年6月10日 上午10:38:56
+	 * @TODO 
+	 * @param couponDetail
+	 * @return
+	 */
+	List<TCouponDetail> checkUidsExist(TCouponDetail couponDetail);
+	
+	@DataSource("slave")
+	public List<TCouponDetail> getViewCouponList(TCouponDetail couponDetail);
+		
+	@DataSource("slave")
+	public Long getViewCouponCount(TCouponDetail couponDetail);
+
+	/**
+	 * 批量发送短信优惠券
+	 * 
+	 * @author zhang'zhiwen
+	 * @date 2015年6月11日 下午2:50:04
+	 * @param couponDetail1
+	 */
+	void batchSendCouponDetail(TCouponDetail couponDetail1);
+	
+	/**
+	 * 
+	 * 方法描述：分组统计用户优惠券发行量 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-4-22下午5:20:42 <br/>
+	 * @param couponDetail
+	 * @return
+	 */
+	@DataSource("slave")
+	public List<TCouponDetail> getGroupList(TCouponDetail couponDetail);
+	
+	/**
+	 * 
+	 * 方法描述：分组统计用户优惠券发行量记录数 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-4-22下午5:20:42 <br/>
+	 * @param couponDetail
+	 * @return
+	 */
+	@DataSource("slave")
+	public Long countGroupList(TCouponDetail couponDetail);
+
+	@DataSource("slave")
+	List<Map<String, Object>> selectByPage(@Param("params") Map<String, String> params, @Param("page") Page page);
+
+	@DataSource("slave")
+	long countCouponDetail(@Param("params") Map<String, String> params);
+
+	@DataSource("slave")
+	int deleteByCdid(@Param("cdid") Long cdid);
+
+	@DataSource("slave")
+	TCouponDetail selectByCdid(@Param("cdid") Long cdid);
+}

@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.fresh.dao.IndianaRobotDao">
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.fresh.entity.IndianaRobot">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="robot_name" jdbcType="VARCHAR" property="robotName" />
+    <result column="avatar" jdbcType="VARCHAR" property="avatar" />
+    <result column="sex" jdbcType="INTEGER" property="sex" />
+    <result column="concern_num" jdbcType="INTEGER" property="concernNum" />
+    <result column="fans_num" jdbcType="INTEGER" property="fansNum" />
+    <result column="condition_num" jdbcType="INTEGER" property="conditionNum" />
+    <result column="store_num" jdbcType="INTEGER" property="storeNum" />
+    <result column="rank_no" jdbcType="INTEGER" property="rankNo" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="uid" jdbcType="INTEGER" property="uid" />
+    <result column="uname" jdbcType="VARCHAR" property="uname" />
+    <result column="nname" jdbcType="VARCHAR" property="nname" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="levels_id" jdbcType="INTEGER" property="levelsId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, robot_name, avatar, sex, concern_num, fans_num, condition_num, store_num, rank_no, 
+    status, create_time, update_time,uid,uname,nname,phone,levels_id
+  </sql>
+  <sql id="whereSQL">
+     and status = 1
+  	 <if test="robotName != null and robotName != ''">
+       and robot_name like '%${robotName}%'
+      </if>
+  	 <if test="nname != null and nname != ''">
+       and nname like '%${nname}%'
+      </if>
+      <if test="sex != null">
+       and sex = #{sex,jdbcType=INTEGER}
+      </if>
+  </sql>
+  <select id="countUrs" resultType="java.lang.Long">
+     select count(1) from b_urs where status = 1
+  </select>
+  <select id="selectNextLong" resultType="java.util.HashMap">
+    select uid from b_urs where status = 1  limit #{long},1
+  </select>
+  <insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_fresh_indiana_robot
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						avatar,
+						sex,
+						concern_num,
+						fans_num,
+						condition_num,
+						store_num,
+						create_time,
+						update_time,
+						uid,
+						uname,
+						nname,
+						levels_id,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.avatar},
+						 #{item.sex},
+						 #{item.concernNum},
+						 #{item.fansNum},
+						 #{item.conditionNum},
+						 #{item.storeNum},
+						 #{item.createTime},
+						 #{item.updateTime},
+						 #{item.uid},
+						 #{item.uname},
+						 #{item.nname},
+						 #{item.levelsId},
+			</trim>
+		</foreach>
+	</insert>
+  <select id="getList" parameterType="com.xmniao.xmn.core.fresh.entity.IndianaRobot" resultMap="BaseResultMap">
+     select 
+    <include refid="Base_Column_List" />
+    from t_fresh_indiana_robot where 1=1
+     <include refid="whereSQL"></include>
+     <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+  </select>
+  <select id="count" parameterType="com.xmniao.xmn.core.fresh.entity.IndianaRobot" resultType="java.lang.Long">
+     select 
+    count(1)
+    from t_fresh_indiana_robot where 1=1
+     <include refid="whereSQL"></include>
+  </select>
+  
+  <select id="getObject" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_fresh_indiana_robot
+    where id = #{id}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_fresh_indiana_robot
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.fresh.entity.IndianaRobot">
+    insert into t_fresh_indiana_robot (id, robot_name, avatar, 
+      sex, concern_num, fans_num, 
+      condition_num, store_num, rank_no, 
+      status, create_time, update_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{robotName,jdbcType=VARCHAR}, #{avatar,jdbcType=VARCHAR}, 
+      #{sex,jdbcType=INTEGER}, #{concernNum,jdbcType=INTEGER}, #{fansNum,jdbcType=INTEGER}, 
+      #{conditionNum,jdbcType=INTEGER}, #{storeNum,jdbcType=INTEGER}, #{rankNo,jdbcType=INTEGER}, 
+      #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.fresh.entity.IndianaRobot">
+    insert into t_fresh_indiana_robot
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="robotName != null">
+        robot_name,
+      </if>
+      <if test="avatar != null">
+        avatar,
+      </if>
+      <if test="sex != null">
+        sex,
+      </if>
+      <if test="concernNum != null">
+        concern_num,
+      </if>
+      <if test="fansNum != null">
+        fans_num,
+      </if>
+      <if test="conditionNum != null">
+        condition_num,
+      </if>
+      <if test="storeNum != null">
+        store_num,
+      </if>
+      <if test="rankNo != null">
+        rank_no,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="robotName != null">
+        #{robotName,jdbcType=VARCHAR},
+      </if>
+      <if test="avatar != null">
+        #{avatar,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null">
+        #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="concernNum != null">
+        #{concernNum,jdbcType=INTEGER},
+      </if>
+      <if test="fansNum != null">
+        #{fansNum,jdbcType=INTEGER},
+      </if>
+      <if test="conditionNum != null">
+        #{conditionNum,jdbcType=INTEGER},
+      </if>
+      <if test="storeNum != null">
+        #{storeNum,jdbcType=INTEGER},
+      </if>
+      <if test="rankNo != null">
+        #{rankNo,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="update" parameterType="com.xmniao.xmn.core.fresh.entity.IndianaRobot">
+    update t_fresh_indiana_robot
+    <set>
+      <if test="robotName != null">
+        robot_name = #{robotName,jdbcType=VARCHAR},
+      </if>
+      <if test="uname != null">
+        uname = #{uname,jdbcType=VARCHAR},
+      </if>
+      <if test="nname != null">
+        nname = #{nname,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="levelsId != null">
+        levels_id = #{levelsId,jdbcType=INTEGER},
+      </if>
+      <if test="avatar != null">
+        avatar = #{avatar,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null">
+        sex = #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="concernNum != null">
+        concern_num = #{concernNum,jdbcType=INTEGER},
+      </if>
+      <if test="fansNum != null">
+        fans_num = #{fansNum,jdbcType=INTEGER},
+      </if>
+      <if test="conditionNum != null">
+        condition_num = #{conditionNum,jdbcType=INTEGER},
+      </if>
+      <if test="storeNum != null">
+        store_num = #{storeNum,jdbcType=INTEGER},
+      </if>
+      <if test="rankNo != null">
+        rank_no = #{rankNo,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.fresh.entity.IndianaRobot">
+    update t_fresh_indiana_robot
+    set robot_name = #{robotName,jdbcType=VARCHAR},
+      avatar = #{avatar,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=INTEGER},
+      concern_num = #{concernNum,jdbcType=INTEGER},
+      fans_num = #{fansNum,jdbcType=INTEGER},
+      condition_num = #{conditionNum,jdbcType=INTEGER},
+      store_num = #{storeNum,jdbcType=INTEGER},
+      rank_no = #{rankNo,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <update id="delete">
+  	update t_fresh_indiana_robot set status = 0 where id in 
+  	<foreach item="item" index="index" collection="array" separator="," open="("  close=")">
+						 #{item}
+		</foreach>
+  </update>
+  
+  <update id="deleteAll">
+  	 update t_fresh_indiana_robot set status = 0 
+  </update>
+</mapper>

@@ -1,0 +1,99 @@
+package com.xmniao.xmn.core.manor.service;
+
+import com.xmniao.xmn.core.manor.dao.ManorFlowerRelationDao;
+import com.xmniao.xmn.core.manor.entity.FlowerNode;
+import com.xmniao.xmn.core.xmnburs.dao.BursDao;
+import com.xmniao.xmn.core.xmnburs.entity.Burs;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+/**
+ * 黄金庄园花朵Service
+ * Created by yang.qiang on 2017/6/21.
+ */
+@Service
+public class ManorFlowerService {
+    @Autowired
+    private ManorFlowerRelationDao manorFlowerRelationDao;
+    @Autowired
+    private BursDao bursDao;
+
+
+    public FlowerNode queryInitNodeAndSubNode(Integer uid) {
+        FlowerNode initNode = manorFlowerRelationDao.selectInitNode(uid);
+        initNode.setChildren(manorFlowerRelationDao.selectSubNodes(initNode.getId()));
+        return initNode;
+    }
+
+    public FlowerNode queryAllNode(Integer uid) {
+
+        FlowerNode initNode = manorFlowerRelationDao.selectInitNode(uid);
+
+        initNode.setTitle("("+initNode.getUid().toString()+")");
+        List<FlowerNode> allNode = manorFlowerRelationDao.selectAllNode(initNode);
+
+
+        HashMap<String, FlowerNode> nodeBufferMap = new HashMap<>();
+        nodeBufferMap.put(initNode.getRelationChain(),initNode);
+        for (FlowerNode flowerNode : allNode) {
+
+            nodeBufferMap.put(flowerNode.getRelationChain(),flowerNode);
+            String relationChain = flowerNode.getRelationChain();
+            FlowerNode parrentNode = nodeBufferMap.get(relationChain.substring(0,relationChain.length()-13));
+            List<FlowerNode> childrens = parrentNode.getChildren();
+            if (childrens == null) {
+                childrens = new ArrayList<>();
+            }
+            childrens.add(flowerNode);
+            parrentNode.setChildren(childrens);
+
+
+            flowerNode.setRelationship("111");
+            Integer uid1 = flowerNode.getUid();
+            if (uid1 == null) {
+                flowerNode.setTitle("");
+            }else {
+                Burs burs = new Burs();
+                burs.setUid(uid1);
+                Burs urs = bursDao.getUrs(burs);
+
+                flowerNode.setTitle(urs.getUname()+"");
+
+            }
+
+            flowerNode.setTitle(flowerNode.getTitle() + "  X  "+flowerNode.getCount());
+
+
+            Integer location = manorFlowerRelationDao.selectLocationByRelationChain(relationChain);
+            if (location==0) {
+                flowerNode.setBody("██==========");
+            }else if (location == 1){
+                flowerNode.setBody("=====██=====");
+            }else {
+                flowerNode.setBody("==========██");
+            }
+
+
+        }
+
+
+
+
+        return initNode;
+    }
+
+
+    public void foldNodes(FlowerNode flowerTree){
+        List<FlowerNode> childers = flowerTree.getChildren();
+
+        if (childers != null) {
+
+        }
+
+
+    }
+}

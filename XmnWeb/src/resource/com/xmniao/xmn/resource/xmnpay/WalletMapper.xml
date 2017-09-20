@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.xmnpay.dao.WalletDao" >
+
+    <resultMap type="Bwallet" id="bwalletMap">
+    	<result column="accountid" property="accountid" />
+        <result column="status" property="status" />
+        <result column="amount" property="amount" />
+        <result column="balance" property="balance" />
+        <result column="commision" property="commision" />
+        <result column="zbalance" property="zbalance" />
+        <result column="integral" property="integral" />
+    </resultMap>
+    
+    <!-- 返回结果列 -->
+	<sql id="Base_Column_List" >
+	    accountid, uid, sellerid, jointid, p_pwd, apply_date, effect_date, cancel_date, status, 
+	    amount,(commision+balance) income, balance, commision, zbalance, integral, seller_amount, quota, sign, sign_type, 
+	    last_date, father_id, sellername, account
+	</sql>
+  
+    <!-- Where查询条件 -->
+	<sql id="whereSQL">
+		<if test=" null != uid">
+			AND uid =#{uid}
+		</if>
+	</sql>
+  
+  <!-- 根据用户ID获取钱包信息 -->
+  <select id="getWalletList" resultMap="bwalletMap" parameterType="com.xmniao.xmn.core.xmnpay.entity.Bwallet" >
+    select 
+    <include refid="Base_Column_List" />
+    from b_wallet
+    <where>
+		1=1
+		<include refid="whereSQL"></include>
+	</where>
+	ORDER BY apply_date DESC
+	<if test=" limit != -1 ">
+		LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <select id="getWalletCount" resultType="long" parameterType="com.xmniao.xmn.core.xmnpay.entity.Bwallet" >
+    select 
+    	count(1)
+    from b_wallet
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+  </select>
+  
+  
+ <!-- 新增钱包 -->
+  <insert id="addWallet" parameterType="com.xmniao.xmn.core.xmnpay.entity.Bwallet" >
+    insert into b_wallet
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="accountid != null" >
+        accountid,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="sellerid != null" >
+        sellerid,
+      </if>
+      <if test="jointid != null" >
+        jointid,
+      </if>
+      <if test="pPwd != null" >
+        p_pwd,
+      </if>
+      <if test="applyDate != null" >
+        apply_date,
+      </if>
+      <if test="effectDate != null" >
+        effect_date,
+      </if>
+      <if test="cancelDate != null" >
+        cancel_date,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="balance != null" >
+        balance,
+      </if>
+      <if test="commision != null" >
+        commision,
+      </if>
+      <if test="zbalance != null" >
+        zbalance,
+      </if>
+      <if test="integral != null" >
+        integral,
+      </if>
+      <if test="sellerAmount != null" >
+        seller_amount,
+      </if>
+      <if test="quota != null" >
+        quota,
+      </if>
+      <if test="sign != null" >
+        sign,
+      </if>
+      <if test="signType != null" >
+        sign_type,
+      </if>
+      <if test="lastDate != null" >
+        last_date,
+      </if>
+      <if test="fatherId != null" >
+        father_id,
+      </if>
+      <if test="sellername != null" >
+        sellername,
+      </if>
+      <if test="account != null" >
+        account,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="accountid != null" >
+        #{accountid,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="sellerid != null" >
+        #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="jointid != null" >
+        #{jointid,jdbcType=INTEGER},
+      </if>
+      <if test="pPwd != null" >
+        #{pPwd,jdbcType=VARCHAR},
+      </if>
+      <if test="applyDate != null" >
+        #{applyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="effectDate != null" >
+        #{effectDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="cancelDate != null" >
+        #{cancelDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="balance != null" >
+        #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="commision != null" >
+        #{commision,jdbcType=DECIMAL},
+      </if>
+      <if test="zbalance != null" >
+        #{zbalance,jdbcType=DECIMAL},
+      </if>
+      <if test="integral != null" >
+        #{integral,jdbcType=INTEGER},
+      </if>
+      <if test="sellerAmount != null" >
+        #{sellerAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="quota != null" >
+        #{quota,jdbcType=DECIMAL},
+      </if>
+      <if test="sign != null" >
+        #{sign,jdbcType=VARCHAR},
+      </if>
+      <if test="signType != null" >
+        #{signType,jdbcType=INTEGER},
+      </if>
+      <if test="lastDate != null" >
+        #{lastDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="fatherId != null" >
+        #{fatherId,jdbcType=INTEGER},
+      </if>
+      <if test="sellername != null" >
+        #{sellername,jdbcType=VARCHAR},
+      </if>
+      <if test="account != null" >
+        #{account,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+	<select id="hasWallet" parameterType="com.xmniao.xmn.core.xmnpay.entity.Bwallet" resultType="int">
+		SELECT COUNT(1) FROM b_wallet 
+		WHERE 1=1
+		<if test="accountid != null" >
+		  AND accountid = #{accountid}
+		</if>
+		<if test="uid != null" >
+		  AND uid = #{uid}
+		</if>
+		<if test="sellerid != null" >
+		  AND sellerid = #{sellerid}
+		</if>
+		<if test="jointid != null" >
+		  AND jointid = #{jointid}
+		</if>
+		<if test="status != null" >
+		  AND status = #{status}
+		</if>
+		<if test="account != null" >
+		  AND account = #{account}
+		</if>
+	</select>
+	
+	<!-- 根据用户id数组查询钱包信息 -->
+	<select id="selectWallet" resultMap="bwalletMap" parameterType="Object">
+		 SELECT
+			uid,
+			accountid,
+			b_wallet.`status`,
+			b_wallet.`amount`,
+			b_wallet.`balance`,
+			b_wallet.`commision`,
+			b_wallet.`zbalance`,
+			b_wallet.`integral`,
+		  (commision+balance) income
+		FROM
+			b_wallet
+		WHERE
+			b_wallet.uid IN
+		 <foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+		 	#{item}
+		</foreach>
+	</select>
+	
+	
+</mapper>

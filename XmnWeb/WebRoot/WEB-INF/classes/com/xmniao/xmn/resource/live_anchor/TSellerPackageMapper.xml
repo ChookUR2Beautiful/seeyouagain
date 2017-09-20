@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TSellerPackageDao" >
+  <parameterMap type="SellerPackage" id="sellerPackage" />
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.live_anchor.entity.TSellerPackage" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="selling_price" property="sellingPrice" jdbcType="DECIMAL" />
+    <result column="selling_coin_price" property="sellingCoinPrice" jdbcType="DECIMAL" />
+    <result column="original_price" property="originalPrice" jdbcType="DECIMAL" />
+    <result column="stock" property="stock" jdbcType="INTEGER" />
+    <result column="sales" property="sales" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="ledger_type" property="ledgerType" jdbcType="INTEGER" />
+    <result column="ledger_ratio" property="ledgerRatio" jdbcType="DECIMAL" />
+    <result column="sale_start_time" property="saleStartTime" jdbcType="TIMESTAMP" />
+    <result column="sale_end_time" property="saleEndTime" jdbcType="TIMESTAMP" />
+    <result column="use_start_time" property="useStartTime" jdbcType="TIMESTAMP" />
+    <result column="use_end_time" property="useEndTime" jdbcType="TIMESTAMP" />
+    <result column="forbid_start_time" property="forbidStartTime" jdbcType="TIMESTAMP" />
+    <result column="forbid_end_time" property="forbidEndTime" jdbcType="TIMESTAMP" />
+    <result column="look_num" property="lookNum" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="highly_recommended" property="highlyRecommended" jdbcType="INTEGER" />
+    <result column="home_sort" property="homeSort" jdbcType="INTEGER" />
+    <result column="content" property="content" jdbcType="LONGVARCHAR" />
+    <result column="notice" property="notice" jdbcType="LONGVARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, title, sellerid, selling_price, selling_coin_price, original_price, stock, sales, 
+    status, ledger_type, ledger_ratio, sale_start_time, sale_end_time, use_start_time, 
+    use_end_time, forbid_start_time, forbid_end_time, look_num, update_time, highly_recommended, 
+    home_sort, content, notice
+  </sql>
+  <!-- 查询单个套餐信息 -->
+  <select id="getObject" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    , CASE t1.STATUS WHEN '1' THEN '出售中' WHEN '2' THEN '下架'
+	WHEN '3' THEN '售罄' ELSE '-' END statusDesc, ts.sellername
+	FROM t_seller_package t1 LEFT JOIN (SELECT sellerid as tssellerid, sellername FROM t_seller 
+		WHERE ismultiple !=1) ts ON t1.sellerid = ts.tssellerid
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 总店列表 -->
+  <select id="getSellerPackageList" resultMap="BaseResultMap" parameterMap="sellerPackage">
+		SELECT t1.*, CASE t1.STATUS WHEN '1' THEN '出售中' WHEN '2' THEN '下架' WHEN '3' THEN '售罄' 
+           ELSE '-' END statusDesc, ts.sellername FROM t_seller_package t1 
+           LEFT JOIN (SELECT sellerid, sellername FROM t_seller WHERE ismultiple != 1) ts 
+           ON t1.sellerid = ts.sellerid
+		<where>
+			1 = 1
+			<include refid="baseSellerCondition" />
+			<if test="title !=null and '' != title">
+				AND t1.title LIKE '%${title}%'
+			</if>
+			
+			<if test=" null != saleStartTime">
+				AND t1.sale_start_time &gt;= #{saleStartTime}
+			</if>
+			<if test=" null != saleEndTime">
+				AND t1.sale_end_time &lt;= #{saleEndTime}
+			</if>
+			
+			<if test=" null != useStartTime">
+				AND t1.use_start_time &gt;= #{useStartTime}
+			</if>
+			<if test=" null != useEndTime">
+				AND t1.use_end_time &lt;= #{useEndTime}
+			</if>
+		</where>
+		    ORDER BY t1.update_time DESC, t1.id DESC
+
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit}, #{limit}
+		</if>
+  </select>
+  
+  <!-- 总店Count -->
+  <select id="sellerPackageCount" resultType="Long" parameterMap="sellerPackage">
+		SELECT COUNT(1) FROM t_seller_package t1
+		<where>
+			1=1
+			<include refid="baseSellerCondition" />
+			<if test="title !=null and '' != title">
+				AND t1.title LIKE '%${title}%'
+			</if>
+		</where>
+  </select>
+  
+  
+  
+  <!-- 商家列表查询条件 -->
+  <sql id="baseSellerCondition">
+      <if test="id != null" >
+          AND t1.id = #{id}
+      </if>
+      <if test="null != title and '' != title " >
+          AND t1.title = #{title}
+      </if>
+      <if test="sellerid != null" >
+          AND t1.sellerid = #{sellerid}
+      </if>
+      <if test="sellingPrice != null" >
+          AND t1.sellingPrice = #{sellingPrice}
+      </if>
+      <if test="sellingCoinPrice != null" >
+         AND t1.sellingPrice = #{sellingPrice}
+      </if>
+      <if test="originalPrice != null" >
+         AND t1.sellingPrice = #{sellingPrice}
+      </if>
+      <if test="stock != null" >
+        AND t1.stock = #{stock}
+      </if>
+      <if test="sales != null" >
+         AND t1.sales = #{sales}
+      </if>
+      <if test="status != null" >
+         AND t1.status = #{status}
+      </if>
+      <if test="ledgerType != null" >
+         AND t1.ledgerType = #{ledgerType}
+      </if>
+      
+  </sql>  
+  
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_seller_package
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <insert id="insertSelective" parameterMap="sellerPackage"  useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+    insert into t_seller_package
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="sellerid != null" >
+        sellerid,
+      </if>
+      <if test="sellingPrice != null" >
+        selling_price,
+      </if>
+      <if test="sellingCoinPrice != null" >
+        selling_coin_price,
+      </if>
+      <if test="originalPrice != null" >
+        original_price,
+      </if>
+      <if test="stock != null" >
+        stock,
+      </if>
+      <if test="sales != null" >
+        sales,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="ledgerType != null" >
+        ledger_type,
+      </if>
+      <if test="ledgerRatio != null" >
+        ledger_ratio,
+      </if>
+      <if test="saleStartTime != null" >
+        sale_start_time,
+      </if>
+      <if test="saleEndTime != null" >
+        sale_end_time,
+      </if>
+      <if test="useStartTime != null" >
+        use_start_time,
+      </if>
+      <if test="useEndTime != null" >
+        use_end_time,
+      </if>
+      <if test="forbidStartTime != null" >
+        forbid_start_time,
+      </if>
+      <if test="forbidEndTime != null" >
+        forbid_end_time,
+      </if>
+      <if test="lookNum != null" >
+        look_num,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="highlyRecommended != null" >
+        highly_recommended,
+      </if>
+      <if test="homeSort != null" >
+        home_sort,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+      <if test="notice != null" >
+        notice,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="sellerid != null" >
+        #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="sellingPrice != null" >
+        #{sellingPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="sellingCoinPrice != null" >
+        #{sellingCoinPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="originalPrice != null" >
+        #{originalPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="stock != null" >
+        #{stock,jdbcType=INTEGER},
+      </if>
+      <if test="sales != null" >
+        #{sales,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="ledgerType != null" >
+        #{ledgerType,jdbcType=INTEGER},
+      </if>
+      <if test="ledgerRatio != null" >
+        #{ledgerRatio,jdbcType=DECIMAL},
+      </if>
+      <if test="saleStartTime != null" >
+        #{saleStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="saleEndTime != null" >
+        #{saleEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="useStartTime != null" >
+        #{useStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="useEndTime != null" >
+        #{useEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="forbidStartTime != null" >
+        #{forbidStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="forbidEndTime != null" >
+        #{forbidEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lookNum != null" >
+        #{lookNum,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="highlyRecommended != null" >
+        #{highlyRecommended,jdbcType=INTEGER},
+      </if>
+      <if test="homeSort != null" >
+        #{homeSort,jdbcType=INTEGER},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="notice != null" >
+        #{notice,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterMap="sellerPackage" >
+    update t_seller_package
+    <set >
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="sellerid != null" >
+        sellerid = #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="sellingPrice != null" >
+        selling_price = #{sellingPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="sellingCoinPrice != null" >
+        selling_coin_price = #{sellingCoinPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="originalPrice != null" >
+        original_price = #{originalPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="stock != null" >
+        stock = #{stock,jdbcType=INTEGER},
+      </if>
+      <if test="sales != null" >
+        sales = #{sales,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="ledgerType != null" >
+        ledger_type = #{ledgerType,jdbcType=INTEGER},
+      </if>
+      <if test="ledgerRatio != null" >
+        ledger_ratio = #{ledgerRatio,jdbcType=DECIMAL},
+      </if>
+      <if test="saleStartTime != null" >
+        sale_start_time = #{saleStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="saleEndTime != null" >
+        sale_end_time = #{saleEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="useStartTime != null" >
+        use_start_time = #{useStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="useEndTime != null" >
+        use_end_time = #{useEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="forbidStartTime != null" >
+        forbid_start_time = #{forbidStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="forbidEndTime != null" >
+        forbid_end_time = #{forbidEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lookNum != null" >
+        look_num = #{lookNum,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="highlyRecommended != null" >
+        highly_recommended = #{highlyRecommended,jdbcType=INTEGER},
+      </if>
+      <if test="homeSort != null" >
+        home_sort = #{homeSort,jdbcType=INTEGER},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="notice != null" >
+        notice = #{notice,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  
+  <!-- 自定义SQL区域 -->
+  <!-- 批量修改商家   公开商户，参与分红，付费商家  状态 -->
+  <update id="updateStatusOption" parameterMap="sellerPackage">
+		UPDATE
+		t_seller_package
+		SET
+		update_time = #{updateTime}
+		<if test="status != null">
+			,status = #{status}
+		</if>
+		<if test="highlyRecommended != null">
+			,highly_recommended = #{highlyRecommended}
+		</if>
+		
+		WHERE id IN
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=") ">
+			#{item}
+		</foreach>
+	</update>
+
+</mapper>

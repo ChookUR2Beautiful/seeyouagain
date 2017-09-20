@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.manor.dao.ManorLevelDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.manor.entity.ManorLevel" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="no" property="no" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="roses" property="roses" jdbcType="INTEGER" />
+    <result column="orchids" property="orchids" jdbcType="INTEGER" />
+    <result column="sunflowers" property="sunflowers" jdbcType="INTEGER" />
+    <result column="warehousing_capacity" property="warehousingCapacity" jdbcType="INTEGER" />
+    <result column="daily_nectar" property="dailyNectar" jdbcType="INTEGER" />
+    <result column="level_logo" property="levelLogo" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, no, name, roses, orchids, sunflowers, warehousing_capacity, daily_nectar, level_logo
+  </sql>
+  
+  <select id="getObject" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from b_manor_level
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="getMaxObject" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from b_manor_level
+    order by no desc
+    limit 1
+  </select>
+
+  <select id="getList" resultMap="BaseResultMap" parameterType="com.xmniao.xmn.core.manor.entity.ManorLevel">
+  	select 
+  	<include refid="Base_Column_List" />
+    from b_manor_level
+    where 1=1
+    <if test="id != null">and id=#{id}</if>
+    <if test="name != null and name!=''">and name like #{name}</if>
+    <if test="no != null">and no=#{no}</if>
+  </select>
+  
+  <select id="count" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.manor.entity.ManorLevel">
+    select 
+  		count(1)
+    from b_manor_level
+    where 1=1
+    <if test="id != null">and id=#{id}</if>
+    <if test="name != null and name!=''">and name like #{name}</if>
+    <if test="no != null">and no=#{no}</if>
+  </select>
+
+  <insert id="add" parameterType="com.xmniao.xmn.core.manor.entity.ManorLevel" >
+    insert into b_manor_level
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="no != null" >
+        no,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="roses != null" >
+        roses,
+      </if>
+      <if test="orchids != null" >
+        orchids,
+      </if>
+      <if test="sunflowers != null" >
+        sunflowers,
+      </if>
+      <if test="warehousingCapacity != null" >
+        warehousing_capacity,
+      </if>
+      <if test="dailyNectar != null" >
+        daily_nectar,
+      </if>
+      <if test="levelLogo != null" >
+        level_logo,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="no != null" >
+        #{no,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="roses != null" >
+        #{roses,jdbcType=INTEGER},
+      </if>
+      <if test="orchids != null" >
+        #{orchids,jdbcType=INTEGER},
+      </if>
+      <if test="sunflowers != null" >
+        #{sunflowers,jdbcType=INTEGER},
+      </if>
+      <if test="warehousingCapacity != null" >
+        #{warehousingCapacity,jdbcType=INTEGER},
+      </if>
+      <if test="dailyNectar != null" >
+        #{dailyNectar,jdbcType=INTEGER},
+      </if>
+      <if test="levelLogo != null" >
+        #{levelLogo,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.manor.entity.ManorLevel" >
+    update b_manor_level
+    <set >
+      <if test="no != null" >
+        no = #{no,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="roses != null" >
+        roses = #{roses,jdbcType=INTEGER},
+      </if>
+      <if test="orchids != null" >
+        orchids = #{orchids,jdbcType=INTEGER},
+      </if>
+      <if test="sunflowers != null" >
+        sunflowers = #{sunflowers,jdbcType=INTEGER},
+      </if>
+      <if test="warehousingCapacity != null" >
+        warehousing_capacity = #{warehousingCapacity,jdbcType=INTEGER},
+      </if>
+      <if test="dailyNectar != null" >
+        daily_nectar = #{dailyNectar,jdbcType=INTEGER},
+      </if>
+      <if test="levelLogo != null" >
+        level_logo = #{levelLogo,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+</mapper>

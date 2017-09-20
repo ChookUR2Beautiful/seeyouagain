@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.SellerCouponDao" >
+
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.businessman.entity.SellerCoupon" >
+    <id column="cid" property="cid" jdbcType="INTEGER" />
+    <result column="cname" property="cname" jdbcType="VARCHAR" />
+    <result column="denomination" property="denomination" jdbcType="DECIMAL" />
+    <result column="start_date" property="startDate" jdbcType="TIMESTAMP" />
+    <result column="end_date" property="endDate" jdbcType="TIMESTAMP" />
+    <result column="limit_amount" property="limitAmount" jdbcType="DECIMAL" />
+    <result column="conditions" property="conditions" jdbcType="DECIMAL" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="use_num" property="useNum" jdbcType="INTEGER" />
+    <result column="coupon_type" property="couponType" jdbcType="INTEGER" />
+    <result column="send_type" property="sendType" jdbcType="INTEGER" />
+    <result column="send_num" property="sendNum" jdbcType="INTEGER" />
+    <result column="maximum" property="maximum" jdbcType="INTEGER" />
+    <result column="min_m" property="minM" jdbcType="DECIMAL" />
+    <result column="max_m" property="maxM" jdbcType="DECIMAL" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="send_object" property="sendObject" jdbcType="VARCHAR" />
+    <result column="send_status" property="sendStatus" jdbcType="INTEGER" />
+    <result column="award_condition" property="awardCondition" jdbcType="INTEGER" />
+    <result column="award_number" property="awardNumber" jdbcType="INTEGER" />
+    <result column="use_number" property="useNumber" jdbcType="INTEGER" />
+    <result column="limit_number" property="limitNumber" jdbcType="INTEGER" />
+    <result column="views" property="views" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="activity_id" property="activityId" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    cid, cname, denomination, start_date, end_date, limit_amount, conditions, sellerid, 
+    use_num, coupon_type, send_type, send_num, maximum, min_m, max_m, amount, send_object, 
+    send_status, award_condition, award_number, use_number, limit_number, views, status, 
+    description, create_date, activity_id
+  </sql>
+  	
+  	<!-- 优惠券列表 -->
+  	<select id="getList" resultMap="BaseResultMap">
+  		SELECT c.`cid`,c.`cname`,c.`denomination`,c.`start_date`,c.`end_date`,c.`limit_amount`,c.`conditions`,
+  		c.`sellerid`,s.`sellername`,c.`send_num`,c.`send_status`,c.`award_condition`,c.`award_number`,
+		c.`use_num`,c.`status`,c.`create_date`
+		FROM t_seller_coupon_detail c
+		LEFT JOIN t_seller s ON s.`sellerid` = c.`sellerid`
+		WHERE c.coupon_type = #{couponType}
+		<if test="cname != null and cname !=''">
+		AND c.cname LIKE '%${cname}%'
+		</if>
+		<if test="sellerName != null and sellerName !=''">
+		AND s.sellername LIKE '%${sellerName}%'
+		</if>
+		<if test="sDate != null and sDate !=''">
+		AND c.create_date &gt;= #{sDate}
+		</if>
+		<if test="eDate != null and eDate !=''">
+		AND c.create_date &lt;= #{eDate}
+		</if>
+		<if test="sendStatus != null">
+		AND c.send_status = #{sendStatus}
+		</if>
+		ORDER BY c.`create_date` DESC
+		<if test="limit != -1">
+		LIMIT ${(page-1)*limit},#{limit}
+		</if>
+  	</select>
+  	
+  	<!-- 统计总数 -->
+  	<select id="count" resultType="long">
+  		SELECT COUNT(1)
+  		FROM t_seller_coupon_detail c
+		LEFT JOIN t_seller s ON s.`sellerid` = c.`sellerid`
+		WHERE c.coupon_type = #{couponType}
+		<if test="cname != null and cname !=''">
+		AND c.cname LIKE '%${cname}%'
+		</if>
+		<if test="sellerName != null and sellerName !=''">
+		AND s.sellername LIKE '%${sellerName}%'
+		</if>
+		<if test="sDate != null and sDate !=''">
+		AND c.create_date &gt;= #{sDate}
+		</if>
+		<if test="eDate != null and eDate !=''">
+		AND c.create_date &lt;= #{eDate}
+		</if>
+		<if test="sendStatus != null">
+		AND c.send_status = #{sendStatus}
+		</if>
+  	</select>
+  	
+  	<!-- 终止活动 -->
+  	<update id="shutdown">
+  		UPDATE t_seller_coupon_detail
+  		SET send_status = 2
+  		WHERE cid = #{cid}
+  	</update>
+  	
+  	<!-- 用户领取优惠券明细 -->
+  	<select id="getUserCouponDetail" resultType="com.xmniao.xmn.core.businessman.entity.UserCoupon">
+	  	SELECT cuid,cid,serial_no serialNo,denomination,get_time getTime,uid,sellerid,phone,use_status useStatus,bid,is_verify isVerify,get_way getWay
+		FROM 
+		t_user_coupon
+		where cid = #{cid}
+		<if test="serialNo != null and serialNo !=''">
+		AND serial_no = #{serialNo}
+		</if>
+		<if test="phone != null and phone !=''">
+		AND phone LIKE '%${phone}%'
+		</if>
+		<if test="sDate != null and sDate !=''">
+		AND get_time &gt;= #{sDate}
+		</if>
+		<if test="eDate != null and eDate !=''">
+		AND get_time &lt;= #{eDate}
+		</if>
+		<if test="useStatus != null">
+		AND use_status = #{useStatus}
+		</if>
+		ORDER BY get_time DESC
+		<if test="limit != -1">
+		LIMIT ${(page-1)*limit},#{limit}
+		</if>
+  	</select>
+  	
+  	<select id="countUserCoupon" resultType="long">
+  		SELECT COUNT(1)
+  		FROM t_user_coupon
+  		WHERE cid = #{cid}
+  		<if test="serialNo != null and serialNo !=''">
+		AND serial_no = #{serialNo}
+		</if>
+		<if test="phone != null and phone !=''">
+		AND phone LIKE '%${phone}%'
+		</if>
+		<if test="sDate != null and sDate !=''">
+		AND get_time &gt;= #{sDate}
+		</if>
+		<if test="eDate != null and eDate !=''">
+		AND get_time &lt;= #{eDate}
+		</if>
+		<if test="useStatus != null">
+		AND use_status = #{useStatus}
+		</if>
+  	</select>
+  	
+  		<!-- 停用用户优惠券-->
+  	<update id="shutdownUC">
+  		UPDATE t_user_coupon
+  		SET use_status = 2
+  		WHERE cuid = #{cuid}
+  	</update>
+  	
+</mapper>

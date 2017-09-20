@@ -1,0 +1,9 @@
+.ipt_txt {
+	width: 150px;
+	border: 1px solid #B1C3D9;
+	background-color: #FBFBFB;
+}
+
+.error {
+	color: Red;
+}

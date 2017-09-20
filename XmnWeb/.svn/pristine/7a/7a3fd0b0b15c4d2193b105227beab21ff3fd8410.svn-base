@@ -1,0 +1,162 @@
+package com.xmniao.xmn.core.common.dao;
+
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.common.entity.TArea;
+import com.xmniao.xmn.core.util.proxy.annotation.DataSource;
+
+/**
+ * 
+ * @项目名称：XmnWeb
+ * 
+ * @类名称：AreaDao
+ * 
+ * @类描述： 区域
+ * 
+ * @创建人：zhou'sheng
+ * 
+ * @创建时间：2014年11月12日17时37分19秒
+ * 
+ * @Copyright:广东寻蜜鸟网络技术有限公司
+ */
+public interface AreaDao extends BaseDao<TArea>{
+	
+	@DataSource("slave")
+	public List<TArea> selectProvince();
+	@DataSource("slave")
+	public List<TArea> selectCity(int areaId);
+	@DataSource("slave")
+	public List<TArea> selectArea(int areaId);
+	@DataSource("slave")
+	public TArea findAreaInfo(int areaId);
+	@DataSource("slave")
+	public List<TArea> findBrother(int areaId);
+	@DataSource("slave")
+	public List<TArea> getArea();
+	
+	/**
+	 * 查询区域集合
+	 * @return
+	 */
+	@DataSource("slave")
+	public List<TArea> getAreaList(TArea area);
+	
+	/**
+	 * 区域count
+	 */
+	@DataSource("slave")
+	public Long getAreaListCount(TArea area);
+	
+	/**
+	 * 检测区域唯一性
+	 */
+	public Long checkArea(String areaId);
+	
+	/**
+	 * 区域下商圈列表
+	 * @param id
+	 * @return
+	 */
+	@DataSource("slave")
+	List<TArea> getAreaInBusinessList(TArea area);
+	
+	/**
+	 * 区域下商圈列表数量
+	 * @param id
+	 * @return
+	 */
+	@DataSource("slave")
+	Long getAreaInBusinessListCount(Long id);
+	
+	/**
+	 * 根据id获取区域信息 包括所有父区域信息
+	 * @param id
+	 * @return
+	 */
+	@DataSource("slave")
+	TArea getObjectById(Long id);
+	
+	@DataSource("slave")
+	List<TArea> getObjectByIds(String[] id);
+	
+
+	/**
+	 * 获取联动用所有区域
+	 * @param area
+	 * @return
+	 */
+	@DataSource("slave")
+	public List<TArea> getLdAll(TArea area);
+	
+	/**
+	 * 查询开通商圈的城市
+	 * @return
+	 */
+	@DataSource("slave")
+	List<TArea> getOpenBusinessCity();
+	/**
+	 * 获取城市内容
+	 * @param area
+	 * @return
+	 */
+	@DataSource("slave")
+	public List<TArea> getCityListContent(TArea area);
+
+	/**
+	 * 获取城市总记录数
+	 * @param area
+	 * @return
+	 */
+	@DataSource("slave")
+	public Long getCityListTotal(TArea area);
+	
+	/**
+	 * 获取区域管理中的商圈信息
+	 * @param area
+	 * @return
+	 */
+	@DataSource("slave")
+	public List<TArea> getBussinessInAreaListContent(TArea area);
+	
+	/**
+	 * 获取区域管理中的商圈信息记录数
+	 * @param area
+	 * @return
+	 */
+	@DataSource("slave")
+	public Long getBussinessInAreaListTotal(TArea area);
+	
+	/**
+	 * 更新城市下面的区域状态
+	 * @param tArea
+	 */
+	public void updateAreaStatus(TArea tArea);
+	/**
+	 * 方法描述：获取未设置赛区的城市
+	 * 创建人： jianming <br/>
+	 * 创建时间：2017年6月8日上午10:17:31 <br/>
+	 * @param id 
+	 * @return
+	 */
+	public List<TArea> getDivisionRNoChooseCitys(@Param("id")Integer id);
+	/**
+	 * 方法描述：根据市id获取所有镇
+	 * 创建人： jianming <br/>
+	 * 创建时间：2017年6月8日上午11:40:29 <br/>
+	 * @param cityIds
+	 * @return
+	 */
+	public List<TArea> getTownsByCityIds(List<String> cityIds);
+	/**
+	 * 方法描述：根据id获取没有区的市
+	 * 创建人： jianming <br/>
+	 * 创建时间：2017年6月20日下午3:53:44 <br/>
+	 * @param cityIds
+	 * @return
+	 */
+	public List<TArea> getCityWhereNotTown(List<String> cityIds);
+}

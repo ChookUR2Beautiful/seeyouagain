@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.PicTypeDao">
+
+	<parameterMap type="PicType" id="picType" />
+	
+	<resultMap type="PicType" id="picTypeMap">
+		<result column="pid" property="pid" />
+		<result column="tid" property="tid" />
+		<result column="name" property="name" />
+		<result column="sdate" property="sdate" />
+	</resultMap>
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_log
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						tid,
+						name,
+						sdate,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.tid},
+						 #{item.name},
+						 #{item.sdate},
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" parameterMap="picType" >
+		INSERT INTO t_pic_type
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != pid">
+					pid,
+				</if>
+			 	<if test=" null != tid">
+					tid,
+				</if>
+			 	<if test=" null != name and '' != name ">
+					name,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != pid">
+					 	#{pid},
+				</if>
+			 	<if test=" null != tid">
+					 	#{tid},
+				</if>
+			 	<if test=" null != name and '' != name ">
+					 	#{name},
+				</if>
+			 	<if test=" null != sdate">
+					 	#{sdate},
+				</if>
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_pic_type WHERE pid IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterMap="picType">
+		UPDATE t_pic_type
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != pid">
+					pid = #{pid},
+				</if>
+				<if test=" null != tid">
+					tid = #{tid},
+				</if>
+				<if test=" null != name and '' != name ">
+					name = #{name},
+				</if>
+				<if test=" null != sdate">
+					sdate = #{sdate},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != pid and '' != pid">
+				pid = #{pid}
+			</if>
+		</where>
+	</update>
+	
+	<select id="getList" resultMap="picTypeMap" parameterMap="picType">
+		SELECT * FROM t_pic_type
+		<where>
+			1=1
+			<if test=" null != pid">
+				AND pid = #{pid}
+			</if>
+			<if test=" null != tid">
+				AND tid = #{tid}
+			</if>
+			<if test=" null != name and '' != name ">
+				AND name LIKE '%${name}%'
+			</if>
+			<if test=" null != sdate">
+				AND sdate = #{sdate}
+			</if>
+		</where>
+			ORDER BY pid DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="picType">
+		SELECT COUNT(*) FROM t_pic_type
+		<where>
+			1=1
+			<if test=" null != pid">
+				AND pid = #{pid}
+			</if>
+			<if test=" null != tid">
+				AND tid = #{tid}
+			</if>
+			<if test=" null != name and '' != name ">
+				AND name LIKE '%${name}%'
+			</if>
+			<if test=" null != sdate">
+				AND sdate = #{sdate}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Integer">
+		SELECT Max(pid) AS VALUE FROM t_pic_type
+	</select>
+	
+	<select id="getObject" resultMap="picTypeMap" parameterType="Long">
+		SELECT * FROM t_pic_type WHERE pid = 0
+	</select>
+	
+</mapper>

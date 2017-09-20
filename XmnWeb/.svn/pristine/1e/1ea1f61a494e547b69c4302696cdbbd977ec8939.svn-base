@@ -1,0 +1,29 @@
+package com.xmniao.xmn.core.manor.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.manor.entity.TManorFlowerRelation;
+
+
+public interface ManorFlowerRelationDao extends BaseDao<TManorFlowerRelation> {
+	
+    int deleteByPrimaryKey(Integer id);
+
+    int insert(TManorFlowerRelation record);
+
+    int insertSelective(TManorFlowerRelation record);
+
+    TManorFlowerRelation selectByPrimaryKey(Integer id);
+
+    int updateByPrimaryKeySelective(TManorFlowerRelation record);
+
+    int updateByPrimaryKey(TManorFlowerRelation record);
+    
+    TManorFlowerRelation getFlowerRelationInfo(TManorFlowerRelation record);
+    
+    List<TManorFlowerRelation> getFlowerRelationNumberInfo(Map<String, Integer> params);
+    
+    
+}

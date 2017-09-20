@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.marketingmanagement.dao.PhoneBillDao">
+
+	<parameterMap type="TPhoneBill" id="phoneBill" />
+	
+	<resultMap type="TPhoneBill" id="phoneBillMap">
+		<result column="pid" property="pid" />
+		<result column="bid" property="bid" />
+		<result column="189_code" property="code" />
+		<result column="pcoler" property="pcoler" />
+		<result column="pmodel" property="pmodel" />
+		<result column="pnum" property="pnum" />
+		<result column="price" property="price" />
+		<result column="total_price" property="totalPrice"/>
+		<result column="dep_price" property="depPrice" />
+		<result column="check_phone" property="checkPhone" />
+		<result column="get_user" property="getUser" />
+		<result column="get_card_id" property="getCardId" />
+		<result column="get_user_phone" property="getUserPhone" />
+		<result column="province_id" property="provinceId" />
+		<result column="province" property="province" />
+		<result column="price" property="price" />
+		<result column="city_id" property="cityId"/>
+		<result column="city" property="city" />
+		<result column="address" property="address" />
+		<result column="pstatus" property="pstatus" />
+		<result column="ptime" property="ptime" />
+		<result column="uid" property="uid" />
+		<result column="uphone" property="uphone" />
+		<result column="ftime" property="ftime" />
+		<result column="payid" property="payid" />
+		<result column="number" property="number"/>
+		<result column="userNum" property="userNum" />
+		<result column="orderNum" property="orderNum" />
+		<result column="sellNum" property="sellNum" />
+		<result column="priceNum" property="priceNum" />
+		<result column="pay" property="pay"/>
+		<result column="notPay" property="notPay"/>
+	</resultMap>
+	
+	<sql id="buillCondition">
+		<if test=" null != pid">
+				AND t.pid = #{pid}
+			</if>
+			
+			<if test=" null != bid">
+				AND t.bid = #{bid}
+			</if>		
+				
+			<if test=" null != getUserPhone and '' != getUserPhone">
+				AND t.get_user_phone LIKE '%${getUserPhone}%'
+			</if>	
+			
+			<if test=" null != provinceId">
+				AND t.province_id = #{provinceId}
+			</if>
+			
+			<if test=" null != cityId">
+				AND t.city_id = #{cityId}
+			</if>
+				
+			<if test=" null != ptimeStart and '' != ptimeStart ">
+				AND t.ptime &lt;= #{ptimeStart} 
+			</if>
+			<if test=" null != ptimeEnd  and '' != ptimeEnd ">
+				AND t.ptime &lt;= #{ptimeEnd} 
+			</if>
+			
+			<if test=" null != pstatus">
+				AND t.pstatus = #{pstatus}
+			</if>
+	</sql>
+
+	<!-- 查询所有话题，可以有条件过滤  -->
+	<select id="getList" resultMap="phoneBillMap" parameterMap="phoneBill">
+		SELECT * FROM t_phone_bill t
+		<where>
+			1=1
+			<include refid="buillCondition"/>
+		</where>
+			ORDER BY pid DESC 
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<!-- 统计 -->
+	<select id="count" resultType="Long" parameterMap="phoneBill">
+		SELECT COUNT(*) FROM t_phone_bill t
+		<where>
+			1=1
+			<include refid="buillCondition"/>
+		</where>
+	</select>
+	
+		<!-- 查询统计数据-->
+	<select id="getCountList" resultMap="phoneBillMap" parameterMap="phoneBill">
+		SELECT COUNT(t3.uid) userNum,
+		       COUNT(t.bid) AS orderNum,
+		       SUM(IFNULL(t2.pnum,0))  AS sellNum,
+		       SUM(IFNULL(t1.pnum,0))  AS notSellNum,
+		       SUM(IFNULL(t2.total_price,0))  AS priceNum,
+		       SUM(IFNULL(t1.total_price,0))  AS notSellPriceNum,
+		       SUM(IFNULL(t1.dep_price,0))  AS allDepPrice,
+		       SUM(IFNULL(t2.dep_price,0))  AS payDepPrice
+		FROM t_phone_bill t 
+		     LEFT JOIN (SELECT total_price,dep_price,pid,pnum FROM t_phone_bill WHERE pstatus = 0) t1 ON t1.pid = t.pid
+		     LEFT JOIN (SELECT total_price,dep_price,pid,pnum FROM t_phone_bill WHERE pstatus = 1) t2 ON t2.pid = t.pid
+		     LEFT JOIN(SELECT tu.uid,tu.pid FROM t_phone_bill tu  GROUP BY tu.uid) t3 ON t3.pid = t.pid
+		 <where>
+				1=1
+				<include refid="buillCondition"/>
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Long">
+		SELECT Max(pid) AS VALUE FROM t_phone_bill
+	</select>
+	
+	<select id="getObject" resultMap="phoneBillMap" parameterType="Long">
+		SELECT * FROM t_phone_bill WHERE pid = #{0}
+	</select>		
+</mapper>

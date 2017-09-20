@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.UnsignedSellerDao">
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.businessman.entity.UnsignedSeller">
+    <id column="unsigned_sellerid" jdbcType="INTEGER" property="unsignedSellerid" />
+    <result column="sellername" jdbcType="VARCHAR" property="sellername" />
+    <result column="province" jdbcType="VARCHAR" property="province" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+    <result column="area" jdbcType="VARCHAR" property="area" />
+    <result column="zoneid" jdbcType="INTEGER" property="zoneid" />
+    <result column="category" jdbcType="VARCHAR" property="category" />
+    <result column="genre" jdbcType="VARCHAR" property="genre" />
+    <result column="bewrite" jdbcType="VARCHAR" property="bewrite" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="tel" jdbcType="VARCHAR" property="tel" />
+    <result column="consume" jdbcType="DOUBLE" property="consume" />
+    <result column="isonline" jdbcType="INTEGER" property="isonline" />
+    <result column="examineinfo" jdbcType="VARCHAR" property="examineinfo" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+    <result column="typename" jdbcType="VARCHAR" property="typename" />
+    <result column="tradename" jdbcType="VARCHAR" property="tradename" />
+    <result column="anchor_uid" jdbcType="INTEGER" property="anchorUid" />
+    <result column="business_title" jdbcType="VARCHAR" property="businessTitle" />
+    <result column="media" jdbcType="INTEGER" property="media" />
+    <result column="comment" jdbcType="INTEGER" property="comment" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    t_unsigned_seller.unsigned_sellerid,
+     t_unsigned_seller.sellername,
+      t_unsigned_seller.province, 
+      t_unsigned_seller.city, 
+      t_unsigned_seller.area, 
+      t_unsigned_seller.zoneid, 
+      t_unsigned_seller.category, 
+      t_unsigned_seller.genre, 
+      t_unsigned_seller.bewrite, 
+    t_unsigned_seller.address, 
+    t_unsigned_seller.tel, 
+    t_unsigned_seller.consume, 
+    t_unsigned_seller.isonline, 
+    t_unsigned_seller.examineinfo, 
+    t_unsigned_seller.create_date, 
+    t_unsigned_seller.update_date, 
+    t_unsigned_seller.remarks, 
+    t_unsigned_seller.typename, 
+    t_unsigned_seller.tradename, 
+    t_unsigned_seller.anchor_uid
+  </sql>
+  
+  <sql id="whereSQL">
+  	 <if test="sellername != null and sellername != ''">
+  	 	 and sellername like '%${sellername}%'
+  	 </if>
+  </sql>
+  
+  
+	<select id="checkIdAtArea" resultType="java.lang.Long">
+		select count(1) from t_unsigned_seller where unsigned_sellerid = #{id} and province = #{province} and city =#{city}
+	</select>
+  
+  <select id="getCommentParam" resultType="map">
+  	   select title as zoneName,address,tel phone   from t_unsigned_seller 
+  	    left  join t_business on t_unsigned_seller.zoneid = t_business.bid
+  	    where t_unsigned_seller.unsigned_sellerid = #{unsignedSellerid}
+  </select>
+  
+  <update id="updateState">
+	 update   t_unsigned_seller set isonline = #{type} where unsigned_sellerid =#{unsignedSellerid}
+  </update>
+  
+  <select id="getList" resultMap="BaseResultMap">
+  	 select <include refid="Base_Column_List" />,t_business.title as business_title,
+  	 (select count(1) from t_experience_comment_media left join  t_experience_comment  on t_experience_comment_media.comment_id = t_experience_comment.id where t_experience_comment.sellerid =  t_unsigned_seller.unsigned_sellerid and t_experience_comment.seller_type = 2  ) as media,
+	(select count(1) from t_experience_comment where t_experience_comment.sellerid =  t_unsigned_seller.unsigned_sellerid and t_experience_comment.seller_type = 2 ) as comment
+  	 from t_unsigned_seller
+  	 left  join t_business on t_unsigned_seller.zoneid = t_business.bid
+  	 where 1=1
+  	 <include refid="whereSQL"/>
+  	 ORDER BY update_date DESC
+	 LIMIT ${(page-1)*limit},#{limit}
+  </select>
+
+  <select id="count" resultType="java.lang.Long">
+  	 select count(1)
+  	 from t_unsigned_seller
+  	 where 1=1
+  	 <include refid="whereSQL"/>
+  </select>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_unsigned_seller
+    where unsigned_sellerid = #{unsignedSellerid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_unsigned_seller
+    where unsigned_sellerid = #{unsignedSellerid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.businessman.entity.UnsignedSeller">
+    insert into t_unsigned_seller (unsigned_sellerid, sellername, province, 
+      city, area, zoneid, 
+      category, genre, bewrite, 
+      address, tel, consume, 
+      isonline, examineinfo, create_date, 
+      update_date, remarks, typename, 
+      tradename, anchor_uid)
+    values (#{unsignedSellerid,jdbcType=INTEGER}, #{sellername,jdbcType=VARCHAR}, #{province,jdbcType=VARCHAR}, 
+      #{city,jdbcType=VARCHAR}, #{area,jdbcType=VARCHAR}, #{zoneid,jdbcType=INTEGER}, 
+      #{category,jdbcType=VARCHAR}, #{genre,jdbcType=VARCHAR}, #{bewrite,jdbcType=VARCHAR}, 
+      #{address,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR}, #{consume,jdbcType=DOUBLE}, 
+      #{isonline,jdbcType=INTEGER}, #{examineinfo,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, 
+      #{updateDate,jdbcType=TIMESTAMP}, #{remarks,jdbcType=VARCHAR}, #{typename,jdbcType=VARCHAR}, 
+      #{tradename,jdbcType=VARCHAR}, #{anchorUid,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.businessman.entity.UnsignedSeller">
+    insert into t_unsigned_seller
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="unsignedSellerid != null">
+        unsigned_sellerid,
+      </if>
+      <if test="sellername != null">
+        sellername,
+      </if>
+      <if test="province != null">
+        province,
+      </if>
+      <if test="city != null">
+        city,
+      </if>
+      <if test="area != null">
+        area,
+      </if>
+      <if test="zoneid != null">
+        zoneid,
+      </if>
+      <if test="category != null">
+        category,
+      </if>
+      <if test="genre != null">
+        genre,
+      </if>
+      <if test="bewrite != null">
+        bewrite,
+      </if>
+      <if test="address != null">
+        address,
+      </if>
+      <if test="tel != null">
+        tel,
+      </if>
+      <if test="consume != null">
+        consume,
+      </if>
+      <if test="isonline != null">
+        isonline,
+      </if>
+      <if test="examineinfo != null">
+        examineinfo,
+      </if>
+      <if test="createDate != null">
+        create_date,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+      <if test="remarks != null">
+        remarks,
+      </if>
+      <if test="typename != null">
+        typename,
+      </if>
+      <if test="tradename != null">
+        tradename,
+      </if>
+      <if test="anchorUid != null">
+        anchor_uid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="unsignedSellerid != null">
+        #{unsignedSellerid,jdbcType=INTEGER},
+      </if>
+      <if test="sellername != null">
+        #{sellername,jdbcType=VARCHAR},
+      </if>
+      <if test="province != null">
+        #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null">
+        #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="area != null">
+        #{area,jdbcType=VARCHAR},
+      </if>
+      <if test="zoneid != null">
+        #{zoneid,jdbcType=INTEGER},
+      </if>
+      <if test="category != null">
+        #{category,jdbcType=VARCHAR},
+      </if>
+      <if test="genre != null">
+        #{genre,jdbcType=VARCHAR},
+      </if>
+      <if test="bewrite != null">
+        #{bewrite,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null">
+        #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="consume != null">
+        #{consume,jdbcType=DOUBLE},
+      </if>
+      <if test="isonline != null">
+        #{isonline,jdbcType=INTEGER},
+      </if>
+      <if test="examineinfo != null">
+        #{examineinfo,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remarks != null">
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="typename != null">
+        #{typename,jdbcType=VARCHAR},
+      </if>
+      <if test="tradename != null">
+        #{tradename,jdbcType=VARCHAR},
+      </if>
+      <if test="anchorUid != null">
+        #{anchorUid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.businessman.entity.UnsignedSeller">
+    update t_unsigned_seller
+    <set>
+      <if test="sellername != null">
+        sellername = #{sellername,jdbcType=VARCHAR},
+      </if>
+      <if test="province != null">
+        province = #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null">
+        city = #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="area != null">
+        area = #{area,jdbcType=VARCHAR},
+      </if>
+      <if test="zoneid != null">
+        zoneid = #{zoneid,jdbcType=INTEGER},
+      </if>
+      <if test="category != null">
+        category = #{category,jdbcType=VARCHAR},
+      </if>
+      <if test="genre != null">
+        genre = #{genre,jdbcType=VARCHAR},
+      </if>
+      <if test="bewrite != null">
+        bewrite = #{bewrite,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null">
+        tel = #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="consume != null">
+        consume = #{consume,jdbcType=DOUBLE},
+      </if>
+      <if test="isonline != null">
+        isonline = #{isonline,jdbcType=INTEGER},
+      </if>
+      <if test="examineinfo != null">
+        examineinfo = #{examineinfo,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remarks != null">
+        remarks = #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="typename != null">
+        typename = #{typename,jdbcType=VARCHAR},
+      </if>
+      <if test="tradename != null">
+        tradename = #{tradename,jdbcType=VARCHAR},
+      </if>
+      <if test="anchorUid != null">
+        anchor_uid = #{anchorUid,jdbcType=INTEGER},
+      </if>
+    </set>
+    where unsigned_sellerid = #{unsignedSellerid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.businessman.entity.UnsignedSeller">
+    update t_unsigned_seller
+    set sellername = #{sellername,jdbcType=VARCHAR},
+      province = #{province,jdbcType=VARCHAR},
+      city = #{city,jdbcType=VARCHAR},
+      area = #{area,jdbcType=VARCHAR},
+      zoneid = #{zoneid,jdbcType=INTEGER},
+      category = #{category,jdbcType=VARCHAR},
+      genre = #{genre,jdbcType=VARCHAR},
+      bewrite = #{bewrite,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      tel = #{tel,jdbcType=VARCHAR},
+      consume = #{consume,jdbcType=DOUBLE},
+      isonline = #{isonline,jdbcType=INTEGER},
+      examineinfo = #{examineinfo,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      remarks = #{remarks,jdbcType=VARCHAR},
+      typename = #{typename,jdbcType=VARCHAR},
+      tradename = #{tradename,jdbcType=VARCHAR},
+      anchor_uid = #{anchorUid,jdbcType=INTEGER}
+    where unsigned_sellerid = #{unsignedSellerid,jdbcType=INTEGER}
+  </update>
+</mapper>

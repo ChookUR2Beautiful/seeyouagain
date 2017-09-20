@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TLiveRecordAddBatchDao" >
+
+  <resultMap id="liveRecordMap" type="com.xmniao.xmn.core.live_anchor.entity.TLiveRecord" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="anchor_id" property="anchorId" jdbcType="INTEGER" />
+    <result column="nname" property="nname" jdbcType="VARCHAR" />
+    <result column="avatar" property="avatar" jdbcType="VARCHAR" />
+    <result column="anchor_room_no" property="anchorRoomNo" jdbcType="VARCHAR" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="sellername" property="sellername" jdbcType="VARCHAR" />
+    <result column="seller_alias" property="sellerAlias" jdbcType="VARCHAR" />
+    
+    <result column="zhibo_address" property="zhiboAddress" jdbcType="VARCHAR" />
+    <result column="zhibo_type" property="zhiboType" jdbcType="INTEGER" />
+    <result column="zhibo_title" property="zhiboTitle" jdbcType="VARCHAR" />
+    <result column="zhibo_cover" property="zhiboCover" jdbcType="VARCHAR" />
+    <result column="plan_start_date" property="planStartDate" jdbcType="TIMESTAMP" />
+    <result column="plan_end_date" property="planEndDate" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="BIT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="sequence_no" property="sequenceNo" jdbcType="INTEGER" />
+    <result column="isAppoint" property="isAppoint" jdbcType="INTEGER" />
+    <result column="telphones" property="telphones" jdbcType="VARCHAR" />
+    <result column="haveCoupon" property="haveCoupon" jdbcType="INTEGER" />
+    <result column="sex" property="sex" jdbcType="INTEGER" />
+    <result column="live_topic" property="liveTopic" jdbcType="INTEGER" />
+    <result column="show_other_seller" property="showOtherSeller" jdbcType="INTEGER" />
+    <result column="sign_type" property="signType" jdbcType="INTEGER" />
+    <result column="root_role" property="rootRole" jdbcType="INTEGER" />
+    
+    <result column="is_custom_share" property="isCustomShare" jdbcType="INTEGER" />
+    <result column="custom_share_title" property="customShareTitle" jdbcType="VARCHAR" />
+    <result column="custom_share_desc" property="customShareDesc" jdbcType="VARCHAR" />    
+  </resultMap>
+  
+  <sql id="live_record_columns" >
+    id, anchor_id, nname, avatar, anchor_room_no, anchor_room_password, sellerid, sellername, 
+    seller_alias , zhibo_address, zhibo_type, zhibo_title, zhibo_cover, 
+    plan_start_date, plan_end_date, create_time, 
+    update_time , sequence_no ,isAppoint,telphones , haveCoupon,sex,live_topic,show_other_seller,
+    sign_type,root_role, is_custom_share, custom_share_title, custom_share_desc
+  </sql>
+  
+  
+  <update id="updateBatch" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRecord" >
+    update t_live_record
+    <set >
+      <if test="anchorId != null" >
+        anchor_id = #{anchorId,jdbcType=INTEGER},
+      </if>
+      <if test="nname != null" >
+        nname = #{nname,jdbcType=VARCHAR},
+      </if>
+      <if test="avatar != null" >
+        avatar = #{avatar,jdbcType=VARCHAR},
+      </if>
+      <if test="anchorRoomNo != null" >
+        anchor_room_no = #{anchorRoomNo,jdbcType=INTEGER},
+      </if>
+      <if test="sellerid != null" >
+        sellerid = #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="sellername != null" >
+        sellername = #{sellername,jdbcType=VARCHAR},
+      </if>
+      
+      <if test="sellerAlias != null" >
+        seller_alias = #{sellerAlias,jdbcType=VARCHAR},
+      </if>
+      <if test="zhiboAddress != null" >
+        zhibo_address = #{zhiboAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="zhiboType != null" >
+        zhibo_type = #{zhiboType,jdbcType=INTEGER},
+      </if>
+      <if test="zhiboTitle != null" >
+        zhibo_title = #{zhiboTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="zhiboCover != null" >
+        zhibo_cover = #{zhiboCover,jdbcType=VARCHAR},
+      </if>
+      <if test="planStartDate != null" >
+        plan_start_date = #{planStartDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="planEndDate != null" >
+        plan_end_date = #{planEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=BIT},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sequenceNo != null" >
+        sequence_no = #{sequenceNo,jdbcType=INTEGER},
+      </if>
+      <if test="isAppoint != null" >
+        isAppoint=#{isAppoint,jdbcType=INTEGER},
+      </if>
+      <if test="telphones != null" >
+        telphones=#{telphones,jdbcType=VARCHAR},
+      </if>
+      <if test="haveCoupon != null" >
+        haveCoupon=#{haveCoupon,jdbcType=VARCHAR},
+      </if>
+      <if test="zhiboThumbnail != null" >
+        zhibo_thumbnail=#{zhiboThumbnail,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        sex=#{sex,jdbcType=INTEGER},
+      </if>
+      <if test="stick != null" >
+        stick=#{stick,jdbcType=INTEGER},
+      </if>
+      <if test="isCustomShare != null" >
+        is_custom_share = #{isCustomShare,jdbcType=INTEGER},
+      </if>
+      <if test="customShareTitle != null" >
+        custom_share_title = #{customShareTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="customShareDesc != null" >
+        custom_share_desc = #{customShareDesc,jdbcType=VARCHAR},
+      </if>      
+    </set>
+    WHERE id IN
+    <foreach item="item" index="index" collection="idList"  open="(" separator="," close=") ">
+			 #{item}
+	</foreach>
+  </update>
+  
+  <insert id="addReturnId"  useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRecord" >
+    insert into t_live_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="anchorId != null" >
+        anchor_id,
+      </if>
+      <if test="nname != null" >
+        nname,
+      </if>
+      <if test="avatar != null" >
+        avatar,
+      </if>
+      <if test="anchorRoomNo != null" >
+        anchor_room_no,
+      </if>
+      <if test="anchorRoomPassword != null" >
+        anchor_room_password,
+      </if>
+      <if test="sellerid != null" >
+        sellerid,
+      </if>
+      <if test="sellername != null" >
+        sellername,
+      </if>
+      
+      <if test="sellerAlias != null" >
+        seller_alias,
+      </if>
+      
+      <if test="sellerCity != null" >
+        seller_city,
+      </if>
+      <if test="sellerStatus != null" >
+        seller_status,
+      </if>
+      <if test="zhiboAddress != null" >
+        zhibo_address,
+      </if>
+      <if test="zhiboType != null" >
+        zhibo_type,
+      </if>
+      <if test="zhiboPlaybackUrl != null" >
+        zhibo_playback_url,
+      </if>
+      <if test="zhiboTitle != null" >
+        zhibo_title,
+      </if>
+      <if test="zhiboCover != null" >
+        zhibo_cover,
+      </if>
+      <if test="planStartDate != null" >
+        plan_start_date,
+      </if>
+      <if test="planEndDate != null" >
+        plan_end_date,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="concernedNums != null" >
+        concerned_nums,
+      </if>
+      <if test="sequenceNo != null" >
+        sequence_no,
+      </if>
+      <if test="sellerSequNo != null" >
+        seller_sequ_no,
+      </if>
+      <if test="isAppoint != null" >
+        isAppoint,
+      </if>
+      <if test="telphones != null" >
+        telphones,
+      </if>
+      <if test="haveCoupon != null" >
+        haveCoupon,
+      </if>
+      <if test="sex != null" >
+        sex,
+      </if>
+      <if test="liveTopic != null" >
+        live_topic,
+      </if>
+      <if test="showOtherSeller != null" >
+        show_other_seller,
+      </if>
+      <if test="signType != null" >
+        sign_type,
+      </if>
+      <if test="rootRole != null" >
+        root_role,
+      </if>
+      <if test="isCustomShare != null" >
+        is_custom_share,
+      </if>
+      <if test="customShareTitle != null" >
+        custom_share_title,
+      </if>
+      <if test="customShareDesc != null" >
+        custom_share_desc,
+      </if>  
+      <if test="isRobotInit != null" >
+        is_robot_init,
+      </if>      
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="anchorId != null" >
+        #{anchorId,jdbcType=INTEGER},
+      </if>
+      <if test="nname != null" >
+        #{nname,jdbcType=VARCHAR},
+      </if>
+      <if test="avatar != null" >
+        #{avatar,jdbcType=VARCHAR},
+      </if>
+      <if test="anchorRoomNo != null" >
+        #{anchorRoomNo,jdbcType=INTEGER},
+      </if>
+      <if test="anchorRoomPassword != null" >
+        #{anchorRoomPassword,jdbcType=INTEGER},
+      </if>
+      <if test="sellerid != null" >
+        #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="sellername != null" >
+        #{sellername,jdbcType=VARCHAR},
+      </if>
+      
+      <if test="sellerAlias != null" >
+        #{sellerAlias,jdbcType=VARCHAR},
+      </if>
+      
+      <if test="sellerCity != null" >
+        #{sellerCity,jdbcType=VARCHAR},
+      </if>
+      <if test="sellerStatus != null" >
+        #{sellerStatus,jdbcType=BIT},
+      </if>
+      <if test="zhiboAddress != null" >
+        #{zhiboAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="zhiboType != null" >
+        #{zhiboType,jdbcType=INTEGER},
+      </if>
+      <if test="zhiboPlaybackUrl != null" >
+        #{zhiboPlaybackUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="zhiboTitle != null" >
+        #{zhiboTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="zhiboCover != null" >
+        #{zhiboCover,jdbcType=VARCHAR},
+      </if>
+      <if test="planStartDate != null" >
+        #{planStartDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="planEndDate != null" >
+        #{planEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=BIT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="concernedNums != null" >
+        #{concernedNums,jdbcType=INTEGER},
+      </if>
+      <if test="sequenceNo != null" >
+        #{sequenceNo,jdbcType=INTEGER},
+      </if>
+      <if test="sellerSequNo != null" >
+        #{sellerSequNo,jdbcType=INTEGER},
+      </if>
+      <if test="isAppoint != null" >
+        #{isAppoint,jdbcType=INTEGER},
+      </if>
+      <if test="telphones != null" >
+        #{telphones,jdbcType=VARCHAR},
+      </if>
+      <if test="haveCoupon != null" >
+        #{haveCoupon,jdbcType=INTEGER},
+      </if>
+      <if test="sex != null" >
+        #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="liveTopic != null" >
+        #{liveTopic,jdbcType=INTEGER},
+      </if>
+      <if test="showOtherSeller != null" >
+        #{showOtherSeller,jdbcType=INTEGER},
+      </if>
+      <if test="signType != null" >
+        #{signType,jdbcType=INTEGER},
+      </if>
+      <if test="rootRole != null" >
+        #{rootRole,jdbcType=INTEGER},
+      </if>
+      <if test="isCustomShare != null" >
+        #{isCustomShare,jdbcType=INTEGER},
+      </if>
+      <if test="customShareTitle != null" >
+        #{customShareTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="customShareDesc != null" >
+        #{customShareDesc,jdbcType=VARCHAR},
+      </if>      
+      <if test="isRobotInit != null" >
+        #{isRobotInit,jdbcType=INTEGER},
+      </if> 
+    </trim>
+  </insert>
+  
+  
+  <!-- 批量插入直播通告信息  useGeneratedKeys="true" keyProperty="id" 批量添加通告不支持返回通告ID,此方法已废弃-->
+  <insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_live_record
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<include refid="live_record_columns" /> 
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+			<!-- id, anchor_id, nname, avatar, anchor_room_no,anchor_room_password, sellerid, sellername,seller_alias , zhibo_address, zhibo_type, zhibo_title, zhibo_cover, 
+			    plan_start_date, plan_end_date, create_time,update_time , sequence_no ,isAppoint,telphones , haveCoupon,sex -->
+				#{item.id},
+				#{item.anchorId},
+				#{item.nname},
+				#{item.avatar},
+				#{item.anchorRoomNo},
+				#{item.anchorRoomPassword},
+				#{item.sellerid},
+				#{item.sellername},
+				#{item.sellerAlias},
+				#{item.zhiboAddress},
+				#{item.zhiboType},
+				#{item.zhiboTitle},
+				#{item.zhiboCover},
+				#{item.planStartDate},
+				#{item.planEndDate},
+				#{item.createTime},
+				#{item.updateTime},
+				#{item.sequenceNo},
+				#{item.isAppoint},
+				#{item.telphones},
+				#{item.haveCoupon},
+				#{item.sex}
+				#{item.isCustomShare},
+				#{item.customShareTitle},
+				#{item.customShareDesc}				
+			</trim>
+		</foreach>
+  </insert>
+  
+  <delete id="deleteBatch" parameterType="java.util.ArrayList" >
+    delete from t_live_record
+    where id in
+    <foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+	</foreach>
+  </delete>
+  
+  
+</mapper>

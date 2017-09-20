@@ -1,0 +1,1672 @@
+package com.xmniao.xmn.core.live_anchor.entity;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+import com.xmniao.xmn.core.base.BaseEntity;
+import com.xmniao.xmn.core.util.DateUtil;
+
+/**
+ * 
+ * 项目名称：XmnWeb_LVB
+ * 
+ * 类名称：TLiveRecord
+ * 
+ * 类描述：直播安排纪录实体类
+ * 
+ * 创建人： huang'tao
+ * 
+ * 创建时间：2016-8-9下午2:53:19
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司
+ */
+public class TLiveRecord extends BaseEntity{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 458327112079544472L;
+
+	private Integer id;// 直播记录id
+
+	private String ids;// 批量操作直播记录id拼接字符串，多个以逗号分隔
+
+	private String[] idList;// 批量操作直播记录idList
+
+	private Integer anchorId;// 主播用户id
+
+	private Integer uid;// 主播会员id(已删)
+
+	private String nname;// 用户昵称
+
+	private String avatar;// 头像
+
+	private Integer sex;// 主播性别
+
+	private Integer pageview;// 浏览数量
+
+	private Integer regcity;// 注册时所在城市
+
+	private String anchorRoomNo;// 主播房间编号
+
+	private Integer sellerid;// 直播商家ID
+
+	private String sellername;// 直播商家名称
+
+	private String sellerAlias;// 商家别名
+
+	private Double longitude;// 商家经度
+
+	private Double latitude;// 商家纬度
+
+	private String sellerCity;// 直播商家所在城市
+
+	private String sellerCityName;// 直播商家所在城市名称
+
+	private Boolean sellerStatus;// 是否推荐的商家 1 推荐 0 不是推荐
+
+	private String zhiboAddress;// 直播地址
+
+	private Integer zhiboType;// 直播类型 -1 初始 0 预告 1 正在直播 2暂停直播 3 回放 4 无回放 5 结束直播
+
+	private String zhiboTypeStr;// 直播类型字符串
+
+	private String zhiboTypeParam;// 直播类型查询参数,格式如：3,5
+
+	private String zhiboPlaybackUrl;// 回放地址URL
+
+	private String zhiboTitle;// 直播/回放标题
+
+	private String zhiboCover;// 直播/回放封面
+
+	private List<TLiveRecordBanner> bannerList;// 通告轮播封面
+
+	private Date planStartDate;// 直播计划开始时间
+
+	private String planStartDateStr;// 直播计划开始时间字符串
+
+	private Date planEndDate;// 直播计划结束时间
+
+	private String planEndDateStr;// 直播计划结束时间字符串
+
+	private Date startDate;// 直播开始时间
+
+	private String startDateStr;// 直播开始时间Str
+
+	private Date endDate;// 直播结束时间
+
+	private String endDateStr;// 直播结束时间Str
+
+	private Integer zhiboDuration;// 直播时长(单位秒)
+
+	private String zhiboDurationStr;// 直播时长(格式：2小时50分)
+
+	private Boolean status;// 默认 1启用 0停用
+
+	private Date createTime;// 加入时间
+
+	private Date updateTime;// 更新时间
+
+	private String liveDate;// 直播日期
+
+	private Integer concernedNums;// 被关注数
+
+	private Integer viewCount;// 观看人数
+
+	private Integer showViewCount;// 想看人数
+
+	private Integer sequenceNo;// 排序序号(通告推荐排序)
+
+	private Integer sellerSequNo;// 排序序号(商家推荐排序)
+
+	private Integer seqLockStatus;// 排序序号锁定状态： 1锁定 0不锁定
+
+	private Integer isqianzhi;// 是否是前置摄像头： 0：后置摄像头 1：前置摄像头(默认)
+
+	private Integer ishorizontalscreen;// 是否横屏状态：0不是 1是
+
+	private Integer deviceType;// 设备开播类型 0 ：IOS开播 1： android 开播 -1 未知
+
+	private String vedioUrl;// 视频流地址
+
+	private String channelId;// 直播频道ID
+
+	private Integer channelStatus;// 直播频道状态 0 无输入流 ，1 直播中， 2 异常，3 关闭
+
+	// private Integer isappoint;//是否指定观众观看
+
+	private String operationType;// 操作类型 up 上移操作, down 下移操作, endLive 结束直播
+
+	private Integer offset;// 偏移量
+
+	private String isAll;// 1 全部, 0 历史数据
+
+	private BigDecimal liveMinute;// 直播时长,分钟数
+
+	private String liveTimeStr;// 直播时长(格式： 20小时50分)
+
+	private long rowNum;// 行号
+
+	private Integer liveRobotSum;// 机器人数量
+
+	private Integer videoType; // 视频分类 1 美食 2 休闲娱乐 3 趣玩' ,
+
+	private String videoLabel; // 视频标签
+
+	private String stringVideoType; // 转换后的视频分类
+
+	private Integer isAppoint;// 是否指定观众观看 , 1 是.0 否
+
+	private String telphones;// 指定观众电话号码 以,分割
+
+	private String introduce;// 预告介绍
+
+	private String haveCoupon;// 提供粉丝券 0 否 1提供
+
+	private String zhiboThumbnail;// 缩略图
+
+	private Integer liveStartType;// 开播类型 ： 0 通告开播 1 自定义开播
+
+	private String liveStartTypeStr;// 开播类型Str
+
+	private Integer recommended;// 首页推荐：0否，1是。默认0
+
+	private Integer stick;// 预告置顶状态：0普通，1置顶，默认0
+
+	private Integer liveTopic;// 直播主题类型：1、商家，2、活动
+
+	private String anchorRoomPassword;// 直播间密码
+
+	private String picUrls;// 通告轮播图,多个已";"分隔
+
+	private String tagIds;// 标签ID,多个已";"分隔
+
+	private Integer incomeEggNums;// 主播收入鸟蛋数
+
+	private Integer showOtherSeller;// 显示其他商家推荐信息,0 默认展示 1 不展示
+
+	private Integer signType;// 是否是签约主播，1 代表签约，0 代表未签约
+
+	private Integer rootRole;// 来源身份 1:普通兼职 2:工会合作 3:活动合作 4:其他
+
+	private Integer isValid;// 有效场次标志,针对主播工资(0:无效 1:有效 )
+
+	private String startTime;// 查询开始时间
+
+	private String endTime;// 查询结束时间
+
+	private String currentMonth;// 查询当月数据标志,Y 是
+
+	private String showValue;// 搜索框输入值
+
+	private Integer isCustomShare;
+
+	private String customShareTitle;
+
+	private String customShareDesc;
+	
+	private Integer rtype;
+	
+	private String playerName;
+	
+	private Integer fansCount;
+	
+	private Integer seeCount;
+	
+	private Integer playerId;
+	
+	private String playerPhone;
+	
+	private Integer moduleType;
+	
+	private Integer isRobotInit;//是否配置机器人
+	
+	private Integer robotSetMixNums;//单次最少新增机器人个数
+	
+	private Integer robotSetMaxNums;//单次最多新增机器人个数
+	
+	private Integer robotMinNums;//初始化机器人数量
+	
+	private Integer robotMaxNums;//最高上限机器人数量
+	
+	private Integer multiple;//机器人显示倍数
+	
+	private Integer orderNum;//接单人数
+	
+	private String appointAnchor;//指派主播标志，Y是。将通告设为预告
+	
+	
+	
+	
+	/**
+	 * @return the appointAnchor
+	 */
+	public String getAppointAnchor() {
+		return appointAnchor;
+	}
+
+	/**
+	 * @param appointAnchor the appointAnchor to set
+	 */
+	public void setAppointAnchor(String appointAnchor) {
+		this.appointAnchor = appointAnchor;
+	}
+
+	/**
+	 * @return the rtype
+	 */
+	public Integer getRtype() {
+		return rtype;
+	}
+
+	/**
+	 * @param rtype the rtype to set
+	 */
+	public void setRtype(Integer rtype) {
+		this.rtype = rtype;
+	}
+
+	/**
+	 * @return the orderNum
+	 */
+	public Integer getOrderNum() {
+		return orderNum;
+	}
+
+	/**
+	 * @param orderNum the orderNum to set
+	 */
+	public void setOrderNum(Integer orderNum) {
+		this.orderNum = orderNum;
+	}
+
+	/**
+	 * @return the isRobotInit
+	 */
+	public Integer getIsRobotInit() {
+		return isRobotInit;
+	}
+
+	/**
+	 * @param isRobotInit the isRobotInit to set
+	 */
+	public void setIsRobotInit(Integer isRobotInit) {
+		this.isRobotInit = isRobotInit;
+	}
+
+	/**
+	 * @return the robotSetMixNums
+	 */
+	public Integer getRobotSetMixNums() {
+		return robotSetMixNums;
+	}
+
+	/**
+	 * @param robotSetMixNums the robotSetMixNums to set
+	 */
+	public void setRobotSetMixNums(Integer robotSetMixNums) {
+		this.robotSetMixNums = robotSetMixNums;
+	}
+
+	/**
+	 * @return the robotSetMaxNums
+	 */
+	public Integer getRobotSetMaxNums() {
+		return robotSetMaxNums;
+	}
+
+	/**
+	 * @param robotSetMaxNums the robotSetMaxNums to set
+	 */
+	public void setRobotSetMaxNums(Integer robotSetMaxNums) {
+		this.robotSetMaxNums = robotSetMaxNums;
+	}
+
+	/**
+	 * @return the robotMinNums
+	 */
+	public Integer getRobotMinNums() {
+		return robotMinNums;
+	}
+
+	/**
+	 * @param robotMinNums the robotMinNums to set
+	 */
+	public void setRobotMinNums(Integer robotMinNums) {
+		this.robotMinNums = robotMinNums;
+	}
+
+	/**
+	 * @return the robotMaxNums
+	 */
+	public Integer getRobotMaxNums() {
+		return robotMaxNums;
+	}
+
+	/**
+	 * @param robotMaxNums the robotMaxNums to set
+	 */
+	public void setRobotMaxNums(Integer robotMaxNums) {
+		this.robotMaxNums = robotMaxNums;
+	}
+	
+	
+
+	/**
+	 * @return the multiple
+	 */
+	public Integer getMultiple() {
+		return multiple;
+	}
+
+	/**
+	 * @param multiple the multiple to set
+	 */
+	public void setMultiple(Integer multiple) {
+		this.multiple = multiple;
+	}
+
+	public String getPlayerPhone() {
+		return playerPhone;
+	}
+
+	public void setPlayerPhone(String playerPhone) {
+		this.playerPhone = playerPhone;
+	}
+
+	public Integer getPlayerId() {
+		return playerId;
+	}
+
+	public void setPlayerId(Integer playerId) {
+		this.playerId = playerId;
+	}
+
+	public String getPlayerName() {
+		return playerName;
+	}
+
+	public void setPlayerName(String playerName) {
+		this.playerName = playerName;
+	}
+
+	public Integer getFansCount() {
+		return fansCount;
+	}
+
+	public void setFansCount(Integer fansCount) {
+		this.fansCount = fansCount;
+	}
+
+	public Integer getSeeCount() {
+		return seeCount;
+	}
+
+	public void setSeeCount(Integer seeCount) {
+		this.seeCount = seeCount;
+	}
+	
+	/**
+	 * @return the showOtherSeller
+	 */
+	public Integer getShowOtherSeller() {
+		return showOtherSeller;
+	}
+
+	/**
+	 * @param showOtherSeller
+	 *            the showOtherSeller to set
+	 */
+	public void setShowOtherSeller(Integer showOtherSeller) {
+		this.showOtherSeller = showOtherSeller;
+	}
+
+	/**
+	 * @return the signType
+	 */
+	public Integer getSignType() {
+		return signType;
+	}
+
+	/**
+	 * @param signType
+	 *            the signType to set
+	 */
+	public void setSignType(Integer signType) {
+		this.signType = signType;
+	}
+
+	/**
+	 * @return the rootRole
+	 */
+	public Integer getRootRole() {
+		return rootRole;
+	}
+
+	/**
+	 * @param rootRole
+	 *            the rootRole to set
+	 */
+	public void setRootRole(Integer rootRole) {
+		this.rootRole = rootRole;
+	}
+
+	/**
+	 * @return the isValid
+	 */
+	public Integer getIsValid() {
+		return isValid;
+	}
+
+	/**
+	 * @param isValid
+	 *            the isValid to set
+	 */
+	public void setIsValid(Integer isValid) {
+		this.isValid = isValid;
+	}
+
+	/**
+	 * @return the startTime
+	 */
+	public String getStartTime() {
+		return startTime;
+	}
+
+	/**
+	 * @param startTime
+	 *            the startTime to set
+	 */
+	public void setStartTime(String startTime) {
+		this.startTime = startTime;
+	}
+
+	/**
+	 * @return the endTime
+	 */
+	public String getEndTime() {
+		return endTime;
+	}
+
+	/**
+	 * @param endTime
+	 *            the endTime to set
+	 */
+	public void setEndTime(String endTime) {
+		this.endTime = endTime;
+	}
+
+	/**
+	 * @return the currentMonth
+	 */
+	public String getCurrentMonth() {
+		return currentMonth;
+	}
+
+	/**
+	 * @param currentMonth
+	 *            the currentMonth to set
+	 */
+	public void setCurrentMonth(String currentMonth) {
+		this.currentMonth = currentMonth;
+	}
+
+	public Integer getIncomeEggNums() {
+		return incomeEggNums;
+	}
+
+	public void setIncomeEggNums(Integer incomeEggNums) {
+		this.incomeEggNums = incomeEggNums;
+	}
+
+	public String getStringVideoType() {
+		if (null == videoType)
+			return "";
+		switch (videoType) {
+		case 1:
+			return "美食";
+		case 2:
+			return "休闲娱乐";
+		case 3:
+			return "趣玩";
+		default:
+			return "";
+		}
+	}
+
+	public void setStringVideoType(String stringVideoType) {
+		this.stringVideoType = stringVideoType;
+	}
+
+	public Integer getVideoType() {
+		return videoType;
+	}
+
+	public void setVideoType(Integer videoType) {
+		this.videoType = videoType;
+	}
+
+	public String getVideoLabel() {
+		return videoLabel;
+	}
+
+	public void setVideoLabel(String videoLabel) {
+		this.videoLabel = videoLabel;
+	}
+
+	public Integer getLiveRobotSum() {
+		return liveRobotSum;
+	}
+
+	public void setLiveRobotSum(Integer liveRobotSum) {
+		this.liveRobotSum = liveRobotSum;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	/**
+	 * @return the ids
+	 */
+	public String getIds() {
+		return ids;
+	}
+
+	/**
+	 * @param ids
+	 *            the ids to set
+	 */
+	public void setIds(String ids) {
+		this.ids = ids;
+	}
+
+	/**
+	 * @return the idList
+	 */
+	public String[] getIdList() {
+		return idList;
+	}
+
+	/**
+	 * @param idList
+	 *            the idList to set
+	 */
+	public void setIdList(String[] idList) {
+		this.idList = idList;
+	}
+
+	public Integer getAnchorId() {
+		return anchorId;
+	}
+
+	public void setAnchorId(Integer anchorId) {
+		this.anchorId = anchorId;
+	}
+
+	/**
+	 * @return the uid
+	 */
+	public Integer getUid() {
+		return uid;
+	}
+
+	/**
+	 * @param uid
+	 *            the uid to set
+	 */
+	public void setUid(Integer uid) {
+		this.uid = uid;
+	}
+
+	/**
+	 * @return the nname
+	 */
+	public String getNname() {
+		return nname;
+	}
+
+	/**
+	 * @param nname
+	 *            the nname to set
+	 */
+	public void setNname(String nname) {
+		this.nname = nname;
+	}
+
+	public String getAvatar() {
+		return avatar;
+	}
+
+	public void setAvatar(String avatar) {
+		this.avatar = avatar == null ? null : avatar.trim();
+	}
+
+	/**
+	 * @return the sex
+	 */
+	public Integer getSex() {
+		return sex;
+	}
+
+	/**
+	 * @param sex
+	 *            the sex to set
+	 */
+	public void setSex(Integer sex) {
+		this.sex = sex;
+	}
+
+	/**
+	 * @return the pageview
+	 */
+	public Integer getPageview() {
+		return pageview;
+	}
+
+	/**
+	 * @param pageview
+	 *            the pageview to set
+	 */
+	public void setPageview(Integer pageview) {
+		this.pageview = pageview;
+	}
+
+	public Integer getRegcity() {
+		return regcity;
+	}
+
+	public void setRegcity(Integer regcity) {
+		this.regcity = regcity;
+	}
+
+	/**
+	 * @return the anchorRoomNo
+	 */
+	public String getAnchorRoomNo() {
+		return anchorRoomNo;
+	}
+
+	/**
+	 * @param anchorRoomNo
+	 *            the anchorRoomNo to set
+	 */
+	public void setAnchorRoomNo(String anchorRoomNo) {
+		this.anchorRoomNo = anchorRoomNo;
+	}
+
+	public Integer getSellerid() {
+		return sellerid;
+	}
+
+	public void setSellerid(Integer sellerid) {
+		this.sellerid = sellerid;
+	}
+
+	public String getSellername() {
+		return sellername;
+	}
+
+	public void setSellername(String sellername) {
+		this.sellername = sellername == null ? null : sellername.trim();
+	}
+
+	/**
+	 * @return the sellerAlias
+	 */
+	public String getSellerAlias() {
+		return sellerAlias;
+	}
+
+	/**
+	 * @param sellerAlias
+	 *            the sellerAlias to set
+	 */
+	public void setSellerAlias(String sellerAlias) {
+		this.sellerAlias = sellerAlias;
+	}
+
+	/**
+	 * @return the longitude
+	 */
+	public Double getLongitude() {
+		return longitude;
+	}
+
+	/**
+	 * @param longitude
+	 *            the longitude to set
+	 */
+	public void setLongitude(Double longitude) {
+		this.longitude = longitude;
+	}
+
+	/**
+	 * @return the latitude
+	 */
+	public Double getLatitude() {
+		return latitude;
+	}
+
+	/**
+	 * @param latitude
+	 *            the latitude to set
+	 */
+	public void setLatitude(Double latitude) {
+		this.latitude = latitude;
+	}
+
+	public String getSellerCity() {
+		return sellerCity;
+	}
+
+	public void setSellerCity(String sellerCity) {
+		this.sellerCity = sellerCity == null ? null : sellerCity.trim();
+	}
+
+	/**
+	 * @return the sellerCityName
+	 */
+	public String getSellerCityName() {
+		return sellerCityName;
+	}
+
+	/**
+	 * @param sellerCityName
+	 *            the sellerCityName to set
+	 */
+	public void setSellerCityName(String sellerCityName) {
+		this.sellerCityName = sellerCityName;
+	}
+
+	public Boolean getSellerStatus() {
+		return sellerStatus;
+	}
+
+	public void setSellerStatus(Boolean sellerStatus) {
+		this.sellerStatus = sellerStatus;
+	}
+
+	public String getZhiboAddress() {
+		return zhiboAddress;
+	}
+
+	public void setZhiboAddress(String zhiboAddress) {
+		this.zhiboAddress = zhiboAddress == null ? null : zhiboAddress.trim();
+	}
+
+	public Integer getZhiboType() {
+		return zhiboType;
+	}
+
+	public void setZhiboType(Integer zhiboType) {
+		this.zhiboType = zhiboType;
+	}
+
+	/**
+	 * 直播类型 -1 初始 0 预告 1 正在直播 2暂停直播 3 回放 4 无回放 5 结束直播
+	 * 
+	 * @return the zhiboTypeStr
+	 */
+	public String getZhiboTypeStr() {
+		if (zhiboType == null) {
+			return null;
+		}
+		switch (zhiboType) {
+		case -1:
+			zhiboTypeStr = "初始";
+			break;
+		case 0:
+			zhiboTypeStr = "预告";
+			break;
+		case 1:
+			zhiboTypeStr = "正在直播";
+			break;
+		case 2:
+			zhiboTypeStr = "暂停直播";
+			break;
+		case 3:
+			zhiboTypeStr = "回放";
+			break;
+		case 4:
+			zhiboTypeStr = "历史通告";
+			break;
+		case 5:
+			zhiboTypeStr = "结束直播";
+			break;
+
+		default:
+			zhiboTypeStr = "初始";
+			break;
+		}
+		return zhiboTypeStr;
+	}
+
+	/**
+	 * @param zhiboTypeStr
+	 *            the zhiboTypeStr to set
+	 */
+	public void setZhiboTypeStr(String zhiboTypeStr) {
+		this.zhiboTypeStr = zhiboTypeStr;
+	}
+
+	/**
+	 * @return the zhiboTypeParam
+	 */
+	public String getZhiboTypeParam() {
+		return zhiboTypeParam;
+	}
+
+	/**
+	 * @param zhiboTypeParam
+	 *            the zhiboTypeParam to set
+	 */
+	public void setZhiboTypeParam(String zhiboTypeParam) {
+		this.zhiboTypeParam = zhiboTypeParam;
+	}
+
+	public String getZhiboPlaybackUrl() {
+		return zhiboPlaybackUrl;
+	}
+
+	public void setZhiboPlaybackUrl(String zhiboPlaybackUrl) {
+		this.zhiboPlaybackUrl = zhiboPlaybackUrl == null ? null
+				: zhiboPlaybackUrl.trim();
+	}
+
+	public String getZhiboTitle() {
+		return zhiboTitle;
+	}
+
+	public void setZhiboTitle(String zhiboTitle) {
+		this.zhiboTitle = zhiboTitle == null ? null : zhiboTitle.trim();
+	}
+
+	public String getZhiboCover() {
+		return zhiboCover;
+	}
+
+	public void setZhiboCover(String zhiboCover) {
+		this.zhiboCover = zhiboCover == null ? null : zhiboCover.trim();
+	}
+
+	/**
+	 * @return the bannerList
+	 */
+	public List<TLiveRecordBanner> getBannerList() {
+		return bannerList;
+	}
+
+	/**
+	 * @param bannerList
+	 *            the bannerList to set
+	 */
+	public void setBannerList(List<TLiveRecordBanner> bannerList) {
+		this.bannerList = bannerList;
+	}
+
+	public Date getPlanStartDate() {
+		return planStartDate;
+	}
+
+	public void setPlanStartDate(Date planStartDate) {
+		this.planStartDate = planStartDate;
+	}
+
+	/**
+	 * @return the planStartDateStr
+	 */
+	public String getPlanStartDateStr() {
+		return planStartDateStr = planStartDate == null ? null : DateUtil
+				.formatDate(planStartDate, DateUtil.Y_M_D_HM);
+	}
+
+	/**
+	 * @param planStartDateStr
+	 *            the planStartDateStr to set
+	 */
+	public void setPlanStartDateStr(String planStartDateStr) {
+		this.planStartDateStr = planStartDateStr;
+	}
+
+	public Date getPlanEndDate() {
+		return planEndDate;
+	}
+
+	public void setPlanEndDate(Date planEndDate) {
+		this.planEndDate = planEndDate;
+	}
+
+	/**
+	 * @return the planEndDateStr
+	 */
+	public String getPlanEndDateStr() {
+		return planEndDateStr = planEndDate == null ? null : DateUtil
+				.formatDate(planEndDate, DateUtil.Y_M_D_HM);
+	}
+
+	/**
+	 * @param planEndDateStr
+	 *            the planEndDateStr to set
+	 */
+	public void setPlanEndDateStr(String planEndDateStr) {
+		this.planEndDateStr = planEndDateStr;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	/**
+	 * @return the startDateStr
+	 */
+	public String getStartDateStr() {
+		return startDateStr = startDate == null ? null : DateUtil.formatDate(
+				startDate, DateUtil.Y_M_D_HM);
+	}
+
+	/**
+	 * @param startDateStr
+	 *            the startDateStr to set
+	 */
+	public void setStartDateStr(String startDateStr) {
+		this.startDateStr = startDateStr;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+	public String getEndDateStr() {
+		if (endDate == null) {
+			return null;
+		}
+		endDateStr = DateUtil.formatDate(DateUtil.Y_M_D_HM, endDate);
+		return endDateStr;
+	}
+
+	public void setEndDateStr(String endDateStr) {
+		this.endDateStr = endDateStr;
+	}
+
+	/**
+	 * @return the zhiboDuration
+	 */
+	public Integer getZhiboDuration() {
+		return zhiboDuration;
+	}
+
+	/**
+	 * @param zhiboDuration
+	 *            the zhiboDuration to set
+	 */
+	public void setZhiboDuration(Integer zhiboDuration) {
+		this.zhiboDuration = zhiboDuration;
+	}
+
+	/**
+	 * @return the zhiboDurationStr
+	 */
+	public String getZhiboDurationStr() {
+		BigDecimal zhiboDurationSecond = new BigDecimal(
+				zhiboDuration == null ? 0d : zhiboDuration.doubleValue());
+		long hours = 0;
+		Integer minute = 0;
+		hours = zhiboDurationSecond.divideToIntegralValue(new BigDecimal(3600))
+				.longValue();
+		// minute = liveDurationSecond.subtract(new
+		// BigDecimal(hours*3600)).divide(new BigDecimal(60)).intValue();
+		minute = zhiboDurationSecond.subtract(new BigDecimal(hours * 3600))
+				.divideToIntegralValue(new BigDecimal(60)).intValue();
+		zhiboDurationStr = (hours == 0 ? "" : hours + "小时") + minute + "分钟";
+		return zhiboDurationStr;
+	}
+
+	/**
+	 * @param zhiboDurationStr
+	 *            the zhiboDurationStr to set
+	 */
+	public void setZhiboDurationStr(String zhiboDurationStr) {
+		this.zhiboDurationStr = zhiboDurationStr;
+	}
+
+	public Boolean getStatus() {
+		return status;
+	}
+
+	public void setStatus(Boolean status) {
+		this.status = status;
+	}
+
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+
+	public Date getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(Date updateTime) {
+		this.updateTime = updateTime;
+	}
+
+	/**
+	 * @return the liveDate
+	 */
+	public String getLiveDate() {
+		return liveDate;
+	}
+
+	/**
+	 * @param liveDate
+	 *            the liveDate to set
+	 */
+	public void setLiveDate(String liveDate) {
+		this.liveDate = liveDate;
+	}
+
+	/**
+	 * @return the concernedNums
+	 */
+	public Integer getConcernedNums() {
+		return concernedNums;
+	}
+
+	/**
+	 * @param concernedNums
+	 *            the concernedNums to set
+	 */
+	public void setConcernedNums(Integer concernedNums) {
+		this.concernedNums = concernedNums;
+	}
+
+	/**
+	 * @return the viewCount
+	 */
+	public Integer getViewCount() {
+		return viewCount;
+	}
+
+	/**
+	 * @param viewCount
+	 *            the viewCount to set
+	 */
+	public void setViewCount(Integer viewCount) {
+		this.viewCount = viewCount;
+	}
+
+	/**
+	 * @return the showViewCount
+	 */
+	public Integer getShowViewCount() {
+		return showViewCount;
+	}
+
+	/**
+	 * @param showViewCount
+	 *            the showViewCount to set
+	 */
+	public void setShowViewCount(Integer showViewCount) {
+		this.showViewCount = showViewCount;
+	}
+
+	/**
+	 * @return the sequenceNo
+	 */
+	public Integer getSequenceNo() {
+		return sequenceNo;
+	}
+
+	/**
+	 * @param sequenceNo
+	 *            the sequenceNo to set
+	 */
+	public void setSequenceNo(Integer sequenceNo) {
+		this.sequenceNo = sequenceNo;
+	}
+
+	/**
+	 * @return the sellerSequNo
+	 */
+	public Integer getSellerSequNo() {
+		return sellerSequNo;
+	}
+
+	/**
+	 * @param sellerSequNo
+	 *            the sellerSequNo to set
+	 */
+	public void setSellerSequNo(Integer sellerSequNo) {
+		this.sellerSequNo = sellerSequNo;
+	}
+
+	/**
+	 * @return the seqLockStatus
+	 */
+	public Integer getSeqLockStatus() {
+		return seqLockStatus;
+	}
+
+	/**
+	 * @return the isqianzhi
+	 */
+	public Integer getIsqianzhi() {
+		return isqianzhi;
+	}
+
+	/**
+	 * @param isqianzhi
+	 *            the isqianzhi to set
+	 */
+	public void setIsqianzhi(Integer isqianzhi) {
+		this.isqianzhi = isqianzhi;
+	}
+
+	/**
+	 * @param seqLockStatus
+	 *            the seqLockStatus to set
+	 */
+	public void setSeqLockStatus(Integer seqLockStatus) {
+		this.seqLockStatus = seqLockStatus;
+	}
+
+	/**
+	 * @return the ishorizontalscreen
+	 */
+	public Integer getIshorizontalscreen() {
+		return ishorizontalscreen;
+	}
+
+	/**
+	 * @param ishorizontalscreen
+	 *            the ishorizontalscreen to set
+	 */
+	public void setIshorizontalscreen(Integer ishorizontalscreen) {
+		this.ishorizontalscreen = ishorizontalscreen;
+	}
+
+	/**
+	 * @return the deviceType
+	 */
+	public Integer getDeviceType() {
+		return deviceType;
+	}
+
+	/**
+	 * @param deviceType
+	 *            the deviceType to set
+	 */
+	public void setDeviceType(Integer deviceType) {
+		this.deviceType = deviceType;
+	}
+
+	/**
+	 * @return the vedioUrl
+	 */
+	public String getVedioUrl() {
+		return vedioUrl;
+	}
+
+	/**
+	 * @param vedioUrl
+	 *            the vedioUrl to set
+	 */
+	public void setVedioUrl(String vedioUrl) {
+		this.vedioUrl = vedioUrl;
+	}
+
+	/**
+	 * @return the channelId
+	 */
+	public String getChannelId() {
+		return channelId;
+	}
+
+	/**
+	 * @param channelId
+	 *            the channelId to set
+	 */
+	public void setChannelId(String channelId) {
+		this.channelId = channelId;
+	}
+
+	/**
+	 * @return the channelStatus
+	 */
+	public Integer getChannelStatus() {
+		return channelStatus;
+	}
+
+	/**
+	 * @param channelStatus
+	 *            the channelStatus to set
+	 */
+	public void setChannelStatus(Integer channelStatus) {
+		this.channelStatus = channelStatus;
+	}
+
+	/**
+	 * @return the operationType
+	 */
+	public String getOperationType() {
+		return operationType;
+	}
+
+	/**
+	 * @param operationType
+	 *            the operationType to set
+	 */
+	public void setOperationType(String operationType) {
+		this.operationType = operationType;
+	}
+
+	/**
+	 * @return the offset
+	 */
+	public Integer getOffset() {
+		return offset;
+	}
+
+	/**
+	 * @param offset
+	 *            the offset to set
+	 */
+	public void setOffset(Integer offset) {
+		this.offset = offset;
+	}
+
+	/**
+	 * @return the isAll
+	 */
+	public String getIsAll() {
+		return isAll;
+	}
+
+	/**
+	 * @param isAll
+	 *            the isAll to set
+	 */
+	public void setIsAll(String isAll) {
+		this.isAll = isAll;
+	}
+
+	/**
+	 * @return the liveMinute
+	 */
+	public BigDecimal getLiveMinute() {
+		return liveMinute;
+	}
+
+	/**
+	 * @param liveMinute
+	 *            the liveMinute to set
+	 */
+	public void setLiveMinute(BigDecimal liveMinute) {
+		this.liveMinute = liveMinute;
+	}
+
+	/**
+	 * @return the liveTimeStr
+	 */
+	public String getLiveTimeStr() {
+		long hours = 0;
+		Integer minute = 0;
+		if (liveMinute != null) {
+			hours = liveMinute.divideToIntegralValue(new BigDecimal(60))
+					.longValue();
+			minute = liveMinute.remainder(new BigDecimal(60)).intValue();
+		}
+		liveTimeStr = (hours == 0 ? "" : hours + "小时") + minute + "分钟";
+		return liveTimeStr;
+	}
+
+	/**
+	 * @param liveTimeStr
+	 *            the liveTimeStr to set
+	 */
+	public void setLiveTimeStr(String liveTimeStr) {
+		this.liveTimeStr = liveTimeStr;
+	}
+
+	/**
+	 * @return the rowNum
+	 */
+	public long getRowNum() {
+		return rowNum;
+	}
+
+	/**
+	 * @param rowNum
+	 *            the rowNum to set
+	 */
+	public void setRowNum(long rowNum) {
+		this.rowNum = rowNum;
+	}
+
+	/**
+	 * @return the isAppoint
+	 */
+	public Integer getIsAppoint() {
+		return isAppoint;
+	}
+
+	/**
+	 * @param isAppoint
+	 *            the isAppoint to set
+	 */
+	public void setIsAppoint(Integer isAppoint) {
+		this.isAppoint = isAppoint;
+	}
+
+	/**
+	 * @return the telphones
+	 */
+	public String getTelphones() {
+		return telphones;
+	}
+
+	/**
+	 * @param telphones
+	 *            the telphones to set
+	 */
+	public void setTelphones(String telphones) {
+		this.telphones = telphones == null ? null : telphones.trim();
+	}
+
+	/**
+	 * @return the introduce
+	 */
+	public String getIntroduce() {
+		return introduce;
+	}
+
+	/**
+	 * @param introduce
+	 *            the introduce to set
+	 */
+	public void setIntroduce(String introduce) {
+		this.introduce = introduce;
+	}
+
+	/**
+	 * @return the haveCoupon
+	 */
+	public String getHaveCoupon() {
+		return haveCoupon;
+	}
+
+	/**
+	 * @param haveCoupon
+	 *            the haveCoupon to set
+	 */
+	public void setHaveCoupon(String haveCoupon) {
+		this.haveCoupon = haveCoupon;
+	}
+
+	public String getZhiboThumbnail() {
+		return zhiboThumbnail;
+	}
+
+	public void setZhiboThumbnail(String zhiboThumbnail) {
+		this.zhiboThumbnail = zhiboThumbnail;
+	}
+
+	/**
+	 * @return the liveStartType
+	 */
+	public Integer getLiveStartType() {
+		return liveStartType;
+	}
+
+	/**
+	 * @param liveStartType
+	 *            the liveStartType to set
+	 */
+	public void setLiveStartType(Integer liveStartType) {
+		this.liveStartType = liveStartType;
+	}
+
+	/**
+	 * 0 通告开播 1 自定义开播
+	 * 
+	 * @return the liveStartTypeStr
+	 */
+	public String getLiveStartTypeStr() {
+		if (liveStartType == null) {
+			return null;
+		}
+		switch (liveStartType) {
+		case 0:
+			liveStartTypeStr = "通告开播";
+			break;
+		case 1:
+			liveStartTypeStr = "自定义开播";
+			break;
+		default:
+			break;
+		}
+		return liveStartTypeStr;
+	}
+
+	/**
+	 * @param liveStartTypeStr
+	 *            the liveStartTypeStr to set
+	 */
+	public void setLiveStartTypeStr(String liveStartTypeStr) {
+		this.liveStartTypeStr = liveStartTypeStr;
+	}
+
+	/**
+	 * @return the recommended
+	 */
+	public Integer getRecommended() {
+		return recommended;
+	}
+
+	/**
+	 * @param recommended
+	 *            the recommended to set
+	 */
+	public void setRecommended(Integer recommended) {
+		this.recommended = recommended;
+	}
+
+	/**
+	 * @return the stick
+	 */
+	public Integer getStick() {
+		return stick;
+	}
+
+	/**
+	 * @param stick
+	 *            the stick to set
+	 */
+	public void setStick(Integer stick) {
+		this.stick = stick;
+	}
+
+	/**
+	 * @return the liveTopic
+	 */
+	public Integer getLiveTopic() {
+		return liveTopic;
+	}
+
+	/**
+	 * @param liveTopic
+	 *            the liveTopic to set
+	 */
+	public void setLiveTopic(Integer liveTopic) {
+		this.liveTopic = liveTopic;
+	}
+
+	/**
+	 * @return the anchorRoomPassword
+	 */
+	public String getAnchorRoomPassword() {
+		return anchorRoomPassword;
+	}
+
+	/**
+	 * @param anchorRoomPassword
+	 *            the anchorRoomPassword to set
+	 */
+	public void setAnchorRoomPassword(String anchorRoomPassword) {
+		this.anchorRoomPassword = anchorRoomPassword;
+	}
+
+	/**
+	 * @return the picUrls
+	 */
+	public String getPicUrls() {
+		return picUrls;
+	}
+
+	/**
+	 * @param picUrls
+	 *            the picUrls to set
+	 */
+	public void setPicUrls(String picUrls) {
+		this.picUrls = picUrls;
+	}
+
+	/**
+	 * @return the tagIds
+	 */
+	public String getTagIds() {
+		return tagIds;
+	}
+
+	/**
+	 * @param tagIds
+	 *            the tagIds to set
+	 */
+	public void setTagIds(String tagIds) {
+		this.tagIds = tagIds;
+	}
+
+	/**
+	 * @return the showValue
+	 */
+	public String getShowValue() {
+		return showValue;
+	}
+
+	/**
+	 * @param showValue
+	 *            the showValue to set
+	 */
+	public void setShowValue(String showValue) {
+		this.showValue = showValue;
+	}
+
+	public Integer getIsCustomShare() {
+		return isCustomShare;
+	}
+
+	public void setIsCustomShare(Integer isCustomShare) {
+		this.isCustomShare = isCustomShare;
+	}
+
+	public String getCustomShareTitle() {
+		return customShareTitle;
+	}
+
+	public void setCustomShareTitle(String customShareTitle) {
+		this.customShareTitle = customShareTitle == null ? null
+				: customShareTitle.trim();
+	}
+
+	public String getCustomShareDesc() {
+		return customShareDesc;
+	}
+
+	public void setCustomShareDesc(String customShareDesc) {
+		this.customShareDesc = customShareDesc == null ? null : customShareDesc
+				.trim();
+	}
+
+	public Integer getModuleType() {
+		return moduleType;
+	}
+
+	public void setModuleType(Integer moduleType) {
+		this.moduleType = moduleType;
+	}
+	
+
+	@Override
+	public String toString() {
+		return "TLiveRecord [id=" + id + ", ids=" + ids + ", idList="
+				+ Arrays.toString(idList) + ", anchorId=" + anchorId + ", uid="
+				+ uid + ", nname=" + nname + ", avatar=" + avatar + ", sex="
+				+ sex + ", pageview=" + pageview + ", regcity=" + regcity
+				+ ", anchorRoomNo=" + anchorRoomNo + ", sellerid=" + sellerid
+				+ ", sellername=" + sellername + ", sellerAlias=" + sellerAlias
+				+ ", longitude=" + longitude + ", latitude=" + latitude
+				+ ", sellerCity=" + sellerCity + ", sellerCityName="
+				+ sellerCityName + ", sellerStatus=" + sellerStatus
+				+ ", zhiboAddress=" + zhiboAddress + ", zhiboType=" + zhiboType
+				+ ", zhiboTypeStr=" + zhiboTypeStr + ", zhiboTypeParam="
+				+ zhiboTypeParam + ", zhiboPlaybackUrl=" + zhiboPlaybackUrl
+				+ ", zhiboTitle=" + zhiboTitle + ", zhiboCover=" + zhiboCover
+				+ ", bannerList=" + bannerList + ", planStartDate="
+				+ planStartDate + ", planStartDateStr=" + planStartDateStr
+				+ ", planEndDate=" + planEndDate + ", planEndDateStr="
+				+ planEndDateStr + ", startDate=" + startDate
+				+ ", startDateStr=" + startDateStr + ", endDate=" + endDate
+				+ ", endDateStr=" + endDateStr + ", zhiboDuration="
+				+ zhiboDuration + ", zhiboDurationStr=" + zhiboDurationStr
+				+ ", status=" + status + ", createTime=" + createTime
+				+ ", updateTime=" + updateTime + ", liveDate=" + liveDate
+				+ ", concernedNums=" + concernedNums + ", viewCount="
+				+ viewCount + ", showViewCount=" + showViewCount
+				+ ", sequenceNo=" + sequenceNo + ", sellerSequNo="
+				+ sellerSequNo + ", seqLockStatus=" + seqLockStatus
+				+ ", isqianzhi=" + isqianzhi + ", ishorizontalscreen="
+				+ ishorizontalscreen + ", deviceType=" + deviceType
+				+ ", vedioUrl=" + vedioUrl + ", channelId=" + channelId
+				+ ", channelStatus=" + channelStatus + ", operationType="
+				+ operationType + ", offset=" + offset + ", isAll=" + isAll
+				+ ", liveMinute=" + liveMinute + ", liveTimeStr=" + liveTimeStr
+				+ ", rowNum=" + rowNum + ", liveRobotSum=" + liveRobotSum
+				+ ", videoType=" + videoType + ", videoLabel=" + videoLabel
+				+ ", stringVideoType=" + stringVideoType + ", isAppoint="
+				+ isAppoint + ", telphones=" + telphones + ", introduce="
+				+ introduce + ", haveCoupon=" + haveCoupon
+				+ ", zhiboThumbnail=" + zhiboThumbnail + ", liveStartType="
+				+ liveStartType + ", liveStartTypeStr=" + liveStartTypeStr
+				+ ", recommended=" + recommended + ", stick=" + stick
+				+ ", liveTopic=" + liveTopic + ", anchorRoomPassword="
+				+ anchorRoomPassword + ", picUrls=" + picUrls + ", tagIds="
+				+ tagIds + ", incomeEggNums=" + incomeEggNums
+				+ ", showOtherSeller=" + showOtherSeller + ", signType="
+				+ signType + ", rootRole=" + rootRole + ", isValid=" + isValid
+				+ ", startTime=" + startTime + ", endTime=" + endTime
+				+ ", currentMonth=" + currentMonth + ", showValue=" + showValue
+				+ ", isCustomShare=" + isCustomShare + ", customShareTitle="
+				+ customShareTitle + ", customShareDesc=" + customShareDesc
+				+ ", rtype="  + "]";
+	}
+
+	
+
+}

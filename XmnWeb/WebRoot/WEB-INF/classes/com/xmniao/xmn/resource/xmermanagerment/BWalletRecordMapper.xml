@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.xmermanagerment.dao.BWalletRecordDao" >
+
+	
+  <resultMap id="BWalletRecordMap" type="BWalletRecord" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="accountid" property="accountid" jdbcType="INTEGER" />
+    <result column="rtype" property="rtype" jdbcType="INTEGER" />
+    <result column="balance" property="balance" jdbcType="DECIMAL" />
+    <result column="qrebate" property="qrebate" jdbcType="DECIMAL" />
+    <result column="hrebate" property="hrebate" jdbcType="DECIMAL" />
+    <result column="commision" property="commision" jdbcType="DECIMAL" />
+    <result column="qcommision" property="qcommision" jdbcType="DECIMAL" />
+    <result column="hcommision" property="hcommision" jdbcType="DECIMAL" />
+    <result column="income" property="income" jdbcType="DECIMAL" />
+    <result column="qincome" property="qincome" jdbcType="DECIMAL" />
+    <result column="hincome" property="hincome" jdbcType="DECIMAL" />
+    <result column="zbalance" property="zbalance" jdbcType="DECIMAL" />
+    <result column="qzbalance" property="qzbalance" jdbcType="DECIMAL" />
+    <result column="hzbalance" property="hzbalance" jdbcType="DECIMAL" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="qamount" property="qamount" jdbcType="DECIMAL" />
+    <result column="hamount" property="hamount" jdbcType="DECIMAL" />
+    <result column="Integral" property="integral" jdbcType="DECIMAL" />
+    <result column="qIntegral" property="qintegral" jdbcType="DECIMAL" />
+    <result column="hIntegral" property="hintegral" jdbcType="DECIMAL" />
+    <result column="sdate" property="sdate" jdbcType="TIMESTAMP" />
+    <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="expenses" property="expenses" jdbcType="DECIMAL" />
+  </resultMap>
+  
+  
+  <sql id="Base_Column_List" >
+    id, accountid, rtype, balance, qrebate, hrebate, commision, qcommision, hcommision, 
+    income, qincome, hincome, zbalance, qzbalance, hzbalance, amount, qamount, hamount, 
+    Integral, qIntegral, hIntegral, sdate, remarks, description, expenses
+  </sql>
+  
+	<!-- Where查询条件 -->
+	<sql id="whereSQL">
+		<if test=" null != accountid">
+			AND accountid =#{accountid}
+		</if>
+		<!-- 佣金-->
+		<if test=" 'commision' == moneyType">
+			AND rtype = '24'
+		</if>
+		<!-- 流水 -->
+		<if test=" 'balance' == moneyType">
+			AND rtype = '22'
+		</if>
+		<if test=" null != remarks and ''!=remarks">
+			AND remarks =#{remarks}
+		</if>
+	</sql>
+  
+  
+  <select id="selectByPrimaryKey" resultMap="BWalletRecordMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from b_wallet_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from b_wallet_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.xmermanagerment.entity.BWalletRecord" >
+    insert into b_wallet_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="accountid != null" >
+        accountid,
+      </if>
+      <if test="rtype != null" >
+        rtype,
+      </if>
+      <if test="balance != null" >
+        balance,
+      </if>
+      <if test="qrebate != null" >
+        qrebate,
+      </if>
+      <if test="hrebate != null" >
+        hrebate,
+      </if>
+      <if test="commision != null" >
+        commision,
+      </if>
+      <if test="qcommision != null" >
+        qcommision,
+      </if>
+      <if test="hcommision != null" >
+        hcommision,
+      </if>
+      <if test="income != null" >
+        income,
+      </if>
+      <if test="qincome != null" >
+        qincome,
+      </if>
+      <if test="hincome != null" >
+        hincome,
+      </if>
+      <if test="zbalance != null" >
+        zbalance,
+      </if>
+      <if test="qzbalance != null" >
+        qzbalance,
+      </if>
+      <if test="hzbalance != null" >
+        hzbalance,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="qamount != null" >
+        qamount,
+      </if>
+      <if test="hamount != null" >
+        hamount,
+      </if>
+      <if test="integral != null" >
+        Integral,
+      </if>
+      <if test="qintegral != null" >
+        qIntegral,
+      </if>
+      <if test="hintegral != null" >
+        hIntegral,
+      </if>
+      <if test="sdate != null" >
+        sdate,
+      </if>
+      <if test="remarks != null" >
+        remarks,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="expenses != null" >
+        expenses,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="accountid != null" >
+        #{accountid,jdbcType=INTEGER},
+      </if>
+      <if test="rtype != null" >
+        #{rtype,jdbcType=INTEGER},
+      </if>
+      <if test="balance != null" >
+        #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="qrebate != null" >
+        #{qrebate,jdbcType=DECIMAL},
+      </if>
+      <if test="hrebate != null" >
+        #{hrebate,jdbcType=DECIMAL},
+      </if>
+      <if test="commision != null" >
+        #{commision,jdbcType=DECIMAL},
+      </if>
+      <if test="qcommision != null" >
+        #{qcommision,jdbcType=DECIMAL},
+      </if>
+      <if test="hcommision != null" >
+        #{hcommision,jdbcType=DECIMAL},
+      </if>
+      <if test="income != null" >
+        #{income,jdbcType=DECIMAL},
+      </if>
+      <if test="qincome != null" >
+        #{qincome,jdbcType=DECIMAL},
+      </if>
+      <if test="hincome != null" >
+        #{hincome,jdbcType=DECIMAL},
+      </if>
+      <if test="zbalance != null" >
+        #{zbalance,jdbcType=DECIMAL},
+      </if>
+      <if test="qzbalance != null" >
+        #{qzbalance,jdbcType=DECIMAL},
+      </if>
+      <if test="hzbalance != null" >
+        #{hzbalance,jdbcType=DECIMAL},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="qamount != null" >
+        #{qamount,jdbcType=DECIMAL},
+      </if>
+      <if test="hamount != null" >
+        #{hamount,jdbcType=DECIMAL},
+      </if>
+      <if test="integral != null" >
+        #{integral,jdbcType=DECIMAL},
+      </if>
+      <if test="qintegral != null" >
+        #{qintegral,jdbcType=DECIMAL},
+      </if>
+      <if test="hintegral != null" >
+        #{hintegral,jdbcType=DECIMAL},
+      </if>
+      <if test="sdate != null" >
+        #{sdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remarks != null" >
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="expenses != null" >
+        #{expenses,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.xmermanagerment.entity.BWalletRecord" >
+    update b_wallet_record
+    <set >
+      <if test="accountid != null" >
+        accountid = #{accountid,jdbcType=INTEGER},
+      </if>
+      <if test="rtype != null" >
+        rtype = #{rtype,jdbcType=INTEGER},
+      </if>
+      <if test="balance != null" >
+        balance = #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="qrebate != null" >
+        qrebate = #{qrebate,jdbcType=DECIMAL},
+      </if>
+      <if test="hrebate != null" >
+        hrebate = #{hrebate,jdbcType=DECIMAL},
+      </if>
+      <if test="commision != null" >
+        commision = #{commision,jdbcType=DECIMAL},
+      </if>
+      <if test="qcommision != null" >
+        qcommision = #{qcommision,jdbcType=DECIMAL},
+      </if>
+      <if test="hcommision != null" >
+        hcommision = #{hcommision,jdbcType=DECIMAL},
+      </if>
+      <if test="income != null" >
+        income = #{income,jdbcType=DECIMAL},
+      </if>
+      <if test="qincome != null" >
+        qincome = #{qincome,jdbcType=DECIMAL},
+      </if>
+      <if test="hincome != null" >
+        hincome = #{hincome,jdbcType=DECIMAL},
+      </if>
+      <if test="zbalance != null" >
+        zbalance = #{zbalance,jdbcType=DECIMAL},
+      </if>
+      <if test="qzbalance != null" >
+        qzbalance = #{qzbalance,jdbcType=DECIMAL},
+      </if>
+      <if test="hzbalance != null" >
+        hzbalance = #{hzbalance,jdbcType=DECIMAL},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="qamount != null" >
+        qamount = #{qamount,jdbcType=DECIMAL},
+      </if>
+      <if test="hamount != null" >
+        hamount = #{hamount,jdbcType=DECIMAL},
+      </if>
+      <if test="integral != null" >
+        Integral = #{integral,jdbcType=DECIMAL},
+      </if>
+      <if test="qintegral != null" >
+        qIntegral = #{qintegral,jdbcType=DECIMAL},
+      </if>
+      <if test="hintegral != null" >
+        hIntegral = #{hintegral,jdbcType=DECIMAL},
+      </if>
+      <if test="sdate != null" >
+        sdate = #{sdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remarks != null" >
+        remarks = #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="expenses != null" >
+        expenses = #{expenses,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+    <!-- 根据钱包ID获取钱包信息 -->
+	<select id="getWalletRecordList" resultMap="BWalletRecordMap" parameterType="com.xmniao.xmn.core.xmermanagerment.entity.BWalletRecord" >
+	   select 
+	   		<include refid="Base_Column_List" />
+	   from b_wallet_record
+	   <where>
+			1=1
+			<include refid="whereSQL"></include>
+		</where>
+		ORDER BY sdate DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<!-- 获取钱包记录数据条数 -->
+	<select id="getWalletRecordCount" resultType="long" parameterType="com.xmniao.xmn.core.xmermanagerment.entity.BWalletRecord" >
+	    select 
+	    	count(1)
+	    from b_wallet_record
+	    <where>
+	    	1=1
+	    	<include refid="whereSQL"></include>
+	    </where>
+  	</select>
+  
+</mapper>

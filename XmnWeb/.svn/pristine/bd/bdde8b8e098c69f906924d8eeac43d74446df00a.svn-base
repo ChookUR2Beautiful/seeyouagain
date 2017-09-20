@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.fresh.dao.FreshTypeDao">
+	<parameterMap id="freshType" type="com.xmniao.xmn.core.fresh.entity.FreshType"></parameterMap>
+
+	<resultMap id="freshTypeMap" type="com.xmniao.xmn.core.fresh.entity.FreshType" >
+	    <id column="id" property="id" jdbcType="INTEGER" />
+	    <result column="name" property="name" jdbcType="VARCHAR" />
+	    <result column="fid" property="fid" jdbcType="INTEGER" />
+	    <result column="dstatus" property="dstatus" jdbcType="INTEGER" />
+	    <result column="rdate" property="rdate" jdbcType="TIMESTAMP" />
+	    <result column="udate" property="udate" jdbcType="TIMESTAMP" />
+	    <result column="sort" property="sort" jdbcType="INTEGER" />
+	    <result column="show_big_img" property="showBigImg" jdbcType="VARCHAR" />
+	    <result column="show_small_img" property="showSmallImg" jdbcType="VARCHAR" />
+	    <result column="hot" property="hot" jdbcType="BIT" />
+	    <result column="type" property="type" jdbcType="BIT" />
+	    <result column="url" property="url" jdbcType="VARCHAR" />
+    </resultMap>
+
+	<sql id="Base_Column_List" >
+	    t_fresh_type.id, 
+	    t_fresh_type.name, 
+	    t_fresh_type.fid, 
+	    t_fresh_type.dstatus, 
+	    t_fresh_type.rdate, 
+	    t_fresh_type.udate, 
+	    t_fresh_type.sort, 
+	    t_fresh_type.show_big_img, 
+	    t_fresh_type.show_small_img, 
+	    t_fresh_type.hot, 
+	    t_fresh_type.type, 
+	    t_fresh_type.url
+  	</sql>
+
+	<!-- 查询所有类别 -->
+	<select id="getAllFreshType" resultType="com.xmniao.xmn.core.fresh.entity.FreshType">
+		select 
+			<include refid="Base_Column_List" />
+		from  t_fresh_type
+	</select>
+	
+	<!-- 查询一级标签  -->
+	<select id="getParentList" resultMap="freshTypeMap" parameterMap="freshType">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			t_fresh_type t
+		WHERE
+			t.fid = '0'
+		ORDER BY
+			t.sort DESC LIMIT ${(page-1)*limit},#{limit}
+	</select>
+	
+	<!-- 查询二级标签  -->
+	<select id="getSubList" resultMap="freshTypeMap" parameterType="java.util.ArrayList">
+		SELECT
+			id,
+			name,
+			fid,
+			sort
+		FROM
+			t_fresh_type
+		WHERE 1=1
+			<if test="list.size>0">
+			and fid IN 
+			<foreach item="item" index="index" collection="list"  open="(" separator="," close=") ">
+				 #{item.id}
+			</foreach>
+			</if>
+			and dstatus = 0
+		ORDER BY
+			sort DESC
+	</select>
+	
+	<!-- 获取一级分类数量 -->
+	<select id="count" resultType="Long" parameterMap="freshType">
+		select count(id) from t_fresh_type where fid='0' and dstatus= 0 
+	</select>
+	
+	<!-- 获取所有一级分类 -->
+	<select id="getParent" resultMap="freshTypeMap" >
+		select 
+			<include refid="Base_Column_List" />
+		 from t_fresh_type where fid='0' ORDER BY sort DESC 
+	</select>
+	
+	<!-- 添加生鲜类别 -->
+	<insert id="add" parameterType="com.xmniao.xmn.core.fresh.entity.FreshType" >
+	    insert into t_fresh_type
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="id != null" >
+	        id,
+	      </if>
+	      <if test="name != null" >
+	        name,
+	      </if>
+	      <if test="fid != null" >
+	        fid,
+	      </if>
+	      <if test="dstatus != null" >
+	        dstatus,
+	      </if>
+	      <if test="rdate != null" >
+	        rdate,
+	      </if>
+	      <if test="udate != null" >
+	        udate,
+	      </if>
+	      <if test="sort != null" >
+	        sort,
+	      </if>
+	      <if test="showBigImg != null" >
+	        show_big_img,
+	      </if>
+	      <if test="showSmallImg != null" >
+	        show_small_img,
+	      </if>
+	      <if test="hot != null" >
+	        hot,
+	      </if>
+	      <if test="type != null" >
+	        type,
+	      </if>
+	      <if test="url != null" >
+	        url,
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="id != null" >
+	        #{id,jdbcType=INTEGER},
+	      </if>
+	      <if test="name != null" >
+	        #{name,jdbcType=VARCHAR},
+	      </if>
+	      <if test="fid != null" >
+	        #{fid,jdbcType=INTEGER},
+	      </if>
+	      <if test="dstatus != null" >
+	        #{dstatus,jdbcType=INTEGER},
+	      </if>
+	      <if test="rdate != null" >
+	        #{rdate,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="udate != null" >
+	        #{udate,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="sort != null" >
+	        #{sort,jdbcType=INTEGER},
+	      </if>
+	      <if test="showBigImg != null" >
+	        #{showBigImg,jdbcType=VARCHAR},
+	      </if>
+	      <if test="showSmallImg != null" >
+	        #{showSmallImg,jdbcType=VARCHAR},
+	      </if>
+	      <if test="hot != null" >
+	        #{hot,jdbcType=BIT},
+	      </if>
+	      <if test="type != null" >
+	        #{type,jdbcType=BIT},
+	      </if>
+	      <if test="url != null" >
+	        #{url,jdbcType=VARCHAR},
+	      </if>
+	    </trim>
+  	</insert>
+  	
+	<!-- 更新生鲜类别 -->
+	<update id="update" parameterType="com.xmniao.xmn.core.fresh.entity.FreshType" >
+	    update t_fresh_type
+	    <set >
+	      <if test="name != null" >
+	        name = #{name,jdbcType=VARCHAR},
+	      </if>
+	      <if test="fid != null" >
+	        fid = #{fid,jdbcType=INTEGER},
+	      </if>
+	      <if test="dstatus != null" >
+	        dstatus = #{dstatus,jdbcType=INTEGER},
+	      </if>
+	      <if test="rdate != null" >
+	        rdate = #{rdate,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="udate != null" >
+	        udate = #{udate,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="sort != null" >
+	        sort = #{sort,jdbcType=INTEGER},
+	      </if>
+	      <if test="showBigImg != null" >
+	        show_big_img = #{showBigImg,jdbcType=VARCHAR},
+	      </if>
+	      <if test="showSmallImg != null" >
+	        show_small_img = #{showSmallImg,jdbcType=VARCHAR},
+	      </if>
+	      <if test="hot != null" >
+	        hot = #{hot,jdbcType=BIT},
+	      </if>
+	      <if test="type != null" >
+	        type = #{type,jdbcType=BIT},
+	      </if>
+	      <if test="url != null" >
+	        url = #{url,jdbcType=VARCHAR},
+	      </if>
+	    </set>
+	    where id = #{id,jdbcType=INTEGER}
+  	</update>
+	<select id="getList" parameterType="com.xmniao.xmn.core.fresh.entity.FreshType" resultMap="freshTypeMap" >
+	    select  <include refid="Base_Column_List" /> 
+	    from t_fresh_type where 1=1
+	      <if test="name != null" >
+	        and name = #{name,jdbcType=VARCHAR}
+	      </if>
+	      <if test="fid != null" >
+	       adn  fid = #{fid,jdbcType=INTEGER}
+	      </if>
+	      <if test="dstatus != null" >
+	       and dstatus = #{dstatus,jdbcType=INTEGER}
+	      </if>
+	      <if test="rdate != null" >
+	       and  rdate = #{rdate,jdbcType=TIMESTAMP}
+	      </if>
+	      <if test="udate != null" >
+	        and udate = #{udate,jdbcType=TIMESTAMP}
+	      </if>
+	      <if test="sort != null" >
+	       and  sort = #{sort,jdbcType=INTEGER}
+	      </if>
+	      <if test="showBigImg != null" >
+	       and  show_big_img = #{showBigImg,jdbcType=VARCHAR}
+	      </if>
+	      <if test="showSmallImg != null" >
+	        and show_small_img = #{showSmallImg,jdbcType=VARCHAR}
+	      </if>
+	      <if test="hot != null" >
+	       and  hot = #{hot,jdbcType=BIT}
+	      </if>
+	      <if test="type != null" >
+	        and type = #{type,jdbcType=BIT}
+	      </if>
+	      <if test="url != null" >
+	       and  url = #{url,jdbcType=VARCHAR}
+	      </if>
+	      <if test="id != null" >
+	       and  id = #{id,jdbcType=INTEGER}
+	      </if>
+  	</select>
+	
+	<!--  -->
+	<select id="getObject" resultMap="freshTypeMap" parameterType="Long">
+		SELECT 
+			<include refid="Base_Column_List" />
+		 FROM t_fresh_type WHERE id = #{0}
+	</select>
+	
+	<select id="getALLFather" resultMap="freshTypeMap">
+		select <include refid="Base_Column_List" /> FROM t_fresh_type WHERE  fid = 0  and dstatus=0 order by sort desc
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="findChild" resultMap="freshTypeMap" >
+		select <include refid="Base_Column_List" /> FROM t_fresh_type where fid=#{id} and dstatus=0
+	</select>
+	
+	<select id="selectFatherTotal" resultType="java.lang.Long">
+		select count(1) FROM t_fresh_type where fid= 0 and dstatus=0
+	</select> 
+
+	<delete id="delete" >
+		delete from t_fresh_type where id=#{id} or fid=#{id}
+	</delete>	
+	
+	<update id="deleteMine">
+		update t_fresh_type set dstatus = 1,udate=now()   
+		<choose>
+		<when test="childId != null and childId != '' and parentId != null and parentId != ''">
+			where id in (${childId},${parentId}) or fid in (${parentId})
+		</when>
+		<when test="childId != null and childId != ''">
+			where id in (${childId})
+		</when>
+		<when test="parentId != null and parentId != ''">
+			 where id  in (${parentId}) or fid in (${parentId})
+		</when>
+		 </choose>
+	</update>
+	
+	<select id="findAll" resultMap="freshTypeMap">
+		select 	<include refid="Base_Column_List" />
+		FROM
+			t_fresh_type
+			where dstatus=0
+	</select>
+	
+	<select id="hasParentBrand" resultMap="freshTypeMap">
+		select 	<include refid="Base_Column_List" />
+		from (SELECT * FROM `t_fresh_type`  where fid in (${parentId}) or id in (${parentId}) ) t_fresh_type  join t_fresh_brand brand on t_fresh_type.id=brand.type_id where brand.`status` = 0  ;
+	</select>
+	
+	<select id="hasParentProduct" resultMap="freshTypeMap">
+		select 	<include refid="Base_Column_List" />
+		 from (SELECT * FROM `t_fresh_type`  where fid in (${parentId}) or id in (${parentId})) t_fresh_type join t_product_info product on t_fresh_type.id= product.classa  ;
+	</select>
+	
+	<select id="hasChildBrand" resultMap="freshTypeMap">
+		select 	<include refid="Base_Column_List" />
+		FROM `t_fresh_type`  join t_fresh_brand brand on t_fresh_type.id=brand.type_id where brand.`status` = 0 and t_fresh_type.id in (${childId}) ;
+	</select>
+	
+	<select id="hasChildProduct" resultMap="freshTypeMap">
+		select 	<include refid="Base_Column_List" />
+		FROM `t_fresh_type`  join t_product_info product on t_fresh_type.id= product.classa where  t_fresh_type.id in (${childId}) ;
+	</select>
+</mapper>

@@ -1,0 +1,519 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.xmermanagerment.dao.BXmerDao">
+    
+    <parameterMap type="BXmer" id="bxmer" />
+    <parameterMap type="XmerSeller" id="xmerSeller"/>
+	<resultMap type="BXmer" id="bxmerMap">
+		<result column="id" property="id" />
+		<result column="uid" property="uid" />
+		<result column="name" property="name" />
+		<result column="rtype" property="rtype" />
+		<result column="phoneid" property="phoneid" />
+		<result column="email" property="email" />
+		<result column="weixinid" property="weixinid" />
+		<result column="age" property="age" />
+		<result column="achievement" property="achievement" />
+		<result column="partner_nums" property="partnerNums" />
+		<result column="parentid" property="parentid" />
+		<result column="levels" property="levels" />
+		<result column="level_swap" property="levelSwap" />
+		<result column="stock" property="stock" />
+		<result column="sold_nums" property="soldNums" />
+		<result column="sdate" property="sdate" />
+		<result column="status" property="status" />
+		<result column="update_date" property="updateDate" />
+	</resultMap>
+	<resultMap type="XmerSeller" id="xmerSellerMap">
+		<result column="sellerid" property="sellerid" />
+		<result column="sellername" property="sellername" />
+		<result column="address" property="address" />
+		<result column="typename" property="typename" />
+		<result column="uid" property="uid" />
+		<result column="status" property="status" />
+		<result column="evalidity" property="evalidity" />
+		<result column="phoneid" property="phoneid" />
+		<result column="saas_type" property="saasType" />
+	</resultMap>
+	<resultMap type="com.xmniao.xmn.core.xmermanagerment.entity.TSaasOrder" id="saasOderMap">
+		<result column="uid" property="uid" />
+		<result column="nums" property="nums" />
+		<result column="stock" property="stock" />
+	</resultMap>
+	<!-- 查询寻蜜客成员列表-->
+	<select id="getXmerList" resultMap="bxmerMap" parameterMap="bxmer">
+		SELECT t.id,t.uid,t.rtype,t.phoneid,t.email,t.weixinid,t.age,t.achievement,t.achievement,f.partnerNums,
+		       t.parentid,t.levels,t.level_swap,t.sold_nums,t.sdate,t.status,t.update_date,B.name
+		FROM  b_urs_earnings_relation r
+		left join b_xmer t on t.uid=r.uid
+		LEFT JOIN b_urs_info B ON B.uid = r.uid 
+		left join (
+			SELECT fid as uid,COUNT(1) as partnerNums FROM(
+				SELECT CAST(LEFT(RIGHT(uid_relation_chain,23),11) AS SIGNED) fid,uid FROM b_urs_earnings_relation t 
+				WHERE object_oriented =5 AND uid_relation_chain_level>1 AND CHAR_LENGTH(uid_relation_chain)>11 ) w GROUP BY fid
+			) f on f.uid=r.uid
+		<where>
+			r.object_oriented=5
+		 	<!-- AND t.uid = B.uid -->
+			<if test=" null != uid">
+				AND t.uid = #{uid} 
+			</if>
+			<if test=" null != phoneid and ''!= phoneid">
+				 AND t.phoneid LIKE '%${phoneid}%'
+			</if>
+			<if test=" null != name and ''!= name">
+				 AND B.name LIKE '%${name}%'
+			</if>
+			<if test=" null != sdate and ''!= sdate">
+				AND t.sdate &gt;= #{sdate}
+			</if>
+			<if test=" null != edate and ''!= edate">
+				AND t.sdate &lt; DATE_ADD(#{edate}, INTERVAL 1 DAY)
+			</if>
+			ORDER BY t.sdate DESC
+		</where>
+			<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+			</if>
+	</select>
+	<!-- 查询寻蜜客成员列表总条数 -->
+	<select id="getXmerCount" resultType="Long" parameterMap="bxmer">
+		SELECT COUNT(*) 
+		FROM  b_urs_earnings_relation r
+		left join b_xmer t on t.uid=r.uid
+		LEFT JOIN b_urs_info B ON B.uid = r.uid 
+		<where>
+		 r.object_oriented=5
+		    <!-- AND t.uid = B.uid -->
+			<if test=" null != uid">
+				AND r.uid = #{uid} 
+			</if>
+			<if test=" null != phoneid and ''!= phoneid">
+				 AND t.phoneid LIKE '%${phoneid}%'
+			</if>
+			<if test=" null != name and ''!= name">
+				 AND B.name LIKE '%${name}%'
+			</if>
+			<if test=" null != sdate and ''!= sdate">
+				AND t.sdate &gt;= #{sdate}
+			</if>
+			<if test=" null != edate and ''!= edate">
+				AND t.sdate &lt; DATE_ADD(#{edate}, INTERVAL 1 DAY)
+			</if>
+			ORDER BY t.sdate DESC
+		</where>
+	</select>
+	<!-- 修改蜜客成员 -->
+	<update id="updateXmer" parameterMap="bxmer">
+		UPDATE b_xmer t 
+		<set>
+		<if test=" null != phoneid">
+			t.phoneid = #{phoneid},
+		</if>
+		<if test=" null != email">
+			t.email = #{email},
+		</if>
+		<if test=" null != weixinid">
+			t.weixinid = #{weixinid},
+		</if>
+		<if test=" null != updateDate">
+			t.update_date = #{updateDate},
+		</if>
+		<if test=" null != achievement">
+			t.achievement = #{achievement},
+		</if>
+		<if test=" null != age">
+			t.age = #{age},
+		</if>
+		<if test=" null != sdate">
+			t.sdate = #{sdate},
+		</if>
+		</set>
+		WHERE t.uid = #{uid}
+	</update>
+	<update id="updateUrsInfo" parameterMap="bxmer">
+		UPDATE b_urs_info t 
+		<set>
+		<if test=" null != phoneid">
+			t.phone = #{phoneid},
+		</if>
+		<if test=" null != avatar">
+			t.avatar = #{avatar},
+		</if>
+		<if test=" null != name">
+			t.name = #{name},
+		</if>
+		<if test=" null != sex">
+			t.sex = #{sex},
+		</if>
+		</set>
+		WHERE t.uid = #{uid}
+	</update>
+	<!-- 根据蜜客成员编号查询详情(修改初始化) -->
+	<select id="getXmer" resultMap="bxmerMap" parameterType="bxmer">
+		SELECT A.`id`,A.`age`,A.`weixinid`,A.`phoneid`,A.`parentid`,A.`email`,A.`sdate`,A.`uid`,A.`achievement`,B.`avatar`,B.`name`,B.`sex`
+        FROM b_xmer A
+        LEFT JOIN b_urs_info B ON A.uid = B.uid 
+        WHERE A.uid = #{uid}
+	</select>
+	<!-- 导出寻蜜客成员列表 -->
+	<select id="exportXmerList" resultMap="bxmerMap" parameterMap="bxmer">
+		SELECT t.id,t.uid,t.rtype,t.phoneid,t.email,t.weixinid,t.age,t.achievement,t.achievement,t.partner_nums,
+		       t.parentid,t.levels,t.level_swap,t.sold_nums,t.sdate,t.status,t.update_date,B.name
+		FROM b_xmer t
+		LEFT JOIN b_urs_info B ON t.uid = B.uid 
+		<where>
+		 1=1
+		 	AND t.uid = B.uid
+			<if test=" null != uid">
+				AND t.uid = #{uid} 
+			</if>
+			<if test=" null != phoneid and ''!= phoneid">
+				 AND t.phoneid LIKE '%${phoneid}%'
+			</if>
+			<if test=" null != name and ''!= name">
+				 AND B.name LIKE '%${name}%'
+			</if>
+			<if test=" null != sdate and ''!= sdate">
+				AND t.sdate &gt;= #{sdate}
+			</if>
+			<if test=" null != edate and ''!= edate">
+				AND t.sdate &lt; DATE_ADD(#{edate}, INTERVAL 1 DAY)
+			</if>
+			ORDER BY t.sdate DESC
+		</where>
+	</select>
+	<!-- 查询寻蜜客伙伴列表-->
+	<select id="getXmerPartnerList" resultMap="bxmerMap" parameterMap="bxmer">
+		SELECT t.id,t.uid,t.rtype,t.phoneid,t.email,t.weixinid,t.age,t.achievement,t.achievement,t.partner_nums,
+		       t.parentid,t.levels,t.level_swap,t.sold_nums,t.sdate,t.status,t.update_date,B.name
+		FROM b_xmer t
+		LEFT JOIN b_urs_info B ON t.uid = B.uid 
+		<where>
+		 1=1
+		 	AND t.uid = B.uid
+			<if test=" null != uidtogetpart">
+				AND t.parentid = #{uidtogetpart} 
+			</if>
+			<if test=" null != uid">
+				AND t.uid = #{uid} 
+			</if>
+			<if test=" null != phoneid and ''!= phoneid">
+				 AND t.phoneid LIKE '%${phoneid}%'
+			</if>
+			<if test=" null != name and ''!= name">
+				 AND B.name LIKE '%${name}%'
+			</if>
+			<if test=" null != sdate and ''!= sdate">
+				AND t.sdate &gt;= #{sdate}
+			</if>
+			<if test=" null != edate and ''!= edate">
+				AND t.sdate &lt; DATE_ADD(#{edate}, INTERVAL 1 DAY)
+			</if>
+			ORDER BY t.sdate DESC
+		</where>
+			<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+			</if>
+	</select>
+	<!-- 查询寻蜜客伙伴列表总条数 -->
+	<select id="getXmerPartnerCount" resultType="Long">
+		SELECT 
+			count(1)
+		FROM b_urs_earnings_relation t1
+			LEFT JOIN b_urs t2  ON t1.uid=t2.uid
+			LEFT JOIN b_xmer t3 ON t1.uid=t3.uid
+		WHERE t1.object_oriented=#{objectOriented} AND RIGHT(t1.uid_relation_chain,23) LIKE CONCAT(LPAD(#{uid},11,'0'),',%')
+	</select>
+<!-- 
+	<select id="getXmerPartnerCount" resultType="Long" parameterMap="bxmer">
+		SELECT COUNT(*) FROM b_xmer t
+		LEFT JOIN b_urs_info B ON t.uid = B.uid 
+		<where>
+		 1=1
+		     <if test=" null != uid">
+				AND t.uid = #{uid} 
+			</if>
+			<if test=" null != phoneid and ''!= phoneid">
+				 AND t.phoneid LIKE '%${phoneid}%'
+			</if>
+			<if test=" null != name and ''!= name">
+				 AND B.name LIKE '%${name}%'
+			</if>
+			<if test=" null != sdate and ''!= sdate">
+				AND t.sdate &gt;= #{sdate}
+			</if>
+			<if test=" null != edate and ''!= edate">
+				AND t.sdate &lt; DATE_ADD(#{edate}, INTERVAL 1 DAY)
+			</if>
+			<if test=" null != uidtogetpart">
+				AND t.parentid = #{uidtogetpart} 
+			</if>
+		</where>
+	</select>
+ -->
+	<!-- 查询寻蜜客商铺列表-->
+	<select id="xmerSellerList" resultMap="xmerSellerMap" parameterMap="xmerSeller">
+		SELECT t_seller.`sellerid`,t_seller.sellername,t_seller.`address`,t_seller.`uid`,t_seller.`typename`,t_seller.`status`,t_seller.`evalidity`,t_seller.`phoneid` 
+		FROM t_seller 
+		<where>
+		 1=1   AND t_seller.`status` not in(0,6)
+			<if test=" null != saasType">
+				AND t_seller.`saas_type` = #{saasType} 
+			</if>
+			 <if test=" null != uid">
+				AND t_seller.`uid` = #{uid} 
+			</if>
+			<if test=" null != uid">
+				AND t_seller.`uid` = #{uid} 
+			</if>
+			<if test=" null != uidtogetseller">
+				AND t_seller.`uid` = #{uidtogetseller} 
+			</if>
+			<if test=" null != sellerid">
+				AND t_seller.`sellerid` = #{sellerid} 
+			</if>
+			<if test=" null != sellername and ''!= sellername">
+				 AND t_seller.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != status">
+				AND t_seller.`status` = #{status} 
+			</if>
+			<if test=" null != typename and ''!= typename">
+				 AND t_seller.typename LIKE '%${typename}%'
+			</if>
+			<if test=" null != sdate and ''!= sdate">
+				AND t_seller.evalidity &gt;= #{sdate}
+			</if>
+			<if test=" null != edate and ''!= edate">
+				AND t_seller.evalidity &lt; DATE_ADD(#{edate}, INTERVAL 1 DAY)
+			</if>
+			ORDER BY t_seller.udate DESC
+		</where>
+			<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+			</if>
+	</select>
+	<!-- 查询寻蜜客商铺列表总条数 -->
+	<select id="xmerSellerCount" resultType="Long" parameterMap="xmerSeller">
+		SELECT COUNT(*) FROM t_seller
+		<where>
+		 1=1   AND t_seller.`status` != 0
+		 	<if test=" null != saasType">
+				AND t_seller.`saas_type` = #{saasType} 
+			</if>
+			<if test=" null != uid">
+				AND t_seller.`uid` = #{uid} 
+			</if>
+			<if test=" null != uidtogetseller">
+				AND t_seller.`uid` = #{uidtogetseller} 
+			</if>
+			<if test=" null != sellerid">
+				AND t_seller.`sellerid` = #{sellerid} 
+			</if>
+			<if test=" null != sellername and ''!= sellername">
+				 AND t_seller.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != status">
+				AND t_seller.`status` = #{status} 
+			</if>
+			<if test=" null != typename and ''!= typename">
+				 AND t_seller.typename LIKE '%${typename}%'
+			</if>
+			<if test=" null != sdate and ''!= sdate">
+				AND t_seller.evalidity &gt;= #{sdate}
+			</if>
+			<if test=" null != edate and ''!= edate">
+				AND t_seller.evalidity &lt; DATE_ADD(#{edate}, INTERVAL 1 DAY)
+			</if>
+		</where>
+	</select>
+	<!-- 商户端出售总数 -->
+	<select id="getSellCount" resultType="Long" parameterType="Integer">
+		SELECT COUNT(*) FROM t_saas_sold_order WHERE t_saas_sold_order.`status`=1 <if test="saasChannel != null">and saas_channel=#{saasChannel}</if>
+	</select>
+	<!-- 平台商铺流水总额 -->
+	<select id="getSellerCrrentCount" resultType="Double"  parameterType="Integer">
+		SELECT COUNT(money) FROM t_bill WHERE t_bill.`status`=2 AND t_bill.`xmer_uid` IS NOT NULL <if test="saasChannel != null">and saas_channel=#{saasChannel}</if>
+	</select>
+	<select id="getXmerIssues" resultType="map">
+		SELECT  b1.uid,b2.uid twoLevelXmerId,b3.uid oneLevelXmerId
+		FROM b_xmer b1
+		LEFT JOIN b_xmer b2 ON b1.parentid=b2.uid AND b2.status=0
+		LEFT JOIN b_xmer b3 ON b2.parentid=b3.uid AND b3.status=0
+		WHERE b1.uid=#{1} AND b1.status=0 
+	</select>
+	
+	<select id="getXmerName" resultType="String">
+		SELECT name
+		FROM b_urs_info
+		WHERE uid = #{uid}
+	</select>
+	
+	<!-- 更新寻蜜客Saas销售情况 -->
+	<update id="updateXmerSoldInfo" parameterType="map">
+		UPDATE b_xmer 
+		<set>
+			<if test="isAdd!=null and isAdd==true">
+				sold_nums = sold_nums+1,
+			</if>
+			<if test="isAdd!=null and isAdd==false">
+				sold_nums = sold_nums-1,
+			</if>
+			<if test=" null != edate">
+				update_date = #{edate},
+			</if>
+			<if test=" null != achievement and 'null' != achievement">
+				achievement = #{achievement},
+			</if>
+		</set>
+		WHERE uid = #{uid}
+	</update>
+	<!-- 根据寻蜜客id查询签约数量 -->
+	<select id="numsList" resultMap="saasOderMap" parameterType="Object">
+     SELECT SUM(t_saas_order.`nums`) AS nums,t_saas_order.`uid` FROM t_saas_order WHERE t_saas_order.`stock` !=0 AND t_saas_order.uid IN
+     <foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+     #{item}
+    </foreach>
+    GROUP BY t_saas_order.`uid`
+    </select>
+    
+    	<!-- 根据寻蜜客id查询签约数量 -->
+	<select id="saasNumsList" resultMap="saasOderMap" >
+     SELECT uid, SUM(nums) nums,SUM(returnnums+stock) stock 
+     FROM t_saas_order WHERE t_saas_order.status=1 and t_saas_order.uid IN
+     <foreach item="item" index="index" collection="objects"  open="(" separator="," close=") ">
+     #{item}
+    </foreach>
+    <if test="saasChannel != null">AND saas_channel=#{saasChannel}</if>
+    GROUP BY t_saas_order.`uid`
+    </select>
+    
+    <!-- 根据寻蜜客id和套餐单价查询签约软件576套餐剩余套数 -->
+	<select id="eightFoldNumsList" resultMap="saasOderMap" parameterType="Object">
+     SELECT SUM(t_saas_order.`stock`) AS stock,t_saas_order.`uid` FROM t_saas_order WHERE t_saas_order.`price`=576 AND t_saas_order.uid IN
+     <foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+     #{item}
+    </foreach>
+    GROUP BY t_saas_order.`uid`
+    </select>
+     <!-- 根据寻蜜客id和套餐单价查询签约软件504套餐剩余套数 -->
+	<select id="sevenFoldNumsList" resultMap="saasOderMap" parameterType="Object">
+     SELECT SUM(t_saas_order.`stock`) AS stock,t_saas_order.`uid` FROM t_saas_order WHERE t_saas_order.`price`=504 AND t_saas_order.uid IN
+     <foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+     #{item}
+    </foreach>
+    GROUP BY t_saas_order.`uid`
+    </select>
+    <!-- 查询所有寻蜜客成员列表 add by lifeng 2016年7月7日 11:30:21-->
+	<select id="getList" resultMap="bxmerMap" parameterMap="bxmer">
+		SELECT 
+			t.id,t.uid,t.rtype,t.phoneid,t.email,t.weixinid,t.age,t.achievement,t.achievement,t.partner_nums,
+		    t.parentid,t.levels,t.level_swap,t.sold_nums,t.sdate,t.status,t.update_date 
+		FROM 
+			b_xmer t 
+		<where>
+		 	1=1
+			<if test=" null != uid">
+				AND t.uid = #{uid} 
+			</if>
+			<if test=" null != phoneid and ''!= phoneid">
+				 AND t.phoneid LIKE '%${phoneid}%' 
+			</if>
+			<if test=" null != sdate and ''!= sdate">
+				AND t.sdate &gt;= #{sdate} 
+			</if>
+			<if test=" null != edate and ''!= edate">
+				AND t.sdate &lt; DATE_ADD(#{edate}, INTERVAL 1 DAY) 
+			</if>
+			ORDER BY t.sdate DESC 
+		</where>
+			<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit} 
+			</if>
+	</select>
+	
+	<resultMap id="XmerLevelMap" type="com.xmniao.xmn.core.xmermanagerment.entity.BLevel" >
+	  <id column="id" property="id" jdbcType="INTEGER" />
+	  <result column="level_no" property="levelNo" jdbcType="INTEGER" />
+	  <result column="sign_num" property="signNum" jdbcType="INTEGER" />
+	  <result column="level_name" property="levelName" jdbcType="VARCHAR" />
+	  <result column="sdate" property="sdate" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<select id="getXmerLevel" resultMap="XmerLevelMap">
+		SELECT * FROM b_level ORDER BY sign_num DESC
+	</select>
+	
+	<select id="getXmerInfo" resultMap="bxmerMap">
+		SELECT * FROM b_xmer WHERE uid=#{uid}
+	</select>
+	
+	  <!--根据订单中的UID 获取用户信息 -->
+	<select id="getXmerBySaasOrderUid" resultMap="bxmerMap" parameterType="list">
+		  SELECT 
+		  	b.uid , b.nname as name, b.uname as phoneid
+		  FROM b_urs b
+		  WHERE 1=1
+		  AND uid IN
+		  <foreach collection="list" index="index" item="item" open="(" separator="," close=")" >
+				#{item}
+		  </foreach>
+		
+	</select>
+	
+		  <!--根据订单中的UID 获取用户信息 -->
+	<select id="getUrsEarningsRelationByUid" resultType="String" parameterType="java.util.Map">
+		SELECT uid FROM b_urs_earnings_relation t WHERE 1 = 1
+		AND object_oriented = 5
+		<if test=" null != relationid and ''!= relationid">
+			AND t.uid_relation_chain LIKE '%${relationid}%'
+			AND (CHAR_LENGTH(SUBSTRING(uid_relation_chain, POSITION(#{relationid} IN uid_relation_chain)) ) = 23 
+              OR CHAR_LENGTH(SUBSTRING(uid_relation_chain, POSITION(#{relationid} IN uid_relation_chain)) ) = 35 )
+		</if>
+		<if test=" null != uid">
+			AND t.uid != #{uid}
+		</if>
+	</select>
+	
+	<!-- 查询寻蜜客伙伴列表-->
+	<select id="getNewXmerPartnerList" resultMap="bxmerMap" parameterMap="bxmer">
+		SELECT t.id,t.uid,t.rtype,t.phoneid,t.email,t.weixinid,t.age,t.achievement,t.achievement,t.partner_nums,
+		       t.parentid,t.levels,t.level_swap,t.sold_nums,t.sdate,t.status,t.update_date,B.name
+		FROM b_xmer t
+		LEFT JOIN b_urs_info B ON t.uid = B.uid 
+		<where>
+		 1=1
+		    <!-- AND t.uid = B.uid 
+			<if test=" null != uidtogetpart">
+				AND t.parentid = #{uidtogetpart} 
+			</if>-->
+			<if test="ids != null and ids != ''">
+			    AND t.uid IN
+				<foreach collection="ids" index="index" item="item" open="(" separator="," close=")" >
+					#{item}
+				</foreach>
+			</if>
+			<if test=" null != uid">
+				AND t.uid = #{uid} 
+			</if>
+			<if test=" null != phoneid and ''!= phoneid">
+				 AND t.phoneid LIKE '%${phoneid}%'
+			</if>
+			<if test=" null != name and ''!= name">
+				 AND B.name LIKE '%${name}%'
+			</if>
+			<if test=" null != sdate and ''!= sdate">
+				AND t.sdate &gt;= #{sdate}
+			</if>
+			<if test=" null != edate and ''!= edate">
+				AND t.sdate &lt; DATE_ADD(#{edate}, INTERVAL 1 DAY)
+			</if>
+			ORDER BY t.sdate DESC
+		</where>
+			<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+			</if>
+	</select>
+	
+	
+</mapper>

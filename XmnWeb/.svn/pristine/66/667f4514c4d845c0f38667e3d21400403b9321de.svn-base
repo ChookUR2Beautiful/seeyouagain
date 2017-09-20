@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.jobmanage.dao.TagEntityDao">
+	<!-- 条件查询实体 -->
+	<select id="getTagEntityByParam" parameterType="tagEntity" resultType="tagEntity">
+		SELECT 
+			bte.`id` id, bte.`pojo_id` pojoId, bte.`tag_id` tagId, bte.`entity_type` entityType, 
+			bte.`update_date` updateDate 
+		FROM `burs`.`b_tag_entity` bte
+		<where>
+			1=1 
+			<include refid="queryTagEntityCondition"></include>
+		</where>
+	</select>
+	
+	<!-- 查询列表 -->
+	<select id="getListByParam" parameterType="tagEntity" resultType="tagEntity">
+		SELECT 
+			bte.`id` id, bte.`pojo_id` pojoId, bte.`tag_id` tagId, bte.`entity_type` entityType, 
+			bte.`update_date` updateDate 
+		FROM `burs`.`b_tag_entity` bte
+		<where>
+			1=1 
+			<include refid="queryTagEntityCondition"></include>
+		</where>
+	</select>
+	
+	<!-- 查询条件 -->
+	<sql id="queryTagEntityCondition">
+		<if test="null != id">
+			AND bte.id = #{id}
+		</if>
+		<if test="null != pojoId">
+			AND bte.pojo_id = #{pojoId}
+		</if>
+		<if test="null != tagId">
+			AND bte.tag_id = #{tagId}
+		</if>
+		<if test="null != entityType">
+			AND bte.entity_type = #{entityType}
+		</if>
+		<if test="null != updateDate and '' != updateDate">
+			AND bte.update_date = #{updateDate}
+		</if>
+	</sql>
+	
+	<!-- 插入数据 -->
+	<insert id="saveTagEntities" parameterType="java.util.ArrayList">
+		INSERT INTO 
+			`burs`.`b_tag_entity` 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			`id`, `pojo_id`, `tag_id`, `entity_type`, `update_date` 
+		</trim>
+		VALUES 
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				 #{item.id},
+				 #{item.pojoId},
+				 #{item.tagId},
+				 #{item.entityType},
+				 #{item.updateDate},
+			</trim>
+		</foreach>
+	</insert>
+	
+	<!-- 根据标签实体pojoId删除标签实体 -->
+	<delete id="deleteTagEntityByPojoId" parameterType="int">
+		DELETE 
+		FROM 
+			b_tag_entity 
+		WHERE 
+			pojo_id = #{pojoId}
+	</delete>
+</mapper>

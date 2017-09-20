@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.dataDictionary.dao.BankListDao">
+
+	<parameterMap type="BankList" id="bankList" />
+	<resultMap type="BankList" id="bankListMap">
+		<result column="id" property="id" />
+		<result column="bankname" property="bankName" />
+		<result column="status" property="status" />
+		<result column="sorting" property="sorting" />
+		<result column="explains" property="explains" />
+		<result column="sdate" property="sdate" />
+		<result column="logo" property="logo" />
+		<result column="abbrev" property="abbrev" />
+	</resultMap>
+	<!-- 可重用的Where 条件 -->
+	<sql id="whereSQL">
+		<if test=" null != id">
+			AND id =#{id}
+		</if>
+		<if test=" null != bankName and '' != bankName">
+			AND bankname LIKE '%${bankName}%'
+		</if>
+		<if test=" null != abbrev and '' != abbrev">
+			AND abbrev = #{abbrev}
+		</if>
+	</sql>
+
+	<!-- 可重用的插入语句中表的列 -->
+	<sql id="insertColumnSQL">
+		<if test=" null != bankName and '' != bankName">
+			bankname,
+		</if>
+		<if test=" null != status">
+			status,
+		</if>
+		<if test=" null != sorting and '' != sorting ">
+			sorting,
+		</if>
+		<if test=" null != explains and '' != explains ">
+			explains,
+		</if>
+		<if test=" null != sdate and '' != sdate ">
+			sdate,
+		</if>
+		<if test=" null != logo and '' != logo ">
+			logo,
+		</if>
+		<if test=" null != abbrev and '' != abbrev ">
+			abbrev,
+		</if>
+	</sql>
+	<!-- 可重用的插入语句中表的值 -->
+	<sql id="insertValuesSQL">
+		<if test=" null != bankName and '' != bankName">
+			#{bankName},
+		</if>
+		<if test=" null != status">
+			#{status},
+		</if>
+		<if test=" null != sorting">
+			#{sorting},
+		</if>
+		<if test=" null != explains and '' != explains">
+			#{explains},
+		</if>
+		<if test=" null != sdate">
+			#{sdate},
+		</if>
+		<if test=" null != logo and '' != logo ">
+			#{logo},
+		</if>
+		<if test=" null != abbrev and '' != abbrev ">
+			#{abbrev},
+		</if>
+	</sql>
+	<!-- 更新动态设置值 -->
+	<sql id="updateSetSQL">
+		<if test=" null != bankName and '' != bankName">
+			bankname = #{bankName},
+		</if>
+		<if test=" null != status">
+			status = #{status},
+		</if>
+		<if test=" null != sorting">
+			sorting = #{sorting},
+		</if>
+		<if test=" null != sorting">
+			sorting = #{sorting},
+		</if>
+		<if test=" null != explains and '' != explains">
+			explains = #{explains},
+		</if>
+		<if test=" null != sdate">
+			sdate = #{sdate},
+		</if>
+		<if test=" null != logo and '' != logo ">
+			logo = #{logo},
+		</if>
+		<if test=" null != abbrev and '' != abbrev ">
+			abbrev = #{abbrev},
+		</if>
+	</sql>
+
+	<insert id="add" parameterMap="bankList">
+		INSERT INTO t_bank_list
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<include refid="insertColumnSQL"></include>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			<include refid="insertValuesSQL"></include>
+		</trim>
+	</insert>
+
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_bank_list WHERE id IN
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=") ">
+			#{item}
+		</foreach>
+	</delete>
+
+	<update id="update" parameterMap="bankList">
+		UPDATE t_bank_list
+		<set>
+			<trim suffixOverrides=",">
+				<include refid="updateSetSQL"></include>
+			</trim>
+		</set>
+		WHERE id = #{id}
+	</update>
+
+	<select id="getList" resultMap="bankListMap" parameterMap="bankList">
+		SELECT
+		*
+		FROM
+		t_bank_list
+		<where>
+			1=1
+			<include refid="whereSQL"></include>
+		</where>
+		ORDER BY id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="count" resultType="Long" parameterMap="bankList">
+		SELECT COUNT(*) FROM t_bank_list
+		<where>
+			1=1
+			<include refid="whereSQL"></include>
+		</where>
+	</select>
+
+	<select id="getMaxId" resultType="Long">
+		SELECT Max(id) AS VALUE FROM
+		t_bank_list
+	</select>
+
+	<select id="getObject" resultMap="bankListMap" parameterType="Long">
+		SELECT * FROM t_bank_list WHERE id = #{0}
+	</select>
+
+</mapper>

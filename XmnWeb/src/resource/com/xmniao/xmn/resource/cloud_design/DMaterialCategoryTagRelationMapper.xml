@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.cloud_design.dao.DMaterialCategoryTagRelationDao" >
+
+  <resultMap id="categoryTagRelationMap" type="com.xmniao.xmn.core.cloud_design.entity.DMaterialCategoryTagRelation" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="category_id" property="categoryId" jdbcType="BIGINT" />
+    <result column="material_tag_id" property="materialTagId" jdbcType="BIGINT" />
+    <result column="material_tag_val" property="materialTagVal" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="categoryTagRelation_column_list" >
+    id, category_id, material_tag_id, material_tag_val
+  </sql>
+  
+  <sql id="whereSQL">
+  		<if test="categoryId != null and categoryId != '' ">
+  			AND category_id = #{categoryId}
+  		</if>
+  		<if test="materialTagId != null and materialTagId != '' ">
+  			AND material_tag_id = #{materialTagId}
+  		</if>
+  </sql>
+  
+  <select id="getList" resultMap="categoryTagRelationMap" parameterType="com.xmniao.xmn.core.cloud_design.entity.DMaterialCategoryTagRelation" >
+    select 
+    <include refid="categoryTagRelation_column_list" />
+    from d_material_category_tag_relation
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+  </select>
+  
+  <delete id="deleteByCategoryId" parameterType="java.lang.Long" >
+    delete from d_material_category_tag_relation
+    where category_id = #{categoryId,jdbcType=BIGINT}
+  </delete>
+  
+  	<!-- 批量插入物料分类、标签对应关联信息 -->
+	<insert id="addBatch" parameterType="java.util.ArrayList">
+		INSERT INTO d_material_category_tag_relation
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<include refid="categoryTagRelation_column_list" /> 
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+			<!-- id, category_id, material_tag_id, material_tag_val -->
+				#{item.id},
+				#{item.categoryId},
+				#{item.materialTagId},
+				#{item.materialTagVal}
+			</trim>
+		</foreach>
+	</insert>
+  
+</mapper>

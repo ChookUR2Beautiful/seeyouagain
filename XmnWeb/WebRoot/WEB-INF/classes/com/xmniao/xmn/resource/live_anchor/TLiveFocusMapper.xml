@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TLiveFocusDao" >
+
+  <resultMap id="liveFocusMap" type="com.xmniao.xmn.core.live_anchor.entity.TLiveFocus" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="liver_str_id" property="liverStrId" jdbcType="INTEGER" />
+    <result column="liver_end_id" property="liverEndId" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="str_uid" property="strUid" jdbcType="INTEGER" />
+    <result column="end_uid" property="endUid" jdbcType="INTEGER" />
+    <result column="fans_type" property="fansType" jdbcType="TINYINT" />
+  </resultMap>
+  
+  <sql id="liveFocus_column_list" >
+    id, liver_str_id, liver_end_id, create_time, update_time, str_uid, end_uid, fans_type
+  </sql>
+  
+  <delete id="deleteByEndUid" parameterType="java.lang.Integer" >
+    delete from t_live_focus
+    where end_uid = #{endUid,jdbcType=INTEGER}
+    and fans_type=2
+  </delete>
+  
+  <!-- 随机获取一个直播用户信息 -->
+  <select id="getRandomFans" parameterType="map" resultType="map">
+  	SELECT 
+  		t1.id,
+  		t1.uid
+	FROM `b_liver` AS t1 
+	JOIN 
+		(SELECT ROUND(RAND() * ((SELECT MAX(id) FROM `b_liver`)-(SELECT MIN(id) FROM `b_liver`))+(SELECT MIN(id) FROM `b_liver`)) AS id) AS t2
+	WHERE t1.id >= t2.id
+	ORDER BY t1.id LIMIT 1
+  </select>
+  
+  
+  <!-- 批量插入机器人粉丝信息 -->
+  <insert id="addBatch" parameterType="java.util.ArrayList">
+	INSERT INTO t_live_focus
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+		<include refid="liveFocus_column_list" /> 
+	</trim>
+	VALUES
+	<foreach item="item" index="index" collection="list" separator=",">
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+		<!-- id, liver_str_id, liver_end_id, create_time, update_time, str_uid, end_uid, fans_type -->
+			#{item.id},
+			#{item.liverStrId},
+			#{item.liverEndId},
+			now(),
+			now(),
+			#{item.strUid},
+			#{item.endUid},
+			#{item.fansType}
+		</trim>
+	</foreach>
+  </insert>
+  
+</mapper>

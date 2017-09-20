@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.business_cooperation.dao.VideoDao">
+
+	<parameterMap type="Video" id="video" />
+	
+	<resultMap type="Video" id="videoMap">
+		<result column="vid" property="vid" />
+		<result column="videoname" property="videoname" />
+		<result column="introduce" property="introduce" />
+		<result column="vurl" property="vurl" />
+		<result column="format" property="format" />
+		<result column="duration" property="duration" />
+		<result column="number" property="number" />
+		<result column="status" property="status" />
+		<result column="size" property="size" />
+	</resultMap>
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_video
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						videoname,
+						introduce,
+						vurl,
+						format,
+						duration,
+						number,
+						status,
+						size,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.videoname},
+						 #{item.introduce},
+						 #{item.vurl},
+						 #{item.format},
+						 #{item.duration},
+						 #{item.number},
+						 #{item.status},
+						 #{item.size},
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" parameterMap="video" >
+		INSERT INTO t_video
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != vid">
+					vid,
+				</if>
+			 	<if test=" null != videoname and '' != videoname ">
+					videoname,
+				</if>
+			 	<if test=" null != introduce and '' != introduce ">
+					introduce,
+				</if>
+			 	<if test=" null != vurl and '' != vurl ">
+					vurl,
+				</if>
+			 	<if test=" null != format and '' != format ">
+					format,
+				</if>
+			 	<if test=" null != duration and '' != duration ">
+					duration,
+				</if>
+			 	<if test=" null != number">
+					number,
+				</if>
+			 	<if test=" null != status">
+					status,
+				</if>
+			 	<if test=" null != size">
+					size,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != vid">
+					 	#{vid},
+				</if>
+			 	<if test=" null != videoname and '' != videoname ">
+					 	#{videoname},
+				</if>
+			 	<if test=" null != introduce and '' != introduce ">
+					 	#{introduce},
+				</if>
+			 	<if test=" null != vurl and '' != vurl ">
+					 	#{vurl},
+				</if>
+			 	<if test=" null != format and '' != format ">
+					 	#{format},
+				</if>
+			 	<if test=" null != duration and '' != duration ">
+					 	#{duration},
+				</if>
+			 	<if test=" null != number">
+					 	#{number},
+				</if>
+			 	<if test=" null != status">
+					 	#{status},
+				</if>
+			 	<if test=" null != size">
+					 	#{size},
+				</if>
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_video WHERE vid IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterMap="video">
+		UPDATE t_video
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != vid">
+					vid = #{vid},
+				</if>
+				<if test=" null != videoname and '' != videoname ">
+					videoname = #{videoname},
+				</if>
+				<if test=" null != introduce and '' != introduce ">
+					introduce = #{introduce},
+				</if>
+				<if test=" null != vurl and '' != vurl ">
+					vurl = #{vurl},
+				</if>
+				<if test=" null != format and '' != format ">
+					format = #{format},
+				</if>
+				<if test=" null != duration and '' != duration ">
+					duration = #{duration},
+				</if>
+				<if test=" null != number">
+					number = #{number},
+				</if>
+				<if test=" null != status">
+					status = #{status},
+				</if>
+				<if test=" null != size">
+					size = #{size},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != vid and '' != vid">
+				vid = #{vid}
+			</if>
+		</where>
+	</update>
+	
+	<select id="getList" resultMap="videoMap" parameterMap="video">
+		SELECT * FROM t_video
+		<where>
+			1=1
+			<if test=" null != vid">
+				AND vid = #{vid}
+			</if>
+			<if test=" null != videoname and '' != videoname ">
+				AND videoname LIKE '%${videoname}%'
+			</if>
+			<if test=" null != introduce and '' != introduce ">
+				AND introduce LIKE '%${introduce}%'
+			</if>
+			<if test=" null != vurl and '' != vurl ">
+				AND vurl LIKE '%${vurl}%'
+			</if>
+			<if test=" null != format and '' != format ">
+				AND format LIKE '%${format}%'
+			</if>
+			<if test=" null != duration and '' != duration ">
+				AND duration LIKE '%${duration}%'
+			</if>
+			<if test=" null != number">
+				AND number = #{number}
+			</if>
+			<if test=" null != status">
+				AND status = #{status}
+			</if>
+			<if test=" null != size">
+				AND size = #{size}
+			</if>
+		</where>
+			ORDER BY vid DESC 
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="video">
+		SELECT COUNT(*) FROM t_video
+		<where>
+			1=1
+			<if test=" null != vid">
+				AND vid = #{vid}
+			</if>
+			<if test=" null != videoname and '' != videoname ">
+				AND videoname LIKE '%${videoname}%'
+			</if>
+			<if test=" null != introduce and '' != introduce ">
+				AND introduce LIKE '%${introduce}%'
+			</if>
+			<if test=" null != vurl and '' != vurl ">
+				AND vurl LIKE '%${vurl}%'
+			</if>
+			<if test=" null != format and '' != format ">
+				AND format LIKE '%${format}%'
+			</if>
+			<if test=" null != duration and '' != duration ">
+				AND duration LIKE '%${duration}%'
+			</if>
+			<if test=" null != number">
+				AND number = #{number}
+			</if>
+			<if test=" null != status">
+				AND status = #{status}
+			</if>
+			<if test=" null != size">
+				AND size = #{size}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Integer">
+		SELECT Max(vid) AS VALUE FROM t_video
+	</select>
+	
+	<select id="getObject" resultMap="videoMap" parameterType="Long">
+		SELECT * FROM t_video WHERE vid = #{0}
+	</select>
+	
+</mapper>

@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.LoginRecordDao">
+
+	<parameterMap type="LoginRecord" id="loginRecord" />
+	
+	<resultMap type="LoginRecord" id="loginRecordMap">
+		<result column="id" property="id" />
+		<result column="sellerid" property="sellerid" />
+		<result column="aid" property="aid" />
+		<result column="sdate" property="sdate" />
+		<result column="account" property="account" />
+		<result column="type" property="type" />
+		<result column="system" property="system" />
+		<result column="remarks" property="remarks" />
+	</resultMap>
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_login_record
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						sellerid,
+						aid,
+						sdate,
+						account,
+						type,
+						system,
+						remarks,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.sellerid},
+						 #{item.aid},
+						 #{item.sdate},
+						 #{item.account},
+						 #{item.type},
+						 #{item.system},
+						 #{item.remarks},
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" parameterMap="loginRecord" >
+		INSERT INTO t_login_record
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					id,
+				</if>
+			 	<if test=" null != sellerid">
+					sellerid,
+				</if>
+			 	<if test=" null != aid">
+					aid,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+			 	<if test=" null != account and '' != account ">
+					account,
+				</if>
+			 	<if test=" null != type">
+					type,
+				</if>
+			 	<if test=" null != system and '' != system ">
+					system,
+				</if>
+			 	<if test=" null != remarks and '' != remarks ">
+					remarks,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					 	#{id},
+				</if>
+			 	<if test=" null != sellerid">
+					 	#{sellerid},
+				</if>
+			 	<if test=" null != aid">
+					 	#{aid},
+				</if>
+			 	<if test=" null != sdate">
+					 	#{sdate},
+				</if>
+			 	<if test=" null != account and '' != account ">
+					 	#{account},
+				</if>
+			 	<if test=" null != type">
+					 	#{type},
+				</if>
+			 	<if test=" null != system and '' != system ">
+					 	#{system},
+				</if>
+			 	<if test=" null != remarks and '' != remarks ">
+					 	#{remarks},
+				</if>
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_login_record WHERE id IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterMap="loginRecord">
+		UPDATE t_login_record
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != id">
+					id = #{id},
+				</if>
+				<if test=" null != sellerid">
+					sellerid = #{sellerid},
+				</if>
+				<if test=" null != aid">
+					aid = #{aid},
+				</if>
+				<if test=" null != sdate">
+					sdate = #{sdate},
+				</if>
+				<if test=" null != account and '' != account ">
+					account = #{account},
+				</if>
+				<if test=" null != type">
+					type = #{type},
+				</if>
+				<if test=" null != system and '' != system ">
+					system = #{system},
+				</if>
+				<if test=" null != remarks and '' != remarks ">
+					remarks = #{remarks},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != id and '' != id">
+				id = #{id}
+			</if>
+		</where>
+	</update>
+	
+	<select id="getList" resultMap="loginRecordMap" parameterMap="loginRecord">
+		SELECT * FROM t_login_record l left join t_seller s on s.sellerid = l.sellerid 
+		<where>
+			1=1
+			<if test=" null != id">
+				AND id = #{id}
+			</if>
+			<if test=" null != sellerid">
+				AND sellerid = #{sellerid}
+			</if>
+			<if test=" null != aid">
+				AND aid = #{aid}
+			</if>
+			<if test=" null != sdate">
+				AND sdate = #{sdate}
+			</if>
+			<if test=" null != account and '' != account ">
+				AND account LIKE '%${account}%'
+			</if>
+			<if test=" null != type">
+				AND type = #{type}
+			</if>
+			<if test=" null != system and '' != system ">
+				AND system LIKE '%${system}%'
+			</if>
+			<if test=" null != remarks and '' != remarks ">
+				AND remarks LIKE '%${remarks}%'
+			</if>
+			<if test=" null != sellername and '' != sellername">
+				AND s.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != sdateStart and '' != sdateStart">
+				AND l.sdate&gt;= #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd and '' != sdateEnd">
+				AND l.sdate&lt;= #{sdateEnd}
+			</if>
+		</where>
+			ORDER BY id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="loginRecord">
+		SELECT COUNT(*) FROM t_login_record l left join t_seller s on s.sellerid = l.sellerid 
+		<where>
+			1=1
+			<if test=" null != id">
+				AND id = #{id}
+			</if>
+			<if test=" null != sellerid">
+				AND sellerid = #{sellerid}
+			</if>
+			<if test=" null != aid">
+				AND aid = #{aid}
+			</if>
+			<if test=" null != sdate">
+				AND sdate = #{sdate}
+			</if>
+			<if test=" null != account and '' != account ">
+				AND account LIKE '%${account}%'
+			</if>
+			<if test=" null != type">
+				AND type = #{type}
+			</if>
+			<if test=" null != system and '' != system ">
+				AND system LIKE '%${system}%'
+			</if>
+			<if test=" null != remarks and '' != remarks ">
+				AND remarks LIKE '%${remarks}%'
+			</if>
+			<if test=" null != sellername and '' != sellername">
+				AND s.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != sdateStart and '' != sdateStart">
+				AND l.sdate&gt;= #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd and '' != sdateEnd">
+				AND l.sdate&lt;= #{sdateEnd}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Integer">
+		SELECT Max(id) AS VALUE FROM t_login_record
+	</select>
+	
+	<select id="getObject" resultMap="loginRecordMap" parameterType="Long">
+		SELECT * FROM t_login_record WHERE id = #{0}
+	</select>
+	
+</mapper>

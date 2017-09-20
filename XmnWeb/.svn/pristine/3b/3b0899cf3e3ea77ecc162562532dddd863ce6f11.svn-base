@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.fresh.dao.BillFreshDao">
+    
+    <parameterMap type="TBillFresh" id="billFresh" />
+    
+    
+	<resultMap type="TBillFresh" id="billFreshMap">
+		<result column="bid" property="bid" />
+		<result column="uid" property="uid" />
+		<result column="wareNum" property="wareNum" />
+		<result column="phoneid" property="phoneid" />
+		<result column="money" property="money" />
+		<result column="profit" property="profit" />
+		<result column="commision" property="commision" />
+		<result column="give_money" property="give_money" />
+		<result column="cardpay" property="cardpay" />
+		<result column="payment" property="payment" />
+		<result column="status" property="status" />
+		<result column="wstatus" property="wstatus" />
+		<result column="express" property="express" />
+		<result column="logistics" property="logistics" />
+		<result column="paytype" property="paytype" />
+		<result column="payid" property="payid" />
+		<result column="number" property="number" />
+		<result column="tel" property="tel" />
+		<result column="sdate" property="sdate" />
+		<result column="zdate" property="zdate" />
+		<result column="ddate" property="ddate" />
+		<result column="ydate" property="ydate" />
+		<result column="address" property="address" />
+		<result column="noId" property="noId" />
+		<result column="mobile" property="mobile" />
+		
+		<result column="integral" property="integral" />
+		<result column="phone_type" property="phoneType" />
+		
+		<result column="cuser" property="cuser" />
+		<result column="cdenom" property="cdenom" />
+		<result column="nname" property="nname" />
+		<result column="username" property="username" />
+		
+		<collection ofType="TProductBill" property="productList" column="bid" >
+			<id column="id" property="id"/>  
+            <result column="goodsName" property="goodsName" />
+            <result column="suttle" property="suttle" />
+            <result column="codeId" property="codeId" />
+		    <result column="price" property="price" />
+		    <result column="goodsNum" property="goodsNum" />  
+		</collection>
+	</resultMap>
+	<resultMap type="com.xmniao.xmn.core.fresh.entity.Texpress" id="expressMap">
+		    <result column="id" property="id" />
+            <result column="expressValue" property="expressValue" />
+            <result column="expressName" property="expressName" />
+		    <result column="dstatus" property="dstatus" />
+		    <result column="rdate" property="rdate" />
+		    <result column="udate" property="udate" />
+	</resultMap>
+	<!-- 提供按  订单编号  用户手机号   消费总金额   订单状态   物流状态   物流单号    下单时间    支付流水号   查询 提供 物流信息查询 -->
+	<select id="getFreshList" resultMap="billFreshMap" parameterMap="billFresh">
+		SELECT t_bill_fresh.`bid`,t_bill_fresh.`wareNum`,t_bill_fresh.`phoneid`,t_bill_fresh.`uid`,t_bill_fresh.`money`,  t_bill_fresh.`profit`,t_bill_fresh.`commision`,t_bill_fresh.`give_money`,t_bill_fresh.cardpay,t_bill_fresh.`payment`,t_bill_fresh.`status`,t_bill_fresh.`wstatus`,t_bill_fresh.`express`,t_bill_fresh.`logistics`,
+        t_bill_fresh.`integral`,t_bill_fresh.`paytype`,t_bill_fresh.`payid`,t_bill_fresh.`number`,t_bill_fresh.`phone_type`,t_bill_fresh.tel,t_bill_fresh.`sdate`,t_bill_fresh.`zdate`,t_bill_fresh.`ddate`,t_bill_fresh.`ydate`,t_bill_fresh.`address`,t_bill_fresh.`noId`,t_bill_fresh.username,t_bill_fresh.`mobile`
+        FROM t_bill_fresh
+		<where>
+		 1=1
+			<if test=" null != bid and ''!= bid">
+				AND t_bill_fresh.`bid` = #{bid}
+			</if>
+			<if test=" null != phoneid and ''!= phoneid">
+				AND t_bill_fresh.`phoneid` = #{phoneid}
+			</if>
+			<if test=" null != money and ''!= money">
+				AND t_bill_fresh.`money` = #{money}
+			</if>
+			<if test=" null != number and ''!= number">
+				AND t_bill_fresh.`number` = #{number}
+			</if>
+			<if test=" null != status">
+				AND t_bill_fresh.`status` = #{status}
+			</if>
+			<if test=" null != wstatus">
+				AND t_bill_fresh.`wstatus` = #{wstatus}
+			</if>
+			<if test=" null != mobile  and ''!= mobile">
+				AND t_bill_fresh.`mobile` = #{mobile}
+			</if>
+			<if test=" null != logistics and ''!= logistics">
+				AND t_bill_fresh.`logistics` = #{logistics}
+			</if>
+			<if test=" null != sdate and ''!= sdate">
+				AND t_bill_fresh.`sdate` &gt;= #{sdate}
+			</if>
+			<if test=" null != edate and ''!= edate">
+				AND t_bill_fresh.`sdate` &lt; DATE_ADD(#{edate}, INTERVAL 1 DAY)
+			</if>
+			ORDER BY t_bill_fresh.`sdate` DESC
+		</where>
+			<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+			</if>
+	</select>
+	<select id="getFreshCount" resultType="Long" parameterMap="billFresh">
+		SELECT COUNT(*) FROM t_bill_fresh
+		<where>
+		 1=1
+			<if test=" null != bid and ''!= bid">
+				AND t_bill_fresh.`bid` = #{bid}
+			</if>
+			<if test=" null != phoneid and ''!= phoneid">
+				AND t_bill_fresh.`phoneid` = #{phoneid}
+			</if>
+			<if test=" null != money and ''!= money">
+				AND t_bill_fresh.`money` = #{money}
+			</if>
+			<if test=" null != number and ''!= number">
+				AND t_bill_fresh.`number` = #{number}
+			</if>
+			<if test=" null != status ">
+				AND t_bill_fresh.`status` = #{status}
+			</if>
+			<if test=" null != wstatus">
+				AND t_bill_fresh.`wstatus` = #{wstatus}
+			</if>
+			<if test=" null != mobile  and ''!= mobile">
+				AND t_bill_fresh.`mobile` = #{mobile}
+			</if>
+			<if test=" null != logistics and ''!= logistics">
+				AND t_bill_fresh.`logistics` = #{logistics}
+			</if>
+			<if test=" null != sdate and ''!= sdate">
+				AND t_bill_fresh.`sdate` &gt;= #{sdate}
+			</if>
+			<if test=" null != edate and ''!= edate">
+				AND t_bill_fresh.`sdate` &lt; DATE_ADD(#{edate}, INTERVAL 1 DAY) 
+			</if>
+		</where>
+	</select>
+	<!-- 更新物流状态 -->
+	<update id="updateWstatus" parameterType="Map">
+		UPDATE t_bill_fresh 
+		<set>
+		<if test="logistics != null">
+			t_bill_fresh.`logistics`=#{logistics},
+		</if>
+		<if test="express != null">
+			t_bill_fresh.`express`=#{express},
+		</if>
+		<if test="ddate != null">
+			t_bill_fresh.`ddate`=#{ddate},
+		</if>
+		t_bill_fresh.`wstatus`=1 
+		</set>
+		WHERE t_bill_fresh.`bid`=#{bid}
+	</update>
+	<!-- 根据id查询订单详细 -->
+	<select id="getBillFresh" resultMap="billFreshMap" parameterType="Long">
+		SELECT t1.`bid`,t1.`uid`,t1.`nname`, t1.`phoneid`, t1.`wareNum`, t1.`money`, t1.`profit`, t1.`commision`,
+               t1.`give_money`, t1.`integral`, t1.`cardpay`, t1.`payment`, t1.`express`, t1.`address`,
+			   t1.username,t1.`mobile`, t1.`status`, t1.`wstatus`, t1.`logistics`, t1.`sdate`, t1.`zdate`, t1.`ddate`,
+               t1.`payid`,t1.`paytype`, t1.`number`, t1.`cuser`, t1.`cdenom`, t1.`phone_type`,
+               t2.`goodsName`,t2.`suttle`,t2.`codeId`,t2.`price`,t2.`wareNum` AS goodsNum
+        FROM `t_bill_fresh` t1 , `t_product_bill` t2 WHERE t2.bid = t1.bid AND t1.bid = #{0}
+	</select>
+	
+	<!-- 根据id查询订单详细 (批量)-->
+	<select id="getBillFreshList" resultMap="billFreshMap" parameterType="Object">
+     SELECT t1.`bid`,t1.`uid`,t1.`nname`, t1.`phoneid`, t1.`wareNum`, t1.`money`, t1.`profit`, t1.`commision`,
+               t1.`give_money`, t1.`integral`, t1.`cardpay`, t1.`payment`, t1.`express`, t1.`address`,
+			   t1.username,t1.`mobile`, t1.`status`, t1.`wstatus`, t1.`logistics`, t1.`sdate`, t1.`zdate`, t1.`ddate`,
+               t1.`payid`,t1.`paytype`,t1.`number`, t1.`cuser`, t1.`cdenom`, t1.`phone_type`,
+               t2.`goodsName`,t2.`suttle`,t2.`codeId`,t2.`price`,t2.`wareNum` AS goodsNum
+        FROM `t_bill_fresh` t1 , `t_product_bill` t2 WHERE t2.bid = t1.bid AND t1.bid IN
+     <foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+       #{item}
+    </foreach>
+    </select>
+	
+	
+	
+	<!-- 查询导出数据 -->
+	<select id="getBillFreshForExport" resultMap="billFreshMap" parameterMap="billFresh">
+ SELECT 
+  t1.bid,
+  t1.wareNum,
+  t1.sdate,
+  t1.zdate,
+  t1.paytype,
+  t1.payid,
+  t1.number,
+  t1.money,
+  t1.profit,
+  t1.commision,
+  t1.give_money,
+  t1.integral,
+  t1.cardpay,
+  t1.payment,
+  t1.address,
+  t1.mobile,
+  t1.username
+FROM
+  `t_bill_fresh` t1
+  <where>
+  	t1.status IN (1,3)
+  	<if test=" null != exsdate and ''!= exsdate and (null == exedate or ''== exedate)">
+		AND DATE_FORMAT(t1.sdate, '%Y-%m-%d') = #{exsdate}
+	</if>
+	<if test=" null != exedate and ''!= exedate and (null == exsdate or ''== exsdate)">
+		AND DATE_FORMAT(t1.sdate, '%Y-%m-%d') = #{exedate}
+	</if>
+	<if test="null != exsdate and ''!= exsdate and null != exedate and ''!= exedate">
+		AND DATE_FORMAT(t1.sdate, '%Y-%m-%d') BETWEEN #{exsdate} AND #{exedate} 
+	</if>
+  	ORDER BY t1.bid DESC
+  </where> 
+	</select>
+	
+	<!-- 查询导出数据（对账导出） -->
+	<select id="getBillFreshForExport1" resultMap="billFreshMap" parameterMap="billFresh">
+ SELECT 
+  t1.bid,
+  t1.wareNum,
+  t1.sdate,
+  t1.zdate,
+  t1.paytype,
+  t1.status,
+  t1.payid,
+  t1.number,
+  t1.money,
+  t1.profit,
+  t1.commision,
+  t1.give_money,
+  t1.integral,
+  t1.cardpay,
+  t1.payment,
+  t1.address,
+  t1.mobile,
+  t1.username
+FROM
+  `t_bill_fresh` t1
+  <where>
+  	t1.status != 0
+  	<if test=" null != exsdate and ''!= exsdate and (null == exedate or ''== exedate)">
+		AND DATE_FORMAT(t1.sdate, '%Y-%m-%d') = #{exsdate}
+	</if>
+	<if test=" null != exedate and ''!= exedate and (null == exsdate or ''== exsdate)">
+		AND DATE_FORMAT(t1.sdate, '%Y-%m-%d') = #{exedate}
+	</if>
+	<if test="null != exsdate and ''!= exsdate and null != exedate and ''!= exedate">
+		AND DATE_FORMAT(t1.sdate, '%Y-%m-%d') BETWEEN #{exsdate} AND #{exedate} 
+	</if>
+  	ORDER BY t1.sdate ASC
+  </where> 
+	</select>
+	
+	<!-- 判断是否有订单数据 -->
+	<select id="checkdata" resultType="Integer" parameterMap="billFresh" >
+	 SELECT COUNT(1) FROM `t_bill_fresh` t1
+	  <where>
+	  	t1.status IN (1,3)
+	  	<if test=" null != exsdate and ''!= exsdate and (null == exedate or ''== exedate)">
+		AND DATE_FORMAT(t1.sdate, '%Y-%m-%d') = #{exsdate}
+	   </if>
+	   <if test=" null != exedate and ''!= exedate and (null == exsdate or ''== exsdate)">
+		AND DATE_FORMAT(t1.sdate, '%Y-%m-%d') = #{exedate}
+	   </if>
+	   <if test="null != exsdate and ''!= exsdate and null != exedate and ''!= exedate">
+		AND DATE_FORMAT(t1.sdate, '%Y-%m-%d') BETWEEN #{exsdate} AND #{exedate} 
+	   </if>
+	  </where>
+	</select>
+	<!-- 获取快递方式列表 -->
+	<select id="getExpressList" resultMap="expressMap">
+		SELECT t1.`id`,t1.`express_value` AS expressValue,t1.`express_name` AS expressName,t1.`dstatus`,t1.`rdate` FROM t_express t1 
+	</select>
+	
+	<select id="countOrderNum" resultType="java.util.HashMap">
+		SELECT  DATE_FORMAT( sdate, "%Y-%m-%d" ) date,count(*) as num,IFNULL(sum(wareNum),0) as wareNum,IFNULL(sum(money),0.00) as money FROM `t_bill_fresh`  where dstatus = 0 and sdate > #{specifiedDate} GROUP BY date
+	</select>
+	
+	<select id="getOrderByDay" resultType="java.util.HashMap">
+		SELECT count(*) as num,IFNULL(sum(wareNum),0) as wareNum,IFNULL(sum(money),0.00) as money  FROM `t_bill_fresh`  where dstatus = 0 and DATE_FORMAT( sdate, "%Y-%m-%d" ) = #{date} 
+	</select>
+	
+</mapper>

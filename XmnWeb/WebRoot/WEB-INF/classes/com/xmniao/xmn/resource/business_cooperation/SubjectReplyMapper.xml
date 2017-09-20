@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.business_cooperation.dao.SubjectReplyDao">
+
+	<parameterMap type="SubjectReply" id="subjectReply" />
+	
+	<resultMap type="SubjectReply" id="subjectReplyMap">
+		<result column="rid" property="rid" />
+		<result column="subjectid" property="subjectid" />
+		<result column="frid" property="frid" />
+		<result column="staffid" property="staffid" />
+		<result column="fullname" property="fullname" />
+		<result column="content" property="content" />
+		<result column="sdate" property="sdate" />
+	</resultMap>
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_subject_reply
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						subjectid,
+						frid,
+						staffid,
+						fullname,
+						content,
+						sdate,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.subjectid},
+						 #{item.frid},
+						 #{item.staffid},
+						 #{item.fullname},
+						 #{item.content},
+						 #{item.sdate},
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" parameterMap="subjectReply" >
+		INSERT INTO t_subject_reply
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != rid">
+					rid,
+				</if>
+			 	<if test=" null != subjectid">
+					subjectid,
+				</if>
+			 	<if test=" null != frid">
+					frid,
+				</if>
+			 	<if test=" null != staffid">
+					staffid,
+				</if>
+			 	<if test=" null != fullname and '' != fullname ">
+					fullname,
+				</if>
+			 	<if test=" null != content and '' != content ">
+					content,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != rid">
+					 	#{rid},
+				</if>
+			 	<if test=" null != subjectid">
+					 	#{subjectid},
+				</if>
+			 	<if test=" null != frid">
+					 	#{frid},
+				</if>
+			 	<if test=" null != staffid">
+					 	#{staffid},
+				</if>
+			 	<if test=" null != fullname and '' != fullname ">
+					 	#{fullname},
+				</if>
+			 	<if test=" null != content and '' != content ">
+					 	#{content},
+				</if>
+			 	<if test=" null != sdate">
+					 	#{sdate},
+				</if>
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_subject_reply WHERE rid IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterMap="subjectReply">
+		UPDATE t_subject_reply
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != rid">
+					rid = #{rid},
+				</if>
+				<if test=" null != subjectid">
+					subjectid = #{subjectid},
+				</if>
+				<if test=" null != frid">
+					frid = #{frid},
+				</if>
+				<if test=" null != staffid">
+					staffid = #{staffid},
+				</if>
+				<if test=" null != fullname and '' != fullname ">
+					fullname = #{fullname},
+				</if>
+				<if test=" null != content and '' != content ">
+					content = #{content},
+				</if>
+				<if test=" null != sdate">
+					sdate = #{sdate},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != rid and '' != rid">
+				rid = #{rid}
+			</if>
+		</where>
+	</update>
+	
+	<select id="getList" resultMap="subjectReplyMap" parameterMap="subjectReply">
+		SELECT * FROM t_subject_reply
+		<where>
+			1=1
+			<if test=" null != rid">
+				AND rid = #{rid}
+			</if>
+			<if test=" null != subjectid">
+				AND subjectid = #{subjectid}
+			</if>
+			<if test=" null != frid">
+				AND frid = #{frid}
+			</if>
+			<if test=" null != staffid">
+				AND staffid = #{staffid}
+			</if>
+			<if test=" null != fullname and '' != fullname ">
+				AND fullname LIKE '%${fullname}%'
+			</if>
+			<if test=" null != content and '' != content ">
+				AND content LIKE '%${content}%'
+			</if>
+			<if test=" null != sdate">
+				AND sdate = #{sdate}
+			</if>
+		</where>
+			ORDER BY rid DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="subjectReply">
+		SELECT COUNT(*) FROM t_subject_reply
+		<where>
+			1=1
+			<if test=" null != rid">
+				AND rid = #{rid}
+			</if>
+			<if test=" null != subjectid">
+				AND subjectid = #{subjectid}
+			</if>
+			<if test=" null != frid">
+				AND frid = #{frid}
+			</if>
+			<if test=" null != staffid">
+				AND staffid = #{staffid}
+			</if>
+			<if test=" null != fullname and '' != fullname ">
+				AND fullname LIKE '%${fullname}%'
+			</if>
+			<if test=" null != content and '' != content ">
+				AND content LIKE '%${content}%'
+			</if>
+			<if test=" null != sdate">
+				AND sdate = #{sdate}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Integer">
+		SELECT Max(rid) AS VALUE FROM t_subject_reply
+	</select>
+	
+	<select id="getObject" resultMap="subjectReplyMap" parameterType="Long">
+		SELECT * FROM t_subject_reply WHERE rid = #{0}
+	</select>
+	
+</mapper>

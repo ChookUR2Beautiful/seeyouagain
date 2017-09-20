@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.marketingmanagement.dao.HotWordsDao">
+
+	<parameterMap type="HotWords" id="hotWords" />
+	
+	<resultMap type="HotWords" id="hotWordsMap">
+		<result column="hid" property="hid" />                            
+		<result column="area_id" property="areaId" />    
+		<result column="hot_words" property="hotWord" />
+		<result column="hot_type" property="hotType" />
+		<result column="hot_num" property="hotNum" />
+		<result column="hot_order" property="hotOrder" />
+		<result column="hot_status" property="hotStatus" />
+		<result column="creator_id" property="creatorId" />
+		<result column="created_time" property="createdTime" />                            
+		<result column="update_user_id" property="updateUserId" />    
+		<result column="update_time" property="updateTime" />    
+		<result column="title" property="title" />
+		<result column="provinceName" property="provinceName" />
+		<result column="provinceId" property="provinceId" />
+	</resultMap>
+	
+	<select id="getHotWordsList" resultMap="hotWordsMap" parameterMap="hotWords">
+		SELECT t.hid,t.area_id,t.hot_words,t.hot_type,t.hot_num,t.hot_order,t.hot_status,t.creator_id,t.created_time,t.update_user_id,t.update_time,t1.title,ta5.provinceName,ta5.provinceId
+		FROM t_hot_words t 
+		LEFT JOIN t_area t1 ON t.area_id=t1.area_id 
+		LEFT JOIN (SELECT ta2.title AS provinceName,ta2.area_id AS provinceId,ta2.pid AS Pid,ta1.area_id FROM t_area ta1 JOIN t_area ta2 WHERE ta1.pid = ta2.area_id) ta5 ON t.area_id = ta5.area_id
+			<where>
+				1=1 
+			AND t.hot_status=1
+			<if test=" null != hotWord and '' != hotWord ">
+				AND t.hot_words LIKE '%${hotWord}%'
+			</if>
+			<if test=" null != hotType and '' != hotType ">
+				AND t.hot_type LIKE '%${hotType}%'
+			</if>
+			<if test=" null != province and '' != province ">
+				AND ta5.provinceId = #{province}
+			</if> 
+			<if test=" null != city and '' != city ">
+				AND t.area_id = #{city}
+			</if>
+			
+		</where>
+			ORDER BY t.hid DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	
+	
+	<select id="getHotWordsCount" resultType="Long" parameterMap="hotWords">
+		SELECT count(1) FROM t_hot_words t
+		LEFT JOIN (SELECT ta2.title AS provinceName,ta2.area_id AS provinceId,ta2.pid AS Pid,ta1.area_id FROM t_area ta1 JOIN t_area ta2 WHERE ta1.pid = ta2.area_id) ta5 ON t.area_id = ta5.area_id
+		<where>
+			1=1 
+			AND t.hot_status=1 
+			<if test=" null != hotWord and '' != hotWord ">
+			AND t.hot_words LIKE '%${hotWord}%'
+			</if>
+			<if test=" null != hotType and '' != hotType ">
+				AND t.hot_type LIKE '%${hotType}%'
+			</if>
+			<if test=" null != province and '' != province ">
+				AND ta5.provinceId = #{province}
+			</if> 
+			<if test=" null != city and '' != city ">
+				AND t.area_id = #{city}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getSearchTags" resultMap="hotWordsMap" parameterType="string">
+		SELECT thw.hid,thw.hot_words,thw.area_id FROM t_hot_words thw WHERE thw.area_id = #{0} AND thw.hot_status=1 ORDER BY thw.hot_order DESC LIMIT 6 
+	</select>
+	
+	<select id="getHotSearchTags" resultMap="hotWordsMap" parameterMap="hotWords">
+		SELECT thw.hid,thw.hot_words,thw.hot_num,thw.update_time FROM t_hot_words thw WHERE thw.area_id = #{areaId} AND thw.hot_status=#{hotStatus} ORDER BY thw.hot_num DESC 
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="getHotSearchTagsCount" resultType="Long" parameterMap="hotWords">
+		SELECT count(thw.hid) FROM t_hot_words thw WHERE thw.area_id = #{areaId} AND thw.hot_status=#{hotStatus} 
+	</select>
+	
+	
+	
+	<select id="isCityInBusiness" resultType="Long" parameterType="string">
+		SELECT COUNT(*) FROM (SELECT ta.`area_id` FROM t_area ta WHERE  ta.area_id IN (SELECT ta.`pid` FROM t_area ta WHERE  ta.area_id IN (SELECT DISTINCT tb.area_id FROM t_business tb)))ta WHERE  ta.area_id=#{0}
+	</select>
+	
+	<select id="isHotWordsOfArea" resultType="Long" parameterMap="hotWords">
+		SELECT COUNT(hot_words) AS hwCount FROM t_hot_words
+		<where>
+			1=1 
+			AND hot_status=1 
+			<if test=" null != areaId and '' != areaId ">
+			AND area_id = #{areaId}
+			</if>
+			<if test=" null != hotWord and '' != hotWord ">
+			AND hot_words = #{hotWord};
+			</if>
+		</where>
+	</select>
+	
+	<select id="isHotWordsOfHid" resultType="String" parameterMap="hotWords">
+		SELECT hot_order FROM t_hot_words
+		<where>
+			1=1 
+			AND hot_status=1 
+			<if test=" null != areaId and '' != areaId ">
+			AND area_id = #{areaId}
+			</if>
+			<if test=" null != hid and '' != hid ">
+			AND hid = #{hid};
+			</if>
+		</where>
+	</select>
+		<select id="isHotWordsOfHid2" resultType="String" parameterMap="hotWords">
+		SELECT hot_words FROM t_hot_words
+		<where>
+			1=1 
+			AND hot_status=1 
+			<if test=" null != areaId and '' != areaId ">
+			AND area_id = #{areaId}
+			</if>
+			<if test=" null != hid and '' != hid ">
+			AND hid = #{hid};
+			</if>
+		</where>
+	</select>
+	
+	<select id="isHotWordsOfAreaId" resultType="Long" parameterMap="hotWords">
+		SELECT COUNT(hot_words) AS hwCount FROM t_hot_words
+		<where>
+			1=1 
+			AND hot_status=1 
+			<if test=" null != areaId and '' != areaId ">
+			AND area_id = #{areaId};
+			</if>
+		</where>
+	</select>
+	
+	<select id="isExistHOrder" resultType="Long" parameterMap="hotWords">
+		SELECT COUNT(hot_words) AS hwCount FROM t_hot_words
+		<where>
+			1=1 
+			AND hot_status=1 
+			<if test=" null != areaId and '' != areaId ">
+			AND area_id = #{areaId} 
+			</if>
+			<if test=" null != hotOrder and '' != hotOrder ">
+			AND hot_order = #{hotOrder};
+			</if>
+		</where>
+	</select>
+	
+	<update id="delete" parameterType="Object">
+		UPDATE t_hot_words set hot_status = 0 where hid in
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>	
+	</update>
+	
+	<!-- 更新 -->
+	<update id="update" parameterMap="hotWords">
+		UPDATE t_hot_words
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != areaId">
+					 	area_id=#{areaId},
+				</if>
+			 	<if test=" null != hotWord and '' != hotWord ">
+					 	hot_words=#{hotWord},
+				</if>
+			 	<if test=" null != hotOrder and '' != hotOrder ">
+					 	hot_order=#{hotOrder},
+				</if>
+			 	<if test=" null != hotStatus and '' != hotStatus ">
+					 	hot_status=#{hotStatus},
+				</if>
+				<if test=" null != creatorId and '' != creatorId ">
+					 	creator_id=#{creatorId},
+				</if>
+			 	<if test=" null != createdTime and '' != createdTime ">
+					 	created_time=#{createdTime},
+				</if>
+			 	<if test=" null != updateUserId and '' != updateUserId ">
+					 	update_user_id=#{updateUserId},
+				</if>
+			 	<if test=" null != updateTime and '' != updateTime ">
+					 	update_time=#{updateTime},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != hid and '' != hid">
+				hid = #{hid}
+			</if>
+		</where>
+	</update>
+	
+	<insert id="add" parameterMap="hotWords" >
+		INSERT INTO t_hot_words
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != areaId and '' != areaId ">
+					area_id,
+				</if>
+			 	<if test=" null != hotWord and '' != hotWord ">
+					hot_words,
+				</if>
+			 	<if test=" null != hotOrder and '' != hotOrder ">
+					hot_order,
+				</if>
+				<if test=" null != hotStatus and '' != hotStatus ">
+					hot_status,
+				</if>
+				<if test=" null != creatorId and '' != creatorId ">
+					creator_id,
+				</if>
+				<if test=" null != createdTime and '' != createdTime ">
+					created_time,
+				</if>
+				<if test=" null != updateUserId and '' != updateUserId ">
+					update_user_id,
+				</if>
+				<if test=" null != updateTime and '' != updateTime ">
+					update_time,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != areaId">
+					 	#{areaId},
+				</if>
+			 	<if test=" null != hotWord and '' != hotWord ">
+					 	#{hotWord},
+				</if>
+			 	<if test=" null != hotOrder and '' != hotOrder ">
+					 	#{hotOrder},
+				</if>
+			 	<if test=" null != hotStatus and '' != hotStatus ">
+					 	#{hotStatus},
+				</if>
+				<if test=" null != creatorId and '' != creatorId ">
+					 	#{creatorId},
+				</if>
+			 	<if test=" null != createdTime and '' != createdTime ">
+					 	#{createdTime},
+				</if>
+			 	<if test=" null != updateUserId and '' != updateUserId ">
+					 	#{updateUserId},
+				</if>
+			 	<if test=" null != updateTime and '' != updateTime ">
+					 	#{updateTime},
+				</if>
+		</trim>
+	</insert>
+	
+	<select id="getObject" resultMap="hotWordsMap" parameterType="Long">
+		<!-- SELECT * FROM t_hot_words WHERE hid = #{0} -->
+		SELECT t.hid,t.area_id,t.hot_words,t.hot_order,t.hot_status,t.creator_id,t.created_time,t.update_user_id,t.update_time,t1.title,ta5.provinceName 
+		FROM t_hot_words t 
+		LEFT JOIN t_area t1 ON t.area_id=t1.area_id 
+		LEFT JOIN (SELECT ta2.title AS provinceName,ta1.area_id,ta1.pid 
+		FROM t_area ta1 JOIN t_area ta2 WHERE ta1.pid = ta2.area_id) ta5 ON t.area_id = ta5.area_id
+		WHERE t.hid = #{0}
+	</select>
+	
+</mapper>

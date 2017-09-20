@@ -1,0 +1,131 @@
+package com.xmniao.xmn.core.manor.controller;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.xmniao.xmn.core.base.BaseController;
+import com.xmniao.xmn.core.base.Pageable;
+import com.xmniao.xmn.core.base.Resultable;
+import com.xmniao.xmn.core.coupon.service.CouponIssueService;
+import com.xmniao.xmn.core.manor.entity.TManorHoneyManage;
+import com.xmniao.xmn.core.manor.entity.TManorInfo;
+import com.xmniao.xmn.core.manor.service.ShopExchangeService;
+import com.xmniao.xmn.core.util.PageConstant;
+import com.xmniao.xmn.core.util.handler.annotation.RequestLogging;
+
+@RequestLogging(name="商店兑换管理")
+@Controller
+@RequestMapping(value = "shopExchange/manage")
+public class shopExchangeController extends BaseController {
+	
+	
+	/**
+	 * 庄园会员管理服务
+	 */
+	@Autowired
+	private ShopExchangeService shopExchangeService;
+	
+	@Autowired
+	private CouponIssueService couponIssueService;
+	
+	
+	@RequestMapping(value = "init")
+	public String init() {
+		return "golden_manor/shopExchangeManage";
+	}
+	
+	@RequestMapping(value = "init/list")
+	@ResponseBody
+	public Object initList(TManorHoneyManage manorHoneyManage) {
+		Pageable<TManorHoneyManage> pageable = new Pageable<TManorHoneyManage>(manorHoneyManage);
+		try {
+			pageable = shopExchangeService.getManorInfoInfoList(manorHoneyManage);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return pageable;
+	}
+	
+	@RequestMapping(value = {"update"})
+	@ResponseBody
+	public Resultable update(TManorHoneyManage manorHoneyManage){
+		Resultable result=new Resultable();
+		try {
+			int count = shopExchangeService.saveUpdateActivity(manorHoneyManage);
+			if (count > 0) {
+				result.setMsg("更新成功!");
+				result.setSuccess(true);
+			} else {
+				result.setMsg("更新失败!");
+				result.setSuccess(false);
+			}
+			
+		} catch (Exception e) {
+			result.setMsg("更新失败!");
+			result.setSuccess(false);
+			e.printStackTrace();
+			this.log.error(e.getMessage(), e);
+		}
+		return result;
+	}
+	
+	@RequestMapping(value = "list/viewDetail")
+	@ResponseBody
+	public Object getManorHoneyManageList(TManorHoneyManage manorHoneyManage) {
+		Resultable resultable = null;
+		try {
+			
+			TManorHoneyManage manorHoneyManageInfo = shopExchangeService.getManorHoneyManageData(manorHoneyManage);
+			resultable = new Resultable(true, "查询成功", manorHoneyManageInfo);
+			return resultable;
+			
+		} catch (Exception e) {
+			log.error("查询兑换管理信息失败", e);
+			resultable = new Resultable(false, "查询兑换管理信息失败");
+			return resultable;
+		}
+
+	}
+	
+	@RequestMapping(value = "init/getCurrentDataSize")
+	@ResponseBody
+	public Object getCurrentDataSize(TManorInfo manorInfo) {
+		long count=0l;
+		try {
+//			count = shopExchangeService.count(manorInfo);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return count;
+	}
+	
+	/**
+	 * 方法描述：导出庄园会员 <br/>
+	 * 创建人： Administrator <br/>
+	 * 创建时间：2017年6月7日下午2:39:46 <br/>
+	 * @param anchor
+	 * @param request
+	 * @param response
+	 */
+	@RequestMapping(value="export")
+	public void export(TManorHoneyManage manorHoneyManage,HttpServletRequest request,HttpServletResponse response){
+		manorHoneyManage.setOrder(PageConstant.NOT_ORDER);
+		manorHoneyManage.setLimit(PageConstant.PAGE_LIMIT_NO);
+		
+		Map<String,Object> params=new HashMap<String,Object>();
+//		anchor.setUtype(LiveConstant.UTYPE_COMMON);
+		params.put("list", shopExchangeService.getManorSunshineRecordList(manorHoneyManage));
+		doExport(request, response, "golden_manor/shopExchange.xls", params);
+		
+	}
+	
+	
+}

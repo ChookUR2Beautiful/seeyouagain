@@ -1,0 +1,415 @@
+/**
+ * 
+ */
+package com.xmniao.xmn.core.live_anchor.controller;
+
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.xmniao.xmn.core.base.BaseController;
+import com.xmniao.xmn.core.base.Pageable;
+import com.xmniao.xmn.core.base.Resultable;
+import com.xmniao.xmn.core.live_anchor.constant.LiveConstant;
+import com.xmniao.xmn.core.live_anchor.entity.TLiveGift;
+import com.xmniao.xmn.core.live_anchor.entity.TLiveGiftBagSet;
+import com.xmniao.xmn.core.live_anchor.entity.TLiveGiftDetail;
+import com.xmniao.xmn.core.live_anchor.service.TLiveGiftDetailService;
+import com.xmniao.xmn.core.live_anchor.service.TLiveGiftService;
+import com.xmniao.xmn.core.util.handler.annotation.RequestLogging;
+import com.xmniao.xmn.core.util.handler.annotation.RequestToken;
+
+/**
+ * 项目名称：XmnWeb_LVB
+ * 
+ * 类名称：LiveGiftController
+ *
+ * 类描述：直播礼物Controller
+ * 
+ * 创建人： huang'tao
+ * 
+ * 创建时间：2016-8-17下午2:21:47
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司
+ */
+@RequestLogging(name="礼物管理")
+@Controller
+@RequestMapping(value = "liveGift/manage")
+public class LiveGiftController extends BaseController {
+	
+	/**
+	 * 注入直播礼物服务
+	 */
+	@Autowired
+	private TLiveGiftService liveGiftService;
+	
+	/**
+	 * 注入直播礼物详细信息服务
+	 */
+	@Autowired
+	private TLiveGiftDetailService liveGiftDetailService;
+	
+	/**
+	 * 礼物管理列表初始页面
+	 * 
+	 * @author huang'tao
+	 * @date 2015年8月12日 下午4:34:01
+	 * @return
+	 */
+	@RequestMapping(value = "init")
+	public String init() {
+		return "live_anchor/giftManage";
+	}
+	
+	/**
+	 * 礼物管理列表
+	 * 
+	 * @author huang'tao
+	 * @date 2015年8月12日 下午4:34:01
+	 * @return
+	 */
+	@RequestMapping(value = "init/list")
+	@ResponseBody
+	public Object initList(TLiveGift liveGift) {
+		Pageable<TLiveGift> pageable = new Pageable<TLiveGift>(liveGift);
+		List<TLiveGift> list = liveGiftService.getList(liveGift);
+		liveGiftService.convertGiftDetailList(list);
+		Long count = liveGiftService.count(liveGift);
+		pageable.setContent(list);
+		pageable.setTotal(count);
+		return pageable;
+	}
+	
+	/**
+	 * 初始化指定礼包可添加礼物
+	 * 
+	 * @author huang'tao
+	 * @date 2015年8月12日 下午4:34:01
+	 * @return
+	 */
+	@RequestMapping(value = "init/giftBagSetToAddList")
+	@ResponseBody
+	public Object giftBagSetListToAdd(TLiveGift liveGift,@RequestParam(value="giftBagId") Integer giftBagId) {
+		Pageable<TLiveGift> pageable = new Pageable<TLiveGift>(liveGift);
+		List<TLiveGift> list = liveGiftService.getGiftListToAdd(liveGift);
+		Long count = liveGiftService.getGiftToAddCount(liveGift);
+		pageable.setContent(list);
+		pageable.setTotal(count);
+		return pageable;
+	}
+	
+	
+	/**
+	 * 礼包礼物管理列表
+	 * 
+	 * @author huang'tao
+	 * @date 2015年8月12日 下午4:34:01
+	 * @return
+	 */
+	@RequestMapping(value = "init/giftBagSetList")
+	@ResponseBody
+	public Object giftBagSetList(TLiveGiftBagSet liveGiftBagSet) {
+		Pageable<TLiveGiftBagSet> pageable = new Pageable<TLiveGiftBagSet>(liveGiftBagSet);
+		List<TLiveGiftBagSet> list = liveGiftService.getGiftBagSetList(liveGiftBagSet);
+		Long count = liveGiftService.giftBagSetCount(liveGiftBagSet);
+		pageable.setContent(list);
+		pageable.setTotal(count);
+		return pageable;
+	}
+	/**
+	 * 
+	 * 方法描述：添加礼物页面初始化
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-17下午2:58:39
+	 * @return
+	 */
+	@RequestMapping(value = "add/init")
+	@RequestToken(createToken=true,tokenName="giftEditToken")
+	public String addInit(){
+		return "live_anchor/giftEdit";
+	}
+	
+	/**
+	 * 
+	 * 方法描述：保存礼物信息
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-17下午3:27:16
+	 * @return
+	 */
+	@RequestMapping(value="add")
+	@RequestToken(removeToken=true,tokenName="giftEditToken")
+	@ResponseBody
+	public Object add(TLiveGift liveGift){
+		Resultable result=new Resultable();
+		try {
+			liveGift.setCreateTime(new Date());
+			liveGift.setUpdateTime(new Date());
+			liveGiftService.add(liveGift);
+			liveGiftService.syncLiveGiftDetailInfo(liveGift);
+			result.setMsg("添加成功!");
+			result.setSuccess(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setMsg("添加失败!");
+			result.setSuccess(false);
+			this.log.error(e.getMessage(), e);
+		}
+		return result;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：跳转到礼物编辑页面
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-17下午5:02:27
+	 * @param liveGift
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value="update/init")
+	public String updateInit(TLiveGift liveGift,Model model){
+		try {
+			long gid = liveGift.getId().longValue();
+			TLiveGift gift = liveGiftService.getObject(gid);
+			TLiveGiftDetail giftDetail = liveGiftDetailService.selectByGid(gid);
+			Integer giftKind = gift.getGiftKind();
+			if(LiveConstant.GIFT_KIND.GIFT_KIND_COMBO==giftKind && giftDetail!=null){
+				gift.setGenre(giftDetail.getGenre());
+			}
+			model.addAttribute("gift", gift);
+		} catch (Exception e) {
+			e.printStackTrace();
+			this.log.error("跳转到礼物编辑页面异常:"+e.getMessage(), e);
+		}
+		return "live_anchor/giftEdit";
+	}
+	
+	/**
+	 * 
+	 * 方法描述：跳转到关联商品列表页 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-4-1下午2:05:41 <br/>
+	 * @return
+	 */
+	@RequestMapping(value="update/loadProductInfo/init")
+	public String loadProductInfoInit(TLiveGift liveGift,Model model){
+		Integer gid = liveGift.getId();
+		TLiveGift gift = liveGiftService.getObject(new Long(gid));
+		model.addAttribute("gift", gift);
+		return "live_anchor/giftDetailManage";
+	}
+	
+	/**
+	 * 
+	 * 方法描述：加载商品列表信息 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-4-1下午3:07:24 <br/>
+	 * @param liveGift
+	 * @return
+	 */
+	@RequestMapping(value="update/giftDetailList")
+	@ResponseBody
+	public Object giftDetailList(TLiveGiftDetail liveGiftDetail){
+		Integer gid = liveGiftDetail.getGid();
+		if(gid == null){
+			return null;
+		}
+		Pageable<TLiveGiftDetail> pageable = new Pageable<TLiveGiftDetail>(liveGiftDetail);
+		List<TLiveGiftDetail> list = liveGiftDetailService.getListByGid(new Long(gid));
+		pageable.setContent(list);
+		Long count=0l;
+		if(list!=null && list.size()>0){
+			count=new Long(list.size());
+		}
+		pageable.setTotal(count);
+		return pageable;
+		
+	}
+	
+	
+	/**
+	 * 
+	 * 方法描述：加载礼物详情信息
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-17下午5:02:27
+	 * @param liveGift
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value="update/loadProductInfo")
+	@ResponseBody
+	public Object loadProductInfo(TLiveGift liveGift){
+		Integer gid = liveGift.getId();
+		if(gid==null){
+			return null;
+		}
+		List<TLiveGiftDetail> giftDetailList = liveGiftDetailService.getListByGid(new Long(gid));
+		return giftDetailList;
+	}
+	
+	
+	/**
+	 * 
+	 * 方法描述：更新礼物信息
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-17下午4:55:18
+	 * @param liveGift
+	 * @return
+	 */
+	@RequestMapping(value={"update"})
+	@ResponseBody
+	public Object update(TLiveGift liveGift){
+		
+		Resultable result=new Resultable();
+		try {
+			liveGift.setUpdateTime(new Date());
+			Integer count = liveGiftService.update(liveGift);
+			liveGiftService.syncLiveGiftDetailInfo(liveGift);
+			if(count>0){
+				result.setSuccess(true);
+				result.setMsg("操作成功!");
+			}else{
+				result.setSuccess(false);
+				result.setMsg("操作失败!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setSuccess(false);
+			result.setMsg("操作失败!");
+			this.log.error(e.getMessage(), e);
+		}
+		return result;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：更新礼物启用状态
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-17下午4:55:18
+	 * @param liveGift
+	 * @return
+	 */
+	@RequestMapping(value={"setStatus"})
+	@ResponseBody
+	public Object setStatus(TLiveGift liveGift){
+		
+		Resultable result=new Resultable();
+		try {
+			liveGift.setUpdateTime(new Date());
+			Integer count = liveGiftService.update(liveGift);
+			if(count>0){
+				result.setSuccess(true);
+				result.setMsg("操作成功!");
+			}else{
+				result.setSuccess(false);
+				result.setMsg("操作失败!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setSuccess(false);
+			result.setMsg("操作失败!");
+			this.log.error(e.getMessage(), e);
+		}
+		return result;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：跳转到礼包配置页面
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-17下午2:58:39
+	 * @return
+	 */
+	@RequestMapping(value = "giftBagAdd/init")
+	public String giftBagAddInit(Model model){
+		Integer giftBagId = liveGiftService.getBagId();
+		model.addAttribute("giftBagId", giftBagId);
+		return "live_anchor/giftBagSetManage";
+	}
+	
+	/**
+	 * 
+	 * 方法描述：在此处添加方法描述
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-29下午9:13:17
+	 * @param ids	礼物ids
+	 * @param giftBagId 礼包id
+	 * @return
+	 */
+	@RequestMapping(value={"giftBagSetAddBatch"})
+	@ResponseBody
+	public Resultable giftBagSetAddBatch(@RequestParam("ids") String ids,@RequestParam("giftBagId") String giftBagId){
+		Resultable result=new Resultable();
+		result=liveGiftService.giftBagSetAddBatch(ids,giftBagId);
+		return result;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：跳转到更新礼包礼物数量页面
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-17下午4:55:18
+	 * @param liveGift
+	 * @return
+	 */
+	@RequestMapping(value={"updateGiftBagSet/init"})
+	public Object updateGiftBagSetInit(TLiveGiftBagSet liveGiftBagSet,Model model){
+		TLiveGiftBagSet liveGiftBagSetInfo = liveGiftService.getGiftBagSetList(liveGiftBagSet).get(0);
+		model.addAttribute("liveGiftBagSetInfo", liveGiftBagSetInfo);
+		return "live_anchor/giftBagSetEdit";
+	}
+	
+	/**
+	 * 
+	 * 方法描述：更新礼包礼物
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-31上午10:02:57
+	 * @param liveGiftBagSet
+	 * @return
+	 */
+	@RequestMapping(value="updateGiftBagSet")
+	@ResponseBody
+	public Resultable updateGiftBagSet(TLiveGiftBagSet liveGiftBagSet){
+		Resultable result=new Resultable();
+		try {
+			Integer count = liveGiftService.updateGiftNums(liveGiftBagSet);
+			if(count>0){
+				result.setSuccess(true);
+				result.setMsg("操作成功!");
+			}else{
+				result.setSuccess(false);
+				result.setMsg("操作失败!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setSuccess(false);
+			result.setMsg("操作失败");
+			this.log.error("更新礼包礼物信息失败:"+e.getMessage(), e);
+		}
+		return result;
+	}
+	
+	@RequestMapping(value="deleteGiftBagSet",method=RequestMethod.POST)
+	@ResponseBody
+	public Object deleteGiftBagSet(TLiveGiftBagSet liveGiftBagSet,Model model){
+		Resultable result=new Resultable();
+		try {
+			liveGiftService.deleteBagSetById(liveGiftBagSet.getId());
+			result.setSuccess(true);
+			result.setMsg("操作成功!");
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setSuccess(false);
+			result.setMsg("操作失败!");
+		}
+		return result;
+	}
+
+}

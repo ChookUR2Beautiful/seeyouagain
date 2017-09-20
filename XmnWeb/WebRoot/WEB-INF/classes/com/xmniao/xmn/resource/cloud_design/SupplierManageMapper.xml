@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.cloud_design.dao.SupplierManageDao">
+
+	<resultMap id="sullpierMap" type="supplier">
+		<id column="id" property="supplierId" jdbcType="BIGINT" />
+		<result column="postage_template_id" property="postTemplateId"
+			jdbcType="BIGINT" />
+		<result column="type" property="type" jdbcType="INTEGER" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="contacts" property="contacts" jdbcType="VARCHAR" />
+		<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="sullpier_column_list">
+		id, postage_template_id, type, name, contacts, mobile,
+		address,
+		status,create_time,province,city,area,wxin,qq,email
+	</sql>
+
+	<!-- 获取供应商列表 -->
+	<select id="getList" parameterType="supplier" resultMap="sullpierMap">
+		SELECT
+		<include refid="sullpier_column_list" />
+		FROM d_supplier
+		WHERE 1=1
+		<if test="status == null or status == ''">
+		AND status = 0
+		</if>
+		<if test="status != null and status != ''">
+		AND status =#{status}
+		</if>
+		<if test="name != null and name != ''">
+			AND name like '%${name}%'
+		</if>
+		<if test="contacts != null and contacts != ''">
+			AND contacts like '%${contacts}%'
+		</if>
+		<if test="mobile != null">
+			AND mobile like '%${mobile}%'
+		</if>
+		<if test="type != null">
+			AND type = #{type}
+		</if>
+		ORDER BY create_time DESC
+		<if test="limit != -1">
+		LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<!-- 统计符合条件的记录数 -->
+	<select id="count" parameterType="supplier" resultType="long">
+		SELECT COUNT(1) count
+		FROM d_supplier
+		WHERE 1=1
+		AND status = 0
+		<if test="name != null and name != ''">
+			AND name like '%${name}%'
+		</if>
+		<if test="contacts != null and contacts != ''">
+			AND contacts like '%${contacts}%'
+		</if>
+		<if test="mobile != null">
+			AND mobile like '%${mobile}%'
+		</if>
+		<if test="type != null">
+			AND type = #{type}
+		</if>
+	</select>
+
+	<!-- 新增 -->
+	<insert id="add" parameterType="supplier" useGeneratedKeys="true" keyProperty="supplierId" keyColumn="id">
+		INSERT INTO d_supplier
+		(type,name,province,city,area,address,contacts,mobile,create_time
+		<if test="wxin != null">
+			,wxin
+		</if>
+		<if test="qq != null">
+			,qq
+		</if>
+		<if test="email != null">
+			,email
+		</if>
+		<if test="postTemplateId != null and postTemplateId !=''">
+			,postage_template_id
+		</if>
+		) VALUES
+		(#{type},#{name},#{province},#{city},#{area},#{address},#{contacts},#{mobile},#{createTime}
+		<if test="wxin != null">
+			,#{wxin}
+		</if>
+		<if test="qq != null">
+			,#{qq}
+		</if>
+		<if test="email != null">
+			,#{email}
+		</if>
+		<if test="postTemplateId != null and postTemplateId !=''">
+			,#{postTemplateId}
+		</if>
+		)
+	</insert>
+
+	<!-- 删除 -->
+	<update id="delete" parameterType="supplier">
+		UPDATE d_supplier
+		SET status =
+		1
+		WHERE id = #{supplierId}
+	</update>
+
+	<!-- 查询供应商信息 -->
+	<select id="getSupplier" parameterType="supplier" resultMap="sullpierMap">
+		SELECT
+		<include refid="sullpier_column_list"/>
+		FROM d_supplier
+		WHERE
+		id = #{supplierId}
+		AND status = 0
+	</select>
+	
+	<!-- 修改商家信息 -->
+	<update id="update" parameterType="supplier">
+		UPDATE d_supplier
+		SET 
+		type =#{type},
+		<if test="postTemplateId != null and postTemplateId !=''">
+		postage_template_id = #{postTemplateId},
+		</if>
+		name =#{name},
+		contacts = #{contacts},
+		mobile =#{mobile},
+		address =#{address},
+		province =#{province},
+		area =#{area}
+		<if test="wxin != null">
+		,wxin = #{wxin}
+		</if>
+		<if test="qq != null">
+		,qq = #{qq}
+		</if>
+		<if test="email != null">
+		,email = #{email}
+		</if>
+		WHERE 
+		id = #{supplierId}
+	</update>
+	
+	<select id="checksData" resultType="long">
+		SELECT COUNT(1) FROM d_order o
+		LEFT JOIN d_order_material om ON o.order_no = om.order_no
+		LEFT JOIN d_material m ON om.material_id = m.id
+		WHERE m.supplier_id = #{supplierId}
+		AND o.status IN (1,2,3,4)
+		
+	</select>
+	
+	<select id="checkdData" resultType="long">
+		SELECT COUNT(1) FROM d_order 
+		WHERE designer = #{supplierId}
+		AND STATUS IN(1,2)
+	</select>
+</mapper>

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TLiveRecordTagConfDao" >
+
+  <resultMap id="liveRecordTagConfMap" type="com.xmniao.xmn.core.live_anchor.entity.TLiveRecordTagConf" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="record_id" property="recordId" jdbcType="INTEGER" />
+    <result column="classify_id" property="classifyId" jdbcType="INTEGER" />
+    <result column="tag_id" property="tagId" jdbcType="INTEGER" />
+    <result column="tag_name" property="tagName" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  
+  <sql id="liveRecordTagConf_column_list" >
+    id, record_id, classify_id, tag_id, tag_name, create_time, update_time
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test=" null != id and '' != id">
+  		AND id=#{id}
+  	</if>
+  	<if test=" null != recordId and '' != recordId">
+  		AND record_id=#{recordId}
+  	</if>
+  </sql>
+  
+  
+  <select id="getList" resultMap="liveRecordTagConfMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRecordTagConf" >
+    select 
+    <include refid="liveRecordTagConf_column_list" />
+    from t_live_record_tag_conf
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+  </select>
+  
+  
+  <delete id="deleteByRecordId" parameterType="java.lang.Integer" >
+    delete from t_live_record_tag_conf
+    where record_id = #{recordId,jdbcType=INTEGER}
+  </delete>
+  
+  
+  <insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRecordTagConf" >
+    insert into t_live_record_tag_conf
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="recordId != null" >
+        record_id,
+      </if>
+      <if test="classifyId != null" >
+        classify_id,
+      </if>
+      <if test="tagId != null" >
+        tag_id,
+      </if>
+      <if test="tagName != null" >
+        tag_name,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="recordId != null" >
+        #{recordId,jdbcType=INTEGER},
+      </if>
+      <if test="classifyId != null" >
+        #{classifyId,jdbcType=INTEGER},
+      </if>
+      <if test="tagId != null" >
+        #{tagId,jdbcType=INTEGER},
+      </if>
+      <if test="tagName != null" >
+        #{tagName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+	<!-- 批量插入直播通告标签配置信息 -->
+	<insert id="addBatch" parameterType="java.util.ArrayList">
+		INSERT INTO t_live_record_tag_conf
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<include refid="liveRecordTagConf_column_list" /> 
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+			<!-- id, record_id, classify_id, tag_id, tag_name, create_time, update_time -->
+				#{item.id},
+				#{item.recordId},
+				#{item.classifyId},
+				#{item.tagId},
+				#{item.tagName},
+				#{item.createTime},
+				#{item.updateTime}
+			</trim>
+		</foreach>
+	</insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRecordTagConf" >
+    update t_live_record_tag_conf
+    <set >
+      <if test="recordId != null" >
+        record_id = #{recordId,jdbcType=INTEGER},
+      </if>
+      <if test="classifyId != null" >
+        classify_id = #{classifyId,jdbcType=INTEGER},
+      </if>
+      <if test="tagId != null" >
+        tag_id = #{tagId,jdbcType=INTEGER},
+      </if>
+      <if test="tagName != null" >
+        tag_name = #{tagName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+</mapper>

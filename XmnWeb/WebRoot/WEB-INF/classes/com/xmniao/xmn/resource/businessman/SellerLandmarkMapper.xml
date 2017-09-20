@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.SellerLandmarkDao">
+
+	<parameterMap type="SellerLandmark" id="sellerLandmark" />
+	
+	<resultMap type="SellerLandmark" id="sellerLandmarkMap">
+		<result column="lid" property="lid" />
+		<result column="sellerid" property="sellerid" />
+		<result column="longitude" property="longitude" />
+		<result column="latitude" property="latitude" />
+		<result column="geohash" property="geohash" />
+		<result column="sdate" property="sdate" />
+		<result column="seller_type" property="sellerType"/>
+	</resultMap>
+	
+	<resultMap type="MSellerLandmark" id="msellerLandmarkMap">
+		<result column="longitude" property="longitude" />
+		<result column="latitude" property="latitude" />
+	</resultMap>
+	
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_log
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						sellerid,
+						longitude,
+						latitude,
+						geohash,
+						sdate,
+						seller_type,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.sellerid},
+						 #{item.longitude},
+						 #{item.latitude},
+						 #{item.geohash},
+						 #{item.sdate},
+						 #{sellerType},
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" parameterMap="sellerLandmark" >
+		INSERT INTO t_seller_landmark
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != lid">
+					lid,
+				</if>
+			 	<if test=" null != sellerid">
+					sellerid,
+				</if>
+			 	<if test=" null != longitude">
+					longitude,
+				</if>
+			 	<if test=" null != latitude">
+					latitude,
+				</if>
+			 	<if test=" null != geohash and '' != geohash ">
+					geohash,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+				<if test="null != sellerType">
+					seller_type,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != lid">
+					 	#{lid},
+				</if>
+			 	<if test=" null != sellerid">
+					 	#{sellerid},
+				</if>
+			 	<if test=" null != longitude">
+					 	#{longitude},
+				</if>
+			 	<if test=" null != latitude">
+					 	#{latitude},
+				</if>
+			 	<if test=" null != geohash and '' != geohash ">
+					 	#{geohash},
+				</if>
+			 	<if test=" null != sdate">
+					 	#{sdate},
+				</if>
+				<if test="null != sellerType">
+						#{sellerType},
+				</if>
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_seller_landmark WHERE lid IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterMap="sellerLandmark">
+		UPDATE t_seller_landmark
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != lid">
+					lid = #{lid},
+				</if>
+				<if test=" null != sellerid">
+					sellerid = #{sellerid},
+				</if>
+				<if test=" null != longitude">
+					longitude = #{longitude},
+				</if>
+				<if test=" null != latitude">
+					latitude = #{latitude},
+				</if>
+				<if test=" null != geohash and '' != geohash ">
+					geohash = #{geohash},
+				</if>
+				<if test=" null != sdate">
+					sdate = #{sdate},
+				</if>
+				<if test="null != sellerType">
+					seller_type = #{sellerType},
+				</if>
+			</trim>
+		</set>
+		<where>
+			1=1
+			<if test="null != lid and '' != lid">
+			and	lid = #{lid}
+			</if>
+			<if test="null != sellerid and '' != sellerid">
+			and	sellerid = #{sellerid}
+			</if>
+		</where>
+	</update>
+	
+	<select id="getList" resultMap="sellerLandmarkMap" parameterMap="sellerLandmark">
+		SELECT * FROM t_seller_landmark
+		<where>
+			seller_type=0
+			<if test=" null != lid">
+				AND lid = #{lid}
+			</if>
+			<if test=" null != sellerid">
+				AND sellerid = #{sellerid}
+			</if>
+			<if test=" null != longitude">
+				AND longitude = #{longitude}
+			</if>
+			<if test=" null != latitude">
+				AND latitude = #{latitude}
+			</if>
+			<if test=" null != geohash and '' != geohash ">
+				AND geohash LIKE '%${geohash}%'
+			</if>
+			<if test=" null != sdate">
+				AND sdate = #{sdate}
+			</if>
+		</where>
+			ORDER BY lid DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="sellerLandmark">
+		SELECT COUNT(*) FROM t_seller_landmark
+		<where>
+			seller_type=0
+			<if test=" null != lid">
+				AND lid = #{lid}
+			</if>
+			<if test=" null != sellerid">
+				AND sellerid = #{sellerid}
+			</if>
+			<if test=" null != longitude">
+				AND longitude = #{longitude}
+			</if>
+			<if test=" null != latitude">
+				AND latitude = #{latitude}
+			</if>
+			<if test=" null != geohash and '' != geohash ">
+				AND geohash LIKE '%${geohash}%'
+			</if>
+			<if test=" null != sdate">
+				AND sdate = #{sdate}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Long">
+		SELECT Max(lid) AS VALUE FROM t_seller_landmark
+	</select>
+	
+	<select id="getObject" resultMap="sellerLandmarkMap" parameterType="Long">
+		SELECT * FROM t_seller_landmark WHERE lid = #{0}
+	</select>
+	
+	<!-- 根据商家id查询 -->
+	<select id="getSellerLandmarkByid" resultMap="sellerLandmarkMap" parameterType="Long">
+		SELECT * FROM t_seller_landmark WHERE sellerid = #{0} AND seller_type=0
+	</select>
+	
+	<!-- 根据商家id查询 -->
+	<select id="getMSellerLandmarkByid" resultMap="msellerLandmarkMap" parameterType="Long">
+		SELECT longitude,latitude FROM t_seller_landmark WHERE sellerid = #{0} AND seller_type=0
+	</select>
+	
+</mapper>

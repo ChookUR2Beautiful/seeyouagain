@@ -1,0 +1,128 @@
+var recordList;
+var initListUrl = "manor/level/init/list.jhtml";
+var imgRoot = $("#fastfdsHttp").val();
+$(function() {
+	inserTitle(
+		' > 黄金庄园 > <a href="experienceofficer/activity/init.jhtml" target="right">庄园等级管理</a> ',
+		'userSpan', true);
+
+	initList();
+	initCouponList();
+});
+
+//初始化等级列表
+function initList() {
+
+	recordList = $("#recordList").page({
+		url : initListUrl,
+		success : success,
+		pageBtnNum : 10,
+		paramForm : 'searchForm'
+	});
+
+}
+
+
+function initCouponList(){
+	$("#cid").chosenObject({
+		hideValue : "cid",
+		showValue : "cname",
+		showType:"multiple",//选项显示形式
+		showParams:["cname"],
+		otherParams:{ctype:$("#ctype").val()},
+		url : "manor/level/init/coupon.jhtml",
+		isChosen:true,//是否支持模糊查询
+		isCode:false,//是否显示编号
+		isHistorical:false,//是否使用历史已加载数据
+		width:"100%"
+	});
+}
+
+function success(data, obj) {
+	var callbackParam = "isBackButton=true&callbackParam="
+	+ getFormParam($("#searchForm").serialize());
+
+	obj.find('div').eq(0).scrollTablel({
+		identifier : "id",
+		callbackParam : callbackParam,
+		data : data.content,
+//		caption : captionInfo,
+		checkable : false,
+		// 操作列
+		handleCols : {
+			title : "操作", // 标题
+			queryPermission : [ "update"], // 不需要选择checkbox处理的权限
+			width : 60, // 宽度
+			// 当前列的中元素
+			cols : [
+				{
+					title : "修改", // 标题
+					linkInfoName : "modal",
+					linkInfo : {
+						modal : {
+							url : "manor/level/update/init.jhtml",
+							width : "auto",
+							title : "修改等级信息"
+						},
+						param : [ "id" ],
+						permission : "update"
+					}
+				}
+			]
+		},
+		cols : [ {
+			title : "等级编号",
+			name : "no",
+			type : "string",
+			width : 40
+		}, {
+			title : "关卡级别",
+			name : "name",
+			type : "string",
+			width : 120
+		}, {
+			title : "玫瑰花田(朵)",
+			name : "roses",
+			type : "int",
+			width : 80
+		}, {
+			title : "兰花田(朵)",
+			name : "orchids",
+			type : "int",
+			width : 80
+		}, {
+			title : "葵花田(朵)",
+			name : "sunflowers",
+			type : "int",
+			width : 80
+		}, {
+			title : "日收益花蜜(滴)",
+			name : "dailyNectar",
+			type : "int",
+			width : 80
+		}, {
+			title : "logo",
+			name : "levelLogo",
+			type : "string",
+			width : 40,
+			customMethod : function(value, data) {
+				if(!data.levelLogo){
+					return "-";
+				}
+				return "<img src='"+imgRoot+data.levelLogo+"'height='60' width='60' >";
+			}
+		}, {
+			title : "等级图",
+			name : "levelPic",
+			type : "string",
+			width : 40,
+			customMethod : function(value, data) {
+				if(!data.levelLogo){
+					return "-";
+				}
+				return "<img src='"+imgRoot+data.levelPic+"'height='60' width='60' >";
+			}
+		}]
+	}, permissions);
+}
+

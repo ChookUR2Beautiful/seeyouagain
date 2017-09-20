@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.jobmanage.dao.RecruitTagDao">
+
+	<!-- 查询所有 -->
+	<select id="getRecruitTagList" resultType="recruitTag" parameterType="recruitTag">
+		SELECT 
+			brt.`id` id, brt.`tagname` name, brt.`tagtype` tagType, 
+			brt.`tagstatus` tagStatus, brt.`update_date` updateDate, brt.`operator` operator 
+		FROM 
+			`burs`.`b_recruit_tag` brt 
+		<where>
+			1=1
+		    <include refid="queryRecruitTagCondition"></include>
+		</where>
+		<if test="order == 1">
+			ORDER BY brt.update_date DESC
+		</if>
+	</select>
+	
+	<!-- 查询条件 -->
+	<sql id="queryRecruitTagCondition">
+		<if test="null != tagStatus">
+			AND brt.tagstatus = #{tagStatus}
+		</if>
+   		<if test="null != id">
+			AND brt.id = #{id}
+		</if>
+		<if test="null != name and '' != name">
+			AND brt.name = #{name}
+		</if>
+		<if test="null != tagType">
+			AND brt.tagtype = #{tagType}
+		</if>
+		<if test="null != updateDate and '' != updateDate">
+			AND brt.update_date = #{updateDate}
+		</if>
+		<if test="null != operator and '' != operator">
+			AND brt.operator LIKE '%${operator}%'
+		</if>
+	</sql>
+	
+	<!-- 查询总记录数（除已删除） -->
+	<select id="getCountByParam"  parameterType="recruitTag" resultType="long">
+		SELECT 
+			COUNT(id) 
+		FROM 
+			b_recruit_tag brt 
+		<where>
+			1=1
+		    <include refid="queryRecruitTagCondition"></include>
+		</where>
+	</select>
+	
+	<!-- 根据id查询一条记录 -->
+	<select id="getRecruitTagByParam" parameterType="recruitTag" resultType="recruitTag">
+		SELECT 
+			brt.`id` id, brt.`tagname` name, brt.`tagtype` tagType, 
+			brt.`tagstatus` tagStatus, brt.`update_date` updateDate, brt.`operator` operator 
+		FROM 
+			b_recruit_tag brt 
+		<where>
+			1=1 
+			<include refid="queryRecruitTagCondition"></include>
+		</where>
+	</select>
+	
+</mapper>

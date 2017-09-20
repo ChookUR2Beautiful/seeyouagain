@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.AllianceAccountDao">
+
+	<parameterMap type="AllianceAccount" id="allianceAccount" />
+	
+	<resultMap type="AllianceAccount" id="allianceAccountMap">	
+		<result column="aid" property="aid" />
+		<result column="id" property="id" />
+		<result column="allianceName" property="allianceName" />
+		<result column="account" property="account" />
+		<result column="nname" property="nname" />
+		<result column="fullname" property="fullname" />
+		<result column="password" property="password" />
+		<result column="phone" property="phone" />
+		<result column="sdate" property="sdate" />
+		<result column="udate" property="udate" />
+		<result column="status" property="status" />		
+	</resultMap>
+	
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_alliance_account
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						aid,
+						id,
+						account,
+						nname,
+						fullname,
+						password,
+						phone,
+						sdate,
+						udate,
+						status
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.aid},
+						 #{item.id},
+						 #{item.account},
+						 #{item.nname},
+						 #{item.fullname},
+						 #{item.password},
+						 #{item.phone},
+						 #{item.sdate},
+						 #{item.udate},
+						 #{item.status}
+			</trim>
+		</foreach>
+	</insert>
+	
+	 <insert id="add" parameterMap="allianceAccount" >
+		INSERT INTO t_alliance_account
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test="null != aid">
+					aid,
+				</if>
+			 	<if test="null != id">
+					id,
+				</if>
+			 	<if test="null != account and '' != account">
+					account,
+				</if>
+			 	<if test=" null != nname and '' != nname">
+					nname,
+				</if>
+			 	<if test=" null != fullname and '' != fullname">
+					fullname,
+				</if>
+				<if test=" null != password and '' != password">
+					password,
+				</if>
+			 	<if test=" null != phone and '' != phone">
+					phone,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+			 	<if test=" null != udate">
+					udate,
+				</if>
+			 	<if test=" null != status">
+					status
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != aid">
+					#{aid},
+				</if>
+			 	<if test=" null != id">
+					#{id},
+				</if>
+			 	<if test=" null != account and '' != account">
+					#{account},
+				</if>
+			 	<if test=" null != nname and '' != nname">
+					#{nname},
+				</if>
+			 	<if test=" null != fullname and '' != fullname">
+					#{fullname},
+				</if>
+				<if test=" null != password and '' != password">
+					#{password},
+				</if>
+			 	<if test=" null != phone and '' != phone">
+					#{phone},
+				</if>
+			 	<if test=" null != sdate">
+					#{sdate},
+				</if>
+			 	<if test=" null != udate">
+					#{udate},
+				</if>
+			 	<if test=" null != status">
+					#{status}
+				</if>
+			</trim>
+	</insert> 
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_alliance_account WHERE aid IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete> 
+	
+	 <update id="update" parameterMap="allianceAccount">
+		UPDATE t_alliance_account
+		<set>
+			<trim suffixOverrides=",">
+			 	<if test=" null != id">
+					id=#{id},
+				</if>
+			 	<if test=" null != account and '' != account">
+					account=#{account},
+				</if>
+				<if test=" null != password and '' != password">
+					password=#{password},
+				</if>
+			 	<if test=" null != nname and '' != nname">
+					nname=#{nname},
+				</if>
+			 	<if test=" null != fullname and '' != fullname">
+					fullname=#{fullname},
+				</if>
+			 	<if test=" null != phone and '' != phone">
+					phone=#{phone},
+				</if>
+			 	<if test=" null != sdate">
+					sdate=#{sdate},
+				</if>
+			 	<if test=" null != udate">
+					udate=#{udate},
+				</if>
+			 	<if test=" null != status">
+					status=#{status}
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != aid">
+				aid = #{aid}
+			</if>
+		</where>
+	</update>  
+	
+	 <select id="getList" resultMap="allianceAccountMap" parameterMap="allianceAccount">
+			SELECT ta.alliance_name AS allianceName,taa.* FROM (
+				SELECT t.aid,t.id,t.account,t.nname,t.fullname,t.phone,t.sdate,t.status FROM t_alliance_account t
+				<where>
+					<if test="null != aid">
+						AND aid = #{aid}
+					</if>
+				 	<if test=" null != id">
+						AND id=#{id}
+					</if>
+				 	<if test=" null != account and '' != account">
+						AND account like '%' #{account} '%'
+					</if>
+				 	<if test=" null != nname and '' != nname">
+						AND nname like '%' #{nname} '%' 
+					</if>
+				 	<if test=" null != fullname and '' != fullname">
+						AND fullname like '%' #{fullname} '%'
+					</if>
+				 	<if test=" null != phone and '' != phone">
+						AND phone like '%' #{phone} '%'
+					</if>
+				 	<if test=" null != sdate">
+						AND sdate=#{sdate}
+					</if>
+				 	<if test=" null != udate">
+						AND udate=#{udate}
+					</if>
+				 	<if test=" null != status">
+						AND status=#{status}
+					</if>
+				</where>
+			)taa 
+			LEFT JOIN (
+				SELECT ta.id,ta.alliance_name FROM t_alliance ta WHERE ta.id=#{id}
+				
+			)ta ON taa.id=ta.id
+		
+			ORDER BY taa.sdate DESC  
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	 <select id="count" resultType="Long" parameterMap="allianceAccount">
+		SELECT COUNT(*) FROM t_alliance_account
+		<where>
+			1=1
+					<if test="null != aid">
+						AND aid = #{aid}
+					</if>
+				 	<if test=" null != id">
+						AND id=#{id}
+					</if>
+				 	<if test=" null != account and '' != account">
+						AND account like '%' #{account} '%'
+					</if>
+				 	<if test=" null != nname and '' != nname">
+						AND nname like '%' #{nname} '%' 
+					</if>
+				 	<if test=" null != fullname and '' != fullname">
+						AND fullname like '%' #{fullname} '%'
+					</if>
+				 	<if test=" null != phone and '' != phone">
+						AND phone like '%' #{phone} '%'
+					</if>
+				 	<if test=" null != sdate">
+						AND sdate=#{sdate}
+					</if>
+				 	<if test=" null != udate">
+						AND udate=#{udate}
+					</if>
+				 	<if test=" null != status">
+						AND status=#{status}
+					</if>
+		</where>
+	</select> 
+	
+	 <select id="getMaxId"   resultType="Integer">
+		SELECT Max(aid) AS VALUE FROM t_alliance_account
+	</select> 
+	
+	 <select id="getObject" resultMap="allianceAccountMap" parameterType="Long">
+		SELECT * FROM t_alliance_account WHERE aid = #{0}
+	</select>
+	
+	 <select id="getObjectByallianceShopId" resultMap="allianceAccountMap" parameterType="Map">
+		SELECT * FROM t_alliance_account WHERE id = #{id} AND aid = #{aid}
+	</select> 
+	
+	 <select id="checkAccount" resultType="Long" parameterType="String">
+	 	SELECT COUNT(*) FROM (SELECT account FROM  t_alliance_account)taa,(SELECT account FROM t_seller_account WHERE TYPE=4 and userstatus=0)tsa WHERE (taa.account=#{0})  OR (tsa.account=#{0}) 
+	</select> 
+	
+	 	
+</mapper>

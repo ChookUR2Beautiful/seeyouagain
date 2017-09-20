@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.SellerLabelDao">
+
+	<parameterMap type="TCommentLabel" id="tCommentLabel" />
+	
+	<resultMap type="TCommentLabel" id="tCommentLabelMap">
+		<result column="id" property="id" />
+		<result column="sellerid" property="sellerid" />
+		<result column="labelname" property="labelname" />
+		<result column="znum" property="znum" />
+		<result column="sdate" property="sdate" />
+		<result column="udate" property="udate" />
+	</resultMap>
+	<!-- 获取商家标签 -->
+	<select id="getCommentLabel" resultMap="tCommentLabelMap" parameterMap="tCommentLabel">
+	   SELECT tcl.* , ts.sellername FROM t_comment_label tcl
+       LEFT JOIN  t_seller ts on tcl.sellerid = ts.sellerid
+		<where>
+			1=1
+			AND tcl.sellerid = ts.sellerid
+	 		<include refid="whereSQL"></include>
+ 		</where>
+		ORDER BY tcl.id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<!-- 获取商家标签信息条数 -->
+	<select id="getCommentLabelCount" resultType="Long" parameterMap="tCommentLabel">
+		SELECT COUNT(1) FROM t_comment_label tcl
+		LEFT JOIN  t_seller ts on tcl.sellerid = ts.sellerid
+		<where>
+			1=1
+			AND tcl.sellerid = ts.sellerid
+ 			<include refid="whereSQL"></include>
+		</where>
+	</select>
+	<!-- 商家标签添加 -->
+	<insert id="addReturnId" parameterMap="tCommentLabel" >
+        INSERT INTO t_comment_label
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                 <if test=" null != sellerid and '' != sellerid">
+                    sellerid,
+                </if>
+                 <if test=" null != labelname">
+                    labelname,
+                </if>
+                <if test="null != znum and '' != znum">
+				     znum,
+			    </if>
+                 <if test=" null != sdate">
+                    sdate,
+                </if>
+                 <if test=" null != udate">
+                    udate,
+                </if>
+        </trim>
+        <trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+                 <if test=" null != sellerid and '' != sellerid">
+                         #{sellerid},
+                </if>
+                <if test=" null != labelname">
+                         #{labelname},
+                </if>
+                <if test="null != znum and '' != znum">
+				         #{znum},
+			    </if>
+                <if test=" null != sdate">
+                         #{sdate},
+                </if>
+                 <if test=" null != udate">
+                         #{udate},
+                </if>
+        </trim>
+    </insert>
+    <!-- 根据id获取商家标签信息用于初始化修改页面 -->
+	<select id="getCommentLabelById" resultMap="tCommentLabelMap" parameterType="Long">
+		SELECT * FROM t_comment_label WHERE id = #{0}
+	</select>
+    <!-- 修改商家标签 -->
+    <update id="updateSellerLabel" parameterMap="tCommentLabel">
+		UPDATE t_comment_label
+		<set>
+			<trim suffixOverrides=",">
+				
+				<if test=" null != labelname">
+                      labelname = #{labelname},
+                </if>
+                <if test="null != znum and '' != znum">
+				      znum = #{znum},
+			    </if>
+                 <if test=" null != udate">
+                      udate = #{udate},
+                </if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != id and '' != id">
+				id = #{id}
+			</if>
+		</where>
+	</update>
+	<!-- 删除商家标签 -->
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_comment_label WHERE id IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	<!-- 可重用的Where 条件 -->
+	<sql id="whereSQL">
+		<if test=" null != id">
+			AND tcl.id = #{id}
+		</if>
+		<if test=" null != labelname and '' != labelname">
+			AND tcl.labelname LIKE '%${labelname}%'
+		</if>
+		<if test=" null != sellerid">
+			AND tcl.sellerid = #{sellerid}
+		</if>
+	</sql>
+	<!-- 验证业务员账号是否存在 -->
+	<select id="vaillabelname" resultType="Integer" parameterMap="tCommentLabel">
+		SELECT COUNT(1) FROM t_comment_label WHERE sellerid = #{sellerid} and labelname = #{labelname} 
+	</select>
+</mapper>

@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.business_statistics.dao.TCelebrityAriticleDao" >
+
+
+  <resultMap id="celebrityAriticleMap" type="com.xmniao.xmn.core.business_statistics.entity.TCelebrityAriticle" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="celebrity_id" property="celebrityId" jdbcType="BIGINT" />
+    <result column="celebrity_name" property="celebrityName" jdbcType="VARCHAR" />
+    <result column="image" property="image" jdbcType="VARCHAR" />
+    <result column="seller_name" property="sellerName" jdbcType="VARCHAR" />
+    <result column="seller_id" property="sellerId" jdbcType="BIGINT" />
+    <result column="views" property="views" jdbcType="INTEGER" />
+    <result column="describe" property="describe" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="zone_name" property="zoneName" jdbcType="VARCHAR" />
+    <result column="html_content" property="htmlContent" jdbcType="LONGVARCHAR" />
+    <result column="html_content" property="htmlContent" jdbcType="LONGVARCHAR" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  
+  <sql id="celebrityAriticle_column_list" >
+    id, name, type, status, celebrity_id,celebrity_name, image, seller_name, seller_id, views, `describe`, 
+    create_time, zone_name, html_content, order_no
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test="name != null and name != '' ">
+  		AND `name` like '%${name}%'
+  	</if>
+  	<!-- 查询起始时间 -->
+  	<if test="startTime != null and startTime != '' ">
+	  	<![CDATA[
+	  		AND date_format(create_time, '%Y-%m-%d') >= date_format(startTime, '%Y-%m-%d')
+	  	]]> 	
+  	</if>
+  	<!-- 查询结束时间 -->
+  	<if test="endTime != null and endTime != '' ">
+	  	<![CDATA[
+	  		AND date_format(create_time, '%Y-%m-%d') <= date_format(endTime, '%Y-%m-%d')
+		]]> 
+  	</if>
+  	<if test="type != null and type != '' ">
+  		AND type=#{type}
+  	</if>
+  	<if test="status != null and status != '' ">
+  		AND status=#{status}
+  	</if>
+  
+  </sql>
+  
+  <select id="getObject" resultMap="celebrityAriticleMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="celebrityAriticle_column_list" />
+    from t_celebrity_ariticle
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  
+  <select id="getList" resultMap="celebrityAriticleMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="celebrityAriticle_column_list" />
+    from t_celebrity_ariticle
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+    order by create_time desc
+    <if test=" limit != -1 ">
+		LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  
+  <select id="count" resultType="java.lang.Long" parameterType="java.lang.Long" >
+    select 
+    	count(1)
+    from t_celebrity_ariticle
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+  </select>
+  
+  <delete id="delete" parameterType="java.lang.Object" >
+    delete from t_celebrity_ariticle
+    where id in
+    <foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+	</foreach>
+  </delete>
+  
+  
+  <insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.xmn.core.business_statistics.entity.TCelebrityAriticle" >
+    insert into t_celebrity_ariticle
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="celebrityId != null" >
+        celebrity_id,
+      </if>
+      <if test="celebrityName != null" >
+        celebrity_name,
+      </if>
+      <if test="image != null" >
+        image,
+      </if>
+      <if test="sellerName != null" >
+        seller_name,
+      </if>
+      <if test="sellerId != null" >
+        seller_id,
+      </if>
+      <if test="views != null" >
+        views,
+      </if>
+      <if test="describe != null" >
+        `describe`,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="zoneName != null" >
+        zone_name,
+      </if>
+      <if test="htmlContent != null" >
+        html_content,
+      </if>
+      <if test="orderNo != null" >
+        order_no,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="celebrityId != null" >
+        #{celebrityId,jdbcType=BIGINT},
+      </if>
+      <if test="celebrityName != null" >
+         #{celebrityName,jdbcType=VARCHAR},
+      </if>
+      <if test="image != null" >
+        #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="sellerName != null" >
+        #{sellerName,jdbcType=VARCHAR},
+      </if>
+      <if test="sellerId != null" >
+        #{sellerId,jdbcType=BIGINT},
+      </if>
+      <if test="views != null" >
+        #{views,jdbcType=INTEGER},
+      </if>
+      <if test="describe != null" >
+        #{describe,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="zoneName != null" >
+        #{zoneName,jdbcType=VARCHAR},
+      </if>
+      <if test="htmlContent != null" >
+        #{htmlContent,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.business_statistics.entity.TCelebrityAriticle" >
+    update t_celebrity_ariticle
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="celebrityId != null" >
+        celebrity_id = #{celebrityId,jdbcType=BIGINT},
+      </if>
+      <if test="celebrityName != null" >
+        celebrity_name = #{celebrityName,jdbcType=VARCHAR},
+      </if>
+      <if test="image != null" >
+        image = #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="sellerName != null" >
+        seller_name = #{sellerName,jdbcType=VARCHAR},
+      </if>
+      <if test="sellerId != null" >
+        seller_id = #{sellerId,jdbcType=BIGINT},
+      </if>
+      <if test="views != null" >
+        views = #{views,jdbcType=INTEGER},
+      </if>
+      <if test="describe != null" >
+        `describe` = #{describe,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="zoneName != null" >
+        zone_name = #{zoneName,jdbcType=VARCHAR},
+      </if>
+      <if test="htmlContent != null" >
+        html_content = #{htmlContent,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        order_no = #{orderNo,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+</mapper>

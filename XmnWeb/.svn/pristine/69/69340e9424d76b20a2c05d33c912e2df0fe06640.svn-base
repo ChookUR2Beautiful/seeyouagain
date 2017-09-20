@@ -1,0 +1,35 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <base href="<%=basePath%>">
+    <title></title>
+	<meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="cache-control" content="no-cache">
+	<meta http-equiv="expires" content="0">    
+	<link href="<%=path%>/resources/zui/css/zui.css" rel="stylesheet">
+  </head>
+  <style>
+		/* body
+		{
+			background:url(resources/welcome.jpg) no-repeat fixed;
+			filter:"progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod='scale')";
+			-moz-background-size:100% 100%;
+			     background-size:100% 100%;
+            background-color: #f3f2f0;
+		} */
+	</style>
+  <body>
+	<img src="resources/welcome.jpg" class="img-thumbnail" style="margin: 5px 28px;width: 97%"/>
+	 <script src="<%=path%>/resources/zui/lib/jquery/jquery.js"></script>
+	<script src="<%=path%>/resources/zui/js/zui.js"></script>
+	<script src="<%=path%>/ux/js/jquery.validate.js"></script>
+	<script src="<%=path%>/resources/web/js/popoverUtil.js"></script>
+	<script src="<%=path%>/resources/web/js/util.js"></script>
+  </body>
+  
+</html>

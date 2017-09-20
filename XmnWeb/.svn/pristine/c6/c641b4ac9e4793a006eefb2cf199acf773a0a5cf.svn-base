@@ -1,0 +1,109 @@
+var orderList;
+$(document).ready(function() {
+	orderList = $('#orderList').page({
+		url : 'ticketsOrder/init/list.jhtml',
+		success : success,
+		pageBtnNum : 10,
+		pageSize : 15,
+		paramForm : 'searchActivityForm'
+	});
+
+	inserTitle(' > 新食尚大赛 > <a href="ticketsOrder/init.jhtml" target="right">门票订单管理</a>', 'ticketsList', true);
+
+});
+
+/**
+ * 构件表格
+ * 
+ * @param data
+ * @param obj
+ */
+function success(data, obj) {
+	var callbackParam = "isBackButton=true&callbackParam=" + getFormParam($("#searchActivityForm").serialize());
+	obj.find('div').eq(0).scrollTablel({
+		tableClass : "table-bordered table-striped info",
+		callbackParam : callbackParam,
+		//数据
+		data : data.content,
+		//数据行
+		cols : [ {
+			title : "订单编号", // 标题
+			name : "orderNo",
+			//sort : "up",
+			width : 200, // 宽度
+			leng : 3, //显示长度
+			type : "number", //数据类型					
+		}, {
+			title : "活动名称", // 标题
+			name : "title",
+			width : 200, // 宽度
+			type : "string" //数据类型
+
+		}, {
+			title : "购买用户", // 标题
+			name : "cityNames",
+			width : 150, // 宽度
+			type : "string", //数据类型
+			customMethod : function(value, data) {
+				return data.nname+"("+data.phone+")";
+			}
+		}
+		, {
+			title : "数量", // 标题
+			name : "num",
+			width : 50, // 宽度
+			type : "string" //数据类型
+		}
+		, {
+			title : "总价", // 标题
+			name : "totalAmount",
+			width : 50, // 宽度
+			type : "string", //数据类型
+			customMethod : function(value, data) {
+				if(data.description=='赠送'){
+					return value+"(赠送)";
+				}
+				return value;
+			}
+		}
+		, {
+			title : "购买时间", // 标题
+			name : "payTimeStr",
+			width : 150, // 宽度
+			type : "string" //数据类型
+		}
+		],
+		//操作列
+		handleCols : {
+			title : "操作", // 标题
+			queryPermission : [ "list","add","edit" ], // 不需要选择checkbox处理的权限
+			width : 200, // 宽度
+			// 当前列的中元素
+			cols : [  
+				{
+					title : "门票清单",// 标题
+					linkInfoName : "modal",
+					width : 20,
+					linkInfo : {
+						modal : {
+							url : "ticketsOrder/init/getDetail.jhtml",
+							position : "100px",
+							width : "600px"
+						},
+						param : ["id"],
+						permission : "list"
+					}
+				}
+				]
+		}
+	}, permissions);
+}
+function substr(obj, length) {
+	return obj;
+}
+
+
+
+
+
+

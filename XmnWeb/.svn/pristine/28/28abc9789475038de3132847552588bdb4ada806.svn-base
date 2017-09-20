@@ -1,0 +1,251 @@
+var pageDiv;
+
+$(document).ready(function() {
+	//标题
+	inserTitle(' > 打赏分红> <span><a href="recommendMember/manage/init.jhtml" target="right">V客会员推荐管理</a>', 'sellerList',true);
+	
+	/**
+	 * 重置
+	 */
+	$("input[data-bus=reset]").click(function(){
+		if(location.href.indexOf("?") > 0){
+			var url = contextPath + '/recommendMember/manage/init.jhtml';
+			location.href =url;
+		}
+		setTimeout(function(){
+			$("#ld").find("select").trigger("chosen:updated");
+		});
+	});
+	
+	pageDiv = $("#rechargeRewardInfoList").page({
+		url : 'recommendMember/manage/init/list.jhtml',
+		success : success,
+		pageBtnNum : 10,
+		paramForm : 'searchFromId'
+	});
+	
+	//加载关联等级
+	initRankId();
+
+	//导出
+	$("#exportAnchor").click(function(){
+		var formId="searchForm";
+		var url="bursRelationChain/manage/init/getCurrentSize.jhtml";
+		var size=getCurrentSize(formId,url);
+		if(size>5000){
+			showWarningWindow("warning", "单次最多可导出1000条数据，请输入查询条件！",9999);
+			return ;
+		}
+		var path="bursRelationChain/manage/export.jhtml";
+		$form = $("#searchForm").attr("action",path);
+		$form[0].submit();
+	});	
+	
+});
+
+//初始化关联等级下拉框
+function initRankId(){
+//	debugger;
+	$("#ledgerLevel").chosenObject({
+		hideValue : "id",
+		showValue : "rankName",
+		url : "liveFansRank/manage/getFansRanks.jhtml",
+		isChosen:true,//是否支持模糊查询
+		isCode:true,//是否显示编号
+		isHistorical:false,//是否使用历史已加载数据
+		width:"100%"
+	});
+}
+
+
+/**
+ * 构件表格
+ * 
+ * @param data
+ * @param obj
+ */
+function success(data, obj) {
+//	var captionInfo = '<caption style="background:#EED8D8; text-align:left; color:#703636; font-size:16px; line-height:40px;">&nbsp;&nbsp;会员列表  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font>共计【'+data.total+'】个会员&nbsp;</font></caption>';
+	var callbackParam="isBackButton=true&callbackParam="+getFormParam($("#searchFromId").serialize());
+	updateAddBtnHref("#addRechargeRewardBto", callbackParam);
+	obj.find('div').eq(0).scrollTablel({
+		identifier : "id",
+		callbackParam : callbackParam,
+		data: data.content, 
+//		caption : captionInfo,
+		checkable : false,
+		cols:[{
+			title : "用户编号",
+			name : "uid",
+			type : "string",
+			width : 80
+		},{
+			title : "会员等级",
+			name : "rankName",
+			type : "string",
+			width : 100
+		},{
+			title : "用户昵称",
+			name : "nickname",
+			type : "string",
+			width : 80
+		},{
+			title : "手机号码",
+			name : "phone",
+			type : "string",
+			width : 80		
+		},{
+			title : "主播推荐名额",
+			name : "totalRecommendLive",
+			type : "string",
+			width : 80,
+			customMethod : function(value, data){
+				var recommendLive = data.recommendLive == undefined ? 0 : data.recommendLive ;
+				var totalRecommendLive = data.totalRecommendLiveStr == undefined ? 0 : data.totalRecommendLiveStr;
+	            var value = "<a href='javascript:anchorView("+data.uid+")'>" + recommendLive + '/' + totalRecommendLive + "</a>";
+	            return value;
+	        }
+		},{
+			title : "获得主播收益",
+			name : "liveProfitAmount",
+			type : "string",
+			width : 80
+		},{
+			title : "商户推荐名额",
+			name : "totalRecommendSeller",
+			type : "string",
+			width : 80,
+			customMethod : function(value, data){
+				var recommendSeller =  data.recommendSeller == undefined ? 0 : data.recommendSeller ;
+				var totalRecommendSeller = data.totalRecommendSellerStr == undefined ? 0 : data.totalRecommendSellerStr;
+	            var value = "<a href='javascript:sellerView("+data.uid+")'>" + recommendSeller + '/' + totalRecommendSeller + "</a>";
+	            return value;
+	        }
+		},{
+			title : "获得商户收益",
+			name : "sellerProfitAmount",
+			type : "string",
+			width : 80
+		}]
+	}, permissions);
+}
+
+/*查看推荐的主播明细*/
+function anchorView(uid){
+	var url='recommendMember/manage/list/viewLiveDetail.jhtml';
+	$.ajax({
+		type : 'post',
+		url : url,
+		data :{uid:uid},
+		dataType : 'json',
+		success : viewLiveSuccess,
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			$('#prompt').hide();
+			$('#recommendLiveListModal').modal('hide');
+		}
+	});
+}
+
+function viewLiveSuccess(data) {
+	//添加优惠券信息 $("#areaTable tr:last").after(tr);
+	$("#liveListInfoTB").html("");  //初始化表格信息
+	if (data.data != null) {
+		for (var i = 0; i < data.data.length; i++) {
+			var nickname = data.data[i].nickname; // 主播名称
+			var phone = data.data[i].phone; // 主播手机
+			var liveTotalProfit = data.data[i].liveTotalProfit; // 主播累计收益
+			var fromLiveProfit = data.data[i].fromLiveProfit; // 获得主播收益
+
+			var tr = $("<tr class='text-center'>").append($("<td>").text(nickname)).append($("<td>").text(phone)).append($("<td>").text(liveTotalProfit)).append($("<td>").text(fromLiveProfit));
+			tr.append($('<td data-row="0" data-index="0" data-flex="false" data-type="string" style="width: 130px; height: 59px;">').html('<a href="javascript:update(\''+data.data[i].uid+'\', 0,\''+data.data[i].nickname+'\')" onclick="">放弃</a>'));
+			$("#liveListInfoTB").append(tr);
+		}
+	}
+	$('#recommendLiveListModal').modal('show');  //'show'
+}
+
+/*查看推荐的商家明细*/
+function sellerView(uid){
+	var url='recommendMember/manage/list/viewShopDetail.jhtml';
+	$.ajax({
+		type : 'post',
+		url : url,
+		data :{uid:uid},
+		dataType : 'json',
+		success : viewSellerSuccess,
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			$('#prompt').hide();
+			$('#rewardRecordListModal').modal('hide');
+		}
+	});
+}
+
+function viewSellerSuccess(data) {
+	$("#sellerListInfoTB").html("");  //初始化表格信息
+	if (data.data != null) {
+		for (var i = 0; i < data.data.length; i++) {
+			var sellername = data.data[i].sellername; // 商户名称
+			var fullname = data.data[i].fullname == undefined ? "" : data.data[i].fullname; // 负责人
+			var phoneid = data.data[i].phoneid == undefined ? "" : "("+ data.data[i].phoneid +")"; // 负责人电话
+			var sellerTotalProfit = data.data[i].sellerTotalProfit; // 流水累计收益
+			var fromSellerProfit = data.data[i].fromSellerProfit; // 获得商户收益
+
+			var tr = $("<tr class='text-center'>").append($("<td>").text(sellername)).append($("<td>").text(fullname+phoneid)).append($("<td>").text(sellerTotalProfit)).append($("<td>").text(fromSellerProfit));
+			tr.append($('<td data-row="0" data-index="0" data-flex="false" data-type="string" style="width: 130px; height: 59px;">').html('<a href="javascript:update(\''+data.data[i].sellerid+'\', 1,\''+data.data[i].sellername+'\')" onclick="">放弃</a>'));
+			$("#sellerListInfoTB").append(tr);
+		}
+	}
+	$('#recommendSellerListModal').modal('show');  //'show'
+}
+
+function update(paramId, type, name) {
+	
+	var title, url = 'recommendMember/manage/update.jhtml';
+	if (type == 0){  //放弃主播
+		title = "是否放弃当前“"+ name +"”主播，放弃后V客返还一个名额";
+	}else{
+		title = "是否放弃当前“"+ name +"”商户，放弃后V客返还一个名额";
+	}
+	$.ajax({
+		type : 'post',
+		url : url,
+		data : {'id':paramId, 'type':type},
+//		data : [paramId, type],
+		dataType : 'json',
+		beforeSend : function(XMLHttpRequest) {
+			$('#prompt').show();
+		},
+		success : function(data) {			 				
+          	$('#prompt').hide();
+			if (data.success) {
+//				bankApplyList.reload();
+		    }			
+			showSmReslutWindow(data.success, data.msg);
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			$('#prompt').hide();
+		}
+	});
+	/*showSmConfirmWindow(function() {
+		$.ajax({
+			type : 'post',
+			url : url,
+//			data : {'paramId':paramId, 'type':type},
+			data : [paramId, type],
+			dataType : 'json',
+			beforeSend : function(XMLHttpRequest) {
+				$('#prompt').show();
+			},
+			success : function(data) {			 				
+	          	$('#prompt').hide();
+				if (data.success) {
+//					bankApplyList.reload();
+			    }			
+				showSmReslutWindow(data.success, data.msg);
+			},
+			error : function(XMLHttpRequest, textStatus, errorThrown) {
+				$('#prompt').hide();
+			}
+		});
+	}, title);*/
+}

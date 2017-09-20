@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.vstar.dao.FashionTicketsDao">
+	<resultMap id="BaseResultMap"
+		type="com.xmniao.xmn.core.vstar.entity.FashionTickets">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="title" jdbcType="VARCHAR" property="title" />
+		<result column="province" jdbcType="INTEGER" property="province" />
+		<result column="city" jdbcType="INTEGER" property="city" />
+		<result column="pic" jdbcType="VARCHAR" property="pic" />
+		<result column="logo" jdbcType="VARCHAR" property="logo" />
+		<result column="address" jdbcType="VARCHAR" property="address" />
+		<result column="support_select_seats" jdbcType="TINYINT"
+			property="supportSelectSeats" />
+		<result column="only_coin" jdbcType="TINYINT" property="onlyCoin" />
+		<result column="limit_everyone" jdbcType="INTEGER" property="limitEveryone" />
+		<result column="sale_start_time" jdbcType="TIMESTAMP" property="saleStartTime" />
+		<result column="sale_end_time" jdbcType="TIMESTAMP" property="saleEndTime" />
+		<result column="use_start_time" jdbcType="TIMESTAMP" property="useStartTime" />
+		<result column="use_end_time" jdbcType="TIMESTAMP" property="useEndTime" />
+		<result column="tel" jdbcType="VARCHAR" property="tel" />
+		<result column="status" jdbcType="TINYINT" property="status" />
+		<result column="seat_sum" jdbcType="INTEGER" property="seatSum" />
+		<result column="sold_sum" jdbcType="INTEGER" property="soldSum" />
+		<result column="seat_pic" jdbcType="VARCHAR" property="seatPic" />
+		<result column="longitude" jdbcType="DOUBLE" property="longitude" />
+		<result column="latitude" jdbcType="DOUBLE" property="latitude" />
+	</resultMap>
+	<resultMap extends="BaseResultMap" id="ResultMapWithBLOBs"
+		type="com.xmniao.xmn.core.vstar.entity.FashionTickets">
+		<result column="content" jdbcType="LONGVARCHAR" property="content" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, title, province, city, pic, logo, address,
+		support_select_seats,
+		only_coin, limit_everyone,
+		sale_start_time,
+		sale_end_time, use_start_time, use_end_time, tel,
+		status,longitude,latitude,seat_pic
+	</sql>
+	<sql id="Blob_Column_List">
+		content
+	</sql>
+
+	<sql id="whereSQL">
+		<if test="title != null and title != ''">
+			and title like '%${title}%'
+		</if>
+		<if test="useStartTime != null and useEndTime != null">
+			and use_start_time >= #{useStartTime} and use_start_time
+			&lt;=
+			#{useEndTime}
+		</if>
+	</sql>
+
+
+	<select id="getSellIngTickets" resultMap="BaseResultMap">
+		 SELECT 
+		 <include refid="Base_Column_List" />
+		  FROM `t_vstar_tickets` where (select count(1) from t_vstar_tickets_detail where fid = t_vstar_tickets.id and sell_status = 0 and use_status = 0 and uid is null ) > 0 and use_end_time > now() ;
+	</select>
+
+	<update id="end">
+		update t_vstar_tickets set status = #{status}
+		where id = #{id}
+	</update>
+
+	<select id="getList" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		,(select count(1) from t_vstar_tickets_detail where
+		t_vstar_tickets_detail.fid = t_vstar_tickets.id ) as seat_sum
+		,(select
+		count(1) from t_vstar_tickets_detail where
+		t_vstar_tickets_detail.fid =
+		t_vstar_tickets.id and
+		t_vstar_tickets_detail.sell_status = 2) as
+		sold_sum
+		from t_vstar_tickets
+		where 1=1
+		<include refid="whereSQL"></include>
+		order by status asc,sale_end_time desc
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="count" resultType="java.lang.Long">
+		select count(1)
+		from t_vstar_tickets
+		where 1=1
+		<include refid="whereSQL"></include>
+	</select>
+
+	<select id="checkSeatHasPrice" resultType="java.util.HashMap">
+		SELECT (select count(1) from t_vstar_tickets_price where sid =
+		t_vstar_tickets_seat.id ) as count FROM `t_vstar_tickets_seat`
+		where
+		t_vstar_tickets_seat.id in
+		<foreach collection="list" item="item" open="(" close=")"
+			separator=",">
+			#{item}
+		</foreach>
+		GROUP BY t_vstar_tickets_seat.id
+	</select>
+
+	<select id="getObject" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from t_vstar_tickets
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from
+		t_vstar_tickets
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.xmniao.xmn.core.vstar.entity.FashionTickets">
+		insert into t_vstar_tickets
+		(id, title, province,
+		city, pic, logo, address,
+		support_select_seats,
+		only_coin, limit_everyone,
+		sale_start_time, sale_end_time,
+		use_start_time,
+		use_end_time, tel, status,
+		content)
+		values
+		(#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR},
+		#{province,jdbcType=INTEGER},
+		#{city,jdbcType=INTEGER},
+		#{pic,jdbcType=VARCHAR}, #{logo,jdbcType=VARCHAR},
+		#{address,jdbcType=VARCHAR},
+		#{supportSelectSeats,jdbcType=TINYINT},
+		#{onlyCoin,jdbcType=TINYINT}, #{limitEveryone,jdbcType=INTEGER},
+		#{saleStartTime,jdbcType=TIMESTAMP},
+		#{saleEndTime,jdbcType=TIMESTAMP}, #{useStartTime,jdbcType=TIMESTAMP},
+		#{useEndTime,jdbcType=TIMESTAMP}, #{tel,jdbcType=VARCHAR},
+		#{status,jdbcType=TINYINT},
+		#{content,jdbcType=LONGVARCHAR})
+	</insert>
+	<insert id="add" parameterType="com.xmniao.xmn.core.vstar.entity.FashionTickets"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into t_vstar_tickets
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="title != null">
+				title,
+			</if>
+			<if test="province != null">
+				province,
+			</if>
+			<if test="city != null">
+				city,
+			</if>
+			<if test="pic != null">
+				pic,
+			</if>
+			<if test="logo != null">
+				logo,
+			</if>
+			<if test="address != null">
+				address,
+			</if>
+			<if test="supportSelectSeats != null">
+				support_select_seats,
+			</if>
+			<if test="onlyCoin != null">
+				only_coin,
+			</if>
+			<if test="limitEveryone != null">
+				limit_everyone,
+			</if>
+			<if test="saleStartTime != null">
+				sale_start_time,
+			</if>
+			<if test="saleEndTime != null">
+				sale_end_time,
+			</if>
+			<if test="useStartTime != null">
+				use_start_time,
+			</if>
+			<if test="useEndTime != null">
+				use_end_time,
+			</if>
+			<if test="tel != null">
+				tel,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="content != null">
+				content,
+			</if>
+			<if test="seatPic != null">
+				seat_pic,
+			</if>
+			<if test="longitude != null">
+				longitude,
+			</if>
+			<if test="latitude != null">
+				latitude,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="title != null">
+				#{title,jdbcType=VARCHAR},
+			</if>
+			<if test="province != null">
+				#{province,jdbcType=INTEGER},
+			</if>
+			<if test="city != null">
+				#{city,jdbcType=INTEGER},
+			</if>
+			<if test="pic != null">
+				#{pic,jdbcType=VARCHAR},
+			</if>
+			<if test="logo != null">
+				#{logo,jdbcType=VARCHAR},
+			</if>
+			<if test="address != null">
+				#{address,jdbcType=VARCHAR},
+			</if>
+			<if test="supportSelectSeats != null">
+				#{supportSelectSeats,jdbcType=TINYINT},
+			</if>
+			<if test="onlyCoin != null">
+				#{onlyCoin,jdbcType=TINYINT},
+			</if>
+			<if test="limitEveryone != null">
+				#{limitEveryone,jdbcType=INTEGER},
+			</if>
+			<if test="saleStartTime != null">
+				#{saleStartTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="saleEndTime != null">
+				#{saleEndTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="useStartTime != null">
+				#{useStartTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="useEndTime != null">
+				#{useEndTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="tel != null">
+				#{tel,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=TINYINT},
+			</if>
+			<if test="content != null">
+				#{content,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="seatPic != null">
+				#{seatPic,jdbcType=VARCHAR},
+			</if>
+			<if test="longitude != null">
+				#{longitude},
+			</if>
+			<if test="latitude != null">
+				#{latitude},
+			</if>
+		</trim>
+	</insert>
+	<update id="update" parameterType="com.xmniao.xmn.core.vstar.entity.FashionTickets">
+		update t_vstar_tickets
+		<set>
+			<if test="title != null">
+				title = #{title,jdbcType=VARCHAR},
+			</if>
+			<if test="province != null">
+				province = #{province,jdbcType=INTEGER},
+			</if>
+			<if test="city != null">
+				city = #{city,jdbcType=INTEGER},
+			</if>
+			<if test="pic != null">
+				pic = #{pic,jdbcType=VARCHAR},
+			</if>
+			<if test="seatPic != null">
+				seat_pic = #{seatPic,jdbcType=VARCHAR},
+			</if>
+			<if test="logo != null">
+				logo = #{logo,jdbcType=VARCHAR},
+			</if>
+			<if test="address != null">
+				address = #{address,jdbcType=VARCHAR},
+			</if>
+			<if test="supportSelectSeats != null">
+				support_select_seats = #{supportSelectSeats,jdbcType=TINYINT},
+			</if>
+			<if test="onlyCoin != null">
+				only_coin = #{onlyCoin,jdbcType=TINYINT},
+			</if>
+			<if test="limitEveryone != null">
+				limit_everyone = #{limitEveryone,jdbcType=INTEGER},
+			</if>
+			<if test="saleStartTime != null">
+				sale_start_time = #{saleStartTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="saleEndTime != null">
+				sale_end_time = #{saleEndTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="useStartTime != null">
+				use_start_time = #{useStartTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="useEndTime != null">
+				use_end_time = #{useEndTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="tel != null">
+				tel = #{tel,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=TINYINT},
+			</if>
+			<if test="longitude != null">
+				longitude = #{longitude,jdbcType=DOUBLE},
+			</if>
+			<if test="latitude != null">
+				latitude = #{latitude,jdbcType=DOUBLE},
+			</if>
+			<if test="content != null">
+				content = #{content,jdbcType=LONGVARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKeyWithBLOBs" parameterType="com.xmniao.xmn.core.vstar.entity.FashionTickets">
+		update
+		t_vstar_tickets
+		set title = #{title,jdbcType=VARCHAR},
+		province =
+		#{province,jdbcType=INTEGER},
+		city = #{city,jdbcType=INTEGER},
+		pic =
+		#{pic,jdbcType=VARCHAR},
+		logo = #{logo,jdbcType=VARCHAR},
+		address =
+		#{address,jdbcType=VARCHAR},
+		support_select_seats =
+		#{supportSelectSeats,jdbcType=TINYINT},
+		only_coin =
+		#{onlyCoin,jdbcType=TINYINT},
+		limit_everyone =
+		#{limitEveryone,jdbcType=INTEGER},
+		sale_start_time =
+		#{saleStartTime,jdbcType=TIMESTAMP},
+		sale_end_time =
+		#{saleEndTime,jdbcType=TIMESTAMP},
+		use_start_time =
+		#{useStartTime,jdbcType=TIMESTAMP},
+		use_end_time =
+		#{useEndTime,jdbcType=TIMESTAMP},
+		tel = #{tel,jdbcType=VARCHAR},
+		status
+		= #{status,jdbcType=TINYINT},
+		content = #{content,jdbcType=LONGVARCHAR}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.vstar.entity.FashionTickets">
+		update
+		t_vstar_tickets
+		set title = #{title,jdbcType=VARCHAR},
+		province =
+		#{province,jdbcType=INTEGER},
+		city = #{city,jdbcType=INTEGER},
+		pic =
+		#{pic,jdbcType=VARCHAR},
+		logo = #{logo,jdbcType=VARCHAR},
+		address =
+		#{address,jdbcType=VARCHAR},
+		support_select_seats =
+		#{supportSelectSeats,jdbcType=TINYINT},
+		only_coin =
+		#{onlyCoin,jdbcType=TINYINT},
+		limit_everyone =
+		#{limitEveryone,jdbcType=INTEGER},
+		sale_start_time =
+		#{saleStartTime,jdbcType=TIMESTAMP},
+		sale_end_time =
+		#{saleEndTime,jdbcType=TIMESTAMP},
+		use_start_time =
+		#{useStartTime,jdbcType=TIMESTAMP},
+		use_end_time =
+		#{useEndTime,jdbcType=TIMESTAMP},
+		tel = #{tel,jdbcType=VARCHAR},
+		status
+		= #{status,jdbcType=TINYINT}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+</mapper>

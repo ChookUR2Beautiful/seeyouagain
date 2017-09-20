@@ -1,0 +1,518 @@
+package com.xmniao.xmn.core.live_anchor.entity;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+
+import com.xmniao.xmn.core.base.BaseEntity;
+import com.xmniao.xmn.core.util.DateUtil;
+import com.xmniao.xmn.core.util.SystemConstants;
+
+/**
+ * 
+ * 
+ * 项目名称：XmnWeb
+ * 
+ * 类名称：TLivePayOrder
+ * 
+ * 类描述： 直播支付订单实体类
+ * 
+ * 创建人：  huang'tao
+ * 
+ * 创建时间：2016-9-1 下午3:36:14 
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司
+ */
+public class TLivePayOrder extends BaseEntity{
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -7483376091556942767L;
+
+	private Integer id;//业务主键
+
+    private String orderNo;//订单编号
+
+    private String payNo;//支付流水号
+
+    private String payCode;//第三方交易号
+
+    private Integer comboId;//鸟币充值套餐ID
+
+    private Integer uid;//寻蜜鸟会员ID
+
+    private BigDecimal payment;//充值支付金额
+
+    private BigDecimal freeCoin;//赠送赠送鸟币数
+
+    private BigDecimal realCoin;//实际获得鸟币数
+    
+
+    /**
+     * 支付方式		
+     * 1000001:支付宝SDK支付
+     * 1000003:微信SDK支付
+     * 1000013:公众号支付 
+     * 1000000：钱包支付		
+     * 1000004：AppStore支付
+     * 1000014:寻蜜鸟服务窗 
+     */
+    private String payType;
+    
+    private String payTypeStr;
+
+    private Integer payState;//充值支付状态 ：0 未支付; 1 已支付成功; 2 取消支付
+    
+    private String payStateStr;//充值支付状态 ：0 未支付; 1 已支付成功; 2 取消支付
+
+    private Date payTime;//支付完成时间
+    
+    private String payTimeStr;//支付完成时间
+
+    private Date createTime;//创建时间
+
+    private Date updateTime;//修改时间
+
+    // b_urs表
+    private String phone;//手机号码
+    
+    private String nname;//昵称
+    
+    private String eUid;//企业级Uid
+    
+    private String uidRelationChain;//会员关系链，规则:每一级用'',''隔开，包含自身，每一级均为11位uid的字符串，不足11位在uid前以''0''填充。如当前uid为112,其关系链为0000001000,0000002000,00000000112
+    
+    private String fansRankName;//粉丝级别名称
+    
+    private List<String> juniorUids;//下级uid集合
+    
+    private Integer objectOriented;//面向平台 0 常规  1.VIP 2.商家 3.直销 4.营业厅会员
+    
+    private String objectOrientedStr;//面向平台  0 常规 1.VIP 2.商家 3.直销 4.营业厅会员
+    
+    private String excitationProject;//V客充值渠道奖励方案
+    
+    private Integer curPeriodExcitation;//V客已奖励期数(仅对V客渠道充值订单有效)
+    
+    private Integer periodExcitation;  //V客总奖励期数(仅对V客渠道充值订单有效)
+    
+    private Integer ledgerLevel; //等级
+    
+    private String ledgerLevelDesc; //等级描述
+ 
+    
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    
+    /**
+	 * @return the orderNo
+	 */
+	public String getOrderNo() {
+		return orderNo;
+	}
+
+	/**
+	 * @param orderNo the orderNo to set
+	 */
+	public void setOrderNo(String orderNo) {
+		this.orderNo = orderNo;
+	}
+
+	/**
+	 * @return the payNo
+	 */
+	public String getPayNo() {
+		return payNo;
+	}
+
+	/**
+	 * @param payNo the payNo to set
+	 */
+	public void setPayNo(String payNo) {
+		this.payNo = payNo;
+	}
+
+	public String getPayCode() {
+        return payCode;
+    }
+
+    public void setPayCode(String payCode) {
+        this.payCode = payCode == null ? null : payCode.trim();
+    }
+
+    public Integer getComboId() {
+        return comboId;
+    }
+
+    public void setComboId(Integer comboId) {
+        this.comboId = comboId;
+    }
+
+    public Integer getUid() {
+        return uid;
+    }
+
+    public void setUid(Integer uid) {
+        this.uid = uid;
+    }
+
+    public BigDecimal getPayment() {
+        return payment;
+    }
+
+    public void setPayment(BigDecimal payment) {
+        this.payment = payment;
+    }
+
+    public BigDecimal getFreeCoin() {
+        return freeCoin;
+    }
+
+    public void setFreeCoin(BigDecimal freeCoin) {
+        this.freeCoin = freeCoin;
+    }
+
+    public BigDecimal getRealCoin() {
+        return realCoin;
+    }
+
+    public void setRealCoin(BigDecimal realCoin) {
+        this.realCoin = realCoin;
+    }
+
+    public String getPayType() {
+        return payType;
+    }
+
+    public void setPayType(String payType) {
+        this.payType = payType == null ? null : payType.trim();
+    }
+    
+    
+
+    /**
+     * 支付方式		
+     * 1000001:支付宝SDK支付
+     * 1000003:微信SDK支付
+     * 1000013:公众号支付 
+     * 1000000：钱包支付		
+     * 1000004：AppStore支付
+	 * @return the payTypeStr
+	 */
+	public String getPayTypeStr() {
+		return SystemConstants.getPayTypeText(payType);
+	}
+
+	/**
+	 * @param payTypeStr the payTypeStr to set
+	 */
+	public void setPayTypeStr(String payTypeStr) {
+		this.payTypeStr = payTypeStr;
+	}
+
+	public Integer getPayState() {
+        return payState;
+    }
+
+    public void setPayState(Integer payState) {
+        this.payState = payState;
+    }
+
+    
+    
+    /**
+     * 充值支付状态 ：0 未支付; 1 已支付成功;2 取消支付
+	 * @return the payStateStr
+	 */
+	public String getPayStateStr() {
+		if(payState==null){
+			return null;
+		}
+		switch (payState) {
+		case 0:
+			payStateStr="未支付";
+			break;
+		case 1:
+			payStateStr="已支付成功";
+			break;
+		case 2:
+			payStateStr="取消支付";
+			break;
+		default:
+			break;
+		}
+		return payStateStr;
+	}
+
+	/**
+	 * @param payStateStr the payStateStr to set
+	 */
+	public void setPayStateStr(String payStateStr) {
+		this.payStateStr = payStateStr;
+	}
+
+	public Date getPayTime() {
+        return payTime;
+    }
+
+    public void setPayTime(Date payTime) {
+        this.payTime = payTime;
+    }
+
+    
+    
+    /**
+	 * @return the payTimeStr
+	 */
+	public String getPayTimeStr() {
+		return payTimeStr = payTime==null?null:DateUtil.formatDate(DateUtil.Y_M_D_HMS, payTime);
+	}
+
+	/**
+	 * @param payTimeStr the payTimeStr to set
+	 */
+	public void setPayTimeStr(String payTimeStr) {
+		this.payTimeStr = payTimeStr;
+	}
+
+	public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+    
+    
+
+	/**
+	 * @return the phone
+	 */
+	public String getPhone() {
+		return phone;
+	}
+
+	/**
+	 * @param phone the phone to set
+	 */
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	
+
+	/**
+	 * @return the nname
+	 */
+	public String getNname() {
+		return nname;
+	}
+
+	/**
+	 * @param nname the nname to set
+	 */
+	public void setNname(String nname) {
+		this.nname = nname;
+	}
+
+
+	
+	
+	/**
+	 * @return the eUid
+	 */
+	public String geteUid() {
+		return eUid;
+	}
+
+	/**
+	 * @param eUid the eUid to set
+	 */
+	public void seteUid(String eUid) {
+		this.eUid = eUid;
+	}
+
+	/**
+	 * @return the uidRelationChain
+	 */
+	public String getUidRelationChain() {
+		return uidRelationChain;
+	}
+
+	/**
+	 * @param uidRelationChain the uidRelationChain to set
+	 */
+	public void setUidRelationChain(String uidRelationChain) {
+		this.uidRelationChain = uidRelationChain;
+	}
+	
+	
+
+	/**
+	 * @return the fansRankName
+	 */
+	public String getFansRankName() {
+		return fansRankName;
+	}
+
+	/**
+	 * @param fansRankName the fansRankName to set
+	 */
+	public void setFansRankName(String fansRankName) {
+		this.fansRankName = fansRankName;
+	}
+	
+	
+
+	/**
+	 * @return the juniorUids
+	 */
+	public List<String> getJuniorUids() {
+		return juniorUids;
+	}
+
+	/**
+	 * @param juniorUids the juniorUids to set
+	 */
+	public void setJuniorUids(List<String> juniorUids) {
+		this.juniorUids = juniorUids;
+	}
+	
+	
+
+	/**
+	 * @return the objectOriented
+	 */
+	public Integer getObjectOriented() {
+		return objectOriented;
+	}
+
+	/**
+	 * @param objectOriented the objectOriented to set
+	 */
+	public void setObjectOriented(Integer objectOriented) {
+		this.objectOriented = objectOriented;
+	}
+	
+	
+
+	/**
+	 * 面向平台 1.VIP 2.商家 3.直销
+	 * @return the objectOrientedStr
+	 */
+	public String getObjectOrientedStr() {
+		if(objectOriented==null){
+			return null;
+		}
+		
+		switch (objectOriented) {
+		case 0:
+			objectOrientedStr="常规";
+			break;
+		case 1:
+			objectOrientedStr="VIP";
+			break;
+		case 2:
+			objectOrientedStr="商家";
+			break;
+		case 3:
+			objectOrientedStr="直销";
+			break;
+		case 4:
+			objectOrientedStr="营业厅会员";
+			break;
+		case 5:
+			objectOrientedStr="黄金庄园";
+			break;
+		default:
+			objectOrientedStr="VIP";
+			break;
+		}
+		return objectOrientedStr;
+	}
+	
+	/**
+	 * @param objectOrientedStr the objectOrientedStr to set
+	 */
+	public void setObjectOrientedStr(String objectOrientedStr) {
+		this.objectOrientedStr = objectOrientedStr;
+	}
+
+	public String getExcitationProject() {
+		return excitationProject;
+	}
+
+	public void setExcitationProject(String excitationProject) {
+		this.excitationProject = excitationProject;
+	}
+
+	public Integer getCurPeriodExcitation() {
+		return curPeriodExcitation;
+	}
+
+	public void setCurPeriodExcitation(Integer curPeriodExcitation) {
+		this.curPeriodExcitation = curPeriodExcitation;
+	}
+	
+
+	public Integer getPeriodExcitation() {
+		return periodExcitation;
+	}
+
+	public void setPeriodExcitation(Integer periodExcitation) {
+		this.periodExcitation = periodExcitation;
+	}
+
+	public Integer getLedgerLevel() {
+		return ledgerLevel;
+	}
+
+	public void setLedgerLevel(Integer ledgerLevel) {
+		this.ledgerLevel = ledgerLevel;
+	}
+
+	public String getLedgerLevelDesc() {		
+		return ledgerLevelDesc;
+	}
+
+	public void setLedgerLevelDesc(String ledgerLevelDesc) {
+		this.ledgerLevelDesc = ledgerLevelDesc;
+	}
+
+	@Override
+	public String toString() {
+		return "TLivePayOrder [id=" + id + ", orderNo=" + orderNo + ", payNo="
+				+ payNo + ", payCode=" + payCode + ", comboId=" + comboId
+				+ ", uid=" + uid + ", payment=" + payment + ", freeCoin="
+				+ freeCoin + ", realCoin=" + realCoin + ", payType=" + payType
+				+ ", payTypeStr=" + payTypeStr + ", payState=" + payState
+				+ ", payStateStr=" + payStateStr + ", payTime=" + payTime
+				+ ", payTimeStr=" + payTimeStr + ", createTime=" + createTime
+				+ ", updateTime=" + updateTime + ", phone=" + phone
+				+ ", nname=" + nname + ", eUid=" + eUid + ", uidRelationChain="
+				+ uidRelationChain + ", fansRankName=" + fansRankName
+				+ ", juniorUids=" + juniorUids + ", objectOriented="
+				+ objectOriented + ", objectOrientedStr=" + objectOrientedStr
+				+ ", excitationProject=" + excitationProject
+				+ ", curPeriodExcitation=" + curPeriodExcitation
+				+ ", periodExcitation=" + periodExcitation + ", ledgerLevel="
+				+ ledgerLevel + ", ledgerLevelDesc=" + ledgerLevelDesc + "]";
+	}
+
+
+    
+}

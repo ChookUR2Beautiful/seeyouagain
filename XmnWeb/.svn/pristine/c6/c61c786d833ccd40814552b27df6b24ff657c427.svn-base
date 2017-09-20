@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.cloud_design.dao.DMaterialCategoryAttrRelationDao" >
+
+  <resultMap id="materialCategoryAttrRelationMap" type="com.xmniao.xmn.core.cloud_design.entity.DMaterialCategoryAttrRelation" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="category_id" property="categoryId" jdbcType="BIGINT" />
+    <result column="material_attr_id" property="materialAttrId" jdbcType="BIGINT" />
+    <result column="material_attr_val" property="materialAttrVal" jdbcType="VARCHAR" />
+    <result column="category_val" property="categoryVal" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  
+  <sql id="materialCategoryAttrRelation_column_list" >
+    id, category_id, material_attr_id, material_attr_val, category_val
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test=" null != categoryId and '' != categoryId">
+  		AND category_id=#{categoryId}
+  	</if>
+  	<if test=" null != materialAttrId and '' != materialAttrId">
+  		AND materialAttrId=#{materialAttrId}
+  	</if>
+  </sql>
+  
+  <select id="getList" resultMap="materialCategoryAttrRelationMap" parameterType="com.xmniao.xmn.core.cloud_design.entity.DMaterialCategoryAttrRelation" >
+    select 
+    <include refid="materialCategoryAttrRelation_column_list" />
+    from d_material_category_attr_relation
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+  </select>
+  
+  
+  <!-- 删除指定分类下的关联规格 -->
+  <delete id="deleteByCategoryId" parameterType="java.lang.Long" >
+    delete from d_material_category_attr_relation
+    where category_id = #{categoryId,jdbcType=BIGINT}
+  </delete>
+  
+  <!-- 删除指定规格下的关联分类 -->
+  <delete id="deleteByMaterialAttrId" parameterType="java.lang.Long" >
+    delete from d_material_category_attr_relation
+    where material_attr_id = #{materialAttrId,jdbcType=BIGINT}
+  </delete>
+  
+  <delete id="delete" parameterType="Object">
+		DELETE FROM d_material_category_attr_relation WHERE id IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+  </delete>
+  
+  
+  <insert id="add" parameterType="com.xmniao.xmn.core.cloud_design.entity.DMaterialCategoryAttrRelation" >
+    insert into d_material_category_attr_relation
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="categoryId != null" >
+        category_id,
+      </if>
+      <if test="materialAttrId != null" >
+        material_attr_id,
+      </if>
+      <if test="materialAttrVal != null" >
+        material_attr_val,
+      </if>
+      <if test="categoryVal != null" >
+        category_val,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="categoryId != null" >
+        #{categoryId,jdbcType=BIGINT},
+      </if>
+      <if test="materialAttrId != null" >
+        #{materialAttrId,jdbcType=BIGINT},
+      </if>
+      <if test="materialAttrVal != null" >
+        #{materialAttrVal,jdbcType=VARCHAR},
+      </if>
+      <if test="categoryVal != null" >
+        #{categoryVal,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  	<!-- 批量插入物料分类、规格对应关联信息 -->
+	<insert id="addBatch" parameterType="java.util.ArrayList">
+		INSERT INTO d_material_category_attr_relation
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<include refid="materialCategoryAttrRelation_column_list" /> 
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+			<!-- id, category_id, material_attr_id, material_attr_val, category_val -->
+				#{item.id},
+				#{item.categoryId},
+				#{item.materialAttrId},
+				#{item.materialAttrVal},
+				#{item.categoryVal}
+			</trim>
+		</foreach>
+	</insert>
+  
+  
+</mapper>

@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.CommentPicDao">
+
+	<parameterMap type="CommentPic" id="commentPic" />
+	
+	<resultMap type="CommentPic" id="commentPicMap">
+		<result column="id" property="id" />
+		<result column="cid" property="cid" />
+		<result column="picname" property="picname" />
+		<result column="picurl" property="picurl" />
+		<result column="picsurl" property="picsurl" />
+		<result column="pid" property="pid" />
+		<result column="sdate" property="sdate" />
+	</resultMap>
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_log
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						cid,
+						picname,
+						picurl,
+						picsurl,
+						pid,
+						sdate,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.cid},
+						 #{item.picname},
+						 #{item.picurl},
+						 #{item.picsurl},
+						 #{item.pid},
+						 #{item.sdate},
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" parameterMap="commentPic" >
+		INSERT INTO t_comment_pic
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					id,
+				</if>
+			 	<if test=" null != cid">
+					cid,
+				</if>
+			 	<if test=" null != picname and '' != picname ">
+					picname,
+				</if>
+			 	<if test=" null != picurl and '' != picurl ">
+					picurl,
+				</if>
+			 	<if test=" null != picsurl and '' != picsurl ">
+					picsurl,
+				</if>
+			 	<if test=" null != pid">
+					pid,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					 	#{id},
+				</if>
+			 	<if test=" null != cid">
+					 	#{cid},
+				</if>
+			 	<if test=" null != picname and '' != picname ">
+					 	#{picname},
+				</if>
+			 	<if test=" null != picurl and '' != picurl ">
+					 	#{picurl},
+				</if>
+			 	<if test=" null != picsurl and '' != picsurl ">
+					 	#{picsurl},
+				</if>
+			 	<if test=" null != pid">
+					 	#{pid},
+				</if>
+			 	<if test=" null != sdate">
+					 	#{sdate},
+				</if>
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_comment_pic WHERE id IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterMap="commentPic">
+		UPDATE t_comment_pic
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != id">
+					id = #{id},
+				</if>
+				<if test=" null != cid">
+					cid = #{cid},
+				</if>
+				<if test=" null != picname and '' != picname ">
+					picname = #{picname},
+				</if>
+				<if test=" null != picurl">
+					picurl = #{picurl},
+				</if>
+				<if test=" null != picsurl">
+					picsurl = #{picsurl},
+				</if>
+				<if test=" null != pid">
+					pid = #{pid},
+				</if>
+				<if test=" null != sdate">
+					sdate = #{sdate},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != id and '' != id">
+				id = #{id}
+			</if>
+		</where>
+	</update>
+	
+	<select id="getList" resultMap="commentPicMap" parameterMap="commentPic">
+		SELECT * FROM t_comment_pic
+		<where>
+			1=1
+			<if test=" null != id">
+				AND id = #{id}
+			</if>
+			<if test=" null != cid">
+				AND cid = #{cid}
+			</if>
+			<if test=" null != picname and '' != picname ">
+				AND picname LIKE '%${picname}%'
+			</if>
+			<if test=" null != picurl and '' != picurl ">
+				AND picurl LIKE '%${picurl}%'
+			</if>
+			<if test=" null != picsurl and '' != picsurl ">
+				AND picsurl LIKE '%${picsurl}%'
+			</if>
+			<if test=" null != pid">
+				AND pid = #{pid}
+			</if>
+			<if test=" null != sdate">
+				AND sdate = #{sdate}
+			</if>
+			<if test=" null != sdateStart and '' != sdateStart">
+				AND sdate&gt;= #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd and '' != sdateEnd">
+				AND sdate&lt;= #{sdateEnd}
+			</if>
+		</where>
+			ORDER BY id DESC 
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="commentPic">
+		SELECT COUNT(*) FROM t_comment_pic
+		<where>
+			1=1
+			<if test=" null != id">
+				AND id = #{id}
+			</if>
+			<if test=" null != cid">
+				AND cid = #{cid}
+			</if>
+			<if test=" null != picname and '' != picname ">
+				AND picname LIKE '%${picname}%'
+			</if>
+			<if test=" null != picurl and '' != picurl ">
+				AND picurl LIKE '%${picurl}%'
+			</if>
+			<if test=" null != picsurl and '' != picsurl ">
+				AND picsurl LIKE '%${picsurl}%'
+			</if>
+			<if test=" null != pid">
+				AND pid = #{pid}
+			</if>
+			<if test=" null != sdate">
+				AND sdate = #{sdate}
+			</if>
+			<if test=" null != sdateStart and '' != sdateStart">
+				AND sdate&gt;= #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd and '' != sdateEnd">
+				AND sdate&lt;= #{sdateEnd}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Integer">
+		SELECT Max(id) AS VALUE FROM t_comment_pic
+	</select>
+	
+	<select id="getObject" resultMap="commentPicMap" parameterType="Long">
+		SELECT * FROM t_comment_pic WHERE id = #{0}
+	</select>
+	
+</mapper>

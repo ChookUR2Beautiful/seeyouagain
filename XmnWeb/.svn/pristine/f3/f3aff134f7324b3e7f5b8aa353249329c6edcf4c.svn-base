@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.fresh.dao.ActivityOrderDao">
+ 	
+  <resultMap id="orderMap" type="ActivityOrder" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="activity_type" property="activityType" jdbcType="INTEGER" />
+    <result column="activity_id" property="activityId" jdbcType="BIGINT" />
+    <result column="product_code_id" property="productCodeId" jdbcType="VARCHAR" />
+    <result column="product_name" property="productName" jdbcType="VARCHAR" />
+    <result column="product_price" property="productPrice" jdbcType="DECIMAL" />
+    <result column="product_num" property="productNum" jdbcType="INTEGER" />
+    <result column="product_breviary" property="productBreviary" jdbcType="VARCHAR" />
+    <result column="product_pv_ids" property="productPvIds" jdbcType="VARCHAR" />
+    <result column="product_pv_value" property="productPvValue" jdbcType="VARCHAR" />
+    <result column="amount_received" property="amountReceived" jdbcType="DECIMAL" />
+    <result column="auction_deposit" property="auctionDeposit" jdbcType="DECIMAL" />
+    <result column="auction_balance" property="auctionBalance" jdbcType="DECIMAL" />
+    <result column="pay_time" property="payTime" jdbcType="TIMESTAMP" />
+    <result column="pay_type" property="payType" jdbcType="VARCHAR" />
+    <result column="receiving_name" property="receivingName" jdbcType="VARCHAR" />
+    <result column="receiving_phone" property="receivingPhone" jdbcType="VARCHAR" />
+    <result column="receiving_city" property="receivingCity" jdbcType="VARCHAR" />
+    <result column="receiving_address" property="receivingAddress" jdbcType="VARCHAR" />
+    <result column="receiving_confirm" property="receivingConfirm" jdbcType="INTEGER" />
+    <result column="state" property="state" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="user_phone" property="userPhone" jdbcType="VARCHAR" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+    <result column="user_type" property="userType" jdbcType="INTEGER" />
+    <result column="logistics_type" property="logisticsType" jdbcType="VARCHAR" />
+    <result column="logistics_num" property="logisticsNum" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="activity_name" property="activityName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, activity_type, activity_id, product_code_id, product_name, product_price, product_num, 
+    product_breviary, product_pv_ids, product_pv_value, amount_received, auction_deposit, 
+    auction_balance, pay_time, pay_type, receiving_name, receiving_phone, receiving_city, 
+    receiving_address, receiving_confirm, state, user_id, user_phone, user_name, user_type, 
+    logistics_type, logistics_num, create_time, update_time,activity_name
+  </sql>
+  
+  <select id="getWinnerOrder" resultMap="orderMap">
+  	 SELECT 
+  	<include refid="Base_Column_List"/>
+  	FROM t_bill_fresh_activity
+  	where 
+  	activity_type = 1
+  	and activity_id = #{id}
+  </select>
+  
+  <select id="getList" parameterType="ActivityOrder" resultMap="orderMap">
+  	SELECT 
+  	<include refid="Base_Column_List"/>
+  	FROM t_bill_fresh_activity
+    WHERE 1=1
+    <if test="receivingName != null and receivingName !=''">
+    	AND receiving_name like '%${receivingName}%'
+    </if>
+    <if test="receivingPhone != null and receivingPhone !=''">
+    	AND receiving_phone = #{receivingPhone}
+    </if>
+   	<if test=" null != sDate and ''!= sDate">
+		AND create_time &gt;=#{sDate}
+	</if>
+	<if test=" null != eDate and ''!= eDate">
+		AND create_time &lt;=#{eDate}
+	</if>
+    <if test="activityType != null">
+    	AND activity_type = #{activityType}
+    </if>
+    <if test="activityId != null">
+    	AND activity_id = #{activityId}
+    </if>
+    <if test="state != null">
+    	AND state = #{state}
+    </if>
+    <if test="id != null and id !=''">
+    	AND id = #{id}
+    </if>
+    ORDER BY create_time DESC
+    <if test=" limit != -1 ">
+		LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <select id="count" parameterType="ActivityOrder" resultType="long">
+  	SELECT COUNT(1)
+  	FROM t_bill_fresh_activity
+    WHERE 1=1
+ <if test="receivingName != null and receivingName !=''">
+    	AND receiving_name like '%${receivingName}%'
+    </if>
+    <if test="id != null and id !=''">
+    	AND id = #{id}
+    </if>
+    <if test="receivingPhone != null and receivingPhone !=''">
+    	AND receiving_phone = #{receivingPhone}
+    </if>
+   	<if test=" null != sDate and ''!= sDate">
+		AND create_time &gt;=#{sDate}
+	</if>
+	<if test=" null != eDate and ''!= eDate">
+		AND create_time &lt;=#{eDate}
+	</if>
+    <if test="activityType != null">
+    	AND activity_type = #{activityType}
+    </if>
+    <if test="activityId != null">
+    	AND activity_id = #{activityId}
+    </if>
+    <if test="state != null">
+    	AND state = #{state}
+    </if>
+  </select>
+  
+  <select id="getActivityOrder" parameterType="ActivityOrder" resultMap="orderMap">
+  	SELECT 
+  	<include refid="Base_Column_List"/>
+  	FROM t_bill_fresh_activity
+  	WHERE id = #{id}
+  </select>
+  
+  <update id="update" parameterType="ActivityOrder">
+  	UPDATE t_bill_fresh_activity
+  	SET update_time = #{updateTime}
+  	<if test="state != null">
+  		,state = #{state}
+  	</if>
+  	<if test="logisticsType != null and logisticsType !=''">
+  		,logistics_type = #{logisticsType}
+  	</if>
+  	<if test="logisticsNum != null and logisticsNum !=''">
+  		,logistics_num = #{logisticsNum}
+  	</if>
+  	<if test="receivingName != null and receivingName !=''">
+  		,receiving_name = #{receivingName}
+  	</if>
+  	<if test="receivingPhone != null and receivingPhone !=''">
+  		,receiving_phone = #{receivingPhone}
+  	</if>
+  	<if test="receivingCity != null and receivingCity !=''">
+  		,receiving_city = #{receivingCity}
+  	</if>
+  	<if test="receivingAddress != null and receivingAddress !=''">
+  		,receiving_address = #{receivingAddress}
+  		,receiving_confirm = 2
+  	</if>
+  	WHERE id = #{id}
+  </update>
+  
+  <select id="getExpress" resultType="map">
+  	SELECT id,express_name expressName,express_value,rdate,dstatus
+  	FROM t_express
+  	WHERE dstatus = 0
+  </select>
+</mapper>

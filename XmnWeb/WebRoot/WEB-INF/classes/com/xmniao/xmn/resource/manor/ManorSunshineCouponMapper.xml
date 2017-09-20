@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.manor.dao.ManorSunshineCouponDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.manor.entity.TManorSunshineCoupon" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="number" property="number" jdbcType="INTEGER" />
+    <result column="cid" property="cid" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, number, cid
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_manor_sunshine_coupon
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_manor_sunshine_coupon
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.manor.entity.TManorSunshineCoupon" >
+    insert into t_manor_sunshine_coupon (id, number, cid
+      )
+    values (#{id,jdbcType=INTEGER}, #{number,jdbcType=INTEGER}, #{cid,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.manor.entity.TManorSunshineCoupon" >
+    insert into t_manor_sunshine_coupon
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="number != null" >
+        number,
+      </if>
+      <if test="cid != null" >
+        cid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="number != null" >
+        #{number,jdbcType=INTEGER},
+      </if>
+      <if test="cid != null" >
+        #{cid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.manor.entity.TManorSunshineCoupon" >
+    update t_manor_sunshine_coupon
+    <set >
+      <if test="number != null" >
+        number = #{number,jdbcType=INTEGER},
+      </if>
+      <if test="cid != null" >
+        cid = #{cid,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.manor.entity.TManorSunshineCoupon" >
+    update t_manor_sunshine_coupon
+    set number = #{number,jdbcType=INTEGER},
+      cid = #{cid,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+	<!-- 自定义查询区域 -->
+	<sql id="baseSellerCondition">
+		<if test="id != null">
+			AND t.id = #{id,jdbcType=INTEGER}
+		</if>
+		<if test="cid != null">
+			AND t.cid = #{cid,jdbcType=INTEGER}
+		</if>
+	</sql>
+	
+	<select id="getManorSunshineCouponList" resultMap="BaseResultMap" parameterType="com.xmniao.xmn.core.manor.entity.TManorSunshineCoupon">
+		select
+		t.*
+		, tr.cname
+		from t_manor_sunshine_coupon t LEFT JOIN  t_coupon tr
+		ON t.cid = tr.cid 
+		<where>
+			1 = 1
+			<include refid="baseSellerCondition" />
+		</where>
+	</select>
+
+	<delete id="deleteManorSunshineCoupon" parameterType="com.xmniao.xmn.core.manor.entity.TManorSunshineCoupon">
+		delete 
+		from t_manor_sunshine_coupon 
+		<where>
+			<include refid="baseSellerCondition" />
+		</where>
+	</delete>
+
+	<insert id="insertManorSunshineCouponBatch" parameterType="java.util.List">
+		INSERT INTO t_manor_sunshine_coupon
+		(number, cid)
+		VALUES
+		<foreach collection="list" item="coupon" separator="," index="index">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				#{coupon.number,jdbcType=INTEGER},
+				#{coupon.cid,jdbcType=INTEGER}
+			</trim>
+		</foreach>
+	</insert>
+  
+</mapper>

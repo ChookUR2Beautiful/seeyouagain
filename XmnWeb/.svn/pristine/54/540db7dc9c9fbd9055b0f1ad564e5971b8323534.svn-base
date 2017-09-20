@@ -1,0 +1,677 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.coupon.dao.CouponDetailDao">
+
+	<parameterMap type="CouponDetail" id="couponDetail" />
+
+	<resultMap type="CouponDetail" id="couponDetailMap">
+		<result column="cdid" property="cdid" />
+		<result column="cid" property="cid" />
+		<result column="serial" property="serial" />
+		<result column="denomination" property="denomination" />
+		<result column="get_way" property="getWay" />
+		<result column="start_date" property="startDate" />
+		<result column="end_date" property="endDate" />
+		<result column="get_status" property="getStatus" />
+		<result column="get_time" property="getTime" />
+		<result column="uid" property="uid" />
+		<result column="phone" property="phone" />
+		<result column="user_status" property="userStatus" />
+		<result column="user_money" property="userMoney" />
+		<result column="lock_time" property="lockTime" />
+		<result column="user_time" property="userTime" />
+		<result column="date_issue" property="dateIssue" />
+		<result column="issue_id" property="issueId" />
+		<result column="send_status" property="sendStatus" />
+		<result column="cname" property="cname" />
+		<result column="issue_volume" property="issuevolume" />
+		<result column="ctype" property="ctype" />
+		<result column="source_uid" property="sourceUid" />
+	</resultMap>
+
+	<!-- 可重用的Where 条件 -->
+	<sql id="whereSQL">
+		<if test=" null != cdid">
+			AND tcd.cdid LIKE '%${cdid}%'
+		</if>
+		<if test=" null != cid">
+			AND tcd.cid LIKE '%${cid}%'
+		</if>
+		<if test=" null != getStatus">
+			AND tcd.get_status LIKE '%${getStatus}%'
+		</if>
+		<if test=" null != userStatus">
+			AND tcd.user_status LIKE '%${userStatus}%'
+		</if>
+		<if test=" null != issueId">
+			AND tcd.issue_id = #{issueId}
+		</if>
+		<if test=" null != phone and '' != phone">
+			AND tcd.phone LIKE '%${phone}%'
+		</if>
+		<if test=" null != uid and '' != uid">
+			AND tcd.uid LIKE '%${uid}%' 
+		</if>
+		<if test=" null != getWay">
+			AND tcd.get_way = #{getWay}
+		</if>
+	</sql>
+
+	<!-- 可重用的插入语句中表的列 -->
+	<sql id="insertColumnSQL">
+		<if test=" null != cid and '' != cid">
+			cid,
+		</if>
+		<if test=" null != serial and '' != serial ">
+			serial,
+		</if>
+		<if test=" null != denomination and '' != denomination ">
+			denomination,
+		</if>
+		<if test=" null != getWay and '' != getWay ">
+			start_date,
+		</if>
+		<if test=" null != getWay">
+			get_way,
+		</if>
+		<if test=" null != startDate">
+			start_date,
+		</if>
+		<if test=" null != endDate">
+			end_date,
+		</if>
+		<if test=" null != getStatus and ''! = getStatus">
+			get_status,
+		</if>
+		<if test=" null != getTime">
+			get_time,
+		</if>
+		<if test=" null != uid and '' != uid">
+			uid,
+		</if>
+		<if test=" null != phone and '' != phone">
+			phone,
+		</if>
+		<if test=" null != userStatus">
+			user_status,
+		</if>
+		<if test=" null != userMoney">
+			user_money,
+		</if>
+		<if test=" null != lockTime">
+			lock_time,
+		</if>
+		<if test=" null != userTime">
+			user_time,
+		</if>
+		<if test=" null != issueId">
+			issue_id,
+		</if>
+		<if test=" null != dateIssue">
+			date_issue,
+		</if>
+		<if test=" null != sendStatus">
+			send_status,
+		</if>
+		<if test=" null != ctype">
+			ctype,
+		</if>
+	</sql>
+	<!-- 可重用的插入语句中表的值 -->
+	<sql id="insertValuesSQL">
+		<if test=" null != cid and '' != cid">
+			#{cid},
+		</if>
+		<if test=" null != serial and '' != serial ">
+			#{serial},
+		</if>
+		<if test=" null != denomination and '' != denomination ">
+			#{denomination},
+		</if>
+		<if test=" null != getWay and '' != getWay ">
+			#{getWay},
+		</if>
+		<if test=" null != startDate">
+			#{startDate},
+		</if>
+		<if test=" null != endDate">
+			#{endDate},
+		</if>
+		<if test=" null != getStatus">
+			#{getStatus},
+		</if>
+		<if test=" null != getTime">
+			#{condition},
+		</if>
+		<if test=" null != uid">
+			#{uid},
+		</if>
+		<if test=" null != phone and '' != phone">
+			#{phone},
+		</if>
+		<if test=" null != userStatus and '' != userStatus">
+			#{userStatus},
+		</if>
+		<if test=" null != userMoney">
+			#{userMoney},
+		</if>
+		<if test=" null != lockTime">
+			#{lockTime},
+		</if>
+		<if test=" null != userTime">
+			#{userTime},
+		</if>
+		<if test=" null != issueId">
+			#{issueId},
+		</if>
+		<if test=" null != dateIssue">
+			#{dateIssue},
+		</if>
+		<if test=" null != sendStatus">
+			#{sendStatus},
+		</if>
+		<if test=" null != ctype">
+			#{ctype},
+		</if>
+	</sql>
+	<!-- 更新动态设置值 -->
+	<sql id="updateSetSQL">
+		<if test=" null != cid and '' != cid">
+			cid = #{cid},
+		</if>
+		<if test=" null != serial and '' != serial">
+			serial = #{serial},
+		</if>
+		<if test=" null != denomination and '' != denomination">
+			denomination = #{denomination},
+		</if>
+		<if test=" null != getWay and '' != getWay">
+			get_way = #{getWay},
+		</if>
+		<if test=" null != startDate">
+			start_date = #{startDate},
+		</if>
+		<if test=" null != endDate">
+			end_date = #{endDate},
+		</if>
+		<if test=" null != getStatus and '' != getStatus">
+			get_status = #{getStatus},
+		</if>
+		<if test=" null != getTime and '' != getTime">
+			get_time = #{getTime},
+		</if>
+		<if test=" null != uid and '' != uid">
+			uid = #{uid},
+		</if>
+		<if test=" null != phone and '' != phone">
+			phone = #{phone},
+		</if>
+		<if test=" null != userStatus and '' != userStatus">
+			user_status = #{userStatus},
+		</if>
+		<if test=" null != userMoney and '' != userStatus">
+			user_money = #{userMoney},
+		</if>
+		<if test=" null != lockTime and '' != lockTime">
+			lock_time = #{lockTime},
+		</if>
+		<if test=" null != userTime and '' != userTime">
+			user_time = #{userTime},
+		</if>
+		<if test=" null != issueId and '' != issueId">
+			issue_id = #{issueId},
+		</if>
+		<if test=" null != dateIssue and '' != dateIssue">
+			date_issue = #{dateIssue},
+		</if>
+		<if test=" null != sendStatus and '' != sendStatus">
+			send_status = #{sendStatus},
+		</if>
+	</sql>
+
+	<insert id="addBatch" parameterType="java.util.ArrayList">
+		INSERT INTO t_coupon_detail
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			cid,
+			serial,
+			denomination,
+			get_way,
+			start_date,
+			end_date,
+			get_status,
+			get_time,
+			uid,
+			phone,
+			user_status,
+			user_money,
+			lock_time,
+			user_time,
+			issue_id,
+			date_issue,
+			ctype,
+			send_status
+			
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list"
+			separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				#{item.cid},
+				#{item.serial},
+				#{item.denomination},
+				#{item.getWay},
+				#{item.startDate},
+				#{item.endDate},
+				#{item.getStatus},
+				#{item.getTime},
+				#{item.uid},
+				#{item.phone},
+				#{item.userStatus},
+				#{item.userMoney},
+				#{item.lockTime},
+				#{item.userTime},
+				#{item.issueId},
+				#{item.dateIssue},
+				<if test="item.ctype!= null">
+				#{item.ctype},
+				</if>
+				<if test="item.ctype== null">
+				0,
+				</if>
+				#{item.sendStatus}
+			</trim>
+		</foreach>
+	</insert>
+
+	<insert id="add" parameterMap="couponDetail">
+		INSERT INTO t_coupon_detail
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<include refid="insertColumnSQL"></include>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			<include refid="insertValuesSQL"></include>
+		</trim>
+	</insert>
+
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_coupon_detail WHERE cid IN
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=") ">
+			#{item}
+		</foreach>
+	</delete>
+
+	<update id="update" parameterMap="couponDetail">
+		UPDATE t_coupon_detail
+		<set>
+			<trim suffixOverrides=",">
+				<include refid="updateSetSQL"></include>
+			</trim>
+		</set>
+		<where>
+			<include refid="whereSQL"></include>
+		</where>
+	</update>
+
+	<select id="getList" resultMap="couponDetailMap" parameterMap="couponDetail">
+		SELECT 
+		  tcd.*,
+		  tc.cname ,
+		  tci.activity_name AS activityName
+		FROM
+		  t_coupon_detail tcd 
+		  LEFT JOIN t_coupon tc 
+		    ON tc.cid = tcd.cid 
+		  LEFT JOIN t_coupon_issue tci
+		    ON tcd.issue_id = tci.issue_id
+		<where>
+			1=1
+			<include refid="whereSQL"></include>
+			<if test="serial != null and serial != ''">
+			AND tcd.serial LIKE '%${serial}%'
+			</if>
+			<if test="cname != null and cname != ''">
+			AND tc.cname LIKE '%${cname}%'
+			</if>
+			<if test="dateIssueStart != null">
+			AND tcd.date_issue &gt;= #{dateIssueStart}
+			</if>
+			<if test="dateIssueEnd != null">
+			AND tcd.date_issue &lt;= #{dateIssueEnd}
+			</if>
+			<if test="getTimeStart != null">
+			AND tcd.get_time &gt;= #{getTimeStart}
+			</if>
+			<if test="getTimeEnd != null">
+			AND tcd.get_time &lt;= #{getTimeEnd}
+			</if>
+			<if test="activityName != null and ''!= activityName">
+			AND tci.activity_name LIKE '%${activityName}%'
+			</if>
+			<if test="cdids != null and '' != cdids">
+			AND FIND_IN_SET(tcd.cdid,#{cdids}) 
+			</if>
+			<if test="ctype != null and '' != ctype">
+			AND tcd.ctype = #{ctype} 
+			</if>
+			<if test="userStatus != null and '' != userStatus or 0== userStatus ">
+			AND tcd.user_status = #{userStatus} 
+			</if>
+		</where>
+		ORDER BY cdid DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="checkUidsExist" resultMap="couponDetailMap" parameterMap="couponDetail">
+		SELECT 
+		  *
+		FROM
+		  t_coupon_detail tcd 
+		<where>
+			1=1
+			<if test="issueId != null and issueId != ''">
+			AND tcd.issue_id =#{issueId}
+			</if>
+			<if test="getWay != null ">
+			AND tcd.get_way =#{getWay}
+			</if>
+			<if test="uids != null and uids != ''">
+			AND FIND_IN_SET(tcd.uid,#{uids})
+			</if>
+		</where>
+	</select>
+	
+
+	<select id="count" resultType="Long" parameterMap="couponDetail">
+		SELECT 
+		 COUNT(1)
+		FROM
+		  t_coupon_detail tcd 
+		  LEFT JOIN t_coupon tc 
+		    ON tc.cid = tcd.cid 
+		  LEFT JOIN t_coupon_issue tci
+		    ON tcd.issue_id = tci.issue_id
+		<where>
+			1=1
+			<include refid="whereSQL"></include>
+			<if test="serial != null and serial != ''">
+			AND tcd.serial LIKE '%${serial}%'
+			</if>
+			<if test="cname != null and cname != ''">
+			AND tc.cname LIKE '%${cname}%'
+			</if>
+			<if test="dateIssueStart != null">
+			AND tcd.date_issue &gt;= #{dateIssueStart}
+			</if>
+			<if test="dateIssueEnd != null">
+			AND tcd.date_issue &lt;= #{dateIssueEnd}
+			</if>
+			<if test="getTimeStart != null">
+			AND tcd.get_time &gt;= #{getTimeStart}
+			</if>
+			<if test="getTimeEnd != null">
+			AND tcd.get_time &lt;= #{getTimeEnd}
+			</if>
+			<if test="activityName != null and ''!= activityName">
+			AND tci.activity_name LIKE '%${activityName}%'
+			</if>
+			<if test="cdids != null and '' != cdids">
+			AND FIND_IN_SET(tcd.cdid,#{cdids}) 
+			</if>
+			<if test="ctype != null and '' != ctype">
+			AND tcd.ctype = #{ctype} 
+			</if>
+			<if test="userStatus != null and '' != userStatus or 0== userStatus ">
+			AND tcd.user_status = #{userStatus} 
+			</if>
+		</where>
+	</select>
+
+	<select id="getMaxId" resultType="Integer">
+		SELECT Max(cid) AS VALUE FROM
+		t_coupon_detail
+	</select>
+
+	<select id="getObject" resultMap="couponDetailMap"
+		parameterType="Long">
+		SELECT * FROM t_coupon_detail WHERE cid = #{0}
+	</select>
+	<select id="getViewCouponList" resultMap="couponDetailMap" parameterMap="couponDetail">
+		SELECT r.cid,r.issue_volume,t.cname AS cname,t.ctype AS ctype FROM t_coupon_issue_ref r LEFT JOIN t_coupon t ON t.cid=r.cid
+		<where>
+			1=1
+			<if test="issueId != null and issueId != ''">
+			AND r.issue_id=#{issueId}
+			</if>
+			<if test="cid != null">
+			AND r.cid=#{cid}
+			</if>
+			<!-- <if test="cname != null and cname != ''">
+			AND r.cname=#{cname}
+			</if> -->
+		</where>
+		ORDER BY r.issue_id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="getViewCouponCount" resultType="Long" parameterMap="couponDetail">
+		SELECT count(1) FROM t_coupon_issue_ref r 
+		<where>
+			1=1
+			<if test="issueId != null and issueId != ''">
+			AND r.issue_id=#{issueId}
+			</if>
+			<if test="cid != null">
+			AND r.cid=#{cid}
+			</if>
+			<!-- <if test="cname != null and cname != ''">
+			AND r.cname=#{cname}
+			</if> -->
+		</where>
+	</select>
+	
+	<!-- 批量短信发送优惠券，优惠券一定要有有效期 -->
+	<update id="batchSendCouponDetail" parameterMap="couponDetail">
+		UPDATE 
+		  t_coupon_detail 
+		SET
+		  send_status = #{sendStatus},
+		  get_status = #{getStatus},
+		  get_time = #{getTime},
+		  start_date=#{startDate},
+		  end_date=#{endDate}
+		WHERE FIND_IN_SET(cdid,#{cdids}); 
+	</update>
+	
+  <!-- 批量更新使用状态 -->
+  <update id="updateBatch"  parameterType="map">
+	update t_coupon_detail
+    <set >
+      <if test="userStatus != null" >
+       user_status= #{userStatus,jdbcType=INTEGER},
+      </if>
+    </set>
+     WHERE cdid IN
+  	<foreach item="item" index="index" collection="cdids"  open="(" separator="," close=") ">
+			 #{item}
+	</foreach>
+  </update>
+  
+  <!-- 获取分组统计列表 -->
+  <select id="getGroupList" resultMap="couponDetailMap" parameterMap="couponDetail">
+		SELECT
+			d.cid,
+		    d.ctype,
+			d.uid,
+			d.phone,
+			c.cname,
+			d.date_issue,
+			count(d.cid) as issue_volume
+		FROM
+			t_coupon_detail d
+		LEFT JOIN t_coupon c ON d.cid = c.cid
+		<where>
+			<if test="getWay != null and getWay != ''">
+			 	AND d.get_way = #{getWay}
+			</if>
+			<if test="uid != null and uid != ''">
+			 	AND d.uid = #{uid}
+			</if>
+			<if test="phone != null and phone != ''">
+			 	AND d.phone = #{phone}
+			</if>
+			<if test="ctype != null and ctype != '' or 0 == ctype">
+			 	AND d.ctype = #{ctype}
+			</if>
+		</where>
+		GROUP BY
+			d.cid,
+			d.ctype,
+			d.uid,
+			d.phone,
+			d.date_issue,
+			c.cname
+		ORDER BY d.date_issue DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+  </select>
+  
+  <!-- 获取分组统计列表记录数 -->
+  <select id="countGroupList" resultType="Long" parameterMap="couponDetail">
+		SELECT
+			COUNT(
+				DISTINCT d.cid,
+				d.ctype,
+				d.uid,
+				d.phone,
+				d.date_issue,
+				c.cname
+			)
+		FROM
+			t_coupon_detail d
+		LEFT JOIN t_coupon c ON d.cid = c.cid
+		<where>
+			<if test="getWay != null and getWay != ''">
+			 	AND d.get_way = #{getWay}
+			</if>
+			<if test="uid != null and uid != ''">
+			 	AND d.uid = #{uid}
+			</if>
+			<if test="phone != null and phone != ''">
+			 	AND d.phone = #{phone}
+			</if>
+			<if test="ctype != null and ctype != '' or 0 == ctype">
+			 	AND d.ctype = #{ctype}
+			</if>
+		</where>
+  </select>
+  
+  
+    <!-- 获取分组统计列表 -->
+  <select id="getRecommendRewardProfitList" resultMap="couponDetailMap" parameterMap="couponDetail">
+		SELECT
+			t.cid,
+		    t.ctype,
+			t.uid,
+			t.phone,
+			t.get_time,
+			t.source_uid,
+			c.cname
+		FROM
+			t_coupon_detail t
+		LEFT JOIN t_coupon c ON t.cid = c.cid
+		<where>
+			<if test="getWay != null and getWay != ''">
+			 	AND d.get_way = #{getWay}
+			</if>
+			<if test="uid != null and uid != ''">
+			 	AND d.uid = #{uid}
+			</if>
+			<if test="phone != null and phone != ''">
+			 	AND d.phone = #{phone}
+			</if>
+			<if test="ctype != null and ctype != '' or 0 == ctype">
+			 	AND d.ctype = #{ctype}
+			</if>
+		</where>
+		ORDER BY t.get_time DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+  </select>
+  
+  <select id="countRecommendRewardProfit" resultType="Long" parameterMap="couponDetail">
+        SELECT
+			count(t.*)
+		FROM
+			t_coupon_detail t
+		LEFT JOIN t_coupon c ON t.cid = c.cid
+		<where>
+			<if test="getWay != null and getWay != ''">
+			 	AND d.get_way = #{getWay}
+			</if>
+			<if test="uid != null and uid != ''">
+			 	AND d.uid = #{uid}
+			</if>
+			<if test="phone != null and phone != ''">
+			 	AND d.phone = #{phone}
+			</if>
+			<if test="ctype != null and ctype != '' or 0 == ctype">
+			 	AND d.ctype = #{ctype}
+			</if>
+		</where>
+  </select>
+
+    <!--分页查询优惠劵-->
+    <select id="selectByPage" resultType="map">
+        select
+          d.cdid cdid,
+          d.uid uid,
+          d.phone phone,
+          d.user_status userStatus,
+          d.get_way getWay ,
+          d.date_issue dateIssue,
+          d.denomination denomination,
+          c.ctype ctype,
+          c.cname cname
+        <include refid="couponCondition"/>
+        order by date_issue desc
+        LIMIT #{page.start} ,#{page.limit}
+    </select>
+    <select id="countCouponDetail" resultType="java.lang.Long">
+		select count(1)
+		<include refid="couponCondition"/>
+	</select>
+	<sql id="couponCondition">
+		from t_coupon_detail d
+		JOIN t_coupon c USING (cid)
+		WHERE 1=1
+		<if test="params.uid != null and params.uid != '' ">
+			and d.uid = #{params.uid}
+		</if>
+		<if test="params.cname != null and params.cname != '' ">
+			and c.cname like concat('%',#{params.cname},'%')
+		</if>
+		<if test="params.phone != null and params.phone != '' ">
+			and d.phone = #{params.phone}
+		</if>
+		<if test="params.ctype != null and params.ctype != '' ">
+			and c.ctype = #{params.ctype}
+		</if>
+	</sql>
+
+
+
+	<select id="selectByCdid" resultMap="couponDetailMap">
+		SELECT * FROM t_coupon_detail WHERE cdid = #{cdid}
+	</select>
+
+	<delete id="deleteByCdid">
+		DELETE FROM t_coupon_detail where cdid = #{cdid}
+	</delete>
+</mapper>

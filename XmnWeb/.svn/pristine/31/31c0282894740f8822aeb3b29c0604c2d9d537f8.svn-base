@@ -1,0 +1,73 @@
+/**
+ * 
+ */
+package com.xmniao.xmn.test.live_anchor;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Resource;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.data.redis.core.StringRedisTemplate;
+
+import com.xmniao.xmn.core.live_anchor.entity.BLiver;
+import com.xmniao.xmn.core.util.PageConstant;
+import com.xmniao.xmn.core.xmnburs.dao.BursDao;
+import com.xmniao.xmn.core.xmnburs.entity.Burs;
+import com.xmniao.xmn.core.xmnburs.service.BursService;
+
+/**
+ * 
+ * 项目名称：XmnWeb
+ * 
+ * 类名称：RedisTemplateTest
+ * 
+ * 类描述： 在此处添加类描述
+ * 
+ * 创建人：  huang'tao
+ * 
+ * 创建时间：2017-4-24 下午4:04:57 
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司 
+ */
+
+public class RedisTemplateTest {
+	
+	private ApplicationContext application;
+	
+	private BursService bursService;
+	
+	/**
+	 * 注入redisTemplate
+	 */
+	@Autowired
+	private StringRedisTemplate redisTemplate2;
+	
+	@Before
+	public void before() {
+		application = new ClassPathXmlApplicationContext("classpath:/com/xmniao/xmn/resource/config/spring-context.xml");
+		bursService = application.getBean(BursService.class);
+//		redisTemplate2 = application.getBean(StringRedisTemplate.class);
+	}
+	
+
+	@Test
+	public void redisSet(){
+		redisTemplate2.opsForValue().set("b_urs$2413", null);
+		String string = redisTemplate2.opsForValue().get("base_teacher$10");
+		/*Burs burs = new Burs();
+		burs.setLimit(PageConstant.PAGE_LIMIT_NO);
+		List<Burs> bursList = bursService.getUrsList(burs);
+		for(Burs bursInfo : bursList){
+			System.out.println("b_urs$"+bursInfo.getUid()+":"+bursInfo.getNname());
+		}*/
+		System.out.println(string);
+		
+	}
+
+}

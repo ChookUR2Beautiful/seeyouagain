@@ -1,0 +1,28 @@
+package com.xmniao.xmn.core.manor.dao;
+
+import java.util.List;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.manor.entity.TManorSunshineCoupon;
+
+
+public interface ManorSunshineCouponDao  extends BaseDao<TManorSunshineCoupon>{
+    int deleteByPrimaryKey(Integer id);
+
+    int insert(TManorSunshineCoupon record);
+
+    int insertSelective(TManorSunshineCoupon record);
+
+    TManorSunshineCoupon selectByPrimaryKey(Integer id);
+
+    int updateByPrimaryKeySelective(TManorSunshineCoupon record);
+
+    int updateByPrimaryKey(TManorSunshineCoupon record);
+    
+    int insertManorSunshineCouponBatch(List<TManorSunshineCoupon> manorSunshineCouponList);
+    
+    int deleteManorSunshineCoupon(TManorSunshineCoupon record);
+    
+    List<TManorSunshineCoupon> getManorSunshineCouponList(TManorSunshineCoupon record); 
+    
+}

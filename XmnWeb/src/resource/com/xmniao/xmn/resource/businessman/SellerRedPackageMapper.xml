@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.SellerRedPackageDao" >
+
+  <resultMap id="BaseResultMap" type="sRedPackage" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="sellerName" property="sellerName" jdbcType="VARCHAR" />
+    <result column="redpacket_type" property="redpacketType" jdbcType="INTEGER" />
+    <result column="amount_type" property="amountType" jdbcType="INTEGER" />
+    <result column="redpacket_name" property="redpacketName" jdbcType="VARCHAR" />
+    <result column="begin_date" property="beginDate" jdbcType="DATE" />
+    <result column="end_date" property="endDate" jdbcType="DATE" />
+    <result column="total_amount" property="totalAmount" jdbcType="DECIMAL" />
+    <result column="random_amount_mini" property="randomAmountMini" jdbcType="DECIMAL" />
+    <result column="leftRedpacket" property="leftRedpacket" jdbcType="DECIMAL" />
+    <result column="random_amount_max" property="randomAmountMax" jdbcType="DECIMAL" />
+    <result column="redpacket_number" property="redpacketNumber" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="get_redpacket" property="getRedpacket" jdbcType="DECIMAL" />
+    <result column="get_redpacket_number" property="getRedpacketNumber" jdbcType="INTEGER" />
+  </resultMap>
+  	
+  	<!-- 获取商户发放红包列表 -->
+	<select id="getList" resultMap="BaseResultMap" parameterType="sRedPackage">
+	SELECT r.id, r.sellerid,s.sellername,r.redpacket_type,r.redpacket_name,r.begin_date,(r.total_amount-r.get_redpacket) leftRedpacket
+	,r.end_date,r.get_redpacket_number,r.get_redpacket,r.total_amount,r.status 
+	FROM t_redpacket r
+	LEFT JOIN t_seller s ON s.sellerid =  r.sellerid
+	WHERE 1=1
+	<if test="redpacketName != null and redpacketName !=''">
+	AND r.redpacket_name LIKE '%${redpacketName}%'
+	</if>
+	<if test="sellerName != null and sellerName !=''">
+	AND s.sellername LIKE '%${sellerName}%'
+	</if>
+	<if test="beginDate != null and beginDate !=''">
+	AND r.begin_date &gt;= #{beginDate}
+	</if>
+	<if test="endDate != null and endDate !=''">
+	AND r.end_date &lt;= #{endDate}
+	</if>
+	<if test="redpacketType != null and redpacketType !=''">
+	AND r.redpacket_type = #{redpacketType}
+	</if>
+	<if test="status != null  and status !='' ">
+	<if test="status == 4">
+	AND r.status IS NULL
+	</if>
+	<if test="status != 4">
+	AND r.status = #{status}
+	</if>
+	</if>
+	ORDER BY r.create_time DESC
+	<if test="limit != -1">
+	LIMIT ${(page-1)*limit},#{limit}
+	</if>
+	</select>
+	
+	<!-- 统计记录总数 -->
+	<select id="count" resultType="long">
+	SELECT COUNT(1)
+	FROM t_redpacket r
+	LEFT JOIN t_seller s ON s.sellerid =  r.sellerid
+	WHERE 1=1
+	<if test="redpacketName != null and redpacketName !=''">
+	AND r.redpacket_name LIKE '%${redpacketName}%'
+	</if>
+	<if test="sellerName != null and sellerName !=''">
+	AND s.sellername LIKE '%${sellerName}%'
+	</if>
+	<if test="beginDate != null and beginDate !=''">
+	AND r.begin_date &gt;= #{beginDate}
+	</if>
+	<if test="endDate != null and endDate !=''">
+	AND r.end_date &lt;= #{endDate}
+	</if>
+	<if test="redpacketType != null and redpacketType !=''">
+	AND r.redpacket_type = #{redpacketType}
+	</if>
+	<if test="status != null  and status !='' ">
+	<if test="status == 4">
+	AND r.status IS NULL
+	</if>
+	<if test="status != 4">
+	AND r.status = #{status}
+	</if>
+	</if>
+	</select>
+	
+	<!-- 统计领取红包会员总数 -->
+	<select id="countTotalUser" resultType="long">
+	SELECT COUNT(1)
+	FROM t_redpacket_record
+	WHERE redpacket_id = #{0}
+	</select>
+	
+	<!-- 统计领取红包绑定会员总数 -->
+	<select id="countLockUser" resultType="long">
+	SELECT COUNT(1) 
+	FROM t_redpacket_record
+	WHERE redpacket_id = #{0}
+	AND is_binding = 1
+	</select>
+	
+	<!-- 查询红包领取详情 -->
+	<select id="getRecordList" parameterType="com.xmniao.xmn.core.businessman.entity.GetRedPackageRecord" resultType="com.xmniao.xmn.core.businessman.entity.GetRedPackageRecord">
+		SELECT id,redpacket_id redPackageId,denomination,record_time recordTime,user_id userId,phone,is_binding isBanding,is_share isShare,status
+		FROM t_redpacket_record
+		WHERE redpacket_id = #{redPackageId}
+		<if test="userId !=null and userId !=''">
+		AND user_id =#{userId}
+		</if>
+		<if test="phone !=null and phone !=''">
+		AND phone =#{phone}
+		</if>
+		<if test="isBanding !=null and isBanding !=''">
+		AND is_binding =#{isBanding}
+		</if>
+		<if test="sDate != null and sDate !=''">
+		AND record_time &gt;= #{sDate}
+		</if>
+		<if test="eDate != null and eDate !=''">
+		AND record_time &lt;= #{eDate}
+		</if>
+		ORDER BY recordTime DESC
+		<if test="limit != -1">
+		LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<!-- 统计记录总数 -->
+	<select id="countRecord" resultType="long">
+		SELECT COUNT(1)
+		FROM t_redpacket_record
+		WHERE redpacket_id = #{redPackageId}
+		<if test="userId !=null and userId !=''">
+		AND user_id =#{userId}
+		</if>
+		<if test="phone !=null and phone !=''">
+		AND phone =#{phone}
+		</if>
+		<if test="isBanding !=null and isBanding !=''">
+		AND is_binding =#{isBanding}
+		</if>
+		<if test="sDate != null and sDate !=''">
+		AND record_time &gt;= #{sDate}
+		</if>
+		<if test="eDate != null and eDate !=''">
+		AND record_time &lt;= #{eDate}
+		</if>
+	</select>
+	
+	<!-- 终止进行中的红包活动 -->
+	<update id="shutDownRedPackage" parameterType="sRedPackage">
+	UPDATE t_redpacket
+	SET status = 0
+	WHERE id = #{id}
+	</update>
+</mapper>

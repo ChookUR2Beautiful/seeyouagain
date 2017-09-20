@@ -1,0 +1,470 @@
+package com.xmniao.xmn.core.vstar.service;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.base.BaseService;
+import com.xmniao.xmn.core.base.Resultable;
+import com.xmniao.xmn.core.live_anchor.dao.TLiveRecordDao;
+import com.xmniao.xmn.core.util.DateUtil;
+import com.xmniao.xmn.core.util.PageConstant;
+import com.xmniao.xmn.core.util.handler.AreaHandler;
+import com.xmniao.xmn.core.vstar.constant.VstarConstant;
+import com.xmniao.xmn.core.vstar.dao.TVstarEnrollDao;
+import com.xmniao.xmn.core.vstar.dao.TVstarEnrollImgDao;
+import com.xmniao.xmn.core.vstar.dao.TVstarPlayerInfoDao;
+import com.xmniao.xmn.core.vstar.dao.TVstarPlayerSettingDao;
+import com.xmniao.xmn.core.vstar.entity.TVstarEnroll;
+import com.xmniao.xmn.core.vstar.entity.TVstarEnrollImg;
+import com.xmniao.xmn.core.vstar.entity.TVstarPlayerInfo;
+import com.xmniao.xmn.core.vstar.entity.TVstarPlayerSetting;
+import com.xmniao.xmn.core.xmnburs.dao.BursDao;
+import com.xmniao.xmn.core.xmnburs.entity.Burs;
+
+/**
+ * 
+ * 
+ * 项目名称：XmnWeb_vstar
+ * 
+ * 类名称：TVstarEnrollService
+ * 
+ * 类描述： 新时尚大赛报名Service
+ * 
+ * 创建人：  huang'tao
+ * 
+ * 创建时间：2017-6-1 下午1:52:27 
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司
+ */
+@Service
+public class TVstarEnrollService extends BaseService<TVstarEnroll>{
+	
+	/**
+	 * 注入新时尚大赛报名信息
+	 */
+	@Autowired
+	private TVstarEnrollDao vstarEnrollDao;
+	
+	/**
+	 * 注入新时尚大赛选手信息
+	 */
+	@Autowired
+	private TVstarPlayerInfoDao vstarPlayerInfoDao;
+	
+	/**
+	 * 注入新时尚大赛报名相册信息
+	 */
+	@Autowired
+	private TVstarEnrollImgDao starEnrollImgDao;
+	
+	
+	/**
+	 * 注入新时尚大赛报名配置信息DAO
+	 */
+	@Autowired
+	private TVstarPlayerSettingDao playerSettionDao;
+	
+	
+	@Autowired
+	private BursDao bursDao;
+	
+	@Autowired
+	private TLiveRecordDao liveRecordDao ;
+	
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected BaseDao getBaseDao() {
+		return vstarEnrollDao;
+	}
+
+	/**
+	 * 方法描述：获取报名信息 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-6-2上午10:51:43 <br/>
+	 * @param vstarEnroll
+	 * @return
+	 */
+	public List<TVstarEnroll> getListInfo(TVstarEnroll vstarEnroll) {
+		List<TVstarEnroll> list = getList(vstarEnroll);
+		convertAreaInfo(list);//转换区域信息
+		loadPraiseInfo(list);//加载点赞信息
+		loadEnrollImgInfo(list);//加载相册信息
+		return list;
+	}
+
+	/**
+	 * 方法描述：加载报名相册信息(个人风采照) <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-6-3下午4:42:42 <br/>
+	 * @param list
+	 */
+	private void loadEnrollImgInfo(List<TVstarEnroll> list) {
+		List<Integer> enrollIds= new ArrayList<Integer>();
+		
+		for(TVstarEnroll enroll:list){
+			Integer id = enroll.getId();
+			enrollIds.add(id);
+		}
+		
+		if(enrollIds != null && enrollIds.size()>0){
+			TVstarEnrollImg enrollImg = new TVstarEnrollImg();
+			enrollImg.setImgType(VstarConstant.ENROLL_IMG_TYPE.IMG_101);
+			enrollImg.setEids(enrollIds);
+			List<TVstarEnrollImg> imgList = starEnrollImgDao.getList(enrollImg);
+			for(TVstarEnroll enroll:list){
+				List<TVstarEnrollImg> enrollImgList = new ArrayList<TVstarEnrollImg>();
+				for(TVstarEnrollImg imgInfo:imgList){
+					Integer enrollId = imgInfo.getPid();
+					Integer id = enroll.getId();
+					if(id != null && enrollId != null && enrollId.intValue() == id.intValue()){
+						enrollImgList.add(imgInfo);
+					}
+				}
+				enroll.setEnrollImgList(enrollImgList);
+				
+			}
+			
+		}
+	}
+
+	/**
+	 * 方法描述：加载点赞信息 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-6-2下午5:22:12 <br/>
+	 * @param list
+	 */
+	private void loadPraiseInfo(List<TVstarEnroll> list) {
+		List<Integer> enrollIds= new ArrayList<Integer>();
+		
+		for(TVstarEnroll enroll:list){
+			Integer id = enroll.getId();
+			enrollIds.add(id);
+		}
+		
+		if(enrollIds != null && enrollIds.size()>0){
+			TVstarPlayerInfo playerInfo= new TVstarPlayerInfo();
+			playerInfo.setEnrollIds(enrollIds);
+			playerInfo.setLimit(PageConstant.PAGE_LIMIT_NO);
+			List<TVstarPlayerInfo> playerInfoList = vstarPlayerInfoDao.getList(playerInfo);
+			for(TVstarEnroll enroll:list){
+				for(TVstarPlayerInfo player:playerInfoList){
+					Integer id = enroll.getId();
+					Integer enrollId = player.getEnrollId();
+					if(id!=null && enrollId!=null && id.intValue()==enrollId.intValue()){
+						enroll.setLikeCount(player.getLikeCount());
+						break;
+					}
+				}
+			}
+		}
+		
+	}
+
+	/**
+	 * 方法描述：将区域信息id转化为name <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-6-2上午11:25:31 <br/>
+	 * @param list
+	 */
+	private void convertAreaInfo(List<TVstarEnroll> list) {
+		String province=null;
+		String city=null;
+		String area=null;
+		for(TVstarEnroll enroll:list){
+			StringBuffer areaText=new StringBuffer();
+			Integer provinceId = enroll.getProvinceId();
+			Integer cityId = enroll.getCityId();
+			Integer areaId = enroll.getAreaId();
+			if(provinceId!=null){
+				province = AreaHandler.getAreaHandler().getAreaIdByTitle(provinceId);
+			}
+			if(cityId!=null){
+				city = AreaHandler.getAreaHandler().getAreaIdByTitle(cityId);
+			}
+			if(areaId != null){
+				area = AreaHandler.getAreaHandler().getAreaIdByTitle(areaId);
+			}
+			if(StringUtils.isNotBlank(province)){
+				areaText.append(province);
+			}
+			
+			if(StringUtils.isNotBlank(city)){
+				areaText.append("-"+city);
+			}
+			
+			if(StringUtils.isNotBlank(area)){
+				areaText.append("-"+area);
+			}
+			enroll.setAreaText(areaText.toString());
+		}
+		
+	}
+
+	/**
+	 * 方法描述：更新报名审核状态 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-6-6下午5:48:09 <br/>
+	 * @param vstarEnroll
+	 * @return
+	 */
+	public Integer updateInfo(TVstarEnroll vstarEnroll) {
+		TVstarPlayerSetting playerSetting = playerSettionDao.getFirstObject();
+		if(playerSetting!=null){
+			Integer autoPassSecond = playerSetting.getAutoPassSecond();//是否自动通过试播审核 0 否 1 是
+			if(autoPassSecond!=null && autoPassSecond.intValue()==1){
+				Integer status = vstarEnroll.getStatus();
+				if(status!=null && status.intValue()==VstarConstant.ENROLL_STATUS.STATUS_5){
+					vstarEnroll.setStatus(VstarConstant.ENROLL_STATUS.STATUS_7);
+				}
+			}
+		}
+		
+		
+		Integer update = update(vstarEnroll);//更新报名状态信息
+		Integer status = vstarEnroll.getStatus();
+		if(status!=null && status.intValue()== VstarConstant.ENROLL_STATUS.STATUS_7){
+			Integer id = vstarEnroll.getId();
+			if(id!=null){
+				TVstarEnroll tVstarEnroll = vstarEnrollDao.getObject(new Long(id));
+				Integer uid = tVstarEnroll.getUid();
+				List<Integer> uids= new ArrayList<Integer>();
+				uids.add(uid);
+				Map<String, Object> paramMap= new HashMap<String,Object>();
+				paramMap.put("utype", "1");//用户类型
+				paramMap.put("vstarStage", "1");//星食尚大赛入围阶段 0海选 1复赛 2决赛
+				paramMap.put("uids", uids);//用户UID集合
+				vstarEnrollDao.updateLiverVstarInfo(paramMap);//更新新时尚大赛报名选手直播用户信息
+			}
+		}
+		return update;
+	}
+
+	/**
+	 * 方法描述：获取实名审核信息 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-6-8上午10:04:51 <br/>
+	 * @param vstarEnroll
+	 * @return
+	 */
+	public List<TVstarEnroll> getListRealInfo(TVstarEnroll vstarEnroll) {
+		List<TVstarEnroll> list = getList(vstarEnroll);
+		loadEnrollImgIdentityInfo(list,VstarConstant.ENROLL_IMG_TYPE.IMG_201);//加载身份证正面信息
+		loadEnrollImgIdentityInfo(list,VstarConstant.ENROLL_IMG_TYPE.IMG_202);;//加载身份证反面信息
+		loadEnrollImgIdentityInfo(list,VstarConstant.ENROLL_IMG_TYPE.IMG_203);;//加载手持身份证照片信息
+		return list;
+	}
+
+	/**
+	 * 方法描述：加载报名相册信息(身份证照片)<br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-6-8上午10:14:56 <br/>
+	 * @param list
+	 * @param imgType
+	 */
+	private void loadEnrollImgIdentityInfo(List<TVstarEnroll> list,
+			String imgType) {
+
+		List<Integer> enrollIds= new ArrayList<Integer>();
+		
+		for(TVstarEnroll enroll:list){
+			Integer id = enroll.getId();
+			enrollIds.add(id);
+		}
+		
+		if(enrollIds != null && enrollIds.size()>0 &&StringUtils.isNotBlank(imgType)){
+			TVstarEnrollImg enrollImg = new TVstarEnrollImg();
+			enrollImg.setImgType(imgType);
+			enrollImg.setEids(enrollIds);
+			List<TVstarEnrollImg> imgList = starEnrollImgDao.getList(enrollImg);
+			for(TVstarEnroll enroll:list){
+				for(TVstarEnrollImg imgInfo:imgList){
+					Integer enrollId = imgInfo.getPid();
+					Integer id = enroll.getId();
+					if(id != null && enrollId != null && enrollId.intValue() == id.intValue()){
+						if(VstarConstant.ENROLL_IMG_TYPE.IMG_201.equals(imgType)){
+							enroll.setImgUrl201(imgInfo.getImgUrl());
+						}else if(VstarConstant.ENROLL_IMG_TYPE.IMG_202.equals(imgType)){
+							enroll.setImgUrl202(imgInfo.getImgUrl());
+						}else if(VstarConstant.ENROLL_IMG_TYPE.IMG_203.equals(imgType)){
+							enroll.setImgUrl203(imgInfo.getImgUrl());
+						}
+						
+						break;
+					}
+				}
+			}
+			
+		}
+	
+		
+	}
+
+	/**
+	 * 方法描述：批量更新实名审核状态 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-6-8上午11:58:06 <br/>
+	 * @param ids
+	 * @param status
+	 * @return
+	 */
+	public Resultable updateRealNameBatch(String ids, String status) {
+		Resultable result = new Resultable();
+		Map<String,Object> map= new HashMap<String,Object>();
+		try {
+			if(StringUtils.isNotBlank(ids)){
+				TVstarPlayerSetting playerSetting = playerSettionDao.getFirstObject();
+				if(playerSetting!=null){
+					Integer autoPassSecond = playerSetting.getAutoPassSecond();//是否自动通过试播审核 0 否 1 是
+					if(autoPassSecond!=null && autoPassSecond.intValue()==1){
+						if(status!=null && new Integer(status)==VstarConstant.ENROLL_STATUS.STATUS_5){
+							status=VstarConstant.ENROLL_STATUS.STATUS_7+"";
+							
+							autoGrantPermission(ids);//自动开通主播权限
+						}
+					}
+				}
+				
+				map.put("ids", ids.split(","));
+				map.put("status", status);
+				vstarEnrollDao.updateBatch(map);
+				
+				result.setSuccess(true);
+				result.setMsg("操作成功!");
+			}
+		} catch (Exception e) {
+			result.setSuccess(false);
+			result.setMsg("操作失败!");
+			this.log.error("批量更新实名审核状态失败:ids="+ids, e);
+			e.printStackTrace();
+		}
+		
+		
+		return result;
+	}
+
+	/**
+	 * 方法描述：自动开通试播权限 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-6-8下午4:28:44 <br/>
+	 * @param ids
+	 */
+	private void autoGrantPermission(String ids) {
+		if(StringUtils.isNotBlank(ids)){
+			TVstarEnroll vstarEnroll= new TVstarEnroll();
+			List<String> idList=new ArrayList<String>();
+			String[] idArray = ids.split(",");
+			for(String id:idArray){
+				idList.add(id);
+			}
+			vstarEnroll.setIdList(idList);
+			vstarEnroll.setLimit(PageConstant.PAGE_LIMIT_NO);
+			List<TVstarEnroll> enrollList = vstarEnrollDao.getList(vstarEnroll);
+			
+			List<Integer> uids= new ArrayList<Integer>();
+			if(enrollList!=null && enrollList.size()>0){
+				for(TVstarEnroll enroll:enrollList){
+					uids.add(enroll.getUid());
+				}
+				Map<String, Object> paramMap= new HashMap<String,Object>();
+				paramMap.put("utype", "1");//用户类型
+				paramMap.put("vstarStage", "1");//星食尚大赛入围阶段 0海选 1复赛 2决赛
+				paramMap.put("uids", uids);//用户UID集合
+				vstarEnrollDao.updateLiverVstarInfo(paramMap);//更新新时尚大赛报名选手直播用户信息
+			}
+			
+		}
+	}
+
+	/**
+	 * 方法描述：获取城市报名人数排名
+	 * 创建人： jianming <br/>
+	 * 创建时间：2017年6月14日下午4:23:26 <br/>
+	 * @return
+	 */
+	public List<Map<String, Object>> getCityRank() {
+		return vstarEnrollDao.getCityRank();
+	}
+
+	/**
+	 * 方法描述：按时间统计报名人数
+	 * 创建人： jianming <br/>
+	 * 创建时间：2017年6月14日下午5:20:47 <br/>
+	 * @return
+	 * @throws Exception 
+	 */
+	public List<Map<String,Object>> getCityRankByDate() throws Exception {
+		List<Map<String,Object>> ranks =  vstarEnrollDao.getCityRankByDate(DateUtil.getSpecifiedDate(DateUtil.LAST_MONTY));
+		HashSet<String> hashSet = new HashSet<>();
+		for (Map<String, Object> map : ranks) {
+			String uids =(String) map.get("uids");
+			if(StringUtils.isNotBlank(uids)){
+				hashSet.addAll(Arrays.asList(uids.split(",")));
+			}
+		}
+		List<Burs> ursListByUids = bursDao.getAnchorIdByUids(hashSet.toArray());
+		List<Map<String,Object>> map =  liveRecordDao.countRecordByBurs(ursListByUids);
+		one:for (Map<String, Object> map2 : map) {
+			for(Burs burs : ursListByUids){
+				if(map2.get("anchorId")!=null&&map2.get("anchorId").equals(burs.getAnchorId())){
+					map2.put("uid", burs.getUid());
+					continue one;
+				}
+			}
+		}
+		for (Map<String, Object> map3 : ranks) {
+			Integer activeCount = 0;
+			String uids =(String) map3.get("uids");
+			if(StringUtils.isNotBlank(uids)){
+				List<String> asList = Arrays.asList(uids.split(","));
+				one :for(String uid : asList){
+					for (Map<String, Object> map4 : map) {
+						if(map4.get("uid")!=null&&map4.get("uid").equals(Integer.valueOf(uid))){
+							activeCount+=((Long)map4.get("count")).intValue();
+							continue one;
+						}
+					}
+				}
+			}
+			map3.put("activeCount", activeCount);
+		}
+		return  recursionDateCount(ranks,DateUtil.formatStringToDate(DateUtil.getSpecifiedDate(DateUtil.LAST_MONTY), DateUtil.Y_M_D));
+	}
+
+	
+	private List<Map<String, Object>> recursionDateCount(List<Map<String, Object>> data, Date date) throws Exception {
+		List<Map<String, Object>> list = new ArrayList<>();
+		int j=0;
+		Map<String, Object> mapPojo = data.get(j);
+		while(!DateUtil.isSameDate(DateUtil.getNearbyDate(date,-1),new Date())) {
+			Map<String, Object> map=new HashMap<>();
+			Date date2 = DateUtil.formatStringToDate((String)mapPojo.get("rankDate"),"");
+			if(DateUtil.isSameDate(date,date2)){
+				list.add(mapPojo);
+				if(j<data.size()-1){
+					mapPojo = data.get(++j);
+				}
+			}else{
+				map.put("rankDate", DateUtil.formatDate(DateUtil.Y_M_D,date));
+				map.put("count",0);
+				map.put("defalt", 0);
+				map.put("success", 0);
+				map.put("activeCount", 0);
+				list.add(map);
+			}
+			date=DateUtil.getNearbyDate(date,1);
+		}
+		return list;
+	}
+	
+}

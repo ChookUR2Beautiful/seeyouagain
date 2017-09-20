@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.business_statistics.dao.TMicrographTemplateDao" >
+
+  <resultMap id="micrographTemplateMap" type="com.xmniao.xmn.core.business_statistics.entity.TMicrographTemplate" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="sold_times" property="soldTimes" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="serial_no" property="serialNo" jdbcType="INTEGER" />
+    <result column="cover_image" property="coverImage" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+  </resultMap>
+  
+  
+  <sql id="micrographTemplate_column_List" >
+    id, sold_times, title, create_time, update_time, serial_no, cover_image, status
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test=" title != null and title != '' ">
+  		AND title like '%${title}%'
+  	</if>
+  </sql>
+  
+  <select id="getObject" resultMap="micrographTemplateMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="micrographTemplate_column_List" />, 
+    (
+		SELECT
+			GROUP_CONCAT(tag.tag_id SEPARATOR ',')
+		FROM
+			t_micrograph_template_tag tag
+		WHERE
+			tag.template_id = t.id
+	) AS relationTagIds
+    from t_micrograph_template t
+    where id = #{id}
+  </select>
+  
+  
+  <select id="getList" resultMap="micrographTemplateMap" parameterType="com.xmniao.xmn.core.business_statistics.entity.TMicrographTemplate" >
+    select 
+    <include refid="micrographTemplate_column_List" />,
+    (
+		SELECT
+			GROUP_CONCAT(tag.`name` SEPARATOR '、')
+		FROM
+			t_micrograph_template_tag rel
+		LEFT JOIN t_saas_tag tag ON rel.tag_id = tag.id
+		WHERE
+			rel.template_id = t.id
+	) AS relationTags
+    from t_micrograph_template t
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+    <if test="order = 1 ">
+    	ORDER BY update_time desc
+    </if>
+    <if test=" limit != -1 ">
+		LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <select id="count" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.business_statistics.entity.TMicrographTemplate" >
+    select 
+   		count(1)
+    from t_micrograph_template
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+  </select>
+  
+  <delete id="delete" parameterType="java.lang.Object" >
+    delete from t_micrograph_template
+    where id in
+    <foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+	</foreach>
+  </delete>
+  
+  
+  <insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.xmn.core.business_statistics.entity.TMicrographTemplate" >
+    insert into t_micrograph_template
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="soldTimes != null" >
+        sold_times,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="serialNo != null" >
+        serial_no,
+      </if>
+      <if test="coverImage != null" >
+        cover_image,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="soldTimes != null" >
+        #{soldTimes,jdbcType=INTEGER},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=INTEGER},
+      </if>
+      <if test="coverImage != null" >
+        #{coverImage,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.business_statistics.entity.TMicrographTemplate" >
+    update t_micrograph_template
+    <set >
+      <if test="soldTimes != null" >
+        sold_times = #{soldTimes,jdbcType=INTEGER},
+      </if>
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="serialNo != null" >
+        serial_no = #{serialNo,jdbcType=INTEGER},
+      </if>
+      <if test="coverImage != null" >
+        cover_image = #{coverImage,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 批量更新模板状态 -->
+  <update id="updateBatch"  parameterType="map">
+  	UPDATE t_micrograph_template SET `status`=#{status} WHERE id IN
+  	<foreach item="item" index="index" collection="ids"  open="(" separator="," close=") ">
+			 #{item}
+	</foreach>
+  </update>
+  
+</mapper>

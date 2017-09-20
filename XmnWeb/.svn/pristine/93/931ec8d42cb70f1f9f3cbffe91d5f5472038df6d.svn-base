@@ -1,0 +1,149 @@
+package com.xmniao.xmn.core.manor.entity;
+
+import java.util.Date;
+
+import com.xmniao.xmn.core.base.BaseEntity;
+
+public class TManorFlowerRelation extends BaseEntity{
+    /**
+	 * 原花蜜收益管理
+	 */
+	private static final long serialVersionUID = -456878261981937667L;
+
+	private Integer id;
+
+    private Integer type;
+
+    private Date endTime;
+
+    private Integer location;
+
+    private Integer pid;
+
+    private Integer leftNode;
+
+    private Integer rightNode;
+
+    private Integer zid;
+
+    private Integer level;
+
+    private Integer uid;
+
+    private Integer fromUid;
+
+    private Integer state;
+    
+    /*自定义字段区域*/
+    private Integer flowerNumber;
+    
+    public Integer getFlowerNumber() {
+		return flowerNumber;
+	}
+
+	public void setFlowerNumber(Integer flowerNumber) {
+		this.flowerNumber = flowerNumber;
+	}   
+    
+    /*自定义字段区域*/
+    
+	
+	public Integer getId() {
+        return id;
+    }
+
+	public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
+
+    public Integer getLocation() {
+        return location;
+    }
+
+    public void setLocation(Integer location) {
+        this.location = location;
+    }
+
+    public Integer getPid() {
+        return pid;
+    }
+
+    public void setPid(Integer pid) {
+        this.pid = pid;
+    }
+
+    public Integer getLeftNode() {
+        return leftNode;
+    }
+
+    public void setLeftNode(Integer leftNode) {
+        this.leftNode = leftNode;
+    }
+
+    public Integer getRightNode() {
+        return rightNode;
+    }
+
+    public void setRightNode(Integer rightNode) {
+        this.rightNode = rightNode;
+    }
+
+    public Integer getZid() {
+        return zid;
+    }
+
+    public void setZid(Integer zid) {
+        this.zid = zid;
+    }
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
+    }
+
+    public Integer getUid() {
+        return uid;
+    }
+
+    public void setUid(Integer uid) {
+        this.uid = uid;
+    }
+
+    public Integer getFromUid() {
+        return fromUid;
+    }
+
+    public void setFromUid(Integer fromUid) {
+        this.fromUid = fromUid;
+    }
+
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
+    }
+
+    
+    
+}

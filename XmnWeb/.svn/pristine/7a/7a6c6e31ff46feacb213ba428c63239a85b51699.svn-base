@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.system_settings.dao.AuthorityDao">
+
+	<parameterMap type="Authority" id="authority" />
+	
+	<resultMap type="Authority" id="authorityMap">
+		<result column="id" property="id" />
+		<result column="authority_father_id" property="authorityFatherId" />
+		<result column="authority_name" property="authorityName" />
+		<result column="authority_extra" property="authorityExtra" />
+		<result column="authority_refer" property="authorityRefer" />
+		<result column="leaf" property="leaf" />
+		<result column="authority_url" property="authorityUrl" />
+		<result column="authority_sort" property="authoritySort" />
+	</resultMap>
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_authority
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						authority_father_id,
+						authority_name,
+						authority_extra,
+						authority_refer,
+						leaf,
+						authority_url,
+						authority_sort,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.authorityFatherId},
+						 #{item.authorityName},
+						 #{item.authorityExtra},
+						 #{item.authorityRefer},
+						 #{item.leaf},
+						 #{item.authorityUrl},
+						 #{item.authoritySort},
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" parameterMap="authority" >
+		INSERT INTO t_authority
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					id,
+				</if>
+			 	<if test=" null != authorityFatherId">
+					authority_father_id,
+				</if>
+			 	<if test=" null != authorityName and '' != authorityName ">
+					authority_name,
+				</if>
+			 	<if test=" null != authorityExtra and '' != authorityExtra ">
+					authority_extra,
+				</if>
+			 	<if test=" null != authorityRefer and '' != authorityRefer ">
+					authority_refer,
+				</if>
+			 	<if test=" null != leaf">
+					leaf,
+				</if>
+			 	<if test=" null != authorityUrl and '' != authorityUrl ">
+					authority_url,
+				</if>
+			 	<if test=" null != authoritySort">
+					authority_sort,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					 	#{id},
+				</if>
+			 	<if test=" null != authorityFatherId">
+					 	#{authorityFatherId},
+				</if>
+			 	<if test=" null != authorityName and '' != authorityName ">
+					 	#{authorityName},
+				</if>
+			 	<if test=" null != authorityExtra and '' != authorityExtra ">
+					 	#{authorityExtra},
+				</if>
+			 	<if test=" null != authorityRefer and '' != authorityRefer ">
+					 	#{authorityRefer},
+				</if>
+			 	<if test=" null != leaf">
+					 	#{leaf},
+				</if>
+			 	<if test=" null != authorityUrl and '' != authorityUrl ">
+					 	#{authorityUrl},
+				</if>
+			 	<if test=" null != authoritySort">
+					 	#{authoritySort},
+				</if>
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_authority WHERE id IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterMap="authority">
+		UPDATE t_authority
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != id">
+					id = #{id},
+				</if>
+				<if test=" null != authorityFatherId">
+					authority_father_id = #{authorityFatherId},
+				</if>
+				<if test=" null != authorityName and '' != authorityName ">
+					authority_name = #{authorityName},
+				</if>
+				<if test=" null != authorityExtra and '' != authorityExtra ">
+					authority_extra = #{authorityExtra},
+				</if>
+				<if test=" null != authorityRefer and '' != authorityRefer ">
+					authority_refer = #{authorityRefer},
+				</if>
+				<if test=" null != leaf">
+					leaf = #{leaf},
+				</if>
+				<if test=" null != authorityUrl and '' != authorityUrl ">
+					authority_url = #{authorityUrl},
+				</if>
+				<if test=" null != authoritySort">
+					authority_sort = #{authoritySort},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != id and '' != id">
+				id = #{id}
+			</if>
+		</where>
+	</update>
+	
+	<select id="getList" resultMap="authorityMap" parameterMap="authority">
+		SELECT * FROM t_authority
+		<where>
+			is_hide=0
+			<if test=" null != id">
+				AND id = #{id}
+			</if>
+			<if test=" null != authorityFatherId">
+				AND authority_father_id = #{authorityFatherId}
+			</if>
+			<if test=" null != authorityName and '' != authorityName ">
+				AND authority_name LIKE '%${authorityName}%'
+			</if>
+			<if test=" null != authorityExtra and '' != authorityExtra ">
+				AND authority_extra LIKE '%${authorityExtra}%'
+			</if>
+			<if test=" null != authorityRefer and '' != authorityRefer ">
+				AND authority_refer LIKE '%${authorityRefer}%'
+			</if>
+			<if test=" null != leaf">
+				AND leaf = #{leaf}
+			</if>
+			<if test=" null != authorityUrl and '' != authorityUrl ">
+				AND authority_url LIKE '%${authorityUrl}%'
+			</if>
+			<if test=" null != authoritySort">
+				AND authority_sort = #{authoritySort}
+			</if>
+		</where>
+			ORDER BY id DESC  LIMIT ${(page-1)*limit},#{limit}
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="authority">
+		SELECT COUNT(id) FROM t_authority
+		<where>
+			is_hide=0
+			<if test=" null != id">
+				AND id = #{id}
+			</if>
+			<if test=" null != authorityFatherId">
+				AND authority_father_id = #{authorityFatherId}
+			</if>
+			<if test=" null != authorityName and '' != authorityName ">
+				AND authority_name LIKE '%${authorityName}%'
+			</if>
+			<if test=" null != authorityExtra and '' != authorityExtra ">
+				AND authority_extra LIKE '%${authorityExtra}%'
+			</if>
+			<if test=" null != authorityRefer and '' != authorityRefer ">
+				AND authority_refer LIKE '%${authorityRefer}%'
+			</if>
+			<if test=" null != leaf">
+				AND leaf = #{leaf}
+			</if>
+			<if test=" null != authorityUrl and '' != authorityUrl ">
+				AND authority_url LIKE '%${authorityUrl}%'
+			</if>
+			<if test=" null != authoritySort">
+				AND authority_sort = #{authoritySort}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Long">
+		SELECT Max(id) AS VALUE FROM t_authority WHERE is_hide=0
+	</select>
+	
+	<select id="getObject" resultMap="authorityMap" parameterType="Long">
+		SELECT * FROM t_authority WHERE id = #{0}
+	</select>
+	
+	<select id="getAuthority" resultMap="authorityMap" >
+		SELECT * FROM t_authority WHERE is_hide=0 ORDER BY  authority_sort
+	</select>
+	
+</mapper>

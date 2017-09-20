@@ -1,0 +1,167 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<% String path = request.getContextPath(); %>
+<html>
+<head>
+    <title>Title</title>
+    <link rel="stylesheet" href="<%=path%>/resources/zui-1.7.0/css/zui.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="<%=path%>/resources/zui-1.7.0/lib/datatable/zui.datatable.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="<%=path%>/resources/paginator/css/bootstrapv3.css">
+
+</head>
+<body>
+
+<div class="modal fade" id="confirmBox">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <%--<div class="modal-header">--%>
+                <%--<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">关闭</span></button>--%>
+                <%--<h4 class="modal-title">操作提示</h4>--%>
+            <%--</div>--%>
+            <%--<div class="modal-body">--%>
+                <%--<p>确定需要执行删除操作？</p>--%>
+            <%--</div>--%>
+            <%--<div class="modal-footer">--%>
+                <%--<button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>&nbsp;&nbsp;--%>
+                <%--<button type="button" class="btn btn-primary yes">确 定</button>--%>
+            <%--</div>--%>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="panel">
+    <div class="panel-body">
+        <div id="coupon-table" class="datatable show-scroll-slide scrolled-out" style="width: auto"></div>
+        <div class="pull-right"> <ul id='pagination'></ul> </div>
+    </div>
+</div>
+
+
+</body>
+
+
+
+<script type="text/javascript" src="<%=path%>/resources/zui-1.7.0/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="<%=path%>/resources/zui-1.7.0/js/zui.js"></script>
+<script type="text/javascript" src="<%=path%>/resources/paginator/src/bootstrap-paginator.js"></script>
+<script type="text/javascript" src="<%=path%>/resources/zui-1.7.0/lib/datatable/zui.datatable.js"></script>
+<script>
+
+    /** 初始化数据表格 */
+
+    cols = [
+        // 数据表格列头
+        {width: 4, text: '操作', type: 'String', flex: true, colClass: ''},
+        {width: 20, text: '#', type: 'number', flex: true, colClass: ''},
+        {width: 20, text: '用户编号', type: 'number', flex: true, colClass: ''},
+        {width: 30, text: '手机号码', type: 'string', flex: true, colClass: ''},
+        {width: 30, text: '使用状态', type: 'string', flex: true, colClass: ''},
+        {width: 30, text: '获取方式', type: 'string', flex: true, colClass: ''},
+        {width: 40, text: '优惠劵类型', type: 'string', flex: true, colClass: ''},
+        {width: 80, text: '推送时间', type: 'date', flex: true},
+    ]
+    tableOption = {
+        data : {cols : cols, rows:{}},
+//        checkable: true,   // 复选框
+        sortable: false,    // 是否可排序
+        fixedRightWidth : "50%",
+        scrollPos : "in",
+        fixCellHeight :false
+    }
+    $table = $("#coupon-table");
+    $table.datatable(tableOption);
+
+
+
+    /** 初始化分页条 */
+    $.ajax({
+        url:"count.jhtml",
+        success : function(resultData){
+            var paginationOption = {
+                bootstrapMajorVersion:3,
+                currentPage: 1,
+                numberOfPages: 10,
+                totalPages:resultData.context.count / 10 + 1,
+                onPageClicked : function(e,originalEvent,type,page){
+                    // 页码点击事件
+                    loadTableData(page);
+                }
+            }
+            $("#pagination").bootstrapPaginator(paginationOption);
+
+        }
+
+    })
+
+
+
+
+    /** 加载表格数据  page : 页数*/
+    function loadTableData(page){
+        $(".table tr").remove();
+        $.ajax({
+            url : "<%=path%>/coupon/detail/list.jhtml",
+            data : {page :page, limit : 10},
+            success : function (resultData){
+
+                var rows = [];
+                $.each(resultData.context.couponList,function(index,item){
+                    ;
+                    rows.push({checked: false,empty:false ,data: [
+                        item.userStatus == 0 ? "<a href='javascript:void(0)' onclick='deleteCouponDetail(this)' class='center'><i class='icon-trash center'></i></a>" : "",
+                        item.cdid ? item.cdid : "",
+                        item.uid    ? item.uid :"" ,
+                        item.phone  ? item.phone :"",
+                        item.userStatusText ? item.userStatusText : "",
+                        item.getWayText ? item.getWayText : "",
+                        item.ctypeStr   ? item.ctypeStr :"",
+                        item.dateIssue  ? item.dateIssue :""],
+                        id : item.cdid,
+                    });
+                });
+                $table.datatable("load",{cols:cols,rows:rows});
+            }
+        });
+
+
+    }
+
+    loadTableData(1);
+
+
+    /** 删除优惠劵 */
+    function deleteCouponDetail(deleteElem){
+        console.log("删除优惠劵");
+        var cdid = $(deleteElem).parents("tr").attr("data-id");
+        if(cdid){
+            console.log("删除:"+cdid);
+            if(window.confirm("是否删除优惠劵:"+cdid)){
+//                console.log("删除:"+cdid)
+                $.ajax({
+                    url: "deleteCoupon.jhtml",
+                    data : {cdid : cdid},
+                    type: "post",
+                    async: true,
+                    success: function (data) {
+//                        loadTableData(1)
+                        if (data.state == 0) {
+                            $(deleteElem).parents("tr:first").remove();
+                        }else{
+                            alert(data.message);
+                        }
+
+                    },
+                    error: function () {
+                        alert("数据加载失败!");
+                    }
+                });
+
+            }
+        }
+    }
+
+
+</script>
+</html>

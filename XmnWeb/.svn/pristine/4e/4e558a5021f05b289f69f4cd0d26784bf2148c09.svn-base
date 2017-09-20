@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xmniao.xmn.core.fresh.dao.TFreshActivityAuctionDao" >
+
+
+  <resultMap id="freshActivityAuctionMap" type="com.xmniao.xmn.core.fresh.entity.TFreshActivityAuction" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="state" property="state" jdbcType="INTEGER" />
+    <result column="begin_time" property="beginTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="term_time" property="termTime" jdbcType="TIMESTAMP" />
+    <result column="codeId" property="codeid" jdbcType="BIGINT" />
+    <result column="pv_ids" property="pvIds" jdbcType="VARCHAR" />
+    <result column="pv_value" property="pvValue" jdbcType="VARCHAR" />
+    <result column="base_price" property="basePrice" jdbcType="DECIMAL" />
+    <result column="start_price" property="startPrice" jdbcType="DECIMAL" />
+    <result column="scope" property="scope" jdbcType="DECIMAL" />
+    <result column="insurance_price" property="insurancePrice" jdbcType="DECIMAL" />
+    <result column="product_status" property="productStatus" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="proceed_status" property="proceedStatus" jdbcType="INTEGER" />
+  </resultMap>
+  
+  
+  <sql id="freshActivityAuction_column_list" >
+    a.id, a.title, a.state, a.begin_time, a.end_time, a.term_time, a.codeId, a.pv_ids, a.pv_value, a.base_price, 
+    a.start_price, a.scope, a.insurance_price, a.product_status, a.create_time, a.update_time,a.proceed_status
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test="null != title and '' != title">
+  		AND title like '%${title}%'
+  	</if>
+  	<if test="queryStartTime !=null and queryStartTime !='' ">
+	  	<![CDATA[
+			AND	DATE_FORMAT(begin_time, '%Y-%m-%d %H:%i') >= DATE_FORMAT(#{queryStartTime}, '%Y-%m-%d %H:%i')
+	  	]]> 
+  	</if>
+  	<if test="queryEndTime !=null and queryEndTime !='' ">
+  		<![CDATA[
+			AND	DATE_FORMAT(begin_time, '%Y-%m-%d %H:%i') <= DATE_FORMAT(#{queryEndTime}, '%Y-%m-%d %H:%i')
+	  	]]>
+  	</if>
+  	<!-- activityType 活动状态 1 全部 、2 未开始活动 、 3进行中活动 、4 已结束活动(正常结束,强制结束) 、 5 流拍活动 -->
+  	<!-- proceed_status 进行状态 ( 1:未开始  2:进行中  3:已结束  4:流拍) -->
+  	<if test=" 2==activityType ">
+		AND a.state='0'
+	  	AND a.proceed_status='1'
+  	</if>
+  	<if test=" 3==activityType ">
+		AND a.state='0'
+	  	AND a.proceed_status='2'
+  	</if>
+  	<if test=" 4==activityType ">
+		AND a.state !='2'
+		AND a.proceed_status='3'
+  	</if>
+  	<if test=" 5==activityType ">
+		AND a.state='0'
+		AND a.proceed_status='4' 	
+  	</if>
+  </sql>
+  
+  <select id="getObject" resultMap="freshActivityAuctionMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="freshActivityAuction_column_list" />
+    from t_fresh_activity_auction a
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="getList" resultMap="freshActivityAuctionMap" parameterType="com.xmniao.xmn.core.fresh.entity.TFreshActivityAuction" >
+    select 
+	    <include refid="freshActivityAuction_column_list" />,
+	    p.pname AS pname,
+	    r.user_name AS user_name,
+		r.phone AS phone,
+		CONCAT(
+			IFNULL(r.user_name, ''),
+			'(',
+			r.phone,
+			')'
+		) AS winner
+    from t_fresh_activity_auction a
+    LEFT JOIN t_product_info p ON a.codeId = p.codeId
+    LEFT JOIN t_fresh_activity_auction_record r ON a.id = r.activity_id
+	AND r.state = '4'
+    <where>
+    	1=1
+    	AND a.state IN('0','1')
+    	<include refid="whereSQL"></include>
+    </where>
+    <if test="order != -1">
+     	ORDER BY begin_time DESC
+    </if>
+    <if test="limit != -1">
+    	LIMIT ${(page-1)*limit},#{limit}
+    </if>
+  </select>
+  
+  <select id="getAuctionRecordList" resultMap="freshActivityAuctionMap" parameterType="java.util.Map" >
+    SELECT
+		activity_id AS activityId,
+		MAX(rised_price) AS maxPrice,
+		count(id) AS peopleNum
+	FROM
+		t_fresh_activity_auction_record
+	<where>
+		1=1
+		<if test="activityIds != null and activityIds != ''">
+			AND activity_id in
+			<foreach item="item" index="index" collection="activityIds"  open="(" separator="," close=") ">
+		 		#{item}
+			</foreach>
+		</if>
+	</where>
+	GROUP BY activity_id
+  </select>
+  
+  <select id="count" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.fresh.entity.TFreshActivityAuction" >
+    select 
+    	count(id)
+    from t_fresh_activity_auction a
+    <where>
+    	1=1
+    	AND a.state IN('0','1')
+    	<include refid="whereSQL"></include>
+    </where>
+  </select>
+  
+  
+  <delete id="deleteById" parameterType="java.lang.Integer" >
+    delete from t_fresh_activity_auction
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  
+  <insert id="add" parameterType="com.xmniao.xmn.core.fresh.entity.TFreshActivityAuction" >
+    insert into t_fresh_activity_auction
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+      <if test="beginTime != null" >
+        begin_time,
+      </if>
+      <if test="endTime != null" >
+        end_time,
+      </if>
+      <if test="termTime != null" >
+        term_time,
+      </if>
+      <if test="codeid != null" >
+        codeId,
+      </if>
+      <if test="pvIds != null" >
+        pv_ids,
+      </if>
+      <if test="pvValue != null" >
+        pv_value,
+      </if>
+      <if test="basePrice != null" >
+        base_price,
+      </if>
+      <if test="startPrice != null" >
+        start_price,
+      </if>
+      <if test="scope != null" >
+        scope,
+      </if>
+      <if test="insurancePrice != null" >
+        insurance_price,
+      </if>
+      <if test="productStatus != null" >
+        product_status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="beginTime != null" >
+        #{beginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="termTime != null" >
+        #{termTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="codeid != null" >
+        #{codeid,jdbcType=BIGINT},
+      </if>
+      <if test="pvIds != null" >
+        #{pvIds,jdbcType=VARCHAR},
+      </if>
+      <if test="pvValue != null" >
+        #{pvValue,jdbcType=VARCHAR},
+      </if>
+      <if test="basePrice != null" >
+        #{basePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="startPrice != null" >
+        #{startPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="scope != null" >
+        #{scope,jdbcType=DECIMAL},
+      </if>
+      <if test="insurancePrice != null" >
+        #{insurancePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="productStatus != null" >
+        #{productStatus,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.fresh.entity.TFreshActivityAuction" >
+    update t_fresh_activity_auction
+    <set >
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="beginTime != null" >
+        begin_time = #{beginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="termTime != null" >
+        term_time = #{termTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="codeid != null" >
+        codeId = #{codeid,jdbcType=BIGINT},
+      </if>
+      <if test="pvIds != null" >
+        pv_ids = #{pvIds,jdbcType=VARCHAR},
+      </if>
+      <if test="pvValue != null" >
+        pv_value = #{pvValue,jdbcType=VARCHAR},
+      </if>
+      <if test="basePrice != null" >
+        base_price = #{basePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="startPrice != null" >
+        start_price = #{startPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="scope != null" >
+        scope = #{scope,jdbcType=DECIMAL},
+      </if>
+      <if test="insurancePrice != null" >
+        insurance_price = #{insurancePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="productStatus != null" >
+        product_status = #{productStatus,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+</mapper>

@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TExperienceofficerActivityDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.live_anchor.entity.TExperienceofficerActivity" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="record_id" property="recordId" jdbcType="INTEGER" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="sellername" property="sellername" jdbcType="VARCHAR" />
+    <result column="limit_num" property="limitNum" jdbcType="INTEGER" />
+    <result column="remainder_num" property="remainderNum" jdbcType="INTEGER" />
+    <result column="enroll_time" property="enrollTime" jdbcType="TIMESTAMP" />
+    <result column="activity_state" property="activityState" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="zhibo_title" property="zhiboTitle" jdbcType="VARCHAR" />
+    <result column="zhibo_address" property="zhiboAddress" jdbcType="VARCHAR" />
+    <result column="plan_start_date" property="planStartDate" jdbcType="TIMESTAMP" />
+    <result column="userInfo" property="userInfo" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, record_id, sellerid, sellername, limit_num,remainder_num, enroll_time, activity_state, create_time, 
+    description
+  </sql>
+  <select id="getObject" resultMap="BaseResultMap" parameterType="Long" >
+    select 
+    	activity.*,live.zhibo_address,live.plan_start_date
+    from t_experienceofficer_activity activity
+    left join t_live_record live
+    on activity.record_id=live.id
+    where activity.id = #{id,jdbcType=INTEGER}
+  </select>
+  
+   <select id="getList" resultMap="BaseResultMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.TExperienceofficerActivity" >
+    select 
+    	activity.*,record.zhibo_title,record.plan_start_date,enroll.userInfo
+    from t_experienceofficer_activity activity
+    left join t_live_record record
+    on activity.record_id=record.id    
+    left join (SELECT activity_id,GROUP_CONCAT(phone,"(",nname,")") userInfo FROM `t_experienceofficer_enroll_record` WHERE enroll_state =1 GROUP BY activity_id) enroll
+    on activity.id=enroll.activity_id
+    where 1=1
+    <if test="sellername!=null and sellername!=''">and activity.sellername like '${sellername}%'</if>
+    <if test="id!=null">and activity.id=#{id}</if>
+    <if test="zhiboTitle!=null and zhiboTitle!=''">and record.zhibo_title like '${zhiboTitle}%'</if>
+    <if test="activityState!=null">and activity.activityState=#{activityState} </if>
+    order by create_time desc
+    <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+    <select id="count" resultType="Long" parameterType="com.xmniao.xmn.core.live_anchor.entity.TExperienceofficerActivity" >
+    select 
+    	count(*)
+    from t_experienceofficer_activity activity
+    left join t_live_record record
+    on activity.record_id=record.id
+    where 1=1
+    <if test="sellername!=null and sellername!=''">and activity.sellername like '${sellername}%'</if>
+    <if test="id!=null">and activity.id=#{id}</if>
+    <if test="zhiboTitle!=null and zhiboTitle!=''">and record.zhibo_title like '${zhiboTitle}%'</if>
+    <if test="activityState!=null">and activity.activityState=#{activityState} </if>
+  </select>
+
+   <select id="getListByMap" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    	activity.*,record.zhibo_title,record.plan_start_date,enroll.userInfo
+    from t_experienceofficer_activity activity
+    left join t_live_record record
+    on activity.record_id=record.id    
+    left join (SELECT activity_id,GROUP_CONCAT(phone,"(",nname,")") userInfo FROM `t_experienceofficer_enroll_record` WHERE enroll_state =1 GROUP BY activity_id) enroll
+    on activity.id=enroll.activity_id
+    where 1=1
+    <if test="sellername!=null and sellername!=''">and activity.sellername like '${sellername}%'</if>
+    <if test="zhiboTitle!=null and zhiboTitle!=''">and record.zhibo_title like '${zhiboTitle}%'</if>
+    <if test="planStartDate!=null and planStartDate!=''">and date_format(record.plan_start_date,'%Y-%m-%d') = date_format(#{planStartDate},'%Y-%m-%d')</if>
+    <if test="state!=null and state!=''">
+    <!-- 1.未开始 2.抢位中 3.已售罄 4.已结束 5.已取消-->
+        <if test="state==5">
+    		and activity.activity_state=2
+    	</if>
+        <if test="state==4">
+    		and activity.activity_state=1
+    		and record.plan_start_date &lt;=#{now}
+    	</if>
+    	<if test="state==1">
+    		and activity.activity_state=1
+    		and activity.enroll_time &gt;=#{now}
+    	</if>
+    	<if test="state==2">
+    		and activity.activity_state=1
+    		and activity.remainder_num &gt;0
+    		and activity.enroll_time &lt;=#{now}
+    		and record.plan_start_date &gt;#{now}
+    	</if>
+    	<if test="state==3">
+    		and activity.activity_state=1
+    		and activity.remainder_num &lt;=0
+    		and record.plan_start_date &gt;#{now}
+    	</if>
+    </if>
+    order by create_time desc
+    <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+    <select id="countByMap" resultType="Long" parameterType="map" >
+    select 
+    	count(*)
+    from t_experienceofficer_activity activity
+    left join t_live_record record
+    on activity.record_id=record.id
+    where 1=1
+    <if test="sellername!=null and sellername!=''">and activity.sellername like '${sellername}%'</if>
+    <if test="zhiboTitle!=null and zhiboTitle!=''">and record.zhibo_title like '${zhiboTitle}%'</if>
+    <if test="state!=null and state!=''">
+    <!-- 1.未开始 2.抢位中 3.已售罄 4.已结束 5.已取消-->
+        <if test="state==5">
+    		and activity.activity_state=2
+    	</if>
+        <if test="state==4">
+    		and activity.activity_state=1
+    		and record.plan_start_date &lt;=#{now}
+    	</if>
+    	<if test="state==1">
+    		and activity.activity_state=1
+    		and activity.enroll_time &gt;=#{now}
+    	</if>
+    	<if test="state==2">
+    		and activity.activity_state=1
+    		and activity.remainder_num &gt;0
+    		and activity.enroll_time &lt;=#{now}
+    		and record.plan_start_date &gt;#{now}
+    	</if>
+    	<if test="state==3">
+    		and activity.activity_state=1
+    		and activity.remainder_num &lt;=0
+    		and record.plan_start_date &gt;#{now}
+    	</if>
+    </if>
+  </select>
+  
+  <insert id="add" parameterType="com.xmniao.xmn.core.live_anchor.entity.TExperienceofficerActivity" >
+    insert into t_experienceofficer_activity
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="recordId != null" >
+        record_id,
+      </if>
+      <if test="sellerid != null" >
+        sellerid,
+      </if>
+      <if test="sellername != null" >
+        sellername,
+      </if>
+      <if test="limitNum != null" >
+        limit_num,
+      </if>
+      <if test="remainderNum != null" >
+        remainder_num,
+      </if>
+      <if test="enrollTime != null" >
+        enroll_time,
+      </if>
+      <if test="activityState != null" >
+        activity_state,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="recordId != null" >
+        #{recordId,jdbcType=INTEGER},
+      </if>
+      <if test="sellerid != null" >
+        #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="sellername != null" >
+        #{sellername,jdbcType=VARCHAR},
+      </if>
+      <if test="limitNum != null" >
+        #{limitNum,jdbcType=INTEGER},
+      </if>
+      <if test="remainderNum != null" >
+        #{remainderNum},
+      </if>
+      <if test="enrollTime != null" >
+        #{enrollTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="activityState != null" >
+        #{activityState,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.live_anchor.entity.TExperienceofficerActivity" >
+    update t_experienceofficer_activity
+    <set >
+      <if test="recordId != null" >
+        record_id = #{recordId,jdbcType=INTEGER},
+      </if>
+      <if test="sellerid != null" >
+        sellerid = #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="sellername != null" >
+        sellername = #{sellername,jdbcType=VARCHAR},
+      </if>
+      <if test="limitNum != null" >
+        limit_num = #{limitNum,jdbcType=INTEGER},
+        remainder_num=remainder_num+(#{limitNum}-#{oldLimitNum}),
+      </if>
+      <if test="enrollTime != null" >
+      	enroll_time = #{enrollTime},
+      </if>
+      <if test="activityState != null" >
+        activity_state = #{activityState,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+   <update id="updateRemainderNum" parameterType="com.xmniao.xmn.core.live_anchor.entity.TExperienceofficerActivity" >
+    update t_experienceofficer_activity
+    <set >
+      	remainder_num=remainder_num-#{remainderNum}
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+    and remainder_num>#{remainderNum}
+  </update>
+  
+
+  <resultMap id="EnrollRecordMap" type="com.xmniao.xmn.core.live_anchor.entity.TExperienceofficerEnrollRecord" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="verification_code" property="verificationCode" jdbcType="VARCHAR" />
+    <result column="activity_id" property="activityId" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="nname" property="nname" jdbcType="VARCHAR" />
+    <result column="enroll_time" property="enrollTime" jdbcType="TIMESTAMP" />
+    <result column="enroll_state" property="enrollState" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Enroll_Record_List" >
+    id, verification_code, activity_id, uid, phone, nname, enroll_time, enroll_state, 
+    update_time, description, is_sms
+  </sql>
+  
+	<select id="getEnrollRecordList" resultMap="EnrollRecordMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.TExperienceofficerEnrollRecord">
+	select 
+		<include refid="Enroll_Record_List" /> 
+	from t_experienceofficer_enroll_record
+	where 1=1
+		<if test="uid != null">and uid=#{uid}</if>
+		<if test="activityId != null">and activity_id=#{activityId}</if>
+		<if test="phone != null and phone !=''">and phone like concat(#{phone},"%")</if>
+		<if test="enrollState != null">and enroll_state=#{enrollState}</if>
+	</select>
+	
+	<update id="updateEnrollRecord"  parameterType="Map">
+	update t_experienceofficer_enroll_record
+	set
+	<trim suffixOverrides=",">
+		<if test="newActivityId != null">activity_id=#{newActivityId},</if>
+		<if test="newEnrollState != null">enroll_state=#{newEnrollState},</if>
+		<if test="description !=null and description!=''">description=#{description},</if>
+		<if test="updateTime !=null">update_time=#{updateTime},</if>
+	</trim>	
+	where 1=1
+		<if test="activityId != null">and activity_id=#{activityId}</if>
+		<if test="enrollState != null">and enroll_state=#{enrollState}</if>
+	</update>
+</mapper>

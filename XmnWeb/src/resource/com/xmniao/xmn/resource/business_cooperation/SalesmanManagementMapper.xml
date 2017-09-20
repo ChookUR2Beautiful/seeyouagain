@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.business_cooperation.dao.SalesmanManagementDao">
+    <!-- 合作商业务员参数和结果集 -->
+    <parameterMap type="Staff" id="staff" />
+	<resultMap type="Staff" id="staffMap">
+		<result column="staffid" property="staffid" />
+		<result column="corporate" property="corporate" />
+		<result column="jointid" property="jointid" />
+		<result column="category" property="category" />
+		<result column="fullname" property="fullname" />
+		<result column="sex" property="sex" />
+		<result column="nickname" property="nickname" />
+		<result column="headurl" property="headurl" />
+		<result column="phoneid" property="phoneid" />
+		<result column="password" property="password" />
+		<result column="quota" property="quota" />
+		<result column="area" property="area" />
+		<result column="areaTitle" property="areaTitle" />
+		<result column="status" property="status" />
+		<result column="sdate" property="sdate" />
+		<result column="imei" property="imei" />
+		<result column="remarks" property="remarks" />
+		<result column="amount" property="amount" />
+		<result column="baseagio" property="baseagio" />
+	</resultMap>
+	<!-- 合作商参数和结果集 -->
+	<parameterMap type="Joint" id="joint" />
+	<resultMap type="Joint" id="jointMap">
+		<result column="jointid" property="jointid" />
+		<result column="corporate" property="corporate" />
+		<result column="legalperson" property="legalperson" />
+		<result column="idnumber" property="idnumber" />
+		<result column="idnumberurl" property="idnumberurl" />
+		<result column="license" property="license" />
+		<result column="licenseurl" property="licenseurl" />
+		<result column="city" property="city" />
+		<result column="area" property="area" />
+		<result column="address" property="address" />
+		<result column="status" property="status" />
+		<result column="Industry" property="industry" />
+		<result column="sdate" property="sdate" />
+		<result column="edate" property="edate" />
+		<result column="startnum" property="startnum" />
+		<result column="percentage" property="percentage" />
+		<result column="logo" property="logo" />
+		<result column="remarks" property="remarks" />
+		<result column="phoneid" property="phoneid" />
+		<result column="applicant" property="applicant" />
+		<result column="number" property="number" />
+		<result column="cityTitle" property="cityTitle" />
+		<result column="areaTitle" property="areaTitle" />
+		<result column="areaNum" property="areaNum" />
+		<result column="sellerNum" property="sellerNum" />
+		<result column="agreeNum" property="agreeNum" />
+		<result column="loginAccount" property="loginAccount" />
+		<result column="staffid" property="staffid" />
+	</resultMap>
+	
+	<!-- 添加合作商业务员 -->
+	<insert id="addReturnId" useGeneratedKeys="true" keyProperty="staffid" keyColumn="staffid" parameterMap="staff" >
+		INSERT INTO t_staff
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != staffid">
+					staffid,
+				</if>
+			 	<if test=" null != jointid">
+					jointid,
+				</if>
+			 	<if test=" null != category">
+					category,
+				</if>
+			 	<if test=" null != fullname">
+					fullname,
+				</if>
+			 	<if test=" null != sex">
+					sex,
+				</if>
+			 	<if test=" null != nickname">
+					nickname,
+				</if>
+			 	<if test=" null != headurl and '' != headurl ">
+					headurl,
+				</if>
+			 	<if test=" null != phoneid and '' != phoneid ">
+					phoneid,
+				</if>
+			 	<if test=" null != password and '' != password ">
+					password,
+				</if>
+			 	<if test=" null != quota">
+					quota,
+				</if>
+			 	<if test=" null != area and '' != area ">
+					area,
+				</if>
+			 	<if test=" null != status">
+					status,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+			 	<if test=" null != imei">
+					imei,
+				</if>
+			 	<if test=" null != remarks and '' != remarks ">
+					remarks,
+				</if>
+			 	<if test=" null != amount">
+					amount,
+				</if>
+			 	<if test=" null != baseagio">
+					baseagio,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != staffid">
+					 	#{staffid},
+				</if>
+			 	<if test=" null != jointid">
+					 	#{jointid},
+				</if>
+			 	<if test=" null != category">
+					 	#{category},
+				</if>
+			 	<if test=" null != fullname ">
+					 	#{fullname},
+				</if>
+			 	<if test=" null != sex">
+					 	#{sex},
+				</if>
+			 	<if test=" null != nickname">
+					 	#{nickname},
+				</if>
+			 	<if test=" null != headurl and '' != headurl ">
+					 	#{headurl},
+				</if>
+			 	<if test=" null != phoneid and '' != phoneid ">
+					 	#{phoneid},
+				</if>
+			 	<if test=" null != password and '' != password ">
+					 	#{password},
+				</if>
+			 	<if test=" null != quota">
+					 	#{quota},
+				</if>
+			 	<if test=" null != area and '' != area ">
+					 	#{area},
+				</if>
+			 	<if test=" null != status">
+					 	#{status},
+				</if>
+			 	<if test=" null != sdate">
+					 	#{sdate},
+				</if>
+			 	<if test=" null != imei">
+					 	#{imei},
+				</if>
+			 	<if test=" null != remarks and '' != remarks ">
+					 	#{remarks},
+				</if>
+			 	<if test=" null != amount">
+					 	#{amount},
+				</if>
+			 	<if test=" null != baseagio">
+					 	#{baseagio},
+				</if>
+		</trim>
+	</insert>
+	
+	<!-- 修改合作商业务员 -->
+	<update id="update" parameterMap="staff">
+		UPDATE `t_staff`
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != fullname and '' != fullname">
+					`t_staff`.fullname = #{fullname},
+				</if>
+				<if test=" null != nickname and '' != nickname">
+					`t_staff`.`nickname` = #{nickname},
+				</if>
+				<if test=" null != sex">
+					`t_staff`.`sex` = #{sex},
+				</if>
+				<if test=" null != nickname">
+					nickname = #{nickname},
+				</if>
+				<if test=" null != password">
+					`t_staff`.`password` = #{password},
+				</if>
+				<if test=" null != area and '' != area ">
+					`t_staff`.`area` = #{area},
+				</if>
+				<if test=" null != status">
+					`t_staff`.`status` = #{status},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != staffid">
+				`t_staff`.`staffid` = #{staffid}
+			</if>
+		</where>
+	</update>
+	
+	<!-- 查询合作商业务员 -->
+	<select id="getSalesman" resultMap="staffMap" parameterMap="joint">
+		SELECT staff.*,joint.corporate,(SELECT GROUP_CONCAT(a.title) FROM t_area a where FIND_IN_SET(a.area_id,REPLACE(staff.AREA, ';', ','))) as areaTitle FROM t_staff staff,(SELECT * FROM t_joint
+		<where>
+			1=1
+			<if test=" null != jointid">
+				AND jointid = ${jointid}
+			</if>
+			<if test=" null != corporate and '' != corporate ">
+				AND corporate LIKE '%${corporate}%'
+			</if>
+		</where>
+		 )joint WHERE joint.jointid=staff.`jointid` AND staff.category !=2 ORDER BY staffid DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<!-- 查询业务员记录条数 -->
+	<select id="getSalesmanCount" resultType="Long" parameterMap="joint">
+		SELECT COUNT(*) FROM t_staff staff,(SELECT * FROM t_joint
+		<where>
+			1=1
+			<if test=" null != jointid">
+				AND jointid = ${jointid}
+			</if>
+			<if test=" null != corporate and '' != corporate ">
+				AND corporate LIKE '%${corporate}%'
+			</if>
+		</where>
+		 )joint WHERE joint.jointid=staff.`jointid` AND staff.category !=2
+	</select>
+	<!-- 获取下拉列表 -->
+	<select id="getJointList" resultMap="jointMap">
+		SELECT t.jointid, t.corporate 
+		from t_joint t
+	</select>
+	<!-- 根据业务员ID获取业务员记录用于初始化修改页面 -->
+	<select id="getSalesmanById" resultMap="staffMap" parameterType="Long">
+		SELECT t_staff.*,`t_joint`.`jointid`,`t_joint`.`corporate` FROM t_staff LEFT JOIN `t_joint` ON t_staff.`jointid`=t_joint.`jointid` WHERE t_staff.`staffid` = #{0}
+	</select>
+	<!-- 验证业务员账号是否存在 -->
+	<select id="vailStaff" resultType="Integer" parameterType="Long">
+		SELECT COUNT(1) FROM `t_staff` WHERE `t_staff`.`phoneid` = #{0}
+	</select>
+</mapper>

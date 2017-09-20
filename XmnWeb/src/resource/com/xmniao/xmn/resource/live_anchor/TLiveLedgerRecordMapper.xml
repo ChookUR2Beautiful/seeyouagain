@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TLiveLedgerRecordDao" >
+
+
+  <resultMap id="liveLedgerRecordMap" type="com.xmniao.xmn.core.live_anchor.entity.TLiveLedgerRecord" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="uid_role" property="uidRole" jdbcType="INTEGER" />
+    <result column="ledger_amount" property="ledgerAmount" jdbcType="DECIMAL" />
+    <result column="real_ledger_amount" property="realLedgerAmount" jdbcType="DECIMAL" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    <result column="ledger_source" property="ledgerSource" jdbcType="INTEGER" />
+    <result column="ledger_source_info" property="ledgerSourceInfo" jdbcType="VARCHAR" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="gived_gift_id" property="givedGiftId" jdbcType="INTEGER" />
+    <result column="redpacket_rocord_date" property="redpacketRocordDate" jdbcType="VARCHAR" />
+    <result column="ledger_uid" property="ledgerUid" jdbcType="INTEGER" />
+  </resultMap>
+  
+  
+  <sql id="liveLedgerRecord_column_list" >
+    id, uid, uid_role, ledger_amount, real_ledger_amount, status, create_date, update_date, 
+    ledger_source, ledger_source_info, order_no, gived_gift_id, redpacket_rocord_date, 
+    ledger_uid
+  </sql>
+  
+  <sql id="whereSQL">
+  	<!-- 分账记录来源: 1 打赏 2 推荐 3 红包 -->
+  	<if test="ledgerSource != null and ledgerSource != ''">
+  		and ledger_source=#{ledgerSource}
+  	</if>
+  	<if test="status != null and status != ''">
+  		and status=#{status}
+  	</if>
+  	<if test="startTime != null and startTime != ''">
+	  	 <![CDATA[
+	  		and redpacket_rocord_date >= #{startTime}
+  		]]> 
+  	</if>
+  	<if test="endTime != null and endTime != ''">
+	  	<![CDATA[
+	  		and redpacket_rocord_date <= #{endTime}
+  		]]> 
+  	</if>
+  	
+  </sql>
+  
+  
+  <select id="getList" resultMap="liveLedgerRecordMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveLedgerRecord" >
+    select 
+    <include refid="liveLedgerRecord_column_list" />
+    from t_live_ledger_record
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+    <if test="order != -1">
+    	order by redpacket_rocord_date desc
+    </if>
+    <if test="limit != -1">
+    	limit ${limit*(page-1)},#{limit}
+    </if>
+  </select>
+  
+  <select id="count" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveLedgerRecord" >
+    select 
+    	count(1)
+    from t_live_ledger_record
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+  </select>
+  
+  
+  
+</mapper>

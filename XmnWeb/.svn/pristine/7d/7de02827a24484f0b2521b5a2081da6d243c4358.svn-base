@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.business_area.dao.BusinessAreaDao">
+
+	<parameterMap type="BusinessArea" id="businessArea" />
+	
+	<resultMap type="BusinessArea" id="businessAreaMap">
+
+		<result column="title" property="title" />
+		<result column="cityName" property="cityName" />
+		<result column="areaCount" property="areaCount" />
+		<result column="businessCount" property="businessCount" />
+		<result column="jointCount" property="jointCount" />
+		<result column="sellerSignCount" property="sellerSignCount" />		
+		<result column="teamName" property="teamName" />
+		<result column="registerRecordCount" property="registerRecordCount" />
+		<result column="sellerAuditCount" property="sellerAuditCount" />
+		<result column="sellerNoValidationCount" property="sellerNoValidationCount" />
+		<result column="userCount" property="userCount" />
+		<result column="nnameCount" property="nnameCount" />
+		<result column="consumeMoney" property="consumeMoney" />
+		<result column="rebateMoney" property="rebateMoney" />
+		<result column="commissionMoney" property="commissionMoney" />
+		<result column="cityNameid" property="cityNameid" />
+		<result column="shenNameid" property="shenNameid" />
+		<result column="areaName" property="areaName" />
+		<result column="businessName" property="businessName" />
+		<result column="cooperator" property="cooperator" />
+		<result column="business" property="business" />
+	</resultMap>
+	
+	<select id="getBusinessAreaByid" resultMap="businessAreaMap" parameterType="Long">
+		<!-- SELECT * FROM t_seller_landmark WHERE sellerid = #{0} -->
+		
+		  SELECT  dqinfo.*, IFNULL(sqinfo.sqsl, 0) AS businessCount
+	      FROM
+	         (SELECT tp.title AS title,tp.area_id AS tpareaid,tc.title AS cityName,tc.area_id AS cityNameid,
+	                 IFNULL(ta.area_id, - 1) AS qyid,COUNT(tc.area_id) AS areaCount 
+	         FROM
+			     (SELECT t.area_id,t.title,t.pid FROM t_area t 
+			     FORCE INDEX(pid)
+			     WHERE t.pid = 0) tp 
+			     LEFT JOIN (SELECT  t.pid,t.area_id,t.title FROM t_area t) tc ON tc.pid = tp.area_id
+			     LEFT JOIN (SELECT  t.pid,t.area_id,t.title FROM t_area t) ta ON ta.pid = tc.area_id
+			 GROUP BY tc.area_id) AS dqinfo   		  
+	       LEFT JOIN 
+			    (SELECT (ta.pid) AS sqpid,SUM(sq.sqs) AS sqsl 
+			     FROM
+				   (SELECT area_id, COUNT(area_id) AS sqs FROM t_business 
+				   FORCE INDEX(Indext_business)
+				   GROUP BY area_id) AS sq 
+				   LEFT JOIN t_area ta  ON sq.area_id = ta.area_id 
+		  GROUP BY ta.pid) AS sqinfo 
+	      ON dqinfo.cityNameid = sqinfo.sqpid
+         
+ 	    <where>
+			1=1	AND dqinfo.cityNameid = #{id}
+					
+		 </where> 
+			<!--  GROUP BY tc.area_id  -->		
+	</select>
+		
+	<select id="getList" resultMap="businessAreaMap" parameterMap="businessArea">
+	   SELECT  dqinfo.*, IFNULL(sqinfo.sqsl, 0) AS businessCount
+      FROM
+         (SELECT tp.title AS title,tp.area_id AS tpareaid,tc.title AS cityName,tc.area_id AS cityNameid,
+                 IFNULL(ta.area_id, - 1) AS qyid,COUNT(tc.area_id) AS areaCount 
+         FROM
+		     (SELECT  t.area_id,t.title,t.pid FROM t_area t 
+		     FORCE INDEX(pid)
+		     WHERE t.pid = 0) tp 
+		     LEFT JOIN (SELECT  t.pid,t.area_id,t.title FROM t_area t) tc ON tc.pid = tp.area_id
+		     LEFT JOIN (SELECT  t.pid,t.area_id,t.title FROM t_area t) ta ON ta.pid = tc.area_id
+		 GROUP BY tc.area_id) AS dqinfo   		  
+       LEFT JOIN 
+		    (SELECT (ta.pid) AS sqpid,SUM(sq.sqs) AS sqsl 
+		     FROM
+			   (SELECT area_id, COUNT(area_id) AS sqs FROM t_business 
+			   FORCE INDEX(Indext_business)
+			   GROUP BY area_id) AS sq 
+			   LEFT JOIN t_area ta  ON sq.area_id = ta.area_id 
+	  GROUP BY ta.pid) AS sqinfo 
+      ON dqinfo.cityNameid = sqinfo.sqpid          
+		<where>
+			1=1
+		    <if test=" null != shenNameid">
+				AND dqinfo.tpareaid = #{shenNameid}
+			</if> 			
+			<if test=" null != cityNameid">
+				AND dqinfo.cityNameid = #{cityNameid}
+			</if>			
+		</where> 
+			<!--  GROUP BY tc.area_id  -->
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="businessArea">
+		SELECT COUNT(1)  FROM
+					( SELECT  dqinfo.*, IFNULL(sqinfo.sqsl, 0) AS businessCount
+        FROM
+           (SELECT tp.title AS title,tp.area_id AS tpareaid,tc.title AS cityName,tc.area_id AS cityNameid,
+                 IFNULL(ta.area_id, - 1) AS qyid,COUNT(tc.area_id) AS areaCount 
+           FROM
+		       (SELECT  t.area_id,t.title,t.pid  FROM t_area t 
+		       FORCE INDEX (pid)
+		       WHERE t.pid = 0) tp 
+		       LEFT JOIN (SELECT  t.pid,t.area_id,t.title FROM t_area t) tc ON tc.pid = tp.area_id 
+		       LEFT JOIN (SELECT  t.pid,t.area_id,t.title FROM t_area t) ta ON ta.pid = tc.area_id 
+		  GROUP BY tc.area_id) AS dqinfo   		  
+          LEFT JOIN 
+		      (SELECT (ta.pid) AS sqpid,SUM(sq.sqs) AS sqsl 
+		       FROM
+			     (SELECT area_id, COUNT(area_id) AS sqs FROM t_business 
+			     FORCE INDEX (Indext_business) 
+			     GROUP BY area_id) AS sq 
+			     LEFT JOIN t_area ta  ON sq.area_id = ta.area_id 
+	     GROUP BY ta.pid) AS sqinfo 
+         ON dqinfo.cityNameid = sqinfo.sqpid   
+					) biao
+		<where>
+			1=1
+		   <if test=" null != shenNameid">
+				AND biao.tpareaid = #{shenNameid}
+			</if>		
+			<if test=" null != cityNameid">
+				AND biao.cityNameid = #{cityNameid}
+			</if>					
+		</where> 
+	</select>
+	
+	<!-- 统计合作商数根据城市id关联 -->
+	<select id="getAreaTjointCount" resultMap="businessAreaMap" parameterMap="businessArea">
+	   SELECT tj.city as cityNameid,COUNT(tj.city) AS jointCount FROM (
+			SELECT tp.area_id AS tpareaids,tp.title AS title,tc.title AS cityName ,tc.area_id AS tcareaid
+			FROM
+  				(SELECT t.area_id,t.title,t.pid FROM t_area t WHERE t.pid = 0) tp 
+           LEFT JOIN (SELECT  t.pid,t.area_id,t.title FROM t_area t) tc 
+           ON tc.pid = tp.area_id  
+           GROUP BY tc.area_id 
+       ) AS cbiao  	
+       LEFT JOIN t_joint  tj ON cbiao.tcareaid=tj.city
+       <where>
+			1=1
+			<if test=" null != shenNameid">
+				AND cbiao.tpareaids = #{shenNameid}
+			</if>			
+			<if test=" null != cityNameid">
+				AND cbiao.tcareaid = #{cityNameid}
+			</if>
+	  </where> 		
+	   GROUP BY cbiao.tcareaid		  
+	</select>
+	
+	<!-- 统计商家（已签约、审核中、未验证）数，根据城市id关联  (0未验证,1审核中,2未通过,3已签约,4未签约)-->
+	<select id="getAreaTSellerCount" resultMap="businessAreaMap" parameterMap="businessArea">
+	  SELECT cbiao.tcareaid,
+		 (SELECT COUNT(1) FROM t_seller t WHERE t.city = cbiao.tcareaid AND t.status=3)  AS sellerSignCount,
+ 		 (SELECT COUNT(1) FROM t_seller t WHERE t.city = cbiao.tcareaid AND t.status=1 )  AS sellerAuditCount
+ 		 <!-- (SELECT COUNT(1) FROM t_seller t WHERE t.city = cbiao.tcareaid AND t.status=0 )  AS sellerNoValidationCount -->
+	  FROM (
+	        SELECT tp.area_id AS tpareaids, tp.title AS title,tc.title AS cityName ,tc.area_id AS tcareaid
+	       FROM
+		   (SELECT t.area_id,t.title,t.pid FROM t_area t 
+		  WHERE t.pid = 0) tp 
+	      LEFT JOIN t_area tc 
+	      ON tc.pid = tp.area_id  
+	      GROUP BY tc.area_id 
+     ) AS cbiao
+       <where>
+			1=1
+			<if test=" null != shenNameid">
+				AND cbiao.tpareaids = #{shenNameid}
+			</if>
+			
+			<if test=" null != cityNameid">
+				AND cbiao.tcareaid = #{cityNameid}
+			</if>
+	  </where> 		
+	 GROUP BY cbiao.tcareaid	  
+	</select>
+	
+	<!-- 统计合作商下的员工的签到数-->
+	<select id="getAreaTregisterRecordCount" resultMap="businessAreaMap" parameterMap="businessArea">
+	  SELECT tj.city AS cityNameid,COUNT(trr.staffid) AS registerRecordCount
+       FROM (
+			SELECT tp.area_id AS tpareaids, tp.title AS title,tc.title AS cityName ,tc.area_id AS tcareaid
+			FROM
+  				(SELECT t.area_id,t.title,t.pid FROM t_area t WHERE t.pid = 0) tp 
+           LEFT JOIN t_area tc 
+           ON tc.pid = tp.area_id  
+           GROUP BY tc.area_id 
+       ) AS cbiao  	
+       LEFT JOIN t_joint  tj ON cbiao.tcareaid=tj.city
+       LEFT JOIN t_staff tsuser ON tsuser.jointid=tj.jointid
+       LEFT JOIN t_register_record trr ON trr.staffid=tsuser.staffid
+       <where>
+			1=1
+			<if test=" null != shenNameid">
+				AND cbiao.tpareaids = #{shenNameid}
+			</if>
+			<if test=" null != cityNameid">
+				AND cbiao.tcareaid = #{cityNameid}
+			</if>
+	  </where> 		
+	   GROUP BY cbiao.tcareaid	 
+	</select>
+	<!-- 新增需求：统计数据下加链接跳转  需要加链接的统计数据：区域、商圈、合作商、已签约数-->
+	<!-- 区域显示 -->
+	<select id="areaInfo" resultMap="businessAreaMap" parameterMap="businessArea">
+		SELECT  tp.title AS title,
+		        tp.area_id AS pArea_id,
+		        tc.title  AS cityName,
+		        tc.area_id AS cArea_id,
+		        ta.title AS areaName,
+		        ta.area_id AS aArea_id
+		FROM 
+		(SELECT * FROM t_area t WHERE t.pid = 0) tp 
+		LEFT JOIN 
+		t_area tc ON tc.pid = tp.area_id 
+		LEFT JOIN 
+		t_area ta ON ta.pid = tc.area_id 
+		WHERE tc.area_id = #{cityNameid}
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<!-- 统计区域显示的数量用做分页 -->
+	<select id="areaInfoCount" resultType="Long" parameterMap="businessArea">
+	   SELECT  count(1)
+		FROM 
+		(SELECT * FROM t_area t WHERE t.pid = 0) tp 
+		LEFT JOIN 
+		t_area tc ON tc.pid = tp.area_id 
+		LEFT JOIN 
+		t_area ta ON ta.pid = tc.area_id 
+		WHERE tc.area_id = #{cityNameid}
+	</select>
+	<!-- 查询该区域商圈数并显示 -->
+	<select id="businessInfo" resultMap="businessAreaMap" parameterMap="businessArea">
+		SELECT
+			tp.title AS title,
+			tp.area_id AS pArea_id,
+			tc.title AS cityName,
+			tc.area_id AS cityNameid,
+			ta.title AS areaName,
+			ta.area_id AS aArea_id,
+			tb.title AS businessName,
+			tb.bid
+		FROM
+			(
+				SELECT
+					t.area_id,t.title,t.pid
+				FROM
+					t_area t
+				WHERE
+					t.pid = 0
+			) tp
+		LEFT JOIN t_area tc ON tc.pid = tp.area_id
+		LEFT JOIN t_area ta ON ta.pid = tc.area_id
+		LEFT JOIN t_business tb ON ta.area_id = tb.area_id
+		WHERE
+			tc.area_id = #{cityNameid}
+		AND tb.bid IS NOT NULL
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<!-- 统计商圈数量做分页 -->
+	<select id="businessInfoCount" resultType="Long" parameterMap="businessArea">
+		SELECT
+				count(1)
+			FROM
+				(
+					SELECT
+						t.area_id,t.title,t.pid
+					FROM
+						t_area t
+					WHERE
+						t.pid = 0
+				) tp
+			LEFT JOIN t_area tc ON tc.pid = tp.area_id
+			LEFT JOIN t_area ta ON ta.pid = tc.area_id
+			LEFT JOIN t_business tb ON ta.area_id = tb.area_id
+			WHERE
+				tc.area_id = #{cityNameid}
+			AND tb.bid IS NOT NULL
+	</select>
+	<!-- 查询该区域合作商并显示 -->
+	<select id="cooperatorInfo" resultMap="businessAreaMap" parameterMap="businessArea">
+		SELECT
+			tp.title AS Title,
+			tp.area_id AS pArea_id,
+			tc.title AS cityName,
+			tc.area_id AS cArea_id,
+			ta.title AS areaName,
+			ta.area_id AS aArea_id,
+			tj.corporate as cooperator
+		FROM
+			(
+				SELECT
+					t.area_id,t.title,t.pid
+				FROM
+					t_area t
+				WHERE
+					t.pid = 0
+			) tp
+		LEFT JOIN t_area tc ON tc.pid = tp.area_id
+		LEFT JOIN t_area ta ON ta.pid = tc.area_id
+		LEFT JOIN t_joint tj ON FIND_IN_SET(
+			ta.area_id,
+			REPLACE (tj.AREA, ';', ',')
+		)
+		WHERE
+			tc.area_id = #{cityNameid}
+		AND tj.jointid IS NOT NULL
+		GROUP BY
+			tj.jointid
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<!-- 统计合作商数量做分页 -->
+	<select id="cooperatorInfoCount" resultType="Long" parameterMap="businessArea">
+		SELECT
+			COUNT(tt.cArea_id)
+		FROM
+			(
+				SELECT
+					tp.title AS pTitle,
+					tp.area_id AS pArea_id,
+					tc.title AS cTitle,
+					tc.area_id AS cArea_id,
+					ta.title AS aTitle,
+					ta.area_id AS aArea_id,
+					tj.corporate AS cooperator
+				FROM
+					(
+						SELECT
+							*
+						FROM
+							t_area t
+						WHERE
+							t.pid = 0
+					) tp
+				LEFT JOIN t_area tc ON tc.pid = tp.area_id
+				LEFT JOIN t_area ta ON ta.pid = tc.area_id
+				LEFT JOIN t_joint tj ON FIND_IN_SET(
+					ta.area_id,
+					REPLACE (tj.AREA, ';', ',')
+				)
+				WHERE
+					tc.area_id = #{cityNameid}
+				AND tj.jointid IS NOT NULL
+				GROUP BY
+					tj.jointid
+			) tt
+	</select>
+	<!-- 查询已签约的商家并显示 -->
+	<select id="businessSignedInfo" resultMap="businessAreaMap" parameterMap="businessArea">
+		SELECT
+			tt.*, ts.sellername AS business
+		FROM
+			(
+				SELECT
+					tp.title AS Title,
+					tp.area_id AS pArea_id,
+					tc.title AS cityName,
+					tc.area_id AS cArea_id,
+					ta.title AS areaName,
+					ta.area_id AS aArea_id
+				FROM
+					(
+						SELECT
+							*
+						FROM
+							t_area t
+						WHERE
+							t.pid = 0
+					) tp
+				LEFT JOIN t_area tc ON tc.pid = tp.area_id
+				LEFT JOIN t_area ta ON ta.pid = tc.area_id
+				WHERE
+					tc.area_id = #{cityNameid}
+			) tt
+		LEFT JOIN t_seller ts ON tt.aArea_id = ts.area
+		AND ts. STATUS = 3
+		WHERE
+			ts.sellerid IS NOT NULL
+		GROUP BY
+			ts.sellerid
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<!-- 查询已签约数做分页 -->
+	<select id="businessSignedInfoCount" resultType="Long" parameterMap="businessArea">
+		SELECT
+			count(list.cArea_id)
+		FROM
+			(
+				SELECT
+					tt.*, ts.sellername AS business
+				FROM
+					(
+						SELECT
+							tp.title AS Title,
+							tp.area_id AS pArea_id,
+							tc.title AS cityName,
+							tc.area_id AS cArea_id,
+							ta.title AS areaName,
+							ta.area_id AS aArea_id
+						FROM
+							(
+								SELECT
+									*
+								FROM
+									t_area t
+								WHERE
+									t.pid = 0
+							) tp
+						LEFT JOIN t_area tc ON tc.pid = tp.area_id
+						LEFT JOIN t_area ta ON ta.pid = tc.area_id
+						WHERE
+							tc.area_id = #{cityNameid}
+					) tt
+				LEFT JOIN t_seller ts ON tt.aArea_id = ts.area
+				AND ts. STATUS = 3
+				WHERE
+					ts.sellerid IS NOT NULL
+				GROUP BY
+					ts.sellerid
+			) list
+
+	</select>	 	
+</mapper>

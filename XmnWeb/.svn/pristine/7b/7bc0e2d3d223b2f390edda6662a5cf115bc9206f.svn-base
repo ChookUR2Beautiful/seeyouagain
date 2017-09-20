@@ -1,0 +1,863 @@
+package com.xmniao.xmn.core.coupon.service;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.time.DateUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.base.BaseService;
+import com.xmniao.xmn.core.base.Pageable;
+import com.xmniao.xmn.core.base.ResultFile;
+import com.xmniao.xmn.core.base.Resultable;
+import com.xmniao.xmn.core.base.Import.PoiImport;
+import com.xmniao.xmn.core.business_cooperation.util.PartnerConstants;
+import com.xmniao.xmn.core.coupon.dao.CouponDao;
+import com.xmniao.xmn.core.coupon.dao.CouponDetailDao;
+import com.xmniao.xmn.core.coupon.dao.CouponIssueDao;
+import com.xmniao.xmn.core.coupon.dao.CouponIssueRefDao;
+import com.xmniao.xmn.core.coupon.entity.TCoupon;
+import com.xmniao.xmn.core.coupon.entity.TCouponDetail;
+import com.xmniao.xmn.core.coupon.entity.TCouponIssue;
+import com.xmniao.xmn.core.coupon.entity.TCouponIssueRef;
+import com.xmniao.xmn.core.coupon.util.CouponUtil;
+import com.xmniao.xmn.core.exception.ApplicationException;
+import com.xmniao.xmn.core.system_settings.entity.TUser;
+import com.xmniao.xmn.core.util.FastfdsConstant;
+import com.xmniao.xmn.core.util.HttpUtil;
+import com.xmniao.xmn.core.util.PropertiesUtil;
+import com.xmniao.xmn.core.util.ResultUtil;
+import com.xmniao.xmn.core.xmnburs.entity.Burs;
+import com.xmniao.xmn.core.xmnburs.service.BursService;
+
+/**
+ * 
+ * @author dong'jietao
+ * @date 2015年6月1日 下午3:04:32
+ * @TODO 优惠券发放管理Service
+ */
+@Service
+public class CouponIssueService extends BaseService<TCouponIssue> {
+	@Autowired
+	private CouponIssueDao couponIssueDao;
+
+	@Autowired
+	private CouponIssueRefDao couponIssueRefDao;
+	
+	@Autowired
+	private CouponService couponService;
+
+	@Autowired
+	private CouponDetailDao couponDetailDao;
+	
+	@Autowired
+	private CouponDao couponDao;
+
+	@Override
+	protected BaseDao<TCouponIssue> getBaseDao() {
+		return couponIssueDao;
+	}
+	
+	/**
+	 * 注入寻蜜鸟用户服务
+	 */
+	@Autowired
+	private BursService bursService;
+
+	/**
+	 * @author dong'jietao
+	 * @date 2015年6月2日 上午11:07:28
+	 * @TODO 摇一摇查询
+	 * @param tCouponIssue
+	 * @param pageable
+	 */
+	public void putPageable(TCouponIssue tCouponIssue,
+			Pageable<TCouponIssue> pageable) {
+		pageable.setContent(couponIssueDao.getList(tCouponIssue));
+		pageable.setTotal(couponIssueDao.count(tCouponIssue));
+	}
+
+	/**
+	 * @author dong'jietao
+	 * @date 2015年6月2日 上午11:08:00
+	 * @TODO 优惠券发放管理添加初始化页面指向
+	 * @param tCouponIssue
+	 * @param modelAndView
+	 */
+	public void goToAddInitPage(ModelAndView modelAndView) {
+		this.putModelParamstCoupons(modelAndView);
+	}
+
+	/**
+	 * @author dong'jietao
+	 * @date 2015年6月2日 上午11:09:00
+	 * @TODO 优惠券发放管理添加执行操作
+	 * @param tCouponIssue
+	 * @param pageable
+	 */
+	@Transactional(propagation=Propagation.REQUIRED,rollbackFor=Exception.class)
+	public void addTCouponIssue(HttpServletRequest request,TCouponIssue tCouponIssue, Resultable resultable) {
+		this.putTCouponIssueParam(tCouponIssue);
+		tCouponIssue.setIsGenerate(0);// 是否已生成优惠券 0:未生成
+		//先根据查询cid查询t_coupon表中的ctype
+		List<TCouponIssueRef> tcirList = tCouponIssue.gettCouponIssueRefs();
+		for (int i = 0; i < tcirList.size(); i++) {
+			TCouponIssueRef tcir = tcirList.get(i);
+			Integer cid = tcir.getCid();
+		    Integer ctype = couponIssueDao.selectCtype(cid);
+			tCouponIssue.setCtype(ctype);
+		}
+		Integer numtCouponIssues = couponIssueDao.addReturnId(tCouponIssue);
+		int num = this.insertAndUpdateTCouponIssueRef(request, tCouponIssue);
+
+		if (numtCouponIssues == 1
+				&& num == tCouponIssue.gettCouponIssueRefs().size()) {
+			resultable.setSuccess(true);
+			resultable.setMsg("操作成功！");
+		} else {
+			resultable.setSuccess(false);
+			resultable.setMsg("操作失败！");
+		}
+	}
+
+	/**
+	 * @author dong'jietao
+	 * @date 2015年6月3日 上午9:29:39
+	 * @TODO 插入前参数填充
+	 * @param tCouponIssue
+	 */
+	public void putTCouponIssueParam(TCouponIssue tCouponIssue) {
+		Double hitRatio = tCouponIssue.getHitRatio();
+		if(null!=hitRatio&&hitRatio!=0){
+			tCouponIssue.setHitRatio(hitRatio / 100);
+		}
+		tCouponIssue.setCreator("system");
+		tCouponIssue.setDateCreated(new Date());
+		tCouponIssue.setUpdator("system");
+		tCouponIssue.setDateUpdated(new Date());
+		tCouponIssue.setStatus(2);
+		tCouponIssue.setSendStatus(TCouponDetail.SendStatus.UNSEND.getIndex());
+	}
+
+	/**
+	 * @author dong'jietao
+	 * @date 2015年6月3日 下午2:06:15
+	 * @TODO 获取摇一摇更新对象
+	 * @param modelAndView
+	 * @param tCouponIssue
+	 */
+	public void getUpdate(ModelAndView modelAndView,TCouponIssue tCouponIssue) {
+		this.putModelParamstCoupons(modelAndView);
+		modelAndView.setViewName("coupon/couponissue/updateyaoyiyao");
+		this.getUpdateObject(modelAndView, tCouponIssue);
+	}
+
+	/**
+	 * @author dong'jietao
+	 * @date 2015年6月3日 下午2:33:55
+	 * @TODO 获取更新对象
+	 * @param modelAndView
+	 * @param tCouponIssue
+	 */
+	public void getUpdateObject(ModelAndView modelAndView,
+			TCouponIssue tCouponIssue) {
+		this.log.info("取得更新的couponIssue");
+		tCouponIssue = couponIssueDao.getObject(Long.parseLong(String
+				.valueOf(tCouponIssue.getIssueId())));
+		TCouponIssueRef tCouponIssueRef = new TCouponIssueRef();
+		tCouponIssueRef.setIssueId(tCouponIssue.getIssueId());
+		tCouponIssue.settCouponIssueRefs(couponIssueRefDao.getCouponIssueRefs(tCouponIssueRef));
+		if(null!=tCouponIssue.getHitRatio()){
+			String ratio=String.valueOf(tCouponIssue.getHitRatio()*100);
+			tCouponIssue.setIntHitRatio(Integer.parseInt(ratio.substring(0, ratio.lastIndexOf("."))));
+		}
+		modelAndView.addObject("tCouponIssue", tCouponIssue);
+	}
+
+	/**
+	 * @author dong'jietao
+	 * @date 2015年6月3日 下午2:27:06
+	 * @TODO 页面优惠选择券选项参数填充
+	 * @param modelAndView
+	 */
+	public void putModelParamstCoupons(ModelAndView modelAndView) {
+		TCoupon tCoupon = new TCoupon();
+		tCoupon.setLimit(-1);
+		List<TCoupon> tCoupons = couponService.getList(tCoupon);
+		modelAndView.addObject("tCoupons", tCoupons);
+	}
+
+	/**
+	 * @author dong'jietao
+	 * @date 2015年6月3日 下午2:12:31
+	 * @TODO 更新对象执行逻辑
+	 * @param resultable
+	 * @param tCouponIssue
+	 */
+	@Transactional(propagation=Propagation.REQUIRED,rollbackFor=Exception.class)
+	public void UpdateTCouponIssue(HttpServletRequest request,Resultable resultable, TCouponIssue tCouponIssue) {
+		if(null!=tCouponIssue.getHitRatio()){
+			tCouponIssue.setHitRatio(tCouponIssue.getHitRatio()/100);
+		}
+		int i=couponIssueDao.update(tCouponIssue);
+		int num=this.insertAndUpdateTCouponIssueRef(request, tCouponIssue);
+		if(i==1&&num==tCouponIssue.gettCouponIssueRefs().size()){
+			resultable.setSuccess(true);
+			resultable.setMsg("操作成功！");
+		} else {
+			throw new RuntimeException();
+			/*resultable.setSuccess(false);
+			resultable.setMsg("操作异常！");*/
+		}
+		
+	}
+	@Transactional(propagation=Propagation.REQUIRED,rollbackFor=Exception.class)
+	public void UpdateCouponIssueAndUpdateCouponIssueRef(HttpServletRequest request,Resultable resultable, TCouponIssue tCouponIssue) {
+		if(null!=tCouponIssue.getHitRatio()){
+			tCouponIssue.setHitRatio(tCouponIssue.getHitRatio()/100);
+		}
+		couponIssueDao.update(tCouponIssue);
+		
+		//判断是否需要删除其他的记录
+		StringBuilder strb = new StringBuilder();
+		for (TCouponIssueRef tCouponIssueRef : tCouponIssue
+				.gettCouponIssueRefs()) {
+			if(tCouponIssueRef.getRefId()!=null){
+				strb.append(tCouponIssueRef.getRefId()+",");
+			}
+		}
+		if(strb.length()>0){
+			String ids = new String(strb.deleteCharAt(strb.length()-1));
+			if(ids.length()>0){
+				TCouponIssueRef couponIssueRef = new TCouponIssueRef();
+				couponIssueRef.setIssueId(tCouponIssue.getIssueId());
+				couponIssueRef.setRefIds(ids);
+				this.log.info("删除其他的记录");
+				couponIssueRefDao.deleteNotInTheIds(couponIssueRef);
+			}
+		}
+		//删除完相关记录后进行更新
+		String username = ResultUtil.getCurrentUser(request).getUsername();
+		for (TCouponIssueRef tCouponIssueRef : tCouponIssue
+				.gettCouponIssueRefs()) {
+			if (tCouponIssueRef.getCid() != null) {
+				if (tCouponIssueRef.getRefId() != null) {
+					tCouponIssueRef.setUpdator(username);
+					tCouponIssueRef.setDateUpdated(new Date());
+					if(tCouponIssueRef.getHitRatio()!=null){
+						tCouponIssueRef.setHitRatio(tCouponIssueRef.getHitRatio()/100);
+					}
+					couponIssueRefDao.update(tCouponIssueRef);
+				} else {
+					tCouponIssueRef.setIssueId(tCouponIssue.getIssueId());
+					tCouponIssueRef.setDateCreated(new Date());
+					tCouponIssueRef.setCreator(username);
+					tCouponIssueRef.setDateUpdated(new Date());
+					if(tCouponIssueRef.getHitRatio()!=null){
+						tCouponIssueRef.setHitRatio(tCouponIssueRef.getHitRatio()/100);
+					}
+					tCouponIssueRef.setUpdator(username);
+					couponIssueRefDao.addReturnId(tCouponIssueRef);
+				}
+			}
+		}
+		
+		resultable.setSuccess(true);
+	}
+
+	/**
+	 * @author dong'jietao
+	 * @date 2015年6月3日 下午5:23:31
+	 * @TODO 更新逻辑
+	 * @param request
+	 * @param tCouponIssue
+	 * @return
+	 */
+	@Transactional(propagation=Propagation.REQUIRED,rollbackFor=Exception.class)
+	public Integer insertAndUpdateTCouponIssueRef(HttpServletRequest request,
+			TCouponIssue tCouponIssue) {
+		String username = ResultUtil.getCurrentUser(request).getUsername();
+		int i = 0;
+		for (TCouponIssueRef tCouponIssueRef : tCouponIssue
+				.gettCouponIssueRefs()) {
+			if(tCouponIssueRef.getCid()!=null){
+				if (tCouponIssueRef.getRefId() != null) {
+					tCouponIssueRef.setUpdator(username);
+					tCouponIssueRef.setDateUpdated(new Date());
+					if(tCouponIssueRef.getHitRatio()!=null){
+						tCouponIssueRef.setHitRatio(tCouponIssueRef.getHitRatio()/100);
+					}
+					i = couponIssueRefDao.update(tCouponIssueRef) + i;
+				} else {
+					tCouponIssueRef.setIssueId(tCouponIssue.getIssueId());
+					tCouponIssueRef.setDateCreated(new Date());
+					tCouponIssueRef.setCreator(username);
+					tCouponIssueRef.setDateUpdated(new Date());
+					if(tCouponIssueRef.getHitRatio()!=null){
+						tCouponIssueRef.setHitRatio(tCouponIssueRef.getHitRatio()/100);
+					}
+					tCouponIssueRef.setUpdator(username);
+					i = couponIssueRefDao.addReturnId(tCouponIssueRef) + i;
+				}
+			}
+		}
+		return i;
+	}
+
+	/**
+	 * @author zhang'zhiwen
+	 * @Date 2015年6月5日 上午10:44:09
+	 * @TODO 取得优惠券详情列表
+	 * @param tCouponDetail
+	 */
+	public void getCouponDetailList(TCouponDetail tCouponDetail,
+			Pageable<TCouponDetail> pageable) {
+		pageable.setContent(couponDetailDao.getList(tCouponDetail));
+		pageable.setTotal(couponDetailDao.count(tCouponDetail));
+	}
+    /**
+     * 
+     * @author dong'jt
+     * 创建时间：2015年9月18日 上午11:13:53
+     * 描述：获取导出数据
+     * @param tCouponDetail
+     * @param map
+     */
+	public void getCouponDetailExportList(TCouponDetail tCouponDetail,Map<String,Object> map) {
+		tCouponDetail.setLimit(-1);
+		map.put("list", couponDetailDao.getList(tCouponDetail));
+	}
+	
+	
+	
+	/**
+	 * 导入用户数据 
+	 * @param multipartFile
+	 * @param couponIssue
+	 * @return
+	 * @throws ApplicationException
+	 */
+	@Transactional(propagation = Propagation.REQUIRED)
+	public ResultFile importCouponDetail(MultipartFile multipartFile,TCouponIssue couponIssue) throws ApplicationException{
+		
+		ResultFile rf=null;
+		try {
+			couponIssue.setActivityType(3);
+			Integer couponIssueId = couponIssue.getIssueId();
+			Long issueId = couponIssueId.longValue();
+			couponIssue = getObject(issueId);
+			TCouponIssueRef couponIssueRef = new TCouponIssueRef();
+			couponIssueRef.setIssueId(couponIssueId);
+			couponIssueRef = couponIssueRefDao.getCouponIssueRefs(couponIssueRef).get(0);
+			TCoupon coupon = couponDao.getObject(couponIssueRef.getCid().longValue());
+			
+			List<TCouponDetail> couponDetails = PoiImport.dataImport(multipartFile, TCouponDetail.class);
+			if(couponDetails!=null){
+				if(couponDetails.size()>10000){
+					rf = new ResultFile(FastfdsConstant.FILE_UPLOAD_FASTDFS_FAILURE, String.format("导入数据不能超过一万条"));
+					return rf;
+				}
+				Date d=new Date();
+				StringBuilder sb = new StringBuilder();
+				
+				for(TCouponDetail couponDetail : couponDetails){
+					sb.append(String.format("%s," ,couponDetail.getUid()));
+					setCouponDatail(couponIssue, couponIssueRef, coupon,d, couponDetail.getUid(), couponDetail.getPhone(), couponDetail);
+				}
+				
+				Resultable resultable =new Resultable();
+				savaUserDatail(couponIssue, resultable, couponDetails, sb);
+				rf = new ResultFile(FastfdsConstant.FILE_UPLOAD_FASTDFS_SUCCESS, String.format("导入成功"));
+			}else{
+				rf = new ResultFile(FastfdsConstant.FILE_UPLOAD_FASTDFS_FAILURE, String.format("导入失败,数据为空"));
+			}
+			return rf;
+		} catch (Exception e) {
+			//rf = new ResultFile(FastfdsConstant.FILE_UPLOAD_FASTDFS_FAILURE, "导入失败");
+			log.error("文件上传失败", e);
+			throw new ApplicationException("导入优惠卷发放用户信息异常",e);
+		} finally {
+			fireLoginEvent( new String[]{"优惠卷发放用户信息导入","导入操作","优惠卷发放用户信息导入",""}, rf==null?0:rf.getStatus());
+		}
+	
+	}
+	
+	
+	/**
+	 * 
+	 * @author zhang'zhiwen
+	 * @date 2015年6月5日 下午5:21:10
+	 * @TODO 批量添加优惠券详情
+	 * @param couponIssue <br>
+	 *  1.如果是直接发行时，couponIssue的值为[cid,totalVolume];<br>
+	 *  2.如果是活动优惠券的时，couponIssue的值为[issueId,activityType]
+	 * @throws Exception 
+	 */
+	@Transactional
+	public void batchAddCouponDetail(TCouponIssue couponIssue,Resultable resultable) throws Exception {
+		
+		if(null == couponIssue.getActivityType()){//直接发放
+			Integer cid = couponIssue.getCid();//优惠券Id
+			Integer circulation = couponIssue.getTotalVolume();//发放总量
+			addCouponDetail(cid,circulation,null,null); //直接发放
+			String[] couponInfo = { "优惠券编号为",couponIssue.getCid().toString(),"发行"+couponIssue.getTotalVolume()+"张", "发行" };
+			this.fireLoginEvent(couponInfo,PartnerConstants.FIRELOGIN_NUMA );
+		}else{//对应相关活动的
+			//短信发送活动
+			if(couponIssue.getActivityType()==3){
+				String userids = couponIssue.getUserIds();
+				if(userids != null){
+					couponIssue = couponIssueDao.getObject(couponIssue.getIssueId().longValue());
+					TCouponIssueRef couponIssueRef = new TCouponIssueRef();
+					couponIssueRef.setIssueId(couponIssue.getIssueId());
+					couponIssueRef = couponIssueRefDao.getCouponIssueRefs(couponIssueRef).get(0);
+					TCoupon coupon = couponDao.getObject(couponIssueRef.getCid().longValue());
+					Date date = new Date();
+					List<TCouponDetail> couponDetails = new ArrayList<TCouponDetail>();
+					StringBuilder sb = new StringBuilder();
+					for(String userId:userids.split(",")){
+						String uid = userId.split(":;")[0];
+						sb.append(uid);
+						sb.append(",");
+						String phone = userId.split(":;")[2];
+						TCouponDetail couponDetail = new TCouponDetail();
+						//抽取公用代码
+						setCouponDatail(couponIssue, couponIssueRef, coupon,date, Integer.parseInt(uid), phone, couponDetail);
+						/**
+						 * 原代码
+						 */
+						/*couponDetail.setCid(couponIssueRef.getCid());
+						couponDetail.setDenomination(coupon.getDenomination());
+						couponDetail.setSerial(CouponUtil.generatorUUID());
+						couponDetail.setGetWay(TCouponDetail.GetWay.DUANXIN.getIndex());
+						couponDetail.setStartDate(coupon.getStartDate());//特别注意：优惠券有效期开始时间和结束时间一定要设置好，不然APP端获取不到优惠券的
+						couponDetail.setEndDate(coupon.getEndDate());
+						couponDetail.setGetStatus(TCouponDetail.GetStatus.UNGET.getIndex());//只有短信发送成功之后，获取状态才会改为已获取
+						couponDetail.setUserStatus(TCouponDetail.UserStatus.UNUSE.getIndex());
+						couponDetail.setUid(Integer.parseInt(uid));
+						couponDetail.setPhone(phone);
+						couponDetail.setIssueId(couponIssue.getIssueId());
+						couponDetail.setDateIssue(date);//发行时间是，指优惠券生成的时间
+						couponDetail.setSendStatus(TCouponDetail.SendStatus.UNSEND.getIndex());*/
+						
+						//couponDetail.setGetTime(date);//短信发送成功后，获取时间才会设置
+						couponDetails.add(couponDetail);
+						
+					}
+					
+					//抽取公用代码
+					savaUserDatail(couponIssue, resultable, couponDetails, sb);
+					
+					/**
+					 * 原代码
+					 */
+					/*sb.deleteCharAt(sb.length()-1);
+					String uidStr = sb.toString();
+					List<TCouponDetail> details = checkUidExist(uidStr,couponIssue.getIssueId());
+					if(details.size()>0){//存在重复的
+						StringBuilder sb1 = new StringBuilder();
+						for(TCouponDetail couponDetail:details){
+							sb1.append(couponDetail.getPhone());
+							sb1.append(",");
+						}
+						sb1.deleteCharAt(sb1.length()-1);
+						resultable.setData("已经存在的用户有："+sb1.toString());
+					}else{//不存在重复的
+						List<List<TCouponDetail>> list = CouponUtil.splitList(couponDetails, 500);
+						for(int i = 0,size=list.size();i<size;i++){
+							couponDetailDao.addBatch(list.get(i));
+						}
+					}
+					
+					resultable.setMsg("发行成功");
+					String[] couponInfo = { "短信发送优惠券编号",couponIssue.getIssueId().toString(),"发行", "发行" };
+					this.fireLoginEvent(couponInfo,PartnerConstants.FIRELOGIN_NUMA );*/
+				}
+			}else{//1：摇一摇，2：满就送 3：刮刮卡
+				
+				//取得所有的优惠券
+				TCouponIssueRef couponIssueRef = new TCouponIssueRef();
+				couponIssueRef.setIssueId(couponIssue.getIssueId());
+				List<TCouponIssueRef> couponIssueRefs = couponIssueRefDao.getCouponIssueRefs(couponIssueRef);
+				//取得所有优惠券类型及发行总量，依次生成相应的优惠券详情
+				for(TCouponIssueRef couponIssueRef2:couponIssueRefs){
+					Integer cid = couponIssueRef2.getCid();//取得优惠券id
+					Integer circulation = couponIssueRef2.getIssueVolume();//发放总量
+					
+					if(couponIssueRef2.getType()!=null){//如果couponIssueRef的type不为空的话就会根据type来决定类型
+						addCouponDetail(cid,circulation,couponIssue,couponIssueRef2);//活动类型优惠券
+					}else{
+						addCouponDetail(cid,circulation,couponIssue,null);
+					}
+				}
+				//发行优惠券成功后更新couponIssue的转为启动
+				couponIssue.setStatus(1);//启动
+				couponIssue.setIsGenerate(1);//是否已生成优惠券设为1：已生成
+				couponIssueDao.update(couponIssue);
+				
+				String[] couponInfo = { couponIssue.getActivityType()==1?"摇一摇活动优惠券编号":"满就送活动优惠券编号",couponIssue.getIssueId().toString(),"发行", "发行" };
+				this.fireLoginEvent(couponInfo,PartnerConstants.FIRELOGIN_NUMA );
+
+			}
+		}
+	}
+
+	/**
+	 * 保存用户明细
+	 * @param couponIssue
+	 * @param resultable
+	 * @param couponDetails
+	 * @param sb
+	 */
+	private void savaUserDatail(TCouponIssue couponIssue,Resultable resultable, List<TCouponDetail> couponDetails,
+			StringBuilder sb) {
+		sb.deleteCharAt(sb.length()-1);
+		String uidStr = sb.toString();
+		//获取优惠券类型添加到优惠券详情表
+		int ctype = couponIssue.getCtype();
+		for (int i = 0; i < couponDetails.size(); i++) {
+			couponDetails.get(i).setCtype(ctype);
+		}
+		List<TCouponDetail> details = checkUidExist(uidStr,couponIssue.getIssueId());
+		if(details.size()>0){//存在重复的
+			StringBuilder sb1 = new StringBuilder();
+			for(TCouponDetail couponDetail:details){
+				sb1.append(couponDetail.getPhone());
+				sb1.append(",");
+			}
+			sb1.deleteCharAt(sb1.length()-1);
+			resultable.setData("已经存在的用户有："+sb1.toString());
+		}else{//不存在重复的
+			List<List<TCouponDetail>> list = CouponUtil.splitList(couponDetails, 500);
+			for(int i = 0,size=list.size();i<size;i++){
+//				list.get(i).get(i).setCtype(ctype);//把优惠券类型set进优惠券详情表
+				couponDetailDao.addBatch(list.get(i));
+			}
+		}
+		
+		resultable.setMsg("发行成功");
+		String[] couponInfo = { "短信发送优惠券编号",couponIssue.getIssueId().toString(),"发行", "发行" };
+		this.fireLoginEvent(couponInfo,PartnerConstants.FIRELOGIN_NUMA );
+	}
+
+	/**
+	 * 设置CouponDatail
+	 * @param couponIssue
+	 * @param couponIssueRef
+	 * @param coupon
+	 * @param date
+	 * @param uid
+	 * @param phone
+	 * @param couponDetail
+	 */
+	private void setCouponDatail(TCouponIssue couponIssue,TCouponIssueRef couponIssueRef, TCoupon coupon, Date date,Integer uid, String phone, TCouponDetail couponDetail) throws ParseException {
+		couponDetail.setCid(couponIssueRef.getCid());
+		couponDetail.setDenomination(coupon.getDenomination());
+		couponDetail.setSerial(CouponUtil.generatorUUID());
+		couponDetail.setGetWay(TCouponDetail.GetWay.DUANXIN.getIndex());
+		Integer dayNum = coupon.getDayNum();
+		if(dayNum!=null){
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date startDate = sdf.parse(sdf.format(new Date()));
+            couponDetail.setStartDate(startDate);
+			couponDetail.setEndDate(DateUtils.addDays(startDate, dayNum));
+		}else{
+			couponDetail.setStartDate(coupon.getStartDate());//特别注意：优惠券有效期开始时间和结束时间一定要设置好，不然APP端获取不到优惠券的
+			couponDetail.setEndDate(coupon.getEndDate());
+		}
+		couponDetail.setGetStatus(TCouponDetail.GetStatus.UNGET.getIndex());//只有短信发送成功之后，获取状态才会改为已获取
+		couponDetail.setUserStatus(TCouponDetail.UserStatus.UNUSE.getIndex());
+		couponDetail.setUid(uid);
+		couponDetail.setPhone(phone);
+		couponDetail.setIssueId(couponIssue.getIssueId());
+		couponDetail.setDateIssue(date);//发行时间是，指优惠券生成的时间
+		couponDetail.setSendStatus(TCouponDetail.SendStatus.UNSEND.getIndex());
+	}
+	
+	
+	/**
+	 * 
+	 * @author zhang'zhiwen
+	 * @date 2015年6月5日 下午5:13:10
+	 * @TODO 批量添加优惠券详情
+	 * @param cid 优惠券id
+	 * @param circulation 发行总量
+	 * @param couponIssue 为null 直接发放，为!null 活动类型优惠券
+	 * @throws Exception 
+	 */
+	private void addCouponDetail(Integer cid,Integer circulation,TCouponIssue couponIssue,TCouponIssueRef couponIssueRef) throws Exception{
+		if(cid!=null && circulation!=null && circulation>0){
+			TCoupon coupon = couponDao.getObject(cid.longValue());
+			if(coupon!=null){
+				List<TCouponDetail> couponDetails = new ArrayList<TCouponDetail>();
+				TCouponDetail couponDetail=null;
+				for(int i=0;i<circulation;i++){
+					couponDetail = generateCouponDetail(coupon,couponIssue,couponIssueRef);
+					couponDetails.add(couponDetail);
+				}
+				List<List<TCouponDetail>> list = CouponUtil.splitList(couponDetails, 500);
+				for(int i = 0,size=list.size();i<size;i++){
+					couponDetailDao.addBatch(list.get(i));
+				}
+				
+			}
+			
+		}else if(cid==null){
+			throw new Exception("批量添加优惠券详情传入的参数cid为null");
+		}else if(circulation==null){
+			throw new Exception("批量添加优惠券详情传入的参数circulation为null");
+		}else if(circulation <= 0){
+			throw new Exception("批量添加优惠券详情传入的参数circulation为必须大于0");
+		}
+	}
+	
+	/**
+	 * @author zhang'zhiwen
+	 * @date 2015年6月5日 下午5:08:20
+	 * @TODO 初始化优惠券详情信息
+	 * @param coupon
+	 * @param couponIssue 为null 直接发放，为!null 活动类型优惠券
+	 * @return couponIssue的值为[]
+	 */
+	private TCouponDetail generateCouponDetail(TCoupon coupon,TCouponIssue couponIssue,TCouponIssueRef couponIssueRef){
+		TCouponDetail couponDetail = new TCouponDetail();
+		couponDetail.setCid(coupon.getCid());
+		couponDetail.setSerial(CouponUtil.generatorUUID());//生成
+		couponDetail.setDenomination(coupon.getDenomination());
+		couponDetail.setGetStatus(0);//刚生成的状态是0未获取的
+		couponDetail.setDateIssue(new Date());//发放时间
+		couponDetail.setStartDate(coupon.getStartDate());
+		couponDetail.setEndDate(coupon.getEndDate());
+		if(couponIssue!=null){
+			couponDetail.setGetWay(couponIssue.getActivityType());
+			couponDetail.setIssueId(couponIssue.getIssueId());
+			if(couponIssueRef!=null){//分享的要从couponIssueRef来拿具体的类型
+				if(TCouponIssueRef.Type.ORDER.getIndex() == couponIssueRef.getType()){
+					 couponDetail.setGetWay(5); 
+				}else if(TCouponIssueRef.Type.SHARE.getIndex() == couponIssueRef.getType()){
+					 couponDetail.setGetWay(6); 
+				}
+			}
+		}else{
+			couponDetail.setGetWay(TCouponDetail.GetWay.DIRECT.getIndex());//直接发放
+		}
+		return couponDetail;
+	}
+	
+	/**
+	 * @author zhang'zhiwen
+	 * @date 2015年6月6日 下午2:49:10
+	 * @TODO 修改couponIssue的状态
+	 * @param couponIssue的值为[issueId,status]
+	 */
+	public void updateCouponIssueStatus(TCouponIssue couponIssue,HttpServletRequest request){
+		couponIssue.setDateUpdated(new Date());
+		couponIssue.setUpdator(((TUser)request.getSession().getAttribute("currentUs")).getName());
+		couponIssueDao.update(couponIssue);
+	}
+	
+	/**
+	 * 
+	 * @author zhang'zhiwen
+	 * @date 2015年6月10日 上午10:33:46
+	 * @TODO 验证短信发送优惠券，添加的用户是否存在
+	 * @param uids
+	 * @param issueId
+	 * @return
+	 */
+	private List<TCouponDetail> checkUidExist(String uids,Integer issueId){
+		TCouponDetail couponDetail = new TCouponDetail();
+		couponDetail.setUids(uids);
+		couponDetail.setIssueId(issueId);
+		couponDetail.setGetWay(TCouponDetail.GetWay.DUANXIN.getIndex());//短信方式
+		return couponDetailDao.checkUidsExist(couponDetail);
+	}
+
+	/**
+	 * @author zhang'zhiwen
+	 * @date 2015年6月10日 上午11:28:28
+	 * @TODO 
+	 * @param tCouponIssue
+	 * @param pageable
+	 */
+	public void getListOfSendShortMessage(TCouponIssue tCouponIssue,Pageable<TCouponIssue> pageable) {
+		pageable.setContent(couponIssueDao.getListOfSendShortMessage(tCouponIssue));
+		pageable.setTotal(couponIssueDao.countOfGetListOfSendShortMessage(tCouponIssue));
+	}
+
+	/**
+	 * @author zhang'zhiwen
+	 * @date 2015年6月10日 下午3:18:52
+	 * @TODO 
+	 * @param issueId
+	 * @return
+	 */
+	public void getUserListByIssueId(TCouponDetail couponDetail,Pageable<TCouponDetail> pageable) {
+		pageable.setContent(couponDetailDao.getList(couponDetail));
+		pageable.setTotal(couponDetailDao.count(couponDetail));
+	}
+	
+
+	/**
+	 * @author cao'yingde
+	 * @date 2015年6月10日 下午3:18:52
+	 * @TODO 
+	 * @param issueId
+	 * @return
+	 */
+	public Pageable<TCouponDetail> getViewCoupon(TCouponDetail couponDetail) {
+		Pageable<TCouponDetail> list = new Pageable<TCouponDetail>(couponDetail);
+		// 未使用列表内容
+		list.setContent(couponDetailDao.getViewCouponList(couponDetail));
+		// 总条数
+		list.setTotal(couponDetailDao.getViewCouponCount(couponDetail));
+		return list;
+	}
+
+	/**
+	 * @author zhang'zhiwen
+	 * @date 2015年6月11日 下午2:18:38
+	 * @TODO 短信发送优惠券，发送短信;根据IssueId发送短信，根据couponDetailIds发送短信
+	 * @param couponIssue
+	 * @throws Exception 
+	 */
+	@Transactional(propagation=Propagation.REQUIRED)
+	public void sendMessage(TCouponDetail couponDetail) throws Exception {
+		//更新发送时间
+		TCouponIssue couponIssue = new TCouponIssue();
+		couponIssue.setIssueId(couponDetail.getIssueId());
+		couponIssue.setDateSend(new Date());
+		couponIssueDao.update(couponIssue);
+		
+		couponIssue = null;
+		couponIssue = couponIssueDao.getObjectAndJoinCid(couponDetail.getIssueId().longValue());//为了取得短信内容
+		TCoupon coupon = couponDao.getObject(couponIssue.getCid().longValue());
+		List<TCouponDetail> couponDetails = couponDetailDao.getList(couponDetail);
+		if(couponDetails!=null&&couponDetails.size()>0){
+			List<String> phones = new ArrayList<String>();
+			StringBuilder sb = new StringBuilder();
+			for(TCouponDetail temp:couponDetails){
+				phones.add(temp.getPhone());
+				sb.append(temp.getCdid());
+				sb.append(",");
+			}
+			String msg = couponIssue.getMessage();
+			Map<String, Object> param = new HashMap<String, Object>();
+			param.put("appid", "998899");			
+			param.put("text", msg);
+			param.put("phones", phones);
+			String url = PropertiesUtil.readValue("http.phone.url")+"/smsSend";
+			this.log.info("短信发送优惠码："+url+"，param" + param);
+			this.log.info("短信发送开始");
+			String newType = HttpUtil.getInstance().postForString(url, param, true);
+			//短信发送成功就更新优惠券详情的状态
+			
+			if(newType!=null){
+				//更新优惠券的发送时间
+				TCouponDetail couponDetail1 = new TCouponDetail();
+				couponDetail1.setCdids(sb.deleteCharAt(sb.length()-1).toString());
+				couponDetail1.setSendStatus(TCouponDetail.SendStatus.SENDED.getIndex());
+				
+				if(coupon.getDayNum()==null){
+					couponDetail1.setStartDate(coupon.getStartDate());
+					couponDetail1.setEndDate(coupon.getEndDate());
+				}else{
+					Date startDate = new Date();
+					couponDetail1.setStartDate(startDate);
+					couponDetail1.setEndDate(DateUtils.addDays(startDate, coupon.getDayNum()));
+				}
+				couponDetail1.setGetStatus(TCouponDetail.GetStatus.GOT.getIndex());//短信发送成功后，获取状态改为已获取
+				couponDetail1.setGetTime(new Date());//短信发送成功后，获取时间才会设置
+				couponDetailDao.batchSendCouponDetail(couponDetail1);
+				//如果是按活动来发的话就要更新活动的发送时间，单个用户发的话，就不更新活动的发送时间
+				if(couponDetail.getCdids()==null){
+					this.log.info("更新短信发送优惠券的发送状态为：已发送");
+					couponIssue.setSendStatus(TCouponDetail.SendStatus.SENDED.getIndex());
+					couponIssue.setStatus(1);//短信发送成功后，活动状态也是为启动
+					couponIssueDao.update(couponIssue);
+				}
+				String[] couponInfo = {"短信发送优惠券活动编号为",couponIssue.getIssueId().toString(),"按用户发送短信", "发送短信" };
+				this.fireLoginEvent(couponInfo,PartnerConstants.FIRELOGIN_NUMA );
+			}else{
+				String[] couponInfo = {"短信发送优惠券活动编号为",couponIssue.getIssueId().toString(),"按用户发送短信", "发送短信" };
+				this.fireLoginEvent(couponInfo,PartnerConstants.FIRELOGIN_NUMB );
+			}
+		}
+		
+	}
+	public void putTCouponIssueRefModel(TCouponIssueRef tCouponIssueRef,ModelAndView modelAndView){
+		try {
+		modelAndView.addObject("tCouponIssueRefs", couponIssueRefDao.getCouponIssueRefs(tCouponIssueRef));
+		modelAndView.addObject("total", couponIssueRefDao.getCouponIssueRefsCount(tCouponIssueRef));
+		} catch (Exception e) {
+			this.log.error("获取优惠券列表异常", e);
+		} 
+	}
+
+	/**
+	 * @author zhang'zhiwen
+	 * @date 2015年7月21日 上午10:14:38
+	 * @param couponIssue
+	 * @param pageable
+	 */
+	public void getShareList(TCouponIssue couponIssue,Pageable<TCouponIssue> pageable) {
+		this.log.info("分享发放优惠列表-->");
+		pageable.setContent(couponIssueDao.getGuaCouponList(couponIssue));
+		pageable.setTotal(couponIssueDao.count(couponIssue));
+	}
+
+	/**
+	 * 方法描述：返回优惠券详细信息(包含用户信息) <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-4-20上午11:48:08 <br/>
+	 * @param tCouponDetail
+	 * @param pageable
+	 */
+	public void getCouponDetailContainBursList(TCouponDetail tCouponDetail, Pageable<TCouponDetail> pageable) {
+		List<TCouponDetail> couponDetailList=new ArrayList<TCouponDetail>();
+		List<Object> uids=new ArrayList<Object>();
+		
+		List<TCouponDetail> couponList = couponDetailDao.getGroupList(tCouponDetail);
+		if(couponList!=null && couponList.size()>0){
+			for(TCouponDetail detail:couponList){
+				uids.add(detail.getUid());
+			}
+			
+			List<Object> uidList = new ArrayList<>(new HashSet<>(uids));//去除重复UID
+			List<Burs> ursList = bursService.getUrsListByUids(uidList.toArray());
+			if(ursList!=null && ursList.size()>0){
+				for(TCouponDetail detail:couponList){
+					for(Burs urs:ursList){
+						if(urs.getUid()!=null&&detail.getUid()!=null){
+							if(urs.getUid().compareTo(detail.getUid())==0){
+								detail.setNname(urs.getNname());
+								break;
+							}
+						}
+						
+					}
+					couponDetailList.add(detail);
+				}
+			}
+			
+		}
+		pageable.setContent(couponDetailList);
+		pageable.setTotal(couponDetailDao.countGroupList(tCouponDetail));
+		
+	}
+
+}

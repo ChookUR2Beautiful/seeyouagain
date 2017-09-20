@@ -1,0 +1,110 @@
+/**
+ * 
+ */
+package com.xmniao.xmn.core.vstar.service;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.base.BaseService;
+import com.xmniao.xmn.core.common.dao.AreaDao;
+import com.xmniao.xmn.core.common.entity.TArea;
+import com.xmniao.xmn.core.util.CollectionUtil;
+import com.xmniao.xmn.core.vstar.dao.DivisionDao;
+import com.xmniao.xmn.core.vstar.dao.DivisionRegionDao;
+import com.xmniao.xmn.core.vstar.entity.Division;
+import com.xmniao.xmn.core.vstar.entity.DivisionRegion;
+
+/**
+ * 
+ * 项目名称：XmnWeb_vstar
+ * 
+ * 类名称：DivisionService
+ * 
+ * 类描述： 在此处添加类描述
+ * 
+ * 创建人： jianming
+ * 
+ * 创建时间：2017年6月7日 上午11:50:56 
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司 
+ */
+@Service
+public class DivisionService extends BaseService<Division>{
+
+	@Autowired
+	private DivisionDao divisionDao;
+	
+	@Autowired
+	private DivisionRegionDao divisionRegionDao;
+	
+	@Autowired
+	private AreaDao areaDao;
+	
+	@Override
+	protected BaseDao getBaseDao() {
+		return divisionDao;
+	}
+	
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED)
+	public void add(Division division){
+		divisionDao.add(division);
+		List<String> cityIds = Arrays.asList(division.getCityIds().split(","));
+		addDivisionRegions(division, cityIds);
+	}
+
+	private Integer addDivisionRegions(Division division, List<String> cityIds) {
+		List<TArea> areas=areaDao.getTownsByCityIds(cityIds);
+		List<DivisionRegion> divisionRegions=new ArrayList<>();
+		for (TArea tArea : areas) {
+			DivisionRegion divisionRegion = new DivisionRegion();
+			divisionRegion.setDivisionId(division.getId());
+			divisionRegion.setProvinceId(tArea.getPareaId());
+			divisionRegion.setCityId(tArea.getAareaId());
+			divisionRegion.setAreaId(tArea.getCareaId());
+			divisionRegion.setProvinceName(tArea.getPtitle());
+			divisionRegion.setCityName(tArea.getCtitle());
+			divisionRegion.setAreaName(tArea.getAtitle());
+			divisionRegion.setState(1);
+			divisionRegions.add(divisionRegion);
+		}
+		return divisionRegionDao.addBatch(divisionRegions);
+	}
+	
+	
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED)
+	public Integer update(Division division){
+		 divisionDao.deleteCityNotInIds(division);
+		 divisionDao.update(division);
+		 Division division2 = divisionDao.getObject(division.getId().longValue());
+		 List<String> diff = CollectionUtil.diff(division.getCityIdsList(),division2.getCityIdsList());
+		 if(!diff.isEmpty()){
+			 return addDivisionRegions(division,diff);
+		 }else{
+			 return 0;
+		 }
+	}
+	
+	/**
+	 * 
+	 * 方法描述：获取赛区基础信息 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-6-19下午3:19:12 <br/>
+	 * @param division
+	 * @return
+	 */
+	public List<Division> getBaseList(Division division){
+		return divisionDao.getBaseList(division);
+	}
+
+
+}

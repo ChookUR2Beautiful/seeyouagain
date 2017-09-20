@@ -1,0 +1,515 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.coupon.dao.CouponIssueDao">
+
+	<parameterMap type="CouponIssue" id="couponIssue" />
+
+	<resultMap type="CouponIssue" id="couponIssueMap">
+		<result column="issue_id" property="issueId" />
+		<result column="cid" property="cid" />
+		<result column="hit_ratio" property="hitRatio" />
+		<result column="max_times" property="maxTimes" />
+		<result column="maximum" property="maximum" />
+		<result column="rate" property="rate" />
+		<result column="activity_type" property="activityType" />
+		<result column="activity_name" property="activityName" />
+		<result column="date_start" property="dateStart" />
+		<result column="date_end" property="dateEnd" />
+		<result column="status" property="status" />
+		<result column="message" property="message" />
+		<result column="remark" property="remark" />
+		<result column="creator" property="creator" />
+		<result column="date_created" property="dateCreated" />
+		<result column="updator" property="updator" />
+		<result column="date_updated" property="dateUpdated" />
+		<result column="send_num" property="sendNum" />
+		<result column="send_object" property="sendObject" />
+		<result column="is_send_all" property="isSendAll" />
+		<result column="send_status" property="sendStatus" />
+		<result column="date_send" property="dateSend" />
+		<result column="is_generate" property="isGenerate" />
+		<result column="amount" property="amount" />
+		<result column="province" property="province" />
+		<result column="city" property="city" />
+		<result column="area" property="area" />
+		<result column="ctype" property="ctype" />
+	</resultMap>
+	<select id="getList" resultMap="couponIssueMap" parameterMap="couponIssue">
+		SELECT 
+		  ti.* 
+		FROM
+		  (SELECT 
+		    tc.*,
+		    (SELECT 
+		      SUM(tr.issue_volume) 
+		    FROM
+		      t_coupon_issue_ref tr 
+		    WHERE tr.issue_id = tc.issue_id) AS issueVolume 
+		  FROM
+		    t_coupon_issue tc) AS ti 
+		<where>
+			1=1
+			<include refid="whereSQL"></include>
+			
+		</where>
+		ORDER BY ti.issue_id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+		<select id="count" resultType="Long" parameterMap="couponIssue">
+		  SELECT  count(*) FROM 
+		  (SELECT tc.*,(SELECT  SUM(tr.issue_volume)  
+		  FROM t_coupon_issue_ref tr  WHERE tr.issue_id = tc.issue_id) AS issueVolume 
+          FROM t_coupon_issue tc ) AS ti    
+		<where>
+			1=1
+			<include refid="whereSQL"></include>
+		</where>
+	</select>
+	
+	<select id="getGuaCouponList" resultMap="couponIssueMap" parameterMap="couponIssue">
+		SELECT 
+		  ti.* 
+		FROM
+		  (SELECT 
+		    tc.*,
+		    (SELECT 
+		      SUM(tr.issue_volume) 
+		    FROM
+		      t_coupon_issue_ref tr 
+		    WHERE tr.issue_id = tc.issue_id 
+		      AND tr.type = 1) AS issueVolumeOrder,
+		    (SELECT 
+		      SUM(tr.issue_volume) 
+		    FROM
+		      t_coupon_issue_ref tr 
+		    WHERE tr.issue_id = tc.issue_id 
+		      AND tr.type = 2) AS issueVolumeShare 
+		  FROM
+		    t_coupon_issue tc) AS ti 
+		<where>
+			1=1
+			<include refid="whereSQL"></include>
+			<if test="null != province and '' != province">
+				AND ti.province = #{province}
+			</if>
+			<if test="null != city and '' != city">
+				AND ti.city = #{city}
+			</if>
+			<if test="null != area and '' != area">
+				AND ti.area LIKE '%${area}%'
+			</if>
+			<if test="null != ctype and '' != ctype">
+				AND ti.ctype = #{ctype}
+			</if>
+		</where>
+		ORDER BY ti.issue_id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+		<!-- 可重用的Where 条件 -->
+	<sql id="whereSQL">
+	<if test=" null != issueId">
+			AND ti.issue_id LIKE '%${issueId}%'
+		</if>
+		<if test=" null != activityName and '' != activityName">
+			AND ti.activity_name  LIKE '%${activityName}%'
+		</if>
+		<if test=" null != status">
+			AND ti.status = #{status}
+		</if>
+		<if test=" null != activityType">
+			AND ti.activity_type=#{activityType}
+		</if>
+		<if test=" null != rate">
+			AND ti.rate=#{rate}
+		</if>
+		<if test=" null != endIssueVolume and '' != endIssueVolume">
+			AND ti.issueVolume &lt;= #{endIssueVolume} 
+		</if>
+		<if test=" null != startIssueVolume and '' != startIssueVolume">
+			AND ti.issueVolume &gt;= #{startIssueVolume}
+		</if>
+		<if test=" null != startDateStart and '' != startDateStart">
+			AND ti.date_start &gt;= #{startDateStart} 
+		</if>
+		<if test=" null != endDateStart and '' != endDateStart">
+			AND ti.date_start  &lt; #{endDateStart}
+		</if>
+		<if test=" null != startDateSend and '' != startDateSend">
+			AND ti.date_send &gt;= #{startDateSend} 
+		</if>
+		<if test=" null != endDateSend and '' != endDateSend">
+			AND ti.date_send  &lt; #{endDateSend}
+		</if>
+		<if test=" null != amountStart ">
+			AND ti.amount  &gt;= #{amountStart}
+		</if>
+		<if test=" null != amountEnd ">
+			AND ti.amount  &lt;= #{amountEnd}
+		</if>
+		<if test=" null != ctype ">
+			AND ti.ctype = #{ctype}
+		</if>
+	</sql>
+	
+	<select id="getListOfSendShortMessage" resultMap="couponIssueMap" parameterMap="couponIssue">
+		SELECT 
+		  ti.*,
+		  tc.cname AS cname,
+		  (SELECT 
+		    COUNT(tcd.uid) 
+		  FROM
+		    t_coupon_detail tcd 
+		  WHERE tcd.issue_id = ti.issue_id) AS usernum 
+		FROM
+		  t_coupon_issue ti 
+		  LEFT JOIN t_coupon_issue_ref tcir 
+		    ON ti.issue_id = tcir.issue_id 
+		  LEFT JOIN t_coupon tc 
+		    ON tc.cid = tcir.cid 
+		<where>
+		     1=1
+			<include refid="GetListOfSendShortMessage"></include>
+		</where>
+		ORDER BY ti.issue_id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="countOfGetListOfSendShortMessage" resultType="Long" parameterMap="couponIssue">
+		SELECT 
+		  count(1)
+		FROM
+		  t_coupon_issue ti 
+		  LEFT JOIN t_coupon_issue_ref tcir 
+		    ON ti.issue_id = tcir.issue_id 
+		  LEFT JOIN t_coupon tc 
+		    ON tc.cid = tcir.cid 
+		<where>
+		      1=1
+			<include refid="GetListOfSendShortMessage"></include>
+		</where>
+	</select>
+
+		<select id="getObject" resultMap="couponIssueMap" parameterType="Long">
+		SELECT  ti.*,(SELECT  SUM(tr.issue_volume)  FROM t_coupon_issue_ref tr  WHERE tr.issue_id = ti.issue_id) AS issueVolume 
+         FROM t_coupon_issue ti 
+		<where>
+			ti.issue_id=#{0}
+		</where>
+	</select>
+	<select id="getObjectAndJoinCid" resultMap="couponIssueMap"
+		parameterType="Long">
+		SELECT 
+		  ti.* ,
+		  tr.cid
+		FROM
+		  t_coupon_issue ti 
+		  LEFT JOIN t_coupon_issue_ref tr
+		  ON tr.issue_id = ti.issue_id
+		  WHERE ti.issue_id = #{0}
+	</select>
+	
+
+		<!-- 可重用的Where 条件 -->
+	<sql id="GetListOfSendShortMessage">
+		<if test=" null != issueId">
+			AND ti.issue_id LIKE '%${issueId}%'
+		</if>
+		<if test=" null != activityName and '' != activityName">
+			AND ti.activity_name  LIKE '%${activityName}%'
+		</if>
+		<if test=" null != status">
+			AND ti.status = #{status}
+		</if>
+		<if test=" null != sendStatus">
+			AND ti.send_status = #{sendStatus}
+		</if>
+		<if test=" null != activityType">
+			AND ti.activity_type=#{activityType}
+		</if>
+		<if test=" null != rate">
+			AND ti.rate=#{rate}
+		</if>
+		<if test=" null != endIssueVolume and '' != endIssueVolume">
+			AND ti.issueVolume &lt;= #{endIssueVolume} 
+		</if>
+		<if test=" null != startIssueVolume and '' != startIssueVolume">
+			AND ti.issueVolume &gt;= #{startIssueVolume}
+		</if>
+		<if test=" null != startDateStart and '' != startDateStart">
+			AND ti.date_start &gt;= #{startDateStart} 
+		</if>
+		<if test=" null != endDateStart and '' != endDateStart">
+			AND ti.date_start  &lt; #{endDateStart}
+		</if>
+		<if test=" null != startDateSend and '' != startDateSend">
+			AND ti.date_send &gt;= #{startDateSend} 
+		</if>
+		<if test=" null != endDateSend and '' != endDateSend">
+			AND ti.date_send  &lt; #{endDateSend}
+		</if>
+		<if test=" null != ctype and '' != ctype">
+			AND ti.ctype = #{ctype}
+		</if>
+	</sql>
+	<!-- 根据cid查询t_coupon表中的ctype -->
+	<select id="selectCtype" resultType="Integer" parameterType="Integer">
+		SELECT t_coupon.ctype FROM t_coupon WHERE t_coupon.`cid` = #{cid}
+	</select>
+	<insert id="addReturnId" useGeneratedKeys="true" keyProperty="issueId" keyColumn="issue_id" parameterMap="couponIssue" >
+		INSERT INTO t_coupon_issue
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != issueId">
+					issue_id,
+				</if>
+			 	<if test=" null != hitRatio ">
+					hit_ratio,
+				</if>
+			 	<if test=" null != maxTimes">
+					max_times,
+				</if>
+			 	<if test=" null != maximum">
+					maximum,
+				</if>
+			 	<if test=" null != rate">
+					rate,
+				</if>
+			 	<if test=" null != activityType">
+					activity_type,
+				</if>
+			 	<if test=" null != activityName and '' != activityName">
+					activity_name,
+				</if>
+			 	<if test=" null != dateStart">
+					date_start,
+				</if>
+			 	<if test=" null != dateEnd">
+					date_end,
+				</if>
+			 	<if test=" null != status">
+					status,
+				</if>
+				<if test=" null != message and '' != message">
+					message,
+				</if>
+				<if test=" null != remark and '' != remark">
+					remark,
+				</if>
+				<if test=" null != creator and '' != creator">
+					creator,
+				</if>
+				<if test=" null != dateCreated and '' != dateCreated">
+					date_created,
+				</if>
+				<if test=" null != updator and '' != updator">
+					updator,
+				</if>
+				<if test=" null != dateUpdated and '' != dateUpdated">
+					date_updated,
+				</if>
+				<if test=" null != sendNum">
+					send_num,
+				</if>
+				<if test=" null != sendObject and '' != sendObject">
+					send_object,
+				</if>
+				<if test=" null != isSendAll">
+					is_send_all,
+				</if>
+				<if test=" null != isGenerate">
+					is_generate,
+				</if>
+				<if test=" null != sendStatus">
+					send_status,
+				</if>
+				<if test=" null != dateSend and '' != dateSend">
+					date_send,
+				</if>
+				<if test=" null != amount">
+					amount,
+				</if>
+				<if test=" null != province and '' != province">
+					province,
+				</if>
+				<if test=" null != city and '' != city">
+					city,
+				</if>
+				<if test=" null != area and '' != area">
+					area,
+				</if>
+				<if test=" null != ctype and '' != ctype">
+					ctype,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != issueId">
+				 #{issueId},
+				</if>
+			 	<if test=" null != hitRatio ">
+				#{hitRatio},
+				</if>
+			 	<if test=" null != maxTimes">
+				#{maxTimes},
+				</if>
+			 	<if test=" null != maximum">
+				#{maximum},
+				</if>
+			 	<if test=" null != rate">
+				#{rate},
+				</if>
+			 	<if test=" null != activityType">
+				#{activityType},
+				</if>
+			 	<if test=" null != activityName and '' != activityName">
+				#{activityName},
+				</if>
+			 	<if test=" null != dateStart">
+				#{dateStart},
+				</if>
+			 	<if test=" null != dateEnd">
+				#{dateEnd},
+				</if>
+			 	<if test=" null != status">
+				#{status},
+				</if>
+				<if test=" null != message and '' != message">
+				#{message},
+				</if>
+				<if test=" null != remark and '' != remark">
+				#{remark},
+				</if>
+				<if test=" null != creator and '' != creator">
+				#{creator},
+				</if>
+				<if test=" null != dateCreated and '' != dateCreated">
+				#{dateCreated},
+				</if>
+				<if test=" null != updator and '' != updator">
+				#{updator},
+				</if>
+				<if test=" null != dateUpdated and '' != dateUpdated">
+				#{dateUpdated},
+				</if>
+				<if test=" null != sendNum">
+				#{sendNum},
+				</if>
+				<if test=" null != sendObject and '' != sendObject">
+				#{sendObject},
+				</if>
+				<if test=" null != isSendAll">
+				#{isSendAll},	
+				</if>
+				<if test=" null != isGenerate">
+					#{isGenerate},
+				</if>
+				<if test=" null != sendStatus ">
+					#{sendStatus},
+				</if>
+				<if test=" null != dateSend and '' != dateSend">
+					#{dateSend}
+				</if>
+				<if test=" null != amount">
+					#{amount},
+				</if>
+				<if test=" null != province and '' != province">
+					#{province},
+				</if>
+				<if test=" null != city and '' != city">
+					#{city},
+				</if>
+				<if test=" null != area and '' != area">
+					#{area},
+				</if>
+				<if test=" null != ctype and '' != ctype">
+					#{ctype},
+				</if>
+				</trim>
+	 </insert>
+	 <update id="update" parameterMap="couponIssue">
+		UPDATE t_coupon_issue
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != hitRatio">
+					hit_ratio = #{hitRatio},
+				</if>
+				<if test=" null != maxTimes">
+					max_times = #{maxTimes},
+				</if>
+				<if test=" null != maximum">
+					maximum = #{maximum},
+				</if>
+				<if test=" null != rate ">
+					rate = #{rate},
+				</if>
+				<if test=" null != activityType">
+					activity_type = #{activityType},
+				</if>
+				<if test=" null != activityName and '' != activityName ">
+					activity_name = #{activityName},
+				</if>	
+				<if test=" null != dateStart and '' != dateStart ">
+					date_start = #{dateStart},
+				</if>
+				<if test=" null != dateEnd and '' != dateEnd ">
+					date_end = #{dateEnd},
+				</if>
+				<if test=" null != status ">
+					status = #{status},
+				</if>
+				<if test=" null != message and '' != message ">
+					message = #{message},
+				</if>
+				<if test=" null != remark and '' != remark ">
+					remark = #{remark},
+				</if>
+				<if test=" null != updator and '' != updator ">
+					updator = #{updator},
+				</if>
+				<if test=" null != message and '' != message ">
+					message = #{message},
+				</if>
+				<if test=" null != sendNum ">
+					send_num = #{sendNum},
+				</if>
+				<if test=" null != sendObject and '' != sendObject ">
+					send_object = #{sendObject},
+				</if>
+				
+				<if test=" null != isSendAll">
+					is_send_all = #{isSendAll},
+				</if>
+				<if test=" null != isGenerate ">
+					is_generate = #{isGenerate},
+				</if>
+				<if test=" null != sendStatus">
+					send_status = #{sendStatus},
+				</if>
+				<if test=" null != dateSend and '' != dateSend ">
+					date_send = #{dateSend},
+				</if>
+				<if test=" null != amount">
+					amount = #{amount},
+				</if>
+				<if test=" null != province and '' != province">
+					province = #{province},
+				</if>
+				<if test=" null != city and '' != city">
+					city = #{city},
+				</if>
+				<if test=" null != area and '' != area">
+					area = #{area},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != issueId">
+				issue_id = #{issueId}
+			</if>
+		</where>
+	</update>
+</mapper>

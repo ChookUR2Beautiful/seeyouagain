@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.vstar.dao.VstarCommentDao">
+	<resultMap id="BaseResultMap" type="com.xmniao.xmn.core.vstar.entity.VstarComment">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="player_id" jdbcType="INTEGER" property="playerId" />
+		<result column="nname" jdbcType="VARCHAR" property="nname" />
+		<result column="phone" jdbcType="VARCHAR" property="phone" />
+		<result column="content" jdbcType="VARCHAR" property="content" />
+		<result column="uid" jdbcType="INTEGER" property="uid" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="state" jdbcType="INTEGER" property="state" />
+		<result column="player_name" jdbcType="VARCHAR" property="playerName" />
+		<result column="player_phone" jdbcType="VARCHAR" property="playerPhone" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		t_vstar_comment.id, 
+		t_vstar_comment.player_id, 
+		t_vstar_comment.nname, 
+		t_vstar_comment.phone, 
+		t_vstar_comment.content, 
+		t_vstar_comment.uid, 
+		t_vstar_comment.create_time, 
+		t_vstar_comment.state
+	</sql>
+
+	<sql id="whereSQL">
+		and t_vstar_comment.state = 0
+		<if test="content != null and content != ''">
+			and t_vstar_comment.content like '%${content}%'
+		</if>
+		<if test="playerName != null and playerName != ''">
+			and t_vstar_player_info.nname like '%${playerName}%'
+		</if>
+		<if test="playerPhone != null and playerPhone != ''">
+			and t_vstar_player_info.phone = #{playerPhone}
+		</if>
+	</sql>
+
+	<delete id="delete">
+		update t_vstar_comment set state =1 where id = #{id}
+	</delete>
+
+	<select id="getList" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />,t_vstar_player_info.nname as player_name,t_vstar_player_info.phone as player_phone
+		from t_vstar_comment
+		join t_vstar_player_info 
+		on t_vstar_comment.player_id = t_vstar_player_info.id
+		where 1=1
+		<include refid="whereSQL" />
+		order by t_vstar_comment.create_time desc
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="count" resultType="java.lang.Long">
+		select count(1)
+		from t_vstar_comment
+		join t_vstar_player_info 
+		on t_vstar_comment.player_id = t_vstar_player_info.id
+		where 1=1
+		<include refid="whereSQL" />
+	</select>
+
+	<select id="selectByPrimaryKey" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_vstar_comment
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from t_vstar_comment
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.xmniao.xmn.core.vstar.entity.VstarComment">
+		insert into t_vstar_comment (id, player_id, nname,
+		phone, content, uid,
+		create_time, state)
+		values (#{id,jdbcType=INTEGER}, #{playerId,jdbcType=INTEGER},
+		#{nname,jdbcType=VARCHAR},
+		#{phone,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, #{uid,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP}, #{state,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective" parameterType="com.xmniao.xmn.core.vstar.entity.VstarComment">
+		insert into t_vstar_comment
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="playerId != null">
+				player_id,
+			</if>
+			<if test="nname != null">
+				nname,
+			</if>
+			<if test="phone != null">
+				phone,
+			</if>
+			<if test="content != null">
+				content,
+			</if>
+			<if test="uid != null">
+				uid,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="state != null">
+				state,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="playerId != null">
+				#{playerId,jdbcType=INTEGER},
+			</if>
+			<if test="nname != null">
+				#{nname,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null">
+				#{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null">
+				#{content,jdbcType=VARCHAR},
+			</if>
+			<if test="uid != null">
+				#{uid,jdbcType=INTEGER},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="state != null">
+				#{state,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.vstar.entity.VstarComment">
+		update t_vstar_comment
+		<set>
+			<if test="playerId != null">
+				player_id = #{playerId,jdbcType=INTEGER},
+			</if>
+			<if test="nname != null">
+				nname = #{nname,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null">
+				phone = #{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null">
+				content = #{content,jdbcType=VARCHAR},
+			</if>
+			<if test="uid != null">
+				uid = #{uid,jdbcType=INTEGER},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="state != null">
+				state = #{state,jdbcType=INTEGER},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.vstar.entity.VstarComment">
+		update t_vstar_comment
+		set player_id = #{playerId,jdbcType=INTEGER},
+		nname = #{nname,jdbcType=VARCHAR},
+		phone = #{phone,jdbcType=VARCHAR},
+		content = #{content,jdbcType=VARCHAR},
+		uid = #{uid,jdbcType=INTEGER},
+		create_time = #{createTime,jdbcType=TIMESTAMP},
+		state = #{state,jdbcType=INTEGER}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+</mapper>

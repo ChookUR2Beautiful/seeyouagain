@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.common.dao.TSequenceDao" >
+
+	<select id="getSid" parameterType="int" resultType="long">
+		select sid from t_sequence where numId=#{numId} for update
+	</select>
+	
+	<update id="updateSid" parameterType="int">
+		update t_sequence set sid=sid+1 where numId=#{numId}
+	</update>
+	
+	<update id="updateSpecifiedSid" parameterType="map">
+		update t_sequence set sid=#{sid} where numId=#{numId}
+	</update>
+	
+</mapper>

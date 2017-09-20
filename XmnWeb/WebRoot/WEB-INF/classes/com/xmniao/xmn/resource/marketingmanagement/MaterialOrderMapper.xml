@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.marketingmanagement.dao.MaterialOrderDao">
+	
+	<parameterMap type="TMaterialOrder" id="tMaterial"></parameterMap>
+	<resultMap type="TMaterialOrder" id="TMaterialMap">
+		<result column="id" property="id" />
+		<result column="order_sn" property="order_sn" />
+		<result column="orderSn" property="orderSn" />
+		<result column="uid" property="uid" />
+		<result column="mid" property="mid" />
+		<result column="sellername" property="sellername"/>
+		<result column="status" property="status" />
+		<result column="payid" property="payid" />
+		<result column="payment_type" property="payment_type" />
+		<result column="third_uid" property="third_uid" />
+		<result column="third_serial" property="third_serial" />
+		<result column="address" property="address" />
+		<result column="mobile" property="mobile" />
+		<result column="consignee" property="consignee" />
+		<result column="amount" property="amount" />
+		<result column="cash" property="cash" />
+		<result column="balance" property="balance" />
+		<result column="integral" property="integral" />
+		<result column="freight" property="freight" />
+		<result column="create_time" property="create_time" />
+		<result column="modify_time" property="modify_time" />
+		<result column="courier_number" property="courier_number" />
+		<result column="courier_type" property="courier_type" />
+		<result column="version" property="version" />
+		<result column="delivery_time" property="delivery_time" />
+		<result column="types" property="types" />
+		<result column="end_time" property="end_time" />
+		
+		<collection ofType="TMaterialOrderItems" property="orderItemList"  column="order_sn" >
+			<result column="moiId" property="id"/>
+            <result column="order_sn" property="order_sn" />
+            <result column="material_id" property="material_id" />
+            <result column="material_name" property="material_name" />
+		    <result column="price" property="price" />
+		    <result column="quantity" property="quantity" />  
+		</collection>
+	</resultMap>
+	
+<!-- 	订单返回字段 -->
+	<sql id="materialOrderCol">
+	 	 id, order_sn, uid, mid, status, payid, payment_type, third_uid,
+		 third_serial,  address,  mobile,  consignee, amount, cash, balance, 
+		 integral, freight, create_time, modify_time, courier_number, 
+		 courier_type, version, delivery_time
+	</sql>
+	
+<!-- 	物料订单列表 -->
+	<select id="getMaterialOrderList" resultMap="TMaterialMap" parameterMap="tMaterial">
+		SELECT
+			tmo.id,
+			tmo.order_sn,
+			tmo.uid,
+			tmo.mid,
+		    ts.sellername, 
+			tmo.STATUS,
+			tmo.payid,
+			tmo.payment_type,
+			tmo.third_uid,
+			tmo.third_serial,
+			tmo.address,
+			tmo.mobile,
+			tmo.consignee,
+			tmo.amount,
+			tmo.cash,
+			tmo.balance,
+			tmo.integral,
+			tmo.freight,
+			tmo.create_time,
+			tmo.modify_time,
+			tmo.courier_number,
+			tmo.courier_type,
+			tmo.version,
+			tmo.delivery_time  
+		FROM
+			t_material_order tmo 
+		LEFT JOIN t_seller ts ON ts.sellerid = tmo.mid  
+		WHERE 1=1 
+		<if test="order_sn != null and order_sn != '' ">
+			AND tmo.order_sn LIKE '%${order_sn}%'
+		</if>
+		<if test="status != null">
+			AND tmo.status = #{status}
+		</if>
+		<if test="courier_number != null and courier_number != ''">
+			AND tmo.courier_number = #{courier_number}
+		</if>
+		<if test="mobile != null and mobile != ''">
+			AND tmo.mobile = #{mobile}
+		</if>
+		<!-- 
+		<if test="types == 1">
+			AND status in (1,2,3,4)
+		</if>
+		<if test="types == 0">
+			AND status = 0
+		</if>
+		 -->
+<!-- 		<if test="null == end_time and ''== end_time and null != create_time and ''!= create_time"> -->
+<!-- 			AND create_time = #{create_time} -->
+<!-- 		</if> -->
+<!-- 		<if test="null != end_time and ''!= end_time and null == create_time and ''== create_time"> -->
+<!-- 			AND end_time =#{end_time}  -->
+<!-- 		</if> -->
+<!-- 		<if test="null != end_time and ''!= end_time and null != create_time and ''!= create_time"> -->
+<!-- 			AND create_time between #{create_time} and #{end_time}  -->
+<!-- 		</if> -->
+			ORDER BY tmo.create_time DESC 
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+<!-- 	物料订单总量 -->
+	<select id="getMaterialOrderCount" resultType="long" parameterMap="tMaterial">
+		SELECT  count(1)  FROM  t_material_order t WHERE 1=1 
+		<if test="order_sn != null and order_sn != '' ">
+			AND order_sn LIKE '%${order_sn}%'
+		</if>
+		<if test="status != null">
+			AND status = #{status}
+		</if>
+		<if test="courier_number != null and courier_number != ''">
+			AND courier_number = #{courier_number}
+		</if>
+		<if test="mobile != null and mobile != ''">
+			AND mobile = #{mobile}
+		</if>
+	</select>
+	
+<!-- 	物料订单详情 -->
+	<select id="getMaterialOrderInfo" resultType="com.xmniao.xmn.core.marketingmanagement.entity.TMaterialOrder" parameterType="Long">
+		SELECT   
+			<include refid="materialOrderCol"></include>, (SELECT sellername FROM t_seller WHERE sellerid = mid) AS sellername  
+		FROM  t_material_order
+		WHERE id = #{id} 
+	</select>
+	
+<!-- 	获取物料订单 商品 -->
+	<select id="getMaterialOrderForProd" resultType="com.xmniao.xmn.core.marketingmanagement.entity.TMaterialOrderItems" parameterType="String">
+		SELECT   
+			  id, order_sn, material_id,  material_name, price, quantity
+		FROM  t_material_order_items
+		WHERE order_sn = #{order_sn}
+	</select>
+	
+<!-- 	输入物流信息 -->
+	<update id="updateShipment"  parameterType="map">
+		update   
+			t_material_order
+		set 
+			courier_number = #{courier_number},
+			courier_type = #{courier_type},
+			delivery_time = #{delivery_time},
+			modify_time =  #{modify_time},
+			status = 3
+		WHERE id = #{id}
+	</update>
+	
+<!-- 	确认收货 -->
+	<update id="updateGetship"  parameterType="map">
+		UPDATE  
+			t_material_order 
+		SET  
+			modify_time =  #{modify_time},
+			status = 4 
+		WHERE id =  #{id}
+	</update>
+	
+	<select id="getExportMaterialOrderList" resultMap="TMaterialMap" parameterType="map">
+		SELECT 
+			moi.order_sn,moi.material_id, moi.material_name, moi.price, moi.quantity,moi.id AS moiId,  
+			mo.id, mo.order_sn as orderSn, mo.uid, mo.mid, ts.sellername, mo.status, mo.payid, mo.payment_type, 
+			mo.third_uid, mo.third_serial, mo.address, mo.mobile, mo.consignee, mo.amount, 
+			mo.cash, mo.balance,mo.integral, mo.freight, mo.create_time, mo.version,
+			mo.modify_time, mo.courier_number, mo.courier_type,  mo.delivery_time 
+		FROM 
+			t_material_order  mo
+		LEFT JOIN 
+			t_material_order_items moi 
+		ON 
+			mo.order_sn = moi.order_sn 
+		LEFT JOIN t_seller ts ON ts.sellerid = mo.mid 
+		WHERE 
+			DATE_FORMAT(mo.create_time, '%Y-%m-%d %H:%i:%s') BETWEEN #{startDate} AND  #{endDate}
+			AND mo.status NOT IN (0) 
+		ORDER BY mo.create_time  DESC
+	</select>
+	
+	<!-- 修改 -->
+	<update id="updateAddress" parameterType="TMaterialOrder">
+		UPDATE `t_material_order` 
+		<set>
+			<trim suffixOverrides=",">
+				<if test="null !=  status">
+					status = #{status},
+				</if>
+				<if test="null != address and '' != address">
+					address = #{address}, 
+				</if>
+			</trim>
+		</set> 
+		WHERE 
+			id = #{id} 
+	</update>
+	
+</mapper>

@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.CommentDao">
+
+	<parameterMap type="Comment" id="comment" />
+	
+	<resultMap type="Comment" id="commentMap">
+		<result column="cid" property="cid" />
+		<result column="sellerid" property="sellerid" />
+		<result column="uid" property="uid" />
+		<result column="nname" property="nname" />
+		<result column="content" property="content" />
+		<result column="sdate" property="sdate" />
+		<result column="number" property="number" />
+		<result column="total" property="total" />
+		<result column="hbranch" property="hbranch" />
+		<result column="fbranch" property="fbranch" />
+		<result column="kbranch" property="kbranch" />
+		<result column="jbranch" property="jbranch" />
+		<result column="percapita" property="percapita" />
+		<result column="status" property="status" />
+		<result column="sellername" property="sellername" />
+		<result column="is_del" property="isDel" />
+	</resultMap>
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_log
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						sellerid,
+						uid,
+						nname,
+						content,
+						sdate,
+						number,
+						total,
+						hbranch,
+						fbranch,
+						kbranch,
+						jbranch,
+						percapita,
+						status,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.sellerid},
+						 #{item.uid},
+						 #{item.nname},
+						 #{item.content},
+						 #{item.sdate},
+						 #{item.number},
+						 #{item.total},
+						 #{item.hbranch},
+						 #{item.fbranch},
+						 #{item.kbranch},
+						 #{item.jbranch},
+						 #{item.percapita},
+						 #{item.status},
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" parameterMap="comment" >
+		INSERT INTO t_comment
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != cid">
+					cid,
+				</if>
+			 	<if test=" null != sellerid">
+					sellerid,
+				</if>
+			 	<if test=" null != uid">
+					uid,
+				</if>
+			 	<if test=" null != nname and '' != nname ">
+					nname,
+				</if>
+			 	<if test=" null != content and '' != content ">
+					content,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+			 	<if test=" null != number">
+					number,
+				</if>
+			 	<if test=" null != total">
+					total,
+				</if>
+			 	<if test=" null != hbranch">
+					hbranch,
+				</if>
+			 	<if test=" null != fbranch">
+					fbranch,
+				</if>
+			 	<if test=" null != kbranch">
+					kbranch,
+				</if>
+			 	<if test=" null != jbranch">
+					jbranch,
+				</if>
+			 	<if test=" null != percapita">
+					percapita,
+				</if>
+			 	<if test=" null != status">
+					status,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != cid">
+					 	#{cid},
+				</if>
+			 	<if test=" null != sellerid">
+					 	#{sellerid},
+				</if>
+			 	<if test=" null != uid">
+					 	#{uid},
+				</if>
+			 	<if test=" null != nname and '' != nname ">
+					 	#{nname},
+				</if>
+			 	<if test=" null != content and '' != content ">
+					 	#{content},
+				</if>
+			 	<if test=" null != sdate">
+					 	#{sdate},
+				</if>
+			 	<if test=" null != number">
+					 	#{number},
+				</if>
+			 	<if test=" null != total">
+					 	#{total},
+				</if>
+			 	<if test=" null != hbranch">
+					 	#{hbranch},
+				</if>
+			 	<if test=" null != fbranch">
+					 	#{fbranch},
+				</if>
+			 	<if test=" null != kbranch">
+					 	#{kbranch},
+				</if>
+			 	<if test=" null != jbranch">
+					 	#{jbranch},
+				</if>
+			 	<if test=" null != percapita">
+					 	#{percapita},
+				</if>
+			 	<if test=" null != status">
+					 	#{status},
+				</if>
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_comment WHERE cid IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	<!-- 逻辑删除只是修改记录状态不删除真实数据 -->
+	<delete id="deleteByLogic" parameterType="Object">
+		UPDATE t_comment SET is_del = 0 WHERE cid IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterMap="comment">
+		UPDATE t_comment
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != cid">
+					cid = #{cid},
+				</if>
+				<if test=" null != sellerid">
+					sellerid = #{sellerid},
+				</if>
+				<if test=" null != uid">
+					uid = #{uid},
+				</if>
+				<if test=" null != nname and '' != nname ">
+					nname = #{nname},
+				</if>
+				<if test=" null != content and '' != content ">
+					content = #{content},
+				</if>
+				<if test=" null != sdate">
+					sdate = #{sdate},
+				</if>
+				<if test=" null != number">
+					number = #{number},
+				</if>
+				<if test=" null != total">
+					total = #{total},
+				</if>
+				<if test=" null != hbranch">
+					hbranch = #{hbranch},
+				</if>
+				<if test=" null != fbranch">
+					fbranch = #{fbranch},
+				</if>
+				<if test=" null != kbranch">
+					kbranch = #{kbranch},
+				</if>
+				<if test=" null != jbranch">
+					jbranch = #{jbranch},
+				</if>
+				<if test=" null != percapita">
+					percapita = #{percapita},
+				</if>
+				<if test=" null != status">
+					status = #{status},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != cid and '' != cid">
+				cid = #{cid}
+			</if>
+		</where>
+	</update>
+	
+	<select id="getList" resultMap="commentMap" parameterMap="comment">
+		SELECT a.*,b.sellername FROM t_comment a left join t_seller b on a.sellerid = b.sellerid
+		<where>
+			1=1 AND is_del = 1
+			<if test=" null != cid">
+				AND cid = #{cid}
+			</if>
+			<if test=" null != sellerid">
+				AND a.sellerid = #{sellerid}
+			</if>
+			<if test=" null != uid">
+				AND uid = #{uid}
+			</if>
+			<if test=" null != nname and '' != nname ">
+				AND nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != content and '' != content ">
+				AND content LIKE '%${content}%'
+			</if>
+			<if test=" null != sdate">
+				AND sdate = #{sdate}
+			</if>
+			<if test=" null != number">
+				AND number = #{number}
+			</if>
+			<if test=" null != total">
+				AND total = #{total}
+			</if>
+			<if test=" null != hbranch">
+				AND hbranch = #{hbranch}
+			</if>
+			<if test=" null != fbranch">
+				AND fbranch = #{fbranch}
+			</if>
+			<if test=" null != kbranch">
+				AND kbranch = #{kbranch}
+			</if>
+			<if test=" null != jbranch">
+				AND jbranch = #{jbranch}
+			</if>
+			<if test=" null != percapita">
+				AND percapita = #{percapita}
+			</if>
+			<if test=" null != status">
+				AND status = #{status}
+			</if>
+			<if test=" null != sdateStart and '' != sdateStart">
+				AND a.sdate &gt;= #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd and '' != sdateEnd">
+				AND a.sdate &lt; #{sdateEnd}
+			</if>
+		</where>
+			ORDER BY cid DESC  
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="comment">
+		SELECT COUNT(*) FROM t_comment
+		<where>
+			1=1 AND is_del = 1
+			<if test=" null != cid">
+				AND cid = #{cid}
+			</if>
+			<if test=" null != sellerid">
+				AND sellerid = #{sellerid}
+			</if>
+			<if test=" null != uid">
+				AND uid = #{uid}
+			</if>
+			<if test=" null != nname and '' != nname ">
+				AND nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != content and '' != content ">
+				AND content LIKE '%${content}%'
+			</if>
+			<if test=" null != sdate">
+				AND sdate = #{sdate}
+			</if>
+			<if test=" null != number">
+				AND number = #{number}
+			</if>
+			<if test=" null != total">
+				AND total = #{total}
+			</if>
+			<if test=" null != hbranch">
+				AND hbranch = #{hbranch}
+			</if>
+			<if test=" null != fbranch">
+				AND fbranch = #{fbranch}
+			</if>
+			<if test=" null != kbranch">
+				AND kbranch = #{kbranch}
+			</if>
+			<if test=" null != jbranch">
+				AND jbranch = #{jbranch}
+			</if>
+			<if test=" null != percapita">
+				AND percapita = #{percapita}
+			</if>
+			<if test=" null != status">
+				AND status = #{status}
+			</if>
+			<if test=" null != sdateStart and '' != sdateStart">
+				AND sdate&gt;= #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd and '' != sdateEnd">
+				AND sdate&lt;= #{sdateEnd}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Integer">
+		SELECT Max(cid) AS VALUE FROM t_comment
+	</select>
+	
+	<select id="getObject" resultMap="commentMap" parameterType="Long">
+		SELECT * FROM t_comment WHERE cid = #{0}
+	</select>
+	
+</mapper>

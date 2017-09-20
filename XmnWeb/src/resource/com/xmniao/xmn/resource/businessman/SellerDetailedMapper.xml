@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.SellerDetailedDao">
+
+	<parameterMap type="SellerDetailed" id="sellerDetailed" />
+	
+	<resultMap type="SellerDetailed" id="sellerDetailedMap">
+		<result column="sellerid" property="sellerid" />
+		<result column="consume" property="consume" />
+		<result column="returnrmb" property="returnrmb" />
+		<result column="iswifi" property="iswifi" />
+		<result column="isparking" property="isparking" />
+		<result column="introduce" property="introduce" />
+		<result column="dishes" property="dishes" />
+		<result column="landmark" property="landmark" />
+		<result column="number" property="number" />
+		<result column="sellername" property="sellername" />
+		<result column="ssid" property="WIFIName" />
+		<result column="wifi_pwd" property="WIFIPassword" />
+		<result column="tips" property="tips" />
+		<result column="seller_grade" property="sellerGrade" />
+		<result column="shop_area" property="shopArea" />
+		<result column="staff_number" property="staffNumber" />
+		<result column="monthly_turnover" property="monthlyTurnover" />
+		<result column="is_chain" property="isChain" />
+		<result column="is_pay" property="isPay" />
+		<result column="rule" property="rule" />
+		<result column="adjust_reason" property="adjustReason"/>
+		<result column="rebate_out" property="rebateOut"/>
+		<result column="operating_out" property="operatingOut" />
+		<result column="is_shopinfo" property="isShopinfo" />
+		<result column="is_discount" property="isDiscount"/>
+		<result column="is_open_booking" property="isOpenBooking"/>
+		<result column="amount_limit" property="amountLimit"/>
+		<result column="isroom" property="isroom"/>
+	</resultMap>
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_log
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						consume,
+						returnrmb,
+						iswifi,
+						isparking,
+						introduce,
+						dishes,
+						landmark,
+						number,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.consume},
+						 #{item.returnrmb},
+						 #{item.iswifi},
+						 #{item.isparking},
+						 #{item.introduce},
+						 #{item.dishes},
+						 #{item.landmark},
+						 #{item.number},
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" parameterMap="sellerDetailed" >
+		INSERT INTO t_seller_detailed
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != sellerid">
+					sellerid,
+				</if>
+			 	<if test=" null != consume">
+					consume,
+				</if>
+			 	<if test=" null != returnrmb and '' != returnrmb ">
+					returnrmb,
+				</if>
+			 	<if test=" null != iswifi">
+					iswifi,
+				</if>
+			 	<if test=" null != isparking">
+					isparking,
+				</if>
+			 	<if test=" null != introduce and '' != introduce ">
+					introduce,
+				</if>
+			 	<if test=" null != dishes and '' != dishes ">
+					dishes,
+				</if>
+			 	<if test=" null != landmark and '' != landmark ">
+					landmark,
+				</if>
+			 	<if test=" null != number">
+					number,
+				</if>
+				<if test=" null != WIFIName and '' != WIFIName ">
+					ssid,
+				</if>
+			 	<if test=" null != WIFIPassword and '' != WIFIPassword ">
+					wifi_pwd,
+				</if>
+			 	<if test=" null != tips and '' != tips ">
+					tips,
+				</if>
+				<if test=" null != sellerGrade and '' != sellerGrade ">
+					seller_grade,
+				</if>
+				<if test=" null != shopArea and '' != shopArea ">
+					shop_area,
+				</if>
+			 	<if test=" null != staffNumber and '' != staffNumber ">
+					staff_number,
+				</if>
+			 	<if test=" null != monthlyTurnover and '' != monthlyTurnover ">
+					monthly_turnover,
+				</if>
+				<if test=" null != isChain and '' != isChain ">
+					is_chain,
+				</if>
+				<if test=" null != isPay and '' != isPay ">
+					is_pay,
+				</if>
+				<if test=" null != rule and '' != rule ">
+					rule,
+				</if>
+				<if test="null != adjustReason and '' != adjustReason ">
+					adjust_reason,
+				</if>
+				<if test="null != isFirst">
+					is_first,
+				</if>
+				<if test="null != isOpenBooking">
+					is_open_booking,
+				</if>
+				<if test="null != amountLimit">
+					amount_limit,
+				</if>
+				<if test="null != isroom">
+					isroom,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != sellerid">
+					 	#{sellerid},
+				</if>
+			 	<if test=" null != consume">
+					 	#{consume},
+				</if>
+			 	<if test=" null != returnrmb and '' != returnrmb ">
+					 	#{returnrmb},
+				</if>
+			 	<if test=" null != iswifi">
+					 	#{iswifi},
+				</if>
+			 	<if test=" null != isparking">
+					 	#{isparking},
+				</if>
+			 	<if test=" null != introduce and '' != introduce ">
+					 	#{introduce},
+				</if>
+			 	<if test=" null != dishes and '' != dishes ">
+					 	#{dishes},
+				</if>
+			 	<if test=" null != landmark and '' != landmark ">
+					 	#{landmark},
+				</if>
+			 	<if test=" null != number">
+					 	#{number},
+				</if>
+				<if test=" null != WIFIName and '' != WIFIName ">
+					#{WIFIName},
+				</if>
+			 	<if test=" null != WIFIPassword and '' != WIFIPassword ">
+					#{WIFIPassword},
+				</if>
+			 	<if test=" null != tips and '' != tips ">
+					#{tips},
+				</if>
+				<if test=" null != sellerGrade and '' != sellerGrade ">
+					#{sellerGrade},
+				</if>
+				<if test=" null != shopArea and '' != shopArea ">
+					#{shopArea},
+				</if>
+			 	<if test=" null != staffNumber and '' != staffNumber ">
+					#{staffNumber},
+				</if>
+			 	<if test=" null != monthlyTurnover and '' != monthlyTurnover ">
+					#{monthlyTurnover},
+				</if>
+				<if test=" null != isChain and '' != isChain ">
+					#{isChain},
+				</if>
+				<if test=" null != isPay and '' != isPay ">
+					#{isPay},
+				</if>
+				<if test=" null != rule and '' != rule ">
+					#{rule},
+				</if>
+				<if test="null != adjustReason and '' != adjustReason ">
+					#{adjustReason},
+				</if>
+				<if test="null != isOpenBooking">
+					#{isOpenBooking},
+				</if>
+				<if test="null != amountLimit">
+					#{amountLimit},
+				</if>
+				<if test="null != isroom">
+					#{isroom},
+				</if>
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_seller_detailed WHERE sellerid IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterMap="sellerDetailed">
+		UPDATE t_seller_detailed
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != sellerid">
+					sellerid = #{sellerid},
+				</if>
+				<if test=" null != consume">
+					consume = #{consume},
+				</if>
+				<if test=" null != returnrmb ">
+					returnrmb = #{returnrmb},
+				</if>
+				<if test=" null != iswifi">
+					iswifi = #{iswifi},
+				</if>
+				<if test=" null != isparking">
+					isparking = #{isparking},
+				</if>
+				<if test=" null != introduce">
+					introduce = #{introduce},
+				</if>
+				<if test=" null != dishes">
+					dishes = #{dishes},
+				</if>
+				<if test=" null != landmark ">
+					landmark = #{landmark},
+				</if>
+				<if test=" null != number">
+					number = #{number},
+				</if>
+				<if test=" null != WIFIName">
+					ssid = #{WIFIName},
+				</if>
+				<if test=" null != WIFIPassword">
+					wifi_pwd = #{WIFIPassword},
+				</if>
+				<if test=" null != tips">
+					tips = #{tips},
+				</if>
+				<if test=" null != sellerGrade ">
+					seller_grade = #{sellerGrade},
+				</if>
+				<if test=" null != shopArea">
+					shop_area = #{shopArea},
+				</if>
+				<if test=" null != staffNumber">
+					staff_number = #{staffNumber},
+				</if>
+				<if test=" null != monthlyTurnover">
+					monthly_turnover = #{monthlyTurnover},
+				</if>
+				<if test=" null != isPay">
+					is_pay = #{isPay},
+				</if>
+				<if test=" null != isChain">
+					is_chain = #{isChain},
+				</if>
+				<if test=" null != rule">
+					rule = #{rule},
+				</if>
+				<if test="null != adjustReason and '' != adjustReason ">
+					adjust_reason = #{adjustReason},
+				</if>
+				<if test="null != isFirst">
+					is_first = #{isFirst},
+				</if>
+				<if test="null != isOpenBooking">
+					is_open_booking = #{isOpenBooking},
+				</if>
+				<if test="null != rebateOut">
+					rebate_out = #{rebateOut},
+				</if>
+				<if test="null != operatingOut">
+					operating_out = #{operatingOut},
+				</if>
+				<if test="null != isShopinfo">
+					is_shopinfo = #{isShopinfo},
+				</if>
+				<if test="null != isDiscount">
+					is_discount = #{isDiscount},
+				</if>
+				<if test="null != amountLimit">
+					amount_limit = #{amountLimit},
+				</if>
+				<if test="null != isroom">
+					isroom = #{isroom},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != sellerid and '' != sellerid">
+				sellerid = #{sellerid}
+			</if>
+		</where>
+	</update>
+	
+	<select id="getList" resultMap="sellerDetailedMap" parameterMap="sellerDetailed">
+	<!-- 	SELECT * FROM t_seller_detailed -->
+	SELECT A.*,B.sellername FROM t_seller_detailed A 
+	LEFT JOIN t_seller B 
+	ON A.sellerid=B.sellerid
+		<where>
+			1=1
+			<if test=" null != sellerid">
+				AND A.sellerid = #{sellerid}
+			</if>
+			<if test=" null != consume">
+				AND A.consume = #{consume}
+			</if>
+			<if test=" null != returnrmb and '' != returnrmb ">
+				AND A.returnrmb LIKE '%${returnrmb}%'
+			</if>
+			<if test=" null != iswifi">
+				AND A.iswifi = #{iswifi}
+			</if>
+			<if test=" null != isparking">
+				AND A.isparking = #{isparking}
+			</if>
+			<if test=" null != introduce and '' != introduce ">
+				AND A.introduce LIKE '%${introduce}%'
+			</if>
+			<if test=" null != dishes and '' != dishes ">
+				AND A.dishes LIKE '%${dishes}%'
+			</if>
+			<if test=" null != landmark and '' != landmark ">
+				AND A.landmark LIKE '%${landmark}%'
+			</if>
+			<!-- <if test=" null != number">
+				AND A.number = #{number}
+			</if> -->
+			<if test=" null != numberSt and '' != numberSt">
+				AND A.number&gt;= #{numberSt}
+			</if>
+			<if test=" null != numberEd and '' != numberEd">
+				AND A.number&lt;= #{numberEd}
+			</if>
+			
+			<if test=" null != sellername and '' != sellername ">
+				AND B.sellername LIKE '%${sellername}%'
+			</if>
+		</where>
+			ORDER BY sellerid DESC  
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+			
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="sellerDetailed">
+	<!-- 	SELECT COUNT(*) FROM t_seller_detailed -->
+	SELECT COUNT(*) FROM t_seller_detailed A 
+	LEFT JOIN t_seller B 
+	ON A.sellerid=B.sellerid
+		<where>
+			1=1
+			<if test=" null != sellerid">
+				AND A.sellerid = #{sellerid}
+			</if>
+			<if test=" null != consume">
+				AND A.consume = #{consume}
+			</if>
+			<if test=" null != returnrmb and '' != returnrmb ">
+				AND A.returnrmb LIKE '%${returnrmb}%'
+			</if>
+			<if test=" null != iswifi">
+				AND A.iswifi = #{iswifi}
+			</if>
+			<if test=" null != isparking">
+				AND A.isparking = #{isparking}
+			</if>
+			<if test=" null != introduce and '' != introduce ">
+				AND A.introduce LIKE '%${introduce}%'
+			</if>
+			<if test=" null != dishes and '' != dishes ">
+				AND A.dishes LIKE '%${dishes}%'
+			</if>
+			<if test=" null != landmark and '' != landmark ">
+				AND A.landmark LIKE '%${landmark}%'
+			</if>
+			<!-- <if test=" null != number">
+				AND A.number = #{number}
+			</if> -->
+			<if test=" null != numberSt and '' != numberSt">
+				AND A.number&gt;= #{numberSt}
+			</if>
+			<if test=" null != numberEd and '' != numberEd">
+				AND A.number&lt;= #{numberEd}
+			</if>
+			
+			<if test=" null != sellername and '' != sellername ">
+				AND B.sellername LIKE '%${sellername}%'
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Integer">
+		SELECT Max(sellerid) AS VALUE FROM t_seller_detailed
+	</select>
+	
+	<select id="getObject" resultMap="sellerDetailedMap" parameterType="Long">
+		SELECT * FROM t_seller_detailed WHERE sellerid = #{0}
+	</select>
+	<select id="getSellerDetailed" resultMap="sellerDetailedMap" parameterType="Long">
+         SELECT ts.fatherid as fatherid,ts.sellername AS sellername,ts.lssellername AS lssellername ,td.* FROM t_seller_detailed  
+         td LEFT JOIN t_seller ts ON td.sellerid=ts.sellerid WHERE td.sellerid = #{0}
+         
+	</select>
+	
+	<update id="batchUpdateIsChain" parameterMap="sellerDetailed">
+	UPDATE t_seller_detailed 
+	SET is_chain = #{isChain}
+	<where>
+		<choose>
+			<when test="null != sellerIds and '' != sellerIds">
+				FIND_IN_SET(sellerid,#{sellerIds})
+			</when>
+			<otherwise>
+				1=0
+			</otherwise>
+		</choose>
+	</where>
+	</update>
+</mapper>

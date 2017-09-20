@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.coupon.dao.CouponDao">
+
+	<parameterMap type="Coupon" id="coupon" />
+
+	<resultMap type="Coupon" id="couponMap">
+		<result column="cid" property="cid" />
+		<result column="cname" property="cname" />
+		<result column="denomination" property="denomination" />
+		<result column="validity_desc" property="validityDesc" />
+		<result column="start_date" property="startDate" />
+		<result column="end_date" property="endDate" />
+		<result column="condition" property="condition" />
+		<result column="use_num" property="useNum" />
+		<result column="pic" property="pic" />
+		<result column="breviary" property="breviary" />
+		<result column="showall" property="showAll" />
+		<result column="is_all_seller" property="isAllSeller" />
+		<result column="cid" property="value" />
+		<result column="day_num" property="dayNum" />
+		<result column="rule" property="rule" />
+		<result column="overlay" property="overlay"/>
+	</resultMap>
+
+	<!-- 可重用的Where 条件 -->
+	<sql id="whereSQL">
+		<if test=" null != cid and '' != cid">
+			AND tc.cid = #{cid}
+		</if>
+		<if test=" null != cname and '' != cname">
+			AND tc.cname LIKE '%${cname}%'
+		</if>
+		<if test=" null != showAll">
+			AND tc.showall = #{showAll}
+		</if>
+		<if test=" null != startDate and '' != startDate">
+			AND tc.start_date = #{startDate}
+		</if>
+		<if test=" null != endDate and '' != endDate">
+			AND tc.end_date = #{endDate}
+		</if>
+		<if test=" null != condition and '' != condition">
+			AND tc.condition = #{condition}
+		</if>
+	</sql>
+
+	<!-- 可重用的插入语句中表的列 -->
+	<sql id="insertColumnSQL">
+		<if test=" null != cname and ''!=cname">
+			cname,
+		</if>
+		<if test=" null != denomination and '' != denomination ">
+			denomination,
+		</if>
+		<if test=" null != validityDesc and '' != validityDesc ">
+			validityDesc,
+		</if>
+		<if test=" null != startDate and '' != startDate ">
+			start_date,
+		</if>
+		<if test=" null != endDate">
+			end_date,
+		</if>
+		<if test=" null != condition">
+			`condition`,
+		</if>
+		<if test=" null != useNum">
+			use_num,
+		</if>
+		<if test=" null != pic and '' != pic">
+			pic,
+		</if>
+		<if test=" null != breviary and ''!=breviary">
+			breviary,
+		</if>
+		<if test=" null != showAll">
+			showall,
+		</if>
+		<if test=" null != isAllSeller">
+			is_all_seller,
+		</if>
+		<if test=" null != dayNum">
+			day_num,
+		</if>
+		<if test=" null != rule and ''!= rule">
+			rule,
+		</if>
+		<if test=" null != ctype and ''!= ctype">
+			ctype,
+		</if>
+		<if test=" null != overlay">
+			overlay,
+		</if>
+		<if test=" null != updateTime">
+			update_time,
+		</if>
+	</sql>
+	<!-- 可重用的插入语句中表的值 -->
+	<sql id="insertValuesSQL">
+		<if test=" null != cname and ''!=cname">
+			#{cname},
+		</if>
+		<if test=" null != denomination and '' != denomination ">
+			#{denomination},
+		</if>
+		<if test=" null != validityDesc and '' != validityDesc ">
+			#{validityDesc},
+		</if>
+		<if test=" null != startDate and '' != startDate ">
+			#{startDate},
+		</if>
+		<if test=" null != endDate">
+			#{endDate},
+		</if>
+		<if test=" null != condition">
+			#{condition},
+		</if>
+		<if test=" null != useNum">
+			#{useNum},
+		</if>
+		<if test=" null != pic and '' != pic">
+			#{pic},
+		</if>
+		<if test=" null != breviary and '' != breviary">
+			#{breviary},
+		</if>
+		<if test=" null != showAll">
+			#{showAll},
+		</if>
+		<if test=" null != isAllSeller">
+			#{isAllSeller},
+		</if>
+		<if test=" null != dayNum">
+			#{dayNum},
+		</if>
+		<if test=" null != rule and ''!= rule">
+			#{rule},
+		</if>
+		<if test=" null != ctype and ''!= ctype">
+			#{ctype},
+		</if>
+		<if test=" null != overlay">
+			#{overlay},
+		</if>
+		<if test=" null != updateTime">
+			#{updateTime},
+		</if>
+	</sql>
+	<!-- 更新动态设置值 -->
+	<sql id="updateSetSQL">
+		start_date = #{startDate},
+		end_date = #{endDate},
+		<if test=" null != overlay">
+			overlay = #{overlay},
+		</if>
+		<if test=" null != cname and ''!=cname">
+			cname = #{cname},
+		</if>
+		<if test=" null != denomination and '' != denomination ">
+			denomination = #{denomination},
+		</if>
+		<if test=" null != validityDesc and '' != validityDesc ">
+			validity_desc = #{validityDesc},
+		</if>
+		<if test=" null != condition">
+			`condition` = #{condition},
+		</if>
+		<if test=" null != useNum">
+			use_num = #{useNum},
+		</if>
+		<if test=" null != pic ">
+			pic = #{pic},
+		</if>
+		<if test=" null != breviary ">
+			breviary = #{breviary},
+		</if>
+		<if test=" null != showAll">
+			showall = #{showAll},
+		</if>
+		<if test=" null != rule and ''!= rule">
+			 rule = #{rule},
+		</if>
+		<if test=" null != updateTime">
+			update_time = #{updateTime},
+		</if>
+			day_num = #{dayNum},
+			is_all_seller = #{isAllSeller}
+	</sql>
+
+	<insert id="addBatch" parameterType="java.util.ArrayList">
+		INSERT INTO t_coupon
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			cname,
+			denomination,
+			validity_desc,
+			start_date,
+			end_date,
+			condition,
+			use_num,
+			pic,
+			breviary,
+			showall,
+			is_all_seller,
+			day_num,
+			rule
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list"
+			separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				#{item.cname},
+				#{item.denomination},
+				#{item.validityDesc},
+				#{item.startDate},
+				#{item.endDate},
+				#{item.condition},
+				#{item.useNum},
+				#{item.pic},
+				#{item.breviary},
+				#{item.showAll},
+				#{item.isAllSeller},
+				#{item.dayNum},
+				#{item.rule}
+			</trim>
+		</foreach>
+	</insert>
+    <insert id="addReturnId" useGeneratedKeys="true" keyProperty="cid" keyColumn="cid" parameterMap="coupon" >
+         INSERT INTO t_coupon
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<include refid="insertColumnSQL"></include>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			<include refid="insertValuesSQL"></include>
+		</trim>
+    </insert>
+    
+	<insert id="add" parameterMap="coupon">
+		INSERT INTO t_coupon
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<include refid="insertColumnSQL"></include>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			<include refid="insertValuesSQL"></include>
+		</trim>
+	</insert>
+
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_coupon WHERE cid IN
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=") ">
+			#{item}
+		</foreach>
+	</delete>
+
+	<update id="update" parameterMap="coupon">
+		UPDATE t_coupon
+		<set>
+			<trim suffixOverrides=",">
+				<include refid="updateSetSQL"></include>
+			</trim>
+		</set>
+		WHERE cid=#{cid}
+	</update>
+
+	<select id="getList" resultMap="couponMap" parameterMap="coupon">
+		SELECT DISTINCT
+		  tc.*,
+		  (SELECT 
+		    COUNT(*) 
+		  FROM
+		    t_coupon_seller tcs 
+		  WHERE tcs.cid = tc.cid AND ltype = 1 AND include = 1 AND status = 1) AS countOfSeller,
+		  (SELECT 
+		    GROUP_CONCAT(ta.title) 
+		  FROM
+		    t_coupon_city tcc 
+		    LEFT JOIN t_area ta 
+		      ON ta.area_id = tcc.city 
+		  WHERE tcc.cid = tc.cid) AS citysText 
+		FROM
+		t_coupon tc
+		  LEFT JOIN t_coupon_city tcc 
+		    ON tcc.cid = tc.cid 
+		<where>
+			1=1
+			<include refid="whereSQL"></include>
+			<if test=" null != city and '' != city">
+				AND tcc.city =#{city}
+			</if>
+			<if test=" null != province and '' != province">
+				AND tcc.provinces =#{province}
+			</if>
+			<if test=" null != startDateStart and '' != startDateStart">
+				AND tc.start_date &gt;=#{startDateStart}
+			</if>
+			<if test=" null != startDateEnd and '' != startDateEnd">
+				AND tc.start_date &lt;#{startDateEnd}
+			</if>
+			<if test=" null != denominationStart ">
+			AND tc.denomination &gt;= #{denominationStart}
+			</if>
+			<if test=" null != denominationEnd ">
+			AND tc.denomination &lt; #{denominationEnd}
+			</if>
+			<if test=" null != ctype ">
+			AND tc.ctype = #{ctype}
+			</if>
+		</where>
+		ORDER BY cid DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="count" resultType="Long" parameterMap="coupon">
+		SELECT 
+		  COUNT(DISTINCT tc.cid) 
+		FROM 
+		  t_coupon tc
+		  LEFT JOIN t_coupon_city tcc 
+		    ON tcc.cid = tc.cid 
+		<where>
+			1=1
+			<include refid="whereSQL"></include>
+			<if test=" null != city and '' != city">
+				AND tcc.city =#{city}
+			</if>
+			<if test=" null != province and '' != province">
+				AND tcc.provinces =#{province}
+			</if>
+			<if test=" null != startDateStart and '' != startDateStart">
+				AND tc.start_date &gt;= #{startDateStart}
+			</if>
+			<if test=" null != startDateEnd and '' != startDateEnd">
+				AND tc.start_date &lt;#{startDateEnd}
+			</if>
+			<if test=" null != denominationStart ">
+			AND tc.denomination &gt;=  #{denominationStart}
+			</if>
+			<if test=" null != denominationEnd ">
+			AND tc.denomination &lt;#{denominationEnd}
+			</if>
+			<if test=" null != ctype ">
+			AND tc.ctype = #{ctype}
+			</if>
+		</where>
+	</select>
+
+	<select id="getMaxId" resultType="Long">
+		SELECT Max(cid) AS VALUE FROM
+		t_coupon
+	</select>
+
+	<select id="getObject" resultMap="couponMap" parameterType="Long">
+		SELECT * FROM t_coupon WHERE cid = #{0}
+	</select>
+	
+	
+	<select id="getSelect" resultMap="couponMap" parameterMap="coupon">
+		SELECT tb.cid as value,tb.cname as cname, tb.use_num useNum, tb.ctype ctype
+		FROM t_coupon tb
+		<where>
+			<if test=" null != cid">
+				AND tb.cid = #{cid}
+			</if>
+			<if test=" null != cname and '' != cname ">
+				AND tb.cname LIKE '%${cname}%'
+			</if>
+			<if test=" null != ctype and '' != ctype or 0==ctype">
+				AND tb.ctype = #{ctype}
+			</if>
+		</where>
+		ORDER BY update_time DESC, cid desc
+
+			<if test=" null != status">
+				AND tb.status = #{status}
+			</if>
+		</where>
+		ORDER BY update_time DESC, cid desc
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+</mapper>

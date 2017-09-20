@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.billmanagerment.dao.RefundBillDao">
+
+	<parameterMap type="Refund" id="refund" />
+	
+	<resultMap type="Refund" id="refundMap">
+		<result column="id" property="id" />                            
+		<result column="bid" property="bid" />                            
+		<result column="sellerid" property="sellerid" />
+		<result column="sellername" property="sellername" />
+		<result column="apply" property="apply" />
+		<result column="cancel" property="cancel" />
+		<result column="qppeal" property="qppeal" />
+		<result column="processing" property="processing" />
+		<result column="status" property="status" />
+		<result column="sdate" property="sdate" />
+		<result column="qdate" property="qdate" />
+		<result column="adate" property="adate" />
+		<result column="cdate" property="cdate" />
+		<result column="quit_date" property="quitDate" />
+		<result column="remarks" property="remarks" />
+		<result column="paytype" property="paytype" />
+		<result column="commision" property="commision" />
+		<result column="profit" property="profit" />
+		<result column="cuser" property="cuser" />
+		<result column="give_money" property="giveMoney" />
+		<result column="activity_rest" property="activityRest" />
+		<result column="payment" property="payment" />
+		<result column="flat_agio" property="flatAgio" />
+		<result column="flat_money" property="flatMoney" />
+		<result column="is_activity" property="isactivity" />
+		<result column="activity_conent" property="activityConent" />
+		<result column="reduction" property="reduction" />
+	</resultMap>
+	
+	<!-- 商家申请订单 -->
+	<select id="getRefundBillList" resultMap="refundMap" parameterMap="refund">
+		
+		SELECT r.*,b.nname,b.flat_agio,b.flat_money,b.is_activity,b.activity_conent,b.payment,b.payid,b.money,b.codeid,b.sdate as orderDate,b.paytype,b.zdate as zdate,b.activity_rest as activityRest, r.processing  FROM t_refund r 
+		
+		FORCE INDEX(index_status) left join t_bill b on r.bid=b.bid
+		<where>
+			r.status='3'
+			AND b.is_virtual=0
+			<if test=" null != bid and '' != bid ">
+				AND r.bid LIKE '%${bid}%'
+			</if>
+			<if test=" null != nname and '' != nname ">
+				AND b.nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND r.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != payid and '' != payid ">
+				AND b.payid LIKE '%${payid}%'
+			</if>
+			<if test=" null != zdateStart and '' != zdateStart">
+				AND  b.zdate &gt;= #{zdateStart}
+			</if>
+			<if test=" null != zdateEnd and ''!= zdateEnd">
+				AND  b.zdate &lt; #{zdateEnd}
+			</if>
+			
+			<if test=" null != paytype and '' != paytype ">
+				AND b.paytype = #{paytype}
+			</if>
+		</where>
+			ORDER BY r.adate DESC,r.sdate DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="refundBillCount" resultType="Long" parameterMap="refund">
+		SELECT count(r.bid) FROM t_refund r FORCE INDEX(index_status) left join t_bill b on r.bid=b.bid
+		<where>
+			r.status='3'
+			AND b.is_virtual=0
+			<if test=" null != bid and '' != bid ">
+				AND b.bid LIKE '%${bid}%'
+			</if>
+			<if test=" null != nname and '' != nname ">
+				AND b.nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND r.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != payid and '' != payid ">
+				AND b.payid LIKE '%${payid}%'
+			</if>
+			<if test=" null != zdateStart and '' != zdateStart">
+				AND  b.zdate &gt;= #{zdateStart}
+			</if>
+			<if test=" null != zdateEnd and ''!= zdateEnd">
+				AND  b.zdate &lt;#{zdateEnd}
+			</if>
+			
+			<if test=" null != paytype and '' != paytype ">
+				AND b.paytype = #{paytype}
+			</if>
+		</where>
+	</select>
+	
+	
+	<!-- 待退款订单 -->
+	<select id="getRefundBillPendingList" resultMap="refundMap" parameterMap="refund">
+
+		SELECT r.*,b.reduction,b.status as billStatus,b.source AS billSource,b.nname,b.phoneid,b.payid,b.money,b.codeid,b.sdate as orderDate ,b.zdate,b.paytype,b.activity_rest as activityRest,b.flat_agio,b.flat_money,b.is_activity,b.activity_conent,b.profit,b.commision,b.give_money,b.cuser,r.processing FROM t_refund r 
+		
+		FORCE INDEX(index_status) left join t_bill b on r.bid=b.bid
+		<where>
+		
+		    <if test=" null != intstatus and intstatus.length > 0 ">
+				r.status in 
+				<foreach collection="intstatus" index="index" item="item"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			
+			AND b.is_virtual=0
+			<if test=" null != bid and '' != bid ">
+				AND r.bid = #{bid}
+			</if>
+			<if test=" null != nname and '' != nname ">
+				AND b.nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				AND b.phoneid =  #{phoneid}
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND r.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != payid and '' != payid ">
+				AND b.payid LIKE '%${payid}%'
+			</if>
+			<if test=" null != zdateStart and '' != zdateStart">
+				AND  b.zdate &gt;= #{zdateStart}
+			</if>
+			<if test=" null != zdateEnd and ''!= zdateEnd">
+				AND  b.zdate &lt;#{zdateEnd}
+			</if>	
+			<if test=" null != sdate and ''!= sdate">
+				AND  DATE_FORMAT(r.sdate,'%y-%m-%d') = DATE_FORMAT(#{sdate},'%y-%m-%d')
+			</if>	
+					
+			<if test=" null != paytype and '' != paytype ">
+				AND b.paytype = #{paytype}
+			</if>
+			<if test=" null != isPresidentHandle and '' != isPresidentHandle ">
+				AND r.is_president_handle = #{isPresidentHandle}
+			</if>
+		</where>
+			ORDER BY  r.qdate DESC,r.sdate DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="refundBillPendingCount" resultType="Long" parameterMap="refund">
+		SELECT count(r.bid) FROM t_refund r FORCE INDEX(index_status) left join t_bill b on r.bid=b.bid
+		<where>
+			<if test=" null != intstatus and intstatus.length > 0 ">
+				r.status in 
+				<foreach collection="intstatus" index="index" item="item"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			AND b.is_virtual=0
+			<if test=" null != bid and '' != bid ">
+				AND b.bid = #{bid}
+			</if>
+			<if test=" null != nname and '' != nname ">
+				AND b.nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				AND b.phoneid =  #{phoneid}
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND r.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != payid and '' != payid ">
+				AND b.payid LIKE '%${payid}%'
+			</if>
+			<if test=" null != zdateStart and '' != zdateStart">
+				AND  b.zdate &gt;= #{zdateStart}
+			</if>
+			<if test=" null != zdateEnd and ''!= zdateEnd">
+				AND  b.zdate &lt;#{zdateEnd}
+			</if>
+			<if test=" null != sdate and ''!= sdate">
+				AND  DATE_FORMAT(r.sdate,'%y-%m-%d') = DATE_FORMAT(#{sdate},'%y-%m-%d')
+			</if>
+			<if test=" null != paytype and '' != paytype ">
+				AND b.paytype = #{paytype}
+			</if>
+			<if test=" null != isPresidentHandle and '' != isPresidentHandle ">
+				AND r.is_president_handle = #{isPresidentHandle}
+			</if>
+		</where>
+	</select>
+	
+	
+	<select id="getObject" resultMap="refundMap" parameterType="Long">
+		SELECT r.*,b.nname,b.money,b.codeid,b.sdate as orderDate FROM t_refund r left join t_bill b on r.bid=b.bid
+		WHERE r.id = #{0} AND b.is_virtual=0
+	</select>
+	
+	<!-- 退款已处理订单 -->
+	<select id="getRefundBillPendingHistoryList" resultMap="refundMap" parameterMap="refund">		
+		SELECT r.*,b.nname,b.phoneid,b.payid,b.money,b.codeid,b.flat_agio,b.flat_money,b.is_activity,b.activity_conent,
+		b.sdate as orderDate ,b.zdate,b.paytype,b.activity_rest as activityRest,r.processing FROM t_refund r FORCE INDEX(index_status) left join t_bill b on r.bid=b.bid
+		<where>
+			r.status in (8,9,10)
+			AND b.is_virtual=0
+			<if test=" null != bid and '' != bid ">
+				AND r.bid LIKE '%${bid}%'
+			</if>
+			<if test=" null != nname and '' != nname ">
+				AND b.nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				AND b.phoneid =  #{phoneid}
+			</if>
+			
+			<if test=" null != isactivity">
+				AND b.is_activity = #{isactivity}
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND r.sellername LIKE '%${sellername}%'
+			</if>
+			
+			<if test=" null != payid and '' != payid ">
+				AND b.payid LIKE '%${payid}%'
+			</if>
+			<if test=" null != zdateStart and '' != zdateStart">
+				AND  b.zdate &gt;= #{zdateStart}
+			</if>
+			<if test=" null != zdateEnd and ''!= zdateEnd">
+				AND  b.zdate &lt;#{zdateEnd}
+			</if>	
+			<if test=" null != sdate">
+				AND  DATE_FORMAT(r.sdate,'%y-%m-%d') = DATE_FORMAT(#{sdate},'%y-%m-%d')
+			</if>
+			<if test=" null != quitDate">
+				AND  DATE_FORMAT(r.quit_date,'%y-%m-%d') = DATE_FORMAT(#{quitDate},'%y-%m-%d')
+			</if>
+			
+			<if test=" null != quitDateStart">
+				AND  r.quit_date &gt;= #{quitDateStart}
+			</if>
+			<if test=" null != quitDateEnd">
+				AND  r.quit_date &lt; #{quitDateEnd}
+			</if>
+			
+			<if test=" null != paytype and '' != paytype ">
+				AND b.paytype = #{paytype}
+			</if>
+			<if test=" null != status and '' != status ">
+				AND r.status = #{status}
+			</if>
+		</where>
+			ORDER BY r.quit_date DESC,r.sdate DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="refundBillPendingHistoryCount" resultType="Long" parameterMap="refund">
+		SELECT count(r.bid) FROM t_refund r FORCE INDEX(index_status) left join t_bill b on r.bid=b.bid
+		<where>
+			r.status in (8,9,10)
+			AND b.is_virtual=0
+			<if test=" null != bid and '' != bid ">
+				AND b.bid LIKE '%${bid}%'
+			</if>
+			<if test=" null != nname and '' != nname ">
+				AND b.nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				AND b.phoneid =  #{phoneid}
+			</if>
+			<if test=" null != isactivity">
+				AND b.is_activity = #{isactivity}
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND r.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != payid and '' != payid ">
+				AND b.payid LIKE '%${payid}%'
+			</if>
+			<if test=" null != zdateStart and '' != zdateStart">
+				AND  b.zdate &gt;= #{zdateStart}
+			</if>
+			<if test=" null != zdateEnd and ''!= zdateEnd">
+				AND  b.zdate &lt;#{zdateEnd}
+			</if>
+			<if test=" null != sdate">
+				AND  DATE_FORMAT(r.sdate,'%y-%m-%d') = DATE_FORMAT(#{sdate},'%y-%m-%d')
+			</if>
+			<if test=" null != quitDate">
+				AND  DATE_FORMAT(r.quit_date,'%y-%m-%d') = DATE_FORMAT(#{quitDate},'%y-%m-%d')
+			</if>
+			<if test=" null != quitDateStart">
+				AND  r.quit_date &gt;= #{quitDateStart}
+			</if>
+			<if test=" null != quitDateEnd">
+				AND  r.quit_date &lt; #{quitDateEnd}
+			</if>
+			<if test=" null != paytype and '' != paytype ">
+				AND b.paytype = #{paytype}
+			</if>
+			<if test=" null != status and '' != status ">
+				AND r.status = #{status}
+			</if>
+		</where>
+	</select>
+
+	<!-- 总裁办处理订单 -->
+	<select id="getRefundBillPresidentList" resultMap="refundMap" parameterMap="refund">
+		
+		SELECT r.*,b.nname,b.payid,b.money,b.codeid,b.sdate as orderDate ,b.zdate,b.paytype,r.processing FROM t_refund r left join t_bill b on r.bid=b.bid
+		<where>
+			r.status = 6
+			AND b.is_virtual=0
+			<if test=" null != bid and '' != bid ">
+				AND r.bid LIKE '%${bid}%'
+			</if>
+			<if test=" null != nname and '' != nname ">
+				AND b.nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND r.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != payid and '' != payid ">
+				AND b.payid LIKE '%${payid}%'
+			</if>
+			<if test=" null != zdateStart and '' != zdateStart">
+				AND  b.zdate &gt;= #{zdateStart}
+			</if>
+			<if test=" null != zdateEnd and ''!= zdateEnd">
+				AND  b.zdate &lt;#{zdateEnd}
+			</if>	
+					
+			<if test=" null != paytype and '' != paytype ">
+				AND b.paytype = #{paytype}
+			</if>
+		</where>
+			ORDER BY  r.qdate DESC,r.sdate DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="refundBillPresidentCount" resultType="Long" parameterMap="refund">
+		SELECT count(r.bid) FROM t_refund r left join t_bill b on r.bid=b.bid
+		<where>
+			r.status = 6
+			AND b.is_virtual=0
+			<if test=" null != bid and '' != bid ">
+				AND b.bid LIKE '%${bid}%'
+			</if>
+			<if test=" null != nname and '' != nname ">
+				AND b.nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND r.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != payid and '' != payid ">
+				AND b.payid LIKE '%${payid}%'
+			</if>
+			<if test=" null != zdateStart and '' != zdateStart">
+				AND  b.zdate &gt;= #{zdateStart}
+			</if>
+			<if test=" null != zdateEnd and ''!= zdateEnd">
+				AND  b.zdate &lt;#{zdateEnd}
+			</if>
+			
+			<if test=" null != paytype and '' != paytype ">
+				AND b.paytype = #{paytype}
+			</if>
+		</where>
+	</select>
+		
+	<update id="update" parameterMap="refund">
+		UPDATE t_refund
+		<set>
+			<trim suffixOverrides=",">
+	
+				<if test=" null != remarks and '' != remarks ">
+					remarks = #{remarks},
+				</if>
+				<if test=" null != processing and '' != processing ">
+					processing = #{processing},
+				</if>
+				
+				<if test=" null != status and '' != status ">
+					status = #{status},
+				</if>
+				<if test=" null != cancel and '' != cancel ">
+					cancel = #{cancel},
+				</if>
+				<if test=" null != qdate and '' != qdate ">
+					qdate = #{qdate},
+				</if>
+				<if test=" null != quitDate and '' != quitDate ">
+					quit_date = #{quitDate},
+				</if>
+				<if test=" null != pdate and '' != pdate ">
+					pdate = #{pdate},
+				</if>
+				<if test=" null != isPresidentHandle and '' != isPresidentHandle ">
+					is_president_handle = #{isPresidentHandle}
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != id and '' != id">
+				id = #{id}
+			</if>
+		</where>
+	</update>		
+</mapper>

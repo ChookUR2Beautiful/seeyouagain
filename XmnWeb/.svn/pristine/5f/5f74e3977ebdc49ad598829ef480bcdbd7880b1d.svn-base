@@ -1,0 +1,811 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.business_cooperation.dao.JointDao">
+	<parameterMap type="Joint" id="joint" />
+	<resultMap type="Joint" id="jointMap">
+		<result column="jointid" property="jointid" />
+		<result column="corporate" property="corporate" />
+		<result column="legalperson" property="legalperson" />
+		<result column="idnumber" property="idnumber" />
+		<result column="idnumberurl" property="idnumberurl" />
+		<result column="license" property="license" />
+		<result column="licenseurl" property="licenseurl" />
+		<result column="city" property="city" />
+		<result column="area" property="area" />
+		<result column="address" property="address" />
+		<result column="status" property="status" />
+		<result column="Industry" property="industry" />
+		<result column="sdate" property="sdate" />
+		<result column="edate" property="edate" />
+		<result column="startnum" property="startnum" />
+		<result column="percentage" property="percentage" />
+		<result column="logo" property="logo" />
+		<result column="remarks" property="remarks" />
+		<result column="phoneid" property="phoneid" />
+		<result column="applicant" property="applicant" />
+		<result column="number" property="number" />
+		<result column="cityTitle" property="cityTitle" />
+		<result column="areaTitle" property="areaTitle" />
+		<result column="areaNum" property="areaNum" />
+		<result column="sellerNum" property="sellerNum" />
+		<result column="agreeNum" property="agreeNum" />
+		<result column="loginAccount" property="loginAccount" />
+		<result column="staffid" property="staffid" />
+		<result column="saasnum" property="saasnum"/>
+		<result column="saasagio" property="saasagio"/>
+		<result column="saasamount" property="saasamount"/>
+	</resultMap>
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_joint
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						corporate,
+						legalperson,
+						idnumber,
+						idnumberurl,
+						license,
+						licenseurl,
+						city,
+						area,
+						address,
+						status,
+						Industry,
+						sdate,
+						edate,
+						startnum,
+						percentage,
+						logo,
+						remarks,
+						saasnum,
+						saasagio,
+						saasamount,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.corporate},
+						 #{item.legalperson},
+						 #{item.idnumber},
+						 #{item.idnumberurl},
+						 #{item.license},
+						 #{item.licenseurl},
+						 #{item.city},
+						 #{item.area},
+						 #{item.address},
+						 #{item.status},
+						 #{item.industry},
+						 #{item.sdate},
+						 #{item.edate},
+						 #{item.startnum},
+						 #{item.percentage},
+						 #{item.logo},
+						 #{item.remarks},
+						 #{saasnum},
+						 #{saasagio},
+						 #{saasamount},
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="addReturnId" useGeneratedKeys="true" keyProperty="jointid" keyColumn="jointid" parameterMap="joint" >
+		INSERT INTO t_joint
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != jointid">
+					jointid,
+				</if>
+			 	<if test=" null != corporate and '' != corporate ">
+					corporate,
+				</if>
+			 	<if test=" null != legalperson and '' != legalperson ">
+					legalperson,
+				</if>
+			 	<if test=" null != idnumber and '' != idnumber ">
+					idnumber,
+				</if>
+			 	<if test=" null != idnumberurl and '' != idnumberurl ">
+					idnumberurl,
+				</if>
+			 	<if test=" null != license and '' != license ">
+					license,
+				</if>
+			 	<if test=" null != licenseurl and '' != licenseurl ">
+					licenseurl,
+				</if>
+				<if test=" null != province and '' != province ">
+					province,
+				</if>
+			 	<if test=" null != city and '' != city ">
+					city,
+				</if>
+			 	<if test=" null != area and '' != area ">
+					area,
+				</if>
+			 	<if test=" null != address and '' != address ">
+					address,
+				</if>
+			 	<if test=" null != status">
+					status,
+				</if>
+			 	<if test=" null != industry">
+					Industry,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+			 	<if test=" null != edate">
+					edate,
+				</if>
+			 	<if test=" null != startnum">
+					startnum,
+				</if>
+			 	<if test=" null != percentage">
+					percentage,
+				</if>
+			 	<if test=" null != logo and '' != logo ">
+					logo,
+				</if>
+			 	<if test=" null != remarks and '' != remarks ">
+					remarks,
+				</if>
+				
+				<if test=" null != phoneid and '' != phoneid">
+					phoneid,
+				</if>
+			 	<if test=" null != applicant and '' != applicant ">
+					applicant,
+				</if>
+			 	<if test=" null != number and '' != number ">
+					number,
+				</if>
+				<if test="null != saasnum">
+					saasnum,
+				</if>
+				<if test="null != stocknum">
+					stocknum,
+				</if>
+				<if test="null != saasagio">
+					saasagio,
+				</if>
+				<if test="null != saasamount">
+					saasamount,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != jointid">
+					 	#{jointid},
+				</if>
+			 	<if test=" null != corporate and '' != corporate ">
+					 	#{corporate},
+				</if>
+			 	<if test=" null != legalperson and '' != legalperson ">
+					 	#{legalperson},
+				</if>
+			 	<if test=" null != idnumber and '' != idnumber ">
+					 	#{idnumber},
+				</if>
+			 	<if test=" null != idnumberurl and '' != idnumberurl ">
+					 	#{idnumberurl},
+				</if>
+			 	<if test=" null != license and '' != license ">
+					 	#{license},
+				</if>
+			 	<if test=" null != licenseurl and '' != licenseurl ">
+					 	#{licenseurl},
+				</if>
+				<if test=" null != province and '' != province ">
+					#{province},
+				</if>
+			 	<if test=" null != city and '' != city ">
+					 	#{city},
+				</if>
+			 	<if test=" null != area and '' != area ">
+					 	#{area},
+				</if>
+			 	<if test=" null != address and '' != address ">
+					 	#{address},
+				</if>
+			 	<if test=" null != status">
+					 	#{status},
+				</if>
+			 	<if test=" null != industry">
+					 	#{industry},
+				</if>
+			 	<if test=" null != sdate">
+					 	#{sdate},
+				</if>
+			 	<if test=" null != edate">
+					 	#{edate},
+				</if>
+			 	<if test=" null != startnum">
+					 	#{startnum},
+				</if>
+			 	<if test=" null != percentage">
+					 	#{percentage},
+				</if>
+			 	<if test=" null != logo and '' != logo ">
+					 	#{logo},
+				</if>
+			 	<if test=" null != remarks and '' != remarks ">
+					 	#{remarks},
+				</if>
+				
+				<if test=" null != phoneid and '' != phoneid">
+					#{phoneid},
+				</if>
+			 	<if test=" null != applicant and '' != applicant ">
+			 		#{applicant},
+				</if>
+			 	<if test=" null != number and '' != number ">
+			 		#{number},
+				</if>
+				<if test="null != saasnum">
+					#{saasnum},
+				</if>
+				<if test="null != stocknum">
+					#{stocknum},
+				</if>
+				<if test="null != saasagio">
+					#{saasagio},
+				</if>
+				<if test="null != saasamount">
+					#{saasamount},
+				</if>
+		</trim>
+	</insert>
+	
+	<insert id="add" parameterMap="joint" >
+		INSERT INTO t_joint
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != jointid">
+					jointid,
+				</if>
+			 	<if test=" null != corporate and '' != corporate ">
+					corporate,
+				</if>
+			 	<if test=" null != legalperson and '' != legalperson ">
+					legalperson,
+				</if>
+			 	<if test=" null != idnumber and '' != idnumber ">
+					idnumber,
+				</if>
+			 	<if test=" null != idnumberurl and '' != idnumberurl ">
+					idnumberurl,
+				</if>
+			 	<if test=" null != license and '' != license ">
+					license,
+				</if>
+			 	<if test=" null != licenseurl and '' != licenseurl ">
+					licenseurl,
+				</if>
+			 	<if test=" null != city and '' != city ">
+					city,
+				</if>
+			 	<if test=" null != area and '' != area ">
+					area,
+				</if>
+			 	<if test=" null != address and '' != address ">
+					address,
+				</if>
+			 	<if test=" null != status">
+					status,
+				</if>
+			 	<if test=" null != industry">
+					Industry,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+			 	<if test=" null != edate">
+					edate,
+				</if>
+			 	<if test=" null != startnum">
+					startnum,
+				</if>
+			 	<if test=" null != percentage">
+					percentage,
+				</if>
+			 	<if test=" null != logo and '' != logo ">
+					logo,
+				</if>
+			 	<if test=" null != remarks and '' != remarks ">
+					remarks,
+				</if>
+				
+				<if test=" null != phoneid and '' != phoneid">
+					phoneid,
+				</if>
+			 	<if test=" null != applicant and '' != applicant ">
+					applicant,
+				</if>
+			 	<if test=" null != number and '' != number ">
+					number,
+				</if>
+				<if test="null != saasnum">
+					saasnum,
+				</if>
+				<if test="null != saasagio">
+					saasagio,
+				</if>
+				<if test="null != saasamount">
+					saasamount,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != jointid">
+					 	#{jointid},
+				</if>
+			 	<if test=" null != corporate and '' != corporate ">
+					 	#{corporate},
+				</if>
+			 	<if test=" null != legalperson and '' != legalperson ">
+					 	#{legalperson},
+				</if>
+			 	<if test=" null != idnumber and '' != idnumber ">
+					 	#{idnumber},
+				</if>
+			 	<if test=" null != idnumberurl and '' != idnumberurl ">
+					 	#{idnumberurl},
+				</if>
+			 	<if test=" null != license and '' != license ">
+					 	#{license},
+				</if>
+			 	<if test=" null != licenseurl and '' != licenseurl ">
+					 	#{licenseurl},
+				</if>
+			 	<if test=" null != city and '' != city ">
+					 	#{city},
+				</if>
+			 	<if test=" null != area and '' != area ">
+					 	#{area},
+				</if>
+			 	<if test=" null != address and '' != address ">
+					 	#{address},
+				</if>
+			 	<if test=" null != status">
+					 	#{status},
+				</if>
+			 	<if test=" null != industry">
+					 	#{industry},
+				</if>
+			 	<if test=" null != sdate">
+					 	#{sdate},
+				</if>
+			 	<if test=" null != edate">
+					 	#{edate},
+				</if>
+			 	<if test=" null != startnum">
+					 	#{startnum},
+				</if>
+			 	<if test=" null != percentage">
+					 	#{percentage},
+				</if>
+			 	<if test=" null != logo and '' != logo ">
+					 	#{logo},
+				</if>
+			 	<if test=" null != remarks and '' != remarks ">
+					 	#{remarks},
+				</if>
+				
+				<if test=" null != phoneid and '' != phoneid">
+					#{phoneid},
+				</if>
+			 	<if test=" null != applicant and '' != applicant ">
+			 		#{applicant},
+				</if>
+			 	<if test=" null != number and '' != number ">
+			 		#{number},
+				</if>
+				<if test="null != saasnum">
+					#{saasnum},
+				</if>
+				<if test="null != saasagio">
+					#{saasagio},
+				</if>
+				<if test="null != saasamount">
+					#{saasamount},
+				</if>
+		</trim>
+	</insert>
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_joint WHERE jointid IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterMap="joint">
+		UPDATE t_joint
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != jointid">
+					jointid = #{jointid},
+				</if>
+				<if test=" null != corporate and '' != corporate ">
+					corporate = #{corporate},
+				</if>
+				<if test=" null != legalperson and '' != legalperson ">
+					legalperson = #{legalperson},
+				</if>
+				<if test=" null != idnumber and '' != idnumber ">
+					idnumber = #{idnumber},
+				</if>
+				<if test=" null != idnumberurl ">
+					idnumberurl = #{idnumberurl},
+				</if>
+				<if test=" null != license and '' != license ">
+					license = #{license},
+				</if>
+				<if test=" null != licenseurl ">
+					licenseurl = #{licenseurl},
+				</if>
+				<if test=" null != province and '' != province ">
+					province = #{province},
+				</if>
+				<if test=" null != city and '' != city ">
+					city = #{city},
+				</if>
+				<if test=" null != area and '' != area ">
+					area = #{area},
+				</if>
+				<if test=" null != address ">
+					address = #{address},
+				</if>
+				<if test=" null != status">
+					status = #{status},
+				</if>
+				<if test=" null != industry">
+					Industry = #{industry},
+				</if>
+				<if test=" null != sdate">
+					sdate = #{sdate},
+				</if>
+				<if test=" null != edate">
+					edate = #{edate},
+				</if>
+				<if test=" null != startnum">
+					startnum = #{startnum},
+				</if>
+				<if test=" null != percentage">
+					percentage = #{percentage},
+				</if>
+				<if test=" null != logo and '' != logo ">
+					logo = #{logo},
+				</if>
+				<if test=" null != remarks">
+					remarks = #{remarks},
+				</if>
+				
+				<if test=" null != phoneid and '' != phoneid">
+					phoneid =#{phoneid},
+				</if>
+			 	<if test=" null != applicant  ">
+			 		applicant =#{applicant},
+				</if>
+			 	<if test=" null != number ">
+			 		number =#{number},
+				</if>
+				<if test="null != saasnum">
+					saasnum = #{saasnum},
+				</if>
+				<if test="null != saasagio">
+					saasagio = #{saasagio},
+				</if>
+				<if test="null != saasamount">
+					saasamount = #{saasamount},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != jointid and '' != jointid">
+				jointid = #{jointid}
+			</if>
+		</where>
+	</update>
+	
+	<select id="getList" resultMap="jointMap" parameterMap="joint">
+   SELECT t.*,a1.title AS cityTitle,ts.phoneid AS loginAccount,v1.noSignNum AS noSignNum,v2.noPassNum AS noPassNum,
+   v3.agreeNum AS agreeNum,v4.onlineNum AS onlineNum,v5.sellerNum AS sellerNum,tab1.activeSellerNum AS activeSellerNum,
+   tab2.sleepSellerNum AS sleepSellerNum 
+   FROM  t_joint t
+   LEFT JOIN t_staff ts ON ts.jointid=t.jointid AND ts.category=2
+   LEFT JOIN t_area a1 ON a1.area_id = t.city 
+   LEFT JOIN v_seller v1 ON t.jointid=v1.jointid 
+   LEFT JOIN v_seller v2 ON t.jointid=v2.jointid 
+   LEFT JOIN v_seller v3 ON t.jointid=v3.jointid 
+   LEFT JOIN v_seller v4 ON t.jointid=v4.jointid 
+   LEFT JOIN v_seller v5 ON t.jointid=v5.jointid 
+   LEFT JOIN (SELECT  b.jointid,COUNT(DISTINCT b.sellerid) AS activeSellerNum FROM t_bill b
+    WHERE b.zdate >= DATE_ADD(CURDATE(), INTERVAL - 7 DAY) 
+    GROUP BY jointid) tab1 ON t.jointid=tab1.jointid
+    LEFT JOIN (SELECT  tb.jointid,COUNT(DISTINCT tb.sellerid) AS sleepSellerNum
+    FROM t_bill tb 
+    WHERE tb.zdate &lt; DATE_ADD(CURDATE(), INTERVAL - 7 DAY) 
+    GROUP BY jointid) tab2 ON t.jointid=tab2.jointid
+		<where>
+			1=1
+			<if test=" null != jointid">
+				AND t.jointid = #{jointid}
+			</if>
+			<if test=" null != corporate and '' != corporate ">
+				AND t.corporate LIKE '%${corporate}%'
+			</if>
+			<if test=" null != legalperson and '' != legalperson ">
+				AND t.legalperson LIKE '%${legalperson}%'
+			</if>
+			<if test=" null != idnumber and '' != idnumber ">
+				AND t.idnumber LIKE '%${idnumber}%'
+			</if>
+			<if test=" null != idnumberurl and '' != idnumberurl ">
+				AND t.idnumberurl LIKE '%${idnumberurl}%'
+			</if>
+			<if test=" null != license and '' != license ">
+				AND t.license LIKE '%${license}%'
+			</if>
+			<if test=" null != licenseurl and '' != licenseurl ">
+				AND t.licenseurl LIKE '%${licenseurl}%'
+			</if>
+			<if test=" null != province and '' != province ">
+				AND t.province = #{province}
+			</if>
+			<if test=" null != city and '' != city ">
+				AND t.city LIKE '%${city}%'
+			</if>
+			<if test=" null != area and '' != area ">
+				AND t.area LIKE '%${area}%'
+			</if>
+			<if test=" null != address and '' != address ">
+				AND t.address LIKE '%${address}%'
+			</if>
+			<if test=" null != status">
+				AND t.status = #{status}
+			</if>
+			<if test=" null != industry">
+				AND t.Industry = #{industry}
+			</if>
+			<if test=" null != edate">
+				AND t.edate = #{edate}
+			</if>
+			
+			<if test=" null != sdateStart">
+				AND t.sdate &gt;=  #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd">
+				AND t.sdate &lt; #{sdateEnd}
+			</if>
+			
+			<if test=" null != startnum">
+				AND t.startnum = #{startnum}
+			</if>
+			<if test=" null != percentage">
+				AND t.percentage = #{percentage}
+			</if>
+			<if test=" null != logo and '' != logo ">
+				AND t.logo LIKE '%${logo}%'
+			</if>
+			<if test=" null != remarks and '' != remarks ">
+				AND remarks LIKE '%${remarks}%'
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				AND t.phoneid LIKE '%${phoneid}%'
+			</if>
+			<if test=" null != account and '' != account ">
+				AND ts.phoneid LIKE '%${account}%'
+			</if>
+		 </where>
+			ORDER BY jointid DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="joint">
+   SELECT count(1) 
+   FROM  t_joint t
+   LEFT JOIN t_staff ts ON ts.jointid=t.jointid AND ts.category=2
+   LEFT JOIN t_area a1 ON a1.area_id = t.city
+   LEFT JOIN v_seller v1 ON t.jointid=v1.jointid 
+   LEFT JOIN v_seller v2 ON t.jointid=v2.jointid 
+   LEFT JOIN v_seller v3 ON t.jointid=v3.jointid 
+   LEFT JOIN v_seller v4 ON t.jointid=v4.jointid 
+   LEFT JOIN v_seller v5 ON t.jointid=v5.jointid 
+   LEFT JOIN (SELECT  b.jointid,COUNT(DISTINCT b.sellerid) AS activeSellerNum FROM t_bill b
+    WHERE b.zdate >= DATE_ADD(CURDATE(), INTERVAL - 7 DAY) 
+    GROUP BY jointid) tab1 ON t.jointid=tab1.jointid
+    LEFT JOIN (SELECT  tb.jointid,COUNT(DISTINCT tb.sellerid) AS sleepSellerNum
+    FROM t_bill tb 
+    WHERE tb.zdate &lt; DATE_ADD(CURDATE(), INTERVAL - 7 DAY) 
+    GROUP BY jointid) tab2 ON t.jointid=tab2.jointid
+		<where>
+			1=1
+			<if test=" null != jointid">
+				AND t.jointid = #{jointid}
+			</if>
+			<if test=" null != corporate and '' != corporate ">
+				AND t.corporate LIKE '%${corporate}%'
+			</if>
+			<if test=" null != legalperson and '' != legalperson ">
+				AND t.legalperson LIKE '%${legalperson}%'
+			</if>
+			<if test=" null != idnumber and '' != idnumber ">
+				AND t.idnumber LIKE '%${idnumber}%'
+			</if>
+			<if test=" null != idnumberurl and '' != idnumberurl ">
+				AND t.idnumberurl LIKE '%${idnumberurl}%'
+			</if>
+			<if test=" null != license and '' != license ">
+				AND t.license LIKE '%${license}%'
+			</if>
+			<if test=" null != licenseurl and '' != licenseurl ">
+				AND t.licenseurl LIKE '%${licenseurl}%'
+			</if>
+			<if test=" null != province and '' != province ">
+				AND t.province = #{province}
+			</if>
+			<if test=" null != city and '' != city ">
+				AND t.city LIKE '%${city}%'
+			</if>
+			<if test=" null != area and '' != area ">
+				AND t.area LIKE '%${area}%'
+			</if>
+			<if test=" null != address and '' != address ">
+				AND t.address LIKE '%${address}%'
+			</if>
+			<if test=" null != status">
+				AND t.status = #{status}
+			</if>
+			<if test=" null != industry">
+				AND t.Industry = #{industry}
+			</if>
+			<if test=" null != edate">
+				AND t.edate = #{edate}
+			</if>
+			
+			<if test=" null != sdateStart">
+				AND t.sdate &gt;=  #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd">
+				AND t.sdate &lt; #{sdateEnd}
+			</if>
+			
+			<if test=" null != startnum">
+				AND t.startnum = #{startnum}
+			</if>
+			
+			<if test=" null != percentage">
+				AND t.percentage = #{percentage}
+			</if>
+			<if test=" null != logo and '' != logo ">
+				AND t.logo LIKE '%${logo}%'
+			</if>
+			<if test=" null != remarks and '' != remarks ">
+				AND remarks LIKE '%${remarks}%'
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				AND t.phoneid LIKE '%${phoneid}%'
+			</if>
+			<if test=" null != account and '' != account ">
+				AND ts.phoneid LIKE '%${account}%'
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Long">
+		SELECT Max(jointid) AS VALUE FROM t_joint
+	</select>
+	
+	<select id="getObject" resultMap="jointMap" parameterType="Long">
+		SELECT j.*,(SELECT GROUP_CONCAT(a.title) FROM t_area a where FIND_IN_SET(a.area_id,REPLACE(j.AREA, ';', ','))) as areaTitle FROM t_joint j WHERE j.jointid = #{0}
+	</select>
+	
+	<!-- 更具合作商id删除管理员信息 -->
+	<delete id="deleteStaffByJointId" parameterType="Object">
+	DELETE FROM t_staff WHERE jointid IN
+	<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+		 #{item}
+	</foreach>
+	</delete>
+	<!-- 根据市id查询省id -->
+	<select id="getProvinceId"   resultType="Long">
+		SELECT t.pid FROM t_area t WHERE t.area_id = #{0}
+	</select>
+	
+		<!-- 根据商户区域id查询对应的合作商信息 -->	
+	<select id="getJointInfoByArea" resultMap="jointMap" parameterType="String">
+			SELECT t1.*,
+	        (SELECT MAX(t.staffid) FROM t_staff t WHERE t.jointid = t1.jointid AND t.category = 2) AS staffid
+			FROM
+			  t_joint t1 
+			WHERE FIND_IN_SET(#{0},REPLACE (t1.AREA, ';', ','))
+	</select>
+	
+	<select id="getcheckPhoneid" resultType="Long"  parameterType="String">
+		SELECT count(1) FROM t_joint WHERE phoneid = #{0}
+	</select>
+	
+	<!-- 获取下拉列表 -->
+	<select id="getSelect" resultMap="jointMap" parameterMap="joint">
+		SELECT t.jointid, t.corporate 
+		from t_joint t
+		<where>
+			1=1
+			<if test=" null != jointid">
+				AND t.jointid = #{jointid}
+			</if>
+			<if test=" null != corporate and '' != corporate ">
+				AND t.corporate LIKE '%${corporate}%'
+			</if>
+			<if test=" null != legalperson and '' != legalperson ">
+				AND t.legalperson LIKE '%${legalperson}%'
+			</if>
+			<if test=" null != idnumber and '' != idnumber ">
+				AND t.idnumber LIKE '%${idnumber}%'
+			</if>
+			<if test=" null != idnumberurl and '' != idnumberurl ">
+				AND t.idnumberurl LIKE '%${idnumberurl}%'
+			</if>
+			<if test=" null != license and '' != license ">
+				AND t.license LIKE '%${license}%'
+			</if>
+			<if test=" null != licenseurl and '' != licenseurl ">
+				AND t.licenseurl LIKE '%${licenseurl}%'
+			</if>
+			<if test=" null != city and '' != city ">
+				AND t.city LIKE '%${city}%'
+			</if>
+			<if test=" null != area and '' != area ">
+				AND t.area LIKE '%${area}%'
+			</if>
+			<if test=" null != address and '' != address ">
+				AND t.address LIKE '%${address}%'
+			</if>
+			<if test=" null != status">
+				AND t.status = #{status}
+			</if>
+			<if test=" null != industry">
+				AND t.Industry = #{industry}
+			</if>
+			<if test=" null != edate">
+				AND t.edate = #{edate}
+			</if>
+			
+			<if test=" null != sdateStart">
+				AND t.sdate &gt;=  #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd">
+				AND t.sdate &lt; #{sdateEnd}
+			</if>
+			
+			<if test=" null != startnum">
+				AND t.startnum = #{startnum}
+			</if>
+			<if test=" null != percentage">
+				AND t.percentage = #{percentage}
+			</if>
+			<if test=" null != logo and '' != logo ">
+				AND t.logo LIKE '%${logo}%'
+			</if>
+			<if test=" null != remarks and '' != remarks ">
+				AND remarks LIKE '%${remarks}%'
+			</if>
+		 </where>
+			ORDER BY jointid DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	
+	<!-- 根据合作商id查询对应的合作商信息 -->	
+	<select id="getJointInfo" resultMap="jointMap" parameterMap="joint">
+		SELECT *
+		FROM
+		  t_joint
+		WHERE jointid=#{jointid}
+	</select>
+	
+	<update id="modifyJonitSaasInfo">
+		UPDATE t_joint SET
+		stocknum = stocknum-1
+		WHERE stocknum>0 AND jointid=#{jointid}
+	</update>
+</mapper>

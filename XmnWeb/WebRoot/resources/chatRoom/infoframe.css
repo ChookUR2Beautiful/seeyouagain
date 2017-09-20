@@ -1,0 +1,240 @@
+/* line 11, ../sass/infoframe.scss */
+.module-containner-wrap {
+  zoom: 1;
+  font-family: "Microsoft Yahei";
+}
+/* line 4, ../sass/infoframe.scss */
+.module-containner-wrap:after {
+  content: " ";
+  display: block;
+  height: 0;
+  clear: both;
+}
+
+/* line 16, ../sass/infoframe.scss */
+.horse-info-module .horse-info-position {
+  height: 356px;
+  min-height: 356px;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  background-color: rgba(55, 55, 55, 0.95);
+}
+/* line 24, ../sass/infoframe.scss */
+.horse-info-module .horse-info-wrap {
+  /**min-height: 756px;*/
+}
+/* line 29, ../sass/infoframe.scss */
+.horse-info-module .horse-info-item {
+  position: relative;
+  padding: 8px 5px 8px 5px;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+/* line 34, ../sass/infoframe.scss */
+.horse-info-module .horse-info-item .horse-info-level {
+  display: block;
+  width: auto;
+  padding: 0 5px;
+  height: 20px;
+  position: absolute;
+  left: 0;
+  top: 8px;
+  border-radius: 4px;
+}
+/* line 44, ../sass/infoframe.scss */
+.horse-info-module .horse-info-item .horse-info-level.level-bg-green {
+  background: #96e500;
+}
+/* line 47, ../sass/infoframe.scss */
+.horse-info-module .horse-info-item .horse-info-level.level-bg-blue {
+  background: #1fd0f4;
+}
+/* line 50, ../sass/infoframe.scss */
+.horse-info-module .horse-info-item .horse-info-level.level-bg-navyblue {
+  background: #6970f3;
+}
+/* line 53, ../sass/infoframe.scss */
+.horse-info-module .horse-info-item .horse-info-level.level-bg-pink {
+  background: #d45eed;
+}
+/* line 56, ../sass/infoframe.scss */
+.horse-info-module .horse-info-item .horse-info-level.level-bg-orange {
+  background: #ff7e00;
+}
+/* line 59, ../sass/infoframe.scss */
+.horse-info-module .horse-info-item .horse-info-level.level-bg-darkyellow {
+  background: #d8951e;
+}
+/* line 62, ../sass/infoframe.scss */
+.horse-info-module .horse-info-item .horse-info-level.level-bg-darkgrey {
+  background: #916b24;
+}
+/* line 65, ../sass/infoframe.scss */
+.horse-info-module .horse-info-item .horse-info-level.level-bg-back {
+  background: #231f00;
+}
+/* line 70, ../sass/infoframe.scss */
+.horse-info-module .horse-info-item .horse-info-level.level-star i {
+  background-position: 0 0;
+}
+/* line 73, ../sass/infoframe.scss */
+.horse-info-module .horse-info-item .horse-info-level.level-moon i {
+  background-position: 0 -12px;
+}
+/* line 76, ../sass/infoframe.scss */
+.horse-info-module .horse-info-item .horse-info-level.level-sun i {
+  background-position: 0 -24px;
+}
+/* line 79, ../sass/infoframe.scss */
+.horse-info-module .horse-info-item .horse-info-level.level-normal-crown i {
+  background-position: 0 -36px;
+}
+/* line 82, ../sass/infoframe.scss */
+.horse-info-module .horse-info-item .horse-info-level.level-medium-crown i {
+  background-position: 0 -48px;
+}
+/* line 85, ../sass/infoframe.scss */
+.horse-info-module .horse-info-item .horse-info-level.level-senior-crown i {
+  background-position: 0 -60px;
+}
+/* line 88, ../sass/infoframe.scss */
+.horse-info-module .horse-info-item .horse-info-level.level-extreme-crown i {
+  background-position: 0 -72px;
+}
+/* line 92, ../sass/infoframe.scss */
+.horse-info-module .horse-info-item .horse-info-level .icon-wrap {
+  display: block;
+  float: left;
+  width: 12px;
+  height: 12px;
+  background-image: url(../images/exclusive-icon.png);
+  background-size: 100% auto;
+  background-position: top;
+  background-repeat: no-repeat;
+  margin-right: 4px;
+  margin-top: 4px;
+}
+/* line 104, ../sass/infoframe.scss */
+.horse-info-module .horse-info-item .horse-info-level em {
+  font-style: normal;
+  color: #ffffff;
+}
+/* line 110, ../sass/infoframe.scss */
+.horse-info-module .horse-info-item .horse-info-content .horse-info-name {
+  color: #ffde9c;
+  margin-right: 8px;
+}
+/* line 114, ../sass/infoframe.scss */
+.horse-info-module .horse-info-item .horse-info-content .horse-info-text {
+  color: #ffffff;
+}
+
+/* line 120, ../sass/infoframe.scss */
+.add-usre-module {
+  font-family: "Microsoft Yahei";
+}
+/* line 122, ../sass/infoframe.scss */
+.add-usre-module .add-user-wrap {
+  border: 1px solid #c0c0c0;
+}
+/* line 125, ../sass/infoframe.scss */
+.add-usre-module .add-user-header {
+  padding: 10px 10px;
+  border-bottom: 1px solid #c0c0c0;
+  box-sizing: border-box;
+}
+/* line 129, ../sass/infoframe.scss */
+.add-usre-module .add-user-header .user-header-box {
+  position: relative;
+  border: 1px solid #eea236;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.42857;
+  margin-bottom: 0;
+  padding: 6px 12px;
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+  background-color: #f0ad4e;
+  color: #ffffff;
+}
+/* line 147, ../sass/infoframe.scss */
+.add-usre-module .add-user-list {
+  padding: 10px 10px;
+  box-sizing: border-box;
+  min-height: 300px;
+}
+/* line 152, ../sass/infoframe.scss */
+.add-usre-module .add-user-name {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #676767;
+}
+/* line 158, ../sass/infoframe.scss */
+.add-usre-module .add-user-item {
+  margin-bottom: 10px;
+}
+/* line 161, ../sass/infoframe.scss */
+.add-usre-module .add-user-item:nth-of-type(0) {
+  margin-bottom: 0;
+}
+/* line 164, ../sass/infoframe.scss */
+.add-usre-module .add-user-content {
+  position: relative;
+  padding-right: 130px;
+  overflow: hidden;
+}
+/* line 169, ../sass/infoframe.scss */
+.add-usre-module .add-user-content .user-content-btn {
+  display: inline-block;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+/* line 174, ../sass/infoframe.scss */
+.add-usre-module .add-user-content .user-content-btn .btn-item {
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.42857;
+  margin: 0 3px;
+  padding: 5px 12px;
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+  color: #ffffff;
+}
+/* line 187, ../sass/infoframe.scss */
+.add-usre-module .add-user-content .user-content-btn .btn-item.add-send {
+  background-color: #428bca;
+  border-color: #357ebd;
+}
+/* line 191, ../sass/infoframe.scss */
+.add-usre-module .add-user-content .user-content-btn .btn-item.add-detele {
+  background-color: #d9534f;
+  border-color: #d43f3a;
+}
+/* line 197, ../sass/infoframe.scss */
+.add-usre-module .add-user-content .user-content-ingput {
+  display: block;
+  width: 100%;
+  height: 30px;
+  line-height: 30px;
+  box-sizing: border-box;
+}
+
+/* line 206, ../sass/infoframe.scss */
+.modal-input-module {
+  display: block;
+  width: 100%;
+  height: 30px;
+  line-height: 30px;
+  box-sizing: border-box;
+}

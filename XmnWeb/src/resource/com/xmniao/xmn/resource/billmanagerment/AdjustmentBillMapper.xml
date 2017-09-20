@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.billmanagerment.dao.AdjustmentBillDao">
+
+	<parameterMap type="AdjustApply" id="adjustApply" />
+	<resultMap type="AdjustApply" id="adjustApplyMap">
+		<result column="adid" property="adid" />
+		<result column="sellerid" property="sellerid" />
+		<result column="bid" property="bid" />
+		<result column="money" property="money" />
+		<result column="phoneid" property="phoneid" />
+		<result column="sdate" property="sdate" />
+		<result column="handlestatu" property="handlestatu" />
+		<result column="remark" property="remark" />
+		<result column="uid" property="uid" />
+		<result column="pdate" property="pdate" />
+		<result column="handleuser" property="handleuser" />
+		<result column="reason" property="reason" />
+	</resultMap>
+	<!-- 查询调单List -->
+    <select id="getList" resultMap="adjustApplyMap" parameterMap="adjustApply">
+           SELECT ta.*,ts.sellername as sellername,tb.status as status,tb.hstatus as hstatus
+           FROM t_adjust_apply ta  LEFT JOIN t_seller ts ON ta.sellerid=ts.sellerid LEFT JOIN t_bill tb ON ta.bid=tb.bid
+		<where>
+		    1=1
+		    <include refid="queryBillCondition"></include>
+		</where>
+		ORDER BY ta.sdate DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<!-- 查询调单条数 -->
+	<select id="count" resultType="Long" parameterMap="adjustApply">
+           SELECT count(ta.adid)
+           FROM t_adjust_apply ta  LEFT JOIN t_seller ts ON ta.sellerid=ts.sellerid LEFT JOIN t_bill tb ON ta.bid=tb.bid
+		<where>
+			1=1
+			<include refid="queryBillCondition"></include>
+		</where>
+	</select>
+	<!-- 公用查询条件 -->
+	<sql id="queryBillCondition">
+	        <if test=" null != sellername and ''!=sellername">
+				AND ts.sellername LIKE '%${sellername}%'
+			</if>
+	        <if test=" null != startSdate">
+				AND ta.sdate &gt;= #{startSdate}
+			</if>
+			<if test=" null != endSdate">
+				AND ta.sdate &lt; #{endSdate}
+			</if>
+			<if test=" null != adid">
+				AND ta.adid = #{adid}
+			</if>
+			<if test=" null != sellerid">
+				AND ta.sellerid = #{sellerid}
+			</if>
+			<if test=" null != bid">
+				AND ta.bid = #{bid}
+			</if>
+			<if test=" null != handlestatu">
+				AND ta.handlestatu = #{handlestatu}
+			</if>	
+	</sql>
+	<update id="update">
+	    UPDATE t_adjust_apply
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != handlestatu">
+					handlestatu = #{handlestatu},pdate=#{pdate}
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != adid">
+				adid = #{adid}
+			</if>
+		</where>
+	</update>
+	
+</mapper>

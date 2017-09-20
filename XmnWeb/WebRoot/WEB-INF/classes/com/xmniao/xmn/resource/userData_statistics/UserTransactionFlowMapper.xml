@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.userData_statistics.dao.UserTransactionFlowDao">
+
+	<parameterMap type="TUserTransactionFlow" id="transactionFlow" />
+	
+	<resultMap type="TUserTransactionFlow" id="transactionFlowMap">
+		<result column="censusDate" property="censusDate" />
+		<result column="averageTradingTotal" property="averageTradingTotal" />
+		<result column="tradingVolume" property="tradingVolume" />
+		<result column="tradingTotal" property="tradingTotal" />
+		
+		<result column="startCensusDate" property="startCensusDate" />
+		<result column="endCensusDate" property="endCensusDate" />
+	</resultMap>
+	
+	<select id="getList" resultMap="transactionFlowMap" parameterMap="transactionFlow">
+				 SELECT t.tradingTotal,t.tradingVolume,ROUND(t.tradingTotal/t.tradingVolume,2)AS averageTradingTotal,t.censusDate FROM 
+					 (
+						 SELECT SUM(money)AS tradingTotal,COUNT(*)AS tradingVolume,DATE_FORMAT(zdate,'%Y-%m-%d')AS censusDate FROM t_bill 
+						 WHERE 
+						 	STATUS IN (1,2,3,6,8,9)
+						 	<if test=" null != startCensusDate">
+								AND DATE_FORMAT(zdate, '%Y-%m-%d')&gt;= DATE_FORMAT(#{startCensusDate},'%Y-%m-%d')
+							</if>
+							<if test=" null != endCensusDate">
+								AND DATE_FORMAT(zdate,'%Y-%m-%d')&lt;=  DATE_FORMAT(#{endCensusDate},'%Y-%m-%d')
+							</if>
+					 
+					  	GROUP BY  DATE_FORMAT(zdate,'%Y-%m-%d')
+				 ) t ORDER BY censusDate DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="getCensusTotal" resultType="TUserTransactionFlow" parameterMap="transactionFlow">
+		SELECT t.tradingTotal,t.tradingVolume,ROUND(t.tradingTotal/t.tradingVolume,2)AS averageTradingTotal FROM 
+		(SELECT SUM(money)AS tradingTotal,COUNT(*)AS tradingVolume FROM t_bill WHERE STATUS IN (1,2,3,6,8,9) 
+							<if test=" null != startCensusDate">
+								AND DATE_FORMAT(zdate, '%Y-%m-%d')&gt;= DATE_FORMAT(#{startCensusDate},'%Y-%m-%d')
+							</if>
+							<if test=" null != endCensusDate">
+								AND DATE_FORMAT(zdate,'%Y-%m-%d')&lt;=  DATE_FORMAT(#{endCensusDate},'%Y-%m-%d')
+							</if>)t
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="transactionFlow">
+		SELECT COUNT(*)  FROM (SELECT DATE_FORMAT(zdate,'%Y-%m-%d')AS sdate FROM t_bill WHERE STATUS IN (1,2,3,6,8,9) 
+		<if test=" null != startCensusDate">
+				AND DATE_FORMAT(zdate, '%Y-%m-%d')&gt;= DATE_FORMAT(#{startCensusDate},'%Y-%m-%d')
+			</if>
+			<if test=" null != endCensusDate">
+				AND DATE_FORMAT(zdate,'%Y-%m-%d')&lt;= DATE_FORMAT(#{endCensusDate},'%Y-%m-%d')
+			</if>
+		GROUP BY  DATE_FORMAT(zdate,'%Y-%m-%d')) t 	
+	</select>
+	
+</mapper>

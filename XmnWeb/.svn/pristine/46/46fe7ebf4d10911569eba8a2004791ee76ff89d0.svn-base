@@ -1,0 +1,175 @@
+package com.xmniao.xmn.core.util.mybatis.interceptor;
+
+
+
+
+
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.ibatis.executor.statement.StatementHandler;
+import org.apache.ibatis.mapping.BoundSql;
+import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.plugin.Interceptor;
+import org.apache.ibatis.plugin.Intercepts;
+import org.apache.ibatis.plugin.Invocation;
+import org.apache.ibatis.plugin.Plugin;
+import org.apache.ibatis.plugin.Signature;
+import org.apache.ibatis.reflection.DefaultReflectorFactory;
+import org.apache.ibatis.reflection.MetaObject;
+import org.apache.ibatis.reflection.ReflectorFactory;
+import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
+import org.apache.ibatis.reflection.factory.ObjectFactory;
+import org.apache.ibatis.reflection.wrapper.DefaultObjectWrapperFactory;
+import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
+import org.apache.ibatis.scripting.xmltags.SqlNode;
+import org.apache.ibatis.scripting.xmltags.TextSqlNode;
+import org.apache.ibatis.scripting.xmltags.WhereSqlNode;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.web.context.WebApplicationContext;
+
+import com.xmniao.xmn.core.util.StringUtils;
+import com.xmniao.xmn.core.util.dataAuthority.DataAuthorityDelegate;
+@Intercepts( {
+    @Signature(method = "prepare", type = StatementHandler.class, args = {Connection.class,Integer.class}) })
+public class DataAuthorityInterceptor implements Interceptor,ApplicationContextAware{
+/*	@Autowired
+	RoleAreaService roleAreaService;*/
+	
+	private static final Log log = LogFactory.getLog(DataAuthorityInterceptor.class);
+	
+	
+	//private WebApplicationContext webApplicationContext;
+	
+	
+	private DataAuthorityDelegate dataAuthorityDelegate = new DataAuthorityDelegate();
+	
+	//private RoleAreaService roleAreaService;
+	
+	   /**
+     * 默认ObjectFactory
+     */
+    public static final ObjectFactory DEFAULT_OBJECT_FACTORY = new DefaultObjectFactory();
+    /**
+     * 默认ObjectWrapperFactory
+     */
+    public static final ObjectWrapperFactory DEFAULT_OBJECT_WRAPPER_FACTORY = new DefaultObjectWrapperFactory();
+    /**
+     * 默认ReflectorFactory
+     */
+    public static final ReflectorFactory DEFAULT_REFLECTOR_FACTORY = new DefaultReflectorFactory();
+	
+	/**
+	 * 包含SQL语句变量和传入参数的映射以及动态SQL信息对象
+	 */
+	private static final String BOUNDSQL_FIELD_NAME="delegate.boundSql";
+	
+	/**
+	 * 包含传入参数映射配置、动态SQL语句配置的映射表对象
+	 */
+	private static final String MAPPEDSTATEMENT_FIELD_NAME="delegate.mappedStatement";
+	
+	/**
+	 * 包含未解析之前的sql表达式信息的容器
+	 */
+	private static final String MAPPEDSTATEMENT_SQLNODE_CONTENTS = ".sqlSource.rootSqlNode.contents";
+	
+	
+	@Override
+	public Object intercept(Invocation invocation) throws Throwable {
+	try{
+		StatementHandler handler = (StatementHandler)invocation.getTarget();
+		MetaObject metaStatementHandler = MetaObject.forObject(handler,DEFAULT_OBJECT_FACTORY, DEFAULT_OBJECT_WRAPPER_FACTORY, DEFAULT_REFLECTOR_FACTORY); 
+		BoundSql boundSql =(BoundSql)metaStatementHandler.getValue(BOUNDSQL_FIELD_NAME);
+	    Object parameterObject = boundSql.getParameterObject();
+	    MappedStatement mappedStatement = (MappedStatement) metaStatementHandler.getValue(MAPPEDSTATEMENT_FIELD_NAME); 
+	    //获取执行方法全限定名
+	    String currentMethodFullName = mappedStatement.getId();
+	    
+	    if(dataAuthorityDelegate.isHandlerMethod(currentMethodFullName)){
+		    	/**
+				 * 获取未解析前的sql语句容器
+				 */
+				@SuppressWarnings("unchecked")
+				List<SqlNode> sqlNodes = (List<SqlNode>) metaStatementHandler.getValue(MAPPEDSTATEMENT_FIELD_NAME+MAPPEDSTATEMENT_SQLNODE_CONTENTS);
+				//新容器
+				List<SqlNode> newSqlNodes = new ArrayList<>(sqlNodes.size()+1);
+				//是否改变sql 生成数据限制sql不为空 则改变sql
+				boolean chageSql=false;
+				for(SqlNode sqlNode:sqlNodes){
+					
+					newSqlNodes.add(sqlNode);
+					/**
+					 * 在where条件表达式后加入数据权限限制语句
+					 */
+					if(sqlNode instanceof WhereSqlNode){
+						//生成限制语句
+						String newTextSql = dataAuthorityDelegate.buildSQL(parameterObject);		    					
+						chageSql = StringUtils.hasLength(newTextSql);
+						if(chageSql){
+							//加入容器
+							newSqlNodes.add(new TextSqlNode(newTextSql));
+						} else{
+							newSqlNodes=null;
+							break;
+						}
+					}
+				}
+				
+				if(chageSql){
+					//替换mapperxml中的sql表达式
+					metaStatementHandler.setValue(MAPPEDSTATEMENT_FIELD_NAME+MAPPEDSTATEMENT_SQLNODE_CONTENTS,newSqlNodes); 
+					//生成新sql表达式信息
+					BoundSql newBoundSql = mappedStatement.getSqlSource().getBoundSql(parameterObject);
+					//恢复成mapperxml的sql表达式 防止 生成的数据权限sql 叠加 
+					metaStatementHandler.setValue(MAPPEDSTATEMENT_FIELD_NAME+MAPPEDSTATEMENT_SQLNODE_CONTENTS,sqlNodes); 
+					newSqlNodes=null;
+					if(newBoundSql!=null){ 
+						//获取新sql
+						String newSql = newBoundSql.getSql();
+						if(StringUtils.hasLength(newSql)){
+							//替换sql
+							metaStatementHandler.setValue(BOUNDSQL_FIELD_NAME+".sql",newSql);	
+						}    		
+					}
+				}
+	    }
+	
+	    }catch(Exception e){
+    		log.error("数据权限拦截器异常", e);
+    	}
+		return invocation.proceed(); 
+	}
+
+	@Override
+	public Object plugin(Object target) {
+		// 当目标类是StatementHandler类型时，才包装目标类，否者直接返回目标本身,减少目标被代理的次数 
+		if (target instanceof StatementHandler) {  
+            return Plugin.wrap(target, this);  
+        } else {  
+            return target;  
+        }  
+	}
+
+	@Override
+	public void setProperties(Properties arg0) {
+		
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext)throws BeansException {
+		if ( applicationContext instanceof WebApplicationContext) {
+			//this.webApplicationContext = (WebApplicationContext) applicationContext;
+			dataAuthorityDelegate.setApplicationContext((WebApplicationContext) applicationContext);
+			//this.roleAreaService=webApplicationContext.getBean(RoleAreaService.class);
+		}
+	}
+	
+
+}

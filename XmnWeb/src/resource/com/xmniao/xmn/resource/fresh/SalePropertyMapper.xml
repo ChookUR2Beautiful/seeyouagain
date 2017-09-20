@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.fresh.dao.SalePropertyDao">
+	<!-- 添加一条数据 -->
+	<insert id="add" parameterType="com.xmniao.xmn.core.fresh.entity.TSaleProperty" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO 
+			`t_sale_property` 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test=" null != codeId">
+				codeId,
+			</if>
+			<if test=" null != property and '' != property">
+				property,
+			</if>
+			<if test=" null != sort">
+				sort,
+			</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			<if test=" null != codeId">
+				#{codeId},
+			</if>
+			<if test=" null != property and '' != property">
+				#{property},
+			</if>
+			<if test=" null != sort">
+				#{sort},
+			</if>
+		</trim>	
+	</insert>
+	
+	<!-- 根据主键id更新一条数据 -->
+	<update id="update" parameterType="com.xmniao.xmn.core.fresh.entity.TSaleProperty">
+		UPDATE 
+			`t_sale_property` 
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != codeId">
+					codeId = #{codeId},
+				</if>
+				<if test=" null != property and '' != property">
+					property = #{property},
+				</if>
+				<if test=" null != sort">
+					sort = #{sort}, 
+				</if>
+			</trim>
+		</set>
+		WHERE 
+			id = #{id}
+	</update>
+	
+	<!-- 条件查询一条记录 -->
+	<select id="getObject" resultType="com.xmniao.xmn.core.fresh.entity.TSaleProperty" 
+		parameterType="Long">
+		SELECT
+			`id`,
+			`codeId`,
+			`property`,
+			`sort` 
+		FROM
+			`t_sale_property` 
+		<where>
+			id = #{0} 
+		</where>
+	</select>
+	
+	<!-- 查询列表 -->
+	<select id="getList" resultType="com.xmniao.xmn.core.fresh.entity.TSaleProperty" parameterType="com.xmniao.xmn.core.fresh.entity.TSaleProperty" >
+		SELECT
+			`id`,
+			`codeId`, 
+			`property`,
+			`sort` 
+		FROM
+			`t_sale_property` 
+		<where>
+			1=1 
+			<if test="null != codeId">
+				AND codeId = #{codeId} 
+			</if>
+			<if test="null != property and '' != property">
+				AND property = #{property} 
+			</if>
+			<if test="null != sort">
+				AND sort = #{sort} 
+			</if>
+		</where>
+	</select>
+	<!-- 根据pid删除记录 -->
+	<delete id="deleteByCodeId" parameterType="long">
+		DELETE FROM `t_sale_property` WHERE codeId = #{0} 
+	</delete>
+	<!-- 根据id删除一条记录 -->
+	<delete id="deleteById" parameterType="int">
+		DELETE FROM `t_sale_property` WHERE id = #{0} 
+	</delete>
+</mapper>

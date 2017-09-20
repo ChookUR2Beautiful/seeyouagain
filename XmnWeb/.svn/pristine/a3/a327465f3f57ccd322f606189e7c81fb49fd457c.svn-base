@@ -1,0 +1,543 @@
+package com.xmniao.xmn.core.coupon.service;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.base.BaseService;
+import com.xmniao.xmn.core.base.Pageable;
+import com.xmniao.xmn.core.base.Resultable;
+import com.xmniao.xmn.core.business_cooperation.util.PartnerConstants;
+import com.xmniao.xmn.core.businessman.dao.SellerDao;
+import com.xmniao.xmn.core.businessman.entity.TSeller;
+import com.xmniao.xmn.core.coupon.dao.CouponCityDao;
+import com.xmniao.xmn.core.coupon.dao.CouponDao;
+import com.xmniao.xmn.core.coupon.dao.CouponSellerDao;
+import com.xmniao.xmn.core.coupon.dao.CouponValidityDao;
+import com.xmniao.xmn.core.coupon.entity.TCoupon;
+import com.xmniao.xmn.core.coupon.entity.TCouponCity;
+import com.xmniao.xmn.core.coupon.entity.TCouponSeller;
+import com.xmniao.xmn.core.coupon.entity.TCouponValidity;
+import com.xmniao.xmn.core.exception.ApplicationException;
+import com.xmniao.xmn.core.live_anchor.dao.BLiveFansRankDao;
+import com.xmniao.xmn.core.live_anchor.entity.BLiveFansRank;
+import com.xmniao.xmn.core.xmnburs.dao.BursDao;
+import com.xmniao.xmn.core.xmnburs.entity.Burs;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+
+import java.util.*;
+
+/**
+ * 
+ * @项目名称：XmnWeb
+ * 
+ * @类名称：CouponService
+ * 
+ * @类描述：
+ * 
+ * @创建人：zhang'zhiwen
+ * 
+ * @创建时间 ：2015年5月29日 下午4:29:15
+ * 
+ */
+@Service
+public class CouponService extends BaseService<TCoupon> {
+	@Autowired
+	private CouponDao couponDao;
+
+	@Autowired
+	private CouponValidityDao couponValidityDao;
+
+	@Autowired
+	private CouponCityDao couponCityDao;
+
+	@Autowired
+	private CouponSellerDao couponSellerDao;
+
+	@Autowired
+	private SellerDao sellerDao;
+
+	@Autowired
+	private BLiveFansRankDao bLiveFansRankDao;
+
+	@Autowired
+	private BursDao bursDao;
+
+	@Override
+	protected BaseDao<TCoupon> getBaseDao() {
+		return couponDao;
+	}
+
+
+	/**
+	 * 添加、更新优惠券
+	 * 
+	 * @param coupon
+	 */
+	@Transactional
+	public void addOrUpdateCoupon(TCoupon coupon, Resultable resultable) {
+		processStartDateAndEndDate(coupon);
+		if (null == coupon.getCid()) {// 添加操作
+			try {
+				addCoupon(coupon, resultable);
+				
+				// 添加优惠券日志
+				String[] couponInfo = { "优惠券名称为", coupon.getCname(), "添加", "添加" };
+				fireLoginEvent(couponInfo, PartnerConstants.FIRELOGIN_NUMA);
+				resultable.setSuccess(true);
+				resultable.setMsg("添加成功");
+			} catch (Exception e) {
+				e.printStackTrace();
+				this.log.error(e);
+				String[] couponInfo = { "优惠券名称为", coupon.getCname(), "添加", "添加" };
+				fireLoginEvent(couponInfo, PartnerConstants.FIRELOGIN_NUMB);
+				resultable.setSuccess(false);
+				resultable.setMsg("添加失败");
+				throw new ApplicationException("添加优惠券异常", e);
+			}
+
+		} else {// 更新操作
+			try {
+				
+				if(coupon.getShowAll() ==1){
+					couponCityDao.deleteAllByCid(coupon.getCid().longValue());
+				}
+				
+				updateCoupon(coupon, resultable);
+				// 更新优惠券日志
+				String[] couponInfo = { "优惠券名称为", coupon.getCname(), "修改", "更新" };
+				fireLoginEvent(couponInfo, PartnerConstants.FIRELOGIN_NUMA);
+				resultable.setSuccess(true);
+				resultable.setMsg("更新成功");
+			} catch (Exception e) {
+				e.printStackTrace();
+				this.log.error(e);
+				String[] couponInfo = { "优惠券名称为", coupon.getCname(), "修改", "更新" };
+				fireLoginEvent(couponInfo, PartnerConstants.FIRELOGIN_NUMB);
+				resultable.setSuccess(false);
+				resultable.setMsg("更新失败");
+				throw new ApplicationException("更新优惠券异常", e);
+			}
+		}
+	}
+
+	/**
+	 * 处理优惠券的开始时间和结束时间
+	 * 
+	 * @param coupon
+	 */
+	private void processStartDateAndEndDate(TCoupon coupon) {
+		List<TCouponValidity> couponValidities = coupon.getCoupnValidities();
+		if (couponValidities != null) {
+			for (TCouponValidity couponValidity : couponValidities) {
+				// 设置优惠券的开始时间
+				if (coupon.getStartDate() == null) {
+					coupon.setStartDate(couponValidity.getStartDate());
+				} else {
+					if (coupon.getStartDate().after(
+							couponValidity.getStartDate())) {
+						coupon.setStartDate(couponValidity.getStartDate());
+					}
+				}
+				// 设置优惠券的结束时间
+				if (coupon.getEndDate() == null) {
+					coupon.setEndDate(couponValidity.getEndDate());
+				} else {
+					if (coupon.getEndDate().before(couponValidity.getEndDate())) {
+						coupon.setEndDate(couponValidity.getEndDate());
+					}
+				}
+			}
+		}
+	}
+
+	private List<TCouponSeller> getAllCouponSellersByCid(Integer cid,
+			Integer ltype, Integer include, Integer status) {
+		TCouponSeller couponSeller = new TCouponSeller();
+		couponSeller.setCid(cid);
+		couponSeller.setInclude(include);
+		couponSeller.setStatus(status);
+		couponSeller.setLtype(ltype);
+		return couponSellerDao.getList(couponSeller);
+	}
+
+	/**
+	 * 取得更新优惠券信息
+	 * 
+	 * @param cid
+	 * @param model
+	 */
+	@Transactional(propagation = Propagation.REQUIRED)
+	public void getUpdateCouponInfo(Long cid, Model model) {
+		TCoupon coupon = couponDao.getObject(cid);
+		coupon.setCoupnValidities(couponValidityDao.getListByCid(cid));
+		coupon.setCouponCities(couponCityDao.getListByCid(cid));
+		this.log.info("取得包含的行业：");
+		coupon.setIncludeTrade(getAllCouponSellersByCid(cid.intValue(),
+				TCouponSeller.LTYPE.TRADE.getValue(),
+				TCouponSeller.INCLUDE.INCLUDE.getValue(),
+				TCouponSeller.STATUS.VALID.getValue()));
+		this.log.info("取得排除的行业：");
+		coupon.setExcludeTrade(getAllCouponSellersByCid(cid.intValue(),
+				TCouponSeller.LTYPE.TRADE.getValue(),
+				TCouponSeller.INCLUDE.EXCLUDE.getValue(),
+				TCouponSeller.STATUS.VALID.getValue()));
+		model.addAttribute("coupon", coupon);
+	}
+
+	private void addCoupon(TCoupon coupon, Resultable resultable) {
+		coupon.setUpdateTime(new Date());
+		//如果daynum2和Condition2不为空则分别set进daynum和condition
+		Integer dayNum2 = coupon.getDayNum2();
+		Double condition2 = coupon.getCondition2();
+
+		Integer dayNum3 = coupon.getDayNum3();
+		Double condition3 = coupon.getCondition3();
+
+
+		if(null != dayNum2 && !"".equals(dayNum2.toString())){
+			coupon.setDayNum(dayNum2);
+		}else if(dayNum3 != null && !"".equals(dayNum3.toString())){
+			coupon.setDayNum(dayNum3);
+		}
+
+		if(null != condition2 && !"".equals(condition2.toString())){
+			coupon.setCondition(condition2);
+		}else if(condition3 !=null && "".equals(condition3.toString())){
+			coupon.setCondition(condition3);
+		}
+
+		couponDao.addReturnId(coupon);
+		//一、消费优惠劵类型的添加方式
+		if(coupon.getCtype()==0 || coupon.getCtype() == 5){
+			// 平台不通用才会添加区域、商家
+			if (coupon.getShowAll() == 0) {
+
+				/* 是否特定区域的全部商家：1.是:添加特定区域，不添加具体商家 ；2.否：添加具体商家，不添加特区域 */
+				if (coupon.getIsAllSeller() == 1) {// 是:添加特定区域，不添加具体商家
+					if (coupon.getCouponCities() != null) {
+						for (TCouponCity couponCity : coupon.getCouponCities()) {
+							couponCity.setCid(coupon.getCid());
+							couponCityDao.add(couponCity);
+						}
+					}
+				} else {// 否：添加具体的包含、不包含的商家,具体的包含、不包含的行业，不添加特区域
+
+					if (coupon.getIncludeSellerids() != null) {
+						bindSellers(coupon.getCid(), coupon.getIncludeSellerids(),
+								TCouponSeller.INCLUDE.INCLUDE.getValue());
+					}
+					if (coupon.getExcludeSellerids() != null) {
+						bindSellers(coupon.getCid(), coupon.getExcludeSellerids(),
+								TCouponSeller.INCLUDE.EXCLUDE.getValue());
+					}
+
+					if (null != coupon.getIncludeTrade()
+							&& !coupon.getIncludeTrade().isEmpty()) {
+						bindTrades(coupon.getCid(), coupon.getIncludeTrade(),
+								TCouponSeller.INCLUDE.INCLUDE.getValue());
+					}
+					if (null != coupon.getExcludeTrade()
+							&& !coupon.getExcludeTrade().isEmpty()) {
+						bindTrades(coupon.getCid(), coupon.getExcludeTrade(),
+								TCouponSeller.INCLUDE.EXCLUDE.getValue());
+					}
+				}
+			}
+		}
+		//二、商城优惠劵类型添加适用区域的方式  add by HLS
+		if (null!= coupon.getCouponCities() && coupon.getCtype()==1) {
+			for (TCouponCity couponCity : coupon.getCouponCities()) {
+				couponCity.setCid(coupon.getCid());
+				couponCityDao.add(couponCity);
+			}
+		}
+		//三、消费优惠劵和商城优惠劵可共用的有效时间处理方式
+		// 当未启用了有效间隔天数，就不会保存有效时间
+		if (coupon.getSwichtime() == 2) {
+			// 添加优惠券期
+			if (coupon.getCoupnValidities() != null) {
+				for (TCouponValidity couponValidity : coupon
+						.getCoupnValidities()) {
+					couponValidity.setCid(coupon.getCid());
+					couponValidityDao.add(couponValidity);
+				}
+			}
+		}
+	}
+
+	@Transactional
+	private void updateCoupon(TCoupon coupon, Resultable resultable)
+			throws Exception {
+		coupon.setUpdateTime(new Date());
+
+		//一、优惠券类型为消费优惠劵的更新方法
+		if(coupon.getCtype()==0 || coupon.getCtype() ==5){
+			if (coupon.getSwichtime() == 2) {// 当未启用了有效间隔天数，才会保存有效时间
+				// 更新优惠券期
+				if (coupon.getCoupnValidities() != null) {
+					this.log.info("删除所有有效日期");
+					couponValidityDao.deleteAllByCid(coupon.getCid().longValue());
+					if (coupon.getSwichtime() == 2) {
+						for (TCouponValidity couponValidity : coupon
+								.getCoupnValidities()) {
+							if (couponValidity.getStartDate() != null
+									&& couponValidity.getEndDate() != null
+									&& couponValidity.getStartTime() != null
+									&& couponValidity.getEndTime() != null) {
+								couponValidity.setCid(coupon.getCid());
+								couponValidityDao.add(couponValidity);
+							}
+						}
+						coupon.setDayNum(null);
+					}
+				}
+			} else if (coupon.getSwichtime() == 1) {// 当启用了有效间隔天数，就会删除所有的时间
+				this.log.info("删除所有有效日期");
+				couponValidityDao.deleteAllByCid(coupon.getCid().longValue());
+				// 清空有效开始时间和结束时间
+				coupon.setStartDate(null);
+				coupon.setEndDate(null);
+			}
+			if (coupon.getShowAll() == 1) {// 平台通用
+				coupon.setIsAllSeller(null);// 是否全部商家设为null
+				couponCityDao.deleteAllByCid(coupon.getCid().longValue());// 删除所有区域
+				couponSellerDao.deleteAllByCid(coupon.getCid().longValue());// 删除所有商家
+			} else {// 平台不通用
+	
+				/* 是否是特定区域全部商家，1.是：删除具体商家，添加特定区域， 2.否：删除特定特定区域，添加具体商家 */
+				if (coupon.getIsAllSeller() == 1) {
+					// 1.删除具体商家
+					couponSellerDao.deleteAllByCid(coupon.getCid().longValue());
+					// 2.添加特定区域
+					if (coupon.getCouponCities() != null) {
+						this.log.info("删除所有区域");
+						couponCityDao.deleteAllByCid(coupon.getCid().longValue());
+						for (TCouponCity couponCity : coupon.getCouponCities()) {
+							if (couponCity.getProvinces() != null
+									&& couponCity.getCity() != null) {
+								couponCity.setCid(coupon.getCid());
+								couponCityDao.add(couponCity);
+							}
+						}
+					}
+				} else {
+					// 1.删除特定区域
+					couponCityDao.deleteAllByCid(coupon.getCid().longValue());
+	
+					// 2.添加具体商家
+					if (coupon.getIncludeSellerids() != null) {
+						bindSellers(coupon.getCid(), coupon.getIncludeSellerids(),
+								TCouponSeller.INCLUDE.INCLUDE.getValue());
+					} else {
+						couponSellerDao.deleteAllIncludeSellerByCid(coupon.getCid()
+								.longValue());// 删除所有包含的商家
+					}
+	
+					if (coupon.getExcludeSellerids() != null) {
+						bindSellers(coupon.getCid(), coupon.getExcludeSellerids(),
+								TCouponSeller.INCLUDE.EXCLUDE.getValue());
+					} else {
+						couponSellerDao.deleteAllExcludeSellerByCid(coupon.getCid()
+								.longValue());// 删除所有排除的商家
+					}
+					if (null != coupon.getIncludeTrade()
+							&& !coupon.getIncludeTrade().isEmpty()) {
+						bindTrades(coupon.getCid(), coupon.getIncludeTrade(),
+								TCouponSeller.INCLUDE.INCLUDE.getValue());
+						couponSellerDao.deleteAllExcludeTradeByCid(coupon.getCid()
+								.longValue());
+					}
+					if (null != coupon.getExcludeTrade()
+							&& !coupon.getExcludeTrade().isEmpty()) {
+						bindTrades(coupon.getCid(), coupon.getExcludeTrade(),
+								TCouponSeller.INCLUDE.EXCLUDE.getValue());
+						couponSellerDao.deleteAllIncludeTradeByCid(coupon.getCid()
+								.longValue());
+					}
+				}
+			}
+		}
+		//二、优惠券类型为商城优惠劵的更新方法，更新适用区域
+		if (null!= coupon.getCouponCities() && coupon.getCtype()==1) {
+			this.log.info("删除所有区域");
+			couponCityDao.deleteAllByCid(coupon.getCid().longValue());
+			for (TCouponCity couponCity : coupon.getCouponCities()) {
+				if (couponCity.getProvinces() != null
+						&& couponCity.getCity() != null) {
+					couponCity.setCid(coupon.getCid());
+					couponCityDao.add(couponCity);
+				}
+			}
+		}
+		//三、消费优惠劵和商城优惠劵共用的更新方法
+		couponDao.update(coupon);
+	}
+
+	/**
+	 * 绑定行业到优惠券
+	 * 
+	 * @param cid
+	 * @param trades
+	 * @param include
+	 */
+	public void bindTrades(Integer cid, List<TCouponSeller> trades,
+			Integer include) {
+		this.log.info("绑定行业到优惠券");
+		TCouponSeller param = new TCouponSeller();
+		param.setCid(cid);
+		param.setInclude(include);
+		param.setLtype(TCouponSeller.LTYPE.TRADE.getValue());
+		param.setStatus(TCouponSeller.STATUS.VALID.getValue());
+		param.setLimit(-1);//去掉分页条件
+		this.log.info("获取所有已经绑定的行业：");
+		List<TCouponSeller> existedTrades = couponSellerDao.getList(param);
+		Set<Integer> tradeIds = new HashSet<Integer>();
+		for (TCouponSeller existedTrade : existedTrades) {
+			tradeIds.add(existedTrade.getSellerid());
+		}
+		for (TCouponSeller trade : trades) {
+			if (tradeIds.contains(trade.getSellerid())) {
+				tradeIds.remove(trade.getSellerid());
+			} else {
+				if (trade.getCategory() != null && trade.getSellerid() != null) {
+					TCouponSeller tradeAdd = new TCouponSeller();
+					tradeAdd.setCid(cid);
+					tradeAdd.setInclude(include);
+					tradeAdd.setLtype(TCouponSeller.LTYPE.TRADE.getValue());
+					tradeAdd.setStatus(TCouponSeller.STATUS.VALID.getValue());
+					tradeAdd.setCategory(trade.getCategory());
+					tradeAdd.setSellerid(trade.getSellerid());
+					couponSellerDao.add(tradeAdd);
+				}
+			}
+		}
+
+		if (tradeIds.size() > 0) {
+			TCouponSeller couponSeller = new TCouponSeller();
+			couponSeller.setCid(cid);
+			StringBuilder sb = new StringBuilder();
+			for (Integer id : tradeIds) {
+				sb.append(id + ",");
+			}
+			sb.deleteCharAt(sb.length() - 1);
+			couponSeller.setSellerids(sb.toString());
+			couponSellerDao.deleteByCidAndSellerids(couponSeller);// 物理删除
+		}
+	}
+
+	/**
+	 * 绑定优惠券到商家
+	 * 
+	 * @param cid
+	 * @param sellerids
+	 */
+	private void bindSellers(Integer cid, String sellerids, Integer include) {
+		TCouponSeller couponSellerTemp = new TCouponSeller();
+		couponSellerTemp.setCid(cid);
+		couponSellerTemp.setLtype(TCouponSeller.LTYPE.SELLER.getValue());
+		couponSellerTemp.setStatus(TCouponSeller.STATUS.VALID.getValue());
+		couponSellerTemp.setInclude(include);
+		couponSellerTemp.setLimit(-1);//去掉分页条件
+		this.log.info("获取所有已经绑定的商家：");
+		List<TCouponSeller> couponSellers = couponSellerDao
+				.getList(couponSellerTemp);
+		Set<Integer> selleridSet = new HashSet<Integer>();
+		// 取得存在的商家的Id
+		for (TCouponSeller couponSeller : couponSellers) {
+			selleridSet.add(couponSeller.getSellerid());
+		}
+
+		if (sellerids != "") {
+			for (String sellerid : sellerids.split(",")) {
+				if (selleridSet.contains(Integer.parseInt(sellerid))) {// 存在的话就不做操作
+					selleridSet.remove(Integer.parseInt(sellerid));// 去除还存在的，用于等下删除不存在的
+				} else {// 不存在的话就添加
+					TCouponSeller couponSeller = new TCouponSeller();
+					couponSeller.setCid(cid.intValue());
+					couponSeller.setSellerid(Integer.parseInt(sellerid));
+					couponSeller.setInclude(include);
+					couponSeller
+							.setLtype(TCouponSeller.LTYPE.SELLER.getValue());
+					couponSeller.setStatus(TCouponSeller.STATUS.VALID
+							.getValue());
+					couponSellerDao.add(couponSeller);
+				}
+			}
+		}
+		if (selleridSet.size() > 0) {
+			TCouponSeller couponSeller = new TCouponSeller();
+			couponSeller.setCid(cid);
+			StringBuilder sb = new StringBuilder();
+			for (Integer id : selleridSet) {
+				sb.append(id + ",");
+			}
+			sb.deleteCharAt(sb.length() - 1);
+			couponSeller.setSellerids(sb.toString());
+			couponSellerDao.deleteByCidAndSellerids(couponSeller);// 物理删除
+		}
+	}
+
+	/**
+	 * 取得优惠券的商家
+	 * 
+	 * @param cid
+	 */
+	public List<TSeller> getSellersByCid(Long cid, Integer include) {
+		TCouponSeller param = new TCouponSeller();
+		param.setCid(cid.intValue());
+		param.setInclude(include);
+		param.setStatus(TCouponSeller.STATUS.VALID.getValue());
+		param.setLtype(TCouponSeller.LTYPE.SELLER.getValue());
+		List<TCouponSeller> couponSellers = couponSellerDao
+				.getListByCidAndJoinSellerName(param);
+		List<TSeller> sellers = null;
+		if (couponSellers.size() > 0) {
+			sellers = new ArrayList<TSeller>();
+			for (TCouponSeller couponSeller : couponSellers) {
+				TSeller seller = new TSeller();
+				seller.setSellerid(couponSeller.getSellerid());
+				seller.setSellername(couponSeller.getSellername());
+				sellers.add(seller);
+			}
+		}
+
+		return sellers;
+	}
+
+	/**
+	 * 取得优惠券商家列表
+	 * 
+	 * @param seller
+	 * @return
+	 */
+	public void getCouponSellerList(TSeller seller, Pageable<TSeller> pageable) {
+		pageable.setContent(sellerDao.getSellerByCidAndSeller(seller));
+		pageable.setTotal(sellerDao.countOfGetSellerByCidAndSeller(seller));
+
+	}
+
+	/**
+	 * 获取下拉列表数据
+	 * 
+	 * @param coupon
+	 * @return
+	 */
+	public List<TCoupon> getSelect(TCoupon coupon) {
+		return couponDao.getSelect(coupon);
+	}
+
+	/**
+	 * 查询粉丝级别
+	 * @return
+	 */
+	public List<BLiveFansRank> queryLevelList(Integer rankType) {
+		return bLiveFansRankDao.selectByRankType(rankType);
+	}
+
+	/** 根据uname 查询用户 */
+    public Burs queryUserByUname(String uname) {
+    	return bursDao.queryBurByUname(uname);
+    }
+}

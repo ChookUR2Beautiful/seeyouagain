@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.ExtensionSetDao">
+
+	<parameterMap type="SellerTextensionSet" id="extensionSet" />
+	
+	<resultMap type="SellerTextensionSet" id="extensionSetMap">
+		<result column="id" property="id" />
+		<result column="sellerid" property="sellerId" />
+		<result column="date_start" property="dateStart" />
+		<result column="date_end" property="dateEnd" />
+		<result column="is_add_marketing_list" property="isAddMarketingList" />
+		<result column="extension_type" property="extensionType" />
+		<result column="sort" property="sort" />
+		<result column="data_state" property="dataState" />
+		<result column="creator" property="creator" />
+		<result column="date_created" property="dateCreated" />
+		<result column="updator" property="updator" />
+		<result column="date_updated" property="dateUpdated" />
+
+	</resultMap>
+	<insert id="addReturnId" useGeneratedKeys="true" keyProperty="id"
+		keyColumn="id" parameterMap="extensionSet">
+		INSERT INTO t_extension_set
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test=" null != sellerId">
+				sellerid,
+			</if>
+			<if test=" null != dateStart">
+				date_start,
+			</if>
+			<if test=" null != dateEnd and '' != dateEnd ">
+				date_end,
+			</if>
+			<if test=" null != isAddMarketingList">
+				is_add_marketing_list,
+			</if>
+			<if test=" null != extensionType">
+				extension_type,
+			</if>
+			<if test=" null != sort and '' != sort ">
+				sort,
+			</if>
+			<if test=" null != dataState and '' != dataState ">
+				data_state,
+			</if>
+			<if test=" null != creator and '' != creator ">
+				creator,
+			</if>
+			<if test=" null != dateCreated">
+				date_created,
+			</if>
+			<if test=" null != updator and '' != updator ">
+				updator,
+			</if>
+			<if test=" null != dateUpdated">
+				date_updated,
+			</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			<if test=" null != sellerId">
+				#{sellerId},
+			</if>
+			<if test=" null != dateStart">
+				#{dateStart},
+			</if>
+			<if test=" null != dateEnd and '' != dateEnd ">
+				#{dateEnd},
+			</if>
+			<if test=" null != isAddMarketingList">
+				#{isAddMarketingList},
+			</if>
+			<if test=" null != extensionType">
+				#{extensionType},
+			</if>
+			<if test=" null != sort and '' != sort ">
+				#{sort},
+			</if>
+			<if test=" null != dataState and '' != dataState ">
+				#{dataState},
+			</if>
+			<if test=" null != creator and '' != creator ">
+				#{creator},
+			</if>
+			<if test=" null != dateCreated">
+				#{dateCreated},
+			</if>
+			<if test=" null != updator and '' != updator ">
+				#{updator},
+			</if>
+			<if test=" null != dateUpdated">
+				#{dateUpdated},
+			</if>
+		</trim>
+	</insert>
+
+	<insert id="add" parameterMap="extensionSet" >
+		INSERT INTO t_extension_set
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != sellerId">
+					sellerid,
+				</if>
+			 	<if test=" null != dateStart">
+					date_start,
+				</if>
+			 	<if test=" null != dateEnd and '' != dateEnd ">
+					date_end,
+				</if>
+			 	<if test=" null != isAddMarketingList">
+					is_add_marketing_list,
+				</if>
+			 	<if test=" null != extensionType">
+					extension_type,
+				</if>
+			 	<if test=" null != sort and '' != sort ">
+					sort,
+				</if>
+			 	<if test=" null != dataState and '' != dataState ">
+					data_state,
+				</if>
+			 	<if test=" null != creator and '' != creator ">
+					creator,
+				</if>
+			 	<if test=" null != dateCreated">
+					date_created,
+				</if>
+				<if test=" null != updator and '' != updator ">
+					updator,
+				</if>
+			 	<if test=" null != dateUpdated">
+					date_updated,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != sellerId">
+					 	#{sellerId},
+				</if>
+			 	<if test=" null != dateStart">
+					 	#{dateStart},
+				</if>
+			 	<if test=" null != dateEnd and '' != dateEnd ">
+					 	#{dateEnd},
+				</if>
+			 	<if test=" null != isAddMarketingList">
+					 	#{isAddMarketingList},
+				</if>
+			 	<if test=" null != extensionType">
+					 	#{extensionType},
+				</if>
+			 	<if test=" null != sort and '' != sort ">
+					 	#{sort},
+				</if>
+			 	<if test=" null != dataState and '' != dataState ">
+					 	#{dataState},
+				</if>
+			 	<if test=" null != creator and '' != creator ">
+					 	#{creator},
+				</if>
+			 	<if test=" null != dateCreated">
+					 	#{dateCreated},
+				</if>
+				<if test=" null != updator and '' != updator ">
+					 	#{updator},
+				</if>
+			 	<if test=" null != dateUpdated">
+					 	#{dateUpdated},
+				</if>
+		</trim>
+	</insert>
+	
+	<update id="update" parameterMap="extensionSet">
+		UPDATE t_extension_set
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != sellerId">
+					sellerid = #{sellerId},
+				</if>
+				<if test=" null != dateStart">
+					date_start = #{dateStart},
+				</if>
+				<if test=" null != dateEnd ">
+					date_end = #{dateEnd},
+				</if>
+				<if test=" null != isAddMarketingList">
+					is_add_marketing_list = #{isAddMarketingList},
+				</if>
+				<if test=" null != extensionType">
+					extension_type = #{extensionType},
+				</if>
+				<if test=" null != sort">
+					sort = #{sort},
+				</if>
+				<if test=" null != dataState">
+					data_state = #{dataState},
+				</if>
+				<if test=" null != creator ">
+					creator = #{creator},
+				</if>
+				<if test=" null != dateCreated">
+					date_created = #{dateCreated},
+				</if>
+				<if test=" null != updator">
+					updator = #{updator},
+				</if>
+				<if test=" null != dateUpdated ">
+					date_updated = #{dateUpdated}
+				</if>
+	
+			</trim>
+		</set>
+		<where>
+				id = #{id}
+		</where>
+	</update>
+	
+	
+	<select id="getList" resultMap="extensionSetMap" parameterMap="extensionSet">
+	<!-- 	SELECT * FROM t_seller_detailed -->
+	   SELECT * FROM t_extension_set
+		<where>
+			sellerid = #{sellerId} and data_state=1
+		</where>
+			ORDER BY extension_type asc  
+	</select>
+	
+		<select id="getListByType" resultMap="extensionSetMap" parameterMap="extensionSet">
+	<!-- 	SELECT * FROM t_seller_detailed -->
+	   SELECT * FROM t_extension_set
+		<where>
+			sellerid = #{sellerId} and extension_type=#{extensionType} and data_state=1
+		</where>
+			ORDER BY extension_type asc  
+	</select>
+</mapper>

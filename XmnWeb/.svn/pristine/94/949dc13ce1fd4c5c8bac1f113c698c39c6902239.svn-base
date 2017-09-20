@@ -1,0 +1,548 @@
+package com.xmniao.xmn.core.live_anchor.controller;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.xmniao.xmn.core.base.BaseController;
+import com.xmniao.xmn.core.base.Pageable;
+import com.xmniao.xmn.core.base.Resultable;
+import com.xmniao.xmn.core.common.service.TSequenceService;
+import com.xmniao.xmn.core.live_anchor.constant.LiveConstant;
+import com.xmniao.xmn.core.live_anchor.entity.BLiver;
+import com.xmniao.xmn.core.live_anchor.entity.ChatMessage;
+import com.xmniao.xmn.core.live_anchor.entity.TFansCouponAnchorRef;
+import com.xmniao.xmn.core.live_anchor.entity.TLivePublicMessage;
+import com.xmniao.xmn.core.live_anchor.entity.TLiveRecord;
+import com.xmniao.xmn.core.live_anchor.entity.TLiveRobotSet;
+import com.xmniao.xmn.core.live_anchor.service.TFansCouponAnchorRefService;
+import com.xmniao.xmn.core.live_anchor.service.TLiveAnchorService;
+import com.xmniao.xmn.core.live_anchor.service.TLivePublicMessageService;
+import com.xmniao.xmn.core.live_anchor.service.TLiveRecordService;
+import com.xmniao.xmn.core.live_anchor.service.TLiveRobotSetService;
+import com.xmniao.xmn.core.util.PageConstant;
+import com.xmniao.xmn.core.util.handler.annotation.RequestLogging;
+
+/**
+ * 项目名称：XmnWeb_LVB
+ * 
+ * 类名称：LiveRecordController
+ *
+ * 类描述：直播管理Controller
+ * 
+ * 创建人： huang'tao
+ * 
+ * 创建时间：2016-8-6下午4:07:43
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司
+ */
+@RequestLogging(name="直播管理")
+@Controller
+@RequestMapping(value = "liveVideo/manage")
+public class LiveVideoController extends BaseController {
+	private final String targetUrl="liveVideo/manage/init.jhtml";//编辑后跳转URL
+	
+	private final Integer RECORD_NUMID=100006;//直播管理排序号
+	
+	/**
+	 * 注入通告服务
+	 */
+	@Autowired
+	private TLiveRecordService liveRecordService;
+	
+	/**
+	 * 注入机器人配置服务
+	 */
+	@Autowired
+	private TLiveRobotSetService liveRobotSetService;
+	
+	/**
+	 * 注入主播服务
+	 */
+	@Autowired
+	private TLiveAnchorService liveAnchorService;
+	
+	/**
+	 * 注入直播公共消息服务
+	 */
+	@Autowired
+	private TLivePublicMessageService livePublicMessageService;
+	
+	/**
+	 * 注入序列号服务
+	 */
+	@Autowired
+	private TSequenceService sequenceService;
+	
+	
+	/**
+	 * 注入直播粉丝券发放配置服务
+	 */
+	@Autowired
+	private TFansCouponAnchorRefService couponAnchorRefService;
+	
+	/**
+	 * 直播管理列表初始页面
+	 * 
+	 * @author huang'tao
+	 * @date 2015年8月12日 下午4:34:01
+	 * @return
+	 */
+	@RequestMapping(value = "init")
+	public String init(BLiver liver,Model model) {
+		model.addAttribute("liver",liver);
+		return "live_anchor/liveVideoManage";
+	}
+	
+	/**
+	 * 直播管理列表
+	 * 
+	 * @author huang'tao
+	 * @date 2015年8月12日 下午4:34:01
+	 * @return
+	 */
+	@RequestMapping(value = "init/list")
+	@ResponseBody
+	public Object initList(TLiveRecord liveRecord) {
+		Pageable<TLiveRecord> pageable = new Pageable<TLiveRecord>(liveRecord);
+		liveRecordService.getListPageWithRowNum(liveRecord, pageable);
+		return pageable;
+	}
+	
+	/**
+	 * 主播时长列表页面初始化
+	 * 
+	 * @author huang'tao
+	 * @date 2015年8月12日 下午4:34:01
+	 * @return
+	 */
+	@RequestMapping(value = "liveTimeInit")
+	public String liveTimeInit(BLiver liver,Model model) {
+		model.addAttribute("liver",liver);
+		return "live_anchor/liveTimeInit";
+	}
+	
+	/**
+	 * 添加通告页面初始化
+	 * 
+	 * @author huang'tao
+	 * @date 2015年8月12日 下午4:34:01
+	 * @return
+	 */
+	@RequestMapping(value = "add/init")
+	public String addInit(TLiveRecord liveRecord,Model model) {
+		return "live_anchor/recordEdit";
+	}
+	
+	/**
+	 * 添加通告信息
+	 * 
+	 * @author huang'tao
+	 * @date 2015年8月12日 下午4:34:01
+	 * @return
+	 */
+	@RequestMapping(value = "add")
+	@ResponseBody
+	public Resultable add(TLiveRecord liveRecord) {
+		Resultable result=new Resultable();
+		try {
+			Long sequenceNo = sequenceService.getAndUpdateSid(RECORD_NUMID);
+			liveRecord.setSequenceNo(Integer.valueOf(sequenceNo.toString()));
+			liveRecord.setZhiboType(-1);//直播类型 -1 初始状态 0 预告 1 正在直播  2 回放  3 不回放
+			liveRecord.setCreateTime(new Date());
+			liveRecord.setUpdateTime(new Date());
+			liveRecordService.add(liveRecord);
+			result.setSuccess(true);
+			result.setMsg("添加成功!");
+		} catch (Exception e) {
+			result.setSuccess(false);
+			result.setMsg("添加失败!");
+			e.printStackTrace();
+			this.log.error(e.getMessage(), e);
+		}
+		return result;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：删除通告信息
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-8下午6:26:35
+	 * @param liveAnchor
+	 * @return
+	 */
+	@RequestMapping(value = "delete")
+	@ResponseBody
+	public Resultable delete(TLiveRecord liveRecord){
+		Resultable result=new Resultable();
+		try {
+			int count = liveRecordService.deleteById(liveRecord.getId());
+			//删除后,对大于当前序号的记录重新排序(排序号-1),并更新t_sequence表中对应的sid
+//			liveRecordService.updateSequenceNo(liveRecord);
+			if(count>0){
+				result.setMsg("删除成功!");
+				result.setSuccess(true);
+			}else {
+				result.setMsg("删除失败!");
+				result.setSuccess(false);
+			}
+		} catch (Exception e) {
+			result.setMsg("删除失败!");
+			result.setSuccess(false);
+			e.printStackTrace();
+			this.log.error(e.getMessage(), e);
+		}
+		return result;
+	}
+	
+	/**
+	 * 通告修改页面初始化
+	 * 
+	 * @author huang'tao
+	 * @date 2015年8月12日 下午4:34:01
+	 * @return
+	 */
+	@RequestMapping(value = "update/init")
+	public String updateInit(TLiveRecord liveRecord,Model model) {
+		try {
+			int recordId=liveRecord.getId();
+			TLiveRecord liveRecordInfo = liveRecordService.getObject(liveRecord.getId().longValue());
+			//加载粉丝券信息 
+			TFansCouponAnchorRef couponAnchorRefParam=new TFansCouponAnchorRef();
+			couponAnchorRefParam.setRecordId(recordId);
+			TFansCouponAnchorRef couponAnchor= couponAnchorRefService.selectCouponAnchorRef(couponAnchorRefParam);
+			
+			model.addAttribute("liveRecord", liveRecordInfo);
+			model.addAttribute("couponAnchor",couponAnchor);
+			model.addAttribute("targetUrl", targetUrl);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "live_anchor/recordEdit";
+	}
+	
+	/**
+	 * 
+	 * 方法描述：更新直播信息
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-8上午11:13:04
+	 * @param liveAnchor
+	 * @return
+	 */
+	@RequestMapping(value = {"update","setAdvance","setState"})
+	@ResponseBody
+	public Resultable update(TLiveRecord liveRecord){
+		Resultable result=new Resultable();
+		try {
+			int count = liveRecordService.update(liveRecord);
+			if(LiveConstant.OPERATIONTYPE.END_LIVE.equals(liveRecord.getOperationType())){
+				liveRecordService.endLive(liveRecord);
+			}
+			if(count>0){
+				result.setMsg("更新成功!");
+				result.setSuccess(true);
+			}else {
+				result.setMsg("更新失败!");
+				result.setSuccess(false);
+			}
+		} catch (Exception e) {
+			result.setMsg("更新失败!");
+			result.setSuccess(false);
+			e.printStackTrace();
+			this.log.error(e.getMessage(), e);
+		}
+		return result;
+	}
+	
+	@RequestMapping(value = {"upOrDown"})
+	@ResponseBody
+	public Resultable upOrDown(TLiveRecord liveRecordRequest){
+		Resultable result=new Resultable();
+		TLiveRecord targetRecord=new TLiveRecord();//目标记录,将A移动到B,则B为目标记录
+		TLiveRecord liveRecord=liveRecordService.getObject(liveRecordRequest.getId().longValue());//操作记录
+		int offset=0;//偏移量,1目标记录下移,-1目标记录上移
+		int count=0;//受影响的记录数
+		try {
+			String operationType = liveRecordRequest.getOperationType();
+			Integer sequenceNo = liveRecord.getSequenceNo();//发生上移(下移)操作记录的序号
+			Integer maxSequnceNo = liveRecordService.getMaxSequnceNo();//当前通告最大序号
+			if("up".equals(operationType)){
+				if(sequenceNo==1){
+					result.setSuccess(false);
+					result.setMsg("当前序号最小,不可上移");
+				}else{
+					liveRecord.setSequenceNo(sequenceNo-1);
+					targetRecord.setSequenceNo(sequenceNo-1);
+					offset=1;
+					targetRecord.setOffset(offset);
+					liveRecordService.updateTargetSequenceNo(targetRecord);//目标记录下移
+					count = liveRecordService.update(liveRecord);//操作记录上移
+				}
+			}else if("down".equals(operationType)){
+				if(sequenceNo==maxSequnceNo){
+					result.setSuccess(false);
+					result.setMsg("当前序号最大,不可下移");
+				}else{
+					liveRecord.setSequenceNo(sequenceNo+1);
+					targetRecord.setSequenceNo(sequenceNo+1);
+					offset=-1;
+					targetRecord.setOffset(offset);
+					liveRecordService.updateTargetSequenceNo(targetRecord);//目标记录上移
+					count = liveRecordService.update(liveRecord);//操作记录下移
+				}
+				
+			}
+			if(count>0){
+				result.setMsg("操作成功!");
+				result.setSuccess(true);
+			}
+		} catch (Exception e) {
+			result.setMsg("操作失败!");
+			result.setSuccess(false);
+			e.printStackTrace();
+			this.log.error(e.getMessage(), e);
+		}
+		return result;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：跳转到机器人配置页面
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-29上午11:25:49
+	 * @param robotSet
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value={"robotSet/init"})
+	public String robotSetInit(TLiveRobotSet robotSet,Model model){
+		try {
+			TLiveRobotSet robotSetInfo = liveRobotSetService.selectTheFirst();
+			model.addAttribute("isCommon", "1");//是否通用配置，0 否，1 是
+			model.addAttribute("robotSetInfo", robotSetInfo);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "live_anchor/robotSetEdit";
+	}
+	
+	
+	/**
+	 * 
+	 * 方法描述：保存机器人配置信息
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-29下午2:15:39
+	 * @param robotSet
+	 * @return
+	 */
+	@RequestMapping(value={"robotSet"})
+	@ResponseBody
+	public Object saveRobotSet(TLiveRobotSet robotSet){
+		Resultable result=new Resultable();
+		try {
+			result=liveRobotSetService.saveRobotSet(robotSet);
+		} catch (Exception e) {
+			e.printStackTrace();
+			this.log.error(e.getMessage(), e);
+		}
+		return result;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：跳转到指定直播间机器人配置页面
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-29上午11:25:49
+	 * @param robotSet
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value={"robotSet/privateRobotSet/init"})
+	public String privateRobotSetInit(@RequestParam(value="id") Integer recordId,Model model){
+		try {
+			TLiveRobotSet robotSetReq= new TLiveRobotSet();
+			robotSetReq.setRecordId(recordId);
+			TLiveRobotSet robotSetInfo = liveRobotSetService.selectByBean(robotSetReq);
+			model.addAttribute("isCommon", "0");//是否通用配置，0 否，1 是
+			model.addAttribute("recordId", recordId);
+			model.addAttribute("robotSetInfo", robotSetInfo);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "live_anchor/robotSetEdit";
+	}
+	
+	/**
+	 * 
+	 * 方法描述：导出通告信息
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-8下午2:57:30
+	 */
+	@RequestMapping(value="export")
+	public void export(TLiveRecord record,HttpServletRequest request,HttpServletResponse response){
+		record.setOrder(PageConstant.NOT_ORDER);
+		record.setLimit(PageConstant.PAGE_LIMIT_NO);
+		Map<String,Object> params=new HashMap<String,Object>();
+		params.put("list", liveRecordService.getList(record));
+		doExport(request,response,"live_anchor/liveRecord.xls",params);
+		
+	}
+	
+	/**
+	 * 进入直播聊天室
+	 * 
+	 * @author huang'tao
+	 * @date 2015年8月12日 下午4:34:01
+	 * @return
+	 */
+	@RequestMapping(value = "enterChatRoom")
+	public String enterChatRoom(TLiveRecord liveRecord,Model model) {
+		Integer liveRecordId = liveRecord.getId();
+		Integer maxId=0;
+		TLivePublicMessage publicMsg = new TLivePublicMessage();
+		publicMsg.setLiveRecordId(liveRecordId);
+		List<TLivePublicMessage> list = livePublicMessageService.getList(publicMsg);
+		if(list!=null && list.size()>0){
+			TLivePublicMessage publicMessage = list.get(0);
+			maxId = publicMessage.getId();
+		}
+		model.addAttribute("liveRecordId", liveRecordId);
+		model.addAttribute("maxId", maxId);
+		return "live_anchor/liveChatRoom";
+	}
+	
+	
+	/**
+	 * 
+	 * 方法描述：验证手机是否为直播用户
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-10下午7:58:55
+	 * @return
+	 */
+	@RequestMapping(value = "checkAccount")
+	@ResponseBody
+	public Object checkAccount(BLiver anchor){
+		Resultable result=new Resultable();
+		//用户类型 1 主播 2 普通用户
+		BLiver bLiver = liveAnchorService.selectBLiver(anchor);
+		if(bLiver!=null){
+			result.setSuccess(true);
+			result.setData(bLiver);
+		}else {
+			result.setSuccess(false);
+			result.setMsg("直播用户不存在，请输入正确的手机号码!");
+		}
+		return result;
+	}
+	
+	
+	/**
+	 * 发送聊天消息
+	 * 
+	 * @author huang'tao
+	 * @date 2015年8月12日 下午4:34:01
+	 * @return
+	 */
+	@RequestMapping(value = "enterChatRoom/sendChatMsg")
+	@ResponseBody
+	public Object sendChatMsg(ChatMessage chatMsg) {
+		Resultable result=new Resultable();
+		try {
+			liveRecordService.sendChatMsg(chatMsg);
+			result.setSuccess(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	
+	/**
+	 * 加载聊天消息
+	 * 
+	 * @author huang'tao
+	 * @date 2015年8月12日 下午4:34:01
+	 * @return
+	 */
+	@RequestMapping(value = "enterChatRoom/loadMessage")
+	@ResponseBody
+	public Object loadMessage(TLivePublicMessage publicMsg) {
+		Resultable result=new Resultable();
+		try {
+//			publicMsg.setCreateTime(new Date());
+			List<TLivePublicMessage> list = livePublicMessageService.getListInfo(publicMsg);
+			result.setSuccess(true);
+			result.setData(list);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	
+	/**
+	 * 
+	 * 方法描述：直播置底 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-2-20下午4:32:18 <br/>
+	 * @param liveRecord
+	 * @return
+	 */
+	@RequestMapping(value="update/sendBack")
+	@ResponseBody
+	public Resultable sendBack(TLiveRecord liveRecord){
+		Resultable result=new Resultable();
+		try {
+			liveRecord.setSequenceNo(LiveConstant.SEQUENCE_MAX_VALUE);
+			liveRecord.setUpdateTime(new Date());
+			liveRecordService.updateRecommendedInfo(liveRecord);
+			result.setSuccess(true);
+			result.setMsg("操作成功!");
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setSuccess(false);
+			result.setMsg("操作失败!");
+			this.log.error("直播置底，操作失败："+e.getMessage(), e);
+		}
+		return result;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：直播置顶 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-2-20下午4:32:18 <br/>
+	 * @param liveRecord
+	 * @return
+	 */
+	@RequestMapping(value="update/sendTop")
+	@ResponseBody
+	public Resultable sendTop(TLiveRecord liveRecord){
+		Resultable result=new Resultable();
+		try {
+			liveRecord.setSequenceNo(LiveConstant.SEQUENCE_MIN_VALUE);
+			liveRecord.setUpdateTime(new Date());
+			liveRecordService.updateRecommendedInfo(liveRecord);
+			result.setSuccess(true);
+			result.setMsg("操作成功!");
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setSuccess(false);
+			result.setMsg("操作失败!");
+			this.log.error("直播置底，操作失败："+e.getMessage(), e);
+		}
+		return result;
+	}
+	
+}

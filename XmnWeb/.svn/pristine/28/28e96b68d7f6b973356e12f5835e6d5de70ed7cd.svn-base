@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.fresh.dao.SaleGroupDao">
+	<resultMap id="BaseResultMap" type="com.xmniao.xmn.core.fresh.entity.TSaleGroup" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="codeId" property="codeId" jdbcType="BIGINT" />
+    <result column="pv_ids" property="pvIds" jdbcType="VARCHAR" />
+    <result column="pv_ids_sort" property="pvIdsSort" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="stock" property="stock" jdbcType="INTEGER" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+    <result column="sales" property="sales" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, codeId, pv_ids, pv_ids_sort, amount, stock, sort, sales
+  </sql>
+	<!-- 添加一条数据 -->
+	<insert id="add" parameterType="com.xmniao.xmn.core.fresh.entity.TSaleGroup">
+		INSERT INTO 
+			`t_sale_group` 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test=" null != codeId">
+				codeId,
+			</if>
+			<if test=" null != pvIds and '' != pvIds">
+				pv_ids,
+			</if>
+			<if test=" null != pvIdsSort and '' != pvIdsSort">
+				pv_ids_sort,
+			</if>
+			<if test=" null != amount">
+				amount,
+			</if>
+			<if test=" null != stock">
+				stock,
+			</if>
+			<if test=" null != stock">
+				sort,
+			</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			<if test=" null != codeId">
+				#{codeId},
+			</if>
+			<if test=" null != pvIds and '' != pvIds">
+				#{pvIds},
+			</if>
+			<if test="null != pvIdsSort and '' != pvIdsSort">
+				#{pvIdsSort},
+			</if>
+			<if test=" null != amount">
+				#{amount},
+			</if>
+			<if test=" null != stock">
+				#{stock},
+			</if>
+			<if test=" null != stock">
+				#{sort},
+			</if>
+		</trim>	
+	</insert>
+	
+	<!-- 根据主键id更新一条数据 -->
+	<update id="update" parameterType="com.xmniao.xmn.core.fresh.entity.TSaleGroup">
+		UPDATE 
+			`t_sale_group` 
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != pvIds and '' != pvIds">
+					pv_ids = #{pvIds},
+				</if>
+				<if test="null != pvIdsSort and '' != pvIdsSort">
+					pv_ids_sort = #{pvIdsSort},
+				</if>
+				<if test=" null != amount">
+					amount = #{amount},
+				</if>
+				<if test=" null != stock">
+					stock = #{stock},
+				</if>
+				<if test=" null != stock">
+					sort = #{sort},
+				</if>
+			</trim>
+		</set>
+		WHERE 
+			id = #{id}
+	</update>
+	
+	<!-- 条件查询一条记录 -->
+	<select id="getObject" resultType="com.xmniao.xmn.core.fresh.entity.TSaleGroup" 
+		parameterType="Long">
+		SELECT
+			id,
+			codeId,
+			pv_ids AS pvIds,
+			pv_ids_sort AS pvIdsSort,
+			amount,
+			stock,
+			sort 
+		FROM
+			`t_sale_group` 
+		<where>
+			id = #{0} 
+		</where>
+	</select>
+	
+	<!-- 查询列表 -->
+	<select id="getList" resultType="com.xmniao.xmn.core.fresh.entity.TSaleGroup" parameterType="com.xmniao.xmn.core.fresh.entity.TSaleGroup">
+		SELECT
+			id,
+			codeId,
+			pv_ids AS pvIds,
+			pv_ids_sort AS pvIdsSort,
+			amount,
+			stock,
+			sort 
+		FROM
+			`t_sale_group` 
+		<where>
+			1=1 
+			<if test="null != codeId">
+				AND codeId = #{codeId} 
+			</if>
+			<if test="null != pvIds and '' != pvIds">
+				AND pv_ids = #{pvIds} 
+			</if>
+			<if test="null != amount">
+				AND amount = #{amount} 
+			</if>
+			<if test=" null != stock">
+				AND stock = #{stock} 
+			</if>
+			<if test="null != sort">
+				AND sort = #{sort} 
+			</if>
+		</where>
+	</select>
+	<!-- 根据pid删除记录 -->
+	<delete id="deleteByCodeId" parameterType="long">
+		DELETE FROM `t_sale_group` WHERE codeId = #{0} 
+	</delete>
+	
+	<select id="findbyPvid" resultMap="BaseResultMap">
+		select  <include refid="Base_Column_List" /> from t_sale_group where codeId = #{codeId} and pv_ids=#{pvIds} 
+	</select>
+	
+	<update id="transferStore">
+		update t_sale_group set stock = stock-#{stock} where codeId = #{codeId} and pv_ids=#{pvIds}
+	</update>
+	
+	<update id="updateActivityGroup">
+		update t_sale_group set stock = stock + #{stock}  where codeId = #{codeId} and pv_ids=#{pvIds}
+	</update>
+	
+	<insert id="addBatch" parameterType="java.util.ArrayList">
+		INSERT INTO t_sale_group
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<include refid="Base_Column_List" /> 
+		</trim>
+		values
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				#{item.id},
+				#{item.codeId},
+				#{item.pvIds},
+				#{item.pvIdsSort},
+				#{item.amount},
+				#{item.stock},
+				#{item.sort},
+				#{item.sales},
+			</trim>
+		</foreach>
+	</insert>
+</mapper>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TFansCouponIssueRefDao" >
+
+
+  <resultMap id="fansCouponIssueRefMap" type="com.xmniao.xmn.core.live_anchor.entity.TFansCouponIssueRef" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="cid" property="cid" jdbcType="INTEGER" />
+    <result column="gift_cid" property="giftCid" jdbcType="INTEGER" />
+    <result column="num" property="num" jdbcType="INTEGER" />
+  </resultMap>
+  
+  
+  <sql id="fansCouponIssueRef_column_list" >
+    id, cid, gift_cid, num
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test=" null != cid and ''!=cid">
+  			<!-- 粉丝券ID -->
+  			AND tf.cid=#{cid}
+  	</if>
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="fansCouponIssueRefMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="fansCouponIssueRef_column_list" />
+    from t_fans_coupon_issue_ref
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 获取指定粉丝券下的抵扣券列表 -->
+  <select id="getVoucherList" resultMap="fansCouponIssueRefMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.TFansCouponIssueRef" >
+    SELECT
+		tf.id,
+		tf.cid,
+		tf.gift_cid,
+		tc.denomination,
+		tc.`condition`
+	FROM
+		t_fans_coupon_issue_ref tf
+	LEFT JOIN t_coupon tc ON tf.gift_cid = tc.cid
+	<where>
+		<!-- ctype 2粉丝券 3抵用券 -->
+		tc.ctype = '3'
+		<include refid="whereSQL"></include>
+	</where>
+  </select>
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_fans_coupon_issue_ref
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 删除抵用券配置关系 -->
+  <delete id="deleteVouchersByGiftIdNotIn" parameterType="map">
+		DELETE FROM t_fans_coupon_issue_ref 
+			WHERE cid =#{cid}
+			AND gift_cid NOT IN
+			<foreach item="giftCid" index="index" collection="giftCids"  open="(" separator="," close=") ">
+				 #{giftCid}
+			</foreach>
+  </delete>
+  
+  
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.live_anchor.entity.TFansCouponIssueRef" >
+    insert into t_fans_coupon_issue_ref
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="cid != null" >
+        cid,
+      </if>
+      <if test="giftCid != null" >
+        gift_cid,
+      </if>
+      <if test="num != null" >
+        num,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="cid != null" >
+        #{cid,jdbcType=INTEGER},
+      </if>
+      <if test="giftCid != null" >
+        #{giftCid,jdbcType=INTEGER},
+      </if>
+      <if test="num != null" >
+        #{num,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+  	<!-- 直播粉丝券与抵用券配置关系信息 -->
+	<insert id="addBatch" parameterType="java.util.ArrayList">
+		INSERT INTO t_fans_coupon_issue_ref
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			cid, gift_cid, num
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+			<!-- id, cid, gift_cid, num -->
+				#{item.cid},
+				#{item.giftCid},
+				#{item.num}
+			</trim>
+		</foreach>
+	</insert>
+  
+  
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.live_anchor.entity.TFansCouponIssueRef" >
+    update t_fans_coupon_issue_ref
+    <set >
+      <if test="cid != null" >
+        cid = #{cid,jdbcType=INTEGER},
+      </if>
+      <if test="giftCid != null" >
+        gift_cid = #{giftCid,jdbcType=INTEGER},
+      </if>
+      <if test="num != null" >
+        num = #{num,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  
+</mapper>

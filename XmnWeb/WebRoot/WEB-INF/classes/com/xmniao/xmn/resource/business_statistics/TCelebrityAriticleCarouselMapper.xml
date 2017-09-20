@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.business_statistics.dao.TCelebrityAriticleCarouselDao" >
+
+
+  <resultMap id="celebrityAriticleCarouselMap" type="com.xmniao.xmn.core.business_statistics.entity.TCelebrityAriticleCarousel" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="celebrity_ariticle_id" property="celebrityAriticleId" jdbcType="BIGINT" />
+    <result column="image" property="image" jdbcType="VARCHAR" />
+    <result column="order" property="order" jdbcType="INTEGER" />
+  </resultMap>
+  
+  
+  <sql id="celebrityAriticleCarousel_column_list" >
+    id, celebrity_ariticle_id, image, `order`
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test="celebrityAriticleId != null and celebrityAriticleId != ''">
+  		celebrity_ariticle_id=#{celebrityAriticleId}
+  	</if>
+  </sql>
+  
+  
+  <select id="getObject" resultMap="celebrityAriticleCarouselMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="celebrityAriticleCarousel_column_list" />
+    from t_celebrity_ariticle_carousel
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getList" resultMap="celebrityAriticleCarouselMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="celebrityAriticleCarousel_column_list" />
+    from t_celebrity_ariticle_carousel
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+    order by `order` desc
+  </select>
+  
+  
+  <delete id="delete" parameterType="java.lang.Object" >
+    delete from t_celebrity_ariticle_carousel
+    where id in
+    <foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+	</foreach>
+  </delete>
+  
+  <delete id="deleteByAriticleId" parameterType="java.lang.Long" >
+    delete from t_celebrity_ariticle_carousel
+    where celebrity_ariticle_id=#{celebrityAriticleId}
+  </delete>
+  
+  
+  <insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.xmn.core.business_statistics.entity.TCelebrityAriticleCarousel" >
+    insert into t_celebrity_ariticle_carousel
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="celebrityAriticleId != null" >
+        celebrity_ariticle_id,
+      </if>
+      <if test="image != null" >
+        image,
+      </if>
+      <if test="order != null" >
+        order,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="celebrityAriticleId != null" >
+        #{celebrityAriticleId,jdbcType=BIGINT},
+      </if>
+      <if test="image != null" >
+        #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="order != null" >
+        #{order,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+	<!-- 批量文章相册 -->
+	<insert id="addPhotoBatch" parameterType="java.util.ArrayList">
+		INSERT INTO t_celebrity_ariticle_carousel
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<include refid="celebrityAriticleCarousel_column_list" /> 
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				#{item.id},
+				#{item.celebrityAriticleId},
+				#{item.image},
+				#{item.order}
+			</trim>
+		</foreach>
+	</insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.business_statistics.entity.TCelebrityAriticleCarousel" >
+    update t_celebrity_ariticle_carousel
+    <set >
+      <if test="celebrityAriticleId != null" >
+        celebrity_ariticle_id = #{celebrityAriticleId,jdbcType=BIGINT},
+      </if>
+      <if test="image != null" >
+        image = #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="order != null" >
+        order = #{order,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  
+  
+</mapper>

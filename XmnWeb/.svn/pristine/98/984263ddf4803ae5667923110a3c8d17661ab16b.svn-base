@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.ClassifyTagDao">
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.businessman.entity.ClassifyTag">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="classify_id" jdbcType="INTEGER" property="classifyId" />
+    <result column="tag_name" jdbcType="VARCHAR" property="tagName" />
+    <result column="classify_name" jdbcType="VARCHAR" property="classifyName" />
+    <result column="classify_type" jdbcType="INTEGER" property="classifyType" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    t_live_classify_tag.id, classify_id, tag_name
+  </sql>
+  <sql id="whereSQL">
+  	 <if test="classifyId != null">
+        and classify_id = #{classifyId,jdbcType=INTEGER}
+      </if>
+      <if test="tagName != null and tagName !=''">
+        and tag_name = #{tagName,jdbcType=VARCHAR}
+      </if>
+      <if test="classifyType != null">
+      	and classify.classify_type = #{classifyType}
+      </if>
+  </sql>
+  
+  <select id="selectTagNameByIds" resultType="map">
+  	 select id,tag_name from t_live_classify_tag
+  	 where id in 
+  	 <foreach collection="array" item="item" open="(" close=")" separator=",">
+  	 	 #{item}
+  	 </foreach>
+  </select>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_live_classify_tag
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="getList" parameterType="com.xmniao.xmn.core.businessman.entity.ClassifyTag" resultMap="BaseResultMap">
+     select 
+    <include refid="Base_Column_List" />,classify.classify_type,classify.classify_name
+    from t_live_classify_tag
+    left join  t_live_classify classify  on  t_live_classify_tag.classify_id = classify.id
+     where 10086=10086
+     <include refid="whereSQL"></include>
+     <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+  </select>
+  <select id="count" parameterType="com.xmniao.xmn.core.businessman.entity.ClassifyTag" resultType="java.lang.Long">
+     select 
+    count(1)
+    from t_live_classify_tag
+     left join  t_live_classify classify  on  t_live_classify_tag.classify_id = classify.id
+     where 10086=10086
+     <include refid="whereSQL"></include>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_live_classify_tag
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.businessman.entity.ClassifyTag">
+    insert into t_live_classify_tag (id, classify_id, tag_name
+      )
+    values (#{id,jdbcType=INTEGER}, #{classifyId,jdbcType=INTEGER}, #{tagName,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="add" parameterType="com.xmniao.xmn.core.businessman.entity.ClassifyTag">
+    insert into t_live_classify_tag
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="classifyId != null">
+        classify_id,
+      </if>
+      <if test="tagName != null and tagName != ''">
+        tag_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="classifyId != null">
+        #{classifyId,jdbcType=INTEGER},
+      </if>
+      <if test="tagName != null and tagName != ''">
+        #{tagName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.businessman.entity.ClassifyTag">
+    update t_live_classify_tag
+    <set>
+      <if test="classifyId != null">
+        classify_id = #{classifyId,jdbcType=INTEGER},
+      </if>
+      <if test="tagName != null">
+        tag_name = #{tagName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.businessman.entity.ClassifyTag">
+    update t_live_classify_tag
+    set classify_id = #{classifyId,jdbcType=INTEGER},
+      tag_name = #{tagName,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

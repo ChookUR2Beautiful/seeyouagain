@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.coupon.dao.CouponCityDao">
+
+	<parameterMap type="CouponCity" id="couponCity" />
+	<resultMap type="CouponCity" id="couponCityMap">
+		<result column="ccid" property="ccid" />
+		<result column="cid" property="cid" />
+		<result column="provinces" property="provinces" />
+		<result column="city" property="city" />
+	</resultMap>
+	<!-- 可重用的Where 条件 -->
+	<sql id="whereSQL">
+		<if test=" null != ccid and '' != ccid">
+			AND ccid =#{ccid}
+		</if>
+		<if test=" null != cid and '' != cid">
+			AND cid = #{cid}
+		</if>
+	</sql>
+
+	<!-- 可重用的插入语句中表的列 -->
+	<sql id="insertColumnSQL">
+		<if test=" null != cid and '' != cid">
+			cid,
+		</if>
+		<if test=" null != provinces and '' != provinces">
+			provinces,
+		</if>
+		<if test=" null != city and '' != city ">
+			city,
+		</if>
+	</sql>
+	<!-- 可重用的插入语句中表的值 -->
+	<sql id="insertValuesSQL">
+		<if test=" null != cid and '' != cid">
+			#{cid},
+		</if>
+		<if test=" null != provinces and '' != provinces">
+			#{provinces},
+		</if>
+		<if test=" null != city and '' != city ">
+			#{city},
+		</if>
+	</sql>
+	<!-- 更新动态设置值 -->
+	<sql id="updateSetSQL">
+		<if test=" null != cid and '' != cid">
+			cid = #{cid},
+		</if>
+		<if test=" null != provinces and '' != provinces">
+			provinces = #{provinces},
+		</if>
+		<if test=" null != city and '' != city">
+			city = #{city},
+		</if>
+	</sql>
+
+	<insert id="add" parameterMap="couponCity">
+		INSERT INTO t_coupon_city
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<include refid="insertColumnSQL"></include>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			<include refid="insertValuesSQL"></include>
+		</trim>
+	</insert>
+
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_coupon_city WHERE ccid IN
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=") ">
+			#{item}
+		</foreach>
+	</delete>
+	<delete id="deleteAllByCid" parameterType="Long">
+		DELETE FROM
+		t_coupon_city WHERE cid =#{0}
+	</delete>
+	<update id="update" parameterMap="couponCity">
+		UPDATE t_coupon_city
+		<set>
+			<trim suffixOverrides=",">
+				<include refid="updateSetSQL"></include>
+			</trim>
+		</set>
+		WHERE ccid = #{ccid}
+	</update>
+
+	<select id="getList" resultMap="couponCityMap" parameterMap="couponCity">
+		SELECT
+		*
+		FROM
+		t_coupon_city
+		<where>
+			1=1
+			<include refid="whereSQL"></include>
+		</where>
+		ORDER BY ccid DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="getListByCid" resultMap="couponCityMap"
+		parameterType="Long">
+		SELECT
+		*
+		FROM
+		t_coupon_city
+		<where>
+			cid = #{cid}
+		</where>
+	</select>
+
+	<select id="count" resultType="Long" parameterMap="couponCity">
+		SELECT COUNT(*) FROM t_coupon_city
+		<where>
+			1=1
+			<include refid="whereSQL"></include>
+		</where>
+	</select>
+
+	<select id="getMaxId" resultType="Long">
+		SELECT Max(cid) AS VALUE FROM
+		t_coupon_city
+	</select>
+
+	<select id="getObject" resultMap="couponCityMap" parameterType="Long">
+		SELECT * FROM t_coupon_city WHERE cid = #{0}
+	</select>
+
+</mapper>

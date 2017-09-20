@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.reward_dividends.dao.TLiveGivedGiftVkeDao" >
+  <parameterMap type="LiveGivedGiftVke" id="liveGivedGiftVke" />
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.reward_dividends.entity.TLiveGivedGiftVke" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="gived_id" property="givedId" jdbcType="BIGINT" />
+    <result column="anchor_uid" property="anchorUid" jdbcType="INTEGER" />
+    <result column="anchor_phone" property="anchorPhone" jdbcType="VARCHAR" />
+    <result column="anchor_nname" property="anchorNname" jdbcType="VARCHAR" />
+    <result column="vke_uid" property="vkeUid" jdbcType="INTEGER" />
+    <result column="vke_phone" property="vkePhone" jdbcType="VARCHAR" />
+    <result column="vke_nname" property="vkeNname" jdbcType="VARCHAR" />
+    <result column="vke_rankid" property="vkeRankid" jdbcType="BIGINT" />
+    <result column="vke_rankname" property="vkeRankname" jdbcType="VARCHAR" />
+    <result column="vke_uid_ratio" property="vkeUidRatio" jdbcType="DOUBLE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, gived_id, anchor_uid, anchor_phone, anchor_nname, vke_uid, vke_phone, vke_nname, 
+    vke_rankid, vke_rankname, vke_uid_ratio
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_live_gived_gift_vke
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_live_gived_gift_vke
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.reward_dividends.entity.TLiveGivedGiftVke" >
+    insert into t_live_gived_gift_vke (id, gived_id, anchor_uid, 
+      anchor_phone, anchor_nname, vke_uid, 
+      vke_phone, vke_nname, vke_rankid, 
+      vke_rankname, vke_uid_ratio)
+    values (#{id,jdbcType=BIGINT}, #{givedId,jdbcType=BIGINT}, #{anchorUid,jdbcType=INTEGER}, 
+      #{anchorPhone,jdbcType=VARCHAR}, #{anchorNname,jdbcType=VARCHAR}, #{vkeUid,jdbcType=INTEGER}, 
+      #{vkePhone,jdbcType=VARCHAR}, #{vkeNname,jdbcType=VARCHAR}, #{vkeRankid,jdbcType=BIGINT}, 
+      #{vkeRankname,jdbcType=VARCHAR}, #{vkeUidRatio,jdbcType=DOUBLE})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.reward_dividends.entity.TLiveGivedGiftVke" >
+    insert into t_live_gived_gift_vke
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="givedId != null" >
+        gived_id,
+      </if>
+      <if test="anchorUid != null" >
+        anchor_uid,
+      </if>
+      <if test="anchorPhone != null" >
+        anchor_phone,
+      </if>
+      <if test="anchorNname != null" >
+        anchor_nname,
+      </if>
+      <if test="vkeUid != null" >
+        vke_uid,
+      </if>
+      <if test="vkePhone != null" >
+        vke_phone,
+      </if>
+      <if test="vkeNname != null" >
+        vke_nname,
+      </if>
+      <if test="vkeRankid != null" >
+        vke_rankid,
+      </if>
+      <if test="vkeRankname != null" >
+        vke_rankname,
+      </if>
+      <if test="vkeUidRatio != null" >
+        vke_uid_ratio,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="givedId != null" >
+        #{givedId,jdbcType=BIGINT},
+      </if>
+      <if test="anchorUid != null" >
+        #{anchorUid,jdbcType=INTEGER},
+      </if>
+      <if test="anchorPhone != null" >
+        #{anchorPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="anchorNname != null" >
+        #{anchorNname,jdbcType=VARCHAR},
+      </if>
+      <if test="vkeUid != null" >
+        #{vkeUid,jdbcType=INTEGER},
+      </if>
+      <if test="vkePhone != null" >
+        #{vkePhone,jdbcType=VARCHAR},
+      </if>
+      <if test="vkeNname != null" >
+        #{vkeNname,jdbcType=VARCHAR},
+      </if>
+      <if test="vkeRankid != null" >
+        #{vkeRankid,jdbcType=BIGINT},
+      </if>
+      <if test="vkeRankname != null" >
+        #{vkeRankname,jdbcType=VARCHAR},
+      </if>
+      <if test="vkeUidRatio != null" >
+        #{vkeUidRatio,jdbcType=DOUBLE},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.reward_dividends.entity.TLiveGivedGiftVke" >
+    update t_live_gived_gift_vke
+    <set >
+      <if test="givedId != null" >
+        gived_id = #{givedId,jdbcType=BIGINT},
+      </if>
+      <if test="anchorUid != null" >
+        anchor_uid = #{anchorUid,jdbcType=INTEGER},
+      </if>
+      <if test="anchorPhone != null" >
+        anchor_phone = #{anchorPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="anchorNname != null" >
+        anchor_nname = #{anchorNname,jdbcType=VARCHAR},
+      </if>
+      <if test="vkeUid != null" >
+        vke_uid = #{vkeUid,jdbcType=INTEGER},
+      </if>
+      <if test="vkePhone != null" >
+        vke_phone = #{vkePhone,jdbcType=VARCHAR},
+      </if>
+      <if test="vkeNname != null" >
+        vke_nname = #{vkeNname,jdbcType=VARCHAR},
+      </if>
+      <if test="vkeRankid != null" >
+        vke_rankid = #{vkeRankid,jdbcType=BIGINT},
+      </if>
+      <if test="vkeRankname != null" >
+        vke_rankname = #{vkeRankname,jdbcType=VARCHAR},
+      </if>
+      <if test="vkeUidRatio != null" >
+        vke_uid_ratio = #{vkeUidRatio,jdbcType=DOUBLE},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.reward_dividends.entity.TLiveGivedGiftVke" >
+    update t_live_gived_gift_vke
+    set gived_id = #{givedId,jdbcType=BIGINT},
+      anchor_uid = #{anchorUid,jdbcType=INTEGER},
+      anchor_phone = #{anchorPhone,jdbcType=VARCHAR},
+      anchor_nname = #{anchorNname,jdbcType=VARCHAR},
+      vke_uid = #{vkeUid,jdbcType=INTEGER},
+      vke_phone = #{vkePhone,jdbcType=VARCHAR},
+      vke_nname = #{vkeNname,jdbcType=VARCHAR},
+      vke_rankid = #{vkeRankid,jdbcType=BIGINT},
+      vke_rankname = #{vkeRankname,jdbcType=VARCHAR},
+      vke_uid_ratio = #{vkeUidRatio,jdbcType=DOUBLE}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  
+    <!-- 自定义专区 -->
+  
+	<!-- 查询出V客签约店铺的消费订单 -->
+	<select id="getVerProfitCountBillList" resultType="com.xmniao.xmn.core.reward_dividends.entity.TLiveGivedGiftVke"
+		parameterMap="liveGivedGiftVke">
+		SELECT t.*, t1.gift_id AS orderNo, t1.gift_ratio AS discount, t1.create_time AS sdate 
+		  FROM t_live_gived_gift_vke t INNER JOIN t_live_gived_gift t1 ON t.gived_id = t1.id
+		<where>
+			1 = 1
+			<if test=" null != vkeUid ">
+				AND uid = #{vkeUid}
+			</if>
+			<if test="vkeNname != null and '' != vkeNname " >
+		        vke_nname = #{vkeNname,jdbcType=VARCHAR},
+		    </if>
+		    <if test="vkePhone != null  and '' != vkePhone " >
+		        vke_phone = #{vkePhone,jdbcType=VARCHAR},
+		    </if>		    
+			<if test="vkeRankid != null">
+				vke_rankid = #{vkeRankid,jdbcType=BIGINT},
+			</if>
+			<if test=" null != sdateStart and '' != sdateStart ">
+				AND create_time &gt; #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd and '' != sdateEnd ">
+				AND create_time &lt; #{sdateEnd}
+			</if>
+		</where>
+		ORDER BY create_time DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="countVerProfitBill" resultType="java.lang.Long" parameterMap="liveGivedGiftVke">
+		SELECT COUNT(1) FROM t_live_gived_gift_vke t INNER JOIN
+		t_live_gived_gift t1 ON t.gived_id = t1.id
+		<where>
+			1 = 1
+			<if test=" null != vkeUid ">
+				AND uid = #{vkeUid}
+			</if>
+			<if test="vkeNname != null and '' != vkeNname ">
+				vke_nname = #{vkeNname,jdbcType=VARCHAR},
+			</if>
+			<if test="vkePhone != null and '' != vkePhone ">
+				vke_phone = #{vkePhone,jdbcType=VARCHAR},
+			</if>
+			<if test="vkeRankid != null">
+				vke_rankid = #{vkeRankid,jdbcType=BIGINT},
+			</if>
+
+			<if test=" null != sdateStart and '' != sdateStart ">
+				AND create_time &gt; #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd and '' != sdateEnd ">
+				AND create_time &lt; #{sdateEnd}
+			</if>
+		</where>
+	</select>
+  
+</mapper>

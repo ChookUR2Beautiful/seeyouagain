@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.RechargeCardRecordDao">
+
+	<resultMap id="recordMap" type="rechargeCardRecord">
+		<result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+		<result column="uid" property="uid" jdbcType="INTEGER" />
+		<result column="pay_type" property="payType" jdbcType="VARCHAR" />
+		<result column="pay_time" property="payTime" jdbcType="TIMESTAMP" />
+		<result column="quota" property="quota" jdbcType="DECIMAL" />
+		<result column="q_quota" property="qquota" jdbcType="DECIMAL" />
+		<result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+		<result column="sellertype" property="sellertype" jdbcType="INTEGER" />
+		<result column="sellername" property="sellername" jdbcType="VARCHAR" />
+		<result column="uid_relation_chain" property="relationChain"
+			jdbcType="LONGVARCHAR" />
+		<result column="real_coin" property="realCoin" jdbcType="DECIMAL" />
+	</resultMap>
+
+	<select id="getList" resultMap="recordMap" parameterType="rechargeCardRecord">
+		SELECT order_no, uid, pay_type,pay_time, quota, uid_relation_chain,IFNULL(q_quota,0.00) q_quota,
+		sellerid, sellertype, sellername, real_coin, payment
+		FROM t_live_pay_order
+		WHERE pay_state = 1
+<!-- 		AND quota != 0 -->
+<!-- 		AND quota IS NOT NULL -->
+		AND object_oriented = 2
+		<if test="uid !=null">
+			AND uid = #{uid}
+		</if>
+		<if test="sellerid != null">
+			AND sellerid = #{sellerid}
+		</if>
+		<if test="sellername !=null and sellername !=''">
+			AND sellername LIKE '%${sellername}%' 
+		</if>	
+		<if test="zDate != null and zDate != ''">
+		AND pay_time &gt;= #{zDate}
+		</if>
+		<if test="eDate != null and eDate != ''">
+		AND pay_time &lt;= #{eDate}
+		</if>
+		<if test="limit != -1">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" parameterType="rechargeCardRecord" resultType="long">
+		SELECT COUNT(1)
+		FROM t_live_pay_order
+		WHERE pay_state = 1
+<!-- 		AND quota != 0 -->
+		AND object_oriented = 2
+		<if test="uid !=null">
+			AND uid = #{uid}
+		</if>
+		<if test="sellername !=null and sellername !=''">
+			AND sellername LIKE '%${sellername}%' 
+		</if>	
+		<if test="zDate != null and zDate != ''">
+		AND pay_time &gt;= #{zDate}
+		</if>
+		<if test="eDate != null and eDate != ''">
+		AND pay_time &lt;= #{eDate}
+		</if>
+		<if test="sellerid != null">
+			AND sellerid = #{sellerid}
+		</if>
+	</select>
+	
+	<select id="getLiver" resultType="map">
+		SELECT CAST(l.uid AS CHAR) uid,l.phone,l.fans_rank_name rankName,u.nname nname
+		FROM b_liver l
+		LEFT JOIN b_urs u ON l.uid = u.uid
+		WHERE l.uid = #{uid}
+	</select>
+	
+	<select id="getLedgerRecord" resultType="map">
+		SELECT real_ledger_amount coin
+		FROM t_live_ledger_record
+		WHERE order_no = #{orderNo}
+		AND uid_role = #{type}
+	</select>
+	
+	<select id="getUsr" parameterType="map" resultType="map">
+		SELECT uid
+		FROM b_urs
+		WHERE 1=1
+		<if test="uid != null">
+			AND l.uid = #{uid}
+		</if>
+		<if test="userName != null and userName != ''">
+			AND nname = #{userName}
+		</if>
+		<if test="phone != null and phone !=''">
+			AND phone = #{phone}
+		</if>
+	</select>
+</mapper>

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.cloud_design.dao.DMaterialCategoryAttrDao" >
+
+  <resultMap id="materialCategoryAttrMap" type="com.xmniao.xmn.core.cloud_design.entity.DMaterialCategoryAttr" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="sort_val" property="sortVal" jdbcType="INTEGER" />
+    <result column="pic_url" property="picUrl" jdbcType="VARCHAR" />
+    <result column="is_customize" property="isCustomize" jdbcType="VARCHAR" />
+    <result column="is_multiple" property="isMultiple" jdbcType="VARCHAR" />
+    <result column="is_customizable" property="isCustomizable" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  
+  <sql id="materialCategoryAttr_column_list" >
+    id, name, sort_val, pic_url, is_customize, is_multiple, is_customizable
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test=" null != name and '' != name ">
+  		AND name like '%${name}%'
+  	</if>
+  	
+  </sql>
+  
+  <select id="selectById" resultMap="materialCategoryAttrMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="materialCategoryAttr_column_list" />,
+	    (
+			SELECT
+				group_concat(val.id SEPARATOR ',')
+			FROM
+				d_material_category_attr_val val
+			WHERE
+				val.category_attr_id = attr.id
+		) attrValIds,
+		(
+			SELECT
+				group_concat(rel.category_id SEPARATOR ',')
+			FROM
+				d_material_category_attr_relation rel
+			WHERE
+				rel.material_attr_id = attr.id
+		) categoryIds
+		
+    from d_material_category_attr attr
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+   <select id="getList" resultMap="materialCategoryAttrMap" parameterType="com.xmniao.xmn.core.cloud_design.entity.DMaterialCategoryAttr" >
+    SELECT
+		<include refid="materialCategoryAttr_column_list" />, 
+		(
+			SELECT
+				group_concat(val SEPARATOR '、')
+			FROM
+				d_material_category_attr_val val
+			WHERE
+				val.category_attr_id = attr.id
+		) attrVals
+	FROM
+		d_material_category_attr attr
+	<where>
+		1=1 
+		<include refid="whereSQL"></include>
+	</where>
+	ORDER BY attr.sort_val ASC
+	<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <select id="count" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.cloud_design.entity.DMaterialCategoryAttr">
+  	SELECT
+		count(1)
+	FROM
+		d_material_category_attr attr
+	<where>
+		1=1 
+		<include refid="whereSQL"></include>
+	</where>
+  
+  </select>
+  
+  
+  <delete id="deleteById" parameterType="java.lang.Long" >
+    delete from d_material_category_attr
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  
+  
+  <insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.xmn.core.cloud_design.entity.DMaterialCategoryAttr" >
+    insert into d_material_category_attr
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="sortVal != null" >
+        sort_val,
+      </if>
+      <if test="picUrl != null" >
+        pic_url,
+      </if>
+      <if test="isCustomize != null" >
+        is_customize,
+      </if>
+      <if test="isMultiple != null" >
+        is_multiple,
+      </if>
+      <if test="isCustomizable != null" >
+        is_customizable,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="sortVal != null" >
+        #{sortVal,jdbcType=INTEGER},
+      </if>
+      <if test="picUrl != null" >
+        #{picUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="isCustomize != null" >
+        #{isCustomize,jdbcType=VARCHAR},
+      </if>
+      <if test="isMultiple != null" >
+        #{isMultiple,jdbcType=VARCHAR},
+      </if>
+      <if test="isCustomizable != null" >
+        #{isCustomizable,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.cloud_design.entity.DMaterialCategoryAttr" >
+    update d_material_category_attr
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="sortVal != null" >
+        sort_val = #{sortVal,jdbcType=INTEGER},
+      </if>
+      <if test="picUrl != null" >
+        pic_url = #{picUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="isCustomize != null" >
+        is_customize = #{isCustomize,jdbcType=VARCHAR},
+      </if>
+      <if test="isMultiple != null" >
+        is_multiple = #{isMultiple,jdbcType=VARCHAR},
+      </if>
+      <if test="isCustomizable != null" >
+        is_customizable = #{isCustomizable,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  
+</mapper>

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.ValueCardDao">
+
+	<resultMap type="valueCard" id="vCard">
+		<result column="sellerid" property="sellerid"/>
+		<result column="sellername" property="sellerName"/>
+		<result column="sellertype" property="sellerType"/>
+		<result column="sub_sellerid" property="relationStore"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="status" property="status"/>
+		<result column="total_limit_recharge" property="limitRecharge"/>
+		<result column="recharge_item" property="comboId"/>
+		<result column="referrer_ratio" property="referrerRatio"/>
+		<result column="parent_referrer_ratio" property="parentReferrerRatio"/>
+	</resultMap>
+	
+	<select id="getValueCard" parameterType="valueCard" resultMap="vCard">
+		SELECT sellerid,sellertype sellerType,sellername sellerName,status,sub_sellerid relationStore,update_time updateTime
+		FROM t_debitcard_seller 
+		WHERE status =0
+		<if test="sellerid != null">
+			AND sellerid = #{sellerid}
+		</if>
+	</select>
+	
+	<select id="getList" parameterType="valueCard" resultMap="vCard">
+		SELECT sellerid,sellertype sellerType,sellername sellerName,status,sub_sellerid relationStore,update_time updateTime,total_limit_recharge,recharge_item,referrer_ratio,parent_referrer_ratio,
+		IF(t.sellertype = 3,(SELECT COUNT(1) FROM t_alliance_relation r WHERE r.id = t.sellerid),(SELECT COUNT(1) FROM t_seller s WHERE s.fatherid = t.sellerid)) childSeller
+		FROM t_debitcard_seller t
+		WHERE status =0
+		<if test="sellerid != null">
+			AND sellerid = #{sellerid}
+		</if>
+		<if test="sellerName != null and sellerName !=''">
+			AND sellername like '%${sellerName}%'
+		</if>
+		<if test="sellerType != null">
+			AND sellertype =#{sellerType}
+		</if>
+		ORDER BY update_time DESC
+		LIMIT ${(page-1)*limit},#{limit}
+	</select>
+	
+	<!-- 新增商家储值卡 -->
+	<insert id="add" parameterType="valueCard">
+		INSERT INTO 
+		t_debitcard_seller(sellerid,sellertype,sellername,sub_sellerid,total_limit_recharge,recharge_item,referrer_ratio,parent_referrer_ratio,update_time)
+		VALUES
+		(#{sellerid},#{sellerType},#{sellerName},#{relationStore},#{limitRecharge},#{combo},#{referrerRatio},#{parentReferrerRatio},#{updateTime})
+	</insert>
+	
+	<select id="getAliance" resultType="string">
+		SELECT sellerid
+		FROM t_alliance_relation
+		WHERE id = #{0}
+	</select>
+	
+	<select id="getSellerList" resultMap="vCard">
+		SELECT sellerid,sellername sellerName
+		FROM t_seller
+		WHERE 1=1
+		<if test="sellerid !=null">
+			AND sellerid = #{sellerid}
+		</if>
+		<if test="sellerName !=null and sellerName !=''">
+			AND sellername LIKE '%${sellerName}%'
+		</if>
+		<if test="sellerType !=null and sellerType == 1">
+			AND ismultiple = 0
+			AND fatherid NOT IN (SELECT sellerid FROM t_debitcard_seller WHERE STATUS = 0 AND sellertype = 2)
+			AND sellerid NOT IN (SELECT r.sellerid FROM t_debitcard_seller s LEFT JOIN t_alliance_relation r ON s.sellerid = r.id WHERE s.status = 0 AND s.sellertype = 3)
+		</if>
+		<if test="sellerType !=null and sellerType == 2">
+			AND ismultiple = 1
+		</if>
+		ORDER BY sellerid DESC
+		LIMIT ${(page-1)*limit},#{limit}
+	</select>
+	
+	<!-- 获取区域代理列表 -->
+	<select id="getAreaAgency" resultMap="vCard">
+		SELECT id sellerid,alliance_name sellerName
+		FROM t_alliance
+		WHERE 1=1
+		<if test="sellerid !=null">
+			AND id = #{sellerid}
+		</if>
+		<if test="sellerName !=null and sellerName !=''">
+			AND alliance_name LIKE '%${sellerName}%'
+		</if>
+		ORDER BY id DESC
+		LIMIT ${(page-1)*limit},#{limit}
+	</select>
+	
+	<select id="count" parameterType="valueCard" resultType="long">
+		SELECT COUNT(1)
+		FROM t_debitcard_seller
+		WHERE status = 0
+		<if test="sellerName != null and sellerName !=''">
+			AND sellername like '%${sellerName}%'
+		</if>
+		<if test="sellerType != null">
+			AND sellertype =#{sellerType}
+		</if>
+	</select>
+	
+	<update id="update" parameterType="valueCard">
+		UPDATE t_debitcard_seller
+		SET update_time = #{updateTime}
+		<if test="status !=null">
+			,status = #{status}
+		</if>
+		<if test="comboId !=null">
+			,recharge_item = #{comboId}
+		</if>
+		<if test="limitRecharge !=null">
+			,total_limit_recharge = #{limitRecharge}
+		</if>
+		WHERE sellerid = #{sellerid}
+		AND status = 0
+	</update>
+	
+	<select id="getChildSeller" resultType="com.xmniao.xmn.core.businessman.entity.TSeller">
+		SELECT 
+		sellerid,sellername,address 
+		FROM t_seller 
+		WHERE 
+		fatherid = #{0}
+	</select>
+	
+	<select id="countChildSeller" parameterType="valueCard" resultType="long">
+		SELECT COUNT(1)
+		FROM t_seller
+		WHERE fatherid = #{sellerid}	
+	</select>
+	
+	<update id="limitSeller" parameterType="valueCard">
+		UPDATE t_debitcard_seller
+		SET sub_sellerid = #{relationStore}
+		WHERE sellerid = #{sellerid}
+		AND status = 0
+	</update>
+	
+	<select id="getAllianceById" resultType="map">
+		SELECT id,alliance_name allianceName
+		FROM t_alliance
+		WHERE id =#{0}	
+	</select>
+	
+	<select id="getRechargeValueList" resultType="map">
+		SELECT id,rech_amount rechAmount
+		FROM t_live_recharge_combo
+		WHERE status = 1
+		AND object_oriented LIKE '%2%'
+		ORDER BY rech_amount ASC
+	</select>
+	
+	<select id="getRechargeValue" resultType="map">
+		SELECT id,rech_amount rechAmount
+		FROM t_live_recharge_combo
+		WHERE id = #{0}
+	</select>
+	
+	<select id="getSellers" resultType="com.xmniao.xmn.core.businessman.entity.TSeller">
+	SELECT 
+	sellerid,sellername,address 
+	FROM t_seller 
+	WHERE 
+	sellerid = #{0}
+	</select>
+</mapper>

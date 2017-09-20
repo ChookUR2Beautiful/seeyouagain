@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.marketingmanagement.dao.BillBargainDao">
+	<parameterMap type="TBillBargain" id="tBillBargain" />
+	<resultMap type="TBillBargain" id="tBillBargainMap">
+		<result column="boid" property="boid" />
+		<result column="bid" property="bid" />
+		<result column="bpid" property="bpid" />
+		<result column="pname" property="pname" />
+		<result column="price" property="price" />
+		<result column="num" property="num" />
+		<result column="sdate" property="sdate" />
+		<result column="remark" property="remark" />
+		<result column="startdate" property="startdate" />
+		<result column="startdate" property="startdate" />
+		<result column="pricelow" property="pricelow" />
+		<result column="pricetop" property="pricetop" />
+		
+	</resultMap>
+	<sql id="whereSql">
+		<if test=" null != bid">
+			AND bid = #{bid}
+		</if>
+		<if test=" null != bpid">
+			AND bpid = #{bpid}
+		</if>
+		<if test=" null != pname and '' != pname ">
+			AND pname = #{pname}
+		</if>
+		<if test=" null != pricelow ">
+			AND price &gt;= #{pricelow}
+		</if>
+		<if test=" null != pricetop ">
+			AND price &lt;= #{pricetop}
+		</if>
+		<if test=" null != startdate and '' != startdate ">
+			AND sdate &gt;= #{startdate}
+		</if>
+		<if test=" null != enddate and '' != enddate ">
+			AND sdate &lt;= #{enddate}
+		</if>
+	</sql>
+	
+	<select id="getList" resultMap="tBillBargainMap" parameterMap="tBillBargain">
+		SELECT * FROM t_bill_bargain
+		<where>
+			1=1
+			<include refid="whereSql" />
+		</where>
+			ORDER BY bid DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="count" resultType="Long" parameterMap="tBillBargain">
+		SELECT COUNT(*) FROM t_bill_bargain
+		<where>
+			1=1
+			<include refid="whereSql" />
+		</where>
+	</select>
+		
+</mapper>

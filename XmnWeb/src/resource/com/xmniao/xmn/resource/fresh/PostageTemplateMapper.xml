@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.fresh.dao.PostageTemplateDao">
+	<parameterMap type="com.xmniao.xmn.core.fresh.entity.PostageTemplate"
+		id="postageTemplate" />
+	<parameterMap type="com.xmniao.xmn.core.fresh.entity.TPostageFreeRule"
+		id="postageFreeRule" />
+	<parameterMap type="com.xmniao.xmn.core.fresh.entity.TPostageRule"
+		id="postageRule" />
+	<!-- 运费模板结果集 -->
+	<resultMap type="com.xmniao.xmn.core.fresh.entity.PostageTemplate"
+		id="postageTemplateMap">
+		<result column="tid" property="tid" />
+		<result column="title" property="title" />
+		<result column="defaultTemplate" property="defaultTemplate" />
+		<result column="area" property="area"/>
+		<result column="status" property="status" />
+		<result column="freeRule" property="freeRule" />
+		<collection ofType="com.xmniao.xmn.core.fresh.entity.TPostageRule" property="postageRuleList" column="tid" >
+			<id column="id" property="id"/>  
+            <result column="base_weight" property="baseWeight"/>
+			<result column="area_r" property="area_r" />
+			<result column="area_id" property="area" />
+			<result column="tid_r" property="tid_r" />
+			<result column="base_fee" property="baseFee" />
+			<result column="extra_weight" property="extraWeight" />
+			<result column="extra_fee" property="extraFee" />  
+		</collection>
+	</resultMap>
+	<!-- 指定条件包邮结果集 -->
+	<resultMap type="com.xmniao.xmn.core.fresh.entity.TPostageFreeRule"
+		id="postageFreeRuleMap">
+		<result column="id" property="id" />
+		<result column="tid" property="tid" />
+		<result column="area" property="area" />
+		<result column="area_f" property="area_f"/>
+		<result column="amount" property="amount" />
+		<result column="weight" property="weight" />
+		<result column="status" property="status" />
+	</resultMap>
+	<!-- 指定地区运费结果集 -->
+	<resultMap type="com.xmniao.xmn.core.fresh.entity.TPostageRule"
+		id="postageRuleMap">
+		<result column="id" property="id" />
+		<result column="tid_r" property="tid" />
+		<result column="base_weight" property="baseWeight" />
+		<result column="area_r" property="area" />
+		<result column="base_fee" property="baseFee" />
+		<result column="extra_weight" property="extraWeight" />
+		<result column="extra_fee" property="extraFee" />
+		<result column="status" property="status" />
+	</resultMap>
+	<!-- 区域结果集 -->
+	<resultMap type="Area" id="areaMap">
+		<result column="area_id" property="areaId" />
+		<result column="title" property="title" />
+		<result column="pid" property="pid" />
+		<result column="region_id" property="regionId" />
+		<result column="status" property="status" />
+		<result column="firstletter" property="firstletter" />
+		
+		<result column="hot" property="hot" />
+		<result column="sdate" property="sdate" />
+		<result column="is_del" property="isDel" />
+		<result column="short" property="shorts" />
+		<result column="pinyin" property="pinyin" />
+		<result column="upid" property="upid" />
+		<result column="locationId" property="locationId" />
+		<result column="is_city" property="isCity" />
+		
+		<result column="pTitle" property="ptitle" />
+		<result column="cTitle" property="ctitle" />
+		<result column="aTitle" property="atitle" />
+		<result column="btitle" property="btitle" />
+		<result column="pArea_id" property="pareaId" />
+		<result column="cArea_id" property="careaId" />
+		<result column="aArea_id" property="aareaId" />
+		<result column="bNum" property="bnum" />
+		<result column="corporate" property="corporate" />
+	</resultMap>
+	<resultMap type="com.xmniao.xmn.core.common.entity.City" id="cityMap">
+		<result column="pid" property="pid" />
+		<result column="cTitle" property="ctitle" />
+		<result column="pArea_id" property="pareaId" />
+		<result column="cArea_id" property="careaId" />
+	</resultMap>
+	<!-- 查询模板详情（指定包邮地区） -->
+	<select id="getPostageTemplateList" resultMap="postageTemplateMap"
+		parameterMap="postageTemplate">
+		SELECT
+			t1.tid,
+			t1.`title`,
+			t1.isdefault AS defaultTemplate,
+			t1.`status` 
+		FROM
+			t_postage_template t1 
+		<where>
+		    1 = 1 AND t1.status = 0
+		    ORDER BY t1.udate DESC
+		</where>
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<!-- 根据tid查询指定地区邮费列表 (批量) -->
+	<select id="getPostageRuleList" resultMap="postageTemplateMap"
+		parameterType="Object">
+		SELECT
+			t1.tid,
+			t1.title,
+			t2.tid AS tid_r,
+			t2.base_weight,
+			t2.base_fee,
+			t2.extra_weight,
+			t2.extra_fee 
+		FROM
+			t_postage_template t1 , t_postage_rule t2 
+		WHERE
+		t1.`status` = 0 AND
+		t2.tid = t1.tid AND
+		t1.tid IN
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=") ">
+			#{item}
+		</foreach>
+	</select>
+	<!-- 查询运费模板列表总数 -->
+	<select id="getPostageTemplateCount" resultType="Long" parameterMap="postageTemplate">
+		SELECT COUNT(*) FROM t_postage_template WHERE status = 0
+	</select>
+	<!-- 根据模板ID查询模板详情（包含指定包邮地区和包邮条件）用于修改 -->
+	<select id="getPostageTemplate" parameterType="Integer" resultMap="postageTemplateMap">
+		SELECT
+			t1.tid,
+			t1.title,
+			t2.area AS area_id,
+			t2.tid AS tid_r,
+			t2.base_weight,
+			t2.base_fee,
+			t2.extra_weight,
+			t2.extra_fee,
+			t2.id 
+		FROM 
+			t_postage_template t1 LEFT JOIN t_postage_rule t2 ON t2.tid = t1.tid 
+		WHERE 
+			t1.`status` = 0 AND 
+			t1.tid = #{0}
+	</select>
+	<select id="getPostageFreeRuleList" parameterType="Integer" resultMap="postageFreeRuleMap">
+		SELECT 
+		  t1.`tid`,
+		  t2.`weight`,
+		  t2.`amount`,
+		  t2.`area`,
+		  t2.id 
+		FROM
+		  t_postage_template t1,t_postage_free_rule t2
+		WHERE 
+		  t1.`status` = 0 AND t2.tid = t1.tid AND t2.tid = #{0}
+	</select>
+	<!-- 修改模板名称 -->
+	<update id="updatePostageTemplate" parameterMap="postageTemplate">
+		 UPDATE t_postage_template t1 
+        <set>
+            <trim suffixOverrides=",">
+                <if test=" null != title and '' != title">
+                    t1.title = #{title},
+                </if>
+                <if test=" null != udate and '' != udate">
+                    t1.udate = #{udate},
+                </if>
+            </trim>
+        </set>
+        <where>
+            <if test="null != tid">
+                t1.tid = #{tid}
+            </if>
+        </where>
+	</update>
+	<!-- 每次更改操作或添加操作都更新默认模板的udate为最新时间，使之排在最前面 -->
+	<update id="updatedefaultTemplateUdate" parameterMap="postageTemplate">
+		 UPDATE t_postage_template t1
+        <set>
+            <trim suffixOverrides=",">
+                <if test=" null != title and '' != title">
+                    t1.title = #{title},
+                </if>
+                <if test=" null != udate and '' != udate">
+                    t1.udate = #{udate},
+                </if>
+            </trim>
+        </set>
+        <where>
+        		t1.isdefault = 1
+        </where>
+	</update>
+	<!-- 修改指定地区邮费 -->
+	<update id="updatePostageRule"  parameterType="Object">
+          <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+                update t_postage_rule 
+                set area="${item.area}",base_weight="${item.baseWeight}",base_fee="${item.baseFee}",extra_weight="${item.extraWeight}",extra_fee="${item.extraFee}"
+                where id = ${item.id}
+         </foreach>
+    </update>
+	<!-- 修改包邮条件 -->
+	<update id="updatePostageFreeRule"  parameterType="Object">
+          <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+                update t_postage_free_rule 
+                set area="${item.area}",amount="${item.amount}",weight="${item.weight}"
+                where id = ${item.id}
+         </foreach>
+    </update>
+    <!-- 添加邮费模板 -->
+    <insert id="addPostageTemplateReturnId" useGeneratedKeys="true" keyProperty="tid" keyColumn="tid" parameterMap="postageTemplate" >
+        INSERT INTO t_postage_template
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test=" null != title and '' != title">
+                    title,
+                </if>
+                 <if test=" null != status">
+                    status,
+                </if>
+                <if test=" null != udate and '' != udate">
+                    udate,
+                </if>
+        </trim>
+        <trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+                 <if test=" null != title and '' != title">
+                    #{title},
+                </if>
+                 <if test=" null != status">
+                    #{status},
+                </if>
+                <if test=" null != udate and '' != udate">
+                    #{udate},
+                </if>
+        </trim>
+    </insert>
+    <!-- 批量添加指定地区邮费 并返回 插入id -->
+    <insert id="addTPostageRule"  parameterType="java.util.ArrayList">
+		INSERT INTO t_postage_rule
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						tid,
+		                area,
+		                base_weight,
+		                base_fee,
+		                extra_weight,
+		                extra_fee,
+		                isdefault,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+					 #{item.tid},
+					 #{item.area},
+					 #{item.baseWeight},
+					 #{item.baseFee},
+					 #{item.extraWeight},
+					 #{item.extraFee},
+					 #{item.isdefault},
+			</trim>
+		</foreach>
+    </insert>
+     <!-- 批量添加包邮条件 并返回 插入id -->
+    <insert id="addTPostageFreeRule"  parameterType="java.util.ArrayList">
+		INSERT INTO t_postage_free_rule
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+					tid,
+	                area,
+	                amount,
+	                weight,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+			         #{item.tid},
+					 #{item.area},
+					 #{item.amount},
+					 #{item.weight},
+			</trim>
+		</foreach>
+    </insert>
+    <!-- 根据模板ID查询指定地区邮费列表 -->
+    <select id="getCityPostageRuleList" parameterType="Integer" resultMap="postageRuleMap">
+		SELECT 
+			t2.tid AS tid_r,
+			t2.base_weight,
+			t2.base_fee,
+			t2.extra_weight,
+			t2.extra_fee,
+			t2.id 
+		FROM
+		  t_postage_template t1,t_postage_rule t2 
+		WHERE 
+		  t1.`status` = 0 AND t2.tid = t1.tid AND t2.tid = #{0}
+	</select>
+	<!-- 根据tid删除指定地区邮费 -->
+	<delete id="delCityPostageRuleList" parameterType="Integer">
+		DELETE FROM `t_postage_rule` WHERE tid = #{0}
+	</delete>
+	<!-- 根据tid删除包邮条件-->
+	<delete id="delPostageFreeRuleList" parameterType="Integer">
+		DELETE FROM `t_postage_free_rule` WHERE tid = #{0}
+	</delete>
+	<!-- 根据tid删除运费模板 -->
+	<delete id="delPostageTemplate" parameterType="Integer">
+		DELETE FROM `t_postage_template` WHERE tid = #{0}
+	</delete>
+	<!-- 区域初始化 省 -->
+	<select id="getProvinceList" resultMap="areaMap">
+		SELECT  tp.title,
+		        tp.area_id
+		FROM 
+		(SELECT * FROM t_area t WHERE t.pid = 0) tp 
+		WHERE 1=1 AND tp.area_id IS NOT NULL
+	</select>
+	<!-- 市 -->
+	<select id="getCityList" resultMap="cityMap" parameterType="Object">
+     SELECT tc.title  AS cTitle,tc.area_id AS cArea_id,tc.pid AS pArea_id
+     FROM
+	 t_area tc
+     WHERE tc.pid IN
+     <foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+     #{item}
+    </foreach>
+    </select>
+    
+    <!-- 查询全国城市的id -->
+    <select id="getCityAreaIds" resultType="string">
+    	SELECT 
+    		area_id 
+    	FROM 
+    		t_area 
+    	WHERE 
+    		pid in (SELECT area_id FROM t_area WHERE pid = '0')
+    </select>
+    
+    <!-- 根据tid查询指定区域邮费列表add by lifeng 20160715 14:54:20 -->
+    <select id="getPostageRuleListByTid" parameterType="Integer" resultMap="postageRuleMap">
+		SELECT 
+			t2.tid AS tid_r,
+			t2.base_weight,
+			t2.area AS area_r,
+			t2.base_fee,
+			t2.extra_weight,
+			t2.extra_fee,
+			t2.id 
+		FROM
+		  t_postage_template t1,t_postage_rule t2 
+		WHERE 
+		  t1.`status` = 0 AND t2.tid = t1.tid AND t2.tid = #{0}
+	</select>
+</mapper>

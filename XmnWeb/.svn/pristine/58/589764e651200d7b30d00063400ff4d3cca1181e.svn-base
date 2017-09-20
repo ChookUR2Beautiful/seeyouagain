@@ -1,0 +1,163 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%
+  String path = request.getContextPath();
+  String basePath = request.getScheme() + "://"
+      + request.getServerName() + ":" + request.getServerPort()
+      + path + "/";
+%>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="zh-CN">
+<head>
+<base href="<%=basePath%>">
+<title>系统推送优惠券发放</title>
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<link href="<%=path%>/resources/web/css/view.css" rel="stylesheet">
+<link href="<%=path%>/resources/zui/css/zui.css" rel="stylesheet">
+<link href="<%=path%>/resources/zui/lib/chosen/chosen.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="panel panel-primary">
+      <div class="panel-heading">优惠劵发送管理-系统推送</div>
+      <div class="panel-body">
+      <form id="submitForm" class="form-horizontal">
+
+        <%--优惠卷类型--%>
+        <div class="form-group " >
+          <label class="col-sm-1">优惠劵类型：</label>
+          <div class="col-sm-3">
+          <label class="radio-inline"> <input id="ctype-default" type="radio" name="ctype" value="0" onchange="onchangeCtype(this)" typeName="消费优惠劵">消费优惠劵</label>
+          <label class="radio-inline"> <input type="radio" name="ctype" value="1" onchange="onchangeCtype(this)" typeName="商城优惠券">商城优惠券</label>
+          <label class="radio-inline"> <input type="radio" name="ctype" value="5" onchange="onchangeCtype(this)" typeName="平台通用优惠劵">平台通用优惠劵</label>
+          </div>
+        </div>
+
+
+        <input id="cids" type="hidden">
+
+        <%--选择优惠劵 --%>
+        <div class="form-group">
+          <label for="cidDiv" class="col-sm-1"> 选择优惠券：</label>
+
+          <div class="col-md-3" id="cidDiv">
+            <%--<select id="coupon-select" class="form-control" initValue="==========" ></select>--%>
+            <select class="form-control" id="cid" name="cid"  initValue="" style="width:100%;"></select>
+          </div>
+
+          <div class="col-sm-1">
+            <div class="input-group">
+              <span class="input-group-addon"></span>
+              <input type="number"  class="form-control" min="1" value="1" id="useNum">
+              <span class="input-group-addon">张</span>
+            </div>
+          </div>
+
+          <div class="col-sm-1">
+            <span class="btn btn-default" id="button-addCoupon">添加</span>
+          </div>
+        </div>
+
+
+        <div class="form-group ">
+          <div class="col-sm-1"></div>
+          <div class="col-sm-4">
+            <table class="table table-hover table-bordered table-striped info">
+              <thead>
+              <tr>
+                <th>类型</th>
+                <th>优惠劵名称</th>
+                <th>数量</th>
+                <th>操作</th>
+              </tr>
+              </thead>
+              <tbody id="couponListTbody">
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+
+
+        <%--用户类型--%>
+        <div class="form-group">
+          <label class="col-sm-1">用户类型：</label>
+          <div class="col-sm-3">
+            <label class="radio-inline"> <input type="radio" name="userType" value="0" onchange="onchangeUserType(this)" typeName="按会员类型">按会员类型</label>
+            <label class="radio-inline"> <input id="userType-default"type="radio" name="userType" value="1" onchange="onchangeUserType(this)" typeName="按具体用户">按具体用户</label>
+          </div>
+        </div>
+
+        <div group="members">
+          <div class="form-group">
+            <label class="col-sm-1">用户类型：</label>
+            <div class="col-sm-2">
+              <select class="form-control" id="levelType" onchange="onchangeLevelType(this)" >
+                <%--<option value="0" selected="selected">=====请选择=====</option>--%>
+                <option value="2" defaultSelect>V客会员</option>
+                <option value="1">VIP会员</option>
+                <option value="1">商家会员</option>
+                <option value="1">直销会员</option>
+              </select>
+
+            </div>
+          </div>
+
+          <div class="form-group" >
+            <label class="col-sm-1">会员等级：</label>
+            <div class="col-sm-1">
+              <select id="level-select" class="form-control" ></select>
+            </div>
+          </div>
+
+        </div>
+
+
+        <div class="form-group">
+          <label class="col-md-1">选择用户：</label>
+          <div class="col-sm-4">
+            <textarea id="selectUsers" class="form-control" rows="5" name="excludeUsers" ></textarea>
+          </div>
+        </div>
+        <div group="members">
+          <div class="col-md-1"></div>
+          <span style="color: red;">*选择排除所选用户，选中的用户将不会收到优惠劵</span>
+        </div>
+        <div group="specific">
+          <div class="col-md-1"></div>
+          <span style="color: red;">*所选用户才能收到优惠劵</span>
+        </div>
+
+      </form>
+
+        <div class="row text-center" style="margin-top:20px;">
+          <button class="btn btn-danger" type="submit" id="ensure">
+            <i class="icon-save"></i>&nbsp;保存
+          </button>
+          &nbsp;&nbsp;
+          <button class="btn btn-warning" type="button"
+                  onclick="window.history.back();">
+            <i class="icon-reply"></i>&nbsp;取消
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+
+  <jsp:include page="../../common.jsp"></jsp:include>
+  <script src="<%=path%>/ux/js/grid.js"></script>
+  <script src="<%=path%>/resources/zui/lib/chosen/chosen.js"></script>
+  <script src="<%=path%>/ux/js/searchChosen.js"></script>
+  <%--<script src="<%=path%>/resources/zui/js/zui.js"></script>--%>
+  <script src="<%=path%>/js/coupon/couponissue/systemPushAddInit2.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.jobmanage.dao.RecruitStationDao">
+
+	<resultMap type="recruitStation" id="recruitStationMap">
+		<result column="id" property="recruitStationId" />
+		<result column="recruit_id" property="recruitId"/>
+		<result column="sellerid" property="sellerId"/>
+		<result column="tagid" property="tagId"/>
+		<result column="stationname" property="stationName"/>
+		<result column="update_date" property="updateDate"/>
+		<result column="nums" property="nums"/>
+		<result column="salary" property="salary"/>
+		<result column="agemax" property="ageMax"/>
+		<result column="agemin" property="ageMin"/>
+		<result column="province" property="province"/>
+		<result column="city" property="city"/>
+		<result column="experie" property="experie"/>
+		<result column="degrees" property="degrees"/>
+		<result column="status" property="status"/>
+	</resultMap>
+
+	<!-- 查询所有订单(所有的列表) -->
+	<select id="getRecruitStationList" resultMap="recruitStationMap" parameterType="recruitStation">
+		SELECT 
+			brs.`id`, brs.`recruit_id`, brs.`sellerid`, brs.`tagid`, 
+			brs.`stationname`, brs.`nums`, brs.`salary`, brs.`agemax`, brs.`agemin`, 
+			brs.`province`, brs.`city`, brs.`experie`, brs.`degrees`, brs.`status`, brs.`update_date` 
+		FROM 
+			`b_recruit_station` brs
+		<where>
+			1=1
+		    <include refid="queryRecruitStationCondition"></include>
+		</where>
+		<if test="order == 1">
+			ORDER BY brs.update_date DESC
+		</if>
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<!-- 查询条件 -->
+	<sql id="queryRecruitStationCondition">
+		<if test="null != status">
+			AND brs.status = #{status}
+		</if>
+   		<if test="null != recruitStationId">
+			AND brs.id = #{recruitStationId}
+		</if>
+		<if test="null != recruitId">
+			AND brs.recruit_id = #{recruitId}
+		</if>
+		<if test="null != sellerId">
+			AND brs.sellerid = #{sellerId}
+		</if>
+		<if test="null != tagId">
+			AND brs.tagid = #{tagId}
+		</if>
+		<if test="null != stationName and '' != stationName">
+			AND brs.stationname LIKE '%${stationName}%'
+		</if>
+		<if test=" null != sdate and '' != sdate">
+			AND brs.update_date &gt;> #{sdate} 
+		</if>
+		<if test=" null != edate and ''!= edate">
+			AND brs.update_date &lt; DATE_ADD(#{edate}, INTERVAL 1 DAY) 
+		</if>
+		<if test="null != nums">
+			AND brs.nums = #{nums}
+		</if>
+		<if test="null != salary and '' != salary">
+		 	AND brs.salary LIKE '%${salary}%'
+		</if>
+		<if test="null != ageMax">
+			AND brs.agemax = #{ageMax}
+		</if>
+		<if test="null != ageMin">
+			AND brs.agemin = #{ageMin}
+		</if>
+		<if test="null != province and '' != province">
+			AND brs.province = #{province}
+		</if>
+		<if test="null != city and '' != city">
+			AND brs.city = #{city}
+		</if>
+		<if test="null != experie and '' != experie">
+			AND brs.experie LIKE '%${experie}%'
+		</if>
+		<if test="null != degrees and '' != degrees">
+			AND brs.degrees LIKE '%${degrees}%'
+		</if>
+		<if test=" null != recruitIds and '' != recruitIds ">
+			AND brs.recruit_id in 
+			<foreach collection="recruitIds" index="index" item="item"
+				open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</sql>
+	
+	<!-- 查询总记录数（除已删除） -->
+	<select id="getCountByParam"  parameterType="recruitStation" resultType="long">
+		SELECT 
+			COUNT(id) 
+		FROM 
+			b_recruit_station brs 
+		<where>
+			1=1
+		    <include refid="queryRecruitStationCondition"></include>
+		</where>
+	</select>
+	
+	<!-- 根据招聘岗位ID查询一条岗位信息 -->
+	<select id="getRecruitStationById" parameterType="int" resultMap="recruitStationMap">
+		SELECT 
+			brs.* 
+		FROM 
+			b_recruit_station brs 
+		WHERE 
+			1=1
+		   	AND brs.id = #{id}
+	</select>
+	
+	<!-- 根据招聘岗位ID修改一条岗位信息 -->
+	<select id="updateByRecruitStationId" parameterType="recruitStation" resultType="int">
+		UPDATE `burs`.`b_recruit_station` 
+		SET 
+			`stationname`= #{stationName}, 
+			`nums`= #{nums}, `salary`= #{salary}, `agemax`= #{ageMax}, `agemin`= #{ageMin}, `province`= #{province}, 
+			`city`= #{city}, `experie`= #{experie}, `degrees`= #{degrees}, 
+			<if test="null != updateDate or '' != updateDate">
+				`update_date`= #{updateDate}  
+			</if>
+		WHERE `id`= #{recruitStationId};
+	</select>
+	
+	<!-- 根据recruitStationId删除招聘岗位，修改招聘岗位的状态为1 -->
+	<select id="deleteById" parameterType="int" resultType="int">
+		UPDATE `burs`.`b_recruit_station` 
+		SET 
+			`status`= 1 
+		WHERE `id`= #{recruitStationId};
+	</select>
+</mapper>

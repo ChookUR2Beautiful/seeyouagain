@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.navigate.dao.CategoryNavigateDao">
+
+	<parameterMap type="CategoryNavigate" id="categoryNavigate" />
+	
+	<resultMap type="CategoryNavigate" id="categoryNavigateMap">
+		<result column="nid" property="nId" />
+		<result column="n_type" property="type" />
+		<result column="title" property="title" />
+		<result column="img_high" property="img_high" />
+		<result column="img_middle" property="img_middle" />
+		<result column="img_low" property="img_low" />
+		<result column="category" property="category" />
+		<result column="genre" property="genre" />
+		<result column="add_user" property="add_user" />
+		<result column="add_time" property="add_time" />
+		<result column="up_user" property="up_user" />
+		<result column="up_time" property="up_time" />
+		<result column="order" property="order" />
+		<result column="category_genre" property="category_genre" />
+	</resultMap>
+	
+	<!-- 根据条件查询分类导航信息 -->
+	<select id="getNavigateList" resultMap="categoryNavigateMap" parameterMap="categoryNavigate">
+		SELECT tn.*, CONCAT(t1.tradename,'-',t2.tradename) category_genre FROM t_navigate tn LEFT JOIN t_trade t1 ON tn.category = t1.tid LEFT JOIN t_trade t2 ON tn.genre = t2.tid
+		<where>
+			tn.n_type = #{type}
+		</where>
+			ORDER BY tn.order ASC 
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<!-- 根据条件统计分类导航数据记录数 -->
+	<select id="getNavigateListcount" resultType="Long" parameterMap="categoryNavigate">
+		SELECT COUNT(nid) FROM t_navigate  
+		<where>
+			n_type = #{type}
+		</where>
+	</select>
+	
+	<!-- 添加分类导航 -->
+	<insert id="add" parameterMap="categoryNavigate" >
+		INSERT INTO t_navigate
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != nId and '' != nId">
+					nid,
+				</if>
+			 	<if test=" null != type">
+					n_type,
+				</if>
+			 	<if test=" null != title and '' != title">
+					title,
+				</if>
+			 	<if test=" null != img_high and '' != img_high ">
+					img_high,
+				</if>
+				<if test=" null != img_middle and '' != img_middle ">
+					img_middle,
+				</if>
+				<if test=" null != img_low and '' != img_low ">
+					img_low,
+				</if>
+				<if test=" null != category">
+					category,
+				</if>
+				<if test=" null != genre">
+					genre,
+				</if>
+				<if test=" null != add_user and '' != add_user ">
+					add_user,
+				</if>
+				<if test=" null != add_time and '' != add_time">
+					add_time,
+				</if>
+				<if test=" null != up_user and '' != up_user ">
+					up_user,
+				</if>
+				<if test=" null != up_time and '' != up_time">
+					up_time,
+				</if>
+				<if test=" null != order">
+					`order`,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != nId and '' != nId">
+					 	#{nId},
+				</if>
+				<if test=" null != type">
+					 	#{type},
+				</if>
+				<if test=" null != title and '' != title ">
+					 	#{title},
+				</if>
+			 	<if test=" null != img_high and '' != img_high ">
+					 	#{img_high},
+				</if>
+				<if test=" null != img_middle and '' != img_middle ">
+					 	#{img_high},
+				</if>
+				<if test=" null != img_low and '' != img_low ">
+					 	#{img_low},
+				</if>
+			 	<if test=" null != category">
+					 	#{category},
+				</if>
+				<if test=" null != genre">
+						#{genre},
+				</if>
+				<if test=" null != add_user and '' != add_user ">
+					 	#{add_user},
+				</if>
+				<if test=" null != add_time and '' != add_time">
+						#{add_time},
+				</if>
+				<if test=" null != up_user and '' != up_user ">
+					 	#{up_user},
+				</if>
+				<if test=" null != up_time and '' != up_time">
+						#{up_time},
+				</if>
+				<if test=" null != order">
+						#{order},
+				</if>
+		</trim>
+	</insert>
+	
+	<select id="getNavigateObject" resultMap="categoryNavigateMap" parameterType="Integer">
+		SELECT * FROM t_navigate WHERE nid = #{nId}
+	</select>
+	
+	<select id="getMaxOrderByType" resultType="Integer" parameterMap="categoryNavigate">
+		SELECT max(`order`) FROM t_navigate  
+		<where>
+			n_type = #{type}
+		</where>
+	</select>
+	
+	<!-- 更新分类导航信息 -->
+	<update id="update" parameterMap="categoryNavigate">
+		UPDATE t_navigate
+		<set>
+			<trim suffixOverrides=",">
+			 	<if test=" null != title and '' != title ">
+					 	title = #{title},
+				</if>
+			 	<if test=" null != img_high ">
+					 	img_high = #{img_high},
+				</if>
+				<if test=" null != img_middle ">
+					 	img_middle = #{img_middle},
+				</if>
+				<if test=" null != img_low ">
+					 	img_low = #{img_low},
+				</if>
+			 	<if test=" null != category">
+					 	category = #{category},
+				</if>
+				<if test=" null != genre">
+						genre = #{genre},
+				</if>
+				<if test=" null != up_user and '' != up_user ">
+					 	up_user = #{up_user},
+				</if>
+				<if test=" null != up_time and '' != up_time">
+						up_time = #{up_time},
+				</if>
+				<if test=" null != order">
+						`order` = #{order},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != nId and '' != nId and null != type">
+				nid = #{nId} and n_type = #{type}
+			</if>
+		</where>
+	</update>	
+	
+	<update id="updateBeforeOrder" parameterMap="categoryNavigate">
+		UPDATE t_navigate
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != order">
+						`order` = (#{order}+1),
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != order and null != type and null != nId and '' != nId">
+				`order` = #{order} and n_type = #{type} and nid != #{nId}
+			</if>
+		</where>
+	</update>
+	
+	<update id="updateAfterOrder" parameterMap="categoryNavigate">
+		UPDATE t_navigate
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != order">
+						`order` = (#{order}-1),
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != order and null != type and null != nId and '' != nId">
+				`order` = #{order} and n_type = #{type} and nid != #{nId}
+			</if>
+		</where>
+	</update>
+</mapper>

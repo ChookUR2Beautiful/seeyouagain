@@ -1,0 +1,44 @@
+package com.xmniao.xmn.core.live_anchor.dao;
+
+import java.util.List;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.live_anchor.entity.TLiveRecommendRecord;
+import com.xmniao.xmn.core.util.proxy.annotation.DataSource;
+
+
+public interface TLiveRecommendRecordDao  extends BaseDao<TLiveRecommendRecord>{
+	@DataSource("slave")
+    int deleteByPrimaryKey(Integer id);
+
+    int insert(TLiveRecommendRecord record);
+    @DataSource("slave")
+    int insertSelective(TLiveRecommendRecord record);
+    
+    @DataSource("slave")
+    TLiveRecommendRecord selectByPrimaryKey(Integer id);
+    
+    @DataSource("slave")
+    int updateByPrimaryKeySelective(TLiveRecommendRecord record);
+    
+    @DataSource("slave")
+    int updateByPrimaryKey(TLiveRecommendRecord record);
+    
+    @DataSource("slave")
+    public List<TLiveRecommendRecord> getLiveRecommendRecordList(TLiveRecommendRecord record);
+    
+    @DataSource("slave")
+    public Long countLiveRecommendRecord(TLiveRecommendRecord record);
+    
+    @DataSource("slave")
+    public List<TLiveRecommendRecord> getFreshmanRecommendRecordList(TLiveRecommendRecord record);
+    
+    @DataSource("slave")
+    public Long countFreshmanRecommendRecord(TLiveRecommendRecord record);    
+    
+    @DataSource("slave")
+    public List<TLiveRecommendRecord> getFreshmanVideoRecommendList(TLiveRecommendRecord record);
+    
+    @DataSource("slave")
+    public Long countFreshmanVideoRecommend(TLiveRecommendRecord record);    
+}

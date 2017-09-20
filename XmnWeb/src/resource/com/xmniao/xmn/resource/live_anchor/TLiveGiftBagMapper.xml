@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TLiveGiftBagDao" >
+
+
+  <resultMap id="liveGiftBagMap" type="com.xmniao.xmn.core.live_anchor.entity.TLiveGiftBag" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="gift_bag_name" property="giftBagName" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <resultMap id="liveGiftBagSetMap" type="com.xmniao.xmn.core.live_anchor.entity.TLiveGiftBagSet" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="gift_bag_id" property="giftBagId" jdbcType="INTEGER" />
+    <result column="gift_id" property="giftId" jdbcType="INTEGER" />
+    <result column="gift_name" property="giftName" jdbcType="VARCHAR" />
+    <result column="gift_price" property="giftPrice" jdbcType="INTEGER" />
+    <result column="gift_experience" property="giftExperience" jdbcType="INTEGER" />
+    <result column="gift_avatar" property="giftAvatar" jdbcType="VARCHAR" />
+    <result column="gift_nums" property="giftNums" jdbcType="INTEGER" />
+    <result column="get_percent" property="getPercent" jdbcType="DECIMAL" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  
+  <sql id="liveGiftBag_column_list" >
+    id, gift_bag_name, status, create_time, update_time
+  </sql>
+  
+  <sql id="liveGiftBagSet_column_list" >
+    id, gift_bag_id, gift_id, gift_nums, get_percent, create_time, update_time
+  </sql>
+  
+  	<!-- Where 礼包查询条件 -->
+  	<sql id="whereSQL">
+		<if test=" null != id and '' != id">
+			AND id =#{id}
+		</if>
+	</sql>
+	
+	<!-- Where 礼包礼物关系查询条件 -->
+  	<sql id="whereSQL2">
+		<if test=" null != id and '' != id">
+			AND bs.id =#{id}
+		</if>
+		<if test=" null != giftBagId and '' != giftBagId">
+			AND bs.gift_bag_id =#{giftBagId}
+		</if>
+		<if test=" null != giftId and '' != giftId">
+			AND bs.gift_id =#{giftId}
+		</if>
+		<if test=" null != giftName and '' != giftName">
+			AND lg.gift_name like '%${giftName}%'
+		</if>
+	</sql>
+  
+  <!-- 查询礼物礼包 -->
+  <select id="selectBagById" resultMap="liveGiftBagMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="liveGiftBag_column_list" />
+    from t_live_gift_bag
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 查询礼包数量 -->
+  <select id="selectBagCount" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveGiftBag" >
+    select 
+    	count(1)
+    from t_live_gift_bag
+    <where>
+    	1=1 
+    	<include refid="whereSQL"></include>
+    </where>
+  </select>
+  
+  <!-- 查询礼包,当前只有一种礼包 -->
+  <select id="selectTheFirstGiftBag" resultMap="liveGiftBagMap" >
+    select 
+    	<include refid="liveGiftBag_column_list" />
+    from t_live_gift_bag
+    LIMIT 0,1
+  </select>
+  
+  <!-- 删除礼物礼包 -->
+  <delete id="deleteBagById" parameterType="java.lang.Integer" >
+    delete from t_live_gift_bag
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 添加礼物礼包 ,并返回礼包ID-->
+  <insert id="addBagReturnId" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveGiftBag" >
+    insert into t_live_gift_bag
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="giftBagName != null" >
+        gift_bag_name,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="giftBagName != null" >
+        #{giftBagName,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  	<!-- 批量插入礼包对应礼物信息 -->
+	<insert id="addBatchGifts" parameterType="java.util.ArrayList">
+		INSERT INTO t_live_gift_bag_set
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<include refid="liveGiftBagSet_column_list" /> 
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				#{item.id},
+				#{item.giftBagId},
+				#{item.giftId},
+				#{item.giftNums},
+				#{item.getPercent},
+				#{item.createTime},
+				#{item.updateTime}
+			</trim>
+		</foreach>
+	</insert>
+  
+  <!-- 删除礼包中的礼物 -->
+  <delete id="deleteBagSetById" parameterType="java.lang.Integer" >
+    delete from t_live_gift_bag_set
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 更新礼包礼物数量 -->
+  <update id="updateGiftNums" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveGiftBagSet" >
+    update t_live_gift_bag_set
+    <set >
+      <if test="giftBagId != null" >
+        gift_bag_id = #{giftBagId,jdbcType=INTEGER},
+      </if>
+      <if test="giftId != null" >
+        gift_id = #{giftId,jdbcType=INTEGER},
+      </if>
+      <if test="giftNums != null" >
+        gift_nums = #{giftNums,jdbcType=INTEGER},
+      </if>
+      <if test="getPercent != null" >
+        get_percent = #{getPercent,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+   <!-- 查询礼包所有礼物 -->
+  <select id="selectBagSetList" resultMap="liveGiftBagSetMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveGiftBagSet" >
+    SELECT
+		bs.id AS id,
+		bs.gift_id AS gift_id,
+		lg.gift_name AS gift_name,
+		lg.gift_avatar AS gift_avatar,
+		lg.gift_price AS gift_price,
+		lg.gift_experience AS gift_experience,
+		bs.gift_nums AS gift_nums
+	FROM
+		t_live_gift_bag_set bs
+	LEFT JOIN t_live_gift lg ON bs.gift_id = lg.id
+    <where>
+    	1=1
+    	<include refid="whereSQL2"></include>
+    </where>
+    <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <!-- 统计礼包礼物数量 -->
+  <select id="giftBagSetCount" resultType="Long" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveGiftBagSet">
+		SELECT 
+			COUNT(1) 
+		FROM 
+			t_live_gift_bag_set bs
+		LEFT JOIN t_live_gift lg ON bs.gift_id = lg.id
+		<where>
+			1=1
+			<include refid="whereSQL2"></include>
+		</where>
+  </select>
+  
+</mapper>

@@ -1,0 +1,13 @@
+eclipse.preferences.version=1
+encoding//WebRoot/WEB-INF/view/fresh/order/orserlist.jsp=UTF-8
+encoding//WebRoot/WEB-INF/view/live_anchor/liveChatRoom.jsp=UTF-8
+encoding//WebRoot/WEB-INF/view/login.jsp=UTF-8
+encoding//WebRoot/WEB-INF/view/system_settings/user.jsp=UTF-8
+encoding//WebRoot/index.jsp=UTF-8
+encoding//WebRoot/resources/web/css/showtips.css=UTF-8
+encoding//WebRoot/resources/web/css/view.css=UTF-8
+encoding//WebRoot/resources/zui/js/zui.js=UTF-8
+encoding//src/resource/conf_redis.properties=UTF-8
+encoding//src/resource/conf_thrift.properties=UTF-8
+encoding//src/resource/value.properties=UTF-8
+encoding/<project>=UTF-8

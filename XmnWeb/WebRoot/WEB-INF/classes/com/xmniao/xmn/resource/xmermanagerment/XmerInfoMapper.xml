@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.xmermanagerment.dao.XmerInfoDao">
+    
+
+	<resultMap type="com.xmniao.xmn.core.xmermanagerment.entity.XmerInfoBean" id="xmerInfoMap">
+		<result column="uid" property="uid" />
+		<result column="name" property="name" />
+		<result column="phone" property="phone" />
+		<result column="status" property="status" />
+		<result column="mb_ecno" property="mbEcno" />
+		<result column="partner" property="partner" />
+	</resultMap>
+	
+	<!-- 查询寻蜜客成员列表-->
+	<select id="getXmerList" resultMap="xmerInfoMap" parameterType="com.xmniao.xmn.core.xmermanagerment.entity.XmerInfoBean">
+		SELECT 
+		t1.uid,t2.phone,t2.nname,t3.status,t2.mb_ecno,IF(uid_relation_chain_level>1,CAST(LEFT(t1.uid_relation_chain,11) AS UNSIGNED),NULL) parent
+		FROM 
+		b_urs_earnings_relation t1
+		LEFT JOIN b_urs t2  ON t1.uid=t2.uid
+		LEFT JOIN b_xmer t3 ON t1.uid=t3.uid
+		
+		WHERE t1.object_oriented=#{objectOriented}
+		<if test="phone!=null and phone !=''">and phone LIKE '${phone}%'</if>
+		<if test="uid!=null">and uid = #{uid}</if>
+		<if test="nname!=null and nname !=''">and nname LIKE '${nname}%'</if>
+		<if test="status!=null">and status = #{status}</if>
+		<if test="parent != null">and parent =#{parent}</if>
+		ORDER BY t1.create_time DESC 
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<!-- 查询寻蜜客成员列表总条数 -->
+	<select id="getXmerCount" resultType="Long" parameterType="com.xmniao.xmn.core.xmermanagerment.entity.XmerInfoBean">
+		SELECT 
+		count(1)
+		FROM 
+		b_urs_earnings_relation t1
+		LEFT JOIN b_urs t2  ON t1.uid=t2.uid
+		LEFT JOIN b_xmer t3 ON t1.uid=t3.uid
+		WHERE t1.object_oriented=#{objectOriented}
+		<if test="phone!=null and phone !=''">and phone LIKE '${phone}%'</if>
+		<if test="uid!=null">and uid = #{uid}</if>
+		<if test="nname!=null and nname !=''">and nname LIKE '${nname}%'</if>
+		<if test="status!=null">and status = #{status}</if>
+		<if test="parent != null">and parent =#{parent}</if>
+	</select>
+	
+	<!-- 查询寻蜜客成员列表-->
+	<select id="getVerXmerList" resultMap="xmerInfoMap" parameterType="com.xmniao.xmn.core.xmermanagerment.entity.XmerInfoBean">
+		SELECT 
+		t1.uid,t2.phone,t2.nname,t3.status,t2.mb_ecno,
+		IF(uid_relation_chain_level>1,CAST(LEFT(t1.uid_relation_chain,11) AS UNSIGNED),NULL) parent,
+		f.partnerNums as partner
+		FROM 
+		b_urs_earnings_relation t1
+		LEFT JOIN b_urs t2  ON t1.uid=t2.uid
+		LEFT JOIN b_xmer t3 ON t1.uid=t3.uid
+		left join (
+			SELECT fid as uid,COUNT(1) as partnerNums FROM(
+				SELECT CAST(LEFT(RIGHT(uid_relation_chain,23),11) AS SIGNED) fid,uid FROM b_urs_earnings_relation t 
+				WHERE object_oriented =6 AND uid_relation_chain_level>1 AND CHAR_LENGTH(uid_relation_chain)>11 ) w GROUP BY fid
+			) f on f.uid=t1.uid
+		WHERE t1.object_oriented=#{objectOriented}
+		<if test="phone!=null and phone !=''">and phone LIKE '${phone}%'</if>
+		<if test="uid!=null">and uid = #{uid}</if>
+		<if test="nname!=null and nname !=''">and nname LIKE '${nname}%'</if>
+		<if test="status!=null">and status = #{status}</if>
+		<if test="parent != null">and parent =#{parent}</if>
+		ORDER BY t1.create_time DESC 
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<!-- 查询寻蜜客成员列表总条数 -->
+	<select id="getVerXmerCount" resultType="Long" parameterType="com.xmniao.xmn.core.xmermanagerment.entity.XmerInfoBean">
+		SELECT 
+		count(1)
+		FROM 
+		b_urs_earnings_relation t1
+		LEFT JOIN b_urs t2  ON t1.uid=t2.uid
+		LEFT JOIN b_xmer t3 ON t1.uid=t3.uid
+		WHERE t1.object_oriented=#{objectOriented}
+		<if test="phone!=null and phone !=''">and phone LIKE '${phone}%'</if>
+		<if test="uid!=null">and uid = #{uid}</if>
+		<if test="nname!=null and nname !=''">and nname LIKE '${nname}%'</if>
+		<if test="status!=null">and status = #{status}</if>
+		<if test="parent != null">and parent =#{parent}</if>
+	</select>
+	
+
+	<select id="xmerSellerCount" resultType="Long" parameterType="Integer">
+		SELECT uid,sum(1) seller FROM t_saas_sold_order 
+		WHERE t_saas_sold_order.`status`=1 
+		and t_saas_sold_order.uid IN
+		<foreach item="item" index="index" collection="objects"  open="(" separator="," close=") ">
+	     #{item}
+	    </foreach>
+	    <if test="saasChannel != null">and saas_channel=#{saasChannel}</if>
+	    group by uid
+	</select>
+	
+	<select id="getXmerDirectPartnerList" resultMap="xmerInfoMap">
+	SELECT u.uid,u.nname,u.phone FROM b_urs_earnings_relation t1
+	LEFT JOIN 
+	(	SELECT * FROM b_urs_earnings_relation  
+		WHERE uid=#{parent} AND object_oriented =#{objectOriented}
+	) t2 ON t1.uid_relation_chain  LIKE CONCAT(t2.uid_relation_chain,"%")
+	LEFT JOIN
+		b_urs u on t1.uid=u.uid
+	WHERE  t1.uid_relation_chain_level=t2.uid_relation_chain_level+1
+	<if test="objectOriented!=null and objectOriented==7">and t1.object_oriented =6</if>
+	<if test="objectOriented==null or objectOriented!=7">and t1.object_oriented =#{objectOriented}</if>
+	<if test="phone!=null and phone !=''">and u.phone LIKE '${phone}%'</if>
+	<if test="uid!=null">and u.uid = #{uid}</if>
+	<if test="nname!=null and nname !=''">and u.nname LIKE '${nname}%'</if>
+	</select>
+	
+	<select id="getXmerDirectPartnerCount" resultType="Long">
+	SELECT count(1) FROM b_urs_earnings_relation t1
+	LEFT JOIN 
+	(	SELECT * FROM b_urs_earnings_relation  
+		WHERE uid=#{parent} AND object_oriented =#{objectOriented}
+	) t2 ON t1.uid_relation_chain  LIKE CONCAT(t2.uid_relation_chain,"%")
+	LEFT JOIN
+		b_urs u on t1.uid=u.uid
+	WHERE  t1.uid_relation_chain_level=t2.uid_relation_chain_level+1
+	<if test="objectOriented!=null and objectOriented==7">and t1.object_oriented =6</if>
+	<if test="objectOriented==null or objectOriented!=7">and t1.object_oriented =#{objectOriented}</if>
+	<if test="phone!=null and phone !=''">and u.phone LIKE '${phone}%'</if>
+	<if test="uid!=null">and u.uid = #{uid}</if>
+	<if test="nname!=null and nname !=''">and u.nname LIKE '${nname}%'</if>
+	</select>
+</mapper>

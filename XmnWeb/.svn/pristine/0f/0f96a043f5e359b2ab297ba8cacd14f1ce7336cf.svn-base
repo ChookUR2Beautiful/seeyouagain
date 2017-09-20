@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.manor.dao.ManorLevelEarningRecordDao" >
+  <parameterMap type="ManorLevelEarningRecord" id="manorLevelEarningRecord"></parameterMap>
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.manor.entity.TManorLevelEarningRecord" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="level_id" property="levelId" jdbcType="INTEGER" />
+    <result column="level_name" property="levelName" jdbcType="VARCHAR" />
+    <result column="yesterday" property="yesterday" jdbcType="DATE" />
+    <result column="earning_chanel" property="earningChanel" jdbcType="INTEGER" />
+    <result column="earning_type" property="earningType" jdbcType="INTEGER" />
+    <result column="number" property="number" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, uid, phone, level_id, level_name, yesterday, earning_chanel, earning_type, number, 
+    status, create_time, update_time, description
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_manor_level_earning_record
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_manor_level_earning_record
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.manor.entity.TManorLevelEarningRecord" >
+    insert into t_manor_level_earning_record (id, uid, phone, 
+      level_id, level_name, yesterday, 
+      earning_chanel, earning_type, number, 
+      status, create_time, update_time, 
+      description)
+    values (#{id,jdbcType=BIGINT}, #{uid,jdbcType=INTEGER}, #{phone,jdbcType=VARCHAR}, 
+      #{levelId,jdbcType=INTEGER}, #{levelName,jdbcType=VARCHAR}, #{yesterday,jdbcType=DATE}, 
+      #{earningChanel,jdbcType=INTEGER}, #{earningType,jdbcType=INTEGER}, #{number,jdbcType=INTEGER}, 
+      #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{description,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.manor.entity.TManorLevelEarningRecord" >
+    insert into t_manor_level_earning_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="levelId != null" >
+        level_id,
+      </if>
+      <if test="levelName != null" >
+        level_name,
+      </if>
+      <if test="yesterday != null" >
+        yesterday,
+      </if>
+      <if test="earningChanel != null" >
+        earning_chanel,
+      </if>
+      <if test="earningType != null" >
+        earning_type,
+      </if>
+      <if test="number != null" >
+        number,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="levelId != null" >
+        #{levelId,jdbcType=INTEGER},
+      </if>
+      <if test="levelName != null" >
+        #{levelName,jdbcType=VARCHAR},
+      </if>
+      <if test="yesterday != null" >
+        #{yesterday,jdbcType=DATE},
+      </if>
+      <if test="earningChanel != null" >
+        #{earningChanel,jdbcType=INTEGER},
+      </if>
+      <if test="earningType != null" >
+        #{earningType,jdbcType=INTEGER},
+      </if>
+      <if test="number != null" >
+        #{number,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.manor.entity.TManorLevelEarningRecord" >
+    update t_manor_level_earning_record
+    <set >
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="levelId != null" >
+        level_id = #{levelId,jdbcType=INTEGER},
+      </if>
+      <if test="levelName != null" >
+        level_name = #{levelName,jdbcType=VARCHAR},
+      </if>
+      <if test="yesterday != null" >
+        yesterday = #{yesterday,jdbcType=DATE},
+      </if>
+      <if test="earningChanel != null" >
+        earning_chanel = #{earningChanel,jdbcType=INTEGER},
+      </if>
+      <if test="earningType != null" >
+        earning_type = #{earningType,jdbcType=INTEGER},
+      </if>
+      <if test="number != null" >
+        number = #{number,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.manor.entity.TManorLevelEarningRecord" >
+    update t_manor_level_earning_record
+    set uid = #{uid,jdbcType=INTEGER},
+      phone = #{phone,jdbcType=VARCHAR},
+      level_id = #{levelId,jdbcType=INTEGER},
+      level_name = #{levelName,jdbcType=VARCHAR},
+      yesterday = #{yesterday,jdbcType=DATE},
+      earning_chanel = #{earningChanel,jdbcType=INTEGER},
+      earning_type = #{earningType,jdbcType=INTEGER},
+      number = #{number,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      description = #{description,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+	<!-- 自定义查询区域 -->
+	<sql id="baseManorLevelEarningCondition">
+		<if test="id != null">
+			AND t.id = #{id}
+		</if>
+		<if test="uid != null">
+			AND t.uid = #{uid,jdbcType=INTEGER}
+		</if>
+		<if test="phone !=null and '' != phone">
+			AND t.phone = #{phone,jdbcType=VARCHAR}
+		</if>
+		<if test="status != null">
+			AND t.status = #{status,jdbcType=INTEGER}
+		</if>
+		<if test="createTime != null">
+			AND t.create_time = #{createTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="updateTime != null">
+			AND t.update_time = #{updateTime,jdbcType=TIMESTAMP}
+		</if>
+	</sql>
+
+	<select id="countManorLevelEarningRecord" resultType="Long" parameterMap="manorLevelEarningRecord">
+		SELECT COUNT(1) FROM t_manor_level_earning_record t
+		<where>
+			1=1
+			<include refid="baseManorLevelEarningCondition" />
+			<if test="description !=null and '' != description">
+				AND t.description LIKE '%${description}%'
+			</if>
+		</where>
+	</select>
+
+	<select id="getManorLevelEarningRecordList" resultMap="BaseResultMap" parameterMap="manorLevelEarningRecord">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM t_manor_level_earning_record t
+		<where>
+			1 = 1
+			<include refid="baseManorLevelEarningCondition" />
+			<if test="description !=null and '' != description">
+				AND t.description LIKE '%${description}%'
+			</if>
+		</where>
+		ORDER BY t.update_time DESC, t.id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit}, #{limit}
+		</if>
+	</select>
+  
+  
+</mapper>

@@ -1,0 +1,170 @@
+package com.xmniao.xmn.core.billmanagerment.dao;
+
+import java.util.List;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.billmanagerment.entity.Bill;
+import com.xmniao.xmn.core.util.proxy.annotation.DataSource;
+
+/**
+ * 
+ * @项目名称：XmnWeb
+ * 
+ * @类名称：AllBillDao
+ * 
+ * @类描述： 所有订单
+ * 
+ * @创建人：huangpingqiang
+ * 
+ * @创建时间：2014年11月26日16时00分41秒
+ * 
+ * @Copyright:广东寻蜜鸟网络技术有限公司
+ */
+public interface AllBillDao extends BaseDao<Bill>{
+	
+	/**
+	 * 获取订单信息列表（除待支付）
+	 */
+	@DataSource("slave")
+	public List<Bill> getBillList(Bill bill);
+		
+	/**
+	 * 获取订单信息列表条数（除待支付）
+	 */
+	@DataSource("slave")
+	public Long billCount(Bill bill);
+	
+	/**
+	 * 获取订单信息列表条数（除待支付）5-10月
+	 */
+	@DataSource("slave")
+	public Long billMonthCount(Bill bill);
+	
+	
+	/**
+	 * 获取订单的总金额(除待支付)
+	 */
+	@DataSource("slave")
+	public Double gettotalAmount(Bill bill);
+	/**
+	 * 获取首单单信息列表（除待支付）
+	 */
+	@DataSource("slave")
+	public List<Bill> getFirstBillList(Bill bill);
+		
+	/**
+	 * 获取首单信息列表条数（除待支付）
+	 */
+	@DataSource("slave")
+	public Long firstBillCount(Bill bill);
+	
+	/**
+	 * 获取首单的总金额(除待支付)
+	 */
+	@DataSource("slave")
+	public Double getFirstTotalAmount(Bill bill);
+	
+	/**
+	 * 更加bid查询详情
+	 * @param bid
+	 * @return
+	 */
+	@DataSource("slave")
+	public Bill getBillObject(Long bid);
+	
+	
+	/**
+	 * 获取订单信息列表（待支付）
+	 */
+	@DataSource("slave")
+	public List<Bill> getBillNotPayList(Bill bill);
+		
+	/**
+	 * 获取订单信息列表条数（待支付）
+	 */
+	@DataSource("slave")
+	public Long getBillNotPayListCount(Bill bill);
+	
+	/**
+	 * 获取订单的总金额(待支付)
+	 */
+	@DataSource("slave")
+	public Double getnotpaytotalAmount(Bill bill);
+	
+	@DataSource("slave")
+	public List<Bill> getSpreadBillList(String date);
+	
+	
+	/**
+	 * 根据用户ID数组返回消费总金额,消费总金额sumMoney
+	 * @param objects
+	 * @return 
+	 */
+	@DataSource("slave")
+	public List<Bill> getBillListByUids(Object[] objects);
+
+	/**
+	 * 根据用户ID获取订单数(status为1,2,3)
+	 * @param bill
+	 * @return
+	 */
+	@DataSource("slave")
+	public Long getBillCountByUid(Bill bill);
+	
+	/**
+	 * 根据用户ID获取订单列表(status为1,2,3)
+	 * @param bill
+	 * @return
+	 */
+	@DataSource("slave")
+	public List<Bill> getBillListByUid(Bill bill);
+
+	/**
+	 * @Description: 获取订单信息列表（只查询已经分账的订单：status=2）
+	 * @Param:
+	 * @return:List<Bill>
+	 * @author:lifeng
+	 * @time:2016年6月12日上午10:04:47
+	 */
+	@DataSource("slave")
+	public List<Bill> getAccountedBillList(Bill bill);
+	
+	/**
+	 * @Description:获取订单信息列表条数（除待支付） 
+	 * @Param:
+	 * @return:Long
+	 * @author:lifeng
+	 * @time:2016年6月12日上午10:05:08
+	 */
+	@DataSource("slave")
+	public Long accountedBillCount(Bill bill);
+	
+	/**
+	 * 
+	 * 方法描述：根据满减活动id 获取订单列表
+	 * 创建人： chenJie <br/>
+	 * 创建时间：2016年12月8日下午8:22:08 <br/>
+	 * @param bill
+	 * @return
+	 */
+	@DataSource("slave")
+	List<Bill> getFullReductionList(Bill bill);
+	
+	/**
+	 * 
+	 * 方法描述：根据满减活动id,统计订单总数
+	 * 创建人： chenJie <br/>
+	 * 创建时间：2016年12月8日下午8:22:35 <br/>
+	 * @param bill
+	 * @return
+	 */
+	@DataSource("slave")
+	Long countFullReduction(Bill bill);
+	
+	
+	@DataSource("slave")
+	List<Bill> getRecommendSellerList(Object[] objects);
+	
+	@DataSource("slave")
+	List<Bill> getRecommendSellerInfoList(Integer uid);
+}

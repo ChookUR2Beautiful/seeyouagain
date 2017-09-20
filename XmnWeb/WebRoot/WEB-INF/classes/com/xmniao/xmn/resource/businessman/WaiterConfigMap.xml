@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.WaiterConfigDao">
+
+	<parameterMap type="TSpreadConfig" id="tSpreadConfig" />
+	
+	<resultMap type="TSpreadConfig" id="tSpreadConfigMap">
+		<result column="sellerid" property="sellerId" />
+		<result column="sellername" property="sellername" />
+		<result column="start_money" property="startMoney" />
+		<result column="end_money" property="endMoney" />
+		<result column="money" property="money" />
+		<result column="status" property="status" />
+		<result column="rdate" property="rdate" />
+		<result column="udate" property="udate" />
+	</resultMap>
+
+ 	<!-- 添加商家服务员推广配置信息 -->
+	<insert id="add" parameterMap="tSpreadConfig" >
+		INSERT INTO t_spread_config
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != sellerId">
+					t_spread_config.`sellerid`,
+				</if>
+				<if test=" null != sellername">
+					t_spread_config.`sellername`,
+				</if>
+			 	<if test=" null != startMoney ">
+					t_spread_config.`start_money`,
+				</if>
+				<if test=" null != endMoney ">
+					t_spread_config.`end_money`,
+				</if>
+				<if test=" null != money ">
+					t_spread_config.`money`,
+				</if>
+				<if test=" null != status ">
+					t_spread_config.`status`,
+				</if>
+				<if test=" null != rdate ">
+					t_spread_config.`rdate`,
+				</if>
+				<if test=" null != udate ">
+					t_spread_config.`udate`,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != sellerId">
+					#{sellerId},
+				</if>
+				<if test=" null != sellername">
+					#{sellername},
+				</if>
+				<if test=" null != startMoney ">
+					#{startMoney},
+				</if>
+				<if test=" null != endMoney ">
+					#{endMoney},
+				</if>
+				<if test=" null != money ">
+					#{money},
+				</if>
+				<if test=" null != status ">
+					#{status},
+				</if>
+				<if test=" null != rdate ">
+					#{rdate},
+				</if>
+				<if test=" null != udate ">
+					#{udate},
+				</if>
+		</trim>
+	</insert>
+	
+	<!-- 获取商家服务员推广配置信息 -->
+	<select id="getList" resultMap="tSpreadConfigMap" parameterMap="tSpreadConfig">
+	   SELECT * FROM t_spread_config
+		<where>
+			1=1
+	 		<include refid="whereSQL"></include>
+ 		</where>
+		ORDER BY id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<!-- 获取商家服务员推广配置信息条数 -->
+	<select id="count" resultType="Long" parameterMap="tSpreadConfig">
+		SELECT COUNT(1) FROM t_spread_config 
+		<where>
+			1=1
+ 			<include refid="whereSQL"></include>
+		</where>
+	</select>
+	<!-- 根据id查询商家服务员配置信息用于初始化修改页面 -->
+	<select id="getObject" resultMap="tSpreadConfigMap" parameterType="Long">
+		SELECT * FROM t_spread_config WHERE id = #{0}
+	</select>
+	<!-- 修改商家服务员推广配置信息 -->
+	<update id="update" parameterMap="tSpreadConfig">
+		UPDATE t_spread_config
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != startMoney">
+					t_spread_config.`start_money` = #{startMoney},
+				</if>
+				<if test=" null != endMoney">
+					t_spread_config.`end_money` = #{endMoney},
+				</if>
+				<if test=" null != money">
+					t_spread_config.`money` = #{money},
+				</if>
+				<if test=" null != status">
+					t_spread_config.`status` = #{status},
+				</if>
+				<if test=" null != rdate">
+					t_spread_config.`rdate` = #{rdate},
+				</if>
+				<if test=" null != udate">
+					t_spread_config.`udate` = #{udate},
+				</if>
+			</trim>
+		</set>
+		<where>
+				t_spread_config.`id` = #{id}
+		</where>
+	</update> 
+	
+	<!-- 可重用的Where 条件 -->
+	<sql id="whereSQL">
+		<if test=" null != sellerId and '' != sellerId">
+			AND sellerid = #{sellerId}
+		</if>
+		<if test=" null != sellername and '' != sellername">
+			AND sellername LIKE '%${sellername}%'
+		</if>
+		<if test=" null != money and '' != money">
+			AND money = #{money}
+		</if>
+		<if test=" null != status">
+			AND status = #{status}
+		</if>
+	</sql>
+	
+</mapper>

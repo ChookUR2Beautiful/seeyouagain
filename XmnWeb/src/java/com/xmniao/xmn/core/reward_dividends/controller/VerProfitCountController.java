@@ -1,0 +1,128 @@
+package com.xmniao.xmn.core.reward_dividends.controller;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.xmniao.xmn.core.base.BaseController;
+import com.xmniao.xmn.core.base.Pageable;
+import com.xmniao.xmn.core.base.Resultable;
+import com.xmniao.xmn.core.reward_dividends.entity.BursEarningsRelation;
+import com.xmniao.xmn.core.reward_dividends.entity.TLiveGivedGiftVke;
+import com.xmniao.xmn.core.reward_dividends.entity.TLivePrivilege;
+import com.xmniao.xmn.core.reward_dividends.service.VerProfitCountService;
+import com.xmniao.xmn.core.util.PageConstant;
+import com.xmniao.xmn.core.util.handler.annotation.RequestLogging;
+
+/**
+ * V客充值奖励
+ * 
+ * @author Administrator
+ *
+ */
+@RequestLogging(name = "V客收益统计")
+@Controller
+@RequestMapping(value = "verProfitCount/manage")
+public class VerProfitCountController extends BaseController {
+	
+	@Autowired
+	private VerProfitCountService verProfitCountService;
+
+	@RequestMapping(value = "init")
+	public String init() {
+		return "reward_dividends/verProfitCountManage";
+	}
+	
+	@RequestMapping(value = "init/list")
+	@ResponseBody
+	public Object list(TLiveGivedGiftVke liveGivedGiftVke){
+		Pageable<TLiveGivedGiftVke> pageable = new Pageable<TLiveGivedGiftVke>(liveGivedGiftVke);
+		
+		if (liveGivedGiftVke.getType().equals(1) ) {  //签约商户收益统计
+			pageable = verProfitCountService.getSellerProfitInfoList(liveGivedGiftVke);
+		} else {  //推荐主播收益统计
+			pageable = verProfitCountService.getLiveGivedGiftVkeInfoList(liveGivedGiftVke);
+		}
+		this.log.info("RecommendMemberController-->list pageable=" + pageable);
+		
+		return pageable;
+	}
+	
+	
+	
+
+	@RequestMapping(value = "init/getCurrentSize")
+	@ResponseBody
+	public Object getCurrentSize(TLiveGivedGiftVke liveGivedGiftVke){
+		long count=0l;
+		try {
+			if (liveGivedGiftVke.getType().equals(1) ) {  //签约商户收益统计
+			   count = verProfitCountService.getSellerProfitVkeTotalNum(liveGivedGiftVke);
+			} else {  //推荐主播收益统计
+			   count = verProfitCountService.getLiveGivedGiftVkeTotalNum(liveGivedGiftVke);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return count;
+	}
+	
+
+	@RequestMapping(value="export")
+	public void export(TLiveGivedGiftVke liveGivedGiftVke,HttpServletRequest request,HttpServletResponse response){
+		liveGivedGiftVke.setOrder(PageConstant.NOT_ORDER);
+		liveGivedGiftVke.setLimit(PageConstant.PAGE_LIMIT_NO);
+		Map<String,Object> params=new HashMap<String,Object>();
+		String path = "";
+		if (liveGivedGiftVke.getType().equals(1) ) {  //签约商户收益统计
+		   params.put("list", verProfitCountService.getSellerProfitDetailList(liveGivedGiftVke));
+		   path = "reward_dividends/SellerBillProfit.xls";
+		} else {  //推荐主播收益统计
+		   params.put("list", verProfitCountService.getLiveGivedGiftVkeDataList(liveGivedGiftVke));
+		   path = "reward_dividends/LiveGiftProfit.xls";
+		}
+		doExport(request,response, path,params);
+		
+	}
+	
+	
+	@RequestMapping(value = "/init/vkeProfitCountSeller")
+	@ResponseBody
+	public Object getVkeProfitSellerCount(TLiveGivedGiftVke liveGivedGiftVke) {
+		Resultable resultable = null;
+		try {
+			Map<String, Object> resultMap = verProfitCountService.getVkeProfitSellerCount(liveGivedGiftVke);
+			resultable = new Resultable(true, "查询成功", resultMap);
+			return resultable;
+			
+		} catch (Exception e) {
+			log.error("统计V客收益总数失败", e);
+			resultable = new Resultable(false, "统计V客收益总数失败");
+			return resultable;
+		}
+	}
+	
+	@RequestMapping(value = "/init/vkeProfitCountGift")
+	@ResponseBody
+	public Object getVkeProfitLiveCount(TLiveGivedGiftVke liveGivedGiftVke) {
+		Resultable resultable = null;
+		try {
+			Map<String, Object> resultMap = verProfitCountService.getVkeProfitGiftCount(liveGivedGiftVke);
+			resultable = new Resultable(true, "查询成功", resultMap);
+			return resultable;
+			
+		} catch (Exception e) {
+			log.error("统计V客收益总数失败", e);
+			resultable = new Resultable(false, "统计V客收益总数失败");
+			return resultable;
+		}
+	}
+
+}

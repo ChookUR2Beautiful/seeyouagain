@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.user_terminal.dao.HelpItemDao" >
+
+  <parameterMap type="HelpItem" id="HelpItem" ></parameterMap>
+  <resultMap type="HelpItem" id="HelpItemMap">
+    <id column="id" property="id" />
+    <result column="item" property="item" />
+    <result column="sort" property="sort" />
+    <result column="udate" property="udate" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, item, sort, udate
+  </sql>
+  
+  
+  	<select id="getHelpItemList" parameterMap="HelpItem" resultMap="HelpItemMap">
+  	    select 
+	    <include refid="Base_Column_List" />
+	    from t_help_item
+	    where 1=1
+	    <if test="id!= null">AND id=#{id}</if>
+	    <if test="item!=null and item != ''">AND item like '%${item}%'</if>
+  	</select>
+  	
+	<select id="getHelpItemCount" parameterMap="HelpItem" resultType="Long">
+	  	select 
+	    COUNT(1)
+	    from t_help_item
+	    where 1=1
+	    <if test="id!= null">AND id=#{id}</if>
+	    <if test="item!=null and item != ''">AND item like '%${item}%'</if>
+	</select>
+	
+	<select id="getHelpItem" parameterType="int" resultMap="HelpItemMap">
+	  	select 
+	    <include refid="Base_Column_List" />
+	    from t_help_item
+	    where id=#{id}
+	</select>
+	
+	<insert id="addHelpItem" parameterMap="HelpItem">
+	    insert into t_help_item
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="id != null" >
+	        id,
+	      </if>
+	      <if test="item != null" >
+	        item,
+	      </if>
+	      <if test="sort != null" >
+	        sort,
+	      </if>
+	      <if test="udate != null" >
+	        udate,
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="id != null" >
+	        #{id,jdbcType=INTEGER},
+	      </if>
+	      <if test="item != null" >
+	        #{item,jdbcType=VARCHAR},
+	      </if>
+	      <if test="sort != null" >
+	        #{sort,jdbcType=INTEGER},
+	      </if>
+	      <if test="udate != null" >
+	        #{udate,jdbcType=TIMESTAMP},
+	      </if>
+	    </trim>
+	</insert>
+	
+	<update id="upadteHelpItem" parameterMap="HelpItem">
+	    update t_help_item
+	    <set >
+	      <if test="item != null" >
+	        item = #{item,jdbcType=VARCHAR},
+	      </if>
+	      <if test="sort != null" >
+	        sort = #{sort,jdbcType=INTEGER},
+	      </if>
+	      <if test="udate != null" >
+	        udate = #{udate,jdbcType=TIMESTAMP},
+	      </if>
+	    </set>
+	    where id = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<delete id="deleteHelpItem" parameterType="int">
+	    delete from t_help_item
+   		where id = #{id,jdbcType=INTEGER}
+	</delete>
+ 
+</mapper>

@@ -1,0 +1,25 @@
+package com.xmniao.xmn.core.manor.dao;
+
+import java.util.List;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.manor.entity.TManorLevelEarningRecord;
+
+
+public interface ManorLevelEarningRecordDao extends BaseDao<TManorLevelEarningRecord>{
+    int deleteByPrimaryKey(Long id);
+
+    int insert(TManorLevelEarningRecord record);
+
+    int insertSelective(TManorLevelEarningRecord record);
+
+    TManorLevelEarningRecord selectByPrimaryKey(Long id);
+
+    int updateByPrimaryKeySelective(TManorLevelEarningRecord record);
+
+    int updateByPrimaryKey(TManorLevelEarningRecord record);
+    
+    public List<TManorLevelEarningRecord> getManorLevelEarningRecordList(TManorLevelEarningRecord record);
+    
+    public Long countManorLevelEarningRecord(TManorLevelEarningRecord record);
+}

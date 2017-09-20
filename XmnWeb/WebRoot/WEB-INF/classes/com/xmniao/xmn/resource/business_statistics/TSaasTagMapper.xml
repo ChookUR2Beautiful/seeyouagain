@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.business_statistics.dao.TSaasTagDao" >
+
+
+  <resultMap id="saasTagMap" type="com.xmniao.xmn.core.business_statistics.entity.TSaasTag" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="tag_category_id" property="tagCategoryId" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="saasTag_column_list" >
+    id, tag_category_id, name
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test=" filterVal !=null and filterVal != '' ">
+  		AND tag_category_id=#{filterVal}
+  	</if>
+  </sql>
+  
+  
+  <select id="getObject" resultMap="saasTagMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="saasTag_column_list" />
+    from t_saas_tag
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getList" resultMap="saasTagMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="saasTag_column_list" />
+    from t_saas_tag
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+    <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <!-- 根据标签属性获取标签列表 -->
+  <select id="getTagsByType" resultMap="saasTagMap" parameterType="com.xmniao.xmn.core.business_statistics.entity.TSaasTag" >
+    SELECT
+		ta.*
+	FROM
+		t_saas_tag ta
+	LEFT JOIN t_saas_tag_category ca ON ta.tag_category_id = ca.id
+	WHERE
+		ca.type = #{type}
+  </select>
+  
+  
+  <delete id="delete" parameterType="java.lang.Object" >
+    delete from t_saas_tag
+    where id in
+    <foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+	</foreach>
+  </delete>
+  
+  
+  
+  <insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.xmn.core.business_statistics.entity.TSaasTag" >
+    insert into t_saas_tag
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="tagCategoryId != null" >
+        tag_category_id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="tagCategoryId != null" >
+        #{tagCategoryId,jdbcType=BIGINT},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <!-- 批量插入SaaS标签信息 -->
+	<insert id="addBatch" parameterType="java.util.ArrayList">
+		INSERT INTO t_saas_tag
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<include refid="saasTag_column_list" /> 
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+			<!-- id, tag_category_id, name -->
+				#{item.id},
+				#{item.tagCategoryId},
+				#{item.name}
+			</trim>
+		</foreach>
+	</insert>
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.business_statistics.entity.TSaasTag" >
+    update t_saas_tag
+    <set >
+      <if test="tagCategoryId != null" >
+        tag_category_id = #{tagCategoryId,jdbcType=BIGINT},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+</mapper>

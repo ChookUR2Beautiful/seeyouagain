@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.user_terminal.dao.HelpInfoDao" >
+	<parameterMap type="HelpInfo" id="HelpInfo"></parameterMap>
+	
+	<resultMap id="HelpInfoMap" type="HelpInfo" >
+	  <id column="id" property="id" jdbcType="INTEGER" />
+	  <result column="item_id" property="itemId" jdbcType="INTEGER" />
+	  <result column="title" property="title" jdbcType="VARCHAR" />
+	  <result column="context" property="context" jdbcType="VARCHAR" />
+	  <result column="sort" property="sort" jdbcType="INTEGER" />
+	  <result column="udate" property="udate" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	
+	<select id="getHelpList" parameterMap="HelpInfo" resultMap ="HelpInfoMap">
+		select 
+			info.id, info.item_id, info.title, info.context, info.sort, info.udate,item.item
+		from t_help_info info,t_help_item item
+		where info.item_id=item.id
+		<if test="itemId != null">AND info.item_id=#{itemId}</if>
+		<if test="title != null and title != ''">AND info.title LIKE '%${title}%'</if>
+		<if test="context != null and context != ''">ANDinfo.context LIKE '%${context}%'</if>
+	</select>	
+	
+	<select id="getHelpCount"  parameterMap="HelpInfo" resultType ="long">
+		select count(1)
+		from t_help_info info,t_help_item item
+		where info.item_id=item.id
+		<if test="itemId != null">AND info.item_id=#{itemId}</if>
+		<if test="title != null and title != ''">AND info.title LIKE '%${title}%'</if>
+		<if test="context != null and context != ''">AND info.context LIKE '%${context}%'</if>
+	</select>	
+	
+	<select id="getHelpInfo"  parameterType="int" resultMap ="HelpInfoMap">
+		select 
+			info.id, info.item_id, info.title, info.context, info.sort, info.udate,item.item
+		from t_help_info info,t_help_item item
+		where info.item_id=item.id
+		AND info.id = #{id}
+	</select>	
+	
+	<insert id="insterHelpInfo"  parameterMap="HelpInfo">
+	    insert into t_help_info
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="itemId != null" >
+	        item_id,
+	      </if>
+	      <if test="title != null" >
+	        title,
+	      </if>
+	      <if test="context != null" >
+	        context,
+	      </if>
+	      <if test="sort != null" >
+	        sort,
+	      </if>
+	      <if test="udate != null" >
+	        udate,
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="itemId != null" >
+	        #{itemId,jdbcType=INTEGER},
+	      </if>
+	      <if test="title != null" >
+	        #{title,jdbcType=VARCHAR},
+	      </if>
+	      <if test="context != null" >
+	        #{context,jdbcType=VARCHAR},
+	      </if>
+	      <if test="sort != null" >
+	        #{sort,jdbcType=INTEGER},
+	      </if>
+	      <if test="udate != null" >
+	        #{udate,jdbcType=TIMESTAMP},
+	      </if>
+	    </trim>
+	</insert>
+	
+	<update id="updateHelpInfo"  parameterMap="HelpInfo">
+	    update t_help_info
+	    <set >
+	      <if test="itemId != null" >
+	        item_id = #{itemId,jdbcType=INTEGER},
+	      </if>
+	      <if test="title != null" >
+	        title = #{title,jdbcType=VARCHAR},
+	      </if>
+	      <if test="context != null" >
+	        context = #{context,jdbcType=VARCHAR},
+	      </if>
+	      <if test="sort != null" >
+	        sort = #{sort,jdbcType=INTEGER},
+	      </if>
+	      <if test="udate != null" >
+	        udate = #{udate,jdbcType=TIMESTAMP},
+	      </if>
+	    </set>
+	    where id = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<delete id="deleteHelpInfo"  parameterType="int">
+	    delete from t_help_info
+   		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	
+	<delete id="deleteHelpInfoByItem"  parameterType="int">
+	    delete from t_help_info
+   		where item_id = #{itemId,jdbcType=INTEGER}
+	</delete>
+
+</mapper>

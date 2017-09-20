@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.reward_dividends.dao.TVerExcitationGoodsOrderDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.reward_dividends.entity.TVerExcitationGoodsOrder" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="rid" property="rid" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="confirm_time" property="confirmTime" jdbcType="TIMESTAMP" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, order_no, uid, phone, amount, rid, status, create_time, confirm_time, description
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_ver_excitation_goods_order
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_ver_excitation_goods_order
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.reward_dividends.entity.TVerExcitationGoodsOrder" >
+    insert into t_ver_excitation_goods_order (id, order_no, uid, 
+      phone, amount, rid, 
+      status, create_time, confirm_time, 
+      description)
+    values (#{id,jdbcType=INTEGER}, #{orderNo,jdbcType=VARCHAR}, #{uid,jdbcType=INTEGER}, 
+      #{phone,jdbcType=VARCHAR}, #{amount,jdbcType=DECIMAL}, #{rid,jdbcType=INTEGER}, 
+      #{status,jdbcType=TINYINT}, #{createTime,jdbcType=TIMESTAMP}, #{confirmTime,jdbcType=TIMESTAMP}, 
+      #{description,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.reward_dividends.entity.TVerExcitationGoodsOrder" >
+    insert into t_ver_excitation_goods_order
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="orderNo != null" >
+        order_no,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="rid != null" >
+        rid,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="confirmTime != null" >
+        confirm_time,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="rid != null" >
+        #{rid,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="confirmTime != null" >
+        #{confirmTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.reward_dividends.entity.TVerExcitationGoodsOrder" >
+    update t_ver_excitation_goods_order
+    <set >
+      <if test="orderNo != null" >
+        order_no = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="rid != null" >
+        rid = #{rid,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="confirmTime != null" >
+        confirm_time = #{confirmTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.reward_dividends.entity.TVerExcitationGoodsOrder" >
+    update t_ver_excitation_goods_order
+    set order_no = #{orderNo,jdbcType=VARCHAR},
+      uid = #{uid,jdbcType=INTEGER},
+      phone = #{phone,jdbcType=VARCHAR},
+      amount = #{amount,jdbcType=DECIMAL},
+      rid = #{rid,jdbcType=INTEGER},
+      status = #{status,jdbcType=TINYINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      confirm_time = #{confirmTime,jdbcType=TIMESTAMP},
+      description = #{description,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+    <!--订单查询条件-->
+  <sql id="orderCondition">
+    from t_ver_excitation_goods_order
+    <where>
+      1 = 1
+      <if test="param.orderNo != null and  param.orderNo != ''">
+        and order_no = #{param.orderNo}
+      </if>
+      <if test="param.uid != null">
+        and uid = #{param.uid}
+      </if>
+      <if test="param.phone != null and param.phone != ''">
+        and phone = #{param.phone}
+      </if>
+      <if test="param.status != null">
+        and status = #{param.status}
+      </if>
+      <if test="param.createTimeBegin != null">
+        and create_time >= #{param.createTimeBegin}
+      </if>
+      <if test="param.createTimeAfter != null">
+        and create_time &lt;= #{param.createTimeAfter}
+      </if>
+    </where>
+  </sql>
+  <!--统计订单数量-->
+  <select id="countOrders" resultType="long" parameterType="com.xmniao.xmn.core.reward_dividends.controller.vo.RechargeOrderListRequest">
+    select count(1)
+    <include refid="orderCondition"/>
+  </select>
+  <!--查询订单-->
+  <select id="selectOrder" resultMap="BaseResultMap">
+    select *
+    <include refid="orderCondition"/>
+    ORDER BY create_time DESC
+    limit #{page.start},#{page.limit}
+  </select>
+</mapper>

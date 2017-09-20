@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.user_terminal.dao.TUserProposalDao">
+
+	<parameterMap type="TUserProposal" id="tUserProposal" />
+
+	<resultMap type="TUserProposal" id="tUserProposalMap">
+		<result column="id" property="id" />
+		<result column="uid" property="uid" />
+		<result column="phoneid" property="phoneid" />
+		<result column="object" property="object" />
+		<result column="content" property="content" />
+		<result column="STATUS" property="status" />
+		<result column="date_created" property="dateCreated" />
+		<result column="result" property="result" />
+		<result column="person_handling_no" property="personHandlingNo" />
+		<result column="person_handling" property="personHandling" />
+		<result column="date_handling" property="dateHandling" />
+		<result column="TYPE" property="type" />
+	</resultMap>
+
+
+	<select id="getList" resultMap="tUserProposalMap" parameterMap="tUserProposal">
+		SELECT id,uid,phoneid,object,content,STATUS,date_created,result,person_handling_no,person_handling,date_handling,TYPE FROM t_user_proposal
+		<where>
+			1=1
+			<if test="null != object">
+				AND object = #{object}
+			</if>
+            <if test="null != phoneid and '' != phoneid">
+				AND phoneid = #{phoneid}
+			</if>
+			<if test="null != type">
+				AND TYPE = #{type}
+			</if>
+			<if test="null != status">
+				AND STATUS = #{status}
+			</if>
+			<if test="null != dateCreatedStart and '' != dateCreatedStart">
+				AND date_created &gt;= #{dateCreatedStart}
+			</if>
+			<if test="null != dateCreatedEnd and '' != dateCreatedEnd">
+				AND date_created &lt;= #{dateCreatedEnd}
+			</if>
+		</where>
+		ORDER BY date_created DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="count" resultType="Long" parameterMap="tUserProposal">
+		SELECT count(id) FROM t_user_proposal
+		<where>
+			1=1
+			<if test="null != object">
+				AND object = #{object}
+			</if>
+            <if test="null != phoneid and '' != phoneid">
+				AND phoneid = #{phoneid}
+			</if>
+			<if test="null != type">
+				AND TYPE = #{type}
+			</if>
+			<if test="null != status">
+				AND STATUS = #{status}
+			</if>
+			<if test="null != dateCreatedStart and '' != dateCreatedStart ">
+				AND date_created &gt;= #{dateCreatedStart}
+			</if>
+			<if test="null != dateCreatedEnd and '' != dateCreatedEnd">
+				AND date_created &lt;= #{dateCreatedEnd}
+			</if>
+		</where>
+	</select>
+
+	<update id="update" parameterMap="tUserProposal">
+		UPDATE t_user_proposal
+		<set>
+			<trim suffixOverrides=",">
+				<if test="null != status">
+					STATUS = #{status},
+				</if>
+				<if test="null != result and '' != result">
+					result = #{result},
+				</if>
+				<if test="null != personHandlingNo and '' != personHandlingNo">
+					person_handling_no = #{personHandlingNo},
+				</if>
+				<if test="null != personHandling and '' != personHandling">
+					person_handling = #{personHandling},
+				</if>
+				<if test="null != dateHandling">
+					date_handling = #{dateHandling},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != id">
+				id = #{id}
+			</if>
+		</where>
+	</update>
+</mapper>

@@ -1,0 +1,759 @@
+package com.xmniao.xmn.core.live_anchor.controller;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.xmniao.xmn.core.base.BaseController;
+import com.xmniao.xmn.core.base.Pageable;
+import com.xmniao.xmn.core.base.Resultable;
+import com.xmniao.xmn.core.live_anchor.constant.LiveConstant;
+import com.xmniao.xmn.core.live_anchor.entity.BLiver;
+import com.xmniao.xmn.core.live_anchor.entity.LiveRecordAddBatchBean;
+import com.xmniao.xmn.core.live_anchor.entity.TFansCouponAnchorRef;
+import com.xmniao.xmn.core.live_anchor.entity.TFansCouponIssueRef;
+import com.xmniao.xmn.core.live_anchor.entity.TLiveCoupon;
+import com.xmniao.xmn.core.live_anchor.entity.TLiveRecord;
+import com.xmniao.xmn.core.live_anchor.entity.TLiveRecordBanner;
+import com.xmniao.xmn.core.live_anchor.entity.TLiveRecordTagConf;
+import com.xmniao.xmn.core.live_anchor.service.LiveRecordAddBatchService;
+import com.xmniao.xmn.core.live_anchor.service.TFansCouponAnchorRefService;
+import com.xmniao.xmn.core.live_anchor.service.TFansCouponIssueRefService;
+import com.xmniao.xmn.core.live_anchor.service.TLiveAnchorService;
+import com.xmniao.xmn.core.live_anchor.service.TLiveCouponService;
+import com.xmniao.xmn.core.live_anchor.service.TLiveRecordService;
+import com.xmniao.xmn.core.util.PageConstant;
+import com.xmniao.xmn.core.util.handler.annotation.RequestLogging;
+import com.xmniao.xmn.core.util.handler.annotation.RequestToken;
+
+/**
+ * 项目名称：XmnWeb_LVB
+ * 
+ * 类名称：LiveRecordController
+ * 
+ * 类描述：通告Controller
+ * 
+ * 创建人： huang'tao
+ * 
+ * 创建时间：2016-8-6下午4:07:43
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司
+ */
+@RequestLogging(name = "通告管理")
+@Controller
+@RequestMapping(value = "liveRecord/manage")
+public class LiveRecordController extends BaseController {
+
+	private final String targetUrl="liveRecord/manage/init.jhtml";//编辑后跳转URL
+
+	/**
+	 * 注入通告服务
+	 */
+	@Autowired
+	private TLiveRecordService liveRecordService;
+	
+	/**
+	 * 注入直播券服务
+	 */
+	@Autowired
+	private TLiveCouponService liveCouponService;
+	
+	/**
+	 * 注入粉丝券服务
+	 */
+	@Autowired
+	private TFansCouponIssueRefService fansCouponService;
+	
+	/**
+	 * 注入主播服务
+	 */
+	@Autowired
+	private TLiveAnchorService anchorService;
+	
+	/**
+	 * 注入直播粉丝券发放配置服务
+	 */
+	@Autowired
+	private TFansCouponAnchorRefService couponAnchorRefService;
+	
+	/**
+	 * 注入批量添加通告Service
+	 */
+	@Autowired
+	private LiveRecordAddBatchService liveRecordAddBatchService;
+	
+
+	/**
+	 * 通告管理列表初始页面
+	 * 
+	 * @author huang'tao
+	 * @date 2015年8月12日 下午4:34:01
+	 * @return
+	 */
+	@RequestMapping(value = "init")
+	public String init(BLiver liver,@RequestParam(value="currentMonth",required=false) String currentMonth, Model model) {
+		model.addAttribute("liver", liver);
+		model.addAttribute("currentMonth", currentMonth);//统计当月数据
+		return "live_anchor/recordManage";
+	}
+
+	/**
+	 * 通告管理列表
+	 * 
+	 * @author huang'tao
+	 * @date 2015年8月12日 下午4:34:01
+	 * @return
+	 */
+	@RequestMapping(value = "init/list")
+	@ResponseBody
+	public Object initList(TLiveRecord liveRecord) {
+		Pageable<TLiveRecord> pageable = new Pageable<TLiveRecord>(liveRecord);
+		liveRecordService.getListPage(liveRecord, pageable);
+		liveRecordService.setZhiboDurationInfo(liveRecord,pageable);//设置标题直播时长信息
+		return pageable;
+	}
+
+	/**
+	 * 通告管理列表
+	 * 
+	 * @author huang'tao
+	 * @date 2015年8月12日 下午4:34:01
+	 * @return
+	 */
+	@RequestMapping(value = "init/detail")
+	@ResponseBody
+	public Object initDetail(TLiveRecord liveRecord) {
+		Resultable resultable = new Resultable(true, "查询成功");
+		resultable.setData(liveRecordService.getObject((long)liveRecord.getId()));
+		return resultable;
+	}
+	/**
+	 * 主播时长列表页面初始化
+	 * 
+	 * @author huang'tao
+	 * @date 2015年8月12日 下午4:34:01
+	 * @return
+	 */
+	@RequestMapping(value = "liveTimeInit")
+	public String liveTimeInit(BLiver liver,@RequestParam(value="currentMonth",required=false) String currentMonth, Model model) {
+		model.addAttribute("liver", liver);
+		model.addAttribute("currentMonth", currentMonth);
+		return "live_anchor/liveTimeInit";
+	}
+
+	/**
+	 * 添加通告页面初始化
+	 * 
+	 * @author huang'tao
+	 * @date 2015年8月12日 下午4:34:01
+	 * @return
+	 */
+	@RequestMapping(value = "add/init")
+	@RequestToken(createToken=true,tokenName="addToken")
+	public String addInit(TLiveRecord liveRecord, Model model) {
+		model.addAttribute("targetUrl", targetUrl);
+		return "live_anchor/recordEdit";
+	}
+
+	/**
+	 * 添加通告信息(此方法已作废)
+	 * 
+	 * @author huang'tao
+	 * @date 2015年8月12日 下午4:34:01
+	 * @return
+	 */
+	@RequestMapping(value = "add")
+	@RequestToken(removeToken=true,tokenName="addToken")
+	@ResponseBody
+	public Resultable add(TLiveRecord liveRecord) {
+		Resultable result = new Resultable();
+		try {
+			// 设置主播头像，房间号，商家城市名称等信息
+			liveRecordService.setAnchorAndSellerInfo(liveRecord);
+
+			liveRecord.setCreateTime(new Date());
+			liveRecord.setUpdateTime(new Date());
+			liveRecordService.add(liveRecord);
+			liveRecordService.syncTagInfo(liveRecord);
+			liveRecordService.addBannerInfoFromPicUrls(liveRecord);
+			result.setSuccess(true);
+			result.setMsg("添加成功!");
+		} catch (Exception e) {
+			result.setSuccess(false);
+			result.setMsg("添加失败!");
+			e.printStackTrace();
+			this.log.error(e.getMessage(), e);
+		}
+		return result;
+	}
+
+	/**
+	 * 
+	 * 方法描述：删除通告信息 创建人： huang'tao 创建时间：2016-8-8下午6:26:35
+	 * 
+	 * @param liveAnchor
+	 * @return
+	 */
+	@RequestMapping(value = "delete")
+	@ResponseBody
+	public Resultable delete(TLiveRecord liveRecord) {
+		Resultable result = new Resultable();
+		try {
+			int count = liveRecordService.deleteById(liveRecord.getId());
+			// liveRecordService.updateSequenceNo(liveRecord);
+			if (count > 0) {
+				result.setMsg("删除成功!");
+				result.setSuccess(true);
+			} else {
+				result.setMsg("删除失败!");
+				result.setSuccess(false);
+			}
+		} catch (Exception e) {
+			result.setMsg("删除失败!");
+			result.setSuccess(false);
+			e.printStackTrace();
+			this.log.error(e.getMessage(), e);
+		}
+		return result;
+	}
+
+	/**
+	 * 通告修改页面初始化
+	 * 
+	 * @author huang'tao
+	 * @date 2015年8月12日 下午4:34:01
+	 * @return
+	 */
+	@RequestMapping(value = "update/init")
+	public String updateInit(TLiveRecord liveRecord, Model model) {
+		try {
+			Integer recordId = liveRecord.getId();
+			String appointAnchor = liveRecord.getAppointAnchor();
+			TLiveRecord liveRecordInfo = liveRecordService.getObject(recordId.longValue());
+			Integer zhiboType = liveRecordInfo.getZhiboType();
+			if("Y".equals(appointAnchor) && zhiboType!=null && zhiboType.intValue()==-1){
+				liveRecordInfo.setZhiboType(0);//指派主播，设置通告为预告
+				model.addAttribute("appointAnchor", appointAnchor);
+			}
+			//加载轮播图信息
+			TLiveRecordBanner bannerRequest = new TLiveRecordBanner();
+			bannerRequest.setRecordId(recordId);
+			List<TLiveRecordBanner> bannerList = liveRecordService.getBannerList(bannerRequest);
+			liveRecordInfo.setBannerList(bannerList);
+			//加载标签信息
+			TLiveRecordTagConf recordTagConf=new TLiveRecordTagConf();
+			recordTagConf.setRecordId(recordId);
+			List<TLiveRecordTagConf> recordTagConfList=liveRecordService.getRecordTagConfList(recordTagConf);
+			liveRecordService.setTagIds(liveRecordInfo,recordTagConfList);
+			//加载粉丝券信息 
+			TFansCouponAnchorRef couponAnchorRefParam=new TFansCouponAnchorRef();
+			couponAnchorRefParam.setRecordId(recordId);
+			TFansCouponAnchorRef couponAnchor= couponAnchorRefService.selectCouponAnchorRef(couponAnchorRefParam);
+			//加载配置机器人信息
+			liveRecordService.loadRobotSetInfo(liveRecordInfo);
+			
+			liveRecordInfo.setOperationType("update");
+			model.addAttribute("liveRecord",liveRecordInfo);
+			model.addAttribute("recordTagConfList",recordTagConfList);
+			model.addAttribute("couponAnchor",couponAnchor);
+			model.addAttribute("targetUrl", targetUrl);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "live_anchor/recordEdit";
+	}
+
+	/**
+	 * 
+	 * 方法描述：
+	 * 更新直播信息 (update)
+	 * 取消预告(setAdvance )
+	 * 创建人： huang'tao 
+	 * 创建时间：2016-8-8上午11:13:04
+	 * 
+	 * @param liveAnchor
+	 * @return
+	 */
+	@RequestMapping(value = { "update", "setAdvance" })
+	@ResponseBody
+	public Resultable update(TLiveRecord liveRecord) {
+		Resultable result = new Resultable();
+		try {
+			// 设置主播头像，房间号，商家城市名称等信息
+			liveRecordService.setAnchorAndSellerInfo(liveRecord);
+			
+			String operationType = liveRecord.getOperationType();
+			if("update".equals(operationType)){
+				liveRecordService.syncBannerInfo(liveRecord);
+				liveRecordService.syncCouponInfo(liveRecord);
+				liveRecordService.syncTagInfo(liveRecord);
+				liveRecordService.syncRobotSetInfo(liveRecord);
+			}
+			
+			int count = liveRecordService.updateLiveRecord(liveRecord);
+			if (count > 0) {
+				result.setMsg("更新成功!");
+				result.setSuccess(true);
+			} else if (count == 0) {
+				result.setMsg("直播计划开始时间已过!");
+				result.setSuccess(false);
+			} else {
+				result.setMsg("更新失败!");
+				result.setSuccess(false);
+			}
+		} catch (Exception e) {
+			result.setMsg("更新失败!");
+			result.setSuccess(false);
+			e.printStackTrace();
+			this.log.error(e.getMessage(), e);
+		}
+		return result;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：
+	 * 取消回放
+	 * 创建人： huang'tao 
+	 * 创建时间：2016-8-8上午11:13:04
+	 * 
+	 * @param liveAnchor
+	 * @return
+	 */
+	@RequestMapping(value = "update/cancelPlayBack")
+	@ResponseBody
+	public Resultable cancelPlayBack(TLiveRecord liveRecord) {
+		Resultable result = new Resultable();
+		try {
+			liveRecordService.update(liveRecord);
+			result.setMsg("更新成功!");
+			result.setSuccess(true);
+		} catch (Exception e) {
+			result.setMsg("更新失败!");
+			result.setSuccess(false);
+			e.printStackTrace();
+			this.log.error(e.getMessage(), e);
+		}
+		return result;
+	}
+	
+
+	/**
+	 * 
+	 * 方法描述：跳转到预告详情(直播券设置)页面 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2016-11-1下午3:30:00 <br/>
+	 * @param liveRecord
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value="setAdvance/advanceDetail")
+	public String advanceDetail(TLiveRecord liveRecord,Model model){
+		// 加载直播券信息
+		Integer recordId = liveRecord.getId();
+		if(recordId!=null){
+			TLiveRecord recordBean = liveRecordService.getObject(Long.valueOf(recordId));
+			Integer anchorId = recordBean.getAnchorId();
+			BLiver anchor = anchorService.selectByPrimaryKey(anchorId);
+			
+			TFansCouponAnchorRef couponAnchorRefParam=new TFansCouponAnchorRef();
+			couponAnchorRefParam.setRecordId(recordId);
+			TFansCouponAnchorRef couponAnchor= couponAnchorRefService.selectCouponAnchorRef(couponAnchorRefParam);
+			
+			model.addAttribute("recordBean", recordBean);
+			model.addAttribute("uid", anchor.getUid());
+			model.addAttribute("couponAnchor", couponAnchor);
+		}
+		return "live_anchor/advanceDetail";
+	}
+	
+	/**
+	 * 
+	 * 方法描述：初始化直播券下拉框
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-10下午3:45:24
+	 * @param liveCoupon
+	 * @return
+	 */
+	@RequestMapping(value = "setAdvance/initLiveCoupon",method=RequestMethod.POST)
+	@ResponseBody
+	public Object initLiveCoupon(TLiveCoupon liveCoupon) {
+		Pageable<TLiveCoupon> pageable = new Pageable<TLiveCoupon>(liveCoupon);
+		liveCoupon.setCtype(LiveConstant.COUPONTYPE.COUPON);
+		liveCoupon.setStatus(1);//状态 1.上架 2.下架 3.售罄
+		List<TLiveCoupon> liveAnchorList = liveCouponService.getLiveCoupon(liveCoupon);
+		pageable.setContent(liveAnchorList);
+		return pageable;
+	}
+
+	/**
+	 * 
+	 * 方法描述：获取直播券信息 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2016-11-1下午9:18:28 <br/>
+	 * @param liveCoupon
+	 * @return
+	 */
+	@RequestMapping(value = "setAdvance/getLiveCouponInfoById")
+	@ResponseBody
+	public Object getLiveCouponInfoById(TLiveCoupon liveCoupon) {
+		Integer cid = liveCoupon.getCid();
+		TLiveCoupon coupon = new TLiveCoupon();
+		if(cid!=null){
+			coupon = liveCouponService.selectByPrimaryKey(cid);
+			List<TFansCouponIssueRef> voucherList = fansCouponService.getVoucherList(liveCoupon);
+			if(voucherList!=null && voucherList.size()>0){
+				coupon.setVoucherList(voucherList);
+			}
+		}
+		return coupon;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：添加预告粉丝券配置及设为预告 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2016-11-2下午3:03:21 <br/>
+	 * @return
+	 */
+	@RequestMapping(value = "setAdvance/addAnchorConpon")
+	@ResponseBody
+	public Resultable addAnchorCoupon(TFansCouponAnchorRef anchorCoupon){
+		Resultable result=new Resultable();
+		try {
+			result=liveRecordService.saveAdvanceInfo(anchorCoupon);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：更新预告粉丝券配置及设为预告 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2016-11-2下午3:03:21 <br/>
+	 * @return
+	 */
+	@RequestMapping(value = "setAdvance/updateAnchorConpon")
+	@ResponseBody
+	public Resultable updateAnchorConpon(TFansCouponAnchorRef anchorCoupon){
+		Resultable result =new Resultable();
+		result=liveRecordService.updateAdvanceInfo(anchorCoupon);
+		return result;
+	}
+	
+	@RequestMapping(value = { "upOrDown" })
+	@ResponseBody
+	public Resultable upOrDown(TLiveRecord liveRecordRequest) {
+		Resultable result = new Resultable();
+		TLiveRecord targetRecord = new TLiveRecord();// 目标记录,将A移动到B,则B为目标记录
+		TLiveRecord liveRecord = liveRecordService.getObject(liveRecordRequest
+				.getId().longValue());// 操作记录
+		int offset = 0;// 偏移量,1目标记录下移,-1目标记录上移
+		int count = 0;// 受影响的记录数
+		try {
+			String operationType = liveRecordRequest.getOperationType();
+			Integer sequenceNo = liveRecord.getSequenceNo();// 发生上移(下移)操作记录的序号
+			Integer maxSequnceNo = liveRecordService.getMaxSequnceNo();// 当前通告最大序号
+			if ("up".equals(operationType)) {
+				if (sequenceNo == 1) {
+					result.setSuccess(false);
+					result.setMsg("当前序号最小,不可上移");
+				} else {
+					liveRecord.setSequenceNo(sequenceNo - 1);
+					targetRecord.setSequenceNo(sequenceNo - 1);
+					offset = 1;
+					targetRecord.setOffset(offset);
+					liveRecordService.updateTargetSequenceNo(targetRecord);// 目标记录下移
+					count = liveRecordService.update(liveRecord);// 操作记录上移
+				}
+			} else if ("down".equals(operationType)) {
+				if (sequenceNo == maxSequnceNo) {
+					result.setSuccess(false);
+					result.setMsg("当前序号最大,不可下移");
+				} else {
+					liveRecord.setSequenceNo(sequenceNo + 1);
+					targetRecord.setSequenceNo(sequenceNo + 1);
+					offset = -1;
+					targetRecord.setOffset(offset);
+					liveRecordService.updateTargetSequenceNo(targetRecord);// 目标记录上移
+					count = liveRecordService.update(liveRecord);// 操作记录下移
+				}
+
+			}
+			if (count > 0) {
+				result.setMsg("操作成功!");
+				result.setSuccess(true);
+			}
+		} catch (Exception e) {
+			result.setMsg("操作失败!");
+			result.setSuccess(false);
+			e.printStackTrace();
+			this.log.error(e.getMessage(), e);
+		}
+		return result;
+	}
+
+	/**
+	 * 
+	 * 方法描述：导出通告信息 创建人： huang'tao 创建时间：2016-8-8下午2:57:30
+	 */
+	@RequestMapping(value = "export")
+	public void export(TLiveRecord record, HttpServletRequest request,
+			HttpServletResponse response) {
+		record.setOrder(PageConstant.NOT_ORDER);
+		record.setLimit(PageConstant.PAGE_LIMIT_NO);
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("list", liveRecordService.getList(record));
+		doExport(request, response, "live_anchor/liveRecord.xls", params);
+
+	}
+	
+	
+	/**
+	 * 
+	 * 方法描述：初始化通告下拉框
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-10下午3:45:24
+	 * @param liveRecord
+	 * @return
+	 */
+	@RequestMapping(value = "initRecordId",method=RequestMethod.POST)
+	@ResponseBody
+	public Object initAnchorId(TLiveRecord liveRecord) {
+		Pageable<TLiveRecord> pageable = new Pageable<TLiveRecord>(liveRecord);
+		liveRecord.setZhiboTypeParam("-1,0,1");//-1初始 0 预告 1 正在直播
+		List<TLiveRecord> liveRecordList = liveRecordService.getLiveRecordList(liveRecord);
+		pageable.setContent(liveRecordList);
+		return pageable;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：跳转到批量新增通告页面 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-2-23上午10:10:53 <br/>
+	 * @param liveRecord
+	 * @return
+	 */
+	@RequestMapping(value="addBatch/init")
+	@RequestToken(createToken=true,tokenName="addBatchToken")
+	public String addBatchInit(TLiveRecord liveRecord){
+		return "live_anchor/addBatchRecord";
+	}
+	
+	
+	/**
+	 * 
+	 * 方法描述：批量新增通告 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-2-23上午10:10:53 <br/>
+	 * @param liveRecord
+	 * @return
+	 */
+	@RequestMapping(value="addBatch")
+	@RequestToken(removeToken=true,tokenName="addBatchToken")
+	@ResponseBody
+	public Resultable addBatch(LiveRecordAddBatchBean liveRecordAddBatch){
+		Resultable result=new Resultable();
+		try {
+			liveRecordAddBatchService.addBatchInfo(liveRecordAddBatch);
+			result.setSuccess(true);
+			result.setMsg("添加成功!");
+		} catch (Exception e) {
+			e.printStackTrace();
+			this.log.error("批量新增通告失败:"+e.getMessage(), e);
+			result.setSuccess(false);
+			result.setMsg("添加失败!");
+		}
+		
+		return result;
+	}
+	
+	
+	/**
+	 * 
+	 * 方法描述：跳转到新增接单通告页面 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-2-23上午10:10:53 <br/>
+	 * @param liveRecord
+	 * @return
+	 */
+	@RequestMapping(value="addOrderRecord/init")
+	@RequestToken(createToken=true,tokenName="addOrderRecordToken")
+	public String addOrderRecordInit(TLiveRecord liveRecord,Model model){
+		model.addAttribute("targetUrl", targetUrl);
+		return "live_anchor/orderRecordEdit";
+	}
+	
+	/**
+	 * 
+	 * 方法描述：新增接单通告信息 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-2-23上午10:10:53 <br/>
+	 * @param liveRecord
+	 * @return
+	 */
+	@RequestMapping(value="addOrderRecord")
+	@RequestToken(removeToken=true,tokenName="addOrderRecordToken")
+	@ResponseBody
+	public Resultable addOrderRecord(TLiveRecord liveRecord){
+		this.log.info("输出通告信息=============>>"+liveRecord.toString());
+		Resultable result= new Resultable();
+		try {
+			liveRecordAddBatchService.addOrderRecordBatch(liveRecord);
+			result.setSuccess(true);
+			result.setMsg("保存成功!");
+		} catch (Exception e) {
+			this.log.error("新增接单通告信息失败："+e.getMessage());
+			result.setSuccess(false);
+			result.setMsg("保存失败!");
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：批量更新通告 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-3-13下午12:03:48 <br/>
+	 * @param liveRecord
+	 * @return
+	 */
+	@RequestMapping(value="updateZhiboTypeBatch")
+	@ResponseBody
+	public Resultable updateZhiboTypeBatch(TLiveRecord liveRecord){
+		Resultable result=new Resultable();
+		try {
+			liveRecordAddBatchService.updateBatch(liveRecord);
+			result.setSuccess(true);
+			result.setMsg("操作成功!");
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setSuccess(false);
+			result.setMsg("操作失败!");
+			this.log.error("批量更新通告失败："+e.getMessage(), e);
+		}
+		return result;
+	}
+
+	/**
+	 * 
+	 * 方法描述：跳转到批量修改通告基础信息页面 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-1-13下午5:57:47 <br/>
+	 * @return
+	 */
+	@RequestMapping(value="updateBaseInfoBatch/init")
+	@RequestToken(createToken=true,tokenName="updateBaseInfoBatchToken")
+	public String updateBatchRatioInit(@RequestParam("ids") String ids,Model model){
+		model.addAttribute("ids", ids);
+		return "live_anchor/updateBaseInfoBatch";
+	}
+	
+	
+	/**
+	 * 
+	 * 方法描述：批量修改通告基础信息 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-1-13下午6:13:18 <br/>
+	 * @param liver
+	 * @return
+	 */
+	@RequestMapping(value="updateBaseInfoBatch")
+	@RequestToken(removeToken=true,tokenName="updateBaseInfoBatchToken")
+	@ResponseBody
+	public Object updateBatchRatio(TLiveRecord liveRecord){
+		Resultable result=new Resultable();
+		try {
+			liveRecordAddBatchService.updateBatch(liveRecord);
+			result.setSuccess(true);
+			result.setMsg("操作成功!");
+		} catch (Exception e) {
+			this.log.error(e.getMessage(),e);
+			result.setSuccess(false);
+			result.setMsg("操作失败!");
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：批量删除通告 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-3-14上午11:27:34 <br/>
+	 * @param ids
+	 * @return
+	 */
+	@RequestMapping(value="deleteBatch")
+	@ResponseBody
+	public Resultable deleteBatch(@RequestParam(value="ids",required=true)String ids){
+		Resultable result=new Resultable();
+		try {
+			if(StringUtils.isNotBlank(ids)){
+				liveRecordAddBatchService.deleteBatch(ids.split(","));
+				result.setSuccess(true);
+				result.setMsg("操作成功");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setSuccess(false);
+			result.setMsg("操作失败");
+			this.log.error("批量删除通告失败 :"+e.getMessage(), e);
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：合并自定义通告 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-3-14上午11:27:34 <br/>
+	 * @param ids
+	 * @return
+	 */
+	@RequestMapping(value="mergeRecord")
+	@ResponseBody
+	public Resultable mergeRecord(TLiveRecord liveRecord){
+		Resultable result=new Resultable();
+		try {
+			String ids = liveRecord.getIds();
+			if(StringUtils.isNotBlank(ids)){
+				result=liveRecordService.validateGivedGift(ids);
+				if(!result.getSuccess()){
+					return result;
+				}
+			}
+			
+			if(StringUtils.isNotBlank(ids)){
+				liveRecordService.mergeRecord(liveRecord);
+			}
+			result.setSuccess(true);
+			result.setMsg("操作成功!");
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setSuccess(false);
+			result.setMsg("操作失败!");
+			this.log.error("合并自定义通告异常："+e.getMessage(), e);
+		}
+		return result;
+		
+	}
+}

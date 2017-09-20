@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.fresh.dao.FreshWordDao">
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.fresh.entity.FreshWord">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="userid" jdbcType="BIGINT" property="userid" />
+    <result column="word" jdbcType="VARCHAR" property="word" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="record" jdbcType="INTEGER" property="record" />
+    <result column="default_word" jdbcType="VARCHAR" property="defaultWord" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="word_sum" jdbcType="BIGINT" property="wordSum" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, type, userid, word, default_word, create_time, update_time,sort,record
+  </sql>
+  <sql id="select_condition">
+  	 <if test="type != null">
+       and  type = #{type,jdbcType=INTEGER}
+      </if>
+      <if test="userid != null">
+       and  userid = #{userid,jdbcType=BIGINT}
+      </if>
+      <choose>
+      	<when test="likeType == 1 and word !=null and word != ''">
+      		and word like '%${word}%'
+      	</when>
+      	<when test="word != null and word != ''">
+      		and  word = #{word,jdbcType=VARCHAR}
+      	</when>
+      </choose>
+      <if test="defaultWord != null">
+       and default_word = #{defaultWord,jdbcType=VARCHAR}
+      </if>
+      <if test="createTime != null">
+       and create_time = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="updateTime != null">
+        and update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="id != null">
+         and id = #{id,jdbcType=BIGINT}
+      </if>
+  </sql>
+  <select id="getObject" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_fresh_word
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from t_fresh_word
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.fresh.entity.FreshWord">
+    insert into t_fresh_word (id, type, userid, 
+      word, default_word, create_time, 
+      update_time)
+    values (#{id,jdbcType=BIGINT}, #{type,jdbcType=INTEGER}, #{sort,jdbcType=INTEGER}, #{record,jdbcType=INTEGER}, #{userid,jdbcType=BIGINT}, 
+      #{word,jdbcType=VARCHAR}, #{defaultWord,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="add" parameterType="com.xmniao.xmn.core.fresh.entity.FreshWord">
+    insert into t_fresh_word
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="sort != null">
+        sort,
+      </if>
+      <if test="record != null">
+        record,
+      </if>
+      <if test="userid != null">
+        userid,
+      </if>
+      <if test="word != null">
+        word,
+      </if>
+      <if test="defaultWord != null">
+        default_word,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null">
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="record != null">
+        #{record,jdbcType=INTEGER},
+      </if>
+      <if test="userid != null">
+        #{userid,jdbcType=BIGINT},
+      </if>
+      <if test="word != null">
+        #{word,jdbcType=VARCHAR},
+      </if>
+      <if test="defaultWord != null">
+        #{defaultWord,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="update" parameterType="com.xmniao.xmn.core.fresh.entity.FreshWord">
+    update t_fresh_word
+    <set>
+      <if test="type != null">
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null">
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="record != null">
+        record = #{record,jdbcType=INTEGER},
+      </if>
+      <if test="userid != null">
+        userid = #{userid,jdbcType=BIGINT},
+      </if>
+      <if test="word != null">
+        word = #{word,jdbcType=VARCHAR},
+      </if>
+      <if test="defaultWord != null">
+        default_word = #{defaultWord,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="getList" resultMap="BaseResultMap">
+    select   <include refid="Base_Column_List" />,sum(record) as word_sum from  t_fresh_word where 1=1
+     	<include refid="select_condition"/>
+     	group by word  order by sort desc
+       <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+  </select>	
+  <select id="getPageList" resultMap="BaseResultMap">
+    select   <include refid="Base_Column_List" />,sum(record) as word_sum from  t_fresh_word where 1=1
+     	<include refid="select_condition"/>
+     	and type = 2 
+     	group by word  order by sort desc
+       <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+  </select>	
+  <select id="getMaxTenWord" resultMap="BaseResultMap">
+    select   <include refid="Base_Column_List" />,sum(record) as word_sum from  t_fresh_word where 1=1
+     	<include refid="select_condition"/>
+     	and type = 4
+     	group by word  order by sum(record) desc
+       <if test=" limit != -1 ">
+			LIMIT 0,10 	
+		</if>
+  </select>	
+  <select id="count" resultType="java.lang.Long">
+    SELECT count(distinct word) FROM `t_fresh_word`  where 1=1
+     <include refid="select_condition"/>
+     and type = 2
+  </select>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.fresh.entity.FreshWord">
+    update t_fresh_word
+    set type = #{type,jdbcType=INTEGER},
+      userid = #{userid,jdbcType=BIGINT},
+      word = #{word,jdbcType=VARCHAR},
+      default_word = #{defaultWord,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+</mapper>

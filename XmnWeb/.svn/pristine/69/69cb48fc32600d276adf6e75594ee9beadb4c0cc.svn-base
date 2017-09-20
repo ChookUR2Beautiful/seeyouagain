@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TLiveRechargeAndRedPacketDao" >
+
+  <!-- 直播充值查询条件 -->
+  <sql id="whereSQL1">
+  	<!-- isOnLine 0 线下 1 线上 -->
+  	<if test="isOnLine == 0 ">
+  		AND pay_type ='1000021'
+  	</if>
+  	<if test="isOnLine == 1 ">
+  		AND pay_type !='1000021'
+  	</if>
+  	<if test="startTime != null and startTime != ''">
+	  	 <![CDATA[
+	  		AND DATE_FORMAT(pay_time,'%Y-%m-%d') >=  DATE_FORMAT(#{startTime},'%Y-%m-%d')
+  		]]> 
+  	</if>
+  	<if test="endTime != null and endTime != ''">
+	  	<![CDATA[
+	  		AND DATE_FORMAT(pay_time,'%Y-%m-%d') <=  DATE_FORMAT(#{endTime},'%Y-%m-%d')
+  		]]> 
+  	</if>
+  	
+  </sql>
+
+  <!-- 直播红包查询条件 -->
+  <sql id="whereSQL2">
+  	<!-- 无人认领 -->
+  	<if test="countType == 0">
+  		and status ='0'
+  	</if>
+  	<!-- 有效可领取 -->
+  	<if test="countType == 1">
+  		and status in ('1','2')
+  	</if>
+  	<!-- 限制认领 -->
+  	<if test="countType == 4">
+  		and status ='4'
+  	</if>
+  	<if test="startTime != null and startTime != ''">
+	  	 <![CDATA[
+	  		and DATE_FORMAT(redpacket_rocord_date,'%Y-%m-%d') >= DATE_FORMAT(#{startTime},'%Y-%m-%d')
+  		]]> 
+  	</if>
+  	<if test="endTime != null and endTime != ''">
+	  	<![CDATA[
+	  		and DATE_FORMAT(redpacket_rocord_date,'%Y-%m-%d') <= DATE_FORMAT(#{endTime},'%Y-%m-%d')
+  		]]> 
+  	</if>
+  	
+  </sql>
+  
+  <!-- 统计充值信息 -->
+  <select id="getRechargeInfo" resultType="java.util.Map" parameterType="java.util.Map">
+  	SELECT
+		SUM(payment) AS payment,
+		COUNT(DISTINCT uid) AS people
+	FROM
+		t_live_pay_order
+	<where>
+		pay_state='1'
+		<include refid="whereSQL1"></include>
+	</where> 
+  
+  </select>
+  
+  
+  <!-- 根据单笔充值金额分组统计充值信息 -->
+  <select id="getRechargeGroupByPayment" resultType="com.xmniao.xmn.core.live_anchor.entity.LiveRequestBean" parameterType="com.xmniao.xmn.core.live_anchor.entity.LiveRequestBean">
+  	SELECT
+		payment,
+		SUM(payment) AS paymentSum,
+		COUNT(DISTINCT uid) AS people
+	FROM
+		t_live_pay_order
+	<where>
+		pay_state = '1'
+		<include refid="whereSQL1"></include>
+	</where>
+	GROUP BY payment
+	<if test="order != -1">
+		ORDER BY payment ASC
+	</if>
+	<if test="limit != -1">
+		LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  
+  </select>
+  
+  <!-- 根据单笔充值金额分组统计充值信息 -->
+  <select id="getRechargeGroupByPaymentCount" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.live_anchor.entity.LiveRequestBean">
+  	SELECT COUNT(1) FROM 
+	  	(SELECT
+			payment
+		FROM
+			t_live_pay_order
+		<where>
+			pay_state = '1'
+			<include refid="whereSQL1"></include>
+		</where>
+		GROUP BY payment) t
+  </select>
+  
+  
+  <!-- 统计红包信息 -->
+  <select id="getRedPacketInfo" resultType="java.util.Map" parameterType="java.util.Map">
+  	SELECT
+		SUM(ledger_amount) AS ledgerAmount,
+		SUM(real_ledger_amount) AS realLedgerAmount,
+		COUNT(id) AS redPacketNum
+	FROM
+		t_live_ledger_record
+	<where>
+		ledger_source = '3'
+		<include refid="whereSQL2"></include>
+	</where>
+		
+  </select>
+  
+  
+  
+</mapper>

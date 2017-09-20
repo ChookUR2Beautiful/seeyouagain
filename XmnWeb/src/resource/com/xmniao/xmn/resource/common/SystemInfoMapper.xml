@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.common.dao.SystemInfoDao">
+
+	<parameterMap type="SystemInfo" id="systemInfo" />
+	
+	<resultMap type="SystemInfo" id="systemInfoMap">
+		<result column="id" property="id" />
+		<result column="content" property="content" />
+		<result column="sdate" property="sdate" />
+		<result column="fdate" property="fdate" />
+		<result column="edate" property="edate" />
+		<result column="status" property="status" />
+		<result column="number" property="number" />
+		<result column="object" property="object" />
+	</resultMap>
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_system_info
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						content,
+						sdate,
+						fdate,
+						edate,
+						status,
+						number,
+						object,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.content},
+						 #{item.sdate},
+						 #{item.fdate},
+						 #{item.edate},
+						 #{item.status},
+						 #{item.number},
+						 #{item.object},
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" parameterMap="systemInfo" >
+		INSERT INTO t_system_info
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					id,
+				</if>
+			 	<if test=" null != content and '' != content ">
+					content,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+			 	<if test=" null != fdate">
+					fdate,
+				</if>
+			 	<if test=" null != edate">
+					edate,
+				</if>
+			 	<if test=" null != status">
+					status,
+				</if>
+			 	<if test=" null != number">
+					number,
+				</if>
+			 	<if test=" null != object and '' != object ">
+					object,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					 	#{id},
+				</if>
+			 	<if test=" null != content and '' != content ">
+					 	#{content},
+				</if>
+			 	<if test=" null != sdate">
+					 	#{sdate},
+				</if>
+			 	<if test=" null != fdate">
+					 	#{fdate},
+				</if>
+			 	<if test=" null != edate">
+					 	#{edate},
+				</if>
+			 	<if test=" null != status">
+					 	#{status},
+				</if>
+			 	<if test=" null != number">
+					 	#{number},
+				</if>
+			 	<if test=" null != object and '' != object ">
+					 	#{object},
+				</if>
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_system_info WHERE id IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterMap="systemInfo">
+		UPDATE t_system_info
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != id">
+					id = #{id},
+				</if>
+				<if test=" null != content and '' != content ">
+					content = #{content},
+				</if>
+				<if test=" null != sdate">
+					sdate = #{sdate},
+				</if>
+				<if test=" null != fdate">
+					fdate = #{fdate},
+				</if>
+				<if test=" null != edate">
+					edate = #{edate},
+				</if>
+				<if test=" null != status">
+					status = #{status},
+				</if>
+				<if test=" null != number">
+					number = #{number},
+				</if>
+				<if test=" null != object and '' != object ">
+					object = #{object},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != id and '' != id">
+				id = #{id}
+			</if>
+		</where>
+	</update>
+	
+	<select id="getList" resultMap="systemInfoMap" parameterMap="systemInfo">
+		SELECT * FROM t_system_info
+		<where>
+			1=1
+			<if test=" null != id">
+				AND id = #{id}
+			</if>
+			<if test=" null != content and '' != content ">
+				AND content LIKE '%${content}%'
+			</if>
+			<if test=" null != sdateStart and '' != sdateStart">
+				AND  sdate &gt;= #{sdateStart}
+			</if>
+			<if test=" null != sdateeEnd and '' != sdateeEnd">
+				AND  sdate &lt;= #{sdateeEnd}
+			</if>
+			<if test=" null != fdateStart and '' != fdateStart">
+				AND  fdate &gt;= #{fdateStart}
+			</if>
+			<if test=" null != fdateEnd and '' != fdateEnd">
+				AND  fdate &lt;= #{fdateEnd}
+			</if>
+			<if test=" null != edateStart and '' != edateStart">
+				AND  edate &gt;= #{edateStart}
+			</if>
+			<if test=" null != edateEnd and '' != edateEnd">
+				AND  edate &lt;= #{edateEnd}
+			</if>
+			<if test=" null != status">
+				AND status = #{status}
+			</if>
+			<if test=" null != number">
+				AND number = #{number}
+			</if>
+			<if test=" null != object and '' != object ">
+				AND object LIKE '%${object}%'
+			</if>
+		</where>
+			ORDER BY id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="systemInfo">
+		SELECT COUNT(*) FROM t_system_info
+		<where>
+			1=1
+			<if test=" null != id">
+				AND id = #{id}
+			</if>
+			<if test=" null != content and '' != content ">
+				AND content LIKE '%${content}%'
+			</if>
+			
+			<if test=" null != sdateStart and '' != sdateStart">
+				AND  sdate &gt;= #{sdateStart}
+			</if>
+			<if test=" null != sdateeEnd and '' != sdateeEnd">
+				AND  sdate &lt;= #{sdateeEnd}
+			</if>
+			<if test=" null != fdateStart and '' != fdateStart">
+				AND  fdate &gt;= #{fdateStart}
+			</if>
+			<if test=" null != fdateEnd and '' != fdateEnd">
+				AND  fdate &lt;= #{fdateEnd}
+			</if>
+			<if test=" null != edateStart and '' != edateStart">
+				AND  edate &gt;= #{edateStart}
+			</if>
+			<if test=" null != edateEnd and '' != edateEnd">
+				AND  edate &lt;= #{edateEnd}
+			</if>
+			
+			<if test=" null != status">
+				AND status = #{status}
+			</if>
+			<if test=" null != number">
+				AND number = #{number}
+			</if>
+			<if test=" null != object and '' != object ">
+				AND object LIKE '%${object}%'
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Integer">
+		SELECT Max(id) AS VALUE FROM t_system_info
+	</select>
+	
+	<select id="getObject" resultMap="systemInfoMap" parameterType="Long">
+		SELECT * FROM t_system_info WHERE id = #{0}
+	</select>
+	
+</mapper>

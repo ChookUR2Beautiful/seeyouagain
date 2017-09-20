@@ -1,0 +1,39 @@
+package com.xmniao.xmn.core.manor.dao;
+
+import java.util.List;
+
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.manor.entity.TManorInfo;
+import com.xmniao.xmn.core.util.proxy.annotation.DataSource;
+
+public interface ManorInfoDao extends BaseDao<TManorInfo>{
+	@DataSource("burs")
+    int deleteByPrimaryKey(Integer id);
+
+	@DataSource("burs")
+    int insert(TManorInfo record);
+
+	@DataSource("burs")
+    int insertSelective(TManorInfo record);
+
+	@DataSource("burs")
+    TManorInfo selectByPrimaryKey(Integer id);
+
+	@DataSource("burs")
+    int updateByPrimaryKeySelective(TManorInfo record);
+
+	@DataSource("burs")
+    int updateByPrimaryKey(TManorInfo record);
+    
+    
+	@DataSource("burs")
+	public List<TManorInfo> getManorMemberList(TManorInfo record);
+	
+	@DataSource("burs")
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+	public Long countManorMember(TManorInfo record);
+	
+}

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.business_statistics.dao.BusinessActionDao">
+
+	<parameterMap type="BusinessAction" id="businessAction" />
+	
+	<resultMap type="BusinessAction" id="businessactionMap">
+		<result column="censustime" property="censusDate" />
+		<result column="newseller" property="newSeller" />
+		<result column="startSeller" property="startSeller" />
+		<result column="startCount" property="startCount" />
+		<result column="useTime" property="useTime" />
+		<result column="ordertotal" property="tradingVolume" />
+		<result column="watertotal" property="tradingTotal" />
+		<result column="startCensusDate" property="startCensusDate" />
+		<result column="endCensusDate" property="endCensusDate" />
+	</resultMap>
+	
+	<select id="getList" resultMap="businessactionMap" parameterMap="businessAction">
+		SELECT 
+			IFNULL(censusDay.watertotal,0)AS watertotal,
+   			IFNULL(censusDay.ordertotal,0)AS ordertotal,
+  			IFNULL(newsellerDay.newseller,0)AS newseller,
+  			censusDay.censustime 
+		 FROM 
+			(
+				SELECT DATE_FORMAT(signdate,'%Y-%m-%d')AS newdate,COUNT(*)AS newseller FROM t_seller 
+					WHERE STATUS=3 
+					<if test=" null != startCensusDate">
+						AND DATE_FORMAT(signdate, '%Y-%m-%d')&gt;= DATE_FORMAT(#{startCensusDate},'%Y-%m-%d')
+					</if>
+					<if test=" null != endCensusDate">
+						AND DATE_FORMAT(signdate,'%Y-%m-%d')&lt;=  DATE_FORMAT(#{endCensusDate},'%Y-%m-%d')
+					</if>
+					GROUP BY DATE_FORMAT(signdate,'%Y-%m-%d')
+			)newsellerDay RIGHT JOIN
+		
+			(
+				SELECT SUM(water_total)AS watertotal,SUM(order_total)AS ordertotal,DATE_FORMAT( order_date,'%Y-%m-%d') AS censustime FROM t_seller_day_census 
+					WHERE 1=1
+					<if test=" null != startCensusDate">
+						AND DATE_FORMAT(order_date, '%Y-%m-%d')&gt;= DATE_FORMAT(#{startCensusDate},'%Y-%m-%d')
+					</if>
+					<if test=" null != endCensusDate">
+						AND DATE_FORMAT(order_date,'%Y-%m-%d')&lt;=  DATE_FORMAT(#{endCensusDate},'%Y-%m-%d')
+					</if>
+				
+				 GROUP BY DATE_FORMAT(order_date,'%Y-%m-%d')
+			)censusDay
+		
+			ON censusDay.censustime=newsellerDay.newdate ORDER BY censusDay.censustime DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="getCensusTotal" resultType="BusinessAction" parameterMap="businessAction">
+		SELECT
+			IFNULL(tradingTotal.watertotal,0)AS tradingTotal,
+   			IFNULL(tradingTotal.ordertotal,0)AS tradingVolume,
+  			IFNULL(newSellerTotal.newseller,0)AS newseller
+		FROM
+		  (SELECT  COUNT(*) AS newseller FROM t_seller  WHERE STATUS = 3 
+		  			<if test=" null != startCensusDate">
+						AND DATE_FORMAT(signdate, '%Y-%m-%d')&gt;= DATE_FORMAT(#{startCensusDate},'%Y-%m-%d')
+					</if>
+					<if test=" null != endCensusDate">
+						AND DATE_FORMAT(signdate,'%Y-%m-%d')&lt;=  DATE_FORMAT(#{endCensusDate},'%Y-%m-%d')
+					</if>
+		  
+		  )newSellerTotal,
+		  (SELECT SUM(water_total) AS watertotal,SUM(order_total) AS ordertotal FROM t_seller_day_census
+		  
+		  		WHERE 1=1
+					<if test=" null != startCensusDate">
+						AND DATE_FORMAT(order_date, '%Y-%m-%d')&gt;= DATE_FORMAT(#{startCensusDate},'%Y-%m-%d')
+					</if>
+					<if test=" null != endCensusDate">
+						AND DATE_FORMAT(order_date,'%Y-%m-%d')&lt;=  DATE_FORMAT(#{endCensusDate},'%Y-%m-%d')
+					</if>
+		  )tradingTotal
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="businessAction">
+		SELECT  COUNT(censusDay.censustime) FROM 
+			(
+				SELECT DATE_FORMAT(signdate,'%Y-%m-%d')AS newdate,COUNT(*)AS newseller FROM t_seller 
+					WHERE STATUS=3 
+					<if test=" null != startCensusDate">
+						AND DATE_FORMAT(signdate, '%Y-%m-%d')&gt;= DATE_FORMAT(#{startCensusDate},'%Y-%m-%d')
+					</if>
+					<if test=" null != endCensusDate">
+						AND DATE_FORMAT(signdate,'%Y-%m-%d')&lt;=  DATE_FORMAT(#{endCensusDate},'%Y-%m-%d')
+						
+					</if>
+					GROUP BY DATE_FORMAT(signdate,'%Y-%m-%d')
+			)newsellerDay RIGHT JOIN
+		
+			(
+				SELECT SUM(water_total)AS watertotal,SUM(order_total)AS ordertotal,DATE_FORMAT( order_date,'%Y-%m-%d') AS censustime FROM t_seller_day_census 
+					WHERE 1=1
+					<if test=" null != startCensusDate">
+						AND DATE_FORMAT(order_date, '%Y-%m-%d')&gt;= DATE_FORMAT(#{startCensusDate},'%Y-%m-%d')
+					</if>
+					<if test=" null != endCensusDate">
+						AND DATE_FORMAT(order_date,'%Y-%m-%d')&lt;=  DATE_FORMAT(#{endCensusDate},'%Y-%m-%d')
+						
+					</if>
+				 GROUP BY DATE_FORMAT(order_date,'%Y-%m-%d')
+			)censusDay 
+			ON censusDay.censustime=newsellerDay.newdate 
+	</select>
+	
+</mapper>

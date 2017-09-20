@@ -1,0 +1,311 @@
+package com.xmniao.xmn.core.fresh.entity;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+import org.apache.commons.lang.StringUtils;
+
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.xmniao.xmn.core.base.BaseEntity;
+import com.xmniao.xmn.core.util.DateUtil;
+
+/**
+ *@ClassName:TProductBill
+ *@Description:订单产品关系表实体
+ *@author hls
+ *@date:2016年4月6日上午9:26:55
+ */
+public class TProductBill extends BaseEntity{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8819420777061174557L;
+
+	private Integer id;//主键id
+	
+	private Integer codeId;//产品编号
+	
+	private String pname;//产品名称
+	
+	private Long bid;//订单编号
+	
+	private Double price;//商品金额
+	
+	private Integer goodsNum;//商品数量
+	
+	private Date rdate;//创建时间
+	private String rdateStr;//创建时间（用于页面显示）
+	
+	private Date udate;//更新时间
+	private String udateStr;//更新时间（用于页面显示）
+	
+	private String goodsName;//商品名称
+	
+	private String suttle;//商品净重
+	
+	private BigDecimal freight;//运费
+	private Long supplierId;//供应商id
+	private BigDecimal integral;//最高积分抵扣单价
+	private BigDecimal purchasePrice;//采购价
+	private String attrVal;//规格信息，json字符串
+	private String strAttrVal;//规格信息，用于显示
+	private Integer attrId;
+	private BigDecimal attrMount;//该规格对应的加价
+	private Integer stock;//该规格对应的库存
+	private Integer activityId; //活动Id
+	private String activityStr; //活动类型输出
+	private Integer wareNum;  //数量
+	private Integer type; //活动类型
+	private Double basePrice; //商品原价
+	
+	public Double getBasePrice() {
+		return basePrice;
+	}
+
+	public void setBasePrice(Double basePrice) {
+		this.basePrice = basePrice;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
+	public Integer getWareNum() {
+		return wareNum;
+	}
+
+	public void setWareNum(Integer wareNum) {
+		this.wareNum = wareNum;
+	}
+
+
+	public Integer getActivityId() {
+		return activityId;
+	}
+
+	public void setActivityId(Integer activityId) {
+		this.activityId = activityId;
+	}
+
+	public String getActivityStr() {
+		if(activityId==null){
+			return "采购";
+		}
+		if(type==null){
+			return "营销活动";
+		}
+		if(type==3){
+			return "秒杀活动";
+		}
+		return "";
+	}
+
+	public void setActivityStr(String activityStr) {
+		this.activityStr = activityStr;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Integer getCodeId() {
+		return codeId;
+	}
+
+	public void setCodeId(Integer codeId) {
+		this.codeId = codeId;
+	}
+
+	public String getPname() {
+		return pname;
+	}
+
+	public void setPname(String pname) {
+		this.pname = pname;
+	}
+
+	public Long getBid() {
+		return bid;
+	}
+
+	public void setBid(Long bid) {
+		this.bid = bid;
+	}
+
+	public Double getPrice() {
+		return price;
+	}
+
+	public void setPrice(Double price) {
+		this.price = price;
+	}
+
+	
+
+	public Integer getGoodsNum() {
+		return goodsNum;
+	}
+
+	public void setGoodsNum(Integer goodsNum) {
+		this.goodsNum = goodsNum;
+	}
+
+	public Date getRdate() {
+		return rdate;
+	}
+
+	public void setRdate(Date rdate) {
+		this.rdate = rdate;
+	}
+
+	public String getRdateStr() {
+		if(null!=rdate) return DateUtil.smartFormat(rdate);
+		return "--";
+	}
+
+	public void setRdateStr(String rdateStr) {
+		this.rdateStr = rdateStr;
+	}
+
+	public Date getUdate() {
+		return udate;
+	}
+
+	public void setUdate(Date udate) {
+		this.udate = udate;
+	}
+
+	public String getUdateStr() {
+		if(null!=udate) return DateUtil.smartFormat(udate);
+		return "--";
+	}
+
+	public void setUdateStr(String udateStr) {
+		this.udateStr = udateStr;
+	}
+
+	public String getGoodsName() {
+		return goodsName;
+	}
+
+	public void setGoodsName(String goodsName) {
+		this.goodsName = goodsName;
+	}
+
+	public String getSuttle() {
+		return suttle;
+	}
+
+	public void setSuttle(String suttle) {
+		this.suttle = suttle;
+	}
+
+	public BigDecimal getFreight() {
+		return freight;
+	}
+
+	public void setFreight(BigDecimal freight) {
+		this.freight = freight;
+	}
+
+	public Long getSupplierId() {
+		return supplierId;
+	}
+
+	public void setSupplierId(Long supplierId) {
+		this.supplierId = supplierId;
+	}
+
+	public BigDecimal getIntegral() {
+		return integral;
+	}
+
+	public void setIntegral(BigDecimal integral) {
+		this.integral = integral;
+	}
+
+	public BigDecimal getPurchasePrice() {
+		return purchasePrice;
+	}
+
+	public void setPurchasePrice(BigDecimal purchasePrice) {
+		this.purchasePrice = purchasePrice;
+	}
+
+	public String getAttrVal() {
+		return attrVal;
+	}
+
+	public void setAttrVal(String attrVal) {
+		this.attrVal = attrVal;
+	}
+
+	public Integer getAttrId() {
+		return attrId;
+	}
+
+	public void setAttrId(Integer attrId) {
+		this.attrId = attrId;
+	}
+
+	public BigDecimal getAttrMount() {
+		return attrMount;
+	}
+
+	public void setAttrMount(BigDecimal attrMount) {
+		this.attrMount = attrMount;
+	}
+
+	public Integer getStock() {
+		return stock;
+	}
+
+	public void setStock(Integer stock) {
+		this.stock = stock;
+	}
+
+	public String getStrAttrVal() {
+		if(StringUtils.isNotBlank(attrVal)){
+			JSONArray parseArray = JSONArray.parseArray(attrVal);
+			StringBuilder sb = new StringBuilder();
+			for (int i=0;i<parseArray.size();i++) {
+				if(i>0){
+					sb.append(",");
+				}
+				JSONObject object = (JSONObject)parseArray.get(i);
+				sb.append(object.get("property"));
+				sb.append("("+object.get("value")+")");
+			}
+			strAttrVal = sb.toString();
+		}
+		return strAttrVal;
+	}
+
+	public void setStrAttrVal(String strAttrVal) {
+		this.strAttrVal = strAttrVal;
+	}
+
+	@Override
+	public String toString() {
+		return "TProductBill [id=" + id + ", codeId=" + codeId + ", pname="
+				+ pname + ", bid=" + bid + ", price=" + price + ", goodsNum="
+				+ goodsNum + ", rdate=" + rdate + ", rdateStr=" + rdateStr
+				+ ", udate=" + udate + ", udateStr=" + udateStr
+				+ ", goodsName=" + goodsName + ", suttle=" + suttle
+				+ ", freight=" + freight + ", supplierId=" + supplierId
+				+ ", integral=" + integral + ", purchasePrice=" + purchasePrice
+				+ ", attrVal=" + attrVal + ", attrId=" + attrId
+				+ ", attrMount=" + attrMount + "]";
+	}
+	
+}

@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.BLiveFansRankDetailDao" >
+
+
+  <resultMap id="liveFansRankDetailMap" type="com.xmniao.xmn.core.live_anchor.entity.BLiveFansRankDetail" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="rank_id" property="rankId" jdbcType="INTEGER" />
+    <result column="effective_date" property="effectiveDate" jdbcType="TIMESTAMP" />
+    <result column="referrer_ratio" property="referrerRatio" jdbcType="INTEGER" />
+    <result column="parent_referrer_ratio" property="parentReferrerRatio" jdbcType="INTEGER" />
+    <result column="send_bean" property="sendBean" jdbcType="VARCHAR" />
+    <result column="referrer_reward" property="referrerReward" jdbcType="INTEGER" />
+    <result column="consume_ratio" property="consumeRatio" jdbcType="INTEGER" />
+    <result column="red_packet_type" property="redPacketType" jdbcType="INTEGER" />
+    <result column="private_red_packet_cash_ratio" property="privateRedPacketCashRatio" jdbcType="INTEGER" />
+    <result column="private_red_packet_coin_ratio" property="privateRedPacketCoinRatio" jdbcType="INTEGER" />
+    <result column="public_red_packet_cash_ratio" property="publicRedPacketCashRatio" jdbcType="INTEGER" />
+    <result column="public_red_packet_coin_ratio" property="publicRedPacketCoinRatio" jdbcType="INTEGER" />
+    <result column="object_oriented" property="objectOriented" jdbcType="INTEGER" />
+    <result column="conversion_rate" property="conversionRate" jdbcType="DECIMAL" />
+    <result column="referrer_ledger_type" property="referrerLedgerType" jdbcType="INTEGER" />
+  </resultMap>
+  
+  
+  <sql id="LiveFansRankDetail_column_list" >
+    id, rank_id, effective_date, referrer_ratio, parent_referrer_ratio, send_bean, referrer_reward, 
+    consume_ratio, red_packet_type, private_red_packet_cash_ratio, private_red_packet_coin_ratio, 
+    public_red_packet_cash_ratio, public_red_packet_coin_ratio, object_oriented,conversion_rate,
+    referrer_ledger_type
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test=" null != rankId and '' != rankId">
+  		AND rank_id =#{rankId}
+  	</if>
+  	<if test=" null != objectOriented and '' != objectOriented">
+  		AND object_oriented=#{objectOriented}
+  	</if>
+  
+  </sql>
+  
+  
+  <select id="selectById" resultMap="liveFansRankDetailMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="LiveFansRankDetail_column_list" />
+    from b_live_fans_rank_detail
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="getList" resultMap="liveFansRankDetailMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.BLiveFansRankDetail" >
+    SELECT
+		r.rank_name AS rankName,
+		d.*
+	FROM
+		b_live_fans_rank_detail d
+	LEFT JOIN b_live_fans_rank r ON d.rank_id = r.id
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+    ORDER BY
+	r.rank_no ASC,
+	d.effective_date DESC
+	<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <select id="count" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.live_anchor.entity.BLiveFansRankDetail" >
+    SELECT
+		count(d.id)
+	FROM
+		b_live_fans_rank_detail d
+	LEFT JOIN b_live_fans_rank r ON d.rank_id = r.id
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+  </select>
+  
+  
+  <delete id="deleteById" parameterType="java.lang.Integer" >
+    delete from b_live_fans_rank_detail
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  
+  
+  <insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.xmn.core.live_anchor.entity.BLiveFansRankDetail" >
+    insert into b_live_fans_rank_detail
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="rankId != null" >
+        rank_id,
+      </if>
+      <if test="effectiveDate != null" >
+        effective_date,
+      </if>
+      <if test="referrerRatio != null" >
+        referrer_ratio,
+      </if>
+      <if test="parentReferrerRatio != null" >
+        parent_referrer_ratio,
+      </if>
+      <if test="sendBean != null" >
+        send_bean,
+      </if>
+      <if test="referrerReward != null" >
+        referrer_reward,
+      </if>
+      <if test="consumeRatio != null" >
+        consume_ratio,
+      </if>
+      <if test="redPacketType != null" >
+        red_packet_type,
+      </if>
+      <if test="privateRedPacketCashRatio != null" >
+        private_red_packet_cash_ratio,
+      </if>
+      <if test="privateRedPacketCoinRatio != null" >
+        private_red_packet_coin_ratio,
+      </if>
+      <if test="publicRedPacketCashRatio != null" >
+        public_red_packet_cash_ratio,
+      </if>
+      <if test="publicRedPacketCoinRatio != null" >
+        public_red_packet_coin_ratio,
+      </if>
+      <if test="objectOriented != null" >
+        object_oriented,
+      </if>
+      <if test="conversionRate != null" >
+        conversion_rate,
+      </if>
+      <if test="referrerLedgerType != null" >
+        referrer_ledger_type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="rankId != null" >
+        #{rankId,jdbcType=INTEGER},
+      </if>
+      <if test="effectiveDate != null" >
+        #{effectiveDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="referrerRatio != null" >
+        #{referrerRatio,jdbcType=INTEGER},
+      </if>
+      <if test="parentReferrerRatio != null" >
+        #{parentReferrerRatio,jdbcType=INTEGER},
+      </if>
+      <if test="sendBean != null" >
+        #{sendBean,jdbcType=VARCHAR},
+      </if>
+      <if test="referrerReward != null" >
+        #{referrerReward,jdbcType=INTEGER},
+      </if>
+      <if test="consumeRatio != null" >
+        #{consumeRatio,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketType != null" >
+        #{redPacketType,jdbcType=INTEGER},
+      </if>
+      <if test="privateRedPacketCashRatio != null" >
+        #{privateRedPacketCashRatio,jdbcType=INTEGER},
+      </if>
+      <if test="privateRedPacketCoinRatio != null" >
+        #{privateRedPacketCoinRatio,jdbcType=INTEGER},
+      </if>
+      <if test="publicRedPacketCashRatio != null" >
+        #{publicRedPacketCashRatio,jdbcType=INTEGER},
+      </if>
+      <if test="publicRedPacketCoinRatio != null" >
+        #{publicRedPacketCoinRatio,jdbcType=INTEGER},
+      </if>
+      <if test="objectOriented != null" >
+        #{objectOriented,jdbcType=INTEGER},
+      </if>
+      <if test="conversionRate != null" >
+        #{conversionRate,jdbcType=DECIMAL},
+      </if>
+      <if test="referrerLedgerType != null" >
+        #{referrerLedgerType,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.live_anchor.entity.BLiveFansRankDetail" >
+    update b_live_fans_rank_detail
+    <set >
+      <if test="rankId != null" >
+        rank_id = #{rankId,jdbcType=INTEGER},
+      </if>
+      <if test="effectiveDate != null" >
+        effective_date = #{effectiveDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="referrerRatio != null" >
+        referrer_ratio = #{referrerRatio,jdbcType=INTEGER},
+      </if>
+      <if test="parentReferrerRatio != null" >
+        parent_referrer_ratio = #{parentReferrerRatio,jdbcType=INTEGER},
+      </if>
+      <if test="sendBean != null" >
+        send_bean = #{sendBean,jdbcType=VARCHAR},
+      </if>
+      <if test="referrerReward != null" >
+        referrer_reward = #{referrerReward,jdbcType=INTEGER},
+      </if>
+      <if test="consumeRatio != null" >
+        consume_ratio = #{consumeRatio,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketType != null" >
+        red_packet_type = #{redPacketType,jdbcType=INTEGER},
+      </if>
+      <if test="privateRedPacketCashRatio != null" >
+        private_red_packet_cash_ratio = #{privateRedPacketCashRatio,jdbcType=INTEGER},
+      </if>
+      <if test="privateRedPacketCoinRatio != null" >
+        private_red_packet_coin_ratio = #{privateRedPacketCoinRatio,jdbcType=INTEGER},
+      </if>
+      <if test="publicRedPacketCashRatio != null" >
+        public_red_packet_cash_ratio = #{publicRedPacketCashRatio,jdbcType=INTEGER},
+      </if>
+      <if test="publicRedPacketCoinRatio != null" >
+        public_red_packet_coin_ratio = #{publicRedPacketCoinRatio,jdbcType=INTEGER},
+      </if>
+      <if test="objectOriented != null" >
+        object_oriented = #{objectOriented,jdbcType=INTEGER},
+      </if>
+      <if test="conversionRate != null" >
+        conversion_rate=#{conversionRate,jdbcType=DECIMAL},
+      </if>
+      <if test="referrerLedgerType != null" >
+        referrer_ledger_type = #{referrerLedgerType,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  
+</mapper>

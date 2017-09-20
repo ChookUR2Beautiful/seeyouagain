@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.user_terminal.dao.TTopicImgDao">
+
+	<parameterMap type="TTopicImg" id="tTopicImg" />
+	
+	<resultMap type="TTopicImg" id="tTopicImgMap">
+		<result column="id" property="id" />
+		<result column="topic_id" property="topicId" />
+		<result column="img" property="img" />
+		
+	</resultMap>
+	
+	<insert id="add" parameterMap="tTopicImg" >
+		INSERT INTO t_xmn_topic_img
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					`id`,
+				</if>
+			 	<if test=" null != topicId ">
+					`topic_id`,
+				</if>
+			 	<if test=" null != img and '' != img ">
+					`img`,
+				</if>			 					
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					 	#{id},
+				</if>
+			 	<if test=" null != topicId">
+					 	#{topicId},
+				</if>
+			 	<if test=" null != img and '' != img ">
+					 	#{img},
+				</if>
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_xmn_topic_img WHERE id IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 删除话题相关图片 -->
+	<delete id="deleteTopicImg" parameterType="Object">
+		DELETE FROM t_xmn_topic_img WHERE `topic_id` IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterMap="tTopicImg">
+		UPDATE t_xmn_topic_img
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != id">
+					 	#{id},
+				</if>
+			 	<if test=" null != topicId">
+					 	#{topicId},
+				</if>
+			 	<if test=" null != img and '' != img ">
+					 	#{img},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != id and '' != id">
+				id = #{id}
+			</if>
+		</where>
+	</update>
+	
+	
+	<select id="getList" resultMap="tTopicImgMap" parameterMap="tTopicImg">
+		SELECT * FROM t_xmn_topic_img
+		<where>
+			1=1
+			<if test=" null != id">
+				AND `id` = #{id}
+			</if>
+			<if test=" null != topicId">
+				AND `topic_id` = #{topicId}
+			</if>			
+			<if test=" null != img and '' != img ">
+				AND `img` LIKE '%${img}%'
+			</if>
+		</where>
+			ORDER BY id DESC 
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<!-- 查询topicId查询话题的所有图片 -->
+	<select id="getTopicImgList" resultMap="tTopicImgMap" parameterType="Long">
+		SELECT * FROM t_xmn_topic_img 
+		 	WHERE `topic_id` = #{0}
+			ORDER BY id 
+		
+	</select>
+	
+	
+	<select id="count" resultType="Long" parameterMap="tTopicImg">
+		SELECT COUNT(*) FROM t_xmn_topic_img
+		<where>
+			1=1
+			<if test=" null != tid">
+				AND `id` = #{id}
+			</if>
+			<if test=" null != topicId">
+				AND `topic_id` = #{topicId}
+			</if>			
+			<if test=" null != img and '' != img ">
+				AND `img` LIKE '%${img}%'
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Integer">
+		SELECT Max(id) AS VALUE FROM t_xmn_topic_img
+	</select>
+	
+	<select id="getObject" resultMap="tTopicImgMap" parameterType="Long">
+		SELECT * FROM t_xmn_topic_img WHERE id = #{0}
+	</select>
+			
+</mapper>

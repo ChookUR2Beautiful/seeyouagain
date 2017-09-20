@@ -1,0 +1,81 @@
+package com.xmniao.xmn.core.live_anchor.dao;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.live_anchor.entity.TLiveRobotSet;
+import com.xmniao.xmn.core.util.proxy.annotation.DataSource;
+
+/**
+ * 
+ * 项目名称：XmnWeb_LVB
+ * 
+ * 类名称：TLiveRobotSetDao
+ *
+ * 类描述：机器人配置Dao
+ * 
+ * 创建人： huang'tao
+ * 
+ * 创建时间：2016-8-29上午9:50:38
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司
+ */
+public interface TLiveRobotSetDao extends BaseDao<TLiveRobotSet>{
+	
+	/**
+	 * 
+	 * 方法描述：删除机器人配置
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-29上午10:15:20
+	 * @param id
+	 * @return
+	 */
+	@DataSource(value = "master")
+    int deleteById(Integer id);
+
+	
+
+	/**
+	 * 
+	 * 方法描述：通过主键ID查询机器人配置
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-29上午10:19:55
+	 * @param id
+	 * @return
+	 */
+	@DataSource(value = "slave")
+    TLiveRobotSet selectById(Integer id);
+	
+	/**
+	 * 
+	 * 方法描述：查询机器人配置
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-29上午10:19:55
+	 * @param id
+	 * @return
+	 */
+	@DataSource(value = "slave")
+	TLiveRobotSet selectTheFirst();
+	
+	
+	/**
+	 * 
+	 * 方法描述：查询机器人配置
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-29上午10:19:55
+	 * @param id
+	 * @return
+	 */
+	@DataSource(value = "slave")
+	TLiveRobotSet selectByBean(TLiveRobotSet robotSet);
+
+
+
+	/**
+	 * 方法描述：根据通告ID删除机器人配置 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-7-24下午3:56:39 <br/>
+	 * @param recordId
+	 */
+	@DataSource(value = "slave")
+	void deleteByRecordId(Integer recordId);
+
+}

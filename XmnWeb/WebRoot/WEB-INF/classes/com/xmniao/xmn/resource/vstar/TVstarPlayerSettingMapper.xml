@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.vstar.dao.TVstarPlayerSettingDao" >
+
+  <resultMap id="VstarPlayerSettingMap" type="com.xmniao.xmn.core.vstar.entity.TVstarPlayerSetting" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="auto_pass_first" property="autoPassFirst" jdbcType="INTEGER" />
+    <result column="auto_pass_second" property="autoPassSecond" jdbcType="INTEGER" />
+    <result column="auto_recognition" property="autoRecognition" jdbcType="INTEGER" />
+    <result column="enroll_start_time" property="enrollStartTime" jdbcType="DATE" />
+    <result column="enroll_end_time" property="enrollEndTime" jdbcType="DATE" />
+    <result column="contest_start_time" property="contestStartTime" jdbcType="DATE" />
+    <result column="contest_end_time" property="contestEndTime" jdbcType="DATE" />
+    <result column="live_start_time" property="liveStartTime" jdbcType="VARCHAR" />
+    <result column="live_end_time" property="liveEndTime" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="vStarPlayerSetting_column_list" >
+    id, auto_pass_first, auto_pass_second, auto_recognition, enroll_start_time, enroll_end_time, 
+    contest_start_time, contest_end_time, live_start_time, live_end_time
+  </sql>
+  
+  <select id="getFirstObject" resultMap="VstarPlayerSettingMap">
+    select 
+    <include refid="vStarPlayerSetting_column_list" />
+    from t_vstar_player_setting
+    LIMIT 0,1
+  </select>
+
+  <insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarPlayerSetting" >
+    insert into t_vstar_player_setting
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="autoPassFirst != null" >
+        auto_pass_first,
+      </if>
+      <if test="autoPassSecond != null" >
+        auto_pass_second,
+      </if>
+      <if test="autoRecognition != null" >
+        auto_recognition,
+      </if>
+      <if test="enrollStartTime != null" >
+        enroll_start_time,
+      </if>
+      <if test="enrollEndTime != null" >
+        enroll_end_time,
+      </if>
+      <if test="contestStartTime != null" >
+        contest_start_time,
+      </if>
+      <if test="contestEndTime != null" >
+        contest_end_time,
+      </if>
+      <if test="liveStartTime != null" >
+        live_start_time,
+      </if>
+      <if test="liveEndTime != null" >
+        live_end_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="autoPassFirst != null" >
+        #{autoPassFirst,jdbcType=INTEGER},
+      </if>
+      <if test="autoPassSecond != null" >
+        #{autoPassSecond,jdbcType=INTEGER},
+      </if>
+      <if test="autoRecognition != null" >
+        #{autoRecognition,jdbcType=INTEGER},
+      </if>
+      <if test="enrollStartTime != null" >
+        #{enrollStartTime,jdbcType=DATE},
+      </if>
+      <if test="enrollEndTime != null" >
+        #{enrollEndTime,jdbcType=DATE},
+      </if>
+      <if test="contestStartTime != null" >
+        #{contestStartTime,jdbcType=DATE},
+      </if>
+      <if test="contestEndTime != null" >
+        #{contestEndTime,jdbcType=DATE},
+      </if>
+      <if test="liveStartTime != null" >
+        #{liveStartTime,jdbcType=VARCHAR},
+      </if>
+      <if test="liveEndTime != null" >
+        #{liveEndTime,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarPlayerSetting" >
+    update t_vstar_player_setting
+    <set >
+      <if test="autoPassFirst != null" >
+        auto_pass_first = #{autoPassFirst,jdbcType=INTEGER},
+      </if>
+      <if test="autoPassSecond != null" >
+        auto_pass_second = #{autoPassSecond,jdbcType=INTEGER},
+      </if>
+      <if test="autoRecognition != null" >
+        auto_recognition = #{autoRecognition,jdbcType=INTEGER},
+      </if>
+      <if test="enrollStartTime != null" >
+        enroll_start_time = #{enrollStartTime,jdbcType=DATE},
+      </if>
+      <if test="enrollEndTime != null" >
+        enroll_end_time = #{enrollEndTime,jdbcType=DATE},
+      </if>
+      <if test="contestStartTime != null" >
+        contest_start_time = #{contestStartTime,jdbcType=DATE},
+      </if>
+      <if test="contestEndTime != null" >
+        contest_end_time = #{contestEndTime,jdbcType=DATE},
+      </if>
+      <if test="liveStartTime != null" >
+        live_start_time = #{liveStartTime,jdbcType=VARCHAR},
+      </if>
+      <if test="liveEndTime != null" >
+        live_end_time = #{liveEndTime,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  
+</mapper>

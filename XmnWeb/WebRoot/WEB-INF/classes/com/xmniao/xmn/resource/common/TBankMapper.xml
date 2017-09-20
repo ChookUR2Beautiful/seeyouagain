@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.common.dao.TBankDao">
+
+	<parameterMap type="Tbank" id="tbank" />
+	
+	<resultMap type="Tbank" id="tradeMap">
+		<result column="id" property="id" />
+		<result column="bankname" property="bankname" />
+		<result column="abbrev" property="abbrev" />
+	</resultMap>
+	
+	<select id="getObject" resultMap="tradeMap">
+		SELECT * FROM t_bank_list
+	</select>
+	
+		<select id="getTBank" resultMap="tradeMap"  parameterMap="tbank">
+		SELECT * FROM t_bank_list t WHERE t.abbrev= #{abbrev}
+	</select>
+	
+</mapper>

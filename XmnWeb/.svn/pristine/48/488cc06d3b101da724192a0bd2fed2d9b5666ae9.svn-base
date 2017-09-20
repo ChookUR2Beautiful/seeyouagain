@@ -1,0 +1,402 @@
+package com.xmniao.xmn.core.live_anchor.entity;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+import com.xmniao.xmn.core.base.BaseEntity;
+
+
+/**
+ * 
+ * 
+ * 项目名称：XmnWeb_LIVE_170105
+ * 
+ * 类名称：BLiveFansRank
+ * 
+ * 类描述： 直播粉丝级别实体类
+ * 
+ * 创建人：  huang'tao
+ * 
+ * 创建时间：2016-12-19 下午5:41:42 
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司
+ */
+public class BLiveFansRank extends BaseEntity{
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 3077325476781679551L;
+
+	private Long id;//主键
+
+    private Long parentId;//父级ID
+
+    private String rankName;//级别名称
+    
+    private String recharges;//关联的充值套餐金额
+
+    private Long rewardLowest;//最低打赏鸟豆
+
+    private Long rewardHighest;//最高打赏鸟豆
+
+    private Integer referrerRatio;//直属推荐人充值分佣百分比
+
+    private Integer parentReferrerRatio;//直属推荐人上级充值分佣百分比
+    
+    private String referrerCoins;//推荐充值送鸟币概述
+
+    private String sendBean;//打赏送鸟币 ,默认001否 002是
+
+    private Integer referrerReward;//推荐奖励比例
+
+    private Integer consumeRatio;//鸟币消费抵消比例
+    
+    private Integer redPacketType;//红包返还资格：1、打赏后才可以获得红包；2、充值后即可获得红包；3、不可获得红包。默认1
+    
+    private BigDecimal redPacketLowest;//红包金额最低占比
+    
+    private BigDecimal redPacketMidLower;//红包金额中低占比
+    
+    private BigDecimal redPacketMidHigher;//红包金额中高占比
+    
+    private BigDecimal redPacketHighest;//红包金额最低占比
+    
+    private Integer rankNo;//粉丝级别,级别越高,值越大
+
+    private Date createTime;//创建时间
+
+    private Date updateTime;//更新时间
+    
+    private String picUrl;//图片地址
+    
+    private long rankDetailNum;//返还模式数量
+    
+    private Integer rankType;//等级类型 1 壕赚等级 2 V客等级
+    
+    private Integer filterVal;//过滤值
+
+    private Integer saasNumber;//获取SAAS资格
+    
+    private Integer anchorNumber;//获取主播资格
+    
+    private Integer uid ;//关联会员uid
+    
+    
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
+    }
+
+    public String getRankName() {
+        return rankName;
+    }
+
+    public void setRankName(String rankName) {
+        this.rankName = rankName == null ? null : rankName.trim();
+    }
+
+    /**
+	 * @return the recharges
+	 */
+	public String getRecharges() {
+		return recharges;
+	}
+
+	/**
+	 * @param recharges the recharges to set
+	 */
+	public void setRecharges(String recharges) {
+		this.recharges = recharges;
+	}
+
+	public Long getRewardLowest() {
+        return rewardLowest;
+    }
+
+    public void setRewardLowest(Long rewardLowest) {
+        this.rewardLowest = rewardLowest;
+    }
+
+    public Long getRewardHighest() {
+        return rewardHighest;
+    }
+
+    public void setRewardHighest(Long rewardHighest) {
+        this.rewardHighest = rewardHighest;
+    }
+
+    public Integer getReferrerRatio() {
+        return referrerRatio;
+    }
+
+    public void setReferrerRatio(Integer referrerRatio) {
+        this.referrerRatio = referrerRatio;
+    }
+
+    public Integer getParentReferrerRatio() {
+        return parentReferrerRatio;
+    }
+
+    public void setParentReferrerRatio(Integer parentReferrerRatio) {
+        this.parentReferrerRatio = parentReferrerRatio;
+    }
+    
+    
+
+    /**
+	 * @return the referrerCoins
+	 */
+	public String getReferrerCoins() {
+		StringBuffer sb=new StringBuffer();
+		sb.append("直属:").append(referrerRatio).append("%");
+		sb.append(" <br/> ");
+		sb.append("直属的上级:").append(parentReferrerRatio).append("%");
+		referrerCoins=sb.toString();
+		return referrerCoins;
+	}
+
+	/**
+	 * @param referrerCoins the referrerCoins to set
+	 */
+	public void setReferrerCoins(String referrerCoins) {
+		this.referrerCoins = referrerCoins;
+	}
+
+	public String getSendBean() {
+        return sendBean;
+    }
+
+    public void setSendBean(String sendBean) {
+        this.sendBean = sendBean == null ? null : sendBean.trim();
+    }
+
+    public Integer getReferrerReward() {
+        return referrerReward;
+    }
+
+    public void setReferrerReward(Integer referrerReward) {
+        this.referrerReward = referrerReward;
+    }
+
+    public Integer getConsumeRatio() {
+        return consumeRatio;
+    }
+
+    public void setConsumeRatio(Integer consumeRatio) {
+        this.consumeRatio = consumeRatio;
+    }
+    
+    
+    
+
+    /**
+	 * @return the redPacketType
+	 */
+	public Integer getRedPacketType() {
+		return redPacketType;
+	}
+
+	/**
+	 * @param redPacketType the redPacketType to set
+	 */
+	public void setRedPacketType(Integer redPacketType) {
+		this.redPacketType = redPacketType;
+	}
+
+	/**
+	 * @return the redPacketLowest
+	 */
+	public BigDecimal getRedPacketLowest() {
+		return redPacketLowest;
+	}
+
+	/**
+	 * @param redPacketLowest the redPacketLowest to set
+	 */
+	public void setRedPacketLowest(BigDecimal redPacketLowest) {
+		this.redPacketLowest = redPacketLowest;
+	}
+
+	/**
+	 * @return the redPacketHighest
+	 */
+	public BigDecimal getRedPacketHighest() {
+		return redPacketHighest;
+	}
+
+	/**
+	 * @param redPacketHighest the redPacketHighest to set
+	 */
+	public void setRedPacketHighest(BigDecimal redPacketHighest) {
+		this.redPacketHighest = redPacketHighest;
+	}
+
+	public BigDecimal getRedPacketMidLower() {
+		return redPacketMidLower;
+	}
+
+	public void setRedPacketMidLower(BigDecimal redPacketMidLower) {
+		this.redPacketMidLower = redPacketMidLower;
+	}
+
+	public BigDecimal getRedPacketMidHigher() {
+		return redPacketMidHigher;
+	}
+
+	public void setRedPacketMidHigher(BigDecimal redPacketMidHigher) {
+		this.redPacketMidHigher = redPacketMidHigher;
+	}
+
+	/**
+	 * @return the rankNo
+	 */
+	public Integer getRankNo() {
+		return rankNo;
+	}
+
+	/**
+	 * @param rankNo the rankNo to set
+	 */
+	public void setRankNo(Integer rankNo) {
+		this.rankNo = rankNo;
+	}
+
+	public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+    
+    
+
+	/**
+	 * @return the picUrl
+	 */
+	public String getPicUrl() {
+		return picUrl;
+	}
+
+	/**
+	 * @param picUrl the picUrl to set
+	 */
+	public void setPicUrl(String picUrl) {
+		this.picUrl = picUrl;
+	}
+	
+	
+
+	/**
+	 * @return the rankDetailNum
+	 */
+	public long getRankDetailNum() {
+		return rankDetailNum;
+	}
+
+	/**
+	 * @param rankDetailNum the rankDetailNum to set
+	 */
+	public void setRankDetailNum(long rankDetailNum) {
+		this.rankDetailNum = rankDetailNum;
+	}
+	
+	
+
+	/**
+	 * @return the rankType
+	 */
+	public Integer getRankType() {
+		return rankType;
+	}
+
+	/**
+	 * @param rankType the rankType to set
+	 */
+	public void setRankType(Integer rankType) {
+		this.rankType = rankType;
+	}
+
+	
+	
+
+	/**
+	 * @return the filterVal
+	 */
+	public Integer getFilterVal() {
+		return filterVal;
+	}
+
+	/**
+	 * @param filterVal the filterVal to set
+	 */
+	public void setFilterVal(Integer filterVal) {
+		this.filterVal = filterVal;
+	}
+	
+
+	public Integer getSaasNumber() {
+		return saasNumber;
+	}
+
+	public void setSaasNumber(Integer saasNumber) {
+		this.saasNumber = saasNumber;
+	}
+
+	public Integer getAnchorNumber() {
+		return anchorNumber;
+	}
+
+	public void setAnchorNumber(Integer anchorNumber) {
+		this.anchorNumber = anchorNumber;
+	}
+
+	public Integer getUid() {
+		return uid;
+	}
+
+	public void setUid(Integer uid) {
+		this.uid = uid;
+	}
+
+	@Override
+	public String toString() {
+		return "BLiveFansRank [id=" + id + ", parentId=" + parentId
+				+ ", rankName=" + rankName + ", recharges=" + recharges
+				+ ", rewardLowest=" + rewardLowest + ", rewardHighest="
+				+ rewardHighest + ", referrerRatio=" + referrerRatio
+				+ ", parentReferrerRatio=" + parentReferrerRatio
+				+ ", referrerCoins=" + referrerCoins + ", sendBean=" + sendBean
+				+ ", referrerReward=" + referrerReward + ", consumeRatio="
+				+ consumeRatio + ", redPacketType=" + redPacketType
+				+ ", redPacketLowest=" + redPacketLowest
+				+ ", redPacketMidLower=" + redPacketMidLower
+				+ ", redPacketMidHigher=" + redPacketMidHigher
+				+ ", redPacketHighest=" + redPacketHighest + ", rankNo="
+				+ rankNo + ", createTime=" + createTime + ", updateTime="
+				+ updateTime + ", picUrl=" + picUrl + ", rankDetailNum="
+				+ rankDetailNum + ", rankType=" + rankType + ", filterVal="
+				+ filterVal + ", saasNumber=" + saasNumber + ", anchorNumber="
+				+ anchorNumber + ", uid=" + uid + "]";
+	}
+	
+}

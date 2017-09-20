@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.GroupLevelDao">
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.live_anchor.entity.GroupLevel">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="level_name" jdbcType="VARCHAR" property="levelName" />
+    <result column="last_level_id" jdbcType="BIGINT" property="lastLevelId" />
+    <result column="min_performance" jdbcType="DECIMAL" property="minPerformance" />
+    <result column="max_performance" jdbcType="DECIMAL" property="maxPerformance" />
+    <result column="award_scale" jdbcType="DECIMAL" property="awardScale" />
+    <result column="period" jdbcType="INTEGER" property="period" />
+    <result column="level_pic" jdbcType="VARCHAR" property="levelPic" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="level" jdbcType="INTEGER" property="level" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, level_name, last_level_id, min_performance, max_performance, award_scale, 
+    period, level_pic, create_time, update_time,level
+  </sql>
+  
+  <sql id="whereSQL">
+  	 <if test="levelName != null and levelName != ''">
+  	 	 and level_name like '%${levelName}%'
+  	 </if>
+  </sql>
+  
+  <update id="downLevel">
+  	 update t_group_level set level = level-1 where level > #{level}
+  	
+  </update>
+  
+  <update id="upLevel">
+	 update  t_group_level set level = level+1 where level >= #{level} 	 
+  </update>
+  
+  <select id="getList" resultMap="BaseResultMap">
+  	 select 
+  	 <include refid="Base_Column_List" />
+  	 from t_group_level
+  	 where 1=1
+  	 <include refid="whereSQL"></include>
+  	  order by level asc
+  	  <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <select id="count" resultType="java.lang.Long">
+  	 select 
+  	 count(1)
+  	 from t_group_level
+  	  where 1=1
+  	 <include refid="whereSQL"></include>
+  </select>
+  
+  <select id="getLastLevel" resultMap="BaseResultMap">
+  select 
+  	 <include refid="Base_Column_List" />
+    from t_group_level
+    where last_level_id = #{id} and last_level_id is not null
+  </select>
+  
+  <select id="getLastLevels" resultMap="BaseResultMap">
+  	select 
+  	 <include refid="Base_Column_List" />
+    from t_group_level
+    where 1=1 
+    <if test="lastLevelId != null">
+     and id &lt;> #{lastLevelId}
+    </if>
+    <!-- id not in (select last_level_id from t_group_level)
+    or id = #{lastLevelId}  and last_level_id &lt;> #{id} -->
+  </select>
+  
+  <select id="getObject" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_group_level
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="queryLevelNameByProformance" resultType="java.lang.String">
+    SELECT level_name from test_data4.t_group_level where
+    max_performance &gt;= #{performance} and min_performance &lt;= #{performance}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from t_group_level
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.live_anchor.entity.GroupLevel">
+    insert into t_group_level (id, level_name, last_level_id, 
+      min_performance, max_performance, top_income, 
+      award_scale, period, level_pic, 
+      create_time, update_time)
+    values (#{id,jdbcType=BIGINT}, #{levelName,jdbcType=VARCHAR}, #{lastLevelId,jdbcType=BIGINT}, 
+      #{minPerformance,jdbcType=DECIMAL}, #{maxPerformance,jdbcType=DECIMAL}, 
+      #{awardScale,jdbcType=DECIMAL}, #{period,jdbcType=INTEGER}, #{levelPic,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="add" parameterType="com.xmniao.xmn.core.live_anchor.entity.GroupLevel" useGeneratedKeys="true" keyProperty="id">
+    insert into t_group_level
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="levelName != null">
+        level_name,
+      </if>
+      <if test="lastLevelId != null">
+        last_level_id,
+      </if>
+      <if test="minPerformance != null">
+        min_performance,
+      </if>
+      <if test="maxPerformance != null">
+        max_performance,
+      </if>
+     
+      <if test="awardScale != null">
+        award_scale,
+      </if>
+      <if test="period != null">
+        period,
+      </if>
+      <if test="levelPic != null">
+        level_pic,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="level != null">
+        level,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="levelName != null">
+        #{levelName,jdbcType=VARCHAR},
+      </if>
+      <if test="lastLevelId != null">
+        #{lastLevelId,jdbcType=BIGINT},
+      </if>
+      <if test="minPerformance != null">
+        #{minPerformance,jdbcType=DECIMAL},
+      </if>
+      <if test="maxPerformance != null">
+        #{maxPerformance,jdbcType=DECIMAL},
+      </if>
+     
+      <if test="awardScale != null">
+        #{awardScale,jdbcType=DECIMAL},
+      </if>
+      <if test="period != null">
+        #{period,jdbcType=INTEGER},
+      </if>
+      <if test="levelPic != null">
+        #{levelPic,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="level != null">
+        #{level,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="update" parameterType="com.xmniao.xmn.core.live_anchor.entity.GroupLevel">
+    update t_group_level
+    <set>
+      <if test="levelName != null">
+        level_name = #{levelName,jdbcType=VARCHAR},
+      </if>
+      <if test="lastLevelId != null">
+        last_level_id = #{lastLevelId,jdbcType=BIGINT},
+      </if>
+      <if test="minPerformance != null">
+        min_performance = #{minPerformance,jdbcType=DECIMAL},
+      </if>
+      <if test="maxPerformance != null">
+        max_performance = #{maxPerformance,jdbcType=DECIMAL},
+      </if>
+    
+      <if test="awardScale != null">
+        award_scale = #{awardScale,jdbcType=DECIMAL},
+      </if>
+      <if test="period != null">
+        period = #{period,jdbcType=INTEGER},
+      </if>
+      <if test="levelPic != null">
+        level_pic = #{levelPic,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="level != null">
+        level = #{level,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.live_anchor.entity.GroupLevel">
+    update t_group_level
+    set level_name = #{levelName,jdbcType=VARCHAR},
+      last_level_id = #{lastLevelId,jdbcType=BIGINT},
+      min_performance = #{minPerformance,jdbcType=DECIMAL},
+      max_performance = #{maxPerformance,jdbcType=DECIMAL},
+      award_scale = #{awardScale,jdbcType=DECIMAL},
+      period = #{period,jdbcType=INTEGER},
+      level_pic = #{levelPic,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

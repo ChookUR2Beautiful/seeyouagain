@@ -1,0 +1,136 @@
+package com.xmniao.xmn.core.reward_dividends.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.xmniao.xmn.core.base.BaseController;
+import com.xmniao.xmn.core.base.Pageable;
+import com.xmniao.xmn.core.base.Resultable;
+import com.xmniao.xmn.core.billmanagerment.entity.Bill;
+import com.xmniao.xmn.core.businessman.service.SellerService;
+import com.xmniao.xmn.core.live_anchor.entity.BVerAnchorRelation;
+import com.xmniao.xmn.core.reward_dividends.entity.TLivePrivilege;
+import com.xmniao.xmn.core.reward_dividends.service.RecommendMemberService;
+import com.xmniao.xmn.core.util.handler.annotation.RequestLogging;
+
+/**
+ * V客充值奖励
+ * 
+ * @author Administrator
+ *
+ */
+@RequestLogging(name = "V客会员推荐管理")
+@Controller
+@RequestMapping(value = "recommendMember/manage")
+public class RecommendMemberController extends BaseController {
+	
+	@Autowired
+	private RecommendMemberService recommendMemberService;
+
+	@Autowired
+	private SellerService sellerService;
+	
+	@RequestMapping(value = "init")
+	public String init() {
+		return "reward_dividends/recommendMemberManage";
+	}
+	
+	@RequestMapping(value = "init/list")
+	@ResponseBody
+	public Object list(TLivePrivilege livePrivilege){
+		Pageable<TLivePrivilege> pageable = new Pageable<TLivePrivilege>(livePrivilege);
+		
+		pageable = recommendMemberService.getLivePrivilegeInfoList(livePrivilege);
+		this.log.info("RecommendMemberController-->list pageable=" + pageable);
+		
+		return pageable;
+	}
+	
+	
+	/**
+	 * 方法描述：V客推荐的主播收益明细 <br/>
+	 * 创建人： Administrator <br/>
+	 * 创建时间：2017年8月4日上午11:49:59 <br/>
+	 * @param livePrivilege
+	 * @return
+	 */
+	@RequestMapping(value = "list/viewLiveDetail")
+	@ResponseBody
+	public Object getVerRecommendLiveDetail(TLivePrivilege livePrivilege) {
+		Resultable resultable = null;
+		try {
+			List<BVerAnchorRelation> verAnchorRelationList = recommendMemberService.getVkeProfitLiveGiftDetailList(livePrivilege);
+			resultable = new Resultable(true, "查询成功", verAnchorRelationList);
+			return resultable;
+			
+		} catch (Exception e) {
+			log.error("查询V客推荐的主播收益失败", e);
+			resultable = new Resultable(false, "查询V客推荐的主播收益失败");
+			return resultable;
+		}
+
+	}
+	
+	/**
+	 * 方法描述：V客推荐的商家收益明细 <br/>
+	 * 创建人： Administrator <br/>
+	 * 创建时间：2017年8月4日上午11:49:38 <br/>
+	 * @param uid
+	 * @return
+	 */
+	@RequestMapping(value = "list/viewShopDetail")
+	@ResponseBody
+	public Object getVerRecommendShopDetail(TLivePrivilege livePrivilege) {
+		Resultable resultable = null;
+		try {
+			List<Bill> billList = recommendMemberService.getVerRecommendSellerDetailList(livePrivilege);
+			resultable = new Resultable(true, "查询成功", billList);
+			return resultable;
+			
+		} catch (Exception e) {
+			log.error("查询推荐的商家收益失败", e);
+			resultable = new Resultable(false, "查询推荐的商家收益失败");
+			return resultable;
+		}
+	}
+	
+	/**
+	 * 方法描述：在此处添加方法描述 <br/>
+	 * 创建人： Administrator <br/>
+	 * 创建时间：2017年8月10日下午5:29:41 <br/>
+	 * @param paramsId 商家编号
+	 * @param uid 签约人编号
+	 * @param type
+	 * @return
+	 */
+	@RequestMapping(value = {"update"})
+	@ResponseBody
+	public Resultable abandon( @RequestParam("id") String paramsId, @RequestParam("uid") String uid,  @RequestParam("type") Integer type) {
+		Resultable result = new Resultable();
+		try {
+			if (type == 0) {
+				//放弃绑定推荐关系
+			    recommendMemberService.abandonVerAnchorRelation(Integer.parseInt(paramsId));
+			}else{
+	            /* 调用寻蜜客放弃商家接口 */
+				sellerService.abandonSeller(Integer.parseInt(paramsId), Integer.parseInt(uid));
+			}
+			result.setMsg("更新数据成功!");
+			result.setSuccess(true);
+		} catch (Exception e) {
+			result.setMsg("更新失败!");
+			result.setSuccess(false);
+			
+			this.log.error(e.getMessage(), e);
+		}
+		
+		return result;
+	}
+	
+
+}

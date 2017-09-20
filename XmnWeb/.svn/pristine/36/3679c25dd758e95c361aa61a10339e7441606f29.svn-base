@@ -1,0 +1,659 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.vstar.dao.TVstarPlayerInfoDao" >
+
+  <resultMap id="vstarPlayerInfoMap" type="com.xmniao.xmn.core.vstar.entity.TVstarPlayerInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="enroll_id" property="enrollId" jdbcType="INTEGER" />
+    <result column="liver_id" property="liverId" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="nname" property="nname" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="province_id" property="provinceId" jdbcType="INTEGER" />
+    <result column="province_name" property="provinceName" jdbcType="VARCHAR" />
+    <result column="city_id" property="cityId" jdbcType="INTEGER" />
+    <result column="city_name" property="cityName" jdbcType="VARCHAR" />
+    <result column="area_id" property="areaId" jdbcType="INTEGER" />
+    <result column="area_name" property="areaName" jdbcType="VARCHAR" />
+    <result column="division_id" property="divisionId" jdbcType="INTEGER" />
+    <result column="division_name" property="divisionName" jdbcType="VARCHAR" />
+    <result column="live_count" property="liveCount" jdbcType="INTEGER" />
+    <result column="live_count_init" property="liveCountInit" jdbcType="INTEGER" />
+    <result column="vstar_live_count" property="vstarLiveCount" jdbcType="INTEGER" />
+    <result column="live_time_count" property="liveTimeCount" jdbcType="BIGINT" />
+    <result column="live_time_count_init" property="liveTimeCountInit" jdbcType="BIGINT" />
+    <result column="vstar_live_count" property="vstarLiveCount" jdbcType="BIGINT" />
+    <result column="fans_count_init" property="fansCountInit" jdbcType="INTEGER" />
+    <result column="fans_count" property="fansCount" jdbcType="INTEGER" />
+    <result column="fans_num" property="fansNum" jdbcType="INTEGER" />
+    <result column="egg_count" property="eggCount" jdbcType="INTEGER" />
+    <result column="egg_count_init" property="eggCountInit" jdbcType="INTEGER" />
+    <result column="reward_egg" property="rewardEgg" jdbcType="INTEGER" />
+    <result column="comment_count" property="commentCount" jdbcType="INTEGER" />
+    <result column="like_count" property="likeCount" jdbcType="INTEGER" />
+    <result column="seller_count" property="sellerCount" jdbcType="INTEGER" />
+    <result column="player_type" property="playerType" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="rank_num" property="rankNum" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="play_status" property="playStatus" jdbcType="INTEGER" />
+    <result column="confining" property="confining" jdbcType="INTEGER" />
+    <result column="r_name" property="rName" jdbcType="VARCHAR" />
+    <result column="r_phone" property="rPhone" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="vstarPlayerInfo_column_list" >
+    id, enroll_id,liver_id, uid, nname, phone, province_id, province_name, city_id, city_name, area_id, area_name,
+    division_id, division_name, live_count,live_count_init,(live_count - live_count_init) AS vstar_live_count,
+    live_time_count,live_time_count_init,(live_time_count - live_time_count_init) AS vstar_live_time,
+    fans_count_init,fans_count,(fans_count_init + fans_count) AS fans_num ,egg_count,egg_count_init,
+    (egg_count - egg_count_init) AS reward_egg , comment_count, 
+    like_count, seller_count, player_type, create_time
+  </sql>
+  
+  <select id="getObject" resultMap="vstarPlayerInfoMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="vstarPlayerInfo_column_list" />
+    from t_vstar_player_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="getList" resultMap="vstarPlayerInfoMap" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarPlayerInfo" >
+    select 
+    	player.id,
+		player.enroll_id,
+		player.liver_id,
+		player.uid,
+		player.nname,
+		player.phone,
+		player.province_id,
+		player.province_name,
+		player.city_id,
+		player.city_name,
+		player.area_id,
+		player.area_name,
+		player.division_id,
+		player.division_name,
+		player.live_count,
+		player.live_count_init,
+		(live_count - live_count_init) AS vstar_live_count,
+		player.live_time_count,
+		player.live_time_count_init,
+		(live_time_count - live_time_count_init) AS vstar_live_time,
+		player.fans_count,
+		(fans_count_init + fans_count) AS fans_num ,
+		player.egg_count,
+		player.egg_count_init,
+		(egg_count - egg_count_init) AS reward_egg,
+		player.comment_count,
+		player.like_count,
+		player.seller_count,
+		player.player_type,
+		player.create_time,
+		enroll.status,
+		enroll.play_status,
+		enroll.confining,
+		referrer.nname AS r_name,
+		referrer.phone AS r_phone
+    from 
+    	t_vstar_player_info player
+    LEFT JOIN t_vstar_enroll enroll ON player.enroll_id = enroll.id
+    LEFT JOIN t_vstar_enroll referrer ON enroll.ruid = referrer.uid
+    <where>
+    	1=1
+    	<if test="id != null and id != '' ">
+    		and player.id =#{id}
+    	</if>
+    	<if test="nname != null and nname != '' ">
+    		and player.nname =#{nname}
+    	</if>
+    	<if test="phone != null and phone != '' ">
+    		and player.phone like '%${phone}%'
+    	</if>
+    	<if test="provinceId != null and provinceId != '' ">
+    		and player.province_id =#{provinceId}
+    	</if>
+    	<if test="cityId != null and cityId != '' ">
+    		and player.city_id =#{cityId}
+    	</if>
+    	<if test="areaId != null and areaId != '' ">
+    		and player.area_id =#{areaId}
+    	</if>
+    	<if test="divisionId != null and divisionId != '' ">
+    		and player.division_id =#{divisionId}
+    	</if>
+    	<if test="playerType != null and playerType != '' or playerType == 0 ">
+    		and player.player_type =#{playerType}
+    	</if>
+    	<if test="enrollIds != null and enrollIds != '' ">
+    		and player.enroll_id in
+    		<foreach collection="enrollIds" item="item" index="index" open="(" separator="," close=")">
+    			#{item}
+    		</foreach>
+    	</if>
+    	<if test="status != null and status != ''">
+    		and enroll.status =#{status}
+    	</if>
+    	<if test="playStatus != null and playStatus != '' or playStatus == 0 ">
+    		and enroll.play_status =#{playStatus}
+    	</if>
+    	<if test="confining != null and confining != '' or confining == 0 ">
+    		and enroll.confining =#{confining}
+    	</if>
+    </where>
+    <if test="order != -1">
+    	 ORDER BY player.create_time DESC
+    </if>
+    <if test=" limit != -1 ">
+		 LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <select id="count" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarPlayerInfo" >
+    select 
+    	count(1)
+    from 
+    	t_vstar_player_info player
+    LEFT JOIN t_vstar_enroll enroll ON player.enroll_id = enroll.id
+    LEFT JOIN t_vstar_enroll referrer ON enroll.ruid = referrer.uid
+    <where>
+    	1=1
+    	<if test="id != null and id != '' ">
+    		and player.id =#{id}
+    	</if>
+    	<if test="nname != null and nname != '' ">
+    		and player.nname =#{nname}
+    	</if>
+    	<if test="phone != null and phone != '' ">
+    		and player.phone like '%${phone}%'
+    	</if>
+    	<if test="provinceId != null and provinceId != '' ">
+    		and player.province_id =#{provinceId}
+    	</if>
+    	<if test="cityId != null and cityId != '' ">
+    		and player.city_id =#{cityId}
+    	</if>
+    	<if test="areaId != null and areaId != '' ">
+    		and player.area_id =#{areaId}
+    	</if>
+    	<if test="divisionId != null and divisionId != '' ">
+    		and player.division_id =#{divisionId}
+    	</if>
+    	<if test="playerType != null and playerType != '' or playerType == 0 ">
+    		and player.player_type =#{playerType}
+    	</if>
+    	<if test="enrollIds != null and enrollIds != '' ">
+    		and player.enroll_id in
+    		<foreach collection="enrollIds" item="item" index="index" open="(" separator="," close=")">
+    			#{item}
+    		</foreach>
+    	</if>
+    	<if test="status != null and status != ''">
+    		and enroll.status =#{status}
+    	</if>
+    	<if test="playStatus != null and playStatus != '' or playStatus == 0 ">
+    		and enroll.play_status =#{playStatus}
+    	</if>
+    	<if test="confining != null and confining != '' or confining == 0 ">
+    		and enroll.confining =#{confining}
+    	</if>
+    </where>
+  </select>
+  
+  <delete id="delete" parameterType="Object" >
+    delete from t_vstar_player_info
+    where id in
+    <foreach collection="array" item="item" index="index" open="(" separator="," close=")">
+    	#{item}
+    </foreach>
+  </delete>
+  
+  <insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarPlayerInfo" >
+    insert into t_vstar_player_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="enrollId != null" >
+        enroll_id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="nname != null" >
+        nname,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="provinceId != null" >
+        province_id,
+      </if>
+      <if test="provinceName != null" >
+        province_name,
+      </if>
+      <if test="cityId != null" >
+        city_id,
+      </if>
+      <if test="cityName != null" >
+        city_name,
+      </if>
+      <if test="divisionId != null" >
+        division_id,
+      </if>
+      <if test="divisionName != null" >
+        division_name,
+      </if>
+      <if test="liveCount != null" >
+        live_count,
+      </if>
+      <if test="liveTimeCount != null" >
+        live_time_count,
+      </if>
+      <if test="fansCount != null" >
+        fans_count,
+      </if>
+      <if test="eggCount != null" >
+        egg_count,
+      </if>
+      <if test="commentCount != null" >
+        comment_count,
+      </if>
+      <if test="likeCount != null" >
+        like_count,
+      </if>
+      <if test="sellerCount != null" >
+        seller_count,
+      </if>
+      <if test="playerType != null" >
+        player_type,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="enrollId != null" >
+        #{enrollId,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="nname != null" >
+        #{nname,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="provinceId != null" >
+        #{provinceId,jdbcType=INTEGER},
+      </if>
+      <if test="provinceName != null" >
+        #{provinceName,jdbcType=VARCHAR},
+      </if>
+      <if test="cityId != null" >
+        #{cityId,jdbcType=INTEGER},
+      </if>
+      <if test="cityName != null" >
+        #{cityName,jdbcType=VARCHAR},
+      </if>
+      <if test="divisionId != null" >
+        #{divisionId,jdbcType=INTEGER},
+      </if>
+      <if test="divisionName != null" >
+        #{divisionName,jdbcType=VARCHAR},
+      </if>
+      <if test="liveCount != null" >
+        #{liveCount,jdbcType=INTEGER},
+      </if>
+      <if test="liveTimeCount != null" >
+        #{liveTimeCount,jdbcType=BIGINT},
+      </if>
+      <if test="fansCount != null" >
+        #{fansCount,jdbcType=INTEGER},
+      </if>
+      <if test="eggCount != null" >
+        #{eggCount,jdbcType=INTEGER},
+      </if>
+      <if test="commentCount != null" >
+        #{commentCount,jdbcType=INTEGER},
+      </if>
+      <if test="likeCount != null" >
+        #{likeCount,jdbcType=INTEGER},
+      </if>
+      <if test="sellerCount != null" >
+        #{sellerCount,jdbcType=INTEGER},
+      </if>
+      <if test="playerType != null" >
+        #{playerType,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <!-- 批量插入选手信息 -->
+  <insert id="addBatch" parameterType="java.util.ArrayList">
+	INSERT INTO t_vstar_player_info
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+		<include refid="vstarPlayerInfo_column_list" /> 
+	</trim>
+	VALUES
+	<foreach item="item" index="index" collection="list" separator=",">
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			#{item.id},
+			#{item.enrollId},
+			#{item.uid},
+			#{item.nname},
+			#{item.phone},
+			#{item.provinceId},
+			#{item.provinceName},
+			#{item.cityId},
+			#{item.cityName},
+			#{item.divisionId},
+			#{item.divisionName},
+			#{item.liveCount},
+			#{item.fansCount},
+			#{item.eggCount},
+			#{item.commentCount},
+			#{item.likeCount},
+			#{item.sellerCount},
+			#{item.playerType},
+			#{item.createTime}
+		</trim>
+	</foreach>
+  </insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarPlayerInfo" >
+    update t_vstar_player_info
+    <set >
+      <if test="enrollId != null" >
+        enroll_id = #{enrollId,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="nname != null" >
+        nname = #{nname,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="provinceId != null" >
+        province_id = #{provinceId,jdbcType=INTEGER},
+      </if>
+      <if test="provinceName != null" >
+        province_name = #{provinceName,jdbcType=VARCHAR},
+      </if>
+      <if test="cityId != null" >
+        city_id = #{cityId,jdbcType=INTEGER},
+      </if>
+      <if test="cityName != null" >
+        city_name = #{cityName,jdbcType=VARCHAR},
+      </if>
+      <if test="divisionId != null" >
+        division_id = #{divisionId,jdbcType=INTEGER},
+      </if>
+      <if test="divisionName != null" >
+        division_name = #{divisionName,jdbcType=VARCHAR},
+      </if>
+      <if test="liveCount != null" >
+        live_count = #{liveCount,jdbcType=INTEGER},
+      </if>
+      <if test="liveCountInit != null" >
+        live_count_init = #{liveCountInit,jdbcType=INTEGER},
+      </if>
+      <if test="liveTimeCount != null" >
+        live_time_count = #{liveTimeCount,jdbcType=BIGINT},
+      </if>
+      <if test="liveTimeCountInit != null" >
+        live_time_count_init = #{liveTimeCountInit,jdbcType=BIGINT},
+      </if>
+      <if test="fansCount != null" >
+        fans_count = #{fansCount,jdbcType=INTEGER},
+      </if>
+      <if test="eggCount != null" >
+        egg_count = #{eggCount,jdbcType=INTEGER},
+      </if>
+       <if test="eggCountInit != null" >
+        egg_count_init = #{eggCountInit,jdbcType=INTEGER},
+      </if>
+      <if test="commentCount != null" >
+        comment_count = #{commentCount,jdbcType=INTEGER},
+      </if>
+      <if test="likeCount != null" >
+        like_count = #{likeCount,jdbcType=INTEGER},
+      </if>
+      <if test="sellerCount != null" >
+        seller_count = #{sellerCount,jdbcType=INTEGER},
+      </if>
+      <if test="playerType != null" >
+        player_type = #{playerType,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 选手排名查询,只查询前一天的排名数据 -->
+  <select id="getRankList" resultMap="vstarPlayerInfoMap" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarPlayerInfo">
+  	select * from (SELECT
+		@rownum :=@rownum + 1 AS rank_num,
+		<!-- <include refid="vstarPlayerInfo_column_list"></include> -->
+		t1.id, 
+		t1.enroll_id,
+		t1.liver_id, 
+		t1.uid, 
+		t1.nname, 
+		t1.phone, 
+		t1.province_id, 
+		t1.province_name, 
+		t1.city_id, 
+		t1.city_name, 
+		t1.area_id, 
+		t1.area_name,
+		t1.division_id, 
+		t1.division_name, 
+		t1.live_count,
+		t1.live_count_init,
+		(t1.live_count - t1.live_count_init) AS vstar_live_count,
+		t1.live_time_count,
+		t1.live_time_count_init,
+		(t1.live_time_count - t1.live_time_count_init) AS vstar_live_time,
+		t1.fans_count_init,
+		t1.fans_count,
+		(t1.fans_count_init + t1.fans_count) AS fans_num ,
+		t1.egg_count,
+		t1.egg_count_init,
+		(t1.egg_count - t1.egg_count_init) AS reward_egg , 
+		t1.comment_count, 
+		t1.like_count, 
+		t1.seller_count, 
+		t1.player_type, 
+		t1.create_time
+	FROM
+		t_vstar_player_info t1
+		LEFT JOIN t_vstar_enroll enroll ON t1.enroll_id = enroll.id,
+		(SELECT @rownum := 0) r
+	WHERE
+		enroll.play_status='1'  
+		AND enroll.confining='0'
+	  	AND enroll.uid IS NOT NULL
+	<if test="id != null and id != '' ">
+    		and t1.id =#{id}
+   	</if>
+   	<if test="nname != null and nname != '' ">
+   		and t1.nname =#{nname}
+   	</if>
+   	<if test="phone != null and phone != '' ">
+   		and t1.phone like '%${phone}%'
+   	</if>
+	<if test="divisionId !=null and divisionId != '' ">
+		and t1.division_id =#{divisionId}
+	</if>
+	<if test="provinceId != null and provinceId != '' ">
+    	and t1.province_id =#{provinceId}
+   	</if>
+   	<if test="cityId != null and cityId != '' ">
+   		and t1.city_id =#{cityId}
+   	</if>
+   	<if test="areaId != null and areaId != '' ">
+   		and t1.area_id =#{areaId}
+   	</if>
+   	<if test="divisionId != null and divisionId != '' ">
+   		and t1.division_id =#{divisionId}
+   	</if>
+   	<!-- 优先粉丝排序 -->
+   	<if test="orderParam == 1 ">
+   		ORDER BY
+			(fans_count+fans_count_init) DESC,(egg_count-egg_count_init) DESC, (live_count - live_count_init) DESC, like_count DESC ,t1.id DESC
+   	</if>
+   	<!-- 优先鸟蛋排序 -->
+   	<if test="orderParam == 2 ">
+   		ORDER BY
+			(egg_count-egg_count_init) DESC, (fans_count+fans_count_init) DESC,(live_count - live_count_init) DESC, like_count DESC,t1.id DESC
+   	</if>
+   	<if test="orderParam == 3 ">
+   		ORDER BY
+			(
+				t1.fans_rank_num * 0.6 + t1.egg_rank_num * 0.4
+			) ASC
+   	</if>
+	<if test="limitSize !=null and limitSize !='' ">
+		limit 0,#{limitSize}
+	</if>
+	) t2
+  	<if test=" limit != -1 ">
+		 LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <select id="getRankCount" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarPlayerInfo">
+  	select count(1) from (SELECT
+		@rownum :=@rownum + 1 AS rank_num,
+		t1.*
+	FROM
+		t_vstar_player_info t1
+		LEFT JOIN t_vstar_enroll enroll ON t1.enroll_id = enroll.id,
+		(SELECT @rownum := 0) r
+	WHERE
+		enroll.play_status='1'  
+		AND enroll.confining='0'
+	  	AND enroll.uid IS NOT NULL
+	<if test="id != null and id != '' ">
+    		and t1.id =#{id}
+   	</if>
+   	<if test="nname != null and nname != '' ">
+   		and t1.nname =#{nname}
+   	</if>
+   	<if test="phone != null and phone != '' ">
+   		and t1.phone like '%${phone}%'
+   	</if>
+	<if test="divisionId !=null and divisionId != '' ">
+		and t1.division_id =#{divisionId}
+	</if>
+	<if test="provinceId != null and provinceId != '' ">
+    	and t1.province_id =#{provinceId}
+   	</if>
+   	<if test="cityId != null and cityId != '' ">
+   		and t1.city_id =#{cityId}
+   	</if>
+   	<if test="areaId != null and areaId != '' ">
+   		and t1.area_id =#{areaId}
+   	</if>
+   	<if test="divisionId != null and divisionId != '' ">
+   		and t1.division_id =#{divisionId}
+   	</if>
+	<!-- 优先粉丝排序 -->
+   	<if test="orderParam == 1 ">
+   		ORDER BY
+			(fans_count+fans_count_init) DESC,(egg_count-egg_count_init) DESC, (live_count - live_count_init) DESC, like_count DESC
+   	</if>
+   	<!-- 优先鸟蛋排序 -->
+   	<if test="orderParam == 2 ">
+   		ORDER BY
+			(egg_count-egg_count_init) DESC, (fans_count+fans_count_init) DESC, (live_count - live_count_init) DESC, like_count DESC
+   	</if>
+   	<if test="orderParam == 3 ">
+   		ORDER BY
+			(
+				t1.fans_rank_num * 0.6 + t1.egg_rank_num * 0.4
+			) ASC
+   	</if>
+	<if test="limitSize !=null and limitSize !='' ">
+		limit 0,#{limitSize}
+	</if>
+	) t2
+  </select>
+  
+  <!-- 根据UID获取签约商家数 -->
+  <select id="getSignedSellerNum" resultType="map" parameterType="map">
+  	SELECT
+		uid,
+		count(uid) AS sellerNum
+	FROM
+		t_seller
+	WHERE
+		uid in
+	<foreach collection="uidList" item="item" index="index" open="(" separator="," close=")">
+			#{item}
+	</foreach>
+	AND `status` = '3'
+	GROUP BY uid
+  </select>
+  
+  <!-- 根据UID获取签约商家列表 -->
+  <select id="getSellerListByUid" resultType="com.xmniao.xmn.core.vstar.entity.TVstarSellerInfo" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarSellerInfo">
+  	SELECT
+		sellerid,
+		sellername,
+		fullname,
+		phoneid,
+		uid
+	FROM
+		t_seller
+	WHERE
+		uid = #{uid}
+	AND `status` = '3'
+	<if test="limit != -1">
+		LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <!-- 根据UID获取签约商家列表 -->
+  <select id="getSellerCountByUid" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarSellerInfo">
+  	SELECT
+		count(1)
+	FROM
+		t_seller
+	WHERE
+		uid = #{uid}
+	AND `status` = '3'
+  </select>
+  
+  
+  <!-- 根据商家id集合获取商家流水 -->
+  <select id="getSellerEarningsBySellerIdList" resultType="map" parameterType="map">
+  	SELECT
+		sellerid,
+		IFNULL(money,0) money,
+		commission
+	FROM
+		t_bill
+	WHERE
+		sellerid in
+		<foreach collection="sellerIdList" item="item" index="index" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	AND `status` > 0
+  </select>
+  
+</mapper>

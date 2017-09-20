@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TLiveShareDao" >
+
+
+  <resultMap id="liveShareMap" type="com.xmniao.xmn.core.live_anchor.entity.TLiveShare" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="position" property="position" jdbcType="VARCHAR" />
+    <result column="page_type" property="pageType" jdbcType="VARCHAR" />
+    <result column="page_content" property="pageContent" jdbcType="VARCHAR" />
+    <result column="share_link" property="shareLink" jdbcType="VARCHAR" />
+    <result column="app_type" property="appType" jdbcType="VARCHAR" />
+    <result column="pic_url" property="picUrl" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  
+  <sql id="liveShare_column_list" >
+    id, title, content, position, page_type, page_content, share_link, app_type,pic_url,status, create_time, 
+    update_time
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test="title != null and title != ''">
+  		AND title like '%${title}%'
+  	</if>
+  	<if test="pageType != null and pageType != ''">
+  		AND page_type=#{pageType}
+  	</if>
+  	<if test="pageContent != null and pageContent != ''">
+  		AND page_content=#{pageContent}
+  	</if>
+  	<if test="appType != null and appType != ''">
+  		AND app_type=#{appType}
+  	</if>
+  
+  </sql>
+  
+  <select id="getObject" resultMap="liveShareMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="liveShare_column_list" />
+    from t_live_share
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  
+  <select id="getList" resultMap="liveShareMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveShare" >
+    select 
+    <include refid="liveShare_column_list" />
+    from t_live_share
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+    <if test="order !=-1">
+    	ORDER BY update_time desc
+    </if>
+    <if test="limit != -1">
+    	LIMIT ${(page-1)*limit},${limit}
+    </if>
+  </select>
+  
+  <select id="count" resultType="java.lang.Object" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveShare" >
+    select 
+    	count(1)
+    from t_live_share
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+  </select>
+  
+  
+  <delete id="delete" parameterType="java.lang.Object" >
+    delete from t_live_share
+    where id in
+    <foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+	</foreach>
+  </delete>
+  
+  
+  <insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveShare" >
+    insert into t_live_share
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+      <if test="position != null" >
+        position,
+      </if>
+      <if test="pageType != null" >
+        page_type,
+      </if>
+      <if test="pageContent != null" >
+        page_content,
+      </if>
+      <if test="shareLink != null" >
+        share_link,
+      </if>
+      <if test="appType != null" >
+        app_type,
+      </if>
+      <if test="picUrl != null" >
+        pic_url,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="position != null" >
+        #{position,jdbcType=VARCHAR},
+      </if>
+      <if test="pageType != null" >
+        #{pageType,jdbcType=VARCHAR},
+      </if>
+      <if test="pageContent != null" >
+        #{pageContent,jdbcType=VARCHAR},
+      </if>
+      <if test="shareLink != null" >
+        #{shareLink,jdbcType=VARCHAR},
+      </if>
+      <if test="appType != null" >
+        #{appType,jdbcType=VARCHAR},
+      </if>
+      <if test="picUrl != null" >
+        #{picUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveShare" >
+    update t_live_share
+    <set >
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="position != null" >
+        position = #{position,jdbcType=VARCHAR},
+      </if>
+      <if test="pageType != null" >
+        page_type = #{pageType,jdbcType=VARCHAR},
+      </if>
+      <if test="pageContent != null" >
+        page_content = #{pageContent,jdbcType=VARCHAR},
+      </if>
+      <if test="shareLink != null" >
+        share_link = #{shareLink,jdbcType=VARCHAR},
+      </if>
+      <if test="appType != null" >
+        app_type = #{appType,jdbcType=VARCHAR},
+      </if>
+      <if test="picUrl != null" >
+        pic_url = #{picUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+   <!-- 批量更新上线状态 -->
+  <update id="updateBatch"  parameterType="map">
+  	UPDATE t_live_share SET `status`=#{status} WHERE id IN
+  	<foreach item="item" index="index" collection="ids"  open="(" separator="," close=") ">
+			 #{item}
+	</foreach>
+  </update>
+  
+</mapper>

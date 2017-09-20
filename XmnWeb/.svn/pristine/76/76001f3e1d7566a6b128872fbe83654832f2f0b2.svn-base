@@ -1,0 +1,138 @@
+package com.xmniao.xmn.core.reward_dividends.controller;
+
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.xmniao.xmn.core.base.BaseController;
+import com.xmniao.xmn.core.base.Pageable;
+import com.xmniao.xmn.core.base.Resultable;
+import com.xmniao.xmn.core.billmanagerment.entity.Bill;
+import com.xmniao.xmn.core.businessman.entity.TSeller;
+import com.xmniao.xmn.core.businessman.service.SellerService;
+import com.xmniao.xmn.core.businessman.util.SellerConstants;
+import com.xmniao.xmn.core.live_anchor.entity.BVerAnchorRelation;
+import com.xmniao.xmn.core.reward_dividends.entity.TLivePrivilege;
+import com.xmniao.xmn.core.reward_dividends.service.RecommendMemberService;
+import com.xmniao.xmn.core.util.handler.annotation.RequestLogging;
+
+/**
+ * V客充值奖励
+ * 
+ * @author Administrator
+ *
+ */
+@RequestLogging(name = "V客会员推荐管理")
+@Controller
+@RequestMapping(value = "recommendMember/manage")
+public class RecommendMemberController extends BaseController {
+	
+	@Autowired
+	private RecommendMemberService recommendMemberService;
+
+	@Autowired
+	private SellerService sellerService;
+	
+	@RequestMapping(value = "init")
+	public String init() {
+		return "reward_dividends/recommendMemberManage";
+	}
+	
+	@RequestMapping(value = "init/list")
+	@ResponseBody
+	public Object list(TLivePrivilege livePrivilege){
+		Pageable<TLivePrivilege> pageable = new Pageable<TLivePrivilege>(livePrivilege);
+		
+		pageable = recommendMemberService.getLivePrivilegeInfoList(livePrivilege);
+		this.log.info("RecommendMemberController-->list pageable=" + pageable);
+		
+		return pageable;
+	}
+	
+	
+	/**
+	 * 方法描述：V客推荐的主播收益明细 <br/>
+	 * 创建人： Administrator <br/>
+	 * 创建时间：2017年8月4日上午11:49:59 <br/>
+	 * @param livePrivilege
+	 * @return
+	 */
+	@RequestMapping(value = "list/viewLiveDetail")
+	@ResponseBody
+	public Object getVerRecommendLiveDetail(TLivePrivilege livePrivilege) {
+		Resultable resultable = null;
+		try {
+			List<BVerAnchorRelation> verAnchorRelationList = recommendMemberService.getVerRecommendLiveDetailList(livePrivilege);
+			resultable = new Resultable(true, "查询成功", verAnchorRelationList);
+			return resultable;
+			
+		} catch (Exception e) {
+			log.error("查询V客推荐的主播收益失败", e);
+			resultable = new Resultable(false, "查询V客推荐的主播收益失败");
+			return resultable;
+		}
+
+	}
+	
+	/**
+	 * 方法描述：V客推荐的商家收益明细 <br/>
+	 * 创建人： Administrator <br/>
+	 * 创建时间：2017年8月4日上午11:49:38 <br/>
+	 * @param uid
+	 * @return
+	 */
+	@RequestMapping(value = "list/viewShopDetail")
+	@ResponseBody
+	public Object getVerRecommendShopDetail(TLivePrivilege livePrivilege) {
+		Resultable resultable = null;
+		try {
+			List<Bill> billList = recommendMemberService.getVerRecommendSellerDetailList(livePrivilege);
+			resultable = new Resultable(true, "查询成功", billList);
+			return resultable;
+			
+		} catch (Exception e) {
+			log.error("查询推荐的商家收益失败", e);
+			resultable = new Resultable(false, "查询推荐的商家收益失败");
+			return resultable;
+		}
+	}
+	
+	@RequestMapping(value = {"update"})
+	@ResponseBody
+	public Resultable abandon( @RequestParam("id") String paramsId,  @RequestParam("type") Integer type) {
+		Resultable result = new Resultable();
+		try {
+			int count = 0;
+			if (type == 0) {
+				//放弃绑定推荐关系
+				count = recommendMemberService.abandonVerAnchorRelation(Integer.parseInt(paramsId));
+			}else{
+	            /* 修改商家状态 */
+				TSeller sellerRecord = new TSeller();
+				sellerRecord.setSellerid(Integer.parseInt(paramsId));
+				int status = SellerConstants.SELLER_STATUS_RECOVER;// 注销下架
+				count = sellerService.updateSellerStatus(sellerRecord, new Date(), status);
+			}
+			if (count > 0) {
+				result.setMsg("更新数据成功!");
+				result.setSuccess(true);
+			} else {
+				throw new Exception("更新数据出错");
+			}
+		} catch (Exception e) {
+			result.setMsg("更新失败!");
+			result.setSuccess(false);
+			
+			this.log.error(e.getMessage(), e);
+		}
+		
+		return result;
+	}
+	
+
+}

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.system_settings.dao.RoleAreaDao">
+
+	<parameterMap type="RoleArea" id="rolearea" />
+	
+	<resultMap type="RoleArea" id="roleareaMap">
+		<result column="id" property="id" />
+		<result column="role_id" property="roleId" />
+		<result column="authority_id" property="authorityId" />
+		<result column="table_name" property="tableName" />
+		<result column="province" property="province" />
+		<result column="city" property="city" />
+		<result column="area" property="area" />
+		<result column="creator" property="creator" />
+		<result column="date_created" property="dateCreated" />
+		<result column="updator" property="updator" />
+		<result column="date_updated" property="dateUpdated" />
+	</resultMap>
+	
+	
+	<resultMap type="AuthorityArea" id="authorityArea">
+		<result column="id" property="id" />
+		<result column="authority_id" property="authorityId" />
+		<result column="authority_father_id" property="authorityFatherId" />
+		<result column="authority_name" property="authorityName" />
+		<result column="authority_url" property="url" />
+		<result column="authority_sort" property="sort" />
+		<result column="table_name" property="tableName" />
+		<result column="pre_name" property="preName" />
+		<result column="method_name" property="methodName" />
+	</resultMap>
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_role_area
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						role_id,
+						table_name,
+						province,
+						city,
+						area,
+						creator,
+						date_created
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.roleId},
+						 #{item.tableName},
+						 #{item.province},
+						 #{item.city},
+						 #{item.area},
+						 #{item.creator},
+						 #{item.dateCreated}
+						
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" parameterMap="rolearea" >
+		INSERT INTO t_role_area
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+				role_id,
+				authority_id,
+				table_name,
+				province,
+				city,
+				area,
+				creator,
+				date_created,	
+				updator,
+				date_updated,
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+					 #{roleId},
+					  #{authorityId},
+					 #{tableName},
+					
+					#{province},
+					
+					
+					#{city},
+					
+					#{area},
+					
+					 #{creator},
+					 #{dateCreated},
+					  #{updator},
+					  #{dateUpdated},
+		
+		</trim>
+	</insert> 
+	
+	<update id="update" parameterMap="rolearea">
+		UPDATE t_role_area
+		<set>
+			<trim suffixOverrides=",">
+				
+				
+				province = #{province},
+				
+				
+				city = #{city},
+			
+			 	
+				area = #{area},
+				
+				updator= #{updator},
+				date_updated= #{dateUpdated},
+			</trim>
+		</set>
+		<where>
+			
+			id = #{id} AND role_id=#{roleId} AND  #{authorityId}
+			
+		</where>
+	</update> 
+	
+<delete id="delete" parameterType="Object">
+		DELETE FROM t_role_area WHERE role_id IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+
+	
+	<select id="getList" resultMap="roleareaMap" parameterMap="rolearea">
+		SELECT id,province,
+				city,area,authority_id FROM t_role_area 
+		<where>
+			 role_id = #{roleId} AND  authority_id = #{authorityId}
+		</where> 
+	
+	</select>
+	
+	<select id="getAidByFid" resultType="String" parameterType="map">
+		SELECT area_id FROM t_area
+		<where> 
+		 <if test="pids !=null ">
+
+               AND pid IN
+               
+               <foreach collection="pids" index="index" item="p" open=" (" separator="," close=")">
+
+                    #{p}
+
+               </foreach>
+
+          </if>
+          
+           <if test="aids !=null ">
+
+               AND area_id IN
+               
+               <foreach collection="aids" index="index" item="a" open=" (" separator="," close=")">
+
+                    #{a}
+
+               </foreach>
+
+          </if>
+		</where> 
+	</select>
+	
+	
+	<select id="getAuthorityAreaList" resultMap="authorityArea">
+		SELECT * FROM t_authority_area
+	</select>
+	
+	
+	<select id="getMaxId"   resultType="Long">
+		SELECT Max(id) AS VALUE FROM t_role_area
+	</select>
+	
+	<select id="getObject" resultMap="roleareaMap" parameterType="Long">
+		SELECT * FROM t_role_area WHERE id = #{0}
+	</select> 
+	
+	
+	<select id="getRoleArea" resultMap="roleareaMap" parameterMap="rolearea">
+		SELECT id,province,
+				city,area,authority_id FROM t_role_area 
+		<where>
+			 role_id = #{roleId} AND  authority_id = #{authorityId}
+		</where> 
+	</select>
+	
+	
+</mapper>

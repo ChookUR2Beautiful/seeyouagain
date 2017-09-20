@@ -1,0 +1,564 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.SellerAgioDao">
+
+	<parameterMap type="SellerAgio" id="sellerAgio" />
+	
+	<resultMap type="SellerAgio" id="sellerAgioMap">
+	    <result column="id" property="id" />
+	    
+		<result column="aid" property="aid" />
+		<result column="sellerid" property="sellerid" />
+		<result column="type" property="type" />
+		<result column="baseagio" property="baseagio" />
+		<result column="status" property="status" />
+		
+		<result column="operation" property="operation" />
+		
+		<result column="Income" property="income" />
+		<result column="sledger" property="sledger" />
+		<result column="yledger" property="yledger" />
+		<result column="pledger" property="pledger" />
+		<result column="stdate" property="stdate" />
+		<result column="endate" property="endate" />
+		
+		<result column="week" property="week" />
+		<result column="weektime" property="weektime" />
+		<result column="eweektime" property="eweektime" />
+		
+		<result column="sdate" property="sdate" />
+		<result column="remarks" property="remarks" />
+		<result column="flat_agio" property="flatAgio" />
+		
+		<result column="uid" property="uid" />
+		<result column="excdate" property="excdate" />
+		
+		<result column="ratio" property="ratio" />
+		
+	</resultMap>
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_log
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						sellerid,
+						type,
+						baseagio,
+						status,
+						Income,
+						sledger,
+						yledger,
+						pledger,
+						stdate,
+						endate,
+						sdate,
+						remarks,
+						flat_agio,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.sellerid},
+						 #{item.type},
+						 #{item.baseagio},
+						 #{item.status},
+						 #{item.income},
+						 #{item.sledger},
+						 #{item.yledger},
+						 #{item.pledger},
+						 #{item.stdate},
+						 #{item.endate},
+						 #{item.sdate},
+						 #{item.remarks},
+						 #{item.flatAgio},
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" parameterMap="sellerAgio" >
+		INSERT INTO t_seller_agio
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != aid">
+					aid,
+				</if>
+			 	<if test=" null != sellerid">
+					sellerid,
+				</if>
+			 	<if test=" null != type">
+					type,
+				</if>
+			 	<if test=" null != baseagio">
+					baseagio,
+				</if>
+			 	<if test=" null != status">
+					status,
+				</if>
+			 	<if test=" null != income">
+					Income,
+				</if>
+			 	<if test=" null != sledger">
+					sledger,
+				</if>
+			 	<if test=" null != yledger">
+					yledger,
+				</if>
+			 	<if test=" null != pledger">
+					pledger,
+				</if>
+			 	<if test=" null != stdate">
+					stdate,
+				</if>
+			 	<if test=" null != endate">
+					endate,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+				<if test=" null != remarks">
+					remarks,
+				</if>
+				<if test=" null != flatAgio">
+					flat_agio,
+				</if>
+				
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != aid">
+					 	#{aid},
+				</if>
+			 	<if test=" null != sellerid">
+					 	#{sellerid},
+				</if>
+			 	<if test=" null != type">
+					 	#{type},
+				</if>
+			 	<if test=" null != baseagio">
+					 	#{baseagio},
+				</if>
+			 	<if test=" null != status">
+					 	#{status},
+				</if>
+			 	<if test=" null != income">
+					 	#{income},
+				</if>
+			 	<if test=" null != sledger">
+					 	#{sledger},
+				</if>
+			 	<if test=" null != yledger">
+					 	#{yledger},
+				</if>
+			 	<if test=" null != pledger">
+					 	#{pledger},
+				</if>
+			 	<if test=" null != stdate">
+					 	#{stdate},
+				</if>
+			 	<if test=" null != endate">
+					 	#{endate},
+				</if>
+			 	<if test=" null != sdate">
+					 	#{sdate},
+				</if>
+				<if test=" null != remarks">
+					#{remarks},
+				</if>
+				<if test=" null != flatAgio">
+					#{flatAgio},
+				</if>
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_seller_agio WHERE aid IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterMap="sellerAgio">
+		UPDATE t_seller_agio
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != aid">
+					aid = #{aid},
+				</if>
+				<if test=" null != sellerid">
+					sellerid = #{sellerid},
+				</if>
+				<if test=" null != type">
+					type = #{type},
+				</if>
+				<if test=" null != baseagio">
+					baseagio = #{baseagio},
+				</if>
+				<if test=" null != status">
+					status = #{status},
+				</if>
+				<if test=" null != income">
+					Income = #{income},
+				</if>
+				<if test=" null != sledger">
+					sledger = #{sledger},
+				</if>
+				<if test=" null != yledger">
+					yledger = #{yledger},
+				</if>
+				<if test=" null != pledger">
+					pledger = #{pledger},
+				</if>							
+				<if test=" null != stdate">
+				   stdate = #{stdate},
+				</if>
+				<if test=" null != endate">
+				   endate = #{endate},
+				</if>
+				<if test=" null != sdate">
+					sdate = #{sdate},
+				</if>
+				<if test=" null != remarks">
+					remarks = #{remarks},
+				</if>
+				<if test=" null != flatAgio">
+					flat_agio = #{flatAgio},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != aid and '' != aid">
+				aid = #{aid}
+			</if>
+		</where>
+	</update>
+		<update id="updatebysellerid" parameterMap="sellerAgio">
+		UPDATE t_seller_agio
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != sellerid">
+					sellerid = #{sellerid},
+				</if>
+				<if test=" null != aid">
+					aid = #{aid},
+				</if>
+				<if test=" null != type">
+					type = #{type},
+				</if>
+				<if test=" null != baseagio">
+					baseagio = #{baseagio},
+				</if>
+				<if test=" null != status">
+					status = #{status},
+				</if>
+				<if test=" null != income">
+					Income = #{income},
+				</if>
+				<if test=" null != sledger">
+					sledger = #{sledger},
+				</if>
+				<if test=" null != yledger">
+					yledger = #{yledger},
+				</if>
+				<if test=" null != pledger">
+					pledger = #{pledger},
+				</if>							
+				<if test=" null != stdate">
+				   stdate = #{stdate},
+				</if>
+				<if test=" null != endate">
+				   endate = #{endate},
+				</if>
+				<if test=" null != sdate">
+					sdate = #{sdate},
+				</if>
+				<if test=" null != remarks">
+					remarks = #{remarks},
+				</if>
+				<if test=" null != ratio ">
+					ratio = #{ratio},
+				</if>
+				<if test=" null != flatAgio">
+					flat_agio = #{flatAgio},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != sellerid and '' != sellerid">
+				sellerid = #{sellerid}
+			</if>
+		</where>
+	</update>
+	<update id="updatebyselleridAndstatusAndtype" parameterMap="sellerAgio">
+		UPDATE t_seller_agio
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != aid">
+					aid = #{aid},
+				</if>
+				<if test=" null != type">
+					type = #{type},
+				</if>
+				<if test=" null != baseagio">
+					baseagio = #{baseagio},
+				</if>
+				<if test=" null != status">
+					status = #{status},
+				</if>
+				<if test=" null != income">
+					Income = #{income},
+				</if>
+				<if test=" null != sledger">
+					sledger = #{sledger},
+				</if>
+				<if test=" null != yledger">
+					yledger = #{yledger},
+				</if>
+				<if test=" null != pledger">
+					pledger = #{pledger},
+				</if>							
+				<if test=" null != stdate">
+				   stdate = #{stdate},
+				</if>
+				<if test=" null != endate">
+				   endate = #{endate},
+				</if>
+				<if test=" null != sdate">
+					sdate = #{sdate},
+				</if>
+				<if test=" null != remarks">
+					remarks = #{remarks},
+				</if>
+				<if test=" null != flatAgio">
+					flat_agio = #{flatAgio},
+				</if>
+				<if test=" null != ratio">
+					ratio = #{ratio},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != sellerid">
+				sellerid = #{sellerid}
+			</if>
+			<if test="null != type">
+				and type = #{type}
+			</if>
+			<if test="null != status">
+				and status = #{status}
+			</if>
+		</where>
+	</update>
+	
+	<select id="getList" resultMap="sellerAgioMap" parameterMap="sellerAgio">
+		SELECT agion.*
+			FROM 
+				(SELECT 
+					-1 AS id,
+					aid,
+					sellerid,
+					TYPE,																							     
+					baseagio,
+					STATUS,	
+					-1 AS operation,													    
+					Income,                                    
+					sledger,                                                                                               
+					yledger,                                                                                              
+					pledger,                                                                                              
+					stdate,                                                                                     
+					endate,                                                                                         
+					WEEK,                
+					weektime,                                                                                 
+					eweektime,                                                                                        
+					sdate,                                                                                                
+					remarks,
+					-1 AS uid,
+					-1 AS excdate
+				FROM t_seller_agio ta
+				UNION ALL
+				SELECT 
+					id,                                                                                                        
+					aid,                                                                      
+					sellerid, 
+					TYPE AS TYPE, 
+					baseagio,
+					STATUS,                                                                                                          
+					operation, 
+					Income, 
+					sledger,                                                                                                      
+					yledger,                                                                                            
+					pledger,                                                                                                        
+					stdate,                                                                                           
+					endate,
+					WEEK, 
+					weektime,                                                                            
+					eweektime, 
+					sdate,
+					remarks,                                    
+					uid,                                                                                                          
+					excdate
+				FROM t_agio_record tr
+				) agion
+		<where>
+			1=1
+			<if test=" null != aid">
+				AND aid = #{aid}
+			</if>
+			<if test=" null != sellerid">
+				AND sellerid = #{sellerid}
+			</if>
+			<if test=" null != type">
+				AND type = #{type}
+			</if>
+			<if test=" null != baseagio">
+				AND baseagio = #{baseagio}
+			</if>
+			<if test=" null != status">
+				AND status = #{status}
+			</if>
+			<if test=" null != income">
+				AND Income = #{income}
+			</if>
+			<if test=" null != sledger">
+				AND sledger = #{sledger}
+			</if>
+			<if test=" null != yledger">
+				AND yledger = #{yledger}
+			</if>
+			<if test=" null != pledger">
+				AND pledger = #{pledger}
+			</if>
+			<if test=" null != stdateStart">
+				AND stdate &gt;= #{stdateStart}
+			</if>
+			<if test=" null != stdateEnd">
+				AND stdate &lt;= #{stdateEnd}
+			</if>
+			<if test=" null != endateStart">
+				AND endate &gt;= #{endateStart}
+			</if>
+			<if test=" null != endateEnd">
+				AND endate &lt;= #{endateEnd}
+			</if>
+			<if test=" null != sdate">
+				AND sdate = #{sdate}
+			</if>
+			<if test=" null != remarks">
+				AND	remarks = #{remarks}
+			</if>
+		</where>
+			ORDER BY id 
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="sellerAgio">
+		SELECT COUNT(1)
+			FROM 
+				(SELECT 
+					-1 AS id,
+					aid,
+					sellerid,
+					TYPE,																							     
+					baseagio,
+					STATUS,	
+					-1 AS operation,													    
+					Income,                                    
+					sledger,                                                                                               
+					yledger,                                                                                              
+					pledger,                                                                                              
+					stdate,                                                                                     
+					endate,                                                                                         
+					WEEK,                
+					weektime,                                                                                 
+					eweektime,                                                                                        
+					sdate,                                                                                                
+					remarks,
+					-1 AS uid,
+					-1 AS excdate
+				FROM t_seller_agio ta
+				UNION ALL
+				SELECT 
+					id,                                                                                                        
+					aid,                                                                      
+					sellerid, 
+					-1 AS TYPE, 
+					baseagio,
+					STATUS,                                                                                                          
+					operation, 
+					Income, 
+					sledger,                                                                                                      
+					yledger,                                                                                            
+					pledger,                                                                                                        
+					stdate,                                                                                           
+					endate,
+					WEEK, 
+					weektime,                                                                            
+					eweektime, 
+					sdate,
+					remarks,                                    
+					uid,                                                                                                          
+					excdate
+				FROM t_agio_record tr
+				) agion
+		<where>
+			1=1
+			<if test=" null != aid">
+				AND aid = #{aid}
+			</if>
+			<if test=" null != sellerid">
+				AND sellerid = #{sellerid}
+			</if>
+			<if test=" null != type">
+				AND type = #{type}
+			</if>
+			<if test=" null != baseagio">
+				AND baseagio = #{baseagio}
+			</if>
+			<if test=" null != status">
+				AND status = #{status}
+			</if>
+			<if test=" null != income">
+				AND Income = #{income}
+			</if>
+			<if test=" null != sledger">
+				AND sledger = #{sledger}
+			</if>
+			<if test=" null != yledger">
+				AND yledger = #{yledger}
+			</if>
+			<if test=" null != pledger">
+				AND pledger = #{pledger}
+			</if>
+			<if test=" null != stdateStart">
+				AND stdate &gt;= #{stdateStart}
+			</if>
+			<if test=" null != stdateEnd">
+				AND stdate &lt;= #{stdateEnd}
+			</if>
+			<if test=" null != endateStart">
+				AND endate &gt;= #{endateStart}
+			</if>
+			<if test=" null != endateEnd">
+				AND endate &lt;= #{endateEnd}
+			</if>
+			<if test=" null != sdate">
+				AND sdate = #{sdate}
+			</if>
+			<if test=" null != remarks">
+				AND	remarks = #{remarks}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Long">
+		SELECT Max(aid) AS VALUE FROM t_seller_agio
+	</select>
+	
+	<select id="getObject" resultMap="sellerAgioMap" parameterType="Long">
+		SELECT * FROM t_seller_agio WHERE aid = #{0}
+	</select>
+	
+	<!-- 根据商家id查询商家当前使用的折扣信息 -->
+	<select id="getUsingCommonAgion" resultMap="sellerAgioMap" parameterType="Long">
+		SELECT * FROM t_seller_agio WHERE sellerid = #{0} and type = 1  AND STATUS=1
+	</select>
+	
+</mapper>

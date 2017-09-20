@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.manor.dao.ManorFlowerRelationDao" >
+  <parameterMap type="ManorFlowerRelation" id="manorFlowerRelation"></parameterMap>
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.manor.entity.TManorFlowerRelation" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="TINYINT" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="location" property="location" jdbcType="TINYINT" />
+    <result column="pid" property="pid" jdbcType="INTEGER" />
+    <result column="left_node" property="leftNode" jdbcType="INTEGER" />
+    <result column="right_node" property="rightNode" jdbcType="INTEGER" />
+    <result column="zid" property="zid" jdbcType="INTEGER" />
+    <result column="level" property="level" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="from_uid" property="fromUid" jdbcType="INTEGER" />
+    <result column="state" property="state" jdbcType="TINYINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, type, end_time, location, pid, left_node, right_node, zid, level, uid, from_uid, 
+    state
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_manor_flower_relation
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_manor_flower_relation
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.manor.entity.TManorFlowerRelation" >
+    insert into t_manor_flower_relation
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="endTime != null" >
+        end_time,
+      </if>
+      <if test="location != null" >
+        location,
+      </if>
+      <if test="pid != null" >
+        pid,
+      </if>
+      <if test="leftNode != null" >
+        left_node,
+      </if>
+      <if test="rightNode != null" >
+        right_node,
+      </if>
+      <if test="zid != null" >
+        zid,
+      </if>
+      <if test="level != null" >
+        level,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="fromUid != null" >
+        from_uid,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=TINYINT},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="location != null" >
+        #{location,jdbcType=TINYINT},
+      </if>
+      <if test="pid != null" >
+        #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="leftNode != null" >
+        #{leftNode,jdbcType=INTEGER},
+      </if>
+      <if test="rightNode != null" >
+        #{rightNode,jdbcType=INTEGER},
+      </if>
+      <if test="zid != null" >
+        #{zid,jdbcType=INTEGER},
+      </if>
+      <if test="level != null" >
+        #{level,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="fromUid != null" >
+        #{fromUid,jdbcType=INTEGER},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.manor.entity.TManorFlowerRelation" >
+    update t_manor_flower_relation
+    <set >
+      <if test="type != null" >
+        type = #{type,jdbcType=TINYINT},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="location != null" >
+        location = #{location,jdbcType=TINYINT},
+      </if>
+      <if test="pid != null" >
+        pid = #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="leftNode != null" >
+        left_node = #{leftNode,jdbcType=INTEGER},
+      </if>
+      <if test="rightNode != null" >
+        right_node = #{rightNode,jdbcType=INTEGER},
+      </if>
+      <if test="zid != null" >
+        zid = #{zid,jdbcType=INTEGER},
+      </if>
+      <if test="level != null" >
+        level = #{level,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="fromUid != null" >
+        from_uid = #{fromUid,jdbcType=INTEGER},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+	<!-- 自定义sql区域 -->
+	<sql id="baseSellerCondition">
+		<if test="id != null">
+			AND t.id = #{id,jdbcType=INTEGER}
+		</if>
+		<if test="null != type">
+			AND t.type = #{type,jdbcType=INTEGER}
+		</if>
+		<if test="location != null">
+			AND t.location = #{location,jdbcType=INTEGER}
+		</if>
+		<if test="leftNode != null">
+			AND t.left_node = #{leftNode,jdbcType=INTEGER},
+		</if>
+		<if test="rightNode != null">
+			AND t.right_node = #{rightNode,jdbcType=INTEGER},
+		</if>
+		<if test="uid != null">
+			AND t.uid = #{uid,jdbcType=INTEGER}
+		</if>
+		<if test="fromUid != null">
+			AND t.from_uid = #{fromUid,jdbcType=INTEGER},
+		</if>
+	</sql>
+
+	<select id="getFlowerRelationInfo" parameterMap="manorFlowerRelation"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM t_manor_flower_relation t 
+		<where>
+			1 = 1
+			<include refid="baseSellerCondition" />
+			LIMIT 0,1
+		</where>
+	</select>
+
+	<select id="getFlowerRelationNumberInfo" parameterMap="manorFlowerRelation" resultType="manorFlowerRelation">
+		SELECT COUNT(1) flowerNumber, location
+		FROM `t_manor_flower_relation` t
+		<where>
+			1 = 1
+			<!-- 类型（0：花苗；1：花朵；） -->
+			AND type = 1 
+			AND state = 0 
+			<![CDATA[
+			    AND end_time > NOW()
+				AND left_node > #{leftNode,jdbcType=INTEGER} 
+			    AND right_node < #{rightNode,jdbcType=INTEGER}
+		  	]]>
+			GROUP BY location
+		</where>
+	</select>
+
+    <!--查询子节点-->
+    <select id="selectSubNodes" resultMap="FlowerNodeReusltMap">
+        SELECT  *, CONCAT('f:',from_uid,' u:',uid) name FROM t_manor_flower_relation
+        WHERE pid = #{pid}
+        order by location asc
+    </select>
+    <select id="selectByNode" resultMap="BaseResultMap">
+        SELECT * from t_manor_flower_relation where
+            left_node >= #{node.leftNode} and #{node.rightNode} >= right_node
+            and state = 0 and end_time > now()
+            order by level desc
+    </select>
+
+    <!-- 当前在种的花朵 -->
+	<select id="getCurrentFlowerRelationCount" parameterType="Object" resultMap="BaseResultMap">
+		SELECT COUNT(1) as currentFlowerRelationCount, from_uid
+		FROM `t_manor_flower_relation` t
+		<where>
+			1 = 1
+			AND t.type = 1 AND t.state = 0
+			AND t.from_uid IN
+			<foreach item="item" index="index" collection="array" open="("
+				separator="," close=") ">
+				#{item}
+			</foreach>
+<!-- 			AND (t.uid NOT IN -->
+<!-- 			<foreach item="item" index="index" collection="array" open="(" -->
+<!-- 				separator="," close=") "> -->
+<!-- 				#{item} -->
+<!-- 			</foreach> -->
+<!-- 			OR t.uid IS NULL) -->
+			<![CDATA[
+			    AND end_time > NOW()
+		  	]]>
+		  	GROUP BY from_uid
+		</where>
+	</select>
+
+	<!-- 当前在种的花朵+历史枯萎的花朵 -->
+	<select id="getTotalFlowerRelationCount" parameterType="Object" resultMap="BaseResultMap">
+		SELECT COUNT(1) as totalFlowerRelationCount, from_uid
+		FROM `t_manor_flower_relation` t
+		<where>
+			1 = 1
+			AND t.type = 1 AND t.state = 0
+            AND t.from_uid IN
+            <foreach item="item" index="index" collection="array" open="("
+				separator="," close=") ">
+				#{item}
+			</foreach>
+<!--             AND (t.uid NOT IN -->
+<!-- 			<foreach item="item" index="index" collection="array" open="(" -->
+<!-- 				separator="," close=") "> -->
+<!-- 				#{item} -->
+<!-- 			</foreach> -->
+<!-- 			OR t.uid IS NULL) -->
+		  	GROUP BY from_uid
+		</where>
+	</select>
+
+    <resultMap id="FlowerNodeReusltMap" type="com.xmniao.xmn.core.manor.entity.FlowerNode">
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="pid" property="pid" jdbcType="INTEGER" />
+        <result column="id" property="name" javaType="String"/>
+        <result column="name" property="title" javaType="String"/>
+        <result column="left_node" property="leftNode" javaType="Integer"/>
+        <result column="right_node" property="rightNode" javaType="Integer"/>
+        <result column="location" property="location" javaType="Integer"/>
+        <result column="uid" property="uid" javaType="Integer"/>
+        <result column="from_uid" property="fromUid" javaType="Integer"/>
+        <result column="relation_chain" property="relationChain" javaType="String"/>
+        <result column="count" property="count" javaType="Integer"/>
+    </resultMap>
+
+    <select id="selectInitNode" resultMap="FlowerNodeReusltMap">
+        SELECT * FROM t_manor_flower_relation_copy
+        WHERE uid = #{uid}
+    </select>
+
+
+    <select id="selectAllNode" resultMap="FlowerNodeReusltMap">
+
+        SELECT
+            s.*, count(s.relation_chain) count
+        FROM `t_manor_flower_relation` s
+            LEFT JOIN t_manor_flower_relation p on s.relation_chain  REGEXP CONCAT('^',p.relation_chain,'.+')
+        where s.state = 0 and s.end_time > now() and p.id = #{initNode.id}
+        group by s.relation_chain
+        order by s.level,s.location;
+    </select>
+    <select id="selectLocationByRelationChain" resultType="java.lang.Integer">
+      select location
+      from t_manor_flower_relation WHERE relation_chain = #{relationChain}
+      order by level
+      limit 1;
+    </select>
+    <select id="selectAllNodeEx" resultMap="FlowerNodeReusltMap">
+        select * from t_manor_flower_relation_copy where relation_chain  REGEXP CONCAT('^',(select relation_chain from t_manor_flower_relation_copy where uid = #{uid}),'.+')
+        ORDER BY level,location
+        limit 1000
+    </select>
+    <select id="countPerishedFlowers" resultType="java.lang.Integer">
+        select count(1)
+        from t_manor_flower_relation s LEFT JOIN t_manor_flower_relation p ON s.relation_chain REGEXP CONCAT('^',p.relation_chain,'.*')
+        where p.id = #{nodeId} and  now() > s.end_time
+    </select>
+    <select id="countLivedFlowers" resultType="java.lang.Integer">
+        select count(1)
+        from t_manor_flower_relation s LEFT JOIN t_manor_flower_relation p ON s.relation_chain REGEXP CONCAT('^',p.relation_chain,'.*')
+        where p.id = #{nodeId} and s.end_time > now()
+    </select>
+</mapper>

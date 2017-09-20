@@ -1,0 +1,184 @@
+package com.xmniao.xmn.core.base;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.xmniao.xmn.core.util.proxy.annotation.DataSource;
+
+/**
+ * 
+ * 项目名称：XmnWeb
+ * 
+ * 类名称：BaseDao
+ * 
+ * 类描述： 基础业务方法
+ * 
+ * 创建人： zhou'sheng
+ * 
+ * 创建时间：2014年11月3日 下午8:06:42
+ * 
+ * Copyright (c) 深圳市XXX有限公司-版权所有
+ */
+public interface BaseDao<T> {
+
+	/**
+	 * @方法名：addBatch
+	 * 
+	 * @方法描述：添加
+	 * 
+	 * @传入参数：List<T> list（插入集合）
+	 * 
+	 * @返回值：Integer （影响条数）
+	 * 
+	 * @创建人：zhou'sheng
+	 * 
+	 * @创建时间：2014年10月31日17时42分21秒
+	 * 
+	 */
+	@Transactional(propagation = Propagation.REQUIRED)
+	public Integer addBatch(List<T> list);
+
+	/**
+	 * @方法名：add
+	 * 
+	 * @方法描述：添加
+	 * 
+	 * @传入参数：TLog log（对象）
+	 * 
+	 * @创建人：zhou'sheng
+	 * 
+	 * @创建时间：2014年10月31日17时42分21秒
+	 * 
+	 */
+	@Transactional(propagation = Propagation.REQUIRED)
+	public void add(T t);
+	
+	/**
+	 * @方法名：addReturnId
+	 * 
+	 * @方法描述：添加 并返回 插入id
+	 * 
+	 * @传入参数：TLog log（对象）
+	 * 
+	 * @创建人：zhou'sheng
+	 * 
+	 * @创建时间：2014年10月31日17时42分21秒
+	 * 
+	 */
+	public int addReturnId(T t);
+
+	/**
+	 * @方法名：delete
+	 * 
+	 * @方法描述：删除
+	 * 
+	 * @传入参数：Object[] objects（Array）
+	 * 
+	 * @返回值：Integer （影响条数）
+	 * 
+	 * @创建人：zhou'sheng
+	 * 
+	 * @创建时间：2014年10月31日17时42分21秒
+	 * 
+	 */
+	@Transactional(propagation = Propagation.REQUIRED)
+	public Integer delete(Object[] objects);
+
+	/**
+	 * @方法名：update
+	 * 
+	 * @方法描述：修改
+	 * 
+	 * @传入参数：T t（对象）
+	 * 
+	 * @返回值：Integer （影响条数）
+	 * 
+	 * @创建人：zhou'sheng
+	 * 
+	 * @创建时间：2014年10月31日17时42分21秒
+	 * 
+	 */
+	@Transactional(propagation = Propagation.REQUIRED)
+	public Integer update(T t);
+	
+	/**
+	 * 方法描述：批量更新数据状态 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2016-12-10下午3:49:22 <br/>
+	 * @param map
+	 */
+	@Transactional(propagation = Propagation.REQUIRED)
+	void updateBatch(Map<String, Object> map);
+
+	/**
+	 * @方法名：getList
+	 * 
+	 * @方法描述：查询
+	 * 
+	 * @传入参数：T t（对象）
+	 * 
+	 * @返回值：List<T > （T 集合）
+	 * 
+	 * @创建人：zhou'sheng
+	 * 
+	 * @创建时间：2014年10月31日17时42分21秒
+	 * 
+	 */
+	@DataSource("slave")
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+	public List<T> getList(T t);
+
+	/**
+	 * @方法名：getMaxId
+	 * 
+	 * @方法描述：查询
+	 * 
+	 * @返回值：Integer（Max ID）
+	 * 
+	 * @创建人：zhou'sheng
+	 * 
+	 * @创建时间：2014年10月31日17时42分21秒
+	 * 
+	 */
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+	public Long getMaxId();
+
+	/**
+	 * @方法名：getObject
+	 * 
+	 * @方法描述：查询
+	 * 
+	 * @传入参数：Long id
+	 * 
+	 * @返回值：T （T 对象）
+	 * 
+	 * @创建人：zhou'sheng
+	 * 
+	 * @创建时间：2014年10月31日17时42分21秒
+	 * 
+	 */
+	@DataSource("slave")
+	public T getObject(Long id);
+
+	/**
+	 * @方法名：count
+	 * 
+	 * @方法描述：统计
+	 * 
+	 * @传入参数：T t（对象）
+	 * 
+	 * @返回值：Long （总条数）
+	 * 
+	 * @创建人：zhou'sheng
+	 * 
+	 * @创建时间：2014年10月31日17时42分21秒
+	 * 
+	 */
+	@DataSource("slave")
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+	public Long count(T t);
+
+}

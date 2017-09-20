@@ -1,0 +1,51 @@
+package com.xmniao.xmn.core.manor.dao;
+
+import com.xmniao.xmn.core.manor.entity.ManorFlowerBranch;
+import com.xmniao.xmn.core.manor.entity.ManorFlowerCount;
+import com.xmniao.xmn.core.util.proxy.annotation.DataSource;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+
+public interface ManorFlowerBranchMapper {
+    int deleteByPrimaryKey(String id);
+
+    int insert(ManorFlowerBranch record);
+
+    int insertSelective(ManorFlowerBranch record);
+
+    @DataSource("joint")
+    ManorFlowerBranch selectByPrimaryKey(String id);
+
+    int updateByPrimaryKeySelective(ManorFlowerBranch record);
+
+    int updateByPrimaryKey(ManorFlowerBranch record);
+
+    @DataSource("joint")
+    List<ManorFlowerBranch> selectAllSubBranch(@Param("uid") Integer uid);
+
+    @DataSource("joint")
+    int countByTypeInBranch(@Param("flowerType") int flowerType, @Param("branch") ManorFlowerBranch branch);
+
+    @DataSource("joint")
+    int countByTypeAndFloristInBranch(@Param("flowerType") int flowerType, @Param("uid") Integer uid, @Param("branch") ManorFlowerBranch branch);
+
+
+    /** 按花朵类型统计分支节点下所有的未枯萎花朵 */
+    ManorFlowerCount countFlowerByTypeInBranch(@Param("branch") ManorFlowerBranch branch,
+                                               @Param("types") int[] types,
+                                               @Param("perishType") int perishType,
+                                               @Param("shareTypes") int[] shareTypes
+
+    );
+
+    /** 按花朵类型统计分支节点下自己种值未枯萎花朵 */
+    ManorFlowerCount countFlowerByTypeAndFloristInBranch(@Param("branch") ManorFlowerBranch branch,
+                                                         @Param("types") int[] types,
+                                                         @Param("floristUid") Integer floristUid,
+                                                         @Param("perishType") int perishType,
+                                                         @Param("shareTypes") int[] shareTypes
+    );
+
+
+}

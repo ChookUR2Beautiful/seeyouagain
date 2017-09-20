@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.cloud_design.dao.DMaterialAttrValDao" >
+
+
+  <resultMap id="caterialAttrValMap" type="com.xmniao.xmn.core.cloud_design.entity.DMaterialAttrVal" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="material_attr_id" property="materialAttrId" jdbcType="BIGINT" />
+    <result column="category_attr_val_id" property="categoryAttrValId" jdbcType="BIGINT" />
+    <result column="val" property="val" jdbcType="VARCHAR" />
+    <result column="sort_val" property="sortVal" jdbcType="INTEGER" />
+  </resultMap>
+  
+  
+  <sql id="caterialAttrVal_column_list" >
+    id, material_attr_id, category_attr_val_id, val, sort_val
+  </sql>
+  
+  
+  <!-- 删除指定物料商品下的规格细项 -->
+  <delete id="deleteByMaterialId" parameterType="java.lang.Long" >
+    DELETE
+	FROM
+		d_material_attr_val 
+	WHERE
+		material_attr_id IN (
+			SELECT
+				attr.id
+			FROM
+				d_material_attr attr
+			WHERE
+				material_id = #{materialId,jdbcType=BIGINT}
+		)
+  </delete>
+  
+  <!-- 批量插入物料规格细项信息 -->
+	<insert id="addBatch" parameterType="java.util.ArrayList">
+		INSERT INTO d_material_attr_val
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<include refid="caterialAttrVal_column_list" /> 
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+			<!-- id, material_attr_id, category_attr_val_id, val, sort_val -->
+				#{item.id},
+				#{item.materialAttrId},
+				#{item.categoryAttrValId},
+				#{item.val},
+				#{item.sortVal}
+			</trim>
+		</foreach>
+	</insert>
+  
+  
+</mapper>

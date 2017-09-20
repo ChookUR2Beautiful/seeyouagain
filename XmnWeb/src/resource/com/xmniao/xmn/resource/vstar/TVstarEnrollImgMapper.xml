@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.vstar.dao.TVstarEnrollImgDao" >
+  
+  
+  <resultMap id="VstarEnrollImgMap" type="com.xmniao.xmn.core.vstar.entity.TVstarEnrollImg" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="pid" property="pid" jdbcType="INTEGER" />
+    <result column="img_type" property="imgType" jdbcType="VARCHAR" />
+    <result column="img_url" property="imgUrl" jdbcType="VARCHAR" />
+    <result column="img_sort" property="imgSort" jdbcType="INTEGER" />
+  </resultMap>
+  
+  
+  <sql id="starEnrollImg_column_list" >
+    id, pid, img_type, img_url, img_sort
+  </sql>
+  
+  <select id="getObject" resultMap="VstarEnrollImgMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="starEnrollImg_column_list" />
+    from t_vstar_enroll_img
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="getList" resultMap="VstarEnrollImgMap" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarEnrollImg" >
+    select 
+    <include refid="starEnrollImg_column_list" />
+    from t_vstar_enroll_img
+    <where>
+    	1=1
+    	<if test="id != null and id != '' " >
+    		and id = #{id}
+    	</if>
+    	<if test="eids != null and eids.size > 0 ">
+    		and pid in
+    		<foreach collection="eids" item="item" index="index" open="(" separator="," close=")">
+		    	#{item}
+		    </foreach>
+    	</if>
+    	<if test="imgType != null and imgType != '' ">
+    		and img_type = #{imgType}
+    	</if>
+    </where>
+    <if test="order != -1">
+    	order by img_sort ASC
+    </if>
+  </select>
+  
+  
+  <delete id="delete" parameterType="Object" >
+    delete from t_vstar_enroll_img
+    where id in
+    <foreach collection="array" item="item" index="index" open="(" separator="," close=")">
+    	#{item}
+    </foreach>
+  </delete>
+  
+  
+  <insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarEnrollImg" >
+    insert into t_vstar_enroll_img
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="pid != null" >
+        pid,
+      </if>
+      <if test="imgType != null" >
+        img_type,
+      </if>
+      <if test="imgUrl != null" >
+        img_url,
+      </if>
+      <if test="imgSort != null" >
+        img_sort,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="pid != null" >
+        #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="imgType != null" >
+        #{imgType,jdbcType=VARCHAR},
+      </if>
+      <if test="imgUrl != null" >
+        #{imgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="imgSort != null" >
+        #{imgSort,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarEnrollImg" >
+    update t_vstar_enroll_img
+    <set >
+      <if test="pid != null" >
+        pid = #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="imgType != null" >
+        img_type = #{imgType,jdbcType=VARCHAR},
+      </if>
+      <if test="imgUrl != null" >
+        img_url = #{imgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="imgSort != null" >
+        img_sort = #{imgSort,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 获取待同步主播相册信息 -->
+  <select id="getImgList" resultType="map" parameterType="map">
+  	SELECT
+		img.img_url AS imgUrl,
+		player.enroll_id AS enrollId,
+		player.liver_id AS liverId
+	FROM
+		t_vstar_enroll_img img
+	LEFT JOIN t_vstar_player_info player ON img.pid = player.enroll_id
+	WHERE
+		img.img_type = #{imgType}
+	AND player.enroll_id IN 
+	<foreach collection="enrollIdList" index="index" item="item" open="(" separator="," close=")">
+		#{item}
+	</foreach>
+  </select>
+  
+</mapper>

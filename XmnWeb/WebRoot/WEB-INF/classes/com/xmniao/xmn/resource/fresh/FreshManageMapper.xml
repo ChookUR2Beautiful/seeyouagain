@@ -1,0 +1,738 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.fresh.dao.FreshManageDao">
+	 <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.fresh.entity.ProductInfo" >
+    <id column="pid" property="pid" jdbcType="INTEGER" />
+    <result column="codeId" property="codeId" jdbcType="BIGINT" />
+    <result column="brand_id" property="brandId" jdbcType="INTEGER" />
+    <result column="standard" property="standard" jdbcType="VARCHAR" />
+    <result column="pname" property="pname" jdbcType="VARCHAR" />
+    <result column="goodsName" property="goodsName" jdbcType="VARCHAR" />
+    <result column="classa" property="classa" jdbcType="INTEGER" />
+    <result column="secondary" property="secondary" jdbcType="INTEGER" />
+    <result column="price" property="price" jdbcType="DOUBLE" />
+    <result column="discount" property="discount" jdbcType="DOUBLE" />
+    <result column="batching" property="batching" jdbcType="VARCHAR" />
+    <result column="weight" property="weight" jdbcType="VARCHAR" />
+    <result column="suttle" property="suttle" jdbcType="VARCHAR" />
+    <result column="quality" property="quality" jdbcType="INTEGER" />
+    <result column="isAdditives" property="isAdditives" jdbcType="INTEGER" />
+    <result column="packing" property="packing" jdbcType="VARCHAR" />
+    <result column="production" property="production" jdbcType="TIMESTAMP" />
+    <result column="brandName" property="brandName" jdbcType="VARCHAR" />
+    <result column="pstatus" property="pstatus" jdbcType="INTEGER" />
+    <result column="crafts" property="crafts" jdbcType="VARCHAR" />
+    <result column="sellType" property="sellType" jdbcType="VARCHAR" />
+    <result column="deal" property="deal" jdbcType="VARCHAR" />
+    <result column="place" property="place" jdbcType="VARCHAR" />
+    <result column="province" property="province" jdbcType="VARCHAR" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="stored" property="stored" jdbcType="VARCHAR" />
+    <result column="store" property="store" jdbcType="INTEGER" />
+    <result column="sales" property="sales" jdbcType="INTEGER" />
+    <result column="choice" property="choice" jdbcType="INTEGER" />
+    <result column="cname" property="cname" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="licenseId" property="licenseId" jdbcType="VARCHAR" />
+    <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="rdate" property="rdate" jdbcType="TIMESTAMP" />
+    <result column="udate" property="udate" jdbcType="TIMESTAMP" />
+    <result column="dstatus" property="dstatus" jdbcType="INTEGER" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+    <result column="supplierId" property="supplierId" jdbcType="INTEGER" />
+    <result column="supplierName" property="supplierName" jdbcType="VARCHAR" />
+    <result column="breviary" property="breviary" jdbcType="VARCHAR" />
+    <result column="salesInfo" property="salesInfo" jdbcType="VARCHAR" />
+    <result column="isIntegral" property="isIntegral" jdbcType="INTEGER" />
+    <result column="integral" property="integral" jdbcType="DECIMAL" />
+    <result column="saleType" property="saleType" jdbcType="INTEGER" />
+    <result column="cash" property="cash" jdbcType="DECIMAL" />
+    <result column="purchasePrice" property="purchasePrice" jdbcType="DECIMAL" />
+    <result column="deliveryType" property="deliveryType" jdbcType="INTEGER" />
+    <result column="allowRefund" property="allowRefund" jdbcType="BIT" />
+    <result column="expWeight" property="expWeight" jdbcType="DOUBLE" />
+    <result column="expTid" property="expTid" jdbcType="INTEGER" />
+    <result column="goodsSerial" property="goodsSerial" jdbcType="VARCHAR" />
+    <result column="barcode" property="barcode" jdbcType="VARCHAR" />
+    <result column="choiceSort" property="choiceSort" jdbcType="INTEGER" />
+  </resultMap>
+   <sql id="Base_Column_List" >
+    pid, codeId, brand_id, standard, pname, goodsName, classa, secondary, price, discount, 
+    batching, weight, suttle, quality, isAdditives, packing, production, brandName, pstatus, 
+    crafts, sellType, deal, place, province, city, stored, store, sales, choice, cname, 
+    address, licenseId, tel, rdate, udate, dstatus, sort, supplierId, supplierName, breviary, 
+    salesInfo, isIntegral, integral, saleType, cash, purchasePrice, deliveryType, allowRefund, 
+    expWeight, expTid, goodsSerial, barcode, choiceSort
+  </sql>
+  <sql id="InfoFieldList" >
+    pid, codeId,brand_id,standard, pname, goodsName, classa, secondary, price, discount,
+    batching, weight, suttle, quality, isAdditives, packing, production, brandName, pstatus, 
+    crafts, sellType, deal, place, province, city, stored, store, sales, choice, cname, 
+    address, licenseId, tel, rdate, udate, dstatus, sort, supplierId, supplierName, breviary,salesInfo,isIntegral,
+    purchasePrice,integral,saleType,cash,allowRefund,deliveryType,expWeight,expTid,deliveryCity,notDeliveryCity,saleCity,notSaleCity,
+    goodsSerial,barcode  
+  </sql>
+  <sql id="DetailFieldList">
+    fid, codeId, pic1, pic2, pic3, pic4, pic5, delivery, postnote, servicenote, img1, 
+    img2, img3, img4, img5, img6, img7, img8, img9, img10, img11, img12, rdate, udate, 
+    sort, remarks,html
+  </sql>
+  
+  <select id="getProductInfoByType" resultMap="BaseResultMap">
+  	  select t_product_info.*
+  	  from t_product_info
+  	  join t_fresh_type on t_fresh_type.id = t_product_info.classa
+  	  where classa in (select id  from t_fresh_type where id = #{classa} or fid = #{classas} )
+  </select>
+  
+	<!-- 按需求查询产品列表 -->
+	<select id="getProductList" resultType="com.xmniao.xmn.core.fresh.entity.ProductInfo" parameterType="com.xmniao.xmn.core.fresh.entity.ProductInfo">
+ 		SELECT 
+			pid, codeId, standard, pname, goodsName, classa, secondary, price, discount,brand_id, 
+		    batching, weight, suttle, quality, isAdditives, packing, production, pstatus, 
+		    crafts, sellType, deal, place, province, city, stored, store, sales, choice, cname, 
+		    address, licenseId, tel, rdate, udate, dstatus, sort, supplierId, breviary,salesInfo,isIntegral,
+		    purchasePrice,integral,saleType,cash,allowRefund,deliveryType,expWeight,expTid,deliveryCity,notDeliveryCity,saleCity,notSaleCity,
+		    goodsSerial,barcode ,tft1.name classaStr,tft2.name secondaryStr,ta1.title provinceStr,ta2.title cityStr,
+			tp.supplierName,tp.contacts,tp.supplierPhone,tp.supplierAddress,tpt.expTitle,brand.brand_name as brandName 
+		FROM
+			t_product_info tinfo
+		LEFT JOIN 
+			(SELECT id,NAME FROM t_fresh_type) tft1 
+    	ON 
+    		tft1.id = tinfo.classa
+  		LEFT JOIN 
+  			(SELECT id,NAME FROM t_fresh_type) tft2 
+    	ON 
+    		tft2.id = tinfo.secondary 
+    	LEFT JOIN
+    		(SELECT area_id,title FROM t_area) ta1
+    	ON ta1.area_id = tinfo.province	
+    	LEFT JOIN
+    		(SELECT area_id,title FROM t_area ) ta2
+    	ON ta2.area_id = tinfo.city	
+    	LEFT JOIN 
+    		(SELECT supplierId AS spId,supplierName,contacts,phone AS supplierPhone,address AS supplierAddress FROM t_supplier WHERE `status` = '0') tp 
+    	ON tp.spId = tinfo.supplierId 
+    	LEFT JOIN 
+    		(SELECT title AS expTitle,tid FROM t_postage_template) tpt 
+    	ON tpt.tid = tinfo.expTid 
+    	LEFT JOIN 
+    		(SELECT id,fid FROM t_fresh_type where dstatus = 0) type 
+    	ON type.id = tinfo.classa
+    	LEFT JOIN 
+    		(SELECT  id,name as brand_name FROM t_fresh_brand where status = 0 ) brand 
+    	ON brand.id = tinfo.brand_id
+    	LEFT JOIN 
+    		(SELECT ifnull(MAX(t_sale_group.stock),0) as max_stock,codeId as g_codeId FROM t_sale_group  GROUP BY  codeId) group_table
+		ON tinfo.codeId = group_table.g_codeId
+		WHERE 1=1
+			<if test="pname != null and pname != ''">and pname like '%${pname}%'</if>
+			<if test="goodsName != null and goodsName != ''">and goodsName like '%${goodsName}%'</if>
+			<if test="codeId != null">and codeId=#{codeId}</if>
+			<choose>
+				<when test="pstatus == 2">
+					and (((group_table.max_stock = 0 or group_table.max_stock is null) and tinfo.store &lt;= 0) or  pstatus = 2 )
+				</when>
+				<when test="pstatus != null">and pstatus=#{pstatus}</when>
+			</choose>
+			<if test="tel != null and tel != ''">and tel like '${tel}'</if>
+			<if test="supplierId != null">and supplierId =#{supplierId}</if>
+			<if test="supplierName != null and supplierName != ''">and supplierName like '%${supplierName}%'</if>
+			<if test="classa !=null and classa != ''">and (classa=#{classa} or type.fid = #{classa})</if>
+			<if test="minPrice != null and minPrice != 0.0 "><![CDATA[ and discount >= #{minPrice}]]></if>
+			<if test="maxPrice != null and maxPrice != 0.0 "><![CDATA[ and discount <= #{maxPrice}]]></if>
+			<if test="province != null and province != ''">AND province = #{province}</if>
+    		<if test="city != null and city != ''">AND city = #{city}</if>
+    		<if test="choice != null">AND choice = #{choice}</if>
+		ORDER BY sort DESC, sales DESC 
+			<if test=" limit != -1 ">LIMIT ${(page-1)*limit},#{limit}</if>
+	
+	</select>
+	
+	<select id="getByCodeIds" resultMap="BaseResultMap">
+		 select <include refid="Base_Column_List"/> from t_product_info 
+		 where codeId in
+		  <foreach collection="codeIds" item="item" open="(" close=")" separator="," >
+				#{item}		  
+		  </foreach>
+	</select>
+	
+	<!-- 查询产品详情 -->
+	<select id="getProductDetail" parameterType="int" resultType="com.xmniao.xmn.core.fresh.entity.ProductDetail">
+		select <include refid="DetailFieldList" /> from t_product_details where codeId=#{codeId}
+	</select>
+	
+	<!-- 查询符合需求的产品列表总数 -->
+	<select id="getProductCount" resultType="long" parameterType="com.xmniao.xmn.core.fresh.entity.ProductInfo">
+		 SELECT COUNT(1) FROM t_product_info
+		 LEFT JOIN 
+    		(SELECT ifnull(MAX(t_sale_group.stock),0) as max_stock,codeId as g_codeId FROM t_sale_group  GROUP BY  codeId) group_table
+			ON t_product_info.codeId = group_table.g_codeId
+		 where 1=1
+			<if test="pname != null and pname != ''">and pname like '%${pname}%'</if>
+			<if test="goodsName != null and goodsName != ''">and goodsName like '%${goodsName}%'</if>
+			<if test="codeId != null">and codeId=#{codeId}</if>
+			<choose>
+				<when test="pstatus == 2">
+					and (group_table.max_stock = 0 or group_table.max_stock is null or  pstatus = 2 or t_product_info.store &lt;= 0)
+				</when>
+				<when test="pstatus != null">and pstatus=#{pstatus}</when>
+			</choose>
+			<if test="tel != null and tel != ''">and tel like '${tel}'</if>
+			<if test="supplierId != null">and supplierId =#{supplierId}</if>
+			<if test="supplierName != null and supplierName != ''">and supplierName like '%${supplierName}%'</if>
+			<if test="classa !=null and classa != ''">and classa=#{classa}</if>
+			<if test="minPrice != null"><![CDATA[ and discount >= #{minPrice}]]></if>
+			<if test="maxPrice != null"><![CDATA[ and discount <= #{maxPrice}]]></if>
+			<if test="province != null and province != ''">AND province = #{province}</if>
+    		<if test="city != null and city != ''">AND city = #{city}</if>
+    		<if test="choice != null">AND choice = #{choice}</if>
+	</select>
+	
+	<!-- 新增产品信息 -->
+	<insert id="addInfo" useGeneratedKeys="true" keyProperty="pid">
+	    insert into t_product_info (
+			pid, codeId, standard, pname, goodsName, batching, weight, suttle, packing, 
+			production, brandName, crafts, sellType, deal, place, province, city, 
+			stored, cname, address, licenseId,tel, rdate, udate, supplierName,breviary,
+			salesInfo,saleType,cash,allowRefund,deliveryType,expWeight,expTid,
+		<trim suffixOverrides=",">
+			<if test="classa != null">
+			classa,
+			</if> 
+			<if test="secondary != null">
+			secondary,
+			</if> 
+			<if test="price != null">
+			price, 
+			</if>
+			<if test="discount != null">
+			discount, 
+			</if>
+			<if test="quality != null">
+			quality, 
+			</if>
+			<if test="isAdditives != null">
+			isAdditives, 
+			</if>
+			<if test="pstatus != null">
+			pstatus,
+			</if>
+			<if test="store != null">
+			store, 
+			</if>
+			<if test="sales != null">
+			sales, 
+			</if>
+			<if test="choice != null">
+			choice,
+			</if>
+			<if test="dstatus != null">
+			dstatus,
+			</if>
+			<if test="sort != null">
+	      	sort, 
+	      	</if>
+			<if test="supplierId != null">
+			supplierId, 
+			</if>
+			<if test="isIntegral != null">
+			isIntegral,
+			</if>
+			<if test="integral != null">
+			integral,
+			</if>
+			<if test="null != deliveryCity and '' != deliveryCity">
+			deliveryCity,
+			</if>
+			<if test="null != notDeliveryCity and '' != notDeliveryCity">
+			notDeliveryCity,
+			</if>
+			<if test="null != saleCity and '' != saleCity">
+			saleCity,
+			</if>
+			<if test="null != notSaleCity and '' != notSaleCity">
+			notSaleCity,
+			</if>
+			<if test="null != goodsSerial and '' != goodsSerial">
+			goodsSerial,
+			</if>
+			<if test="null != barcode and '' != barcode">
+			barcode, 
+			</if>
+			<if test="null != purchasePrice">
+			purchasePrice,
+			</if>
+			<if test="null != brandId">
+			brand_id, 
+			</if>
+		</trim>
+	      )
+	    values (
+	      #{pid}, #{codeId}, #{standard}, #{pname}, #{goodsName}, #{batching}, #{weight}, 
+	      #{suttle}, #{packing}, #{production}, #{brandName}, #{crafts}, #{sellType}, 
+	      #{deal}, #{place}, #{province}, #{city}, #{stored}, #{cname}, #{address}, #{licenseId}, 
+	      #{tel}, #{rdate}, #{udate}, #{supplierName}, #{breviary},#{salesInfo},#{saleType},#{cash},
+	      #{allowRefund},#{deliveryType},#{expWeight},#{expTid},
+	   <trim suffixOverrides=",">
+		  <if test="classa != null">
+	      #{classa}, 
+	      </if>
+		  <if test="secondary != null">
+	      #{secondary},
+	      </if>
+	      <if test="price != null">
+	      #{price}, 
+	      </if>
+	      <if test="discount != null">
+	      #{discount},
+	      </if>
+	      <if test="quality != null">
+	      #{quality},
+	      </if>
+	      <if test="isAdditives != null">
+	      #{isAdditives}, 
+	      </if>
+	      <if test="pstatus != null">
+	      #{pstatus},
+	      </if>
+	      <if test="store != null">
+	      #{store}, 
+	      </if>
+	      <if test="sales != null">
+	      #{sales}, 
+	      </if>
+	      <if test="choice != null">
+	      #{choice}, 
+	      </if>
+	      <if test="dstatus != null">
+	      #{dstatus}, 
+	      </if>
+	      <if test="sort != null">
+	      #{sort}, 
+	      </if>
+	      <if test="supplierId != null">
+	      #{supplierId}, 
+	      </if>
+	      <if test="isIntegral != null">
+	      #{isIntegral},
+	      </if>
+	       <if test="integral != null">
+	      #{integral},
+	      </if>
+	      <if test="null != deliveryCity and '' != deliveryCity">
+		  #{deliveryCity},
+		  </if>
+		  <if test="null != notDeliveryCity and '' != notDeliveryCity">
+		  #{notDeliveryCity},
+		  </if>
+		  <if test="null != saleCity and '' != saleCity">
+		  #{saleCity},
+		  </if>
+		  <if test="null != notSaleCity and '' != notSaleCity">
+		  #{notSaleCity},
+		  </if>
+		  <if test="null != goodsSerial and '' != goodsSerial">
+		  #{goodsSerial},
+		  </if>
+		  <if test="null != barcode and '' != barcode">
+		  #{barcode},
+		  </if>
+		  <if test="null != purchasePrice">
+		  #{purchasePrice}, 
+		  </if>
+		  <if test="null != brandId">
+		  #{brandId}, 
+		  </if>
+	    </trim>
+	      )
+	</insert>
+	
+	<!-- 批量导入产品信息 -->
+	<insert id="addBatch" parameterType="java.util.ArrayList">
+		INSERT INTO t_product_info
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<include refid="InfoFieldList" /> 
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				#{item.pid},
+				#{item.codeId},
+				#{item.brandId},
+				#{item.standard},
+				#{item.pname},
+				#{item.goodsName},
+				#{item.classa},
+				#{item.secondary},
+				#{item.price},
+				#{item.discount},
+				#{item.batching},
+				#{item.weight},
+				#{item.suttle},
+				#{item.quality},
+				#{item.isAdditives},
+				#{item.packing},
+				#{item.production},
+				#{item.brandName},
+				#{item.pstatus},
+				#{item.crafts},
+				#{item.sellType},
+				#{item.deal},
+				#{item.place},
+				#{item.province},
+				#{item.city},
+				#{item.stored},
+				#{item.store},
+				#{item.sales},
+				#{item.choice},
+				#{item.cname},
+				#{item.address},
+				#{item.licenseId},
+				#{item.tel},
+				#{item.rdate},
+				#{item.udate},
+				#{item.dstatus},
+				#{item.sort},
+				#{item.supplierId},
+				#{item.supplierName},
+				#{item.breviary},
+				#{item.salesInfo},
+				#{item.isIntegral},
+				#{item.purchasePrice},
+				#{item.integral},
+				#{item.saleType},
+				#{item.cash},
+				#{item.allowRefund},
+				#{item.deliveryType},
+				#{item.expWeight},
+				#{item.expTid},
+				#{item.deliveryCity},
+				#{item.notDeliveryCity},
+				#{item.saleCity},
+				#{item.notSaleCity},
+				#{item.goodsSerial},
+				#{item.barcode}
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="addDetail">
+	    insert into t_product_details (
+	    <trim suffixOverrides=",">
+	        fid, codeId, pic1, pic2, pic3, pic4, pic5, delivery, postnote, servicenote, img1, 
+		    img2, img3, img4, img5, img6, img7, img8, img9, img10, img11, img12, rdate, udate, 
+		    remarks,html,
+		    <if test="sort != null">
+		    sort,
+		    </if>
+		 </trim>
+	      )
+	    values (
+	    <trim suffixOverrides=",">
+	      #{fid}, #{codeId}, #{pic1}, 
+	      #{pic2}, #{pic3}, #{pic4}, #{pic5}, 
+	      #{delivery}, #{postnote}, #{servicenote}, 
+	      #{img1}, #{img2}, #{img3}, #{img4}, 
+	      #{img5}, #{img6}, #{img7}, #{img8}, 
+	      #{img9}, #{img10}, #{img11}, 
+	      #{img12}, #{rdate}, #{udate}, 
+	      #{remarks}, 
+	      <![CDATA[ #{html}, ]]>
+	      <if test="sort != null">
+	       #{sort},
+	      </if>
+	     </trim>
+	      )
+	      
+	</insert>
+	
+	<!-- 批量新增产品详情 -->
+	<insert id="addBatchDetail" parameterType="java.util.ArrayList">
+	    insert into t_product_details 
+	    <trim prefix="(" suffix=")" suffixOverrides=",">
+	    	codeId,
+	        delivery, 
+	        postnote, 
+	        servicenote,
+	        rdate, 
+	        udate,  
+	        remarks 
+		 </trim>
+	    values 
+	    <foreach item="item" index="index" collection="list" separator=",">
+		    <trim prefix="(" suffix=")" suffixOverrides=",">
+		      #{item.codeId}, 
+		      #{item.delivery}, 
+		      #{item.postnote}, 
+		      #{item.servicenote},  
+		      #{item.rdate}, 
+		      #{item.udate},  
+		      #{item.remarks}
+		     </trim>
+	     </foreach>
+	</insert>
+	
+	<select id="getFreshAllInfo" resultType="map">
+		SELECT 
+		    pid, info.codeId, standard, pname, goodsName, classa, secondary, price, discount,brand_id, 
+		    batching, weight, suttle, quality, isAdditives, packing, production, brandName, pstatus, 
+		    crafts, sellType, deal, place, province, city, stored, store, sales, choice, cname, 
+		    address, licenseId, tel,  dstatus,info.sort, supplierId, tp.supplierName, tp.contacts, 
+		    tp.supplierPhone, tp.supplierAddress, breviary, salesInfo, 
+		    isIntegral,integral,saleType,cash,purchasePrice,allowRefund,deliveryType,expWeight,expTid,
+		    deliveryCity,notDeliveryCity,saleCity,notSaleCity,goodsSerial,barcode,purchasePrice,
+		    fid,  pic1, pic2, pic3, pic4, pic5, delivery, postnote, servicenote, img1, 
+		    img2, img3, img4, img5, img6, img7, img8, img9, img10, img11, img12, 
+		    detail.sort picsort, remarks,html
+	    FROM 
+	    	t_product_info info 
+	    LEFT JOIN 
+	    	t_product_details detail
+	    ON 
+	    	info.codeId = detail.codeId 
+	    LEFT JOIN 
+    		(SELECT supplierId AS spId,supplierName,contacts,phone AS supplierPhone,address AS supplierAddress FROM t_supplier WHERE `status` = '0') tp 
+    	ON 
+    		tp.spId = info.supplierId 
+	    WHERE  
+	    	info.pid=#{pid}
+	</select>
+	
+	<update id="updateInfo" parameterType="com.xmniao.xmn.core.fresh.entity.ProductInfo">
+	    update t_product_info
+	    set 
+		   <trim suffixOverrides=",">
+		      standard = #{standard,jdbcType=VARCHAR},
+		      pname = #{pname,jdbcType=VARCHAR},
+		      goodsName = #{goodsName,jdbcType=VARCHAR},
+		      deliveryCity = #{deliveryCity}, 
+		      notDeliveryCity = #{notDeliveryCity},
+		      saleCity = #{saleCity},
+		      notSaleCity = #{notSaleCity},
+		      <if test="classa != null">
+		      classa = #{classa,jdbcType=INTEGER},
+		      </if>
+		      <if test="secondary != null">
+		      secondary = #{secondary,jdbcType=INTEGER},
+		      </if>
+		      <if test="price != null">
+		      price = #{price,jdbcType=DOUBLE},
+		      </if>
+		      <if test="discount != null">
+		      discount = #{discount,jdbcType=DOUBLE},
+		      </if>
+		      batching = #{batching,jdbcType=VARCHAR},
+		      weight = #{weight,jdbcType=VARCHAR},
+		      suttle = #{suttle,jdbcType=VARCHAR},
+		      <if test="quality != null">
+		      quality = #{quality,jdbcType=INTEGER},
+		      </if>
+		      <if test="isAdditives != null">
+		      isAdditives = #{isAdditives,jdbcType=INTEGER},
+		      </if>
+		      packing = #{packing,jdbcType=VARCHAR},
+		      <if test="production != null">
+		      production = #{production,jdbcType=TIMESTAMP},
+		      </if>
+		      brandName = #{brandName,jdbcType=VARCHAR},
+		      <if test="pstatus != null">
+		      pstatus = #{pstatus,jdbcType=INTEGER},
+		      </if>
+		      crafts = #{crafts,jdbcType=VARCHAR},
+		      sellType = #{sellType,jdbcType=VARCHAR},
+		      deal = #{deal,jdbcType=VARCHAR},
+		      place = #{place,jdbcType=VARCHAR},
+		      province = #{province,jdbcType=VARCHAR},
+		      city = #{city,jdbcType=VARCHAR},
+		      stored = #{stored,jdbcType=VARCHAR},
+		      <if test="store != null">
+		      store = #{store,jdbcType=INTEGER},
+		      </if>
+		      <if test="sales != null">
+		      sales = #{sales,jdbcType=INTEGER},
+		      </if>
+		      <if test="choice != null">
+		      choice = #{choice,jdbcType=INTEGER},
+		      </if>
+		      cname = #{cname,jdbcType=VARCHAR},
+		      address = #{address,jdbcType=VARCHAR},
+		      licenseId = #{licenseId,jdbcType=VARCHAR},
+		      tel = #{tel,jdbcType=VARCHAR},
+		      <if test="udate != null">
+		      udate = #{udate,jdbcType=TIMESTAMP},
+		      </if>
+		      <if test="dstatus != null">
+		      dstatus = #{dstatus,jdbcType=INTEGER},
+		      </if>
+		      <if test="sort != null">
+		      sort = #{sort,jdbcType=INTEGER},
+		      </if>
+		      <if test="supplierId != null">
+		      supplierId = #{supplierId,jdbcType=INTEGER},
+		      </if>
+		      supplierName = #{supplierName,jdbcType=VARCHAR},
+		      breviary = #{breviary,jdbcType=VARCHAR},
+		      salesInfo = #{salesInfo,jdbcType=VARCHAR},
+		      <if test="isIntegral != null">
+		      isIntegral = #{isIntegral},
+		      </if>
+		      <if test="integral != null">
+		      integral = #{integral}, 
+		      </if>
+		      <if test="saleType != null">
+		      saleType = #{saleType},
+		      </if>
+		      <if test="cash != null">
+		      cash = #{cash}, 
+		      </if>
+		      <if test="purchasePrice != null">
+		      	purchasePrice = #{purchasePrice}, 
+		      </if>
+		      <if test="allowRefund != null">
+		      	allowRefund = #{allowRefund},
+		      </if>
+		      <if test="deliveryType != null">
+		      	deliveryType = #{deliveryType},
+		      </if>
+		      <if test="null != expWeight">
+		      	expWeight = #{expWeight},
+		      </if>
+		      <if test="null != expTid">
+		      	expTid = #{expTid}, 
+		      </if>
+		      <if test="null != goodsSerial and '' != barcode">
+		      	goodsSerial = #{goodsSerial},
+		      </if>
+		      <if test="null != barcode and '' != barcode">
+		      	barcode = #{barcode},
+		      </if>
+		      <if test="null != purchasePrice">
+		      	purchasePrice = #{purchasePrice},
+		      </if>
+		      <if test="null != brandId">
+		      	brand_id = #{brandId},
+		      </if>
+		    </trim>  
+	    where codeId = #{codeId,jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateDetail" parameterType="com.xmniao.xmn.core.fresh.entity.ProductDetail">
+	    update t_product_details
+	    set 
+	      pic1 = #{pic1,jdbcType=VARCHAR},	
+	      pic2 = #{pic2,jdbcType=VARCHAR},
+	      pic3 = #{pic3,jdbcType=VARCHAR},
+	      pic4 = #{pic4,jdbcType=VARCHAR},
+	      pic5 = #{pic5,jdbcType=VARCHAR},
+	      delivery = #{delivery,jdbcType=VARCHAR},
+	      postnote = #{postnote,jdbcType=VARCHAR},
+	      servicenote = #{servicenote,jdbcType=VARCHAR},
+	      img1 = #{img1,jdbcType=VARCHAR},
+	      img2 = #{img2,jdbcType=VARCHAR},
+	      img3 = #{img3,jdbcType=VARCHAR},
+	      img4 = #{img4,jdbcType=VARCHAR},
+	      img5 = #{img5,jdbcType=VARCHAR},
+	      img6 = #{img6,jdbcType=VARCHAR},
+	      img7 = #{img7,jdbcType=VARCHAR},
+	      img8 = #{img8,jdbcType=VARCHAR},
+	      img9 = #{img9,jdbcType=VARCHAR},
+	      img10 = #{img10,jdbcType=VARCHAR},
+	      img11 = #{img11,jdbcType=VARCHAR},
+	      img12 = #{img12,jdbcType=VARCHAR},
+	      udate = #{udate,jdbcType=TIMESTAMP},
+	      sort = #{sort,jdbcType=INTEGER},
+	      remarks = #{remarks,jdbcType=VARCHAR},
+	      html = <![CDATA[ #{html} ]]>
+	    where codeId = #{codeId,jdbcType=INTEGER}
+	</update>
+	
+	<!-- 条件查询一条记录 add by lifeng 2016年6月18日下午14:17:20 -->
+	<select id="getProductInfoByParam" resultType="com.xmniao.xmn.core.fresh.entity.ProductInfo" parameterType="com.xmniao.xmn.core.fresh.entity.ProductInfo">
+ 		SELECT 
+			<include refid="InfoFieldList" /> 
+		FROM
+			t_product_info 
+		WHERE 1=1
+			<if test="pname != null and pname != ''">AND pname LIKE '%${pname}%'</if>
+			<if test="goodsName != null and goodsName != ''">AND goodsName LIKE '%${goodsName}%'</if>
+			<if test="codeId != null">AND codeId = #{codeId}</if>
+			<if test="pstatus != null">AND pstatus = #{pstatus}</if>
+			<if test="supplierId != null">AND supplierId = #{supplierId}</if>
+			<if test="supplierName != null and supplierName != ''">AND supplierName LIKE '%${supplierName}%'</if>
+			<if test="classa !=null and classa != ''">AND classa = #{classa}</if>
+			<if test="province != null and province != ''">AND province = #{province}</if>
+    		<if test="city != null and city != ''">AND city = #{city}</if>
+	</select>
+	
+	<!-- 批量操作 -->
+	<update id="batch" parameterType="com.xmniao.xmn.core.fresh.entity.ProductInfo">
+		UPDATE 
+			t_product_info 
+		<set>
+			<trim suffixOverrides=",">
+				<if test="null != pstatus">
+					pstatus = #{pstatus},
+				</if>
+				<if test="null != choice">
+					choice = #{choice},
+				</if>
+				<if test="null != udate">
+					udate = #{udate},
+				</if>
+			</trim>
+		</set>
+		WHERE pid IN 
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=") ">
+			#{item}
+		</foreach>
+	</update>
+	
+	<!-- 修改产品排序 -->
+	<update id="updateSortByPid" parameterType="com.xmniao.xmn.core.fresh.entity.ProductInfo">
+		UPDATE 
+			t_product_info 
+		<set>
+			<trim suffixOverrides=",">
+				<if test="null != sort">
+					sort = #{sort},
+				</if>
+				<if test="null != udate">
+					udate = #{udate},
+				</if>
+			</trim>
+		</set>
+		WHERE 
+			pid = #{pid} 
+	</update>
+	
+	
+	<select id="getProductInfoSelect" resultType="com.xmniao.xmn.core.fresh.entity.ProductInfo">
+		select * from t_product_info where dstatus = 0 and pstatus = 1
+		<if test="classa != null">
+			and classa = #{classa}
+		</if>
+	</select>
+	
+	<select id="getByCodeId" resultType="com.xmniao.xmn.core.fresh.entity.ProductInfo">
+		select * from t_product_info where codeId=#{codeId}
+	</select>
+	
+	<select id="getObject" parameterType="java.lang.Long" resultMap="BaseResultMap">
+		SELECT <include refid="Base_Column_List"></include> from t_product_info  
+		where pid  = #{pid}
+	</select>
+	
+	<update id="updateStore" >
+		UPDATE t_product_info set store = #{store} where codeId = #{codeId}
+	</update>
+	<update id="transferStore" >
+		UPDATE t_product_info set store =store - #{sellStore} where codeId = #{codeId}
+	</update>
+	<update id="updateActivityProduct" >
+		UPDATE t_product_info set store =store + #{store} where codeId = #{codeId}
+	</update>
+	
+</mapper>

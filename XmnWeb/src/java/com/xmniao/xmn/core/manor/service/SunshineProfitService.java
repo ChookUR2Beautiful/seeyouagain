@@ -1,0 +1,417 @@
+/**
+ * 
+ */
+package com.xmniao.xmn.core.manor.service;
+
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.alibaba.fastjson.JSON;
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.base.BaseService;
+import com.xmniao.xmn.core.base.Pageable;
+import com.xmniao.xmn.core.exception.ApplicationException;
+import com.xmniao.xmn.core.manor.dao.ManorInfoDao;
+import com.xmniao.xmn.core.manor.dao.ManorSunshineManageDao;
+import com.xmniao.xmn.core.manor.entity.TManorSunshineManage;
+import com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy;
+import com.xmniao.xmn.core.thrift.service.ResponseData;
+import com.xmniao.xmn.core.thrift.service.ResponsePageList;
+import com.xmniao.xmn.core.xmnburs.dao.BursDao;
+import com.xmniao.xmn.core.xmnburs.entity.Burs;
+import com.xmniao.xmn.core.xmnburs.service.BursService;
+
+
+@Service
+public class SunshineProfitService extends BaseService<TManorSunshineManage> {
+
+	
+	/**
+	 * 注入主播(用户)服务
+	 */
+	@Autowired
+	private ManorInfoDao manorInfoDao;
+	
+	@Autowired
+	private BursDao bursDao;
+	
+	@Autowired
+	private ManorSunshineManageDao manorSunshineManageDao;
+	
+	/**
+	 * 寻蜜鸟用户Service
+	 */
+	@Autowired
+	private BursService bursService;
+	
+	/**
+	 * 注入获取庄园的服务
+	 */
+	@Resource(name = "manorRelatedServiceClient")
+	private ThriftClientProxy manorRelatedServiceClient;	
+	
+	private Long count = 0l;
+	
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected BaseDao getBaseDao() {
+		// TODO Auto-generated method stub
+		return manorSunshineManageDao;
+	}
+
+	
+	/**
+	 * 方法描述：获取接口阳光收益数据<br/>
+	 * 创建人： Administrator <br/>
+	 * 创建时间：2017年6月23日上午10:34:59 <br/>
+	 * @param manorSunshineManage
+	 * @return
+	 */
+	public Pageable<TManorSunshineManage> getManorSunshineInfoList(TManorSunshineManage manorSunshineManage) {
+		Pageable<TManorSunshineManage> manorSunshineInfoList = new Pageable<TManorSunshineManage>(manorSunshineManage);
+		
+		List<TManorSunshineManage> manorSunshineRecordList = this.getManorSunshineRecordList(manorSunshineManage);
+		
+		manorSunshineInfoList.setContent(manorSunshineRecordList);
+		manorSunshineInfoList.setTotal(count);
+		
+	    return manorSunshineInfoList;
+	}
+	
+	
+	public List<TManorSunshineManage> getManorSunshineRecordList(TManorSunshineManage manorSunshineManage) {
+		//通过会员昵称查询
+		if ( (manorSunshineManage.getNickname() != null && !"".equals(manorSunshineManage.getNickname())) || (manorSunshineManage.getPhone() != null  && !"".equals(manorSunshineManage.getPhone()))  ) {
+			Burs burs = new Burs();
+			if (!"".equals(manorSunshineManage.getNickname()) ){
+				String nickname = manorSunshineManage.getNickname();
+				burs.setNname(nickname);
+			}
+			if ( !"".equals(manorSunshineManage.getPhone()) ){
+				burs.setPhone(manorSunshineManage.getPhone());
+			}
+			List<Burs> bursList = bursService.getUrsList(burs);
+			if (bursList != null && bursList.size() > 0) {
+				Integer uid = bursList.get(0).getUid();
+				manorSunshineManage.setUid(uid);
+			}
+		}
+		List<TManorSunshineManage> manorSunshineRecordList = new ArrayList<TManorSunshineManage>();
+		try {
+			//连接接口进行查询
+			Map<String, String> params = new HashMap<>();
+			 
+			params.put("type", "1");  //操作类型 1.增加 2.减少
+			if (manorSunshineManage.getUid() != null) {  //用户编号
+				params.put("uid", manorSunshineManage.getUid().toString());
+			}
+			if (manorSunshineManage.getChannel() != null) {  //收支渠道, 1.购买花苗 2.购买施肥3.施肥
+				params.put("channel", manorSunshineManage.getChannel().toString());
+			}
+			params.put("cPage", manorSunshineManage.getPage().toString());
+			
+			com.xmniao.xmn.core.thrift.service.manorService.ManorRelatedService.Client client = (com.xmniao.xmn.core.thrift.service.manorService.ManorRelatedService.Client) (manorRelatedServiceClient.getClient());
+			log.info("查询用户庄园的阳光收益或支出流水开始"+params);
+			ResponsePageList response = client.getSunshineRecord (params);
+			if(response.getDataInfo().getState() != 0){
+				log.error("调用修改指定收益类型提现手续费率失败");
+				throw new RuntimeException("修改指定收益类型提现手续费率失败, 错误信息:"+ response.getDataInfo().getMsg());
+			}
+			log.info("查询用户庄园的阳光收益或支出流水结束，返回值：" + response.getDataInfo().getState());
+		    //获取用户庄园的阳光收益或支出流水
+			List<Map<String, String>> sunshineRecordList = response.getPageList();
+
+			count = new Long(response.getDataInfo().getResultMap().get("count"));
+			manorSunshineRecordList = this.getManorSunshineRecordFromMap(sunshineRecordList);
+			
+		} catch (Exception e) {
+			log.error("修改指定收益类型提现手续费率失败", e);
+			throw new ApplicationException("修改指定收益类型提现手续费率异常", e, new Object[] { manorSunshineManage.getChannel() });
+			
+		} finally {
+			manorRelatedServiceClient.returnCon();
+		}
+		
+		return manorSunshineRecordList;
+	}
+	
+	
+	/**
+	 * 方法描述：用户庄园的阳光收益或支出流水 <br/>
+	 * 创建人： Administrator <br/>
+	 * 创建时间：2017年6月20日下午6:00:03 <br/>
+	 * @param sunshineProfitList
+	 * @return
+	 * @throws Exception
+	 */
+	public List<TManorSunshineManage> getManorSunshineRecordFromMap(List<Map<String, String>> sunshineProfitList) throws Exception{
+		List<TManorSunshineManage> manorSunshineManageList = new ArrayList<TManorSunshineManage>();
+		List<Integer> uids = new ArrayList<Integer>();
+		List<Integer> giveUids = new ArrayList<Integer>();
+		for (Map<String, String> object : sunshineProfitList) {
+			TManorSunshineManage bean = new TManorSunshineManage();
+			Integer uid = new Integer(object.get("uid"));
+			bean.setUid(uid);
+			uids.add(uid);
+			
+			bean.setType(new Integer(object.get("type")));  //操作类型 1.增加 2.减少
+			bean.setChannel(new Integer(object.get("channel")));  //收支渠道
+			if (object.get("common") != null){//
+				String common = object.get("common").toString();
+				com.alibaba.fastjson.JSONObject json = JSON.parseObject(common);  
+				if (json != null && ( json.getString("sendUid") != null || json.getString("giveUid") != null)) {
+					Integer giveUid = Integer.parseInt(json.getString("sendUid") == null ? json.getString("giveUid") : json.getString("sendUid"));
+					bean.setGiveUid(giveUid);
+					giveUids.add(giveUid);
+				}
+			}
+			if (object.get("createTime") != null){//记录时间
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
+				Date createTime = sdf.parse(object.get("createTime"));
+				bean.setCreateTime(createTime);
+			}
+			if (object.get("num") != null){
+				BigDecimal num = new BigDecimal(object.get("num"));
+				num = num.setScale(2, BigDecimal.ROUND_HALF_UP);  
+				bean.setNum(num);
+			}
+			manorSunshineManageList.add(bean);
+		}
+		
+		//设置用户名称 电话信息
+		if (uids.size() > 0){
+			List<Burs> bursList = bursDao.getUrsListByUids(uids.toArray());
+			for (TManorSunshineManage manorSunshineInfo: manorSunshineManageList){
+				for (Burs object : bursList) {
+					if (manorSunshineInfo.getUid().equals(object.getUid()) ){
+						manorSunshineInfo.setNickname(object.getNname());
+						manorSunshineInfo.setPhone(object.getPhone());
+					}
+				}
+			}
+		}
+		
+		//设置用户名称 电话信息
+		if (giveUids.size() > 0){
+			List<Burs> bursList = bursDao.getUrsListByUids(giveUids.toArray());
+			for (TManorSunshineManage manorSunshineInfo: manorSunshineManageList){
+				for (Burs object : bursList) {
+					if (manorSunshineInfo.getGiveUid() != null && manorSunshineInfo.getGiveUid().equals(object.getUid()) ){
+						manorSunshineInfo.setGiveName(object.getNname());
+					}
+				}
+			}
+		}
+
+		return manorSunshineManageList;
+	}
+	
+	/*仓库储存收益*/
+	public List<TManorSunshineManage> getManorSunshineProfitList(TManorSunshineManage manorSunshineManage) {
+		List<TManorSunshineManage> manorSunshineManageList = new ArrayList<TManorSunshineManage>();
+		try {
+			//连接接口进行查询
+			com.xmniao.xmn.core.thrift.service.manorService.ManorRelatedService.Client client = (com.xmniao.xmn.core.thrift.service.manorService.ManorRelatedService.Client) (manorRelatedServiceClient.getClient());
+			log.info("获取庄园的阳光收益配置列表开始");
+			
+			ResponsePageList response = client.getSunshineProfit();
+			if(response.getDataInfo().getState() != 0){
+				log.error("调用获取庄园的阳光收益配置列表失败");
+				throw new RuntimeException("获取庄园的阳光收益配置列表失败, 错误信息:"+ response.getDataInfo().getMsg());
+			}
+			
+			manorSunshineManageList = this.getManorSunshineManageFromMap(response.getPageList());
+			log.info("获取庄园的阳光收益配置列表结束，返回值：" + response.getDataInfo().getState());
+		} catch (Exception e) {
+			log.error("获取庄园的阳光收益配置列表失败", e);
+			throw new ApplicationException("修改指定收益类型提现手续费率异常", e, new Object[] { manorSunshineManage.getChannel() });
+			
+		} finally {
+			manorRelatedServiceClient.returnCon();
+		}
+
+		return manorSunshineManageList;
+	}
+	
+	public List<TManorSunshineManage> getManorSunshineManageFromMap(List<Map<String, String>> sunshineProfitList) throws Exception{
+		List<TManorSunshineManage> manorSunshineManageList = new ArrayList<TManorSunshineManage>();
+		
+		for (Map<String, String> object : sunshineProfitList) {
+			TManorSunshineManage bean = new TManorSunshineManage();
+			if (object.get("baseNumber") != null){
+			   bean.setBaseNumber(new Integer(object.get("baseNumber") ) );
+			}
+			if (object.get("profit") != null){
+				BigDecimal profit = new BigDecimal(object.get("profit"));
+				profit = profit.setScale(2, BigDecimal.ROUND_HALF_UP);  
+				bean.setProfit(profit);
+				
+			}
+			
+			manorSunshineManageList.add(bean);
+		}
+
+		return manorSunshineManageList;
+	}
+	
+	private List<TManorSunshineManage> initManorSunshineProfiteDetail(TManorSunshineManage manorSunshineManage) {
+		List<TManorSunshineManage> manorSunshineManageList = new ArrayList<TManorSunshineManage>();
+		//专题关联的信息
+		String productJson = manorSunshineManage.getSunshineProfitJson();
+		JSONObject fromObject = JSONObject.fromObject(productJson);
+		JSONArray jsonArray = fromObject.getJSONArray("json");
+		for (Object object : jsonArray) {
+			TManorSunshineManage sunshineManageDetail = new TManorSunshineManage();
+			//JSONObject -> bean
+			TManorSunshineManage bean = (TManorSunshineManage) JSONObject.toBean(JSONObject.fromObject(object.toString()), TManorSunshineManage.class);
+			sunshineManageDetail.setProfit(bean.getProfit());  //利率比例(0-1)
+			sunshineManageDetail.setBaseNumber(bean.getBaseNumber());  //阳光数
+			manorSunshineManageList.add(sunshineManageDetail);
+		}
+        return manorSunshineManageList;
+	}
+	
+	
+	/**
+	 * 方法描述：保存仓库储存收益数据 <br/>
+	 * 创建人： Administrator <br/>
+	 * 创建时间：2017年6月23日上午10:37:00 <br/>
+	 * @param manorSunshineManage
+	 */
+	public void updateManorSunshineProfitList(TManorSunshineManage manorSunshineManage) {
+		List<TManorSunshineManage> manorSunshineManageList =  this.initManorSunshineProfiteDetail(manorSunshineManage);
+		if (manorSunshineManageList != null){
+			List<Map<String, String>> params = new ArrayList<Map<String, String>>();
+			
+			for (TManorSunshineManage sunshineProfit : manorSunshineManageList){  
+				Map<String, String> maps = new HashMap<String, String>();
+				if (sunshineProfit.getBaseNumber() != null)
+					maps.put("baseNumber", sunshineProfit.getBaseNumber().toString());
+				if (sunshineProfit.getProfit() != null)
+					maps.put("profit", sunshineProfit.getProfit().toString());			
+				params.add(maps);
+			}
+	
+			try {
+				//连接接口进行查询
+				com.xmniao.xmn.core.thrift.service.manorService.ManorRelatedService.Client client = (com.xmniao.xmn.core.thrift.service.manorService.ManorRelatedService.Client) (manorRelatedServiceClient.getClient());
+				log.info("获取庄园的阳光收益配置列表开始");
+				ResponseData response = client.updateSunshineProfit (params);
+				if(response.getState() != 0){
+					log.error("调用获取庄园的阳光收益配置列表失败");
+					throw new RuntimeException("获取庄园的阳光收益配置列表失败, 错误信息:"+ response.getMsg());
+				}
+				log.info("获取庄园的阳光收益配置列表结束，返回值：" + response.getState());
+			} catch (Exception e) {
+				log.error("获取庄园的阳光收益配置列表失败", e);
+				throw new ApplicationException("修改指定收益类型提现手续费率异常", e, new Object[] {manorSunshineManage.getChannel() });
+				
+			} finally {
+				manorRelatedServiceClient.returnCon();
+			}
+		}
+	}
+	
+	
+	
+	/**
+	 * 方法描述：获取阳光渠道数据 <br/>
+	 * 创建人： Administrator <br/>
+	 * 创建时间：2017年6月23日上午10:37:24 <br/>
+	 * @return
+	 */
+	public TManorSunshineManage getManorSunshineManageInfo() {
+		TManorSunshineManage manorSunshineManage = new TManorSunshineManage();
+		try {
+			//连接接口进行查询
+			com.xmniao.xmn.core.thrift.service.manorService.ManorRelatedService.Client client = (com.xmniao.xmn.core.thrift.service.manorService.ManorRelatedService.Client) (manorRelatedServiceClient.getClient());
+			log.info("获取庄园的阳光渠道配置开始");
+			
+			ResponseData response = client.getSunshineManage ();
+			if(response.getState() != 0){
+				log.error("调用获取庄园的阳光渠道配置失败");
+				throw new RuntimeException("获取庄园的阳光渠道配置失败, 错误信息:"+ response.getMsg());
+			}
+			
+			manorSunshineManage = this.getManorSunshineManageDataFromMap(response.getResultMap());
+			log.info("获取庄园的阳光渠道配置结束，返回值：" + response.getState());
+		} catch (Exception e) {
+			log.error("获取庄园的阳光渠道配置失败", e);
+			throw new ApplicationException("获取庄园的阳光渠道配置异常", e, new Object[] { manorSunshineManage.getChannel() });
+			
+		} finally {
+			manorRelatedServiceClient.returnCon();
+		}
+
+		return manorSunshineManage;
+	}
+	
+	public TManorSunshineManage getManorSunshineManageDataFromMap(Map<String, String> sunshineProfitMap) throws Exception{
+		TManorSunshineManage bean = new TManorSunshineManage();
+		if (sunshineProfitMap.get("recommendNumber") != null){ //推荐获取奖励
+		   bean.setRecommendNumber(new Integer(sunshineProfitMap.get("recommendNumber") ) );
+		}
+		if (sunshineProfitMap.get("isSpendEnergy") != null){ //推荐奖励是否与下级消耗能量挂钩
+			   bean.setIsSpendEnergy(new Integer(sunshineProfitMap.get("isSpendEnergy") ) );
+		}
+		if (sunshineProfitMap.get("spendEnergyNumber") != null){  //推荐奖励需下级消耗的能量值
+			   bean.setSpendEnergyNumber(new Integer(sunshineProfitMap.get("spendEnergyNumber") ) );
+		}
+		if (sunshineProfitMap.get("handselNumber") != null){//园友赠送阳光
+			bean.setHandselNumber(new Integer(sunshineProfitMap.get("handselNumber") ));
+		}
+		
+		return bean;
+	}
+	
+	
+	/**
+	 * 方法描述：保存设置阳光渠道数据 <br/>
+	 * 创建人： Administrator <br/>
+	 * 创建时间：2017年6月23日上午10:38:01 <br/>
+	 * @param manorSunshineManage
+	 */
+	public void updateManorSunshineManage(TManorSunshineManage manorSunshineManage) {
+		if (manorSunshineManage != null){
+			Map<String, String> params = new HashMap<String, String>();
+			if (manorSunshineManage.getRecommendNumber() != null)  //推荐获取奖励
+				params.put("recommendNumber", manorSunshineManage.getRecommendNumber().toString());
+			params.put("isSpendEnergy", "1");	//推荐奖励是否与下级消耗能量挂钩
+			params.put("spendEnergyNumber", "0"); //推荐奖励需下级消耗的能量值
+			if (manorSunshineManage.getHandselNumber() != null)  //园友赠送阳光
+				params.put("handselNumber", manorSunshineManage.getHandselNumber() .toString());		
+			try {
+				//连接接口进行查询
+				com.xmniao.xmn.core.thrift.service.manorService.ManorRelatedService.Client client = (com.xmniao.xmn.core.thrift.service.manorService.ManorRelatedService.Client) (manorRelatedServiceClient.getClient());
+				log.info("设置庄园的阳光渠道配置开始");
+				ResponseData response = client.updateSunshineManage  (params);
+				if(response.getState() != 0){
+					log.error("设置庄园的阳光渠道配置失败");
+					throw new RuntimeException("设置庄园的阳光渠道配置失败, 错误信息:"+ response.getMsg());
+				}
+				log.info("设置庄园的阳光渠道配置结束，返回值：" + response.getState());
+			} catch (Exception e) {
+				log.error("设置庄园的阳光渠道配置失败", e);
+				throw new ApplicationException("设置庄园的阳光渠道配置异常", e, new Object[] {manorSunshineManage.getChannel() });
+				
+			} finally {
+				manorRelatedServiceClient.returnCon();
+			}
+		}
+	}
+	
+}

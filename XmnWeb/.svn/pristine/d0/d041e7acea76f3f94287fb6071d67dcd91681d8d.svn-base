@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.SpecialTopicDao" >
+  <parameterMap type="SpecialTopic" id="specialTopic" />
+  <resultMap id="BaseResultMap" type="SpecialTopic" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="video_url" property="videoUrl" jdbcType="VARCHAR" />
+    <result column="topic_type" property="topicType" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="content" property="content" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, title, description, video_url, topic_type, update_time, content
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_special_topic_config
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 总店列表 -->
+  <select id="getSpecialTopicList" resultMap="BaseResultMap" parameterMap="specialTopic">
+		SELECT t1.*,  CASE topic_type WHEN '1' THEN '商户' WHEN '2' THEN '连锁店' WHEN '3' THEN '区域代理' 
+           WHEN '4' THEN '主播' WHEN '5' THEN '预告' WHEN '6' THEN '粉丝券' WHEN '7' THEN '套餐' WHEN '8' THEN '商品' 
+           ELSE '-' END topicTypeDesc, tr.pic_url as picUrl,
+          (SELECT COUNT(*) FROM t_special_topic_relation tr WHERE tr.fid = t1.id ) AS relationNum
+                FROM t_special_topic_config t1 LEFT JOIN t_special_topic_pic tr ON t1.id = tr.fid
+		<where>
+			1 = 1
+			<include refid="baseSellerCondition" />
+		</where>
+		ORDER BY t1.update_time DESC,t1.id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+  </select>
+  
+  <!-- 商家列表查询条件 -->
+  <sql id="baseSellerCondition">
+	  <if test="id != null" >
+	      AND t1.id = #{id}
+      </if>
+      <if test="title != null and '' != title " >
+          AND t1.title LIKE '%${title}%'
+      </if>
+      <if test="description != null and '' != description " >
+          AND t1.description LIKE '%${description}%'
+      </if>
+      <if test="videoUrl != null" >
+          AND t1.videoUrl = #{videoUrl}
+      </if>
+      <if test="topicType != null" >
+          AND t1.topicType = #{topicType}
+      </if>
+      <if test="updateTime != null" >
+          AND t1.updateTime = #{updateTime}
+      </if>
+  </sql>
+  
+  <!-- 总店Count -->
+  <select id="specialTopicCount" resultType="Long" parameterMap="specialTopic">
+		SELECT COUNT(1) FROM t_special_topic_config t1
+		<where>
+			1=1
+			<include refid="baseSellerCondition" />
+		</where>
+	</select>
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_special_topic_config
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <insert id="insert" parameterType="specialTopic" >
+    insert into t_special_topic_config (id, title, description, 
+      video_url, topic_type, update_time, 
+      content)
+    values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
+      #{videoUrl,jdbcType=VARCHAR}, #{topicType,jdbcType=INTEGER}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{content,jdbcType=LONGVARCHAR})
+  </insert>
+  
+  <insert id="insertSelective" parameterType="specialTopic"  useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+    insert into t_special_topic_config
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="videoUrl != null" >
+        video_url,
+      </if>
+      <if test="topicType != null" >
+        topic_type,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="videoUrl != null" >
+        #{videoUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="topicType != null" >
+        #{topicType,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="specialTopic" >
+    update t_special_topic_config
+    <set >
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="videoUrl != null" >
+        video_url = #{videoUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="topicType != null" >
+        topic_type = #{topicType,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+</mapper>

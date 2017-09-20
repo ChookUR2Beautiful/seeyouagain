@@ -1,0 +1,208 @@
+var billList, giftList;
+var initListUrl = "verProfitCount/manage/init/list.jhtml";
+
+$(function() {
+	inserTitle(
+			' > 打赏分红 > <a href="verProfitCount/manage/init.jhtml" target="right">V客收益统计</a>',
+			'userSpan', true);
+	//加载列表数据
+	pageInit();
+	
+	$('.form-datetime').datetimepicker({
+		weekStart : 1,
+		todayBtn : 1,
+		autoclose : 1,
+		todayHighlight : 1,
+		startView : 2,
+		forceParse : 0,
+		showMeridian : 1,
+		format : 'yyyy-mm-dd hh:ii'
+	});
+
+});
+
+/**
+ * 加载页面数据
+ */
+function pageInit(){
+	//tab1
+	billList = $("#billList").page({
+		url : initListUrl,
+		success : success,
+		pageBtnNum : 10,
+		paramForm : 'searchFormBill',
+		param : {
+			type : "1"  //交易类型 1.签约商户收益统计,  2.推荐主播收益统计
+		}
+	});
+	
+	//tab2
+	giftList = $("#giftList").page({
+		url : initListUrl,
+		success : giftSuccess,
+		pageBtnNum : 10,
+		paramForm : 'searchFormGift',
+		param : {
+			type : "2" //交易类型 1.签约商户收益统计,  2.推荐主播收益统计
+		}
+	});	
+}
+
+function success(data, obj) {
+	var formId = "searchFormBill";
+	var title = "会员列表 ", subtitle = "个会员";
+	var captionInfo = '<caption style="background:#EED8D8; text-align:left; color:#703636; font-size:16px; line-height:40px;">&nbsp;&nbsp;'
+			+ title + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font>共计【' + data.total + '】' + subtitle + '&nbsp;</font></caption>';
+	var callbackParam = "isBackButton=true&callbackParam="+ getFormParam($("#" + formId).serialize());
+	obj.find('div').eq(0).scrollTablel({
+		identifier : "id",
+		callbackParam : callbackParam,
+		data : data.content,
+		caption : captionInfo,
+		// checkable : checkable,
+		cols : [ {
+			title : "订单编号",
+			name : "orderNo",
+			type : "string",
+			width : 80
+		},{
+			title : "签约商户名称",
+			name : "sellerName",
+			type : "string",
+			width : 80
+		}, {
+			title : "订单金额",
+			name : "money",
+			type : "string",
+			width : 60
+		},{
+			title : "签约折扣",
+			name : "discount",
+			type : "string",
+			width : 60
+		}, {
+			title : "V客编号",
+			name : "vkeUid",
+			type : "string",
+			width : 80			
+		}, {
+			title : "签约V客",
+			name : "vkeNname",
+			type : "string",
+			width : 100,
+			customMethod : function(value, data){
+				var vkeNname = data.vkeNname== undefined ? "" : data.vkeNname;
+				var vkePhone = data.vkePhone == undefined ? "" : " ( " +data.vkePhone+ " )";
+	            var value = vkeNname + vkePhone;
+	            return value;
+	        }	
+		}, {
+			title : "V客等级",
+			name : "vkeRankname",
+			type : "string",
+			width : 80	
+		}, {
+			title : "收益分成",
+			name : "vkeUidRatio",
+			type : "string",
+			width : 60,
+			customMethod : function(value, data){
+				var vkeUidRatio = data.vkeUidRatio == undefined ? 0 : data.vkeUidRatio;
+	            var value = vkeUidRatio + "%";
+	            return value;
+	        }
+		}, {
+			title : "获得收益",
+			name : "profit",
+			type : "string",
+			width : 60
+		}, {
+			title : "获得时间",
+			name : "sdate",
+			type : "string",
+			width : 80
+		} ]
+	}, permissions);
+}
+
+
+
+function giftSuccess(data, obj) {
+	var formId = "searchFormGift";
+	var title = "会员列表 ", subtitle = "个会员";
+	var captionInfo = '<caption style="background:#EED8D8; text-align:left; color:#703636; font-size:16px; line-height:40px;">&nbsp;&nbsp;'
+			+ title + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font>共计【' + data.total + '】' + subtitle + '&nbsp;</font></caption>';
+	var callbackParam = "isBackButton=true&callbackParam="+ getFormParam($("#" + formId).serialize());
+
+	obj.find('div').eq(0).scrollTablel({
+		identifier : "id",
+		callbackParam : callbackParam,
+		data : data.content,
+		caption : captionInfo,
+		// checkable : checkable,
+		cols : [ {
+			title : "送礼编号",
+			name : "orderNo",
+			type : "string",
+			width : 80,
+		},{
+			title : "签约主播",
+			name : "sellerName",
+			type : "string",
+			width : 120
+		}, {
+			title : "打赏金额(鸟豆)",
+			name : "money",
+			type : "string",
+			width : 100
+		},{
+			title : "分成折扣",
+			name : "discount",
+			type : "string",
+			width : 60
+		}, {
+			title : "V客编号",
+			name : "vkeUid",
+			type : "string",
+			width : 80				
+		}, {
+			title : "签约V客",
+			name : "vkeNname",
+			type : "string",
+			width : 100,
+			customMethod : function(value, data){
+				var vkeNname = data.vkeNname== undefined ? "" : data.vkeNname;
+				var vkePhone = data.vkePhone == undefined ? "" : " ( " +data.vkePhone+ " )";
+	            var value = vkeNname + vkePhone;
+	            return value;
+	        }	
+		}, {
+			title : "V客等级",
+			name : "vkeRankname",
+			type : "string",
+			width : 60,
+		}, {
+			title : "收益分成",
+			name : "vkeUidRatio",
+			type : "string",
+			width : 60,			
+			customMethod : function(value, data){
+				var vkeUidRatio = data.vkeUidRatio == undefined ? 0 : data.vkeUidRatio;
+	            var value = vkeUidRatio + "%";
+	            return value;
+	        }
+		}, {
+			title : "获得收益",
+			name : "profit",
+			type : "string",
+			width : 60			
+		}, {
+			title : "获得时间",
+			name : "sDate",
+			type : "string",
+			width : 80
+		} ]
+	
+	}, permissions);
+}
+

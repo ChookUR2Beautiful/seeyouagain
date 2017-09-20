@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.ExperienceCommentDao">
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.businessman.entity.ExperienceComment">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="sellerid" jdbcType="INTEGER" property="sellerid" />
+    <result column="sellername" jdbcType="VARCHAR" property="sellername" />
+    <result column="seller_type" jdbcType="INTEGER" property="sellerType" />
+    <result column="uid" jdbcType="INTEGER" property="uid" />
+    <result column="user_type" jdbcType="INTEGER" property="userType" />
+    <result column="record_type" jdbcType="TINYINT" property="recordType" />
+    <result column="record_id" jdbcType="INTEGER" property="recordId" />
+    <result column="activity_id" jdbcType="INTEGER" property="activityId" />
+    <result column="is_recommend" jdbcType="TINYINT" property="isRecommend" />
+    <result column="review_time" jdbcType="TIMESTAMP" property="reviewTime" />
+    <result column="review_state" jdbcType="INTEGER" property="reviewState" />
+    <result column="refuse_remark" jdbcType="VARCHAR" property="refuseRemark" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.xmniao.xmn.core.businessman.entity.ExperienceComment">
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, sellerid, sellername, seller_type, uid, user_type, record_type, record_id, activity_id, 
+    is_recommend, review_time, review_state, refuse_remark, create_time
+  </sql>
+  <sql id="Blob_Column_List">
+    content
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test="reviewState != null">
+  	 and review_state = #{reviewState}
+  	</if>
+  	<if test="sellername != null and sellername != ''">
+  	 and sellername like '%${sellername}%'
+  	</if>
+  	<if test="uids != null">
+  		and uid in 
+  	 	<foreach collection="uids" item="item" separator="," open="(" close=")">
+  	 		#{item}
+  	 	</foreach>
+  	</if>
+  	<if test="id != null">
+  		and id = #{id}
+  	</if>
+  	<if test="sellerType != null">
+  		and seller_type = #{sellerType}
+  	</if>
+  	<if test="sellerid != null">
+  		and sellerid = #{sellerid}
+  	</if>
+  </sql>
+  
+  <select id="getCommentChoose" resultMap="BaseResultMap">
+  	   select <include refid="Base_Column_List"/>
+  	  from t_experience_comment 
+  	  where 1=1
+  	   <include refid="whereSQL"/>
+  	   group by  sellerid,seller_type
+  </select>
+  
+  
+  <update id="updateReviewState">
+  	 update t_experience_comment set review_state = #{reviewState},review_time = now()
+  	 <if test="refuseRemark !=null and refuseRemark != ''">
+  	 	 ,refuse_remark = #{refuseRemark}
+  	 </if>
+  	  where id = #{id}
+  </update>
+  
+  <update id="updateIsRecommend">
+  	 update t_experience_comment set is_recommend = #{isRecommend} where id = #{id}
+  </update>
+  
+  <select id="count" resultType="java.lang.Long">
+  	 select count(1) from t_experience_comment 
+  	  where 1=1
+  	  <include refid="whereSQL"/>
+  </select>
+  
+  <select id="getList" resultMap="BaseResultMap">
+  	  select <include refid="Base_Column_List"/>,<include refid="Blob_Column_List"/>
+  	  from t_experience_comment 
+  	  where 1=1
+  	  <include refid="whereSQL"/>
+  	  ORDER BY field(review_state,0,1,3,2),create_time DESC
+	 LIMIT ${(page-1)*limit},#{limit}
+  </select>
+  
+  <select id="getObject" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_experience_comment
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_experience_comment
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.businessman.entity.ExperienceComment">
+    insert into t_experience_comment (id, sellerid, sellername, 
+      seller_type, uid, user_type, 
+      record_type, record_id, activity_id, 
+      is_recommend, review_time, review_state, 
+      refuse_remark, create_time, content
+      )
+    values (#{id,jdbcType=INTEGER}, #{sellerid,jdbcType=INTEGER}, #{sellername,jdbcType=VARCHAR}, 
+      #{sellerType,jdbcType=INTEGER}, #{uid,jdbcType=INTEGER}, #{userType,jdbcType=INTEGER}, 
+      #{recordType,jdbcType=TINYINT}, #{recordId,jdbcType=INTEGER}, #{activityId,jdbcType=INTEGER}, 
+      #{isRecommend,jdbcType=TINYINT}, #{reviewTime,jdbcType=TIMESTAMP}, #{reviewState,jdbcType=INTEGER}, 
+      #{refuseRemark,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{content,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.businessman.entity.ExperienceComment">
+    insert into t_experience_comment
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="sellerid != null">
+        sellerid,
+      </if>
+      <if test="sellername != null">
+        sellername,
+      </if>
+      <if test="sellerType != null">
+        seller_type,
+      </if>
+      <if test="uid != null">
+        uid,
+      </if>
+      <if test="userType != null">
+        user_type,
+      </if>
+      <if test="recordType != null">
+        record_type,
+      </if>
+      <if test="recordId != null">
+        record_id,
+      </if>
+      <if test="activityId != null">
+        activity_id,
+      </if>
+      <if test="isRecommend != null">
+        is_recommend,
+      </if>
+      <if test="reviewTime != null">
+        review_time,
+      </if>
+      <if test="reviewState != null">
+        review_state,
+      </if>
+      <if test="refuseRemark != null">
+        refuse_remark,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="sellerid != null">
+        #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="sellername != null">
+        #{sellername,jdbcType=VARCHAR},
+      </if>
+      <if test="sellerType != null">
+        #{sellerType,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null">
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="userType != null">
+        #{userType,jdbcType=INTEGER},
+      </if>
+      <if test="recordType != null">
+        #{recordType,jdbcType=TINYINT},
+      </if>
+      <if test="recordId != null">
+        #{recordId,jdbcType=INTEGER},
+      </if>
+      <if test="activityId != null">
+        #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="isRecommend != null">
+        #{isRecommend,jdbcType=TINYINT},
+      </if>
+      <if test="reviewTime != null">
+        #{reviewTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="reviewState != null">
+        #{reviewState,jdbcType=INTEGER},
+      </if>
+      <if test="refuseRemark != null">
+        #{refuseRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.businessman.entity.ExperienceComment">
+    update t_experience_comment
+    <set>
+      <if test="sellerid != null">
+        sellerid = #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="sellername != null">
+        sellername = #{sellername,jdbcType=VARCHAR},
+      </if>
+      <if test="sellerType != null">
+        seller_type = #{sellerType,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null">
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="userType != null">
+        user_type = #{userType,jdbcType=INTEGER},
+      </if>
+      <if test="recordType != null">
+        record_type = #{recordType,jdbcType=TINYINT},
+      </if>
+      <if test="recordId != null">
+        record_id = #{recordId,jdbcType=INTEGER},
+      </if>
+      <if test="activityId != null">
+        activity_id = #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="isRecommend != null">
+        is_recommend = #{isRecommend,jdbcType=TINYINT},
+      </if>
+      <if test="reviewTime != null">
+        review_time = #{reviewTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="reviewState != null">
+        review_state = #{reviewState,jdbcType=INTEGER},
+      </if>
+      <if test="refuseRemark != null">
+        refuse_remark = #{refuseRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.xmniao.xmn.core.businessman.entity.ExperienceComment">
+    update t_experience_comment
+    set sellerid = #{sellerid,jdbcType=INTEGER},
+      sellername = #{sellername,jdbcType=VARCHAR},
+      seller_type = #{sellerType,jdbcType=INTEGER},
+      uid = #{uid,jdbcType=INTEGER},
+      user_type = #{userType,jdbcType=INTEGER},
+      record_type = #{recordType,jdbcType=TINYINT},
+      record_id = #{recordId,jdbcType=INTEGER},
+      activity_id = #{activityId,jdbcType=INTEGER},
+      is_recommend = #{isRecommend,jdbcType=TINYINT},
+      review_time = #{reviewTime,jdbcType=TIMESTAMP},
+      review_state = #{reviewState,jdbcType=INTEGER},
+      refuse_remark = #{refuseRemark,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      content = #{content,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.businessman.entity.ExperienceComment">
+    update t_experience_comment
+    set sellerid = #{sellerid,jdbcType=INTEGER},
+      sellername = #{sellername,jdbcType=VARCHAR},
+      seller_type = #{sellerType,jdbcType=INTEGER},
+      uid = #{uid,jdbcType=INTEGER},
+      user_type = #{userType,jdbcType=INTEGER},
+      record_type = #{recordType,jdbcType=TINYINT},
+      record_id = #{recordId,jdbcType=INTEGER},
+      activity_id = #{activityId,jdbcType=INTEGER},
+      is_recommend = #{isRecommend,jdbcType=TINYINT},
+      review_time = #{reviewTime,jdbcType=TIMESTAMP},
+      review_state = #{reviewState,jdbcType=INTEGER},
+      refuse_remark = #{refuseRemark,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,645 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.VipCardDao">
+
+	<!-- 商家会员卡审核参数和查询结果集 -->
+	<parameterMap type="TCardApply" id="cardApply" />
+	<resultMap type="TCardApply" id="cardApplyMap">
+		<result column="id" property="id" />
+		<result column="sellerid" property="sellerid" />
+		<result column="sellername" property="sellername" />
+		<result column="apply_type" property="applytype" />
+		<result column="instructions" property="instructions" />
+		<result column="apply_date" property="applydate" />
+		<result column="apply_status" property="applystatus" />
+		<result column="reason" property="reason" />
+		<result column="sellerNum" property="sellerNum" />
+		<result column="prepaidScheme" property="prepaidScheme" />
+	</resultMap>
+
+	<!-- 获取会员卡配置列表 -->
+	<select id="getVipCardList" resultType="com.xmniao.xmn.core.businessman.entity.VipCardBean"
+		parameterType="com.xmniao.xmn.core.businessman.entity.VipCardBean">
+		SELECT
+		config.id,config.sellerId,config.sellerName,config.sellerLogo,config.cardName,config.isPay,config.activeNum,config.sellerNum,
+		config.rights,config.cardStatus,config.rdate,config.udate,config.dstatus,
+		issue.prepaidScheme,
+		seller.total amount,seller.consumeTotal
+		usedAmount,seller.amount notUsedAmount
+		FROM t_card_config config
+		LEFT
+		JOIN
+		(SELECT sellerid,
+		GROUP_CONCAT(CONCAT('充',CONVERT(price,char),',到账',CONVERT(retail,char))
+		ORDER BY price SEPARATOR ';') prepaidScheme
+		FROM t_issue_card WHERE
+		dstatus=0
+		GROUP BY sellerid) issue
+		ON config.sellerId=issue.sellerid
+		LEFT JOIN
+		(SELECT sellerid, SUM(amount) amount,SUM(total)
+		total,SUM(consumeTotal)
+		consumeTotal
+		FROM t_card_seller
+		GROUP BY
+		sellerid) seller
+		ON config.sellerId=seller.sellerid
+		<!-- 说明：因t_card_seller表中存储的sellerid对应是子门店的sellerid，故统计总店会员卡余额时，需先获取到总店的sellerid -->
+		<trim prefix="WHERE" prefixOverrides="and">
+			<if test="id != null">AND config.id=#{id}</if>
+			<if test="cardName != null and cardName != ''">AND config.cardName LIKE '%${cardName}%'</if>
+			<if test="isPay != null">AND config.isPay=#{isPay}</if>
+			<if test="cardStatus != null">AND config.cardStatus=#{cardStatus}</if>
+			<if test="minActiveNum != null"><![CDATA[AND activeNum>=#{minActiveNum}]]></if>
+			<if test="maxActiveNum != null"><![CDATA[AND activeNum<=#{maxActiveNum}]]></if>
+			<if test="minNotUsedAmount != null"><![CDATA[AND seller.amount>=#{minNotUsedAmount}]]></if>
+			<if test="maxNotUsedAmount != null"><![CDATA[AND seller.amount<=#{maxNotUsedAmount}]]></if>
+			<if test="sellerId != null and sellerId != ''">AND config.sellerId=#{sellerId}</if>
+			<if test="sellerName != null and sellerName != ''">AND config.sellerName LIKE '%${sellerName}%'</if>
+		</trim>
+		ORDER BY config.udate DESC,config.id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<!-- 获取会员卡配置列表 总数 -->
+	<select id="getVipCardCount" resultType="long"
+		parameterType="com.xmniao.xmn.core.businessman.entity.VipCardBean">
+		SELECT
+		COUNT(1)
+		FROM t_card_config config
+		LEFT JOIN
+		(SELECT sellerid,
+		GROUP_CONCAT(CONCAT('充',price,',到账',retail) SEPARATOR ';')
+		prepaidScheme
+		FROM t_issue_card
+		GROUP BY sellerid) issue
+		ON
+		config.sellerId=issue.sellerid
+		LEFT JOIN
+		(SELECT sellerid, SUM(amount)
+		amount,SUM(total) total,SUM(consumeTotal)
+		consumeTotal
+		FROM
+		t_card_seller
+		GROUP BY sellerid) seller
+		ON
+		config.sellerId=seller.sellerid
+		<trim prefix="WHERE" prefixOverrides="and">
+			<if test="id != null">AND config.id=#{id}</if>
+			<if test="sellerName != null and sellerName != ''">AND config.cardName LIKE '%${cardName}%'</if>
+			<if test="isPay != null">AND isPay=#{isPay}</if>
+			<if test="cardStatus != null">AND config.cardStatus=#{cardStatus}</if>
+			<if test="minActiveNum != null"><![CDATA[AND activeNum>=#{minActiveNum}]]></if>
+			<if test="maxActiveNum != null"><![CDATA[AND activeNum<=#{maxActiveNum}]]></if>
+			<if test="minNotUsedAmount != null"><![CDATA[AND seller.amount>=#{minNotUsedAmount}]]></if>
+			<if test="maxNotUsedAmount != null"><![CDATA[AND seller.amount<=#{maxNotUsedAmount}]]></if>
+			<if test="sellerId != null and sellerId != ''">AND config.sellerId=#{sellerId}</if>
+			<if test="sellerName != null and sellerName != ''">AND config.sellerName LIKE '%${sellerName}%'</if>
+		</trim>
+	</select>
+
+	<!-- 新增会员卡配置 -->
+	<insert id="addVipCardSellerConfig" parameterType="map">
+		INSERT INTO
+		t_card_config (
+		sellerId,sellerName,sellerLogo,cardName,isPay,sellerNum,rights,cardStatus,rdate,udate,dstatus
+		)
+		VALUES (
+		#{sellerId},#{sellerName},#{sellerLogo},#{cardName},#{isPay},#{sellerNum},#{rights},#{cardStatus},#{rdate},#{udate},#{dstatus}
+		)
+	</insert>
+
+	<!-- 新增商家会员卡适用门店关系 -->
+	<insert id="addVipCardSellerNexus" parameterType="map">
+		INSERT INTO
+		t_seller_nexus (
+		sellerId,sellerName,msellerId,msellerName,cardStatus,rdate,udate,dstatus
+		)
+		VALUES (
+		#{sellerId},#{sellerName},#{msellerId},#{msellerName},0,#{rdate},#{udate},0
+		)
+	</insert>
+
+	<!-- 新增商家会员卡充值方案 -->
+	<insert id="addVipCardIssueCard" parameterType="map">
+		INSERT INTO
+		t_issue_card (
+		batchId,batchName,sellerid,sellername,price,retail,cash,card_status,rdate,udate,dstatus,isDefault
+		)
+		VALUES(
+		#{batchId},#{cardName},#{sellerId},#{sellerName},#{price},#{retail},#{cash},#{cardStatus},#{rdate},#{udate},0,#{isDefault}
+		)
+	</insert>
+
+	<!-- 获取支持总店会员卡业务的子店 -->
+	<select id="getSupporSellerList" resultType="com.xmniao.xmn.core.businessman.entity.TSellerNexus">
+		SELECT *
+		FROM t_seller_nexus
+		WHERE
+		sellerId=#{sellerId} AND dstatus=0
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<!-- 获取支持总店会员卡业务的子店个数 -->
+	<select id="getSupporSellerCount" resultType="Long">
+		SELECT COUNT(1)
+		FROM t_seller_nexus WHERE sellerId=#{sellerId} AND dstatus=0
+	</select>
+
+	<!-- 获取商家会员卡配置信息 -->
+	<select id="getVipCardBeanDetail"
+		resultType="com.xmniao.xmn.core.businessman.entity.ReqVipCardBean">
+		SELECT
+		id,cardName,sellerId,sellerName,sellerLogo,isPay,cardStatus,rights
+		FROM t_card_config
+		WHERE sellerId=#{sellerId}
+	</select>
+
+	<!-- 获取商家会员卡的充值方案列表 -->
+	<select id="getVipCardIssue" resultType="com.xmniao.xmn.core.businessman.entity.Plan">
+		SELECT
+		price,retail,isDefault
+		FROM t_issue_card
+		WHERE sellerid=#{sellerId} AND
+		dstatus=0
+		ORDER BY price
+	</select>
+
+	<!-- 更新商家会员卡的配置信息 -->
+	<update id="updateSellerConfig" parameterType="map">
+		UPDATE
+		t_card_config
+		SET
+		sellerLogo=#{sellerLogo},cardName=#{cardName},isPay=#{isPay},
+		sellerNum=#{sellerNum},rights=#{rights},cardStatus=#{cardStatus},
+		udate=#{udate}
+		WHERE sellerId=#{sellerId}
+	</update>
+
+	<!-- 删除指定商家的充值方案 -->
+	<update id="removeIssueCard">
+		UPDATE t_issue_card
+		SET dstatus=1
+		WHERE
+		sellerid=#{sellerId}
+	</update>
+
+	<!-- 删除指定商家的适用门店关系 -->
+	<update id="removeSellerNexus">
+		<!-- 逻辑删掉 -->
+		UPDATE t_seller_nexus
+		SET dstatus=1
+		WHERE sellerId=#{sellerId}
+	</update>
+
+	<!-- 获取持卡人会员卡信息列表 -->
+	<select id="getCardholderList" parameterType="com.xmniao.xmn.core.businessman.entity.TCardSeller"
+		resultType="com.xmniao.xmn.core.businessman.entity.TCardSeller">
+		SELECT
+		id,noId,cardName,uid,nname,phoneid,sellerid,sellername,amount,card_status
+		cardStatus,total,consumeTotal,rdate,msellerId,msellerName
+		FROM
+		t_card_seller
+		WHERE
+		cardType=#{cardType}
+		<if test="noId != null">AND noId=#{noId}</if>
+		<if test="id != null">AND id=#{id}</if>
+		<if test="cardName != null and cardName != ''">AND cardName LIKE '%${cardName}%'</if>
+		<if test="uid != null">AND uid=#{uid}</if>
+		<if test="nname != null and nname != ''">AND nname LIKE '%${nname}%'</if>
+		<if test="phoneid != null and phoneid !=''">AND phoneid LIKE '%${phoneid}%'</if>
+		<if test="minAmount != null"><![CDATA[AND amount >= #{minAmount}]]></if>
+		<if test="maxAmount != null"><![CDATA[AND amount <= #{maxAmount}]]></if>
+		<if test="msellerId != null">AND msellerId = #{msellerId}</if>
+		<if test="msellerName != null and msellerName != ''">AND msellerName LIKE '%${msellerName}%'</if>
+		ORDER BY id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<!-- 获取持卡人会员卡信息列表总数 -->
+	<select id="getCardholderCount" parameterType="com.xmniao.xmn.core.businessman.entity.TCardSeller"
+		resultType="long">
+		SELECT COUNT(1) FROM t_card_seller
+		WHERE
+		cardType=#{cardType}
+		<if test="noId != null">AND noId=#{noId}</if>
+		<if test="id != null">AND id=#{id}</if>
+		<if test="cardName != null and cardName != ''">AND cardName LIKE '%${cardName}%'</if>
+		<if test="uid != null">AND uid=#{uid}</if>
+		<if test="nname != null and nname != ''">AND nname LIKE '%${nname}%'</if>
+		<if test="phoneid != null and phoneid !=''">AND phoneid LIKE '%${phoneid}%'</if>
+		<if test="minAmount != null"><![CDATA[AND amount >= #{minAmount}]]></if>
+		<if test="maxAmount != null"><![CDATA[AND amount <= #{maxAmount}]]></if>
+		<if test="msellerId != null">AND msellerId = #{msellerId}</if>
+		<if test="msellerName != null and msellerName != ''">AND msellerName LIKE '%${msellerName}%'</if>
+	</select>
+
+	<!-- 获取所有商家的总充值额,消费额及余额 -->
+	<select id="getCountAmount" resultType="com.xmniao.xmn.core.businessman.entity.TCardSeller"
+		parameterType="com.xmniao.xmn.core.businessman.entity.TCardSeller">
+		SELECT SUM(total) totalAmount,SUM(consumeTotal)
+		totalConsumeAmount,SUM(amount) totalNoConsumeAmount
+		FROM t_card_seller
+		WHERE
+		cardType=#{cardType}
+		<if test="noId != null">AND noId=#{noId}</if>
+		<if test="id != null">AND id=#{id}</if>
+		<if test="cardName != null and cardName != ''">AND cardName LIKE '%${cardName}%'</if>
+		<if test="uid != null">AND uid=#{uid}</if>
+		<if test="nname != null and nname != ''">AND nname LIKE '%${nname}%'</if>
+		<if test="phoneid != null and phoneid !=''">AND phoneid LIKE '%${phoneid}%'</if>
+		<if test="minAmount != null"><![CDATA[AND amount >= #{minAmount}]]></if>
+		<if test="maxAmount != null"><![CDATA[AND amount <= #{maxAmount}]]></if>
+		<if test="msellerId != null">AND msellerId = #{msellerId}</if>
+		<if test="msellerName != null and msellerName != ''">AND msellerName LIKE '%${msellerName}%'</if>
+	</select>
+
+	<!-- 获取商家会员卡的充值记录列表 -->
+	<select id="getPrepaidList"
+		resultType="com.xmniao.xmn.core.businessman.entity.TRechargeRecord"
+		parameterType="com.xmniao.xmn.core.businessman.entity.TRechargeRecord">
+		SELECT
+		record.uid,record.id,record.noId,record.amount,record.profit,record.cash,
+		record.orderId,record.rdate,record.number,record.third_uid thirdUid,
+		record.paytype payType,card.id
+		cardNo,card.cardName,card.nname,card.phoneid phoneId,
+		record.payStatus,record.udate,record.depict
+		FROM t_recharge_record
+		record
+		LEFT JOIN t_card_seller card
+		ON record.noId=card.noId
+		WHERE
+		card.cardType=#{cardType}
+		<if test="uid!=null">AND record.uid=#{uid}</if>
+		<if test="nname!=null and nname!=''">AND card.nname LIKE '%${nname}%'</if>
+		<if test="phoneId!=null and phoneId!=''">AND card.phoneid LIKE '${phoneId}'</if>
+		<if test="cardNo !=null">AND card.id =#{cardNo}</if>
+		<if test="cardName!=null and cardName!=''">AND card.cardName LIKE '%${cardName}%'</if>
+		<if test="noId!=null">AND record.noId LIKE '%${noId}%'</if>
+		<if test="minAmount!=null"><![CDATA[AND record.amount>=#{minAmount}]]></if>
+		<if test="maxAmount!=null"><![CDATA[AND record.amount<=#{maxAmount}]]></if>
+		<if test="minProfit!=null"><![CDATA[AND record.profit>=#{minProfit}]]></if>
+		<if test="maxProfit!=null"><![CDATA[AND record.profit<=#{maxProfit}]]></if>
+		<if test="orderId !=null">AND record.orderId =#{orderId}</if>
+		<if test="rdate !=null">AND DATE_FORMAT(record.rdate,'%Y-%m-%d') =
+			DATE_FORMAT(#{rdate}, '%Y-%m-%d')</if>
+		<if test="number !=null and number != ''">AND record.number LIKE '%${number}%'</if>
+		<if test="thirdUid !=null and thirdUid != ''">AND record.third_uid LIKE '%${thirdUid}%'</if>
+		<if test="payStatus !=null">AND record.payStatus=#{payStatus}</if>
+		ORDER BY record.id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<!-- 获取商家会员卡的充值记录列表总数 -->
+	<select id="getPrepaidCount" resultType="Long"
+		parameterType="com.xmniao.xmn.core.businessman.entity.TRechargeRecord">
+		SELECT COUNT(1)
+		FROM t_recharge_record record
+		LEFT JOIN t_card_seller
+		card
+		ON record.noId=card.noId
+		WHERE
+		card.cardType=#{cardType}
+		<if test="uid!=null">AND record.uid=#{uid}</if>
+		<if test="nname!=null and nname!=''">AND card.nname LIKE '%${nname}%'</if>
+		<if test="phoneId!=null and phoneId!=''">AND card.phoneid LIKE '${phoneId}'</if>
+		<if test="cardNo !=null">AND card.id =#{cardNo}</if>
+		<if test="cardName!=null and cardName!=''">AND card.cardName LIKE '%${cardName}%'</if>
+		<if test="noId!=null">AND record.noId LIKE '%${noId}%'</if>
+		<if test="minAmount!=null"><![CDATA[AND record.amount>=#{minAmount}]]></if>
+		<if test="maxAmount!=null"><![CDATA[AND record.amount<=#{maxAmount}]]></if>
+		<if test="minProfit!=null"><![CDATA[AND record.profit>=#{minProfit}]]></if>
+		<if test="maxProfit!=null"><![CDATA[AND record.profit<=#{maxProfit}]]></if>
+		<if test="orderId !=null">AND record.orderId =#{orderId}</if>
+		<if test="rdate !=null">AND DATE_FORMAT(record.rdate,'%Y-%m-%d') =
+			DATE_FORMAT(#{rdate}, '%Y-%m-%d')</if>
+		<if test="number !=null and number != ''">AND record.number LIKE '%${number}%'</if>
+		<if test="thirdUid !=null and thirdUid != ''">AND record.third_uid LIKE '%${thirdUid}%'</if>
+		<if test="payStatus !=null">AND record.payStatus=#{payStatus}</if>
+	</select>
+
+
+	<!-- 获取生鲜会员卡的消费记录列表 -->
+	<select id="getConsumeList" parameterType="com.xmniao.xmn.core.fresh.entity.TConsumeRecord"
+		resultType="com.xmniao.xmn.core.fresh.entity.TConsumeRecord">
+		SELECT record.*,card.cardName,card.id cardNo
+		FROM t_consume_record
+		record
+		LEFT JOIN t_card_seller card
+		ON record.noId=card.noId
+		WHERE
+		record.cardType=#{cardType}
+		<if test="uid!=null">AND record.uid=#{uid}</if>
+		<if test="nname!=null and nname!=''">AND record.nname LIKE '%${nname}%'</if>
+		<if test="phoneId!=null and phoneId!=''">AND record.phoneid LIKE '${phoneId}'</if>
+		<if test="noId!=null">AND record.noId LIKE '%${noId}%'</if>
+		<if test="minAmount!=null"><![CDATA[AND record.amount>=#{minAmount}]]></if>
+		<if test="maxAmount!=null"><![CDATA[AND record.amount<=#{maxAmount}]]></if>
+		<if test="minMoney!=null"><![CDATA[AND record.money>=#{minMoney}]]></if>
+		<if test="maxMoney!=null"><![CDATA[AND record.money<=#{maxMoney}]]></if>
+		<if test="bid !=null">AND record.bid =#{bid}</if>
+		<if test="rdate !=null">AND DATE_FORMAT(record.rdate,'%Y-%m-%d') =
+			DATE_FORMAT(#{rdate}, '%Y-%m-%d')</if>
+		<if test="sellerId !=null">AND record.sellerId=#{sellerId}</if>
+		<if test="sellerName !=null and sellerName != ''">AND record.sellerName LIKE '%${sellerName}%'</if>
+		<if test="cardName!=null and cardName!=''">AND card.cardName LIKE '%${cardName}%'</if>
+		<if test="cardNo !=null">AND card.id =#{cardNo}</if>
+		ORDER BY rdate DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<!-- 获取生鲜会员卡的消费记录列表总数 -->
+	<select id="getConsumeCount" parameterType="com.xmniao.xmn.core.fresh.entity.TConsumeRecord"
+		resultType="Long">
+		SELECT COUNT(1)
+		FROM t_consume_record record
+		WHERE cardType=#{cardType}
+		<if test="uid!=null">AND record.uid=#{uid}</if>
+		<if test="nname!=null and nname!=''">AND record.nname LIKE '%${nname}%'</if>
+		<if test="phoneId!=null and phoneId!=''">AND record.phoneid LIKE '${phoneId}'</if>
+		<if test="noId!=null">AND record.noId LIKE '%${noId}%'</if>
+		<if test="minAmount!=null"><![CDATA[AND record.amount>=#{minAmount}]]></if>
+		<if test="maxAmount!=null"><![CDATA[AND record.amount<=#{maxAmount}]]></if>
+		<if test="minMoney!=null"><![CDATA[AND record.money>=#{minMoney}]]></if>
+		<if test="maxMoney!=null"><![CDATA[AND record.money<=#{maxMoney}]]></if>
+		<if test="bid !=null">AND record.bid =#{bid}</if>
+		<if test="rdate !=null">AND DATE_FORMAT(record.rdate,'%Y-%m-%d') =
+			DATE_FORMAT(#{rdate}, '%Y-%m-%d')</if>
+		<if test="sellerId !=null">AND record.sellerId=#{sellerId}</if>
+		<if test="sellerName !=null and sellerName != ''">AND record.sellerName LIKE '%${sellerName}%'</if>
+		<if test="cardName!=null and cardName!=''">AND card.cardName LIKE '%${cardName}%'</if>
+		<if test="cardNo !=null">AND card.id =#{cardNo}</if>
+	</select>
+
+	<select id="getMulShopList" resultType="map">
+		SELECT msellerId
+		sellerid,msellerName sellername FROM t_seller_nexus where dstatus=0
+		and sellerId=#{sellerId}
+	</select>
+
+	<select id="getSupporSellerString" resultType="String">
+		SELECT
+		GROUP_CONCAT(msellerid SEPARATOR ',')
+		FROM t_seller_nexus
+		WHERE
+		dstatus=0 AND sellerId=#{sellerId}
+	</select>
+
+	<!-- 修改会员卡状态 -->
+	<update id="updateCardSellerStatus" parameterType="com.xmniao.xmn.core.businessman.entity.TCardSeller">
+		UPDATE
+		t_card_seller
+		SET card_status=#{cardStatus}
+		WHERE noId=#{noId}
+	</update>
+
+	<!-- 查询该商家是否已有会员卡配置 -->
+	<select id="getSellerCardCount" resultType="int">
+		SELECT COUNT(1) FROM
+		t_card_config WHERE sellerId=#{sellerId}
+	</select>
+	<!-- 查询申请审核开通会员卡和修改会员卡使用说明的列表 -->
+	<select id="getCardApplyList" resultMap="cardApplyMap"
+		parameterType="com.xmniao.xmn.core.businessman.entity.TCardApply">
+		SELECT
+		t_card_apply.`id`,
+		t_card_apply.`sellerid`,
+		t_seller.`sellername`,
+		t_card_apply.`instructions`,
+		t_card_apply.`apply_type`,
+		t_card_apply.`apply_status`,
+		t_card_apply.`reason`
+		FROM
+		t_card_apply,t_seller
+		WHERE
+		t_card_apply.`sellerid` = t_seller.`sellerid`
+		<if test="sellername !=null and sellername != ''">
+			AND t_seller.`sellername` LIKE '%${sellername}%'
+		</if>
+		<if test="sellerid !=null">
+			AND t_card_apply.`sellerid`= #{sellerid}
+		</if>
+		<if test="applytype !=null">
+			AND t_card_apply.`apply_type` = #{applytype}
+		</if>
+		<if test="applystatus !=null">
+			AND t_card_apply.`apply_status` = #{applystatus}
+		</if>
+	</select>
+	<!-- 查询申请审核开通会员卡的列表记录数 -->
+	<select id="getCardApplyListCount" resultType="Long">
+		SELECT
+		COUNT(*)
+		FROM
+		t_card_apply,t_seller
+		WHERE t_card_apply.`sellerid` =
+		t_seller.`sellerid`
+		<if test="sellername !=null and sellername != ''">
+			AND t_seller.`sellername` LIKE '%${sellername}%'
+		</if>
+		<if test="sellerid !=null">
+			AND t_card_apply.`sellerid`= #{sellerid}
+		</if>
+		<if test="applytype !=null">
+			AND t_card_apply.`apply_type` = #{applytype}
+		</if>
+		<if test="applystatus !=null">
+			AND t_card_apply.`apply_status` = #{applystatus}
+		</if>
+		ORDER BY apply_date DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<!-- 根据id查询会员卡审核申请记录 -->
+	<select id="getVipCardAuditDetail" parameterType="int"
+		resultMap="cardApplyMap">
+		SELECT t_seller.`sellername`,t_card_apply.* FROM
+		t_card_apply,t_seller WHERE
+		t_card_apply.`sellerid` =
+		t_seller.`sellerid` AND t_card_apply.id =
+		#{0}
+	</select>
+	<!-- 批量查询申请审核记录 -->
+	<select id="selectTCardApplyList" resultMap="cardApplyMap"
+		parameterType="Object">
+		SELECT t_seller.`sellername`,t_card_apply.* FROM t_card_apply,t_seller
+		WHERE t_card_apply.`sellerid` = t_seller.`sellerid` AND
+		t_card_apply.id IN
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=") ">
+			#{item}
+		</foreach>
+	</select>
+	<!-- 查询商家是否已开通会员卡 -->
+	<select id="checkExist" parameterType="int" resultType="int">
+		SELECT
+		COUNT(*) FROM t_card_config WHERE t_card_config.`sellerId` =
+		#{0} AND
+		t_card_config.`cardStatus` = 1 AND t_card_config.`dstatus` =
+		0
+	</select>
+	<!-- 查询是否是连锁店的子店 -->
+	<select id="checkIsmultiple" parameterType="int" resultType="int">
+		SELECT COUNT(*) FROM t_seller WHERE t_seller.`sellerid` = #{0} AND
+		t_seller.`ismultiple` = 1 AND t_seller.`fatherid` != 0
+	</select>
+	<!-- 查询是总店还是单店 -->
+	<select id="checkIstotalbusiness" parameterType="int"
+		resultType="int">
+		SELECT COUNT(*) FROM t_seller WHERE t_seller.`sellerid` =
+		#{0} AND
+		t_seller.`ismultiple` = 1
+	</select>
+	<!-- 查询适用商家 -->
+	<select id="getIsmultipleSub" resultType="com.xmniao.xmn.core.businessman.entity.TSellerNexus"
+		parameterType="int">
+		SELECT t.sellerid,t.sellername FROM t_seller t WHERE
+		t.fatherid = #{0} AND
+		t.is_virtual = 0 AND t.status = 3
+	</select>
+	<!-- 批量插入适用商家表t_seller_nexus -->
+	<insert id="batchAddSellerNexus" parameterType="Object">
+		INSERT INTO
+		t_seller_nexus(sellerId,sellerName,msellerId,msellerName,cardStatus,dstatus,rdate)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.sellerId},#{item.sellerName},#{item.msellerId},#{item.msellerName},#{item.cardStatus},#{item.dstatus},#{item.rdate})
+		</foreach>
+	</insert>
+	<!-- 批量更新会员卡使用说明 -->
+	<update id="batchUpdateCarConfig" parameterType="Object">
+		<foreach collection="list" item="item" index="index" open=""
+			close="" separator=";">
+			update t_card_config
+			set
+			rights="${item.instructions}",udate="${item.udate}"
+			where sellerId =
+			${item.sellerid}
+		</foreach>
+	</update>
+	<!-- 批量更新 t_card_apply的审核状态和时间 -->
+	<update id="batchUpdateCarApply" parameterType="Object">
+		<foreach collection="list" item="item" index="index" open=""
+			close="" separator=";">
+			update t_card_apply
+			set
+			apply_status="${item.applystatus}"
+			where sellerId = ${item.sellerid}
+			AND id = ${item.id}
+		</foreach>
+	</update>
+	<!-- 批量更新 t_card_apply的不通过原因和审核状态 -->
+	<update id="batchUpdateNoPass" parameterType="Object">
+		<foreach collection="list" item="item" index="index" open=""
+			close="" separator=";">
+			update t_card_apply
+			set
+			apply_status="${item.applystatus}",reason="${item.reason}"
+			where id =
+			${item.id}
+		</foreach>
+	</update>
+	<!--获取充值方案审核信息列表 -->
+	<select id="getissueCardApplyList"
+		resultType="com.xmniao.xmn.core.businessman.entity.TIssueCardApply"
+		parameterType="com.xmniao.xmn.core.businessman.entity.TIssueCardApply">
+		SELECT
+		id,batchId,batchName,sellerid,sellername,price,retail,cash,statr_period
+		AS statrperiod,end_period AS endperiod,number,card_status AS
+		cardstatus,reason,amount,profit,num,rdate,udate,dstatus,isDefault
+		FROM
+		t_issue_card
+		WHERE card_status IN(0,1,3) AND dstatus = 0
+		<if test="sellername !=null and sellername != ''">
+			AND sellername LIKE '%${sellername}%'
+		</if>
+		<if test="sellerid !=null">
+			AND sellerid = #{sellerid}
+		</if>
+		<if test="cardstatus !=null">
+			AND card_status = #{cardstatus}
+		</if>
+		ORDER BY rdate DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<!-- 获取充值方案审核信息记录总数 -->
+	<select id="getissueCardApplyListCount"
+		parameterType="com.xmniao.xmn.core.businessman.entity.TIssueCardApply"
+		resultType="Long">
+		SELECT COUNT(*)
+		FROM t_issue_card
+		WHERE card_status IN(0,1,3) AND dstatus = 0
+		<if test="sellername !=null and sellername != ''">
+			AND sellername LIKE '%${sellername}%'
+		</if>
+		<if test="sellerid !=null">
+			AND sellerid = #{sellerid}
+		</if>
+		<if test="cardstatus !=null">
+			AND card_status = #{cardstatus}
+		</if>
+	</select>
+	<!-- 查看充值方案审核申请记录详情 -->
+	<select id="getIssueCardAuditDetail" parameterType="int"
+		resultType="com.xmniao.xmn.core.businessman.entity.TIssueCardApply">
+		SELECT
+		id,batchId,batchName,sellerid,sellername,price,retail,cash,statr_period
+		AS statrperiod,end_period AS endperiod,number,card_status AS
+		cardstatus,reason,amount,profit,num,rdate,udate,dstatus,isDefault
+		FROM
+		t_issue_card
+		WHERE
+		t_issue_card.id = #{0}
+	</select>
+	<!-- 批量查询修改充值方案信息 -->
+	<select id="selectTIssueCardApplyList"
+		resultType="com.xmniao.xmn.core.businessman.entity.TIssueCardApply"
+		parameterType="Object">
+		SELECT id,batchId,sellerid FROM t_issue_card
+		WHERE
+		t_issue_card.id IN
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=") ">
+			#{item}
+		</foreach>
+	</select>
+	<!-- 批量更新 t_issue_card的通过时间和审核状态 -->
+	<update id="updateIssuePass" parameterType="Object">
+		<foreach collection="list" item="item" index="index" open=""
+			close="" separator=";">
+			update t_issue_card
+			set
+			udate="${item.udate}",card_status="${item.cardstatus}"
+			where id = ${item.id}
+		</foreach>
+	</update>
+	<!-- 批量更新 t_issue_card的不通过原因和审核状态以及时间 -->
+	<update id="updateIssueNoPass" parameterType="Object">
+		<foreach collection="list" item="item" index="index" open=""
+			close="" separator=";">
+			update t_issue_card
+			set
+			udate="${item.udate}",reason="${item.reason}",card_status="${item.cardstatus}"
+			where id = ${item.id}
+		</foreach>
+	</update>
+	<!-- 查询会员卡是否有默认充值方案 -->
+	<select id="getisDefault" resultType="int">
+		SELECT COUNT(1) FROM
+		t_issue_card WHERE sellerId=#{sellerId} AND isDefault=1
+	</select>
+</mapper>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.user_terminal.dao.TSellerNoticeDao">
+
+	<parameterMap type="TSellerNotice" id="tSellerNotice" />
+
+	<resultMap type="TSellerNotice" id="tSellerNoticeMap">
+		<result column="id" property="id" />
+		<result column="remark" property="remark" />
+		<result column="STATUS" property="STATUS" />
+		<result column="creator" property="creator" />
+		<result column="date_created" property="dateCreated" />
+		<result column="updator" property="updator" />
+		<result column="date_updated" property="dateUpdated" />
+	</resultMap>
+
+ 
+	<select id="getList" resultMap="tSellerNoticeMap" parameterMap="tSellerNotice">
+		SELECT id,remark,STATUS,creator,date_created,updator,date_updated  FROM t_seller_notice
+		<where>
+			1=1
+			<include refid="QueryTerms"></include>
+		</where>
+		ORDER BY date_created DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="count" resultType="Long" parameterMap="tSellerNotice">
+		SELECT count(id) FROM t_seller_notice
+		<where>
+			1=1
+			<include refid="QueryTerms"></include>
+		</where>
+	</select>
+	<!-- 查询条件 -->
+    <sql id="QueryTerms">
+            <if test="null != STATUS">
+				AND STATUS = #{STATUS}
+			</if>
+			<if test="null != remark and '' != remark">
+				AND remark like '%${remark}%'
+			</if>
+			<if test="null != dateCreatedStart and '' != dateCreatedStart">
+				AND date_created &gt;= #{dateCreatedStart}
+			</if>
+			<if test="null != dateCreatedEnd and '' != dateCreatedEnd">
+				AND date_created &lt;= #{dateCreatedEnd}
+			</if>
+    </sql>
+    <insert id="addReturnId" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterMap="tSellerNotice" >
+		INSERT INTO t_seller_notice
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					id,
+				</if>
+			 	<if test=" null != remark and '' != remark ">
+					remark,
+				</if>
+			 	<if test=" null != STATUS ">
+					STATUS,
+				</if>			 					
+			 	<if test=" null != creator and '' != creator ">
+					creator,
+				</if>
+			 	<if test=" null != dateCreated ">
+					date_created,
+				</if>
+			 	<if test=" null != updator and '' != updator ">
+					updator,
+				</if>
+			 	<if test=" null != dateUpdated ">
+					date_updated,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					#{id},
+				</if>
+			 	<if test=" null != remark and '' != remark ">
+					#{remark},
+				</if>
+			 	<if test=" null != STATUS ">
+					#{STATUS},
+				</if>			 					
+			 	<if test=" null != creator and '' != creator ">
+					#{creator},
+				</if>
+			 	<if test=" null != dateCreated ">
+					#{dateCreated},
+				</if>
+			 	<if test=" null != updator and '' != updator ">
+					#{updator},
+				</if>
+			 	<if test=" null != dateUpdated ">
+					#{dateUpdated},
+				</if>
+		</trim>
+	</insert>
+	
+	<update id="update" parameterMap="tSellerNotice">
+		UPDATE t_seller_notice
+		<set>
+			<trim suffixOverrides=",">
+				<if test="null != STATUS">
+					STATUS = #{STATUS},
+				</if>
+				<if test="null != remark and '' != remark">
+					remark = #{remark},
+				</if>
+				<if test="null != updator and '' != updator">
+					updator = #{updator},
+				</if>
+				<if test="null != dateUpdated">
+					date_updated = #{dateUpdated},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != id">
+				id = #{id}
+			</if>
+		</where>
+	</update>
+	<select id="getObject" resultMap="tSellerNoticeMap" parameterType="Long">
+		SELECT id,remark,STATUS,creator,date_created,updator,date_updated  FROM t_seller_notice where id = #{0}
+	</select>
+</mapper>

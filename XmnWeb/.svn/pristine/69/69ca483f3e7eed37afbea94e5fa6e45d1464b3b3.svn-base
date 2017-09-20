@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.vstar.dao.TVstarContentVideoDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.vstar.entity.TVstarContentVideo" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="content_id" property="contentId" jdbcType="BIGINT" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="video_url" property="videoUrl" jdbcType="VARCHAR" />
+    <result column="video_img" property="videoImg" jdbcType="VARCHAR" />
+    <result column="sort_val" property="sortVal" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, content_id, title, description, video_url, video_img, sort_val, status, create_time, 
+    update_time
+  </sql>
+  
+  <select id="getListByContentId" resultMap="BaseResultMap" >
+  	   select 
+    <include refid="Base_Column_List" />
+    from t_vstar_content_video
+    where content_id = #{id}
+  </select>
+  
+  <update id="tVstarContentVideoDao">
+  	 update t_vstar_content_video set content_id = #{id}
+  	 where id in 
+  	 <foreach collection="list" item="item" open="(" close=")" separator=",">
+  	 	#{item}
+  	 </foreach>
+  </update>
+  
+  <select id="getByIds" resultMap="BaseResultMap">
+  	  select 
+    <include refid="Base_Column_List" />
+    from t_vstar_content_video
+    where id in 
+    <foreach collection="list" item="item" open="(" close=")" separator=",">
+    	#{item}
+    </foreach>
+  </select>
+  
+  <select id="getObject" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_vstar_content_video
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_vstar_content_video
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarContentVideo" >
+    insert into t_vstar_content_video (id, content_id, title, 
+      description, video_url, video_img, 
+      sort_val, status, create_time, 
+      update_time)
+    values (#{id,jdbcType=BIGINT}, #{contentId,jdbcType=BIGINT}, #{title,jdbcType=VARCHAR}, 
+      #{description,jdbcType=VARCHAR}, #{videoUrl,jdbcType=VARCHAR}, #{videoImg,jdbcType=VARCHAR}, 
+      #{sortVal,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="add" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarContentVideo" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_vstar_content_video
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="contentId != null" >
+        content_id,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="videoUrl != null" >
+        video_url,
+      </if>
+      <if test="videoImg != null" >
+        video_img,
+      </if>
+      <if test="sortVal != null" >
+        sort_val,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="contentId != null" >
+        #{contentId,jdbcType=BIGINT},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="videoUrl != null" >
+        #{videoUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="videoImg != null" >
+        #{videoImg,jdbcType=VARCHAR},
+      </if>
+      <if test="sortVal != null" >
+        #{sortVal,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="update" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarContentVideo" >
+    update t_vstar_content_video
+    <set >
+      <if test="contentId != null" >
+        content_id = #{contentId,jdbcType=BIGINT},
+      </if>
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="videoUrl != null" >
+        video_url = #{videoUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="videoImg != null" >
+        video_img = #{videoImg,jdbcType=VARCHAR},
+      </if>
+      <if test="sortVal != null" >
+        sort_val = #{sortVal,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarContentVideo" >
+    update t_vstar_content_video
+    set content_id = #{contentId,jdbcType=BIGINT},
+      title = #{title,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      video_url = #{videoUrl,jdbcType=VARCHAR},
+      video_img = #{videoImg,jdbcType=VARCHAR},
+      sort_val = #{sortVal,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

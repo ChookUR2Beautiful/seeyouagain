@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.billmanagerment.dao.CelebrityOrderDao" >
+
+  <resultMap id="BaseResultMap" type="CelebrityOrder" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="seller_id" property="sellerId" jdbcType="BIGINT" />
+    <result column="celebrity_id" property="celebrityId" jdbcType="BIGINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="price" property="price" jdbcType="DECIMAL" />
+    <result column="arrival_time" property="arrivalTime" jdbcType="TIMESTAMP" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="emphasis" property="emphasis" jdbcType="INTEGER" />
+    <result column="crowd" property="crowd" jdbcType="INTEGER" />
+    <result column="demand" property="demand" jdbcType="VARCHAR" />
+    <result column="detail_demand" property="detailDemand" jdbcType="VARCHAR" />
+    <result column="pay_status" property="payStatus" jdbcType="INTEGER" />
+    <result column="pay_type" property="payType" jdbcType="INTEGER" />
+    <result column="version_lock" property="versionLock" jdbcType="BIGINT" />
+    <result column="third_serial" property="thirdSerial" jdbcType="VARCHAR" />
+    <result column="sellername" property="sellername" jdbcType="VARCHAR" />
+    <result column="fullname" property="fullname" jdbcType="VARCHAR" />
+    <result column="phoneid" property="phoneid" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, order_no, seller_id, celebrity_id, create_time, status, price, arrival_time, 
+    type, emphasis, crowd, demand, detail_demand, pay_status, pay_type, version_lock, 
+    third_serial, pay_time
+  </sql>
+  
+  <!-- 获取订单列表 -->
+  <select id="getList" resultMap="BaseResultMap" parameterType="CelebrityOrder" >
+    SELECT 
+    s.sellername,s.fullname,s.phoneid,c.name,c.phone,o.*
+    FROM t_celebrity_order o
+    LEFT JOIN t_celebrity c ON o.celebrity_id = c.id
+    LEFT JOIN t_seller s ON o.seller_id = s.sellerid
+    WHERE 1=1
+    <if test="orderNo != null and orderNo !=''">
+    AND	o.order_no = #{orderNo}
+    </if>
+    <if test="status != null">
+    AND	o.status = #{status}
+    </if>
+    <if test="sellername != null and sellername !=''">
+    AND	s.sellername LIKE '%${sellername}%'
+    </if>
+    <if test="phoneid != null and phoneid != ''">
+    AND	s.phoneid = #{phoneid}
+    </if>
+    <if test="name != null and name !=''">
+    AND	c.name LIKE '%${name}%'
+    </if>
+    <if test="phone != null and phone !=''">
+    AND	c.phone = #{phone}
+    </if>
+    <if test="sdate != null and sdate !=''">
+    AND	o.create_time &gt;= #{sdate}
+    </if>
+    <if test="edate != null and edate !=''">
+    AND	o.create_time &lt;= #{edate}
+    </if>
+    ORDER BY o.create_time DESC
+    <if test=" limit != -1 ">
+	LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <select id="count" parameterType="CelebrityOrder" resultType="long">
+    SELECT 
+    COUNT(1)
+    FROM t_celebrity_order o
+    LEFT JOIN t_celebrity c ON o.celebrity_id = c.id
+    LEFT JOIN t_seller s ON o.seller_id = s.sellerid
+    WHERE 1=1
+    <if test="orderNo != null and orderNo !=''">
+    AND	o.order_no = #{orderNo}
+    </if>
+    <if test="status != null">
+    AND	o.status = #{status}
+    </if>
+    <if test="sellername != null and sellername !=''">
+    AND	s.sellername LIKE '%${sellername}%'
+    </if>
+    <if test="phoneid != null and phoneid != ''">
+    AND	s.phoneid = #{phoneid}
+    </if>
+    <if test="name != null and name !=''">
+    AND	c.name LIKE '%${name}%'
+    </if>
+    <if test="phone != null and phone !=''">
+    AND	c.phone = #{phone}
+    </if>
+    <if test="sdate != null and sdate !=''">
+    AND	o.create_time &gt;= #{sdate}
+    </if>
+    <if test="edate != null and edate !=''">
+    AND	o.create_time &lt;= #{edate}
+    </if>
+  </select>
+</mapper>

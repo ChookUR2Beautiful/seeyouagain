@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.business_statistics.dao.TCelebrityDao" >
+
+
+  <resultMap id="celebrityMap" type="com.xmniao.xmn.core.business_statistics.entity.TCelebrity" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="sex" property="sex" jdbcType="INTEGER" />
+    <result column="avatar" property="avatar" jdbcType="VARCHAR" />
+    <result column="age" property="age" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="picture_price" property="picturePrice" jdbcType="DECIMAL" />
+    <result column="share_price" property="sharePrice" jdbcType="DECIMAL" />
+    <result column="review_price" property="reviewPrice" jdbcType="DECIMAL" />
+    <result column="review_num" property="reviewNum" jdbcType="INTEGER" />
+    <result column="order_num" property="orderNum" jdbcType="INTEGER" />
+    <result column="fans_num" property="fansNum" jdbcType="INTEGER" />
+    <result column="province" property="province" jdbcType="INTEGER" />
+    <result column="city" property="city" jdbcType="INTEGER" />
+    <result column="area" property="area" jdbcType="INTEGER" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="describe" property="describe" jdbcType="VARCHAR" />
+    <result column="image_json" property="imageJson" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  
+  <sql id="celebrity_column_list" >
+    id, sex, avatar, age, name, picture_price, share_price, review_price,review_num, order_num, 
+    fans_num, province, city, area, address, phone, email, `describe`, image_json, type, status
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test="name !=null and name != '' ">
+  		AND `name` like '%${name}%'
+  	</if>
+  	<if test="phone !=null and phone != '' ">
+  		AND `phone` = #{phone}
+  	</if>
+  </sql>
+  
+  <select id="getObject" resultMap="celebrityMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="celebrity_column_list" />
+    from t_celebrity
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getList" resultMap="celebrityMap" parameterType="com.xmniao.xmn.core.business_statistics.entity.TCelebrity" >
+    select 
+    <include refid="celebrity_column_list" />
+    from t_celebrity
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+    order by order_num desc
+    <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  
+  <select id="count" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.business_statistics.entity.TCelebrity" >
+    select 
+    	count(1)
+    from t_celebrity
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+  </select>
+  
+  <delete id="delete" parameterType="java.lang.Object" >
+    delete from t_celebrity
+    where id in
+    <foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+	</foreach>
+  </delete>
+  
+  <insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.xmn.core.business_statistics.entity.TCelebrity" >
+    insert into t_celebrity
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="sex != null" >
+        sex,
+      </if>
+      <if test="avatar != null" >
+        avatar,
+      </if>
+      <if test="age != null" >
+        age,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="picturePrice != null" >
+        picture_price,
+      </if>
+      <if test="sharePrice != null" >
+        share_price,
+      </if>
+      <if test="reviewPrice != null" >
+        review_price,
+      </if>
+      <if test="reviewNum != null" >
+        review_num,
+      </if>
+      <if test="orderNum != null" >
+        order_num,
+      </if>
+      <if test="fansNum != null" >
+        fans_num,
+      </if>
+      <if test="province != null" >
+        province,
+      </if>
+      <if test="city != null" >
+        city,
+      </if>
+      <if test="area != null" >
+        area,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="describe != null" >
+        `describe`,
+      </if>
+      <if test="imageJson != null" >
+        image_json,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="sex != null" >
+        #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="avatar != null" >
+        #{avatar,jdbcType=VARCHAR},
+      </if>
+      <if test="age != null" >
+        #{age,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="picturePrice != null" >
+        #{picturePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="sharePrice != null" >
+        #{sharePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="reviewPrice != null" >
+        #{reviewPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="reviewNum != null" >
+        #{reviewNum,jdbcType=INTEGER},
+      </if>
+      <if test="orderNum != null" >
+        #{orderNum,jdbcType=INTEGER},
+      </if>
+      <if test="fansNum != null" >
+        #{fansNum,jdbcType=INTEGER},
+      </if>
+      <if test="province != null" >
+        #{province,jdbcType=INTEGER},
+      </if>
+      <if test="city != null" >
+        #{city,jdbcType=INTEGER},
+      </if>
+      <if test="area != null" >
+        #{area,jdbcType=INTEGER},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="describe != null" >
+        #{describe,jdbcType=VARCHAR},
+      </if>
+      <if test="imageJson != null" >
+        #{imageJson,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.business_statistics.entity.TCelebrity" >
+    update t_celebrity
+    <set >
+      <if test="sex != null" >
+        sex = #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="avatar != null" >
+        avatar = #{avatar,jdbcType=VARCHAR},
+      </if>
+      <if test="age != null" >
+        age = #{age,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="picturePrice != null" >
+        picture_price = #{picturePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="sharePrice != null" >
+        share_price = #{sharePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="reviewPrice != null" >
+        review_price = #{reviewPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="reviewNum != null" >
+        review_num = #{reviewNum,jdbcType=INTEGER},
+      </if>
+      <if test="orderNum != null" >
+        order_num = #{orderNum,jdbcType=INTEGER},
+      </if>
+      <if test="fansNum != null" >
+        fans_num = #{fansNum,jdbcType=INTEGER},
+      </if>
+      <if test="province != null" >
+        province = #{province,jdbcType=INTEGER},
+      </if>
+      <if test="city != null" >
+        city = #{city,jdbcType=INTEGER},
+      </if>
+      <if test="area != null" >
+        area = #{area,jdbcType=INTEGER},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="describe != null" >
+        `describe` = #{describe,jdbcType=VARCHAR},
+      </if>
+      <if test="imageJson != null" >
+        image_json = #{imageJson,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status=#{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <!-- 批量更新角色状态 -->
+  <update id="updateBatch"  parameterType="map">
+  	UPDATE t_celebrity SET `status`=#{status} WHERE id IN
+  	<foreach item="item" index="index" collection="ids"  open="(" separator="," close=") ">
+			 #{item}
+	</foreach>
+  </update>
+  
+</mapper>

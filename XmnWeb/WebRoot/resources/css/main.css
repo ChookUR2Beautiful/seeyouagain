@@ -1,0 +1,651 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+
+li {
+	list-style: none;
+}
+
+a {
+	text-decoration: none;
+}
+
+em,i {
+	font-style: normal;
+}
+
+input::-webkit-outer-spin-button,input::-webkit-inner-spin-button {
+	-webkit-appearance: none !important;
+	margin: 0;
+}
+
+input[type="number"] {
+	-moz-appearance: textfield;
+}
+
+body {
+	background: rgb(238, 238, 238);
+	overflow-y: auto;
+	min-width: 1024px;
+	padding: 10px 30px;
+}
+
+.title {
+	height: 30px;
+	line-height: 30px;
+	font-size: 15px;
+	color: #333333;
+}
+
+.bg-fff {
+	background: #ffffff;
+}
+
+.search-box {
+	
+}
+
+.search-box ul li {
+	display: inline-block;
+	line-height: 30px;
+	padding: 10px;
+}
+
+.search-box ul li * {
+	vertical-align: middle;
+}
+
+.search-box ul li select {
+	width: 120x;
+	height: 30px;
+	padding: 5px 8px;
+	font-size: 13px;
+	line-height: 1.53846154;
+	color: #333;
+	vertical-align: middle;
+	background-color: #fff;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+	box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+	-webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow
+		ease-in-out .15s;
+	-o-transition: border-color ease-in-out .15s, box-shadow ease-in-out
+		.15s;
+	transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+}
+
+.search-box ul li input {
+	width: 250px;
+	height: 28px;
+	border-radius: 5px;
+	border: 1px solid #d6d6d6;
+	padding-left: 5px;
+}
+
+.search-box ul li input#startTime,.search-box ul li input#stopTime {
+	width: 200px;
+}
+
+.search-box ul li label {
+	display: inline-block;
+	font-size: 15px;
+	width: 60px;
+	text-align: right;
+	margin-right: 10px;
+}
+
+.list-box {
+	background: #fff;
+	margin-top: 20px;
+	padding: 10px 20px;
+}
+
+.list-box .list-tab {
+	overflow: hidden;
+	line-height: 30px;
+}
+
+.list-box .list-tab ul {
+	float: left;
+	font-size: 0;
+	border-bottom: 1px solid #ccc;
+	border-top: 1px solid #ccc;
+}
+
+.list-box .list-tab span {
+	float: right;
+}
+
+.list-box .list-tab ul li {
+	display: inline-block;
+	padding: 5px 12px;
+	margin-bottom: 0;
+	font-family: inherit;
+	font-size: 13px;
+	font-weight: normal;
+	line-height: 1.53846154;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: middle;
+	cursor: pointer;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	background-image: none;
+	-webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, .15), 0 1px 1px
+		rgba(0, 0, 0, .075);
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, .15), 0 1px 1px
+		rgba(0, 0, 0, .075);
+	-webkit-transition: all .8s cubic-bezier(.175, .885, .32, 1);
+	-o-transition: all .8s cubic-bezier(.175, .885, .32, 1);
+	transition: all .8s cubic-bezier(.175, .885, .32, 1);
+	color: #333;
+	text-shadow: 0 1px 0 #fff;
+	background-color: #f2f2f2;
+	border-right: 1px solid #ccc;
+}
+
+.list-box .list-tab ul li:first-child {
+	border-left: 1px solid #ccc;
+}
+
+.list-box .list-tab ul li.active {
+	color: #fff;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, .2);
+	background-color: #229f24;
+	border-right: 1px solid #229f24;
+}
+
+.list-box .list-tab ul li:hover {
+	background-color: #dedede;
+	border-right: 1px solid #a1a1a1;
+	-webkit-box-shadow: 0 2px 1px rgba(0, 0, 0, .1);
+	box-shadow: 0 2px 1px rgba(0, 0, 0, .1);
+}
+
+.list-title {
+	overflow: hidden;
+}
+
+.list-title li {
+	float: left;
+	text-align: center;
+	height: 30px;
+	line-height: 30px;
+	background-color: #444444;
+	border-right: 1px solid #ffffff;
+	font-size: 14px;
+	color: #fff;
+}
+
+.list-title li:last-child {
+	border-right: 0;
+}
+
+.list-box .order {
+	font-size: 14px;
+	max-height: 400px;
+	overflow: auto;
+}
+
+.list-box .order ul {
+	overflow: hidden;
+}
+
+.list-box .order ul li:first-child {
+	padding-left: 10px;
+}
+
+.list-box .order ul {
+	border-bottom: 1px solid #ccc;
+	border-top: 1px solid #ccc;
+}
+
+.list-box .order ul:last-child {
+	border-bottom: 0;
+}
+
+.list-box .order ul.order-title {
+	border: 0;
+	background: rgb(238, 238, 238);
+	padding-left: 0;
+}
+
+.list-box .order ul.order-title li {
+	text-align: left;
+	height: 35px;
+	line-height: 35px;
+	float: left;
+	border-right: 0;
+}
+
+.list-box .order ul.order-title li.handle {
+	float: right;
+	margin-right: 10px;
+}
+
+.list-box .order ul.order-title li.handle a.yes {
+	color: #CC3333;
+}
+
+.list-box .order ul.order-title li.handle a {
+	padding-right: 5px;
+	margin-right: 5px;
+	border-right: 1px solid #333333;
+	color: #999;
+}
+
+.list-box .order ul.order-title li.handle a:last-child {
+	border-right: 0;
+}
+
+.list-box .order ul.order-content {
+	display: table;
+	width: 100%;
+}
+
+.list-box .order ul.order-content li {
+	display: table-cell;
+	text-align: center;
+	border-right: 1px solid #ccc;
+	vertical-align: middle;
+}
+
+.list-box .order ul.order-content li:last-child {
+	border-right: 0;
+}
+
+.list-box .order ul.order-content li span {
+	display: inline-block;
+	line-height: 18px;
+	vertical-align: middle;
+}
+
+.list-box .order ul.order-content li p {
+	line-height: 20px;
+	text-align: left;
+	padding-left: 75px;
+}
+
+.list-box .order ul.order-content li>div {
+	margin-bottom: 10px;
+	overflow: hidden;
+}
+
+.list-box .order ul.order-content li p span {
+	cursor: pointer;
+	color: #00A1CB;
+}
+
+.list-box .order ul.order-content li img {
+	width: 60px;
+	float: left;
+}
+
+.order-list {
+	border: 1px solid #ccc;
+	margin-top: 20px;
+}
+
+.shade-box {
+	display: none;
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	filter: alpha(opacity = 60);
+	opacity: 0.6;
+	overflow: hidden;
+	background-color: #000;
+	z-index: 1;
+}
+
+.shade-content {
+	display: none;
+	background: #fff;
+	position: fixed;
+	top: 200px;
+	left: 50%;
+	width: 610px;
+	margin-left: -305px;
+	z-index: 2;
+}
+
+.shade-content .introduction-list {
+	line-height: 30px;
+}
+
+.shade-content .img-box {
+	overflow: auto;
+	width:600px;
+	max-height:300px;
+}
+
+.shade-content .img-box li {
+	float: left;
+	margin-right: 10px;
+	margin-top: 10px;
+}
+
+.shade-content .img-box img {
+	width: 100px;
+	vertical-align: middle;
+}
+
+.customization-box h2 {
+	text-align: center;
+	height: 40px;
+	line-height: 40px;
+	font-size: 20px;
+	font-weight: bold;
+}
+
+.customization-box ul {
+	line-height: 30px;
+}
+
+.customization-box ul li:last-child {
+	margin-top: 10px;
+}
+
+.customization-box ul li img {
+	margin-right: 10px;
+	margin-top: 10px;
+}
+
+.customization-box .btn-box {
+	overflow: hidden;
+}
+
+.customization-box .btn-box button {
+	float: right;
+	width: 60px;
+	height: 30px;
+	margin-right: 10px;
+	border: 0;
+	cursor: pointer;
+}
+
+.customization-box .btn-box button.save-btn {
+	background: #00a2ec;
+	color: #fff;
+	margin-right: 40px;
+}
+
+.customization-box .btn-box button.print-btn {
+	background: #1d092e;
+	color: #fff;
+}
+
+.content-box {
+	position: relative;
+	padding: 10px 20px;
+	font-size: 15px;
+}
+
+.content-box .close-shade {
+	position: absolute;
+	right: 10px;
+	top: 0px;
+	font-size: 30px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.delete-hint {
+	position: fixed;
+	width: 300px;
+	z-index: 2;
+	top: 200px;
+	left: 50%;
+	margin-left: -150px;
+	background: #fff;
+	display: none;
+	padding: 30px 0;
+}
+
+.delete-hint p {
+	height: 50px;
+	line-height: 50px;
+	text-align: center;
+	font-size: 15px;
+	position: relative;
+}
+
+.delete-hint p span {
+	position: absolute;
+	right: 15px;
+	top: -35px;
+	display: inline-block;
+	font-size: 30px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.delete-hint .btn-box {
+	text-align: center;
+}
+
+.delete-hint .btn-box button {
+	width: 60px;
+	height: 30px;
+	margin-right: 10px;
+	border: 0;
+	cursor: pointer;
+}
+
+.delete-hint .btn-box button.cancel-btn {
+	background: #8a8a8a;
+	color: #fff;
+}
+
+.delete-hint .btn-box button.confirm-btn {
+	background: #00a2ec;
+	color: #fff;
+	margin-left: 10px;
+	margin-right: 0;
+}
+
+.flow-box {
+	padding: 10px 20px;
+}
+
+.flow-box .flow-stage {
+	padding: 20px 0;
+}
+
+.flow-box .flow-stage ul {
+	overflow: hidden;
+	width: 922px;
+	margin: auto;
+}
+
+.flow-box .flow-stage ul li {
+	float: left;
+	width: 46px;
+	font-size: 0;
+	text-align: center;
+	margin-right: 100px;
+	position: relative;
+}
+
+.flow-box .flow-stage ul li:last-child {
+	margin-right: 0;
+}
+
+.flow-box .flow-stage ul li span {
+	display: inline-block;
+	font-size: 15px;
+}
+
+.flow-box .flow-stage ul li span.line {
+	width: 116px;
+	position: absolute;
+	left: 38px;
+	top: 15px;
+	height: 1px;
+	background: #ddd;
+}
+
+.flow-box .flow-stage ul li span.round {
+	display: inline-block;
+	width: 30px;
+	height: 30px;
+	text-align: center;
+	line-height: 30px;
+	border-radius: 50%;
+	background: #dddddd;
+	margin-bottom: 5px;
+}
+
+.flow-box .flow-stage ul li.yes span {
+	color: #00a2ec;
+}
+
+.flow-box .flow-stage ul li.yes span.round {
+	background: #00a2ec;
+	color: #fff;
+}
+
+.flow-box .order-information ul {
+	overflow: hidden;
+}
+
+.flow-box .order-information ul li {
+	float: left;
+	margin-right: 60px;
+	line-height: 30px;
+}
+
+.flow-box .order-information ul li span {
+	color: #666;
+}
+
+#address {
+	border: 0;
+}
+
+#copy {
+	color: #00a2ec;
+	cursor: pointer;
+}
+
+.price-box {
+	margin-top: 20px;
+}
+
+.price-box input {
+	width: 300px;
+	margin: 0 20px;
+	height: 30px;
+	border: 1px solid #dddddd;
+	text-indent: 8px;
+}
+
+.price-box button {
+	background: #00a2ec;
+	color: #fff;
+	width: 80px;
+	font-size: 14px;
+	height: 30px;
+	border: 1px solid #00a2ec;
+	cursor: pointer;
+}
+
+.table-list {
+	margin-top: 20px;
+}
+
+.table-list ul {
+	font-size: 0;
+	line-height: 30px;
+}
+
+.table-list ul li {
+	display: inline-block;
+	font-size: 14px;
+	width: 250px;
+}
+
+.table-list ul li select {
+	padding: 5px;
+}
+
+.table-list ul li input[type='text'] {
+	height: 30px;
+	text-indent: 8px;
+	width: 220px;
+}
+
+.delete-order,.back-box {
+	overflow: hidden;
+	height: 30px;
+}
+
+.delete-order span {
+	display: inline-block;
+	float: right;
+	width: 80px;
+	height: 30px;
+	cursor: pointer;
+	background: #8a8a8a;
+	color: #fff;
+	border: 1px solid #8a8a8a;
+	text-align: center;
+	line-height: 30px;
+}
+
+.delete-order button,.back-box button,.back-box a {
+	float: right;
+	width: 80px;
+	height: 30px;
+	cursor: pointer;
+	background: #8a8a8a;
+	color: #fff;
+	border: 1px solid #8a8a8a;
+	display: inline-block;
+    text-align: center;
+    line-height: 30px;
+
+}
+
+.sales-service ul {
+	display: inline-block;
+}
+
+.sales-service ul li {
+	line-height: 35px;
+}
+
+.sales-service ul li input {
+	margin-right: 5px;
+}
+
+.sales-service ul li label {
+	margin-right: 30px;
+}
+
+.sales-service ul li input[type='number'] {
+	height: 30px;
+	text-indent: 8px;
+	margin-left: 20px;
+}
+
+.sales-service .plan-box {
+	display: inline-block;
+	vertical-align: top;
+}
+
+.sales-service .plan-box p {
+	height: 30px;
+}
+
+.sales-service .plan-box textarea {
+	width: 400px;
+	height: 150px;
+	padding: 10px;
+}

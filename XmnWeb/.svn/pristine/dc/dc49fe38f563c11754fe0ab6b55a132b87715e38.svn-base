@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.dataDictionary.dao.TSystemAnnouncementDao" >
+
+  <resultMap id="systemAnnouncementMap" type="com.xmniao.xmn.core.dataDictionary.entity.TSystemAnnouncement" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="sdate" property="sdate" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="app" property="app" jdbcType="INTEGER" />
+    <result column="content" property="content" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  
+  
+  <sql id="systemAnnouncement_column_list" >
+    id, sdate, status, app, content
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test="app !=null and app != '' ">
+  		and app = #{app}
+  	</if>
+  </sql>
+  
+  
+  <select id="getObject" resultMap="systemAnnouncementMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="systemAnnouncement_column_list" />
+    from t_system_announcement
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  
+  <select id="getList" resultMap="systemAnnouncementMap" parameterType="com.xmniao.xmn.core.dataDictionary.entity.TSystemAnnouncement" >
+    select 
+    <include refid="systemAnnouncement_column_list" />
+    from t_system_announcement
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+  </select>
+  
+  <select id="count" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.dataDictionary.entity.TSystemAnnouncement" >
+    select 
+    	count(1)
+    from t_system_announcement
+   <where>
+   		1=1
+   		<include refid="whereSQL"></include>
+   </where>
+  </select>
+  
+  
+  <insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.xmn.core.dataDictionary.entity.TSystemAnnouncement" >
+    insert into t_system_announcement
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="sdate != null" >
+        sdate,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="app != null" >
+        app,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="sdate != null" >
+        #{sdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="app != null" >
+        #{app,jdbcType=INTEGER},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.dataDictionary.entity.TSystemAnnouncement" >
+    update t_system_announcement
+    <set >
+      <if test="sdate != null" >
+        sdate = #{sdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="app != null" >
+        app = #{app,jdbcType=INTEGER},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+</mapper>

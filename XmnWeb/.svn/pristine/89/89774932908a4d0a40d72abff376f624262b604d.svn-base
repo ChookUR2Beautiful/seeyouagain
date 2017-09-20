@@ -1,0 +1,295 @@
+package com.xmniao.xmn.core.billmanagerment.service;
+
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import oracle.net.aso.s;
+
+import org.apache.thrift.TException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.base.BaseService;
+import com.xmniao.xmn.core.base.Pageable;
+import com.xmniao.xmn.core.billmanagerment.dao.AllBillDao;
+import com.xmniao.xmn.core.base.Resultable;
+import com.xmniao.xmn.core.billmanagerment.dao.RefundBillDao;
+import com.xmniao.xmn.core.billmanagerment.entity.Bill;
+import com.xmniao.xmn.core.billmanagerment.entity.Refund;
+import com.xmniao.xmn.core.billmanagerment.util.BillConstants;
+import com.xmniao.xmn.core.exception.ApplicationException;
+import com.xmniao.xmn.core.president_office.util.PresidentConstants;
+import com.xmniao.xmn.core.exception.ApplicationException;
+import com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy;
+import com.xmniao.xmn.core.thrift.service.memberAccountService.MemberAccountService;
+import com.xmniao.xmn.core.thrift.service.businessService.BusiSysOrderService;
+import com.xmniao.xmn.core.thrift.service.payRefundService.FailureException;
+import com.xmniao.xmn.core.thrift.service.payRefundService.PayRefundService;
+import com.xmniao.xmn.core.thrift.service.payRefundService.RefundRequest;
+import com.xmniao.xmn.core.thrift.service.synthesizeService.SynthesizeService;
+
+
+/**
+ * 
+ * 项目名称：XmnWeb
+ * 
+ * 类名称：RefundBillService
+ * 
+ * 类描述： 申诉订单
+ * 
+ * 创建人： huangpingqiang
+ * 
+ * 创建时间：2014年11月15日16时00分41秒
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司
+ */
+ @Service
+public class RefundBillService extends BaseService<Refund> {
+
+	@Autowired
+	private RefundBillDao refundBillDao;
+	
+	@Autowired
+	private AllBillDao allBillDao;
+	
+	@Resource(name = "payRefundServiceClient")
+	private ThriftClientProxy payRefundServiceClient;
+	
+	@Resource(name = "memberAccountService")
+	private ThriftClientProxy memberAccountService;
+	
+	@Resource(name = "synthesizeServiceClient")
+	private ThriftClientProxy synthesizeServiceClient;
+	
+	@Override
+	protected BaseDao getBaseDao() {
+		return refundBillDao;
+	}
+	/**
+	 * 获取商家列表信息
+	 * 
+	 * @param refund
+	 * @return
+	 */
+	public Pageable<Refund> getRefundBillList(Refund refund) {
+		Pageable<Refund> refundList = new Pageable<Refund>(refund);
+		refundList.setContent(refundBillDao.getRefundBillList(refund));// 订单列表内容
+		refundList.setTotal(refundBillDao.refundBillCount(refund));// 总条数
+		return refundList;
+	}
+	
+	/**
+	 * 退款订单列表
+	 * @param refund
+	 * @return
+	 */
+	public Pageable<Refund> getRefundBillPendingList(Refund refund) {
+		String strStatus=refund.getStrStatus();
+		if(!("null".equals(strStatus)&&strStatus==null)){
+			if(BillConstants.SERVICE.equals(strStatus)){
+				int[] intstatus=BillConstants.REFUND_CUSTOMER_AGREES_STATUS; //客服同意
+				refund.setIsPresidentHandle(BillConstants.IsPresidentHandleN);
+				refund.setIntstatus(intstatus);	
+			}else if(BillConstants.CEOS.equals(strStatus)){
+				refund.setIsPresidentHandle(BillConstants.IsPresidentHandleY);
+				int[] intstatus=BillConstants.REFUND_CEOS_AGREES_STATUS; //总裁办同意
+				refund.setIntstatus(intstatus);	
+			}else if(BillConstants.SHOPS.equals(strStatus)){
+				int[] intstatus={BillConstants.REFUND_STATUS_AGREE}; //商家同意
+				refund.setIntstatus(intstatus);	
+			}else if(BillConstants.FAILURE.equals(strStatus)){
+				int[] intstatus={BillConstants.REFUND_STATUS_REFUND_FAILURE}; //退款失败
+				refund.setIntstatus(intstatus);	
+			}else if(BillConstants.PINTAI.equals(strStatus)){
+				int[] intstatus={BillConstants.REFUND_STATUS_REFUND_PINTAI}; //平台同意退款
+				refund.setIntstatus(intstatus);	
+			}else if(BillConstants.BRUSHORDER.equals(strStatus)){
+				int[] intstatus={BillConstants.REFUND_STATUS_REFUND_BRUSH}; //刷单退款
+				refund.setIntstatus(intstatus);	
+			}else{
+				int[] intstatus=BillConstants.REFUND_WAIT_STATUS; //待退款
+				refund.setIntstatus(intstatus);	
+			}
+		}
+		Pageable<Refund> refundList = new Pageable<Refund>(refund);
+		refundList.setContent(refundBillDao.getRefundBillPendingList(refund));
+		refundList.setTotal(refundBillDao.refundBillPendingCount(refund));
+		return refundList;
+	}
+	/**
+	 * 总裁办订单列表
+	 * @param refund
+	 * @return
+	 */
+	public Pageable<Refund> getRefundBillPresidentList(Refund refund) {
+		Pageable<Refund> refundList = new Pageable<Refund>(refund);
+		refundList.setContent(refundBillDao.getRefundBillPresidentList(refund));
+		refundList.setTotal(refundBillDao.refundBillPresidentCount(refund));
+		return refundList;
+	}
+	
+	/**
+	 * 退款（调接口）
+	 * @param request
+	 * @return
+	 * @throws FailureException
+	 * @throws TException
+	 */
+	public Map<String, String> refundBillPendingConfirm(RefundRequest request) {
+		PayRefundService.Client client = (PayRefundService.Client)(payRefundServiceClient.getClient());//支付服务
+		Map<String, String> res = null;
+		try {
+			res = client.PayRefund(request);
+		} catch (Exception e) {
+			log.error("退款失败", e);
+		} finally {
+			payRefundServiceClient.returnCon();
+		}
+		return res;
+	}
+	/**
+	 * @author dong'jt
+	 * 创建时间：2015年9月7日 下午6:12:04
+	 * 描述：恢复订单
+	 * @param refund
+	 * @return
+	 */
+   public Resultable recoveryOrderClient(Refund refund){//订单恢复接口
+	    Resultable resultable=null;
+	    try {
+			Map<String,String> res=recoveryClient(refund);//接口调用
+			resultable=getLogRes(res, refund);//日志以及返回信息组装
+		} catch (Exception e) {
+			this.log.error("恢复订单：", e);
+			throw new ApplicationException("恢复订单",e,new Object[]{refund},new String[]{"恢复订单",refund.getBid().toString(),"恢复订单","恢复订单"});	
+		}
+	    return resultable;	
+  }
+   
+  public Map<String,String> recoveryClient(Refund refund){//接口调用
+	  Map<String,String> map=new HashMap<String,String>();
+	  map.put("orderId", String.valueOf(refund.getBid()));
+	  Map<String, String> res = null;
+	  try {
+		SynthesizeService.Client client = (SynthesizeService.Client)(synthesizeServiceClient.getClient());//支付服务
+		res = client.recoveryFailOrder(map);
+	  }catch (TException e) {
+		this.log.error("恢复订单接口调用：", e);
+		throw new ApplicationException("恢复订单接口调用",e,new Object[]{refund});
+	  }finally {
+		  synthesizeServiceClient.returnCon();
+	  }
+	  return res;
+  }
+  public Resultable getLogRes(Map<String,String> map, Refund refund){//日志以及返回信息组装
+	  Resultable resultable=new Resultable();
+	  boolean flag = BillConstants.RECOVERY_CODE_100.equals(String.valueOf(map.get("code")));
+	  resultable.setMsg(String.valueOf(map.get("msg")));
+	  resultable.setSuccess(flag);
+	  //记录日志
+	  String[] logInfo = new String[]{"订单编号", String.valueOf(refund.getBid()), "恢复订单", "恢复"};
+	  fireLoginEvent(logInfo, flag ? 1 : 0);
+	  return resultable;
+  }
+	/**
+	 * 查询退款历史记录
+	 * @param refund
+	 * @return
+	 */
+	public Pageable<Refund> getRefundBillPendingHistoryList(Refund refund) {
+		Pageable<Refund> refundList = new Pageable<Refund>(refund);
+		refundList.setContent(refundBillDao.getRefundBillPendingHistoryList(refund));
+		refundList.setTotal(refundBillDao.refundBillPendingHistoryCount(refund));
+		return refundList;
+	}
+	
+	/**
+	 * 总裁办-商家申诉订单处理逻辑
+	 * @param refund
+	 */
+	@Transactional(propagation = Propagation.REQUIRED)
+	public boolean updateRefund(Refund refund) {
+		boolean isSuccess = true;
+		try{
+			int status = refund.getStatus().intValue();
+			if (PresidentConstants.REFUND_STATUS_REJECT == status) {// 5 商家申诉成功
+				memberCancelRefund(refund);
+			}else if (PresidentConstants.REFUND_STATUS_FAILURE == status) {// 7 同意退款(商家申诉失败)
+				doUpdate(refund);
+			}
+		}catch(Exception e){
+			isSuccess = false;
+			throw new ApplicationException("总裁办处理申诉订单", e, new Object[]{refund}, new String[]{"订单编号", refund.getBid().toString(), "商家申诉", "商家申诉"});
+		}
+		return isSuccess;
+	}
+	
+	/**
+	 * 用户取消申请订单退款
+	 * @param refund
+	 */
+	private void memberCancelRefund(Refund refund){
+		try{
+			MemberAccountService.Client client = (MemberAccountService.Client) (memberAccountService.getClient());   //支付系统服务
+			if (client.memberCancelRefund(refund.getBid().toString()) > 0) {
+				doUpdate(refund);
+			}
+		}catch(Exception e){
+			throw new ApplicationException("用户取消申请订单退款", e, new Object[]{refund});
+		}finally{
+			memberAccountService.returnCon();
+		}
+	}
+	
+	/**
+	 * 跟新订单信息
+	 * @param refund
+	 */
+	private void doUpdate(Refund refund){
+		refund.setQdate(new Date());
+		Long bid = refund.getBid();
+		int status = refund.getStatus().intValue();
+		if (PresidentConstants.REFUND_STATUS_REJECT == status) {
+			setRefundParams(refund);
+			update(refund);
+			this.log.info("8：驳回申请退款，商家申诉成功：状态更新为：" + PresidentConstants.BILL_STATUS_APPEAL_SUCCEED);
+			updateBill(bid, PresidentConstants.BILL_STATUS_APPEAL_SUCCEED);// 8：驳回申请退款，商家申诉成功,
+		}else if (PresidentConstants.REFUND_STATUS_FAILURE == status) {
+			setRefundParams(refund);
+			update(refund);
+			updateBill(bid, PresidentConstants.BILL_STATUS_APPEAL_FAILURE);// 10 申诉失败
+		}
+		this.log.info("修改成功");
+	}
+	
+	
+	private void setRefundParams(Refund refund){
+		Integer status = refund.getStatus();
+		if(PresidentConstants.REFUND_STATUS_REJECT == status){
+			String str = "总裁办处理结果【驳回退款申请】";
+			if (!"".equals(refund.getProcessing())) {
+				str = str + "<br>驳回原因【" + refund.getProcessing() + "】";
+			}
+			refund.setProcessing(str);
+			refund.setIsPresidentHandle(String.valueOf(PresidentConstants.FLAG_1));//1
+		}else if(PresidentConstants.REFUND_STATUS_FAILURE == status){
+			refund.setProcessing("总裁办处理结果【同意退款】");
+			refund.setIsPresidentHandle(String.valueOf(PresidentConstants.FLAG_1));//1
+		}
+		refund.setPdate(new Date());
+	}
+	
+	private void updateBill(Long bid, Integer status){
+		Bill bill = new Bill();
+		bill.setBid(bid);
+		bill.setStatus(status);  
+		allBillDao.update(bill);
+	}
+}

@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.user_terminal.dao.TTopicDao">
+
+	<parameterMap type="TTopic" id="tTopic" />
+	
+	<resultMap type="TTopic" id="tTopicMap">
+		<result column="id" property="id" />
+		<result column="content" property="content" />
+		<result column="time" property="time" />
+		<result column="status" property="status" />
+		<result column="comm_no" property="commentNum" />
+		<result column="praise_no" property="praiseNum" />
+		<result column="order" property="order" />
+		<result column="user_id" property="userId" />
+		<!-- <result column="comm_info" property="commInfo" /> -->
+	</resultMap>
+
+	<!-- 添加话题 -->
+	<insert id="add" parameterMap="tTopic" >
+		INSERT INTO t_xmn_topic
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					id,
+				</if>
+			 	<if test=" null != content and '' != content ">
+					content,
+				</if>
+			 	<if test=" null != time ">
+					time,
+				</if>			 					
+			 	<if test=" null != status ">
+					status,
+				</if>
+			 	<if test=" null != commentNum ">
+					comm_no,
+				</if>
+			 	<if test=" null != praiseNum ">
+					praise_no,
+				</if>
+			 	<if test=" null != order " >
+					order,
+				</if>
+				<if test=" null != userId ">
+					user_id,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					 	#{id},
+				</if>
+			 	<if test=" null != content and '' != content ">
+					 	#{content},
+				</if>
+			 	<if test=" null != time ">
+					 	#{time},
+				</if>
+			 	<if test=" null != status ">
+					 	#{status},
+				</if>
+			   <if test=" null != commentNum">
+					 	#{commentNum},
+				</if>
+			 	<if test=" null != praiseNum">
+					 	#{praiseNum},
+				</if>
+			 	<if test=" null != order">
+					 	#{order},
+				</if>
+			 	<if test=" null != userId">
+					 	#{userId},
+				</if>
+			 	
+		</trim>
+	</insert>
+	
+		<!-- 添加话题 --> 
+	<insert id="addReturnId" useGeneratedKeys="true" keyProperty="id" keyColumn="i" parameterMap="tTopic" >
+		INSERT INTO t_xmn_topic
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					id,
+				</if>
+			 	<if test=" null != content and '' != content ">
+					content,
+				</if>
+			 	<if test=" null != time ">
+					time,
+				</if>			 					
+			 	<if test=" null != status ">
+					status,
+				</if>
+			 	<if test=" null != commentNum ">
+					comm_no,
+				</if>
+			 	<if test=" null != praiseNum ">
+					praise_no,
+				</if>
+			 	<if test=" null != order " >
+					order,
+				</if>
+				<if test=" null != userId ">
+					user_id,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					 	#{id},
+				</if>
+			 	<if test=" null != content and '' != content ">
+					 	#{content},
+				</if>
+			 	<if test=" null != time ">
+					 	#{time},
+				</if>
+			 	<if test=" null != status ">
+					 	#{status},
+				</if>
+			   <if test=" null != commentNum">
+					 	#{commentNum},
+				</if>
+			 	<if test=" null != praiseNum">
+					 	#{praiseNum},
+				</if>
+			 	<if test=" null != order">
+					 	#{order},
+				</if>
+			 	<if test=" null != userId">
+					 	#{userId},
+				</if>
+			 	
+		</trim>
+	</insert>
+	
+		<!-- 删除话题 -->
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_xmn_topic WHERE id IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	<!-- 更新 -->
+	<update id="update" parameterMap="tTopic">
+		UPDATE t_xmn_topic
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != id and '' != id ">
+					id = #{id},
+				</if>
+				<if test=" null != content and '' !=content ">
+					content = #{content},
+				</if>			
+				<if test=" null != time ">
+					time = #{time},
+				</if>
+				<if test=" null != status ">
+					status = #{status},
+				</if>
+				<if test=" null != commentNum  ">
+					comm_no = #{commentNum},
+				</if>				
+				<if test=" null != praiseNum">
+					praise_no = #{praiseNum},
+				</if>
+				<if test=" null != order">
+					`order` = #{order},
+				</if>
+				<if test=" null != userId">
+					user_id = #{userId},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != id and '' != id">
+				id = #{id}
+			</if>
+		</where>
+	</update>
+	<!-- 查询所有话题，可以有条件过滤  -->
+	<select id="getList" resultMap="tTopicMap" parameterMap="tTopic">
+		SELECT 
+		  t.* 
+		FROM
+		  t_xmn_topic t
+		<where>
+			1=1
+			<if test=" null != id">
+				AND t.id = #{id}
+			</if>
+			<if test=" null != content and '' != content">
+				AND t.content LIKE '%${content}%'
+			</if>
+			<if test=" null != edateStart and '' != edateStart ">
+				AND t.time &gt;= #{edateStart}
+			</if>
+			<if test=" null != edateEnd and '' != edateEnd ">
+				AND t.time &lt;= #{edateEnd}
+			</if>
+			<if test=" null != status ">
+				AND t.status = #{status}
+			</if>
+			<if test=" null != commentNum ">
+				AND t.comm_no = #{commentNum}
+			</if>
+			<if test=" null != praiseNum ">
+				AND t.praise_no = #{praiseNum}
+			</if>
+			<if test=" null != order">
+				AND t.order = #{order}
+			</if>
+			<if test=" null != userId">
+				AND t.user_id = #{userId}
+			</if>
+		</where>
+			ORDER BY t.comm_no DESC ,t.time DESC 
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if> 
+	</select>
+	<!-- 统计 -->
+	<select id="count" resultType="Long" parameterMap="tTopic">
+		SELECT COUNT(*) FROM t_xmn_topic
+		<where>
+			1=1
+			<if test=" null != id">
+				AND id = #{id}
+			</if>
+			<if test=" null != content">
+				AND content LIKE '%${content}%'
+			</if>			
+			<if test=" null != time and '' != time ">
+				AND time = #{time}
+			</if>
+			<if test=" null != status and '' != status ">
+				AND status = #{status}
+			</if>
+			<if test=" null != commentNum and '' != commentNum ">
+				AND comm_no = #{commentNum}
+			</if>
+			<if test=" null != praiseNum ">
+				AND praise_no = #{praiseNum}
+			</if>
+			<if test=" null != order">
+				AND order = #{order}
+			</if>
+			<if test=" null != userId">
+				AND user_id = #{userId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Long">
+		SELECT Max(id) AS VALUE FROM t_xmn_topic
+	</select>
+	
+	<select id="getObject" resultMap="tTopicMap" parameterType="Long">
+		SELECT * FROM t_xmn_topic WHERE id = #{0}
+	</select>		
+</mapper>

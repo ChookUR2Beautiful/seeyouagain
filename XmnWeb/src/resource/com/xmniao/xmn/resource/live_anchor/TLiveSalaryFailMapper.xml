@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TLiveSalaryFailDao">
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.live_anchor.entity.TLiveSalaryFail">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="anchor_id" jdbcType="INTEGER" property="anchorId" />
+    <result column="uid" jdbcType="INTEGER" property="uid" />
+    <result column="count_time" jdbcType="VARCHAR" property="countTime" />
+    <result column="msg" jdbcType="VARCHAR" property="msg" />
+    <result column="is_dispose" jdbcType="INTEGER" property="isDispose" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, anchor_id, uid, count_time, msg, is_dispose, create_time, update_time
+  </sql>
+  
+  <select id="getFailList" resultMap="BaseResultMap">
+  	   select 
+    <include refid="Base_Column_List" />
+    from t_live_salary_fail where  is_dispose = 0
+  </select>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_live_salary_fail
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_live_salary_fail
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveSalaryFail">
+    insert into t_live_salary_fail (id, anchor_id, uid, 
+      count_time, msg, is_dispose, 
+      create_time, update_time)
+    values (#{id,jdbcType=INTEGER}, #{anchorId,jdbcType=INTEGER}, #{uid,jdbcType=INTEGER}, 
+      #{countTime,jdbcType=VARCHAR}, #{msg,jdbcType=VARCHAR}, #{isDispose,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveSalaryFail">
+    insert into t_live_salary_fail
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="anchorId != null">
+        anchor_id,
+      </if>
+      <if test="uid != null">
+        uid,
+      </if>
+      <if test="countTime != null">
+        count_time,
+      </if>
+      <if test="msg != null">
+        msg,
+      </if>
+      <if test="isDispose != null">
+        is_dispose,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="anchorId != null">
+        #{anchorId,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null">
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="countTime != null">
+        #{countTime,jdbcType=VARCHAR},
+      </if>
+      <if test="msg != null">
+        #{msg,jdbcType=VARCHAR},
+      </if>
+      <if test="isDispose != null">
+        #{isDispose,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveSalaryFail">
+    update t_live_salary_fail
+    <set>
+      <if test="anchorId != null">
+        anchor_id = #{anchorId,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null">
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="countTime != null">
+        count_time = #{countTime,jdbcType=VARCHAR},
+      </if>
+      <if test="msg != null">
+        msg = #{msg,jdbcType=VARCHAR},
+      </if>
+      <if test="isDispose != null">
+        is_dispose = #{isDispose,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveSalaryFail">
+    update t_live_salary_fail
+    set anchor_id = #{anchorId,jdbcType=INTEGER},
+      uid = #{uid,jdbcType=INTEGER},
+      count_time = #{countTime,jdbcType=VARCHAR},
+      msg = #{msg,jdbcType=VARCHAR},
+      is_dispose = #{isDispose,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

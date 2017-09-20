@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TLiveGiftDao" >
+
+
+  <resultMap id="liveGiftMap" type="com.xmniao.xmn.core.live_anchor.entity.TLiveGift" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="gift_name" property="giftName" jdbcType="VARCHAR" />
+    <result column="gift_type" property="giftType" jdbcType="INTEGER" />
+    <result column="gift_price" property="giftPrice" jdbcType="INTEGER" />
+    <result column="gift_experience" property="giftExperience" jdbcType="INTEGER" />
+    <result column="gift_avatar" property="giftAvatar" jdbcType="VARCHAR" />
+    <result column="free_status" property="freeStatus" jdbcType="INTEGER" />
+    <result column="is_gift_packs" property="isGiftPacks" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="is_radio" property="isRadio" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="is_series" property="isSeries" jdbcType="VARCHAR" />
+    <result column="sort_val" property="sortVal" jdbcType="INTEGER" />
+    <result column="gift_kind" property="giftKind" jdbcType="INTEGER" />
+    <result column="freight" property="freight" jdbcType="DECIMAL" />
+    
+    <result column="category" property="category" jdbcType="VARCHAR" />
+    <result column="genre" property="genre" jdbcType="VARCHAR" />
+    <result column="product_num" property="productNum" jdbcType="BIGINT" />
+    <result column="msg_priority" property="msgPriority" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  
+  <sql id="liveGift_column_list" >
+    id, gift_name, gift_type,  gift_price, gift_experience, gift_avatar, free_status , status ,
+    is_radio,create_time, update_time,is_series,sort_val,gift_kind,freight,msg_priority
+  </sql>
+  
+   <!-- Where 查询条件 -->
+  <sql id="whereSQL">
+		<if test=" null != giftName and '' != giftName">
+			AND g.gift_name like '%${giftName}%'
+		</if>
+		<if test=" null != giftKind and '' != giftKind">
+			AND g.gift_kind =#{giftKind}
+		</if>
+  </sql>
+  
+  
+  <select id="getObject" resultMap="liveGiftMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="liveGift_column_list" />
+    from t_live_gift
+    where id = #{id}
+  </select>
+  
+  <select id="count" resultType="Long" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveGift">
+    select 
+    	count(1)
+    from t_live_gift g
+    	<where>
+    		1=1
+    	<include refid="whereSQL"></include>
+    </where>
+  </select>
+  
+  <select id="getList" resultMap="liveGiftMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveGift" >
+    SELECT
+		g.id,
+		g.gift_name,
+		g.gift_type,
+		g.gift_price,
+		g.gift_experience,
+		g.gift_avatar,
+		g.free_status,
+		g. STATUS,
+		g.is_radio,
+		g.create_time,
+		g.update_time,
+		g.is_series,
+		g.sort_val,
+		g.gift_kind,
+		g.freight,
+		d1.category AS category,
+		d1.genre AS genre,
+		(
+			SELECT
+				count(d2.id)
+			FROM
+				t_live_gift_detail d2
+			WHERE
+				d2.gid = g.id
+			AND d2.gift_kind = '2'
+		) AS product_num
+	FROM
+		t_live_gift g
+	LEFT JOIN t_live_gift_detail d1 ON g.id = d1.gid
+	AND g.gift_kind = '3'
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+    ORDER BY g.sort_val ASC,g.update_time DESC
+    <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  
+  <delete id="deleteById" parameterType="java.lang.Integer" >
+    delete from t_live_gift
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  
+  <insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveGift" >
+    insert into t_live_gift
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="giftName != null" >
+        gift_name,
+      </if>
+      <if test="giftType != null" >
+        gift_type,
+      </if>
+      <if test="giftPrice != null" >
+        gift_price,
+      </if>
+      <if test="giftExperience != null" >
+        gift_experience,
+      </if>
+      <if test="giftAvatar != null" >
+        gift_avatar,
+      </if>
+      <if test="freeStatus != null" >
+        free_status,
+      </if>
+      <if test="isGiftPacks != null" >
+        is_gift_packs,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="isRadio != null" >
+        is_radio,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="isSeries != null" >
+        is_series,
+      </if>
+      <if test="sortVal != null" >
+        sort_val,
+      </if>
+      <if test="giftKind != null" >
+        gift_kind,
+      </if>
+      <if test="freight != null" >
+        freight,
+      </if>
+      <if test="msgPriority != null" >
+        msg_priority,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="giftName != null" >
+        #{giftName,jdbcType=VARCHAR},
+      </if>
+      <if test="giftType != null" >
+        #{giftType,jdbcType=INTEGER},
+      </if>
+      <if test="giftPrice != null" >
+        #{giftPrice,jdbcType=INTEGER},
+      </if>
+      <if test="giftExperience != null" >
+        #{giftExperience,jdbcType=INTEGER},
+      </if>
+      <if test="giftAvatar != null" >
+        #{giftAvatar,jdbcType=VARCHAR},
+      </if>
+      <if test="freeStatus != null" >
+        #{freeStatus,jdbcType=INTEGER},
+      </if>
+      <if test="isGiftPacks != null" >
+        #{isGiftPacks,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="isRadio != null" >
+        #{isRadio,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isSeries != null" >
+        #{isSeries,jdbcType=VARCHAR},
+      </if>
+      <if test="sortVal != null" >
+         #{sortVal,jdbcType=INTEGER},
+      </if>
+      <if test="giftKind != null" >
+         #{giftKind,jdbcType=INTEGER},
+      </if>
+      <if test="freight != null" >
+         #{freight,jdbcType=DECIMAL},
+      </if>
+      <if test="msgPriority != null" >
+         #{msgPriority,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveGift" >
+    update t_live_gift
+    <set >
+      <if test="giftName != null" >
+        gift_name = #{giftName,jdbcType=VARCHAR},
+      </if>
+      <if test="giftType != null" >
+        gift_type = #{giftType,jdbcType=INTEGER},
+      </if>
+      <if test="giftPrice != null" >
+        gift_price = #{giftPrice,jdbcType=INTEGER},
+      </if>
+      <if test="giftExperience != null" >
+        gift_experience = #{giftExperience,jdbcType=INTEGER},
+      </if>
+      <if test="giftAvatar != null" >
+        gift_avatar = #{giftAvatar,jdbcType=VARCHAR},
+      </if>
+      <if test="freeStatus != null" >
+        free_status = #{freeStatus,jdbcType=INTEGER},
+      </if>
+      <if test="isGiftPacks != null" >
+        is_gift_packs = #{isGiftPacks,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="isRadio != null" >
+        is_radio = #{isRadio,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isSeries != null" >
+        is_series = #{isSeries,jdbcType=VARCHAR},
+      </if>
+      <if test="sortVal != null" >
+        sort_val = #{sortVal,jdbcType=INTEGER},
+      </if>
+      <if test="giftKind != null" >
+        gift_kind = #{giftKind,jdbcType=INTEGER},
+      </if>
+      <if test="freight != null" >
+        freight = #{freight,jdbcType=DECIMAL},
+      </if>
+      <if test="msgPriority != null" >
+        msg_priority = #{msgPriority,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 根据礼物ID数组获取礼物列表 -->
+  <select id="getListByIds" resultMap="liveGiftMap" parameterType="Object">
+  	select 
+    	<include refid="liveGift_column_list" />
+    from t_live_gift
+    <where>
+    	id IN
+    	<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+    </where>
+  </select>
+  
+  <!-- 获取指定礼包可添加的礼物 -->
+  <select id="getGiftListToAdd" resultMap="liveGiftMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveGift">
+  	SELECT
+		<include refid="liveGift_column_list"></include>
+	FROM
+		t_live_gift g
+	<where>
+		NOT EXISTS (
+			SELECT
+				1
+			FROM
+				t_live_gift_bag_set sb
+			WHERE
+				g.id = sb.gift_id
+				AND gift_bag_id=#{giftBagId,jdbcType=INTEGER}
+		)
+		AND g.gift_price &lt; 1200
+		<include refid="whereSQL"></include>
+	</where>
+	<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <!-- 获取指定礼包可添加的礼物数量 -->
+  <select id="getGiftToAddCount" resultType="long" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveGift">
+  	SELECT
+		count(1)
+	FROM
+		t_live_gift g
+	<where>
+		NOT EXISTS (
+			SELECT
+				1
+			FROM
+				t_live_gift_bag_set sb
+			WHERE
+				g.id = sb.gift_id
+				AND gift_bag_id=#{giftBagId,jdbcType=INTEGER}
+		)
+		AND g.gift_price &lt; 1200
+		<include refid="whereSQL"></include>
+	</where>
+  </select>
+  
+</mapper>

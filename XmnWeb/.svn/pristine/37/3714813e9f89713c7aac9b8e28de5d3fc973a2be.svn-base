@@ -1,0 +1,91 @@
+package com.xmniao.xmn.core.util.handler;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import com.xmniao.xmn.core.system_settings.entity.TLog;
+import com.xmniao.xmn.core.system_settings.entity.TUser;
+import com.xmniao.xmn.core.system_settings.service.LogService;
+import com.xmniao.xmn.core.util.AnnotationUtil;
+import com.xmniao.xmn.core.util.ResultUtil;
+import com.xmniao.xmn.core.util.handler.annotation.RequestLogging;
+import com.xmniao.xmn.core.util.logRecord.AccessDescriptionRecord;
+import com.xmniao.xmn.core.util.logRecord.AccessParamRecord;
+import com.xmniao.xmn.core.util.logRecord.AccessRemarkRecord;
+import com.xmniao.xmn.core.util.logRecord.AccessUserRecord;
+import com.xmniao.xmn.core.util.logRecord.LogRecord;
+import com.xmniao.xmn.core.util.logRecord.LogRecordElement;
+
+public class LoggingHandler extends HandlerInterceptorAdapter implements InitializingBean{
+	
+	private static final Class<RequestLogging> REQUEST_LOGGING_CLASS = RequestLogging.class;
+
+	private LogService logService;
+
+	private  List<LogRecord> logRecords = new ArrayList<>(4);
+	
+	
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		logRecords.add(new AccessUserRecord());
+		logRecords.add(new AccessDescriptionRecord());
+		logRecords.add(new AccessParamRecord());
+		logRecords.add(new AccessRemarkRecord());
+	}
+	
+	public List<LogRecord> getLogRecords() {
+		return logRecords;
+	}
+
+	public LogService getLogService() {
+		return logService;
+	}
+	
+	@Autowired
+	public void setLogService(LogService logService) {
+		this.logService = logService;
+	}
+
+	
+
+	@Override
+	public void postHandle(HttpServletRequest request,
+			HttpServletResponse response, Object handler,
+			ModelAndView modelAndView) throws Exception {
+		try {
+			if (handler != null && (handler instanceof HandlerMethod)) {
+				HandlerMethod handlerMethod = (HandlerMethod) handler;
+				Method method = handlerMethod.getMethod();
+				RequestLogging classAnnotation = AnnotationUtil.getClassAnnotation(handlerMethod.getBean(),REQUEST_LOGGING_CLASS);
+				RequestLogging methodMnnotation = AnnotationUtil.getMethodAnnotation(method, REQUEST_LOGGING_CLASS);
+				if (classAnnotation != null && methodMnnotation != null) {
+					TUser u = ResultUtil.getCurrentUser(request);
+					if (u != null) {
+						LogRecordElement logRecordElement = new LogRecordElement(new TLog(), classAnnotation.name(), methodMnnotation.name());
+						
+						for (LogRecord logRecord : getLogRecords()) {
+							logRecord.logRecord(logRecordElement, request, response, handlerMethod);
+						}
+						getLogService().add(logRecordElement.getLog());
+					}
+				}
+			}
+		} finally {
+			super.postHandle(request, response, handler, modelAndView);
+		}
+		
+	}
+
+	
+	
+}

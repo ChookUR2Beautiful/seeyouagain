@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.xmermanagerment.dao.TSaasSoldOrderDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.xmermanagerment.entity.TSaasSoldOrder" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="ordersn" property="ordersn" jdbcType="VARCHAR" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="sellername" property="sellername" jdbcType="VARCHAR" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="reason" property="reason" jdbcType="VARCHAR" />
+    <result column="pay_type" property="payType" jdbcType="BIT" />
+    <result column="zdate" property="zdate" jdbcType="TIMESTAMP" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="samount" property="samount" jdbcType="DECIMAL" />
+    <result column="pay_id" property="payId" jdbcType="VARCHAR" />
+    <result column="pay_code" property="payCode" jdbcType="VARCHAR" />
+    <result column="commission" property="commission" jdbcType="VARCHAR" />
+    <result column="saas_ordersn" property="saasOrdersn" jdbcType="DECIMAL" />
+    <result column="hstatus" property="hstatus" jdbcType="INTEGER"/>
+    <result column="udate" property="udate" jdbcType="TIMESTAMP"/>
+    <result column="saas_source" property="saasSource" jdbcType="INTEGER"/>
+    <result column="saas_channel" property="saasChannel" jdbcType="INTEGER"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, ordersn, sellerid, sellername, uid, amount, status, reason, pay_type, zdate, 
+    create_date, samount, pay_id, pay_code,commission,saas_ordersn,hstatus,udate,saas_source,saas_channel 
+  </sql>
+  
+  <select id="getSaasSoldOrder" resultMap="BaseResultMap" parameterType="com.xmniao.xmn.core.xmermanagerment.entity.TSaasSoldOrder" >
+    select 
+    <include refid="Base_Column_List"/>
+    from t_saas_sold_order
+    where sellerid = #{sellerid}
+  </select>
+
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.xmermanagerment.entity.TSaasSoldOrder">
+	 insert into t_saas_sold_order
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="ordersn != null">
+				ordersn,
+			</if>
+			<if test="sellerid != null">
+				sellerid,
+			</if>
+			<if test="sellername != null">
+				sellername,
+			</if>
+			<if test="uid != null">
+				uid,
+			</if>
+			<if test="amount != null">
+				amount,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="reason != null">
+				reason,
+			</if>
+			<if test="payType != null">
+				pay_type,
+			</if>
+			<if test="zdate != null">
+				zdate,
+			</if>
+			<if test="createDate != null">
+				create_date,
+			</if>
+			<if test="samount != null">
+				samount,
+			</if>
+			<if test="payId != null">
+				pay_id,
+			</if>
+			<if test="payCode != null">
+				pay_code,
+			</if>
+			<if test="saasOrdersn != null">
+				saas_ordersn,
+			</if>
+			<if test="hstatus != null">
+				hstatus,
+			</if>
+			<if test="udate != null">
+				udate,
+			</if>
+			<if test="saasSource != null">
+				saas_source,
+			</if>
+			<if test="saasChannel != null">
+				saas_channel,
+			</if>
+			<if test="commission != null">
+				commission,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="ordersn != null">
+				#{ordersn,jdbcType=VARCHAR},
+			</if>
+			<if test="sellerid != null">
+				#{sellerid,jdbcType=INTEGER},
+			</if>
+			<if test="sellername != null">
+				#{sellername,jdbcType=VARCHAR},
+			</if>
+			<if test="uid != null">
+				#{uid,jdbcType=INTEGER},
+			</if>
+			<if test="amount != null">
+				#{amount,jdbcType=DECIMAL},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+			<if test="reason != null">
+				#{reason,jdbcType=VARCHAR},
+			</if>
+			<if test="payType != null">
+				#{payType,jdbcType=INTEGER},
+			</if>
+			<if test="zdate != null">
+				#{zdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createDate != null">
+				#{createDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="samount != null">
+				#{samount,jdbcType=DECIMAL},
+			</if>
+			<if test="payId != null">
+				#{payId,jdbcType=VARCHAR},
+			</if>
+			<if test="payCode != null">
+				#{payCode,jdbcType=VARCHAR},
+			</if>
+			<if test="saasOrdersn != null">
+				#{saasOrdersn,jdbcType=VARCHAR},
+			</if>
+			<if test="hstatus != null">
+				#{hstatus,jdbcType=INTEGER},
+			</if>
+			<if test="udate != null">
+				#{udate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="saasSource != null">
+				#{saasSource,jdbcType=INTEGER},
+			</if>
+			<if test="saasChannel != null">
+				#{saasChannel,jdbcType=INTEGER},
+			</if>
+			<if test="commission != null">
+				#{commission,jdbcType=LONGVARCHAR},
+			</if>
+		</trim>
+	</insert>
+
+  <update id="updateSaasSoldOrder" parameterType="com.xmniao.xmn.core.xmermanagerment.entity.TSaasSoldOrder" >
+    update t_saas_sold_order
+    <set >
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="reason != null" >
+        reason = #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="payType != null" >
+        pay_type = #{payType,jdbcType=BIT},
+      </if>
+      <if test="zdate != null" >
+        zdate = #{zdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createDate != null" >
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="samount != null" >
+        samount = #{samount,jdbcType=DECIMAL},
+      </if>
+      <if test="payId != null" >
+        pay_id = #{payId,jdbcType=VARCHAR},
+      </if>
+      <if test="payCode != null" >
+        pay_code = #{payCode,jdbcType=VARCHAR},
+      </if>
+      <if test="commission != null" >
+        commission = #{commission,jdbcType=VARCHAR},
+      </if>
+      <if test="null != hstatus">
+      	hstatus = #{hstatus},
+      </if>
+      <if test="null != udate">
+      	udate = #{udate} 
+      </if>
+    </set>
+    where ordersn = #{ordersn,jdbcType=VARCHAR}
+  </update>
+  
+  <!-- 查询条件，add by lifeng 2016年6月15日11:40:08 -->
+  <sql id="queryTSaasSoldOrderCondition">
+  	<if test="null != id">
+  		AND id = #{id}
+  	</if>
+  	<if test="null != ordersn and '' != ordersn">
+  		AND ordersn LIKE '%${ordersn}%'
+  	</if>
+  	<if test="null != sellerid">
+  		AND  sellerid = #{sellerid}
+  	</if>
+  	<if test="null != sellername and '' != sellername">
+  		AND sellername LIKE '%${sellername}%'
+  	</if>
+  	<if test="null != uid">
+  		AND uid LIKE '%${uid}%'
+  	</if>
+  	 <if test="amount != null">
+        AND amount = #{amount}
+      </if>
+    <if test="null != status">
+    	AND status = #{status}
+    </if>
+    <if test="null != reason and '' != reason">
+    	AND reason LIKE '%${reason}%'
+    </if>
+    <if test="null != payType and '' != payType">
+    	AND pay_type = #{payType}
+    </if>
+	<if test=" null != sDate and '' != sDate">
+		AND zdate &gt;= #{sDate}
+	</if>
+	<if test=" null != eDate and ''!= eDate">
+		AND zdate &lt; DATE_ADD(#{eDate}, INTERVAL 1 DAY)
+	</if>
+    <if test="null != createDate and '' != createDate">
+        AND create_date = #{createDate}
+    </if>
+    <if test="null != samount">
+    	AND samount = #{samount}
+    </if>
+    <if test="null != payId and '' != payId">
+    	AND pay_id LIKE '%${payId}%'
+    </if>
+    <if test="null != payCode and '' != payCode">
+    	AND pay_code LIKE '%${payCode}%'
+    </if>
+    <if test="null != saasOrdersn and '' != saasOrdersn">
+    	AND saas_ordersn LIKE '%${saasOrdersn}%'
+    </if>
+    <if test="null != commission and '' != commission">
+    	AND commission LIKE '%${commission}%'
+    </if>
+    <if test="null != hstatus">
+    	AND hstatus = #{hstatus} 
+    </if>
+    <if test="null != saasChannel">
+    	AND saas_channel = #{saasChannel} 
+    </if>
+  </sql>
+  
+  <!-- 查询列表，add by lifeng 2016年6月15日上午11:38:22 -->
+  <select id="getSaasSoldOrderList" resultMap="BaseResultMap" parameterType="com.xmniao.xmn.core.xmermanagerment.entity.TSaasSoldOrder">
+    SELECT 
+    	<include refid="Base_Column_List"/>
+    FROM 
+    	t_saas_sold_order 
+    <where>
+		1=1
+	    <include refid="queryTSaasSoldOrderCondition"></include>
+	</where>
+	<if test="order == 1">
+		ORDER BY create_date DESC
+	</if>
+	<if test=" limit != -1 ">
+		LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <!-- 查询总记录数 add by lifeng 2016年6月15日上午11:49:25 -->
+  <select id="getCountByParam" parameterType="com.xmniao.xmn.core.xmermanagerment.entity.TSaasSoldOrder" resultType="long">
+  	SELECT 
+		COUNT(id) 
+	FROM 
+		t_saas_sold_order 
+	<where>
+		1=1
+	    <include refid="queryTSaasSoldOrderCondition"></include>
+	</where>
+  </select>
+  
+  	<!-- V客已签约店铺的总数 -->
+<!-- 	<select id="getRecommendSellerCountList" resultType="map" parameterType="Object">
+        SELECT COUNT(1) AS number, t.uid FROM t_saas_sold_order t 
+              INNER JOIN t_saas_order t1 ON t.saas_ordersn = t1.ordersn
+		<where>
+			1 = 1
+			AND t.`status`>0
+			AND t.`uid` IN
+			<foreach item="item" index="index" collection="array" open="("
+				separator="," close=") ">
+				#{item}
+			</foreach>
+		</where>
+		GROUP BY t.uid
+	</select> -->
+	
+	<!-- V客已签约店铺的总数(包括赠送给主播) -->
+	<select id="getRecommendSellerCountList" resultType="map" parameterType="Object">
+		SELECT COUNT(1) AS number, t.uid From (
+		SELECT t.uid FROM t_saas_sold_order t
+		INNER JOIN t_saas_order t1 ON t.saas_ordersn = t1.ordersn
+		INNER JOIN t_seller t2 ON t.sellerid = t2.sellerid
+		<where>
+			1 = 1
+			AND t.`status` = 1
+			AND t.`saas_channel` = 3	
+			AND t2.status = 3 
+			AND t.`uid` IN
+			<foreach item="item" index="index" collection="array" open="("
+				separator="," close=") ">
+				#{item}
+			</foreach>
+		</where>
+		UNION ALL
+		<!-- 主播推荐商家 -->
+		SELECT t1.from_uid AS uid FROM t_saas_sold_order t
+		INNER JOIN t_saas_order t1 ON t.saas_ordersn = t1.ordersn
+		INNER JOIN t_seller t2 ON t.sellerid = t2.sellerid
+		<where>
+			1 = 1
+			AND t.`status` = 1	
+			AND t.`saas_channel` = 4			
+			AND t2.status  = 3 
+			AND t1.`from_uid` IN
+			<foreach item="item" index="index" collection="array" open="("
+				separator="," close=") ">
+				#{item}
+			</foreach>
+		</where>
+		 ) t GROUP BY t.uid
+	</select>
+	
+	<!-- V客签约店铺的流水 -->
+	<select id="getRecommendSellerList" resultType="map" parameterType="Object">
+		SELECT t.sellerid, t.sellername, t.uid, t2.phoneid AS personChargePhone, t2.fullname AS personCharge, t2.status FROM t_saas_sold_order t
+		INNER JOIN t_saas_order t1 ON t.saas_ordersn = t1.ordersn
+		INNER JOIN t_seller t2 ON t2.sellerid = t.sellerid
+		<where>
+			1 = 1
+			AND t.`status` = 1
+			AND t.`saas_channel` = 3				
+			AND t2.status = 3 
+			AND t1.`uid` IN
+			<foreach item="item" index="index" collection="array" open="("
+				separator="," close=") ">
+				#{item}
+			</foreach>
+		</where>
+		UNION ALL
+		<!-- 主播推荐商家  -->
+		SELECT t.sellerid, t.sellername, t1.from_uid AS uid, t2.phoneid AS personChargePhone, t2.fullname AS personCharge, t2.status FROM t_saas_sold_order t
+		INNER JOIN t_saas_order t1 ON t.saas_ordersn = t1.ordersn
+		INNER JOIN t_seller t2 ON t2.sellerid = t.sellerid
+		<where>
+			1 = 1
+			AND t.`status` = 1
+			AND t.`saas_channel` = 4				
+			AND t2.status = 3 
+			AND t1.`from_uid` IN
+			<foreach item="item" index="index" collection="array" open="("
+				separator="," close=") ">
+				#{item}
+			</foreach>
+		</where>
+	</select>
+
+	<update id="cancelOrder" parameterType="com.xmniao.xmn.core.xmermanagerment.entity.TSaasSoldOrder">
+		update t_saas_sold_order
+		set status=2,reason="V客放弃店铺",udate=now()
+		where sellerid=#{sellerid} and uid=#{uid} and status =1
+	</update>
+</mapper>

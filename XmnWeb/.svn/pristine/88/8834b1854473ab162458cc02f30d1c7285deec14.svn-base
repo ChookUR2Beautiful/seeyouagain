@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.xmnpay.dao.LiveWalletDao" >
+
+  <resultMap id="liveWalletMap" type="com.xmniao.xmn.core.xmnpay.entity.LiveWallet" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="balance" property="balance" jdbcType="DECIMAL" />
+    <result column="commision" property="commision" jdbcType="DECIMAL" />
+    <result column="zbalance" property="zbalance" jdbcType="DECIMAL" />
+    <result column="turn_egg_out" property="turnEggOut" jdbcType="DECIMAL" />
+    <result column="sign" property="sign" jdbcType="VARCHAR" />
+    <result column="sign_type" property="signType" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="restrictive" property="restrictive" jdbcType="VARCHAR" />
+    <result column="limit_balance" property="limitBalance" jdbcType="DECIMAL" />
+  </resultMap>
+  
+  <sql id="liveWallet_column_List" >
+    id, uid, status, balance, commision,zbalance,turn_egg_out, sign, sign_type, create_time, update_time,restrictive,limit_balance
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="liveWalletMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="liveWallet_column_List" />
+    from b_live_wallet
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  
+  <select id="selectByUid" resultMap="liveWalletMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="liveWallet_column_List" />
+    from b_live_wallet
+    where uid = #{uid,jdbcType=INTEGER}
+  </select>
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from b_live_wallet
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  
+  <insert id="addLiveWallet" parameterType="com.xmniao.xmn.core.xmnpay.entity.LiveWallet" >
+    insert into b_live_wallet
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="balance != null" >
+        balance,
+      </if>
+      <if test="commision != null" >
+        commision,
+      </if>
+      <if test="sign != null" >
+        sign,
+      </if>
+      <if test="signType != null" >
+        sign_type,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="balance != null" >
+        #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="commision != null" >
+        #{commision,jdbcType=DECIMAL},
+      </if>
+      <if test="sign != null" >
+        #{sign,jdbcType=VARCHAR},
+      </if>
+      <if test="signType != null" >
+        #{signType,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="updateLiveWallet" parameterType="com.xmniao.xmn.core.xmnpay.entity.LiveWallet" >
+    update b_live_wallet
+    <set >
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="balance != null" >
+        balance = #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="commision != null" >
+        commision = #{commision,jdbcType=DECIMAL},
+      </if>
+      <if test="sign != null" >
+        sign = #{sign,jdbcType=VARCHAR},
+      </if>
+      <if test="signType != null" >
+        sign_type = #{signType,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  
+  <update id="updateLiveWalletByUid" parameterType="com.xmniao.xmn.core.xmnpay.entity.LiveWallet" >
+    update b_live_wallet
+    <set >
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="balance != null" >
+        balance = #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="commision != null" >
+        commision = #{commision,jdbcType=DECIMAL},
+      </if>
+      <if test="sign != null" >
+        sign = #{sign,jdbcType=VARCHAR},
+      </if>
+      <if test="signType != null" >
+        sign_type = #{signType,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="restrictive != null" >
+        restrictive = #{restrictive,jdbcType=VARCHAR},
+      </if>
+      <if test="limitBalance != null" >
+        limit_balance = #{limitBalance,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where uid = #{uid,jdbcType=INTEGER}
+  </update>
+  
+  
+  <!-- 根据用户id数组查询钱包信息 -->
+	<select id="selectLiveWalletByUids" resultMap="liveWalletMap" parameterType="Object">
+		 SELECT
+			<include refid="liveWallet_column_List"></include>
+			<!-- 5 主播礼物收入，6 主播私信收入  7 主播弹幕收入 -->
+			,(select IFNULL(SUM(r.egg_money),0) from b_live_wallet_record r where r.wallet_id = w.id and rtype in('5','6','7')) AS eggsTotal
+		FROM
+			b_live_wallet w
+		WHERE
+			uid IN
+		 <foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+		 	#{item,jdbcType=VARCHAR}
+		</foreach>
+	</select>
+  
+</mapper>

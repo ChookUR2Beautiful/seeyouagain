@@ -1,0 +1,150 @@
+
+	
+
+/*$("#videoImgImg").uploadImg({
+	urlId : "videoImg",
+	showImg : $('#videoImg').val()
+});
+*/
+	
+	$("#product").chosenObject({
+		hideValue : "codeId",
+		showValue : "pname",
+		url : "fresh/activity/getProduct.jhtml",
+		isChosen : true, //是否支持模糊查询
+		isCode : true, //是否显示编号
+		isHistorical : false, //是否使用历史已加载数据
+		width : "100%"
+	});
+	
+	$("#product").on("change",function(){
+		productChange();
+	});
+	
+	function productChange(){
+		if($("#product").val()){
+			
+			$.post("fresh/manage/getProducDetailById.jhtml",{"codeId":$("#product").val()},function(data,status){
+			if(data.success){
+				var product = data.data;
+				$("#breviary").html('');
+				$('<img tyle="width: 100px;height: 100px;">').attr("src",imgRoot+"/"+product.breviary).appendTo($("#breviary"));
+				$("#imgList").html('');
+				$('<img  style="width: 100px;height: 100px;">').attr("src",imgRoot+product.productDetail.pic1).appendTo($("#imgList"));
+				$('<img  style="width: 100px;height: 100px;">').attr("src",imgRoot+product.productDetail.pic2).appendTo($("#imgList"));
+				$('<img  style="width: 100px;height: 100px;">').attr("src",imgRoot+product.productDetail.pic3).appendTo($("#imgList"));
+				$('<img  style="width: 100px;height: 100px;">').attr("src",imgRoot+product.productDetail.pic4).appendTo($("#imgList"));
+				$('<img  style="width: 100px;height: 100px;">').attr("src",imgRoot+product.productDetail.pic5).appendTo($("#imgList"));
+			}
+		});
+			
+			var codeId=$("#product").val();
+			$.post("fresh/manage/getSaleGroupList.jhtml",{"codeId":codeId},function(data,status){
+				if(status=='success'){
+					var group=$("#group");
+					group.html('');
+					$("<option>").text("请选择").val('').appendTo(group);
+					productInfo=data.productInfo;
+					if(data.saleGroupList.length==0){
+						/*var item={
+								"stock":productInfo.store,
+								"amount":0,
+								"codeId":codeId,
+								"pname":productInfo.pname
+						}
+						var option=$("<option>").text("通用规格").val($.toJSON(item));
+						var trs=$("#productList").find("tr");
+						$.each(trs,function(i,item2){
+							var product_productName=$(item2).find("[id='product_productName']").text();
+							var product_pvValue=$(item2).find("[id='product_pvValue']").text();
+							if(productInfo.pname==product_productName&&''==product_pvValue){
+								option.attr("disabled","disabled");
+							}
+						});
+						option.appendTo(group);*/
+					}else{
+						$.each(data.saleGroupList,function(i,item){
+							item.pname=productInfo.pname;
+							var option=$("<option>").text(item.pvValues).val($.toJSON(item));
+							var trs=$("#productList").find("tr");
+							$.each(trs,function(i,item2){
+								var product_productName=$(item2).find("[id='product_productName']").text();
+								var product_pvValue=$(item2).find("[id='product_pvValue']").text();
+								if(productInfo.pname==product_productName&&item.pvValues==product_pvValue){
+									option.attr("disabled","disabled");
+								}
+							});
+							option.val($.toJSON(item));
+							option.appendTo(group);
+						});
+					}
+					group.trigger("change");
+				}
+			});
+			
+		}
+	}
+	
+	$("#group").on("change",function(){
+		var item=$.parseJSON($(this).val());
+		$("#number").attr("max",item.stock).attr("min",item.stock>0?1:0).val('');
+	});
+	
+	validate("videoFrom",{
+		rules : {
+			number : {
+				required : true,
+				min:1
+			}
+		},
+		messages:{
+			
+		}
+	},save);
+		
+	
+	function save(){
+		if(!$("#product").val()){
+			showWarningWindow("warning", "请选择商品!", 9999);
+			return
+		}
+		if(!$("#group").val()){
+			showWarningWindow("warning", "请选择商品规格!", 9999);
+			return
+		}
+		var group=$.parseJSON($("#group").val());
+		var product={};
+		product.codeId=group.codeId;
+		product.pvIds=group.pvIds;
+		product.pvValue=group.pvValues?group.pvValues.toString():'';
+		product.productName=group.pname;
+		product.number=$("#number").val();
+		$.ajax({
+			type : 'post',
+			url : "fresh/mallPackage/edit/mallPackage.jhtml",
+			data : product,
+			dataType : 'json',
+			beforeSend : function(XMLHttpRequest) {
+				$('#prompt').show();
+			},
+			success : function(data) {
+				$('#prompt').hide();
+				$('#triggerModal').modal('hide');
+				if (data.success) {
+					/*if(!$("#videoId").val()){
+						videos.push(data.data.id)
+					}*/
+					products.push(data.data.id);
+					loadProducts();
+			    }else{
+			    	showSmReslutWindow(data.success, data.msg);
+			    }			
+			},
+			error : function() {
+				window.messager.warning(data.msg);
+			}
+		});
+		
+		
+		
+	}

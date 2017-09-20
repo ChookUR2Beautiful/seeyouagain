@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.fresh.dao.ProductFailingDao" >
+  <resultMap id="productFailingMap" type="com.xmniao.xmn.core.fresh.entity.ProductFailing" >
+    <id column="cid" property="cid" jdbcType="INTEGER" />
+    <result column="importSerial" property="importserial" jdbcType="BIGINT" />
+    <result column="standard" property="standard" jdbcType="VARCHAR" />
+    <result column="pname" property="pname" jdbcType="VARCHAR" />
+    <result column="goodsName" property="goodsname" jdbcType="VARCHAR" />
+    <result column="classa" property="classa" jdbcType="VARCHAR" />
+    <result column="secondary" property="secondary" jdbcType="INTEGER" />
+    <result column="price" property="price" jdbcType="VARCHAR" />
+    <result column="discount" property="discount" jdbcType="VARCHAR" />
+    <result column="batching" property="batching" jdbcType="VARCHAR" />
+    <result column="weight" property="weight" jdbcType="VARCHAR" />
+    <result column="suttle" property="suttle" jdbcType="VARCHAR" />
+    <result column="quality" property="quality" jdbcType="VARCHAR" />
+    <result column="isAdditives" property="isadditives" jdbcType="VARCHAR" />
+    <result column="packing" property="packing" jdbcType="VARCHAR" />
+    <result column="production" property="production" jdbcType="VARCHAR" />
+    <result column="brandName" property="brandname" jdbcType="VARCHAR" />
+    <result column="pstatus" property="pstatus" jdbcType="INTEGER" />
+    <result column="crafts" property="crafts" jdbcType="VARCHAR" />
+    <result column="sellType" property="selltype" jdbcType="VARCHAR" />
+    <result column="integral" property="integral" jdbcType="VARCHAR" />
+    <result column="deal" property="deal" jdbcType="VARCHAR" />
+    <result column="place" property="place" jdbcType="VARCHAR" />
+    <result column="province" property="province" jdbcType="VARCHAR" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="stored" property="stored" jdbcType="VARCHAR" />
+    <result column="store" property="store" jdbcType="VARCHAR" />
+    <result column="sales" property="sales" jdbcType="VARCHAR" />
+    <result column="choice" property="choice" jdbcType="VARCHAR" />
+    <result column="cname" property="cname" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="licenseId" property="licenseid" jdbcType="VARCHAR" />
+    <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="rdate" property="rdate" jdbcType="TIMESTAMP" />
+    <result column="dstatus" property="dstatus" jdbcType="INTEGER" />
+    <result column="sort" property="sort" jdbcType="VARCHAR" />
+    <result column="supplierId" property="supplierid" jdbcType="INTEGER" />
+    <result column="supplierName" property="suppliername" jdbcType="VARCHAR" />
+    <result column="salesInfo" property="salesinfo" jdbcType="VARCHAR" />
+    <result column="cash" property="cash" jdbcType="VARCHAR" />
+    <result column="purchasePrice" property="purchaseprice" jdbcType="VARCHAR" />
+    <result column="deliveryType" property="deliverytype" jdbcType="VARCHAR" />
+    <result column="allowRefund" property="allowrefund" jdbcType="VARCHAR" />
+    <result column="expWeight" property="expweight" jdbcType="VARCHAR" />
+    <result column="goodsSerial" property="goodsserial" jdbcType="VARCHAR" />
+    <result column="barcode" property="barcode" jdbcType="VARCHAR" />
+    <result column="delivery" property="delivery" jdbcType="VARCHAR" />
+    <result column="postnote" property="postnote" jdbcType="VARCHAR" />
+    <result column="servicenote" property="servicenote" jdbcType="VARCHAR" />
+    <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+    <result column="comments" property="comments" jdbcType="VARCHAR" />
+    <result column="prpoName" property="prpoName" jdbcType="VARCHAR" />
+    <result column="groupName" property="groupName" jdbcType="VARCHAR" />
+ 	<result column="amount" property="amount" jdbcType="DECIMAL" />
+ 	<result column="stock" property="stock" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <resultMap id="failingSerialMap" type="com.xmniao.xmn.core.fresh.entity.ProductFailingSerial" >
+    <id column="cid" property="cid" jdbcType="INTEGER" />
+    <result column="importSerial" property="importserial" jdbcType="BIGINT" />
+    <result column="rdate" property="rdate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="productFailingColumnList" >
+    cid, importSerial,standard, pname, goodsName, classa, secondary, price, discount, batching, 
+    weight, suttle, quality, isAdditives, packing, production, brandName, pstatus, crafts, 
+    sellType,integral, deal, place, province, city, stored, store, sales, choice, cname, address, 
+    licenseId, tel, rdate, dstatus, sort, supplierId, supplierName, salesInfo, cash, 
+    purchasePrice, deliveryType, allowRefund, expWeight, goodsSerial, barcode, delivery, 
+    postnote, servicenote, remarks,comments,prpoName,groupName,amount,stock
+  </sql>
+  
+  <sql id="failingSerialColumnList" >
+    cid, importSerial, rdate
+  </sql>
+  
+  <!-- 查询条件 -->
+	<sql id="queryCondition">
+		<if test="null != importserial">
+			AND importSerial = #{importserial}
+		</if>
+		<if test="null != rdate">
+			AND DATE_FORMAT(rdate,'%Y-%m-%d') = #{rdate}
+		</if>
+	</sql>
+  
+  <insert id="addBatch" parameterType="java.util.ArrayList" >
+    insert into t_product_failing 
+    	<trim prefix="(" suffix=")" suffixOverrides=",">
+			<include refid="productFailingColumnList" /> 
+		</trim>
+    values 
+	<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+		      #{item.cid,jdbcType=INTEGER}, 
+		      #{item.importserial,jdbcType=BIGINT}, 
+		      #{item.standard,jdbcType=VARCHAR}, 
+		      #{item.pname,jdbcType=VARCHAR}, 
+		      #{item.goodsname,jdbcType=VARCHAR}, 
+		      #{item.classa,jdbcType=INTEGER}, 
+		      #{item.secondary,jdbcType=INTEGER}, 
+		      #{item.price,jdbcType=VARCHAR}, 
+		      #{item.discount,jdbcType=VARCHAR}, 
+		      #{item.batching,jdbcType=VARCHAR}, 
+		      #{item.weight,jdbcType=VARCHAR}, 
+		      #{item.suttle,jdbcType=VARCHAR}, 
+		      #{item.quality,jdbcType=VARCHAR}, 
+		      #{item.isadditives,jdbcType=VARCHAR}, 
+		      #{item.packing,jdbcType=VARCHAR}, 
+		      #{item.production,jdbcType=VARCHAR}, 
+		      #{item.brandname,jdbcType=VARCHAR}, 
+		      #{item.pstatus,jdbcType=INTEGER}, 
+		      #{item.crafts,jdbcType=VARCHAR}, 
+		      #{item.selltype,jdbcType=VARCHAR}, 
+		      #{item.integral,jdbcType=VARCHAR}, 
+		      #{item.deal,jdbcType=VARCHAR}, 
+		      #{item.place,jdbcType=VARCHAR}, 
+		      #{item.province,jdbcType=VARCHAR}, 
+		      #{item.city,jdbcType=VARCHAR}, 
+		      #{item.stored,jdbcType=VARCHAR}, 
+		      #{item.store,jdbcType=VARCHAR}, 
+		      #{item.sales,jdbcType=VARCHAR}, 
+		      #{item.choice,jdbcType=VARCHAR}, 
+		      #{item.cname,jdbcType=VARCHAR}, 
+		      #{item.address,jdbcType=VARCHAR}, 
+		      #{item.licenseid,jdbcType=VARCHAR}, 
+		      #{item.tel,jdbcType=VARCHAR}, 
+		      #{item.rdate,jdbcType=TIMESTAMP}, 
+		      #{item.dstatus,jdbcType=INTEGER}, 
+		      #{item.sort,jdbcType=VARCHAR}, 
+		      #{item.supplierid,jdbcType=INTEGER}, 
+		      #{item.suppliername,jdbcType=VARCHAR}, 
+		      #{item.salesinfo,jdbcType=VARCHAR}, 
+		      #{item.cash,jdbcType=VARCHAR}, 
+		      #{item.purchaseprice,jdbcType=VARCHAR}, 
+		      #{item.deliverytype,jdbcType=VARCHAR}, 
+		      #{item.allowrefund,jdbcType=VARCHAR}, 
+		      #{item.expweight,jdbcType=VARCHAR}, 
+		      #{item.goodsserial,jdbcType=VARCHAR}, 
+		      #{item.barcode,jdbcType=VARCHAR}, 
+		      #{item.delivery,jdbcType=VARCHAR}, 
+		      #{item.postnote,jdbcType=VARCHAR}, 
+		      #{item.servicenote,jdbcType=VARCHAR}, 
+		      #{item.remarks,jdbcType=VARCHAR},
+		      #{item.comments,jdbcType=VARCHAR},
+		      #{item.prpoName,jdbcType=VARCHAR},
+		      #{item.groupName,jdbcType=VARCHAR},
+		      #{item.amount,jdbcType=DECIMAL},
+		      #{item.stock,jdbcType=INTEGER}
+      </trim>
+	</foreach>
+  </insert>
+  
+  <!-- 新增导入失败序列号信息 -->
+  <insert id="insertFailingSerial" parameterType="com.xmniao.xmn.core.fresh.entity.ProductFailingSerial" >
+    insert into t_product_failing_serial 
+    	(cid, importSerial, rdate)
+    values 
+    	(
+	    	#{cid,jdbcType=INTEGER}, 
+	    	#{importserial,jdbcType=BIGINT}, 
+	    	#{rdate,jdbcType=TIMESTAMP} 
+    	)
+  </insert>
+  
+  <!-- 获取产品导入失败序列号信息 -->
+  <select id="getFailingSerialInfo" resultMap="failingSerialMap" parameterType="com.xmniao.xmn.core.fresh.entity.ProductFailingSerial" >
+    select 
+    	<include refid="failingSerialColumnList" />
+    from t_product_failing_serial
+    <where>
+    	1=1
+		    <include refid="queryCondition"></include>
+	    ORDER BY importSerial DESC 
+	</where>
+  </select>
+  
+  
+  	<!-- 根据序列号获取无效的产品信息 -->
+	<select id="getProductFailingList" resultMap="productFailingMap" parameterType="com.xmniao.xmn.core.fresh.entity.ProductFailing" >
+	   select 
+	   		<include refid="productFailingColumnList" />
+	   from t_product_failing
+	   <where>
+			1=1
+			<include refid="queryCondition"></include>
+		</where>
+		ORDER BY rdate DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+  
+</mapper>

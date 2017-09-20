@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.system_settings.dao.RoleDao">
+
+	<parameterMap type="Role" id="role" />
+	
+	<resultMap type="Role" id="roleMap">
+		<result column="role_id" property="roleId" />
+		<result column="role_name" property="roleName" />
+		<result column="is_system" property="isSystem" />
+		<result column="description" property="description" />
+	</resultMap>
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_role
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						role_name,
+						is_system,
+						description,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.roleName},
+						 #{item.isSystem},
+						 #{item.description},
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" parameterMap="role" >
+		INSERT INTO t_role
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != roleId">
+					role_id,
+				</if>
+			 	<if test=" null != roleName and '' != roleName ">
+					role_name,
+				</if>
+			 	<if test=" null != isSystem">
+					is_system,
+				</if>
+			 	<if test=" null != description and '' != description ">
+					description,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != roleId">
+					 	#{roleId},
+				</if>
+			 	<if test=" null != roleName and '' != roleName ">
+					 	#{roleName},
+				</if>
+			 	<if test=" null != isSystem">
+					 	#{isSystem},
+				</if>
+			 	<if test=" null != description and '' != description ">
+					 	#{description},
+				</if>
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_role WHERE role_id IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterMap="role">
+		UPDATE t_role
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != roleId">
+					role_id = #{roleId},
+				</if>
+				<if test=" null != roleName and '' != roleName ">
+					role_name = #{roleName},
+				</if>
+				<if test=" null != isSystem">
+					is_system = #{isSystem},
+				</if>
+				<if test=" null != description and '' != description ">
+					description = #{description},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != roleId and '' != roleId">
+				role_id = #{roleId}
+			</if>
+		</where>
+	</update>
+	
+	<select id="getList" resultMap="roleMap" parameterMap="role">
+		SELECT * FROM t_role
+		<where>
+			1=1 AND role_id !=1
+			
+			<if test=" null != roleName and '' != roleName ">
+				AND role_name LIKE '%${roleName}%'
+			</if>
+			<if test=" null != isSystem">
+				AND is_system = #{isSystem}
+			</if>
+			<if test=" null != description and '' != description ">
+				AND description LIKE '%${description}%'
+			</if>
+		</where>
+			ORDER BY role_id DESC  LIMIT ${(page-1)*limit},#{limit}
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="role">
+		SELECT COUNT(*) FROM t_role
+		<where>
+			1=1 AND role_id !=1
+			
+			<if test=" null != roleName and '' != roleName ">
+				AND role_name LIKE '%${roleName}%'
+			</if>
+			<if test=" null != isSystem">
+				AND is_system = #{isSystem}
+			</if>
+			<if test=" null != description and '' != description ">
+				AND description LIKE '%${description}%'
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Long">
+		SELECT Max(role_id) AS VALUE FROM t_role
+	</select>
+	
+	<select id="getObject" resultMap="roleMap" parameterType="Long">
+		SELECT * FROM t_role WHERE role_id = #{0} 
+	</select>
+	
+	<select id="getotherRoleList" resultMap="roleMap" parameterType="Long">
+		SELECT role_id,role_name FROM t_role WHERE  role_id NOT IN(1
+		<if test=" null != roleid ">
+			,#{roleid}
+		</if>
+		)  
+			
+	</select>
+	
+	
+</mapper>

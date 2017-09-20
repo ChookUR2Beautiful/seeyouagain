@@ -1,0 +1,559 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.SellerInternalInfoDao">
+
+	<parameterMap type="SellerInternalInfo" id="sellerInternalInfoParam" />
+	
+	<resultMap type="SellerInternalInfo" id="sellerInternalInfoMap">
+		<result column="id_seller_internal_info" property="msgId" />
+		<result column="title" property="title" />
+		<result column="subtitle" property="subtitle" />
+		<result column="url_message_img" property="urlMessageImg" />
+		<result column="url_article_focus_img" property="urlArticleFocusImg" />
+		<result column="date_start_send" property="dateSend" />
+		<result column="send_object" property="sendObject" />
+		<result column="content" property="content" />
+		<result column="send_num" property="sendNum" />
+		<result column="read_num" property="readNum" />
+		<result column="data_state" property="dataState" />
+		<result column="creator" property="creator" />
+		<result column="date_created" property="dateCreated" />
+		<result column="updator" property="updator" />
+		<result column="date_updated" property="dateUpdated" />
+		<result column="id_seller_read_detail" property="srId" />
+		<result column="sellerid" property="sellerid" />
+		
+		<result column="province" property="province" />
+		<result column="city" property="city" />
+		<result column="area" property="area" />
+		<result column="zoneid" property="zoneid" />
+		<result column="ptitle" property="ptitle" />
+		<result column="ctitle" property="ctitle" />
+		<result column="atitle" property="atitle" />
+		<result column="btitle" property="btitle" />
+		<result column="is_send_immediate" property="isSendImmediate" />
+		<result column="date_end_send" property="dateEndSend" />
+	</resultMap>
+	
+	
+	<insert id="addReturnId" useGeneratedKeys="true" keyProperty="msgId" keyColumn="id_seller_internal_info"  parameterMap="sellerInternalInfoParam" >
+		INSERT INTO t_seller_internal_info
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != msgId">
+					id_seller_internal_info,
+				</if>
+			 	<if test=" null != title  and '' != title ">
+					title,
+				</if>
+			 	<if test=" null != subtitle and '' != subtitle ">
+					subtitle,
+				</if>
+			 	<if test=" null != urlMessageImg and '' != urlMessageImg ">
+					url_message_img,
+				</if>
+			 	<if test=" null != urlArticleFocusImg and '' != urlArticleFocusImg ">
+					url_article_focus_img,
+				</if>
+			 	<if test=" null != dateSend and '' != dateSend ">
+					date_start_send,
+				</if>
+			 	<if test=" null != sendObject and '' != sendObject ">
+					send_object,
+				</if>
+			 	<if test=" null != content">
+					content,
+				</if>
+			 	<if test=" null != sendNum">
+					send_num,
+				</if>
+			 	<if test=" null != readNum">
+					read_num,
+				</if>
+			 	<if test=" null != dataState and '' != dataState ">
+					data_state,
+				</if>
+			 	<if test=" null != creator and '' != creator ">
+					creator,
+				</if>
+			 	<if test=" null != dateCreated and '' != dateCreated ">
+					date_created,
+				</if>
+				<if test=" null != updator and '' != updator ">
+					updator,
+				</if>
+			 	<if test=" null != dateUpdated and '' != dateUpdated ">
+					date_updated,
+				</if>
+				
+				<if test=" null != province">
+					province,
+				</if>
+			 	<if test=" null != city">
+					city,
+				</if>
+			 	<if test=" null != area">
+					area,
+				</if>
+				<if test=" null != zoneid">
+					zoneid,
+				</if>
+			 	<if test=" null != isSendImmediate">
+					is_send_immediate,
+				</if>
+				<if test=" null != dateEndSend">
+					date_end_send,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+				<if test=" null != msgId">
+					#{msgId},
+				</if>
+			 	<if test=" null != title  and '' != title ">
+					#{title},
+				</if>
+			 	<if test=" null != subtitle and '' != subtitle ">
+					#{subtitle},
+				</if>
+			 	<if test=" null != urlMessageImg and '' != urlMessageImg ">
+					#{urlMessageImg},
+				</if>
+			 	<if test=" null != urlArticleFocusImg and '' != urlArticleFocusImg ">
+					#{urlArticleFocusImg},
+				</if>
+			 	<if test=" null != dateSend and '' != dateSend ">
+					#{dateSend},
+				</if>
+			 	<if test=" null != sendObject and '' != sendObject ">
+					#{sendObject},
+				</if>
+			 	<if test=" null != content">
+					#{content},
+				</if>
+			 	<if test=" null != sendNum">
+					#{sendNum},
+				</if>
+			 	<if test=" null != readNum">
+					#{readNum},
+				</if>
+			 	<if test=" null != dataState and '' != dataState ">
+					#{dataState},
+				</if>
+			 	<if test=" null != creator and '' != creator ">
+					#{creator},
+				</if>
+			 	<if test=" null != dateCreated and '' != dateCreated ">
+					#{dateCreated},
+				</if>
+				<if test=" null != updator and '' != updator ">
+					#{updator},
+				</if>
+			 	<if test=" null != dateUpdated and '' != dateUpdated ">
+					#{dateUpdated},
+				</if>
+				
+				<if test=" null != province">
+				    #{province},
+				</if>
+			 	<if test=" null != city">
+			 		#{city},
+				</if>
+			 	<if test=" null != area">
+			 		#{area},
+				</if>
+				<if test=" null != zoneid">
+					#{zoneid},
+				</if>
+			 	<if test=" null != isSendImmediate">
+			 		#{isSendImmediate},
+				</if>
+				<if test=" null != dateEndSend">
+					#{dateEndSend},
+				</if>
+		</trim>
+	</insert>
+	
+	
+	<insert id="add" parameterMap="sellerInternalInfoParam" >
+		INSERT INTO t_seller_internal_info
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != msgId">
+					id_seller_internal_info,
+				</if>
+			 	<if test=" null != title  and '' != title ">
+					title,
+				</if>
+			 	<if test=" null != subtitle and '' != subtitle ">
+					subtitle,
+				</if>
+			 	<if test=" null != urlMessageImg and '' != urlMessageImg ">
+					url_message_img,
+				</if>
+			 	<if test=" null != urlArticleFocusImg and '' != urlArticleFocusImg ">
+					url_article_focus_img,
+				</if>
+			 	<if test=" null != dateSend and '' != dateSend ">
+					date_start_send,
+				</if>
+			 	<if test=" null != sendObject and '' != sendObject ">
+					send_object,
+				</if>
+			 	<if test=" null != content">
+					content,
+				</if>
+			 	<if test=" null != sendNum">
+					send_num,
+				</if>
+			 	<if test=" null != readNum">
+					read_num,
+				</if>
+			 	<if test=" null != dataState and '' != dataState ">
+					data_state,
+				</if>
+			 	<if test=" null != creator and '' != creator ">
+					creator,
+				</if>
+			 	<if test=" null != dateCreated and '' != dateCreated ">
+					date_created,
+				</if>
+				<if test=" null != updator and '' != updator ">
+					updator,
+				</if>
+			 	<if test=" null != dateUpdated and '' != dateUpdated ">
+					date_updated,
+				</if>
+				
+				<if test=" null != province">
+					province,
+				</if>
+			 	<if test=" null != city">
+					city,
+				</if>
+			 	<if test=" null != area">
+					area,
+				</if>
+				<if test=" null != zoneid">
+					zoneid,
+				</if>
+			 	<if test=" null != isSendImmediate">
+					is_send_immediate,
+				</if>
+				<if test=" null != dateEndSend">
+					date_end_send,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+				<if test=" null != msgId">
+					#{msgId},
+				</if>
+			 	<if test=" null != title  and '' != title ">
+					#{title},
+				</if>
+			 	<if test=" null != subtitle and '' != subtitle ">
+					#{subtitle},
+				</if>
+			 	<if test=" null != urlMessageImg and '' != urlMessageImg ">
+					#{urlMessageImg},
+				</if>
+			 	<if test=" null != urlArticleFocusImg and '' != urlArticleFocusImg ">
+					#{urlArticleFocusImg},
+				</if>
+			 	<if test=" null != dateSend and '' != dateSend ">
+					#{dateSend},
+				</if>
+			 	<if test=" null != sendObject and '' != sendObject ">
+					#{sendObject},
+				</if>
+			 	<if test=" null != content">
+					#{content},
+				</if>
+			 	<if test=" null != sendNum">
+					#{sendNum},
+				</if>
+			 	<if test=" null != readNum">
+					#{readNum},
+				</if>
+			 	<if test=" null != dataState and '' != dataState ">
+					#{dataState},
+				</if>
+			 	<if test=" null != creator and '' != creator ">
+					#{creator},
+				</if>
+			 	<if test=" null != dateCreated and '' != dateCreated ">
+					#{dateCreated},
+				</if>
+				<if test=" null != updator and '' != updator ">
+					#{updator},
+				</if>
+			 	<if test=" null != dateUpdated and '' != dateUpdated ">
+					#{dateUpdated},
+				</if>
+				
+				<if test=" null != province">
+				    #{province},
+				</if>
+			 	<if test=" null != city">
+			 		#{city},
+				</if>
+			 	<if test=" null != area">
+			 		#{area},
+				</if>
+				<if test=" null != zoneid">
+					#{zoneid},
+				</if>
+			 	<if test=" null != isSendImmediate">
+			 		#{isSendImmediate},
+				</if>
+				<if test=" null != dateEndSend">
+					#{dateEndSend},
+				</if>
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_seller_internal_info WHERE id_seller_internal_info IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterMap="sellerInternalInfoParam">
+		UPDATE t_seller_internal_info
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != msgId">
+					id_seller_internal_info = #{msgId},
+				</if>
+			 	<if test=" null != title  and '' != title ">
+					title = #{title},
+				</if>
+			 	<if test=" null != subtitle and '' != subtitle ">
+					subtitle = #{subtitle},
+				</if>
+			 	<if test=" null != urlMessageImg and '' != urlMessageImg ">
+					url_message_img = #{urlMessageImg},
+				</if>
+			 	<if test=" null != urlArticleFocusImg and '' != urlArticleFocusImg ">
+					url_article_focus_img = #{urlArticleFocusImg},
+				</if>
+			 	<if test=" null != dateSend and '' != dateSend ">
+					date_start_send = #{dateSend},
+				</if>
+			 	<if test=" null != sendObject and '' != sendObject ">
+					send_object = #{sendObject},
+				</if>
+			 	<if test=" null != content">
+					content = #{content},
+				</if>
+			 	<if test=" null != sendNum">
+					send_num = #{sendNum},
+				</if>
+			 	<if test=" null != readNum">
+					read_num = #{readNum},
+				</if>
+			 	<if test=" null != dataState and '' != dataState ">
+					data_state = #{dataState},
+				</if>
+			 	<if test=" null != creator and '' != creator ">
+					creator = #{creator},
+				</if>
+			 	<if test=" null != dateCreated and '' != dateCreated ">
+					date_created = #{dateCreated},
+				</if>
+				<if test=" null != updator and '' != updator ">
+					updator = #{updator},
+				</if>
+			 	<if test=" null != dateUpdated and '' != dateUpdated ">
+					date_updated = #{dateUpdated},
+				</if>
+				
+				<if test=" null != province">
+				    province = #{province},
+				</if>
+			 	<if test=" null != city">
+			 		city = #{city},
+				</if>
+			 	<if test=" null != area">
+			 		area = #{area},
+				</if>
+				<if test=" null != zoneid">
+					zoneid = #{zoneid},
+				</if>
+			 	<if test=" null != isSendImmediate">
+			 		is_send_immediate = #{isSendImmediate},
+				</if>
+				<if test=" null != dateEndSend">
+					date_end_send = #{dateEndSend},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != msgId">
+				id_seller_internal_info = #{msgId}
+			</if>
+		</where>
+	</update>
+	
+	<!-- 查询列表 -->
+	<select id="getList" resultMap="sellerInternalInfoMap" parameterMap="sellerInternalInfoParam">
+		SELECT 
+		   t.* ,
+	       tp.title AS ptitle,
+	       tc.title AS ctitle,
+	       ta.title AS atitle,
+	       tb.title AS btitle
+		FROM t_seller_internal_info t
+		LEFT JOIN t_area tp ON t.province = tp.area_id
+		LEFT JOIN t_area tc ON t.city = tc.area_id
+		LEFT JOIN t_area ta ON t.area = ta.area_id
+		LEFT JOIN t_business tb ON t.zoneid = tb.bid
+		<where>
+			1=1
+			AND t.data_state <![CDATA[<>]]> -1
+			    <if test=" null != msgId">
+					AND t.id_seller_internal_info = #{msgId}
+				</if>
+				<if test=" null != content">
+					AND content = #{content}
+				</if>
+			 	<if test=" null != title  and '' != title ">
+					AND t.title LIKE '%${title}%'
+				</if>
+			 	<if test=" null != subtitle and '' != subtitle ">
+					AND subtitle LIKE '%${subtitle}%'
+				</if>
+				
+				<if test=" null != dateSendStart and '' != dateSendStart">
+					AND  date_start_send &gt;= #{dateSendStart}
+				</if>
+				<if test=" null != dateSendEnd and '' != dateSendEnd">
+					AND  date_start_send &lt;= #{dateSendEnd}
+				</if>
+				
+				<if test=" null != cdateStart and '' != cdateStart">
+					AND  date_created &gt;= #{cdateStart}
+				</if>
+				<if test=" null != cdateEnd and '' != cdateEnd">
+					AND  date_created &lt;= #{cdateEnd}
+				</if>
+				
+				<if test=" null != sendNumStart and '' != sendNumStart">
+					AND  send_num &gt;= #{sendNumStart}
+				</if>
+				<if test=" null != sendNumEnd and '' != sendNumEnd">
+					AND  send_num &lt;= #{sendNumEnd}
+				</if>
+				
+				<if test=" null != dateEndSendS and '' != dateEndSendS">
+					AND  date_end_send &gt;= #{dateEndSendS}
+				</if>
+				<if test=" null != dateEndSendE and '' != dateEndSendE">
+					AND  date_end_send &lt;= #{dateEndSendE}
+				</if>
+				
+				<if test=" null != readNumStart and '' != readNumStart">
+					AND  read_num &gt;= #{readNumStart}
+				</if>
+				<if test=" null != readNumEnd and '' != readNumEnd">
+					AND  read_num &lt;= #{readNumEnd}
+				</if>
+				<if test="zoneid!=null and zoneid!='' ">
+					AND zoneid = #{zoneid}
+				</if>
+		</where>
+			ORDER BY id_seller_internal_info DESC ,date_updated DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="sellerInternalInfoParam">
+		SELECT COUNT(1) FROM t_seller_internal_info 
+		<where>
+			1=1
+			AND data_state <![CDATA[<>]]> -1
+			    <if test=" null != msgId">
+					AND id_seller_internal_info = #{msgId}
+				</if>
+				<if test=" null != content">
+					AND content = #{content}
+				</if>
+			 	<if test=" null != title  and '' != title ">
+					AND title LIKE '%${title}%'
+				</if>
+			 	<if test=" null != subtitle and '' != subtitle ">
+					AND subtitle LIKE '%${subtitle}%'
+				</if>
+				
+				<if test=" null != dateSendStart and '' != dateSendStart">
+					AND  date_start_send &gt;= #{dateSendStart}
+				</if>
+				<if test=" null != dateSendEnd and '' != dateSendEnd">
+					AND  date_start_send &lt;= #{dateSendEnd}
+				</if>
+				
+				<if test=" null != cdateStart and '' != cdateStart">
+					AND  date_created &gt;= #{cdateStart}
+				</if>
+				<if test=" null != cdateEnd and '' != cdateEnd">
+					AND  date_created &lt;= #{cdateEnd}
+				</if>
+				
+				<if test=" null != sendNumStart and '' != sendNumStart">
+					AND  send_num &gt;= #{sendNumStart}
+				</if>
+				<if test=" null != sendNumEnd and '' != sendNumEnd">
+					AND  send_num &lt;= #{sendNumEnd}
+				</if>
+				
+				<if test=" null != readNumStart and '' != readNumStart">
+					AND  read_num &gt;= #{readNumStart}
+				</if>
+				<if test=" null != readNumEnd and '' != readNumEnd">
+					AND  read_num &lt;= #{readNumEnd}
+				</if>
+				<if test="zoneid!=null and zoneid!='' ">
+					AND zoneid = #{zoneid}
+				</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Long">
+		SELECT Max(id_seller_internal_info) AS VALUE FROM t_seller_internal_info
+	</select>
+	
+	<select id="getObject" resultMap="sellerInternalInfoMap" parameterType="Long">
+		SELECT * FROM t_seller_internal_info WHERE id_seller_internal_info = #{0}
+	</select>
+	
+	
+	<!-- 添加商家关联表信息 -->
+	<insert id="beachRelationSeller" parameterType="java.util.ArrayList" >
+		INSERT INTO t_seller_read_detail
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						id_seller_internal_info,
+						sellerid,
+						data_state,
+						creator,
+						date_created,
+						updator,
+						date_updated,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						#{item.msgId},
+				 		#{item.sellerid},
+				 		#{item.dataState},
+				 		#{item.creator},
+				 		#{item.dateCreated},
+						#{item.updator},
+				 		#{item.dateUpdated},
+			</trim>
+		</foreach>
+	</insert>
+	
+	<!-- 根据消息id删除对应的推送人 -->
+	<delete id="deleteRelation" parameterType="Long">
+		DELETE FROM t_seller_read_detail WHERE id_seller_internal_info = #{0};
+	</delete>
+</mapper>

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.vstar.dao.TVstarContentImgDao" >
+
+  <resultMap id="vstarContentImgMap" type="com.xmniao.xmn.core.vstar.entity.TVstarContentImg" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="content_id" property="contentId" jdbcType="BIGINT" />
+    <result column="img_url" property="imgUrl" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="vstarContentImg_column_list" >
+    id, content_id, img_url, status, create_time, update_time
+  </sql>
+  
+  <select id="getObject" resultMap="vstarContentImgMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="vstarContentImg_column_list" />
+    from t_vstar_content_img
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getList" resultMap="vstarContentImgMap" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarContentImg" >
+    select 
+    <include refid="vstarContentImg_column_list" />
+    from t_vstar_content_img
+    <where> 
+    	status=1
+    	<if test="contentId != null and contentId!='' ">
+    		and content_id=#{contentId}
+    	</if>
+    </where>
+    <if test="order != -1">
+    	order by update_time DESC,id DESC
+    </if>
+    <if test="limit != -1">
+    	limit ${(page-1)*limit},#{limit}
+    </if>
+  </select>
+  
+    <select id="count" resultType="long" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarContentImg" >
+    select 
+    	count(id)
+    from t_vstar_content_img
+    <where> 
+    	status=1
+    	<if test="contentId != null and contentId!='' ">
+    		and content_id=#{contentId}
+    	</if>
+    </where>
+  </select>
+  
+  <delete id="delete" parameterType="java.lang.Object" >
+    delete from t_vstar_content_img
+    where id in
+    <foreach collection="array" index="index" item="item" open="(" separator="," close=")">
+    	#{item}
+    </foreach>
+  </delete>
+  
+  <insert id="add" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarContentImg" >
+    insert into t_vstar_content_img
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="contentId != null" >
+        content_id,
+      </if>
+      <if test="imgUrl != null" >
+        img_url,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="contentId != null" >
+        #{contentId,jdbcType=BIGINT},
+      </if>
+      <if test="imgUrl != null" >
+        #{imgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarContentImg" >
+    update t_vstar_content_img
+    <set >
+      <if test="contentId != null" >
+        content_id = #{contentId,jdbcType=BIGINT},
+      </if>
+      <if test="imgUrl != null" >
+        img_url = #{imgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  
+	<!-- 批量插入图片信息 -->
+	<insert id="addBatch" parameterType="java.util.ArrayList">
+		INSERT INTO t_vstar_content_img
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<include refid="vstarContentImg_column_list" /> 
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+			<!-- id, content_id, img_url, status, create_time, update_time -->
+				#{item.id},
+				#{item.contentId},
+				#{item.imgUrl},
+				#{item.status},
+				#{item.createTime},
+				#{item.updateTime}
+			</trim>
+		</foreach>
+	</insert>
+  
+</mapper>

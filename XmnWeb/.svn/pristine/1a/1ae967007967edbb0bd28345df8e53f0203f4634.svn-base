@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.AgioRecordDao">
+
+	<parameterMap type="AgioRecord" id="agioRecord" />
+	
+	<resultMap type="AgioRecord" id="agioRecordMap">
+		<result column="id" property="id" />
+		<result column="aid" property="aid" />
+		<result column="sellerid" property="sellerid" />
+		<result column="operation" property="operation" />
+		<result column="uid" property="uid" />
+		<result column="baseagio" property="baseagio" />
+		<result column="Income" property="income" />
+		<result column="sledger" property="sledger" />
+		<result column="yledger" property="yledger" />
+		<result column="pledger" property="pledger" />
+		<result column="stdate" property="stdate" />
+		<result column="endate" property="endate" />
+		<result column="sdate" property="sdate" />		
+		<result column="excdate" property="excdate" />
+		<result column="remarks" property="remarks" />
+		<result column="type" property="type" />
+		<result column="status" property="status" />
+				
+		<result column="sellername" property="sellername" />
+	</resultMap>
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_log
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						aid,
+						sellerid,
+						operation,
+						uid,
+						baseagio,
+						Income,
+						sledger,
+						yledger,
+						pledger,
+						stdate,
+						endate,
+						sdate,
+						excdate,
+						remarks,
+						status,
+						type,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.aid},
+						 #{item.sellerid},
+						 #{item.operation},
+						 #{item.uid},
+						 #{item.baseagio},
+						 #{item.income},
+						 #{item.sledger},
+						 #{item.yledger},
+						 #{item.pledger},
+						 #{item.stdate},
+						 #{item.endate},
+						 #{item.sdate},
+						 #{item.excdate},
+						 #{item.remarks},
+						 #{item.status},
+						 #{item.type},
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" parameterMap="agioRecord" >
+		INSERT INTO t_agio_record
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					id,
+				</if>
+			 	<if test=" null != aid">
+					aid,
+				</if>
+			 	<if test=" null != sellerid">
+					sellerid,
+				</if>
+			 	<if test=" null != operation">
+					operation,
+				</if>
+			 	<if test=" null != uid">
+					uid,
+				</if>
+			 	<if test=" null != baseagio">
+					baseagio,
+				</if>
+			 	<if test=" null != income">
+					Income,
+				</if>
+			 	<if test=" null != sledger">
+					sledger,
+				</if>
+			 	<if test=" null != yledger">
+					yledger,
+				</if>
+			 	<if test=" null != pledger">
+					pledger,
+				</if>
+			 	<if test=" null != stdate">
+					stdate,
+				</if>
+			 	<if test=" null != endate">
+					endate,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+				
+				<if test=" null != excdate">
+					excdate,
+				</if>
+				<if test=" null != remarks">
+					remarks,
+				</if>
+				<if test=" null != status">
+					status,
+				</if>
+				<if test=" null != type">
+					type,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					 	#{id},
+				</if>
+			 	<if test=" null != aid">
+					 	#{aid},
+				</if>
+			 	<if test=" null != sellerid">
+					 	#{sellerid},
+				</if>
+			 	<if test=" null != operation">
+					 	#{operation},
+				</if>
+			 	<if test=" null != uid">
+					 	#{uid},
+				</if>
+			 	<if test=" null != baseagio">
+					 	#{baseagio},
+				</if>
+			 	<if test=" null != income">
+					 	#{income},
+				</if>
+			 	<if test=" null != sledger">
+					 	#{sledger},
+				</if>
+			 	<if test=" null != yledger">
+					 	#{yledger},
+				</if>
+			 	<if test=" null != pledger">
+					 	#{pledger},
+				</if>
+			 	<if test=" null != stdate">
+					 	#{stdate},
+				</if>
+			 	<if test=" null != endate">
+					 	#{endate},
+				</if>
+			 	<if test=" null != sdate">
+					 	#{sdate},
+				</if>
+				
+				<if test=" null != excdate">
+					#{excdate},
+				</if>
+				<if test=" null != remarks">
+					#{remarks},
+				</if>
+				<if test=" null != status">
+					#{status},
+				</if>
+				<if test=" null != type">
+					#{type},
+				</if>
+				
+		</trim>
+	</insert>
+	
+	<insert id="addReturnId" parameterMap="agioRecord" useGeneratedKeys="true" keyProperty="id" keyColumn="id" >
+		INSERT INTO t_agio_record
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					id,
+				</if>
+			 	<if test=" null != aid">
+					aid,
+				</if>
+			 	<if test=" null != sellerid">
+					sellerid,
+				</if>
+			 	<if test=" null != operation">
+					operation,
+				</if>
+			 	<if test=" null != uid">
+					uid,
+				</if>
+			 	<if test=" null != baseagio">
+					baseagio,
+				</if>
+			 	<if test=" null != income">
+					Income,
+				</if>
+			 	<if test=" null != sledger">
+					sledger,
+				</if>
+			 	<if test=" null != yledger">
+					yledger,
+				</if>
+			 	<if test=" null != pledger">
+					pledger,
+				</if>
+			 	<if test=" null != stdate">
+					stdate,
+				</if>
+			 	<if test=" null != endate">
+					endate,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+				
+				<if test=" null != excdate">
+					excdate,
+				</if>
+				<if test=" null != remarks">
+					remarks,
+				</if>
+				<if test=" null != status">
+					status,
+				</if>
+				<if test=" null != type">
+					type,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					 	#{id},
+				</if>
+			 	<if test=" null != aid">
+					 	#{aid},
+				</if>
+			 	<if test=" null != sellerid">
+					 	#{sellerid},
+				</if>
+			 	<if test=" null != operation">
+					 	#{operation},
+				</if>
+			 	<if test=" null != uid">
+					 	#{uid},
+				</if>
+			 	<if test=" null != baseagio">
+					 	#{baseagio},
+				</if>
+			 	<if test=" null != income">
+					 	#{income},
+				</if>
+			 	<if test=" null != sledger">
+					 	#{sledger},
+				</if>
+			 	<if test=" null != yledger">
+					 	#{yledger},
+				</if>
+			 	<if test=" null != pledger">
+					 	#{pledger},
+				</if>
+			 	<if test=" null != stdate">
+					 	#{stdate},
+				</if>
+			 	<if test=" null != endate">
+					 	#{endate},
+				</if>
+			 	<if test=" null != sdate">
+					 	#{sdate},
+				</if>
+				
+				<if test=" null != excdate">
+					#{excdate},
+				</if>
+				<if test=" null != remarks">
+					#{remarks},
+				</if>
+				<if test=" null != status">
+					#{status},
+				</if>
+				<if test=" null != type">
+					#{type},
+				</if>
+				
+		</trim>
+	</insert>
+	
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_agio_record WHERE id IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterMap="agioRecord">
+		UPDATE t_agio_record
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != id">
+					id = #{id},
+				</if>
+				<if test=" null != aid">
+					aid = #{aid},
+				</if>
+				<if test=" null != sellerid">
+					sellerid = #{sellerid},
+				</if>
+				<if test=" null != operation">
+					operation = #{operation},
+				</if>
+				<if test=" null != uid">
+					uid = #{uid},
+				</if>
+				<if test=" null != baseagio">
+					baseagio = #{baseagio},
+				</if>
+				<if test=" null != income">
+					Income = #{income},
+				</if>
+				<if test=" null != sledger">
+					sledger = #{sledger},
+				</if>
+				<if test=" null != yledger">
+					yledger = #{yledger},
+				</if>
+				<if test=" null != pledger">
+					pledger = #{pledger},
+				</if>
+				<if test=" null != stdate">
+					stdate = #{stdate},
+				</if>
+				<if test=" null != endate">
+					endate = #{endate},
+				</if>
+				<if test=" null != sdate">
+					sdate = #{sdate},
+				</if>
+				
+				<if test=" null != excdate">
+					excdate = #{excdate},
+				</if>
+				<if test=" null != remarks">
+					remarks = #{remarks},
+				</if>
+				<if test=" null != status">
+					status = #{status},
+				</if>
+				<if test=" null != type">
+					type = #{type},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != id and '' != id">
+				id = #{id}
+			</if>
+		</where>
+	</update>
+	
+	<select id="getList" resultMap="agioRecordMap" parameterMap="agioRecord">
+		SELECT * FROM (SELECT a.*,s.sellername  FROM t_agio_record a left join t_seller s on a.sellerid = s.sellerid) a
+		<where>
+			1=1
+			<!-- <if test=" null != id">
+				AND id = #{id}
+			</if>
+			<if test=" null != aid">
+				AND aid = #{aid}
+			</if> -->
+			<if test=" null != sellerid">
+				AND a.sellerid = #{sellerid}
+			</if>
+			<if test=" null != operation">
+				AND a.operation = #{operation}
+			</if>
+			<if test=" null != uid">
+				AND a.uid = #{uid}
+			</if>
+		<!-- 	<if test=" null != baseagio">
+				AND baseagio = #{baseagio}
+			</if>
+			<if test=" null != income">
+				AND Income = #{income}
+			</if>
+			<if test=" null != sledger">
+				AND sledger = #{sledger}
+			</if>
+			<if test=" null != yledger">
+				AND yledger = #{yledger}
+			</if>
+			<if test=" null != pledger">
+				AND pledger = #{pledger}
+			</if>
+			<if test=" null != stdate">
+				AND stdate = #{stdate}
+			</if>
+			<if test=" null != endate">
+				AND endate = #{endate}
+			</if>
+			<if test=" null != sdate">
+				AND sdate = #{sdate}
+			</if> -->
+			
+			
+			<if test=" null != sellername and '' != sellername">
+				AND a.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != stdateStart and '' != stdateStart">
+				AND a.stdate&gt;= #{stdateStart}
+			</if>
+			<if test=" null != stdateEnd and '' != stdateEnd">
+				AND a.stdate&lt;= #{stdateEnd}
+			</if>
+			<if test=" null != endateStart and '' != endateStart">
+				AND a.endate&gt;= #{endateStart}
+			</if>
+			<if test=" null != endateEnd and '' != endateEnd">
+				AND a.endate&lt;= #{endateEnd}
+			</if>
+			<if test=" null != sdateStart and '' != sdateStart">
+				AND a.sdate&gt;= #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd and '' != sdateEnd">
+				AND a.sdate&lt;= #{sdateEnd}
+			</if>
+		<!-- 	
+			<if test=" null != excdate">
+				AND excdate = #{excdate}
+				</if>
+			<if test=" null != remarks">
+				AND remarks = #{remarks}
+				</if> -->
+		</where>
+			ORDER BY a.id DESC 
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="agioRecord">
+		SELECT COUNT(*) FROM (SELECT a.*,s.sellername FROM t_agio_record a left join t_seller s on a.sellerid = s.sellerid) a
+		<where>
+			1=1
+			<!-- <if test=" null != id">
+				AND id = #{id}
+			</if>
+			<if test=" null != aid">
+				AND aid = #{aid}
+			</if> -->
+			<if test=" null != sellerid">
+				AND a.sellerid = #{sellerid}
+			</if>
+			<if test=" null != operation">
+				AND a.operation = #{operation}
+			</if>
+			<if test=" null != uid">
+				AND a.uid = #{uid}
+			</if>
+		<!-- 	<if test=" null != baseagio">
+				AND baseagio = #{baseagio}
+			</if>
+			<if test=" null != income">
+				AND Income = #{income}
+			</if>
+			<if test=" null != sledger">
+				AND sledger = #{sledger}
+			</if>
+			<if test=" null != yledger">
+				AND yledger = #{yledger}
+			</if>
+			<if test=" null != pledger">
+				AND pledger = #{pledger}
+			</if>
+			<if test=" null != stdate">
+				AND stdate = #{stdate}
+			</if>
+			<if test=" null != endate">
+				AND endate = #{endate}
+			</if>
+			<if test=" null != sdate">
+				AND sdate = #{sdate}
+			</if> -->
+			
+			
+			<if test=" null != sellername and '' != sellername">
+				AND a.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != stdateStart and '' != stdateStart">
+				AND a.stdate&gt;= #{stdateStart}
+			</if>
+			<if test=" null != stdateEnd and '' != stdateEnd">
+				AND a.stdate&lt;= #{stdateEnd}
+			</if>
+			<if test=" null != endateStart and '' != endateStart">
+				AND a.endate&gt;= #{endateStart}
+			</if>
+			<if test=" null != endateEnd and '' != endateEnd">
+				AND a.endate&lt;= #{endateEnd}
+			</if>
+			<if test=" null != sdateStart and '' != sdateStart">
+				AND a.sdate&gt;= #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd and '' != sdateEnd">
+				AND a.sdate&lt;= #{sdateEnd}
+			</if>
+		<!-- 	
+			<if test=" null != excdate">
+				AND excdate = #{excdate}
+				</if>
+			<if test=" null != remarks">
+				AND remarks = #{remarks}
+				</if> -->
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Integer">
+		SELECT Max(id) AS VALUE FROM t_agio_record
+	</select>
+	
+	<select id="getObject" resultMap="agioRecordMap" parameterType="Long">
+		SELECT * FROM t_agio_record WHERE id = #{0}
+	</select>
+	
+</mapper>

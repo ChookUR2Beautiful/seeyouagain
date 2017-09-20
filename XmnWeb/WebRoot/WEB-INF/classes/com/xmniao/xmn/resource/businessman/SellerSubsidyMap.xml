@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.SellerSubsidyDao">
+
+	<parameterMap type="TSellerSubsidy" id="tSellerSubsidy" />
+	
+	<resultMap type="TSellerSubsidy" id="tSellerSubsidyMap">
+		<result column="id_subsidy" property="idsubsidy" />
+		<result column="sellerid" property="sellerid" />
+		<result column="sellername" property="sellername" />
+		<result column="province" property="province" />
+		<result column="city" property="city" />
+		<result column="area" property="area" />
+		<result column="phoneid" property="phoneid" />
+		<result column="order_num" property="ordernum" />
+		<result column="subsidy_amount" property="subsidyamount" />
+		<result column="creator" property="creator" />
+		<result column="date_created" property="datecreated" />
+		<result column="updator" property="updator" />
+		<result column="date_updated" property="dateupdated" />
+		<result column="issue_status" property="issuestatus" />
+		<result column="date_issue" property="dateissue" />
+	</resultMap>
+	
+
+	 <insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_seller_subsidy
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+					sellerid,
+					sellername,
+					province,
+					city,
+					area,
+					phoneid,
+					order_num,
+					subsidy_amount,
+					creator,
+					date_created,
+					issue_status,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+				<trim prefix="(" suffix=")" suffixOverrides=",">
+						#{item.sellerid},
+					
+						#{item.sellername},
+						#{item.province},
+						#{item.city},
+						#{item.area},
+						#{item.phoneid},
+						#{item.ordernum},
+						#{item.subsidyamount},
+						#{item.creator},
+						#{item.datecreated},
+						#{item.issuestatus},
+			</trim>
+		</foreach>
+	</insert>
+
+
+ 	<insert id="add" parameterMap="tSellerSubsidy" >
+		INSERT INTO t_seller_subsidy
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != sellerid">
+					sellerid,
+				</if>
+			 	<if test=" null != sellername and '' != sellername ">
+					sellername,
+				</if>
+			 	<if test=" null != province and '' != province ">
+					province,
+				</if>
+				<if test=" null != city and '' != city ">
+					city,
+				</if>
+				<if test=" null != area and '' != area ">
+					area,
+				</if>
+			 	<if test=" null != phoneid">
+					phoneid,
+				</if>
+			 	<if test=" null != ordernum">
+					order_num,
+				</if>
+			 	<if test=" null != subsidyamount">
+					subsidy_amount,
+				</if>
+			 	<if test=" null != creator and '' != creator ">
+					creator,
+				</if>
+			 	<if test=" null != datecreated">
+					date_created,
+				</if>
+			 	<if test=" null != updator and '' != updator ">
+					updator,
+				</if>
+				<if test=" null != dateupdated and '' != dateupdated ">
+					date_updated,
+				</if>
+			 	<if test=" null != issuestatus">
+					issue_status,
+				</if>
+				<if test=" null != dateissue and '' != dateissue ">
+					date_issue,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != sellerid">
+					#{sellerid},
+				</if>
+			 	<if test=" null != sellername and '' != sellername ">
+					#{sellername},
+				</if>
+			 	<if test=" null != province and '' != province ">
+					#{province},
+				</if>
+				<if test=" null != city and '' != city ">
+					#{city},
+				</if>
+				<if test=" null != area and '' != area ">
+					#{area},
+				</if>
+			 	<if test=" null != phoneid">
+					#{phoneid},
+				</if>
+			 	<if test=" null != ordernum">
+					#{ordernum},
+				</if>
+			 	<if test=" null != subsidyamount">
+					#{subsidyamount},
+				</if>
+			 	<if test=" null != creator and '' != creator ">
+					#{creator},
+				</if>
+			 	<if test=" null != datecreated">
+					#{datecreated},
+				</if>
+			 	<if test=" null != updator and '' != updator ">
+					#{updator},
+				</if>
+				<if test=" null != dateupdated and '' != dateupdated ">
+					#{dateupdated},
+				</if>
+			 	<if test=" null != issuestatus">
+					#{issuestatus},
+				</if>
+				<if test=" null != dateissue and '' != dateissue ">
+					#{dateissue},
+				</if>
+		</trim>
+	</insert>
+	
+	<update id="update" parameterMap="tSellerSubsidy">
+		UPDATE t_seller_subsidy
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != sellerid">
+					sellerid = #{sellerid},
+				</if>
+				<if test=" null != sellername">
+					sellername = #{sellername},
+				</if>
+				<if test=" null != province ">
+					province = #{province},
+				</if>
+				<if test=" null != city">
+					city = #{city},
+				</if>
+				<if test=" null != area">
+					area = #{area},
+				</if>
+				<if test=" null != phoneid">
+					phoneid = #{phoneid},
+				</if>
+				<if test=" null != ordernum">
+					order_num = #{ordernum},
+				</if>
+				<if test=" null != subsidyamount ">
+					subsidy_amount = #{subsidyamount},
+				</if>
+				<if test=" null != creator">
+					creator = #{creator},
+				</if>
+				<if test=" null != datecreated">
+					date_created = #{datecreated},
+				</if>
+				<if test=" null != updator ">
+					updator = #{updator},
+				</if>
+				<if test=" null != dateupdated">
+					date_updated = #{dateupdated},
+				</if>
+				<if test=" null != issuestatus ">
+					issue_status = #{issuestatus},
+				</if>
+				<if test=" null != dateissue ">
+					date_issue = #{dateissue},
+				</if>
+			</trim>
+		</set>
+		<where>
+				id_subsidy = #{idsubsidy}
+		</where>
+	</update> 
+	
+	<!-- 可重用的Where 条件 -->
+	<sql id="whereSQL">
+		<if test=" null != sellerid">
+			AND sellerid = #{sellerid}
+		</if>
+		<if test=" null != sellername and '' != sellername">
+			AND sellername LIKE '%${sellername}%'
+		</if>
+		<if test=" null != province and '' != province">
+			AND province = #{province}
+		</if>
+		<if test=" null != city and '' != city">
+			AND city = #{city}
+		</if>
+		
+		<if test=" null != area and '' != area">
+			AND area = #{area}
+		</if>
+		<if test=" null != phoneid and '' != phoneid">
+			AND phoneid = #{phoneid}
+		</if>
+		<if test=" null != ordernum and '' != ordernum">
+			AND order_num = #{ordernum}
+		</if>
+		<if test=" null != subsidyamount and '' != subsidyamount">
+			AND subsidy_amount = #{subsidyamount}
+		</if>
+		<if test=" null != issuestatus">
+			AND issue_status = #{issuestatus}
+		</if>
+		<!-- <if test=" null != dateissue">
+			AND date_issue = #{dateissue}
+		</if>
+		<if test=" null != dateissue">
+			AND date_issue = #{dateissue}
+		</if> -->
+	</sql>
+	
+	<select id="getList" resultMap="tSellerSubsidyMap" parameterMap="tSellerSubsidy">
+	   SELECT * FROM t_seller_subsidy 
+		<where>
+			1=1
+	 		<include refid="whereSQL"></include>
+ 		</where>
+		ORDER BY id_subsidy DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="tSellerSubsidy">
+		SELECT COUNT(1) FROM t_seller_subsidy 
+		<where>
+			1=1
+ 			<include refid="whereSQL"></include>
+		</where>
+	</select>
+	
+	<select id="getMaxId" resultType="Integer">
+		SELECT Max(id_subsidy) AS VALUE FROM t_seller_subsidy
+	</select>
+
+	<select id="getObject" resultMap="tSellerSubsidyMap" parameterType="Long">
+		SELECT * FROM t_seller_subsidy WHERE id_subsidy = #{0}
+	</select>
+</mapper>

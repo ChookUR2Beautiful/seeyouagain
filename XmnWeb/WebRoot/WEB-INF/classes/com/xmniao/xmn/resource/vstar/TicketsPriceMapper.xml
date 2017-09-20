@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.vstar.dao.TicketsPriceDao">
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.vstar.entity.TicketsPrice">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="sid" jdbcType="INTEGER" property="sid" />
+    <result column="buy_num" jdbcType="INTEGER" property="buyNum" />
+    <result column="price" jdbcType="INTEGER" property="price" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="seat_name" jdbcType="VARCHAR" property="seatName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    t_vstar_tickets_price.id, 
+    t_vstar_tickets_price.sid, 
+    t_vstar_tickets_price.buy_num, 
+    t_vstar_tickets_price.price, 
+    t_vstar_tickets_price.status
+  </sql>
+  
+  <update id="updateStateByIds" >
+  	 update t_vstar_tickets_price set status = 0 
+  	 where sid in 
+  	 <foreach collection="list" item="item" open="(" close=")" separator=",">
+  	 	#{item}
+  	 </foreach>
+  </update>
+  
+  <select id="countRepetition" resultType="java.lang.Long">
+  	 select count(1) from t_vstar_tickets_price
+  	 where sid = #{sid}
+  	 and buy_num = #{buyNum}
+  </select>
+  
+   <select id="getByPriceGroup" resultMap="BaseResultMap">
+  	 select <include refid="Base_Column_List" />
+  	 from t_vstar_tickets_price
+  	 where sid = #{sid}
+  	 and buy_num = #{buyNum}
+  	 and status = 0
+  </select>
+  
+  <select id="getPricesBySeatsIds" resultMap="BaseResultMap">
+  	  select 
+    <include refid="Base_Column_List" />,t_vstar_tickets_seat.seat_name
+    from t_vstar_tickets_price
+    join t_vstar_tickets_seat on t_vstar_tickets_price.sid = t_vstar_tickets_seat.id
+    where sid in 
+    <foreach collection="list" item="item" open="(" close=")" separator=",">
+    	  #{item}
+    </foreach>
+    and t_vstar_tickets_price.status = 0
+  </select>
+  
+  <select id="getObject" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_vstar_tickets_price
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_vstar_tickets_price
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.vstar.entity.TicketsPrice" useGeneratedKeys="true" keyProperty="id">
+    insert into t_vstar_tickets_price (id, sid, buy_num, 
+      price, status)
+    values (#{id,jdbcType=INTEGER}, #{sid,jdbcType=INTEGER}, #{buyNum,jdbcType=INTEGER}, 
+      #{price,jdbcType=INTEGER}, #{status,jdbcType=TINYINT})
+  </insert>
+  <insert id="add" parameterType="com.xmniao.xmn.core.vstar.entity.TicketsPrice" useGeneratedKeys="true" keyProperty="id">
+    insert into t_vstar_tickets_price
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="sid != null">
+        sid,
+      </if>
+      <if test="buyNum != null">
+        buy_num,
+      </if>
+      <if test="price != null">
+        price,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="sid != null">
+        #{sid,jdbcType=INTEGER},
+      </if>
+      <if test="buyNum != null">
+        #{buyNum,jdbcType=INTEGER},
+      </if>
+      <if test="price != null">
+        #{price,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="update" parameterType="com.xmniao.xmn.core.vstar.entity.TicketsPrice">
+    update t_vstar_tickets_price
+    <set>
+      <if test="sid != null">
+        sid = #{sid,jdbcType=INTEGER},
+      </if>
+      <if test="buyNum != null">
+        buy_num = #{buyNum,jdbcType=INTEGER},
+      </if>
+      <if test="price != null">
+        price = #{price,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.vstar.entity.TicketsPrice">
+    update t_vstar_tickets_price
+    set sid = #{sid,jdbcType=INTEGER},
+      buy_num = #{buyNum,jdbcType=INTEGER},
+      price = #{price,jdbcType=INTEGER},
+      status = #{status,jdbcType=TINYINT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

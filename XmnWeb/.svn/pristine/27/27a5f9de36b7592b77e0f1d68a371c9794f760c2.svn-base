@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.vstar.dao.VideoDao">
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.vstar.entity.Video">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="image_url" jdbcType="VARCHAR" property="imageUrl" />
+    <result column="jump_url" jdbcType="VARCHAR" property="jumpUrl" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="province_id" jdbcType="INTEGER" property="provinceId" />
+    <result column="city_id" jdbcType="INTEGER" property="cityId" />
+    <result column="location" jdbcType="INTEGER" property="location" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="player_id" jdbcType="INTEGER" property="playerId" />
+    <result column="sellerid" jdbcType="INTEGER" property="sellerid" />
+    <result column="view_count" jdbcType="INTEGER" property="viewCount" />
+    <result column="live_date" jdbcType="DATE" property="liveDate" />
+    <result column="sellername" jdbcType="VARCHAR" property="sellername" />
+    <result column="palyer_name" jdbcType="VARCHAR" property="palyerName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    t_vstar_video.id, 
+    t_vstar_video.title, 
+    t_vstar_video.image_url, 
+    t_vstar_video.jump_url, 
+    t_vstar_video.state, 
+    t_vstar_video.sort, 
+    t_vstar_video.province_id, 
+    t_vstar_video.city_id, 
+    t_vstar_video.location, 
+    t_vstar_video.create_time, 
+    t_vstar_video.update_time, 
+    t_vstar_video.content, 
+    t_vstar_video.player_id, 
+    t_vstar_video.sellerid, 
+    t_vstar_video.view_count, 
+    t_vstar_video.live_date
+  </sql>
+  
+  <sql id="whereSQL">
+  	 and t_vstar_video.state = 1
+  </sql>
+  
+  <select id="getList" resultMap="BaseResultMap">
+  	 select 
+  	  <include refid="Base_Column_List" />,t_vstar_player_info.nname as palyer_name,t_seller.sellername
+    from t_vstar_video
+    left join t_vstar_player_info on t_vstar_player_info.id = t_vstar_video.player_id
+    left join t_seller on t_seller.sellerid = t_vstar_video.sellerid
+    where 1=1
+    <include refid="whereSQL"></include>
+  </select>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_vstar_video
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_vstar_video
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.vstar.entity.Video">
+    insert into t_vstar_video (id, title, image_url, 
+      jump_url, state, sort, 
+      province_id, city_id, location, 
+      create_time, update_time, content, 
+      player_id, sellerid, view_count, 
+      live_date)
+    values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{imageUrl,jdbcType=VARCHAR}, 
+      #{jumpUrl,jdbcType=VARCHAR}, #{state,jdbcType=INTEGER}, #{sort,jdbcType=INTEGER}, 
+      #{provinceId,jdbcType=INTEGER}, #{cityId,jdbcType=INTEGER}, #{location,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{content,jdbcType=VARCHAR}, 
+      #{playerId,jdbcType=INTEGER}, #{sellerid,jdbcType=INTEGER}, #{viewCount,jdbcType=INTEGER}, 
+      #{liveDate,jdbcType=DATE})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.vstar.entity.Video">
+    insert into t_vstar_video
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="imageUrl != null">
+        image_url,
+      </if>
+      <if test="jumpUrl != null">
+        jump_url,
+      </if>
+      <if test="state != null">
+        state,
+      </if>
+      <if test="sort != null">
+        sort,
+      </if>
+      <if test="provinceId != null">
+        province_id,
+      </if>
+      <if test="cityId != null">
+        city_id,
+      </if>
+      <if test="location != null">
+        location,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="playerId != null">
+        player_id,
+      </if>
+      <if test="sellerid != null">
+        sellerid,
+      </if>
+      <if test="viewCount != null">
+        view_count,
+      </if>
+      <if test="liveDate != null">
+        live_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="imageUrl != null">
+        #{imageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="jumpUrl != null">
+        #{jumpUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null">
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="provinceId != null">
+        #{provinceId,jdbcType=INTEGER},
+      </if>
+      <if test="cityId != null">
+        #{cityId,jdbcType=INTEGER},
+      </if>
+      <if test="location != null">
+        #{location,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="playerId != null">
+        #{playerId,jdbcType=INTEGER},
+      </if>
+      <if test="sellerid != null">
+        #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="viewCount != null">
+        #{viewCount,jdbcType=INTEGER},
+      </if>
+      <if test="liveDate != null">
+        #{liveDate,jdbcType=DATE},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.vstar.entity.Video">
+    update t_vstar_video
+    <set>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="imageUrl != null">
+        image_url = #{imageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="jumpUrl != null">
+        jump_url = #{jumpUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null">
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="provinceId != null">
+        province_id = #{provinceId,jdbcType=INTEGER},
+      </if>
+      <if test="cityId != null">
+        city_id = #{cityId,jdbcType=INTEGER},
+      </if>
+      <if test="location != null">
+        location = #{location,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="playerId != null">
+        player_id = #{playerId,jdbcType=INTEGER},
+      </if>
+      <if test="sellerid != null">
+        sellerid = #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="viewCount != null">
+        view_count = #{viewCount,jdbcType=INTEGER},
+      </if>
+      <if test="liveDate != null">
+        live_date = #{liveDate,jdbcType=DATE},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.vstar.entity.Video">
+    update t_vstar_video
+    set title = #{title,jdbcType=VARCHAR},
+      image_url = #{imageUrl,jdbcType=VARCHAR},
+      jump_url = #{jumpUrl,jdbcType=VARCHAR},
+      state = #{state,jdbcType=INTEGER},
+      sort = #{sort,jdbcType=INTEGER},
+      province_id = #{provinceId,jdbcType=INTEGER},
+      city_id = #{cityId,jdbcType=INTEGER},
+      location = #{location,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      content = #{content,jdbcType=VARCHAR},
+      player_id = #{playerId,jdbcType=INTEGER},
+      sellerid = #{sellerid,jdbcType=INTEGER},
+      view_count = #{viewCount,jdbcType=INTEGER},
+      live_date = #{liveDate,jdbcType=DATE}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

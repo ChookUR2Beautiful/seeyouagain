@@ -1,0 +1,150 @@
+/**
+ * 
+ */
+package com.xmniao.xmn.core.reward_dividends.service;
+
+import java.util.List;
+import javax.annotation.Resource;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.base.BaseService;
+import com.xmniao.xmn.core.base.Pageable;
+import com.xmniao.xmn.core.billmanagerment.dao.AllBillDao;
+import com.xmniao.xmn.core.live_anchor.dao.BLiveFansRankDao;
+import com.xmniao.xmn.core.live_anchor.dao.BLiverDao;
+import com.xmniao.xmn.core.live_anchor.dao.BVerAnchorRelationDao;
+import com.xmniao.xmn.core.live_anchor.service.TLiveAnchorService;
+import com.xmniao.xmn.core.reward_dividends.entity.TLiveGivedGiftVke;
+import com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy;
+import com.xmniao.xmn.core.xmermanagerment.dao.TSaasSoldOrderDao;
+import com.xmniao.xmn.core.xmnburs.entity.Burs;
+import com.xmniao.xmn.core.xmnburs.service.BursService;
+
+@Service
+public class VerProfitCountService extends BaseService<TLiveGivedGiftVke> {
+
+	@Autowired
+	private BLiveFansRankDao liveFansRankDao;
+	
+	@Autowired
+	private BursService bursService;
+	
+	@Autowired
+	private TLiveAnchorService liveAnchorService;
+	
+	@Autowired
+	private TSaasSoldOrderDao saasSoldOrderDao;
+	
+	@Autowired
+	private BVerAnchorRelationDao verAnchorRelationDao;
+	
+	@Autowired
+	private BLiverDao liverDao;
+	
+	
+	@Autowired
+	private AllBillDao allBillDao;
+	
+	/**
+	 * 注入扩展钱包服务
+	 */
+	@Resource(name = "walletExpansionServiceClient")
+	private ThriftClientProxy walletExpansionServiceClient;
+	
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected BaseDao getBaseDao() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	/**
+	 * 方法描述：充值订单查询商家 <br/>
+	 * 创建人： Administrator <br/>
+	 * 创建时间：2017年8月8日下午5:37:54 <br/>
+	 * @param liveGivedGiftVke
+	 * @return
+	 */
+	public Pageable<TLiveGivedGiftVke> getLiveGivedGiftVkeInfoList(TLiveGivedGiftVke liveGivedGiftVke) {
+		Pageable<TLiveGivedGiftVke> liveGivedGiftVkeInfoList = new Pageable<TLiveGivedGiftVke>(liveGivedGiftVke);
+		Long totalNum = (long) 0;
+		//通过电话号码/用户昵称查询
+		if (StringUtils.isNotBlank(liveGivedGiftVke.getVkeNname()) || StringUtils.isNotBlank(liveGivedGiftVke.getVkePhone())  ) {
+			Burs burs = new Burs();
+			if (StringUtils.isNotBlank(liveGivedGiftVke.getVkePhone()) ) {
+				String phone = liveGivedGiftVke.getVkePhone();
+				burs.setPhone(phone);
+			}
+			if (StringUtils.isNotBlank(liveGivedGiftVke.getVkeNname()) ) {
+				String nickname = liveGivedGiftVke.getVkeNname();
+				burs.setNname(nickname);
+			}		
+			List<Burs> bursList = bursService.getUrsList(burs);
+			if (bursList != null && bursList.size() > 0 ){
+				liveGivedGiftVke.setVkeUid(bursList.get(0).getUid());
+			}else{
+				liveGivedGiftVkeInfoList.setTotal(totalNum);
+			    return liveGivedGiftVkeInfoList;
+			}
+		}
+		
+		// 查询充值的订单(分页)
+		// 根据uid查询出V客信息
+		// 根据uid查询出对应的消费订单信息
+		List<TLiveGivedGiftVke>  liveGivedGiftVkeList = allBillDao.getVerProfitCountSellerList(liveGivedGiftVke);
+		
+		
+		
+		
+		
+		
+//		totalNum = allBillDao.countRecommendMember(liveGivedGiftVke);
+		liveGivedGiftVkeInfoList.setContent(liveGivedGiftVkeList);
+		liveGivedGiftVkeInfoList.setTotal(totalNum);
+		
+	    return liveGivedGiftVkeInfoList;
+	}
+	
+	
+	public Pageable<TLiveGivedGiftVke> getSellerProfitInfoList(TLiveGivedGiftVke liveGivedGiftVke) {
+		Pageable<TLiveGivedGiftVke> liveGivedGiftVkeInfoList = new Pageable<TLiveGivedGiftVke>(liveGivedGiftVke);
+		Long totalNum = (long) 0;
+		//通过电话号码/用户昵称查询
+		if (StringUtils.isNotBlank(liveGivedGiftVke.getVkeNname()) || StringUtils.isNotBlank(liveGivedGiftVke.getVkePhone())  ) {
+			Burs burs = new Burs();
+			if (StringUtils.isNotBlank(liveGivedGiftVke.getVkePhone()) ) {
+				String phone = liveGivedGiftVke.getVkePhone();
+				burs.setPhone(phone);
+			}
+			if (StringUtils.isNotBlank(liveGivedGiftVke.getVkeNname()) ) {
+				String nickname = liveGivedGiftVke.getVkeNname();
+				burs.setNname(nickname);
+			}		
+			List<Burs> bursList = bursService.getUrsList(burs);
+			if (bursList != null && bursList.size() > 0 ){
+				liveGivedGiftVke.setVkeUid(bursList.get(0).getUid());
+			}else{
+				liveGivedGiftVkeInfoList.setTotal(totalNum);
+			    return liveGivedGiftVkeInfoList;
+			}
+		}
+		
+		// 查询充值的订单(分页)
+
+		// 根据uid查询出V客信息
+
+		// 根据uid查询出对应的消费订单信息
+		
+
+//		totalNum = liveGivedGiftVkeDao.countRecommendMember(liveGivedGiftVke);
+//		liveGivedGiftVkeInfoList.setContent(liveGivedGiftVkeList);
+		liveGivedGiftVkeInfoList.setTotal(totalNum);
+		
+	    return liveGivedGiftVkeInfoList;
+	}
+
+}

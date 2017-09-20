@@ -1,0 +1,604 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<typeAliases>
+		
+		<!-- 商户（businessman） -->
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.TSeller" alias="Seller" />
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.TSellerIncomeFlow" alias="sellerIncomeFlow"/>
+		<!--mongo商户（businessman）  -->
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.MSeller" alias="MSeller" />
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.MSellerLandmark" alias="MSellerLandmark" />
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.MSellerPic" alias="MSellerPic" />
+		
+		
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.TSellerLandmark" alias="SellerLandmark" />
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.TAgioRecord" alias="AgioRecord" />
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.TSellerAgio" alias="SellerAgio" />
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.TSellerAccount" alias="SellerAccount" />
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.TSellerDetailed" alias="SellerDetailed" />
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.TSellerApply" alias="SellerApply" />
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.TSellerPicApply" alias="TSellerPicApply" />
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.TPicType" alias="PicType" />
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.TSellerPic" alias="SellerPic" />
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.TComment" alias="Comment" />
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.TCommentReply" alias="CommentReply" />
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.TCommentPic" alias="CommentPic" />
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.TOrderinvoice" alias="Orderinvoice" />
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.TLoginRecord" alias="LoginRecord" />
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.TSellerInternalInfo" alias="SellerInternalInfo" />
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.TbankApply" alias="TbankApply"/>	
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.AllianceAccount" alias="AllianceAccount" />
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.AllianceShop" alias="AllianceShop"/>
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.AllianceRelation" alias="AllianceRelation"/>
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.ExtensionSet" alias="SellerTextensionSet"/>
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.TSpreadConfig" alias="TSpreadConfig"/>
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.TSpread" alias="TSpread"/>
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.TSellerMarketing" alias="SellerMarketing"/>		
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.TFood" alias="Food"/>		
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.TFoodClass" alias="FoodClass"/>
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.TSellerTraderRef" alias="TSellerTraderRef"/>
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.TexpertComment" alias="TexpertComment"/>
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.TCommentLabel" alias="TCommentLabel"/>
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.TCardApply" alias="TCardApply"/>
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.SellerRedPackage" alias="sRedPackage"/>
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.ValueCard" alias="valueCard"/>
+		<typeAlias type="com.xmniao.xmn.core.businessman.entity.RechargeCardRecord" alias="rechargeCardRecord"/>
+		
+		<!-- 合作商管理（business_cooperation） -->
+		<typeAlias type="com.xmniao.xmn.core.business_cooperation.entity.TVideo" alias="Video" />
+		<typeAlias type="com.xmniao.xmn.core.business_cooperation.entity.TSellerAsk" alias="SellerAsk" />
+		<typeAlias type="com.xmniao.xmn.core.business_cooperation.entity.TSubject" alias="Subject" />
+		<typeAlias type="com.xmniao.xmn.core.business_cooperation.entity.TJoint" alias="Joint" />
+		<typeAlias type="com.xmniao.xmn.core.business_cooperation.entity.TStaff" alias="Staff" />
+		<typeAlias type="com.xmniao.xmn.core.business_cooperation.entity.TSubjectReply" alias="SubjectReply" />
+		<typeAlias type="com.xmniao.xmn.core.business_cooperation.entity.TJointLandmark" alias="jointLandmark"/>
+		<typeAlias type="com.xmniao.xmn.core.business_cooperation.entity.MJointLandmark" alias="mJointLandmark"/>
+		<typeAlias type="com.xmniao.xmn.core.business_cooperation.entity.TJointSaasLedger" alias="jointSaasLedger"/>
+		
+		<!-- 订单管理（bill managerment） -->
+		<typeAlias type="com.xmniao.xmn.core.billmanagerment.entity.Bill" alias="bill" />
+		<typeAlias type="com.xmniao.xmn.core.billmanagerment.entity.Refund" alias="refund" />
+		<typeAlias type="com.xmniao.xmn.core.billmanagerment.entity.BillRecord" alias="billRecord" />
+		<typeAlias type="com.xmniao.xmn.core.billmanagerment.entity.AdjustApply" alias="adjustApply" />
+		<typeAlias type="com.xmniao.xmn.core.billmanagerment.entity.BillBargain" alias="BillBargain" />
+		<typeAlias type="com.xmniao.xmn.core.billmanagerment.entity.CelebrityOrder" alias="CelebrityOrder" />
+		<!-- 会员管理 -->
+		<typeAlias type="com.xmniao.xmn.core.xmnpay.entity.Bwallet" alias="Bwallet" />
+		
+		<!-- 系统设置 （system_settings）-->
+		<typeAlias type="com.xmniao.xmn.core.system_settings.entity.TUser" alias="User" />
+		<typeAlias type="com.xmniao.xmn.core.system_settings.entity.TLog" alias="Log" />
+		<typeAlias type="com.xmniao.xmn.core.system_settings.entity.TRole" alias="Role" />
+		<typeAlias type="com.xmniao.xmn.core.system_settings.entity.TRoleAuthority" alias="RoleAuthority" />
+		<typeAlias type="com.xmniao.xmn.core.system_settings.entity.TAuthority" alias="Authority" />
+		<typeAlias type="com.xmniao.xmn.core.system_settings.entity.Category" alias="Category" />
+		<typeAlias type="com.xmniao.xmn.core.system_settings.entity.TRoleArea" alias="RoleArea" />
+		<typeAlias type="com.xmniao.xmn.core.system_settings.entity.TAuthorityArea" alias="AuthorityArea" />
+		
+		<!-- 公共模块（common） -->
+		<typeAlias type="com.xmniao.xmn.core.common.entity.TArea" alias="Area" />
+		<typeAlias type="com.xmniao.xmn.core.common.entity.TBusiness" alias="Business" />
+		<typeAlias type="com.xmniao.xmn.core.common.entity.TAppPush" alias="AppPush" />
+		<typeAlias type="com.xmniao.xmn.core.common.entity.TAdvertising" alias="Advertising" />
+		<typeAlias type="com.xmniao.xmn.core.common.entity.TSystemInfo" alias="SystemInfo" />
+		<typeAlias type="com.xmniao.xmn.core.common.entity.TSystemMsg" alias="SystemMsg" />
+		<typeAlias type="com.xmniao.xmn.core.common.entity.TAppVersion" alias="AppVersion" />
+		<typeAlias type="com.xmniao.xmn.core.common.entity.TTrade" alias="Trade" />
+		<typeAlias type="com.xmniao.xmn.core.common.entity.TBank" alias="Tbank" />
+		<!-- 商务区域管理 -->
+		<typeAlias type="com.xmniao.xmn.core.business_area.entity.BusinessArea" alias="BusinessArea" />
+		<typeAlias type="com.xmniao.xmn.core.business_area.entity.TstaffRanking" alias="TstaffRanking" />
+		
+		<!-- 用户客户端端后台-->
+		<typeAlias type="com.xmniao.xmn.core.user_terminal.entity.TPost" alias="TPost" />
+		<typeAlias type="com.xmniao.xmn.core.user_terminal.entity.TPostReport" alias="TPostReport" />
+		<typeAlias type="com.xmniao.xmn.core.user_terminal.entity.TPostComment" alias="TPostComment" />
+		<typeAlias type="com.xmniao.xmn.core.user_terminal.entity.TPostPic" alias="TPostPic" />
+		<typeAlias type="com.xmniao.xmn.core.user_terminal.entity.TTopic" alias="TTopic" />
+		<typeAlias type="com.xmniao.xmn.core.user_terminal.entity.TTopicComment" alias="TTopicComment" />
+		<typeAlias type="com.xmniao.xmn.core.user_terminal.entity.TTopicImg" alias="TTopicImg" />
+		<typeAlias type="com.xmniao.xmn.core.user_terminal.entity.TBrandSeller" alias="BrandSeller"/>
+		<typeAlias type="com.xmniao.xmn.core.user_terminal.entity.TShare" alias="TShare"/>
+		<typeAlias type="com.xmniao.xmn.core.user_terminal.entity.TShareRange" alias="TShareRange"/>
+		<typeAlias type="com.xmniao.xmn.core.user_terminal.entity.TSellerTrader" alias="TSellerTrader"/>
+		<typeAlias type="com.xmniao.xmn.core.user_terminal.entity.TUserProposal" alias="TUserProposal"/>
+		<typeAlias type="com.xmniao.xmn.core.user_terminal.entity.TSellerNotice" alias="TSellerNotice"/>
+		<typeAlias type="com.xmniao.xmn.core.user_terminal.entity.TRegisterGift" alias="TRegisterGift"/>
+		<typeAlias type="com.xmniao.xmn.core.user_terminal.entity.THelpInfo" alias="HelpInfo"/>
+		<typeAlias type="com.xmniao.xmn.core.user_terminal.entity.THelpItem" alias="HelpItem"/>
+		
+		<!-- 商户统计 -->
+		 <typeAlias type="com.xmniao.xmn.core.business_statistics.entity.BusinessAction" alias="BusinessAction" />
+		 <typeAlias type="com.xmniao.xmn.core.business_statistics.entity.TransactionFlow" alias="TransactionFlow" />
+		 <typeAlias type="com.xmniao.xmn.core.business_statistics.entity.TApplicationOverview" alias="ApplicationOverview" />
+		 
+		 <!-- 用户统计 -->
+		 <typeAlias type="com.xmniao.xmn.core.userData_statistics.entity.TUserTransactionFlow" alias="TUserTransactionFlow" />
+		 <typeAlias type="com.xmniao.xmn.core.userData_statistics.entity.TUserApplicationOverview" alias="TUserApplicationOverview" />
+		 <typeAlias type="com.xmniao.xmn.core.userData_statistics.entity.TMerberAction" alias="TMerberAction" />
+		 
+		 <!-- 营销管理 -->
+		 <typeAlias type="com.xmniao.xmn.core.marketingmanagement.entity.TActivity" alias="TActivity" />
+		 <typeAlias type="com.xmniao.xmn.core.marketingmanagement.entity.TGiveMoneyInfo" alias="TGiveMoneyInfo" />
+		 <typeAlias type="com.xmniao.xmn.core.marketingmanagement.entity.TPhoneBill" alias="TPhoneBill" />
+		 <typeAlias type="com.xmniao.xmn.core.marketingmanagement.entity.TActivityPrize" alias="TActivityPrize" />
+		 <typeAlias type="com.xmniao.xmn.core.marketingmanagement.entity.TActivityRule" alias="TActivityRule" />
+		 <typeAlias type="com.xmniao.xmn.core.marketingmanagement.entity.TIntegralRule" alias="TIntegralRule" />
+		 <typeAlias type="com.xmniao.xmn.core.marketingmanagement.entity.ExtensionSet" alias="ExtensionSet" />
+		 <typeAlias type="com.xmniao.xmn.core.marketingmanagement.entity.HotWords" alias="HotWords" />
+		 <typeAlias type="com.xmniao.xmn.core.marketingmanagement.entity.BargainProduct" alias="BargainProduct" />
+		 <typeAlias type="com.xmniao.xmn.core.marketingmanagement.entity.TBargainPrice" alias="TBargainPrice" />
+		 <typeAlias type="com.xmniao.xmn.core.marketingmanagement.entity.TBillBargain" alias="TBillBargain" />
+		 
+		 <typeAlias type="com.xmniao.xmn.core.marketingmanagement.entity.TMaterial" alias="TMaterial" />
+		 <typeAlias type="com.xmniao.xmn.core.marketingmanagement.entity.TMaterialOrder" alias="TMaterialOrder" />
+		 <typeAlias type="com.xmniao.xmn.core.marketingmanagement.entity.TMaterialOrderItems" alias="TMaterialOrderItems" />
+		  
+		 <!-- 客服管理 -->
+		 <typeAlias type="com.xmniao.xmn.core.service_management.entity.Order" alias="Order" />
+		 <typeAlias type="com.xmniao.xmn.core.service_management.entity.PhoneRecord" alias="PhoneRecord" />
+		 
+		 <!-- 优惠券管理 -->
+		 <typeAlias type="com.xmniao.xmn.core.coupon.entity.TCoupon" alias="Coupon" />
+		 <typeAlias type="com.xmniao.xmn.core.coupon.entity.TCouponCity" alias="CouponCity" />
+		 <typeAlias type="com.xmniao.xmn.core.coupon.entity.TCouponDetail" alias="CouponDetail" />
+		 <typeAlias type="com.xmniao.xmn.core.coupon.entity.TCouponSeller" alias="CouponSeller" />
+		 <typeAlias type="com.xmniao.xmn.core.coupon.entity.TCouponValidity" alias="CouponValidity" />
+		 <typeAlias type="com.xmniao.xmn.core.coupon.entity.TCouponStatistics" alias="CouponStatistics" />
+		 <typeAlias type="com.xmniao.xmn.core.coupon.entity.TCouponIssue" alias="CouponIssue" />
+		 <typeAlias type="com.xmniao.xmn.core.coupon.entity.TCouponIssueRef" alias="CouponIssueRef" />
+		 <!-- 积分商城管理 -->
+		 <typeAlias type="com.xmniao.xmn.core.fresh.entity.TBillFresh" alias="TBillFresh" />
+		 <typeAlias type="com.xmniao.xmn.core.fresh.entity.TBillFreshSub" alias="TBillFreshSub" />
+		 <typeAlias type="com.xmniao.xmn.core.fresh.entity.TProductBill" alias="TProductBill" />
+		 <typeAlias type="com.xmniao.xmn.core.fresh.entity.FreshBrand" alias="FreshBrand" />
+		 <typeAlias type="com.xmniao.xmn.core.fresh.entity.ActivityOrder" alias="ActivityOrder" />
+		 <!-- 启动图管理 -->
+		 <typeAlias type="com.xmniao.xmn.core.startimage.entity.StartImage" alias="StartImage" />
+		 
+		 <!-- 数据字典管理 -->
+		 <typeAlias type="com.xmniao.xmn.core.dataDictionary.entity.TBankList" alias="BankList" />
+		 <typeAlias type="com.xmniao.xmn.core.dataDictionary.entity.BRecruitTag" alias="BRecruitTag" />
+		 
+		 <!-- 用户端管理==>分类导航管理 -->
+		 <typeAlias type="com.xmniao.xmn.core.navigate.entity.CategoryNavigate" alias="CategoryNavigate" />
+		 <typeAlias type="com.xmniao.xmn.core.user_terminal.entity.TBanner" alias="TBanner"/>
+		 <typeAlias type="com.xmniao.xmn.core.user_terminal.entity.AbnormalSeller" alias="AbnormalSeller"/>
+		 
+		 <!-- 寻蜜客成员管理 -->
+		 <typeAlias type="com.xmniao.xmn.core.xmermanagerment.entity.BXmer" alias="BXmer"/>
+		 <typeAlias type="com.xmniao.xmn.core.xmermanagerment.entity.XmerSeller" alias="XmerSeller"/>
+		 <!-- 钱包记录 -->
+		 <typeAlias type="com.xmniao.xmn.core.xmermanagerment.entity.BWalletRecord" alias="BWalletRecord"/>
+		 <!-- 用户简历管理 -->
+		 <typeAlias type="com.xmniao.xmn.core.jobmanage.entity.UserCV" alias="UserCV"/>
+		 <!-- 岗位管理 -->
+		 <typeAlias type="com.xmniao.xmn.core.jobmanage.entity.RecruitStation" alias="recruitStation"/>
+		 <typeAlias type="com.xmniao.xmn.core.jobmanage.entity.RecruitInfo" alias="recruitInfo"/>
+		 <typeAlias type="com.xmniao.xmn.core.jobmanage.entity.RecruitTag" alias="recruitTag"/>
+		 <typeAlias type="com.xmniao.xmn.core.jobmanage.entity.TagEntity" alias="tagEntity"/>
+		 
+		  <!-- 雏鸟云设计 -->
+		  <typeAlias type="com.xmniao.xmn.core.cloud_design.entity.Supplier" alias="supplier"/>
+		  <typeAlias type="com.xmniao.xmn.core.cloud_design.entity.PostTemplate" alias="postTemplate"/>
+		  <typeAlias type="com.xmniao.xmn.core.cloud_design.entity.MaterialOrder" alias="materialOrder"/>
+		  <typeAlias type="com.xmniao.xmn.core.cloud_design.entity.PostCondition" alias="postCondition"/>
+		  <typeAlias type="com.xmniao.xmn.core.cloud_design.entity.AfterSale" alias="afterSale"/>
+		  
+		   <!-- 专题管理 -->
+		  <typeAlias type="com.xmniao.xmn.core.businessman.entity.TSpecialTopic" alias="SpecialTopic" />
+		  <typeAlias type="com.xmniao.xmn.core.businessman.entity.TSpecialTopicPic" alias="SpecialTopicPic" />
+		  <typeAlias type="com.xmniao.xmn.core.businessman.entity.TSpecialTopicRelation" alias="SpecialTopicRelation" />
+		  
+		  <!-- 套餐管理 -->
+		  <typeAlias type="com.xmniao.xmn.core.live_anchor.entity.TSellerPackage" alias="SellerPackage" />
+		  <typeAlias type="com.xmniao.xmn.core.live_anchor.entity.TSellerPackagePic" alias="SellerPackagePic" />
+		  <typeAlias type="com.xmniao.xmn.core.live_anchor.entity.TSellerPackageIssueRef" alias="SellerPackageIssueRef" />
+		  
+		  <!-- 悬浮广告管理 -->
+		  <typeAlias type="com.xmniao.xmn.core.live_anchor.entity.TFloatAdvert" alias="FloatAdvert" />
+		  <typeAlias type="com.xmniao.xmn.core.billmanagerment.entity.PackageOrder" alias="PackageOrder" />
+		  
+		  <!-- 商品标签管理 -->
+		  <typeAlias type="com.xmniao.xmn.core.fresh.entity.TFreshLabel" alias="FreshLabel" />
+		  
+		  <!-- 主播等级管理 -->
+		  <typeAlias type="com.xmniao.xmn.core.live_anchor.entity.TLiveLevel" alias="LiveLevel" />
+		  
+		  <!-- 兑换专享卡记录 -->
+		  <typeAlias type="com.xmniao.xmn.core.businessman.entity.TDebitcardOrder" alias="DebitcardOrder" />
+		  
+		  <!-- 好看推荐 -->
+		  <typeAlias type="com.xmniao.xmn.core.live_anchor.entity.TLiveRecommendRecord" alias="LiveLevel" />
+		  
+		  <!-- 主播招募管理 -->
+		  <typeAlias type="com.xmniao.xmn.core.live_anchor.entity.BVerAnchorRelation" alias="VerAnchorRelation" />
+		  
+		  <!-- 直播首页管理 -->
+		  <typeAlias type="com.xmniao.xmn.core.live_anchor.entity.TLiveDelicious" alias="LiveDelicious" />
+		  <typeAlias type="com.xmniao.xmn.core.live_anchor.entity.TLiveEntertainment" alias="LiveEntertainment" />
+		  
+	      <!-- 直播悬浮广告管理 -->
+		  <typeAlias type="com.xmniao.xmn.core.live_anchor.entity.TLiveFloatAdvertise" alias="LiveFloatAdvertise" />	
+		  <typeAlias type="com.xmniao.xmn.core.live_anchor.entity.TLiveFloatAdvertisePosition" alias="LiveFloatAdvertise" />	
+		  
+		  <!-- V客充值奖励 -->
+		  <typeAlias type="com.xmniao.xmn.core.reward_dividends.entity.TLivePrivilege" alias="LivePrivilege" />	
+		  <typeAlias type="com.xmniao.xmn.core.reward_dividends.entity.TVerExcitationDetail" alias="VerExcitationDetail" />	
+		  <typeAlias type="com.xmniao.xmn.core.reward_dividends.entity.TVerExcitationProject" alias="VerExcitationProject" />			    
+		  <typeAlias type="com.xmniao.xmn.core.reward_dividends.entity.TVerExcitationReceive" alias="VerExcitationReceive" />	
+
+		  <!-- 黄金庄园管理 -->
+		  <typeAlias type="com.xmniao.xmn.core.manor.entity.TManorInfo" alias="ManorInfo" />	
+		  <typeAlias type="com.xmniao.xmn.core.manor.entity.TManorFlowerRelation" alias="ManorFlowerRelation" />	
+		  <typeAlias type="com.xmniao.xmn.core.manor.entity.TManorSunshineManage" alias="ManorSunshineManage" />		
+		  <typeAlias type="com.xmniao.xmn.core.manor.entity.TManorHoneyManage" alias="ManorHoneyManage" />	
+		  <typeAlias type="com.xmniao.xmn.core.manor.entity.TManorSunshineCoupon" alias="ManorSunshineCoupon" />		
+		  <typeAlias type="com.xmniao.xmn.core.manor.entity.TManorLevelEarningRecord" alias="ManorLevelEarningRecord" />		  	    
+	</typeAliases>
+
+	<mappers>
+		<!-- 商户（businessman） -->
+		<mapper resource="com/xmniao/xmn/resource/businessman/SellerMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/businessman/SellerLandmarkMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/businessman/AgioRecordMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/businessman/SellerAgioMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/businessman/SellerAccountMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/businessman/SellerDetailedMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/businessman/SellerApplyMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/businessman/PicTypeMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/businessman/SellerPicMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/businessman/CommentMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/businessman/CommentReplyMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/businessman/CommentPicMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/businessman/OrderinvoiceMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/businessman/LoginRecordMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/businessman/SellerInternalInfoMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/businessman/BankApplyMapper.xml"/>
+		<mapper resource="com/xmniao/xmn/resource/businessman/SellerMarketingMapper.xml"/>
+		<mapper resource="com/xmniao/xmn/resource/businessman/AllianceAccountMapper.xml"/> 
+		<mapper resource="com/xmniao/xmn/resource/businessman/AllianceShopMapper.xml"/> 
+        <mapper resource="com/xmniao/xmn/resource/businessman/ExtensionSetMap.xml"/>
+         <mapper resource="com/xmniao/xmn/resource/businessman/SpreadMap.xml"/>
+         <mapper resource="com/xmniao/xmn/resource/businessman/WaiterConfigMap.xml"/>
+         <mapper resource="com/xmniao/xmn/resource/businessman/FoodMapper.xml"/>
+         <mapper resource="com/xmniao/xmn/resource/businessman/ExpertCommentMap.xml"/>
+         <mapper resource="com/xmniao/xmn/resource/businessman/SellerLabelMap.xml"/>
+         <mapper resource="com/xmniao/xmn/resource/businessman/SellerIncomeFlowMapper.xml"/>
+         <mapper resource="com/xmniao/xmn/resource/businessman/SellerRedPackageMapper.xml"/>
+         <mapper resource="com/xmniao/xmn/resource/businessman/FullReductionMapper.xml"/>
+         <mapper resource="com/xmniao/xmn/resource/businessman/SellerCouponMapper.xml"/>
+         <mapper resource="com/xmniao/xmn/resource/businessman/SellerActivityMapper.xml"/>
+         <mapper resource="com/xmniao/xmn/resource/businessman/ValueCardMapper.xml"/>
+         <mapper resource="com/xmniao/xmn/resource/businessman/RecommendSpecialMapper.xml"/>
+         <mapper resource="com/xmniao/xmn/resource/businessman/RecommendSellerPackageMapper.xml"/>
+         <mapper resource="com/xmniao/xmn/resource/businessman/VipValueCardMapper.xml"/>
+         <mapper resource="com/xmniao/xmn/resource/businessman/RechargeCardRecordMapper.xml"/>
+         <mapper resource="com/xmniao/xmn/resource/businessman/ClassifyMapper.xml"/>
+         <mapper resource="com/xmniao/xmn/resource/businessman/ClassifyTagMapper.xml"/>
+         <mapper resource="com/xmniao/xmn/resource/businessman/UnsignedSellerMapper.xml"/>
+         <mapper resource="com/xmniao/xmn/resource/businessman/ExperienceCommentMapper.xml"/>
+         <mapper resource="com/xmniao/xmn/resource/businessman/CatehomeActivityMapper.xml"/>
+         <mapper resource="com/xmniao/xmn/resource/businessman/SellerTopicMapper.xml"/>
+         <mapper resource="com/xmniao/xmn/resource/businessman/CatehomeCommentMapper.xml"/>
+         <mapper resource="com/xmniao/xmn/resource/businessman/CatehomeMustBuyMapper.xml"/>
+         <mapper resource="com/xmniao/xmn/resource/businessman/CommentMediaMapper.xml"/>
+         <!-- 商户会员卡 -->
+		 <mapper resource="com/xmniao/xmn/resource/businessman/VipCardMapper.xml"/>
+		
+		<!-- 合作商管理（business_cooperation） -->
+		<mapper resource="com/xmniao/xmn/resource/business_cooperation/VideoMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/business_cooperation/SellerAskMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/business_cooperation/SubjectMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/business_cooperation/JointMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/business_cooperation/StaffMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/business_cooperation/SubjectReplyMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/business_cooperation/SalesmanManagementMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/business_cooperation/JointLandmarkMapper.xml"/>
+		<mapper resource="com/xmniao/xmn/resource/business_cooperation/JointSaasLedgerMapper.xml"/>
+		
+		<!-- 订单管理（bill managerment） -->
+		<mapper resource="com/xmniao/xmn/resource/billmanagerment/AllBillMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/billmanagerment/AllBillBargainMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/billmanagerment/RefundBillMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/billmanagerment/RefundBillHistoryMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/billmanagerment/AdjustmentBillMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/billmanagerment/CelebrityOrderMapper.xml" />
+		
+		<!-- 系统设置 （system_settings）-->
+		<mapper resource="com/xmniao/xmn/resource/system_settings/UserMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/system_settings/LogMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/system_settings/RoleMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/system_settings/RoleAuthorityMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/system_settings/AuthorityMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/system_settings/CategoryMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/system_settings/RoleAreaMapper.xml" />
+		
+		<!-- 公共模块（common） -->
+		<mapper resource="com/xmniao/xmn/resource/common/AreaMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/common/BusinessMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/common/AppPushMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/common/AdvertisingMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/common/SystemInfoMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/common/SystemMsgMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/common/AppVersionMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/common/TradeMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/common/TBankMapper.xml" />
+		
+		<!-- 商务区域管理 -->
+		<mapper resource="com/xmniao/xmn/resource/business_area/BusinessAreaMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/business_area/TstaffRankingMapper.xml" />
+		
+		<!-- 用户客户端端后台-->
+		<mapper resource="com/xmniao/xmn/resource/user_terminal/TPostMapper.xml" />	
+		<mapper resource="com/xmniao/xmn/resource/user_terminal/PostReportMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/user_terminal/postCommentMapper.xml" />	
+		<mapper resource="com/xmniao/xmn/resource/user_terminal/postPicMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/user_terminal/TTopicMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/user_terminal/TTopicCommentMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/user_terminal/TTopicImgMapper.xml" />
+		<mapper resource="com/xmniao/xmn/resource/user_terminal/BrandSellerMapper.xml"/>
+		<mapper resource="com/xmniao/xmn/resource/user_terminal/TShareMapper.xml"/>
+		<mapper resource="com/xmniao/xmn/resource/user_terminal/SellerTraderMapper.xml"/>
+		<mapper resource="com/xmniao/xmn/resource/user_terminal/TSellerNoticeMapper.xml"/>
+		<mapper resource="com/xmniao/xmn/resource/user_terminal/TUserProposalMapper.xml"/>
+		<mapper resource="com/xmniao/xmn/resource/user_terminal/AbnormalSellerMapper.xml"/>
+		<mapper resource="com/xmniao/xmn/resource/user_terminal/RegisterGiftMapper.xml"/>
+		<mapper resource="com/xmniao/xmn/resource/user_terminal/HelpInfoMapper.xml"/>
+		<mapper resource="com/xmniao/xmn/resource/user_terminal/HelpItemMapper.xml"/>
+
+		 <!-- 商户统计 -->
+		 <mapper resource="com/xmniao/xmn/resource/business_statistics/BusinessActionMapper.xml" />
+		 <mapper resource="com/xmniao/xmn/resource/business_statistics/TransactionFlowMapper.xml" />   
+		 <mapper resource="com/xmniao/xmn/resource/business_statistics/ApplicationOverviewMapper.xml" /> 
+		 <mapper resource="com/xmniao/xmn/resource/business_statistics/TSaasTagCategoryMapper.xml" /> 
+		 <mapper resource="com/xmniao/xmn/resource/business_statistics/TSaasTagMapper.xml" /> 
+		 <mapper resource="com/xmniao/xmn/resource/business_statistics/TCelebrityMapper.xml" /> 
+		 <mapper resource="com/xmniao/xmn/resource/business_statistics/TCelebrityAriticleMapper.xml" /> 
+		 <mapper resource="com/xmniao/xmn/resource/business_statistics/TCelebrityAriticleCarouselMapper.xml" /> 
+		 
+		 <mapper resource="com/xmniao/xmn/resource/business_statistics/TMicrographModuleMapper.xml" /> 
+		 <mapper resource="com/xmniao/xmn/resource/business_statistics/TMicrographPageMapper.xml" /> 
+		 <mapper resource="com/xmniao/xmn/resource/business_statistics/TMicrographTemplateMapper.xml" /> 
+		 <mapper resource="com/xmniao/xmn/resource/business_statistics/TMicrographTemplateTagMapper.xml" /> 
+		 
+		 
+		 
+		 <!-- 用户统计 -->
+		 <mapper resource="com/xmniao/xmn/resource/userData_statistics/UserTransactionFlowMapper.xml" />
+		 <mapper resource="com/xmniao/xmn/resource/userData_statistics/UserApplicationOverviewMapper.xml" />
+		 <mapper resource="com/xmniao/xmn/resource/userData_statistics/MerberActionMapper.xml" />
+		 
+		 <!-- 营销管理 -->
+		 <mapper resource="com/xmniao/xmn/resource/marketingmanagement/TActivityMapper.xml" />
+		 <mapper resource="com/xmniao/xmn/resource/marketingmanagement/TActivityRuleMapper.xml" />
+		 <mapper resource="com/xmniao/xmn/resource/marketingmanagement/PhoneBillMapper.xml" />
+		 <mapper resource="com/xmniao/xmn/resource/marketingmanagement/TActivityPrizeMapper.xml" />
+		 <mapper resource="com/xmniao/xmn/resource/marketingmanagement/TActivityRuleMapper.xml" />
+		 <mapper resource="com/xmniao/xmn/resource/marketingmanagement/ExtensionSetMapper.xml" />
+		 <mapper resource="com/xmniao/xmn/resource/marketingmanagement/HotWordsMapper.xml" />
+		 <mapper resource="com/xmniao/xmn/resource/marketingmanagement/BargainProductMapper.xml" />
+		 <mapper resource="com/xmniao/xmn/resource/marketingmanagement/BillBargainMapper.xml" />
+		 <mapper resource="com/xmniao/xmn/resource/marketingmanagement/TActivityApplyMapper.xml" />
+		 
+		 <mapper resource="com/xmniao/xmn/resource/marketingmanagement/MaterialMapper.xml" />
+		 <mapper resource="com/xmniao/xmn/resource/marketingmanagement/MaterialOrderMapper.xml" />
+		 
+		 
+		 
+		 <!-- 客服管理 -->
+		 <mapper resource="com/xmniao/xmn/resource/service_management/PhoneRecordMapper.xml" />
+		 
+		 <!-- 优惠券管理 -->
+		 <mapper resource="com/xmniao/xmn/resource/coupon/CouponMapper.xml" />
+		 <mapper resource="com/xmniao/xmn/resource/coupon/CouponCityMapper.xml" />
+		 <mapper resource="com/xmniao/xmn/resource/coupon/CouponDetailMapper.xml" />
+		 <mapper resource="com/xmniao/xmn/resource/coupon/CouponSellerMapper.xml" />
+		 <mapper resource="com/xmniao/xmn/resource/coupon/CouponValidityMapper.xml" />
+		 <mapper resource="com/xmniao/xmn/resource/coupon/CouponStatisticsMapper.xml" />
+		 <mapper resource="com/xmniao/xmn/resource/coupon/CouponIssueMapper.xml" />
+		 <mapper resource="com/xmniao/xmn/resource/coupon/CouponIssueRefMapper.xml" />
+		 
+		 <!-- 启动图管理 -->
+		 <mapper resource="com/xmniao/xmn/resource/startimage/StartImageMapper.xml"/>
+		 
+		 <!-- 数据字典管理 -->
+		 <mapper resource="com/xmniao/xmn/resource/dataDictionary/BankListMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/dataDictionary/BRecruitTagMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/dataDictionary/TSystemAnnouncementMapper.xml"/>
+		 
+		 <!-- 用户端管理==>分类导航管理 -->
+		 <mapper resource="com/xmniao/xmn/resource/nagivate/NagivateMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/user_terminal/BannerMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/fresh/PostageTemplateMapper.xml"/>
+		 <!-- 积分超市管理 -->
+		 <mapper resource="com/xmniao/xmn/resource/fresh/BillFreshMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/fresh/BillFreshSubMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/fresh/FreshManageMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/fresh/SupplierMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/fresh/FreshTypeMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/fresh/ProductFailingMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/fresh/SaleGroupMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/fresh/SalePropertyMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/fresh/SalePropertyValueMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/fresh/HotSaleManageMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/fresh/FreshBrandMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/fresh/FreshActivityCommonMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/fresh/ActivityProductMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/fresh/ActivityGroupMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/fresh/FreshImageMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/fresh/ModuleMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/fresh/HotBrandMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/fresh/ActivityGroup1Mapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/fresh/FreshWordMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/fresh/KillMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/fresh/IndianaMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/fresh/IndianaDduonumMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/fresh/IndianaBoutMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/fresh/BillActivityMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/fresh/IndianaRobotMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/fresh/ActivityOrderMapper.xml"/>
+ 		 <mapper resource="com/xmniao/xmn/resource/fresh/TFreshActivityAuctionMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/fresh/TFreshActivityAuctionBiddingMapper.xml"/>
+		 <!-- 业务序列号 -->
+		 <mapper resource="com/xmniao/xmn/resource/common/TsequenceMapper.xml"/>
+		 
+		 <!-- 用户表 -->
+		 <mapper resource="com/xmniao/xmn/resource/xmnburs/BursMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/xmnburs/BursInfoMapper.xml"/>
+		 
+		 <!-- 支付表 -->
+		 <mapper resource="com/xmniao/xmn/resource/xmnpay/WalletMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/xmnpay/LiveWalletMapper.xml"/>
+		 
+		 <!-- 寻蜜客成员管理 -->
+		 <mapper resource="com/xmniao/xmn/resource/xmermanagerment/XmerMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/xmermanagerment/TSaasOrderMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/xmermanagerment/TSaasSoldOrderMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/xmermanagerment/BXmerWalletMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/xmermanagerment/BXmerWalletRecordMapper.xml"/>
+		 <!-- 钱包记录 -->
+		 <mapper resource="com/xmniao/xmn/resource/xmermanagerment/BWalletRecordMapper.xml"/>
+		 
+		 <!-- 招聘频道 -->
+		 <mapper resource="com/xmniao/xmn/resource/jobmanage/recruitStationMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/jobmanage/recruitInfoMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/jobmanage/recruitTagMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/jobmanage/tagEntityMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/jobmanage/UserCVMapper.xml"/>
+		 
+		 <!-- 直播频道 -->
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/BLiverMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TLiveRecordMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TLiveGiftMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/BLiveAnchorImageMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TLiveRobotMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TLiveRobotSetMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TLiveGiftBagMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TLiveRechargeComboMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TLivePayOrderMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/BLiveAnchorStartImageMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TLiveBroadcastMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TLiveCouponMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TFansCouponIssueRefMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TFansCouponAnchorRefMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TCouponOrderMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TLivePublicMessageMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TLiveRecordBannerMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TLiveAnchorVideoMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/BLiveFansRankMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TLiveShareMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TLiveReferrerCensusMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TLiveGivedGiftMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TLiveLedgerRecordMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TLiveRechargeAndRedPacketMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TLiveRecordAddBatchMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TLiveRecordTagConfMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TLiveGiftDetailMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TLiveSalaryMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/BursEarningsRankMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TLiveSalaryFailMapper.xml"/>
+		 
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TExperienceofficerActivityMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TExperienceofficerConfigMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TExperienceofficerOrderMapper.xml"/>
+		 
+		 
+		 <!-- 打赏分红 -->
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/BRankRedPacketDetailMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/BLiveFansRankDetailMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/GroupLevelMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/reward_divideds/BursEarningsRelationMapper.xml"/>
+		  
+		  
+		 <!-- 雏鸟云设计 -->
+		 <mapper resource="com/xmniao/xmn/resource/cloud_design/DMaterialTagMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/cloud_design/DMaterialCategoryAttrMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/cloud_design/DMaterialCategoryAttrValMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/cloud_design/SupplierManageMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/cloud_design/PostManageMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/cloud_design/DMaterialCategoryMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/cloud_design/DMaterialCategoryAttrRelationMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/cloud_design/DMaterialCategoryTagRelationMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/cloud_design/DMaterialMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/cloud_design/OrderManageMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/cloud_design/DMaterialAttrMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/cloud_design/DMaterialAttrValMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/cloud_design/DMaterialAttrGroupMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/cloud_design/DMaterialCarouselMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/cloud_design/DMaterialCarouselSourceMapper.xml"/>
+		 
+		 
+		 <!-- 专题管理 -->
+		 <mapper resource="com/xmniao/xmn/resource/businessman/SpecialTopicMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/businessman/SpecialTopicPicMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/businessman/SpecialTopicRelationMapper.xml"/>
+		 <!-- 专题管理 -->
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TSellerPackageMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TSellerPackagePicMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TSellerPackageIssueRefMapper.xml"/>
+
+		 <!-- 悬浮广告管理-->
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TFloatAdvertMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/billmanagerment/PackageOrderMapper.xml"/>
+		 
+		 <!-- 商品标签管理 -->
+		 <mapper resource="com/xmniao/xmn/resource/fresh/TFreshLabelMapper.xml"/>
+		 
+		 <!-- 主播等级管理 -->
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TLiveLevelMapper.xml"/>
+		 
+		 <!-- 兑换专享卡记录 -->
+		 <mapper resource="com/xmniao/xmn/resource/businessman/DebitcardOrderMapper.xml"/>
+		 
+		 <!-- 好看推荐记录 -->
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TLiveRecommendRecordMapper.xml"/>
+		 
+		 <!-- 主播招募管理 -->
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/BVerAnchorRelationMapper.xml"/>
+		 
+		 <!-- 直播首页管理 -->
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TLiveDeliciousMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TLiveEntertainmentMapper.xml"/>
+		 
+		 <!-- 直播悬浮广告管理 -->
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TLiveFloatAdvertiseMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/live_anchor/TLiveFloatAdvertisePositionMapper.xml"/>		
+		 
+		 <!-- V客充值奖励 --> 
+		 <mapper resource="com/xmniao/xmn/resource/reward_divideds/TLivePrivilegeMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/reward_divideds/TVerExcitationDetailMapper.xml"/>		
+		 <mapper resource="com/xmniao/xmn/resource/reward_divideds/TVerExcitationProjectMapper.xml"/>
+		<mapper resource="com/xmniao/xmn/resource/reward_divideds/TReceivingAddressMapper.xml"/>
+		<mapper resource="com/xmniao/xmn/resource/reward_divideds/TVerExcitationGoodsOrderMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/reward_divideds/TVerExcitationReceiveMapper.xml"/>			 
+
+         <!--  星食尚大赛	-->
+		 <mapper resource="com/xmniao/xmn/resource/vstar/FashionTicketsMapper.xml"/>		
+		 <mapper resource="com/xmniao/xmn/resource/vstar/FashionTicketSeatMapper.xml"/>		
+		 <mapper resource="com/xmniao/xmn/resource/vstar/TicketsPriceMapper.xml"/>		
+		 <mapper resource="com/xmniao/xmn/resource/vstar/TicketsDetailMapper.xml"/>		
+		 <mapper resource="com/xmniao/xmn/resource/vstar/TVstarEnrollMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/vstar/TVstarPlayerInfoMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/vstar/TVstarEnrollImgMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/vstar/TVstarPlayerSettingMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/vstar/TicketsOrderMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/vstar/DivisionMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/vstar/DivisionRegionMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/vstar/VstarCommentMapper.xml"/>	 
+		 <mapper resource="com/xmniao/xmn/resource/vstar/DynamicMapper.xml"/>
+		 
+		 <!-- 黄金庄园管理 --> 
+		 <mapper resource="com/xmniao/xmn/resource/manor/ManorInfoMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/manor/ManorFlowerRelationMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/manor/ManorSunshineManageMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/manor/ManorHoneyManageMapper.xml"/>
+		 <mapper resource="com/xmniao/xmn/resource/manor/ManorSunshineCouponMapper.xml"/>		 	 			 		 
+		 <mapper resource="com/xmniao/xmn/resource/manor/ManorLevelMapper.xml"/>		 
+		 <mapper resource="com/xmniao/xmn/resource/manor/ManorLevelEarningRecordMapper.xml"/>	
+
+	</mappers>
+</configuration>

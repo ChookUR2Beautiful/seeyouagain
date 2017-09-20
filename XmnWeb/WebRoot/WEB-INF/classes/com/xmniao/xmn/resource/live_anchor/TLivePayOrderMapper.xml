@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TLivePayOrderDao" >
+
+
+  <resultMap id="livePayOrderMap" type="com.xmniao.xmn.core.live_anchor.entity.TLivePayOrder" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="pay_no" property="payNo" jdbcType="VARCHAR" />
+    <result column="pay_code" property="payCode" jdbcType="VARCHAR" />
+    <result column="combo_id" property="comboId" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="payment" property="payment" jdbcType="DECIMAL" />
+    <result column="free_coin" property="freeCoin" jdbcType="DECIMAL" />
+    <result column="real_coin" property="realCoin" jdbcType="DECIMAL" />
+    <result column="pay_type" property="payType" jdbcType="VARCHAR" />
+    <result column="pay_state" property="payState" jdbcType="INTEGER" />
+    <result column="pay_time" property="payTime" jdbcType="TIMESTAMP" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="uid_relation_chain" property="uidRelationChain" jdbcType="LONGVARCHAR" />
+    <result column="object_oriented" property="objectOriented" jdbcType="INTEGER" />
+    <result column="excitation_project" property="excitationProject" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  
+  <sql id="livePayOrder_column_list" >
+    id, order_no, pay_no, pay_code, combo_id, uid, payment, free_coin, real_coin, pay_type, 
+    pay_state, pay_time, create_time, update_time,uid_relation_chain,object_oriented, excitation_project
+  </sql>
+  
+  <!-- Where 查询条件 -->
+  <sql id="whereSQL">
+		<if test=" null != orderNo and '' != orderNo">
+			AND order_no =#{orderNo}
+		</if>
+		<if test=" null != payType and '' != payType">
+			AND pay_type =#{payType}
+		</if>
+		<if test=" null != payState and '' != payState or payState==0 " >
+			AND pay_state =#{payState}
+		</if>
+		<!-- <if test=" null != eUid and '' != eUid">
+			AND uid != #{eUid} AND uid_relation_chain LIKE '%${eUid}%'
+		</if> -->
+		<if test=" null != juniorUids and '' != juniorUids ">
+			AND uid IN
+			<foreach item="item" index="index" collection="juniorUids"  open="(" separator="," close=") ">
+			 	#{item}
+			</foreach>
+		</if>
+		
+		<if test=" null != uid and '' != uid">
+			AND uid =#{uid}
+		</if>
+		<if test="null != objectOriented and '' != objectOriented or objectOriented==0 ">
+			AND object_oriented=#{objectOriented}
+		</if>
+  </sql>
+  
+  
+  <select id="getObject" resultMap="livePayOrderMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="livePayOrder_column_list" />
+    from t_live_pay_order
+    where id = #{id}
+  </select>
+  
+  <select id="getList" resultMap="livePayOrderMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLivePayOrder" >
+    select 
+    <include refid="livePayOrder_column_list" />
+    from t_live_pay_order
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+    order by pay_time desc
+    <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <select id="count" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLivePayOrder" >
+    select 
+    	count(1)
+    from t_live_pay_order
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+  </select>
+  
+  
+  <delete id="delete" parameterType="java.lang.Object" >
+    delete from t_live_pay_order
+    	where id in 
+	<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+		#{item}
+	</foreach>
+  </delete>
+  
+  <insert id="addReturnId" useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLivePayOrder" >
+    insert into t_live_pay_order
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="orderNo != null" >
+        order_no,
+      </if>
+      <if test="payNo != null" >
+        pay_no,
+      </if>
+      <if test="payCode != null" >
+        pay_code,
+      </if>
+      <if test="comboId != null" >
+        combo_id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="payment != null" >
+        payment,
+      </if>
+      <if test="freeCoin != null" >
+        free_coin,
+      </if>
+      <if test="realCoin != null" >
+        real_coin,
+      </if>
+      <if test="payType != null" >
+        pay_type,
+      </if>
+      <if test="payState != null" >
+        pay_state,
+      </if>
+      <if test="payTime != null" >
+        pay_time,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="uidRelationChain != null" >
+        uid_relation_chain,
+      </if>
+      <if test="objectOriented != null" >
+        object_oriented,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=BIGINT},
+      </if>
+      <if test="payNo != null" >
+        #{payNo,jdbcType=BIGINT},
+      </if>
+      <if test="payCode != null" >
+        #{payCode,jdbcType=VARCHAR},
+      </if>
+      <if test="comboId != null" >
+        #{comboId,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="payment != null" >
+        #{payment,jdbcType=DECIMAL},
+      </if>
+      <if test="freeCoin != null" >
+        #{freeCoin,jdbcType=DECIMAL},
+      </if>
+      <if test="realCoin != null" >
+        #{realCoin,jdbcType=DECIMAL},
+      </if>
+      <if test="payType != null" >
+        #{payType,jdbcType=VARCHAR},
+      </if>
+      <if test="payState != null" >
+        #{payState,jdbcType=INTEGER},
+      </if>
+      <if test="payTime != null" >
+        #{payTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uidRelationChain != null" >
+        #{uidRelationChain,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="objectOriented != null" >
+        #{objectOriented,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="update" parameterType="java.lang.Long" >
+    update t_live_pay_order
+    <set >
+      <if test="orderNo != null" >
+        order_no = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="payNo != null" >
+        pay_no = #{payNo,jdbcType=VARCHAR},
+      </if>
+      <if test="payCode != null" >
+        pay_code = #{payCode,jdbcType=VARCHAR},
+      </if>
+      <if test="comboId != null" >
+        combo_id = #{comboId,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="payment != null" >
+        payment = #{payment,jdbcType=DECIMAL},
+      </if>
+      <if test="freeCoin != null" >
+        free_coin = #{freeCoin,jdbcType=DECIMAL},
+      </if>
+      <if test="realCoin != null" >
+        real_coin = #{realCoin,jdbcType=DECIMAL},
+      </if>
+      <if test="payType != null" >
+        pay_type = #{payType,jdbcType=VARCHAR},
+      </if>
+      <if test="payState != null" >
+        pay_state = #{payState,jdbcType=INTEGER},
+      </if>
+      <if test="payTime != null" >
+        pay_time = #{payTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="excitationProject != null" >
+        excitation_project = #{excitationProject,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="">
+  
+  </select>
+  <select id="statLiverPromance" resultType="java.lang.Double" parameterType="ArrayList">
+    SELECT SUM(payment) FROM test_data4.t_live_pay_order WHERE object_oriented=4 AND pay_state=1
+    AND uid in
+    <foreach collection="uids" item="uid" open="(" close=")" separator="," index="index">
+      #{uid}
+    </foreach>
+  </select>
+
+</mapper>

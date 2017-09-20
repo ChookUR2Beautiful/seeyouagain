@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.SellerMarketingDao">
+
+	<parameterMap type="SellerMarketing" id="sellerMarketing" />
+	
+	<resultMap type="SellerMarketing" id="sellerMarketingMap">
+		<result column="id" property="id" />
+		<result column="sellerid" property="sellerid" />
+		<result column="aid" property="aid" />
+		<result column="isattend" property="isattend" />
+		<result column="sdate" property="sdate" />
+		<result column="edate" property="edate" />
+		<result column="rdate" property="rdate" />
+		<result column="sellername" property="sellername" />
+		<result column="aname" property="aname" />
+	</resultMap>
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_seller_marketing
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						sellerid,
+						aid,
+						isattend,
+						sdate,
+						edate,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.sellerid},
+						 #{item.aid},
+						 #{item.isattend},
+						 #{item.sdate},
+						 #{item.edate},
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" parameterMap="sellerMarketing" >
+		INSERT INTO t_seller_marketing
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					id,
+				</if>
+			 	<if test=" null != sellerid">
+					sellerid,
+				</if>
+			 	<if test=" null != aid">
+					aid,
+				</if>
+			 	<if test=" null != isattend">
+					isattend,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+			 	<if test=" null != edate">
+					edate,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					 	#{id},
+				</if>
+			 	<if test=" null != sellerid">
+					 	#{sellerid},
+				</if>
+			 	<if test=" null != aid">
+					 	#{aid},
+				</if>
+			 	<if test=" null != isattend">
+					 	#{isattend},
+				</if>
+			 	<if test=" null != sdate">
+					 	#{sdate},
+				</if>
+			 	<if test=" null != edate">
+					 	#{edate},
+				</if>
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_seller_marketing WHERE id IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterMap="sellerMarketing">
+		UPDATE t_seller_marketing
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != id">
+					id = #{id},
+				</if>
+				<if test=" null != sellerid">
+					sellerid = #{sellerid},
+				</if>
+				<if test=" null != aid">
+					aid = #{aid},
+				</if>
+				<if test=" null != isattend">
+					isattend = #{isattend},
+				</if>
+				<if test=" null != sdate">
+					sdate = #{sdate},
+				</if>
+				<if test=" null != edate">
+					edate = #{edate},
+				</if>
+			</trim>
+		</set>
+		<where>
+			1=1
+			<if test="null != id and '' != id">
+				AND id = #{id}
+			</if>
+		</where>
+	</update>
+	
+	
+	<select id="getSellerMarketingBySellerid" resultType="int"  parameterType="map">
+		SELECT m.sellerid FROM t_seller_marketing m WHERE (m.aid=#{aid} OR m.aid=(SELECT aid FROM t_activity WHERE TYPE = 3)) AND m.sellerid IN 
+		<foreach item="sid" index="index" collection="item"  open="(" separator="," close=")">
+			 #{sid}
+		</foreach>
+	</select>
+	
+	<select id="getList" resultMap="sellerMarketingMap" parameterMap="sellerMarketing">
+		SELECT m.id,m.sellerid,m.aid,m.isattend,s.sellername,a.type AS activityType,
+		    a.aname ,CONCAT(a.start_date,' ',a.start_time) AS sdate,CONCAT(a.end_date,' ',a.end_time) AS edate,m.rdate as rdate
+            FROM  t_seller_marketing m 
+            LEFT JOIN t_seller s 
+            ON s.sellerid = m.sellerid 
+            LEFT JOIN t_activity a 
+            ON a.aid = m.aid 
+		<where>
+			1=1
+			<if test=" null != id">
+				AND m.id = #{id}
+			</if>
+			<if test=" null != sellerid">
+				AND m.sellerid = #{sellerid}
+			</if> 
+			<if test=" null != aid">
+				AND m.aid = #{aid}
+			</if>
+			<if test=" null != isattend">
+				AND m.isattend = #{isattend}
+			</if>
+			<if test=" null != sdate">
+				AND m.sdate = #{sdate}
+			</if>
+			<if test=" null != edate">
+				AND m.edate = #{edate}
+			</if>
+			<if test=" null != aname and '' != aname">
+				AND a.aname LIKE '%${aname}%'
+			</if>
+			<if test=" null != startDataS and '' != startDataS">
+				AND a.start_date&gt;= #{startDataS}
+			</if>
+			<if test=" null != startDataE and '' != startDataE">
+				AND a.start_date&lt;= #{startDataE}
+			</if>
+			<if test=" null != endDataS and '' != endDataS">
+				AND a.end_date&gt;= #{endDataS}
+			</if>
+			<if test=" null != endDataE and '' != endDataE">
+				AND a.end_date&lt;= #{endDataE}
+			</if>
+			
+			
+			<if test=" null != startTimeS and '' != startTimeS">
+				AND a.start_time&gt;= #{startTimeS}
+			</if>
+			<if test=" null != startTimeE and '' != startTimeE">
+				AND a.start_time&lt;= #{startTimeE}
+			</if>
+			<if test=" null != endTimeS and '' != endTimeS">
+				AND a.end_time&gt;= #{endTimeS}
+			</if>
+			<if test=" null != endTimeE and '' != endTimeE">
+				AND a.end_time&lt;= #{endTimeE}
+			</if>
+			
+			<if test=" null != activityType and '' != activityType">
+				AND a.type= #{activityType}
+			</if>
+			<if test=" null != repel and '' != repel">
+				AND a.repel = #{repel}
+			</if>
+		</where>
+			ORDER BY id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="sellerMarketing">
+		SELECT COUNT(*) FROM t_seller_marketing m 
+			left join t_seller s on s.sellerid = m.sellerid
+			left join t_activity a on a.aid = m.aid
+		<where>
+			1=1
+			<if test=" null != id">
+				AND m.id = #{id}
+			</if>
+			<if test=" null != sellerid">
+				AND m.sellerid = #{sellerid}
+			</if>
+			<if test=" null != aid">
+				AND m.aid = #{aid}
+			</if>
+			<if test=" null != isattend">
+				AND m.isattend = #{isattend}
+			</if>
+			<if test=" null != sdate">
+				AND m.sdate = #{sdate}
+			</if>
+			<if test=" null != edate">
+				AND m.edate = #{edate}
+			</if>
+			<if test=" null != aname and '' != aname">
+				AND a.aname LIKE '%${aname}%'
+			</if>
+			<if test=" null != sdateStart and '' != sdateStart">
+				AND a.start_date&gt;= #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd and '' != sdateEnd">
+				AND a.start_date&lt;= #{sdateEnd}
+			</if>
+			<if test=" null != edateStart and '' != edateStart">
+				AND a.end_date&gt;= #{edateStart}
+			</if>
+			<if test=" null != edateEnd and '' != edateEnd">
+				AND a.end_date&lt;= #{edateEnd}
+			</if>
+			<if test=" null != activityType and '' != activityType">
+				AND a.type= #{activityType}
+			</if>
+			<if test=" null != repel and '' != repel">
+				AND a.repel = #{repel}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId" resultType="Integer">
+		SELECT Max(id) AS VALUE FROM t_seller_marketing
+	</select>
+	
+	<select id="getObject" resultMap="sellerMarketingMap" parameterType="Long">
+		SELECT ts.*,ta.type AS activityType FROM
+    t_seller_marketing ts LEFT JOIN t_activity ta 
+    ON ts.aid = ta.aid WHERE ts.id = #{0}
+	</select>
+	<!-- 参加活动重复校验 -->
+	<select id="getActivtyListCount" resultType="Long" parameterMap="sellerMarketing">
+		SELECT  IFNULL(COUNT(1),0 ) FROM t_seller_marketing m, t_activity t 
+		<where>
+			m.aid = t.aid
+			<if test=" null != sellerid">
+				AND m.sellerid = #{sellerid}
+			</if> 
+			<if test=" null != activityType and '' != activityType">
+				And t.type= #{activityType}
+			</if>
+		</where>
+	</select>
+</mapper>

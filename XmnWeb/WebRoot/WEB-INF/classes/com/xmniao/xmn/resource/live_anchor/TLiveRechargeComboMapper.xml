@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TLiveRechargeComboDao" >
+
+  <resultMap id="liveRechargeComboMap" type="com.xmniao.xmn.core.live_anchor.entity.TLiveRechargeCombo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="rech_amount" property="rechAmount" jdbcType="DECIMAL" />
+    <result column="rech_norm_coin" property="rechNormCoin" jdbcType="INTEGER" />
+    <result column="rech_free_coin" property="rechFreeCoin" jdbcType="INTEGER" />
+    <result column="rech_real_coin" property="rechRealCoin" jdbcType="INTEGER" />
+    <result column="recharge_type" property="rechargeType" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    <result column="product_id" property="productId" jdbcType="VARCHAR" />
+    <result column="fans_rank_id" property="fansRankId" jdbcType="INTEGER" />
+    <result column="fans_rank_name" property="fansRankName" jdbcType="VARCHAR" />
+    
+    <result column="combo_source" property="comboSource" jdbcType="INTEGER" />
+    <result column="object_oriented" property="objectOriented" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="liveRechargeCombo_column_list" >
+    id, rech_amount, rech_norm_coin, rech_free_coin, rech_real_coin, recharge_type, status, 
+    update_date, product_id,fans_rank_id,fans_rank_name,combo_source,object_oriented
+  </sql>
+  
+  <sql id="whereSQL">
+  		<if test=" null != rechargeType and '' != rechargeType">
+			AND recharge_type like '%${rechargeType}%'
+		</if>
+		<if test="isPublicComo != null">
+			AND is_public_combo = #{isPublicComo}
+		</if>
+		<if test="fansRankId != null">
+			AND fans_rank_id = #{fansRankId}
+		</if>
+		<if test="objectOriented != null and objectOriented !=''">
+			AND 
+			<foreach item="item" collection="objectOrienteds"  separator="and" >
+				 	 object_oriented like '%${item}%'
+			</foreach>
+		</if>
+        <if test="null != status and '' != status ">
+          AND status =#{status}
+        </if>
+        <if test="null != comboSource and '' != comboSource or 0 ==comboSource ">
+          AND combo_source =#{comboSource}
+        </if>
+  </sql>
+  
+  
+  <select id="getObject" resultMap="liveRechargeComboMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="liveRechargeCombo_column_list" />
+    from t_live_recharge_combo
+    where id = #{id}
+  </select>
+  
+  <select id="getList" resultMap="liveRechargeComboMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRechargeCombo" >
+    select 
+    <include refid="liveRechargeCombo_column_list" />,
+    (
+		SELECT
+			count(distinct uid)
+		FROM
+			t_live_pay_order orders
+		WHERE
+			orders.combo_id = combo.id
+	) rechargeNums
+    from t_live_recharge_combo combo
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+    order by update_date desc
+    <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <!-- 获取粉丝级别可充值套餐金额 -->
+  <select id="getRechargeOfFansRankId" resultMap="liveRechargeComboMap" >
+    SELECT
+		fans_rank_id,GROUP_CONCAT(rech_amount SEPARATOR ',') recharges
+	FROM
+		t_live_recharge_combo
+	WHERE
+		recharge_type = '2'
+	GROUP BY fans_rank_id
+  </select>
+  
+  
+  
+  <select id="count" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRechargeCombo" >
+    select 
+    	count(1)
+    from t_live_recharge_combo
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+  </select>
+  
+  
+  <delete id="deleteById" parameterType="java.lang.Integer" >
+    delete from t_live_recharge_combo
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  
+  
+  <insert id="add" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRechargeCombo" >
+    insert into t_live_recharge_combo
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="rechAmount != null" >
+        rech_amount,
+      </if>
+      <if test="rechNormCoin != null" >
+        rech_norm_coin,
+      </if>
+      <if test="rechFreeCoin != null" >
+        rech_free_coin,
+      </if>
+      <if test="rechRealCoin != null" >
+        rech_real_coin,
+      </if>
+      <if test="rechargeType != null" >
+        recharge_type,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="updateDate != null" >
+        update_date,
+      </if>
+      <if test="productId != null" >
+        product_id,
+      </if>
+      <if test="fansRankId != null" >
+        fans_rank_id,
+      </if>
+      <if test="fansRankName != null" >
+        fans_rank_name,
+      </if>
+      <if test="comboSource != null" >
+        combo_source,
+      </if>
+      <if test="objectOriented != null" >
+        object_oriented,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="rechAmount != null" >
+        #{rechAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="rechNormCoin != null" >
+        #{rechNormCoin,jdbcType=INTEGER},
+      </if>
+      <if test="rechFreeCoin != null" >
+        #{rechFreeCoin,jdbcType=INTEGER},
+      </if>
+      <if test="rechRealCoin != null" >
+        #{rechRealCoin,jdbcType=INTEGER},
+      </if>
+      <if test="rechargeType != null" >
+        #{rechargeType,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="productId != null" >
+        #{productId,jdbcType=VARCHAR},
+      </if>
+      <if test="fansRankId != null" >
+        #{fansRankId,jdbcType=INTEGER},
+      </if>
+      <if test="fansRankName != null" >
+        #{fansRankName,jdbcType=VARCHAR},
+      </if>
+      <if test="comboSource != null" >
+        #{comboSource,jdbcType=INTEGER},
+      </if>
+      <if test="objectOriented != null" >
+        #{objectOriented,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRechargeCombo" >
+    update t_live_recharge_combo
+    <set >
+      <if test="rechAmount != null" >
+        rech_amount = #{rechAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="rechNormCoin != null" >
+        rech_norm_coin = #{rechNormCoin,jdbcType=INTEGER},
+      </if>
+      <if test="rechFreeCoin != null" >
+        rech_free_coin = #{rechFreeCoin,jdbcType=INTEGER},
+      </if>
+      <if test="rechRealCoin != null" >
+        rech_real_coin = #{rechRealCoin,jdbcType=INTEGER},
+      </if>
+      <if test="rechargeType != null" >
+        recharge_type = #{rechargeType,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="updateDate != null" >
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="productId != null" >
+        product_id = #{productId,jdbcType=VARCHAR},
+      </if>
+      <if test="fansRankId != null" >
+        fans_rank_id = #{fansRankId,jdbcType=INTEGER},
+      </if>
+      <if test="fansRankName != null" >
+        fans_rank_name = #{fansRankName,jdbcType=VARCHAR},
+      </if>
+      <if test="comboSource != null" >
+        combo_source = #{comboSource,jdbcType=INTEGER},
+      </if>
+      <if test="objectOriented != null" >
+        object_oriented = #{objectOriented,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+   <delete id="delete" parameterType="Object">
+		DELETE FROM t_live_recharge_combo WHERE id IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+
+  <update id="updateBatch" parameterType="java.util.Map">
+    UPDATE t_live_recharge_combo SET status =#{status} WHERE id IN
+    <foreach item="item" index="index" collection="ids"  open="(" separator="," close=") ">
+      #{item}
+    </foreach>
+
+  </update>
+  
+</mapper>

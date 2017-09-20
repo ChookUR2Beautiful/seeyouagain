@@ -1,0 +1,1029 @@
+var baseURI =$("base").attr("href");
+/**
+ * 权限
+ */
+var permissions = eval("("+$("#permissions").html()+")");
+createBackButton();
+
+/**
+ * 操作提示
+ */
+function showSmReslutWindow(isflag, content) {
+	$('#sm_reslut_window').find('.modal-title').html('操作提示');
+	if (isflag) {
+		$('#sm_reslut_window').find('.modal-body').html('<div class="alert with-icon alert-success"> <i class="icon-ok"></i> <div class="content">' + content + '</div></div>');
+	} else {
+		$('#sm_reslut_window').find('.modal-body').html('<div class="alert with-icon  alert-danger"><i class="icon-remove-sign"></i> <div class="content">' + content + '</div></div>');
+	}
+	$('#sm_reslut_window').modal();
+	setTimeout(function(){
+		$('#sm_reslut_window').modal('hide');
+	}, 2000);
+}
+
+
+/**
+ * 操作提示
+ */
+function showWarningWindow(isflag, content ,zindex) {
+	$('#sm_reslut_window').find('.modal-title').html('操作提示');
+	if(isflag =="warning"){
+		$('#sm_reslut_window').find('.modal-body').html('<div class="alert with-icon  alert-warning"><i class="icon-warning-sign"></i> <div class="content">' + content + '</div></div>');
+	}
+	if(zindex){
+		$('#sm_reslut_window').css("zIndex",zindex);
+	}
+	$('#sm_reslut_window').modal();
+	/*setTimeout(function(){
+		$('#sm_reslut_window').modal('hide');
+	}, 1000);*/
+}
+
+/**
+ * 询问框
+ */
+function showSmConfirmWindow(yesFun,content) {
+	if(content){
+		$('#sm_comfir_window').find('.modal-body').html(content);
+	}else{
+		$('#sm_comfir_window').find('.modal-body').html('<p>确定需要执行删除操作？</p>');
+	}
+	$('#sm_comfir_window').modal();
+	$('#sm_comfir_window').find('.yes').off().click(function() {
+		if(yesFun){
+			yesFun();
+		};
+		$('#sm_comfir_window').modal('hide');
+	});
+}
+
+/**
+ * 操作提示层
+ */
+function showSmResultTipWindow(content) {
+	$('#sm_result_tip_window').find('.modal-body').html('<div class="alert with-icon  alert-warning"><i class="icon-warning-sign"></i> <div class="content">' + content + '</div></div>');
+	$('#sm_result_tip_window').modal();
+}
+
+/**
+ *  仅供退款调用
+ * @param {} yesFun
+ */
+function showTkConfirmWindow(yesFun) {
+	$('#tk_comfir_window').modal();
+	var fun = function() {
+		if(yesFun){
+			yesFun();
+		};
+		$('#tk_comfir_window').modal('hide');
+	};
+	$('#tk_comfir_window').one("click","a.yes",fun);
+}
+
+/**
+ * 编辑层
+ */
+function showEditWindow(title, body) {
+	$('#sm_edit_window').find('.modal-title').html(title);
+	$('#sm_edit_window').find('.modal-body').html(body);
+	$('#sm_edit_window').modal();
+}
+
+function showEditIframe(html,fn,title) {
+	$('#sm_edit_iframe').find('.modal-title').html(title);
+	 $('#sm_edit_iframe').find('#iframe-triggerModal').html(html);
+	
+	$('#sm_edit_iframe').modal();
+	$('#sm_edit_iframe').find('.yes').click(function() {
+		if(fn){
+			fn();
+		};
+		$('#sm_edit_iframe').modal('hide');
+	});
+}
+
+
+function getOtherIframe(iframeName){
+	try{
+	return $(window.parent.document.getElementsByName(iframeName)[0].contentDocument);
+	}catch(e){}
+}
+
+/**
+ * 修改位置
+ */
+function inserTitle(html, name, isflag) {
+	var titeFrame = getOtherIframe('title');
+	var content = titeFrame.find('[name =  content]');
+	
+	if (isflag == true) {
+		content.html('');
+	}
+	
+	var targetValue = content.find('span[name=' + name + ']');
+
+	if (targetValue.length != 0) {
+		targetValue.nextAll().remove();
+	} else {
+		content.append('<span name=' + name + '>' + html + '</span>');
+	}
+}
+
+/**
+ * 表单设置===============================================================================================
+ *
+ */
+
+/**
+ * 封装JSON
+ */
+function jsonFromt(data) {
+	var json = {};
+	for (var i = 0; i < data.length; i++) {
+		json[data[i].name] = data[i].value;
+	}
+	return json;
+}
+
+/**
+ * 单个或者批量 序列化表单值为json数据
+ * 
+ * @param {}
+ *            form 表单
+ * @return {} json数据 单个 {表单对象} 批量格式 [{表单对象1},{表单对象2}] 后台可以使用数组或者list接受
+ */
+function serializeJSON(form) {
+	var jsonObj = {};
+	var array = new Array();
+	var info = $(form).serializeArray();
+	$.each(info, function(index, obj) {
+		if (jsonObj[obj.name]) {
+			array.push(jsonObj);
+			jsonObj = {};
+		}
+		jsonObj[this.name] = obj.value || '';
+	});
+	if (!$.isEmptyObject(jsonObj))
+		array.push(jsonObj);
+	return JSON.stringify(array);
+}
+
+/**
+ * 设置表单提交信息
+ * @param {} form
+ * @return {}
+ */
+
+function formValue(form,callback){
+	/*if($( ":contains(.jhtml)",action)){*/
+	/*}else{
+		url= [$(form).attr("action"),".jhtml"].join("");
+	}*/
+	var url= [$(form).attr("action"),".jhtml"].join("");
+	var method= $(form).attr("method");
+	var data = serializeJSON(form);
+	var info={
+		dataType:"json",
+		url:url,
+		method:method,
+		data:data,
+		callback : null!=callback&&$.isFunction(callback)?callback:null
+	}
+	return info;
+}
+
+
+/**
+ * ajax
+ * @param {} info 请求信息
+ */
+function formAjax(info){
+	$.ajax({
+			contentType : 'application/json',
+			type :info.method,
+			url: info.url,
+			data:info.data
+		}).done(function(data){
+			if(null==info.callback) return false;
+			//回调
+			info.callback(data)
+	}).fail(function(data){
+		window.messager.warning("操作失败!");
+	});
+}
+
+
+/**
+ * 表单验证===============================================================================================
+ *
+ */
+
+/**
+ * 表单验证
+ * @param {} form 表单
+ * @param {} data 效验规则
+ * @param {} callback 回调方法
+ * @return {}
+ */
+function validate(formId,data,handle){
+	var formId = "#"+formId;
+	elmentClick(formId);
+	var vali = $(formId).validate({
+		rules:data.rules,
+		messages:data.messages,
+		onkeyup:false,
+		onclick:false,
+		errorPlacement: function(error, element) {
+			destroyPopover(element);
+			popoverRemove();
+			var text = $(error).text();
+			if(typeof text=="string" && text.length>0){
+				createPopover(element,text);
+				showElement(element);
+				createBorder(element,false);
+			 }
+		},
+		success: function(label) {
+			var name = $(label).attr("for");
+			var element = findByName(formId,name);
+			if(element.length>1){
+				$.each(element,function(index,el){
+					if($(el).attr("isClick")){
+						element = el;
+					}
+				});
+			}
+			datasuccess(element);
+		},
+		submitHandler : function(form) { 
+			//自定义表单处理
+			if(handle){
+				handle(form);
+		 		return false;
+	 		}
+	 	}	
+	});
+	//监听
+	changes(formId,vali);
+	return false; 
+}
+
+/**
+ * 监听click事件
+ * @param {} formId
+ */
+function elmentClick(formId){
+	$(formId).on("click","input,textarea,select",function(evet){
+		var name = $(evet.target).attr("name");
+		var info = findByName(formId,name);
+		if(info.length>1){
+			$.each(info,function(){
+				var me = $(this);
+				if(me.attr("isClick")){
+					me.removeAttr("isClick");
+					return false;
+				}
+			});
+			$(evet.target).attr("isClick",true);
+		}
+	});
+}
+/**
+ * 表单失焦则效验表单输入 
+ * @param {} form
+ * @param {} vali
+ */
+function changes(formId,vali){
+	 $(formId).on("blur","input,textarea,select", function(evet) {
+		 	var name = $(evet.target).attr("name");
+			var info = findByName(formId,name);
+			if(info.length>1){
+				$.each(info,function(i,v){
+					valiElement(vali,v);
+				});
+			}else{
+				valiElement(vali,evet.target);
+			}	
+	});
+}
+
+function valiElement(vali,element)
+{
+	/*var me = $(element);
+	var val = me.val();
+	if (vali && (!val || val.length <= 0)) {
+		vali.element(me);
+	}*/
+	vali.element(element);
+}
+
+
+/**
+ * 判断必选图片是否选择
+ * @param {} data
+ * @return {}
+ */
+function valiImgData(form,data){
+	var vali=false;
+	var key,value;
+	for(key in data){
+		value = data[key];
+		if(value.length==0){
+			var uploaderImg =isUploaderImg(form,key);
+			if(uploaderImg){
+				console.info(key+"是图片元素，需要验证!");
+				vali=true;
+				valiImg(key,uploaderImg,form);
+			}
+		}
+	}
+	return vali;
+}
+
+/**
+ * 是否是需要验证的图片
+ * @return {Boolean}
+ */
+function isUploaderImg(form,name){
+	var ImgInput =$(form).find("input[name='"+name+"']");
+	var $parent = $(ImgInput).parent();
+	if($parent.is("div")){
+		var isUploaderImg = $parent.find("div.uploader");
+		if($(isUploaderImg).length>0){
+			if($(isUploaderImg).parent().attr("ImgValidate")){
+				return isUploaderImg;
+			}
+		}
+		var isUploaderFile = $parent.find("div.webuploader-container");
+		if($(isUploaderFile).length>0){
+			if($(isUploaderFile).parent().attr("ImgValidate")){
+				return isUploaderFile;
+			}
+		}
+	}
+	
+}
+/**
+ * 图片验证
+ * @param {} name: input name
+ * @param {} el: 包含图片的div
+ */
+function valiImg(name,el,form){
+	var tip,typeImg;
+	var file = $(el).find("img");
+	if($(file).length==0){
+		file = $(form).find("input[name="+name+"]");
+		tip="请选择文件";
+		typeImg=false;
+	}else{
+		tip="请选择图片";
+		typeImg=true;
+	}
+	if(!$(file).attr("ischage")){
+		var element = typeImg?el:$(el).parent().parent();
+		$(element).on("change",file,function(){
+			submitDatasuccess(el);
+		});
+		$(file).attr("ischage","true")
+	}
+	submitDataError(el,tip);
+
+}
+
+
+/**
+ * 效验选择框
+ * @param {} form 
+ * @param {} pid 包含所有选择框的id
+ * @param {} selectAray 选择框name数组
+ * @param {} isSearch 选择框是否支持搜索 false 不支持, true 支持
+ * @return {} true false  true：通过 false:不通过
+ */
+function checkSelect(form,pid,selectAray,isSearch){
+	var success= new Array();
+	var len = selectAray.length;
+	for(var i =0;i<len;i++){
+		success.push(0)
+	}
+	$.each(selectAray,function(index,name){
+		var select = $(form).find(pid+" select[name="+name+"]");
+		var val = $(select).val();
+		success[index]=val&&$.trim(val).length>0?1:0;
+		if(!success[index]){
+			setErrorMark(select,pid,name,form,isSearch);
+		}
+	});
+	var s=0;
+	$.each(success,function(index,obj){	
+		s =s+obj;
+	});
+	return (s==len);
+}
+
+/**
+ * 选择框错误信息提醒
+ * @param {} element 选择框
+ * @param {} pid 包含选择框的容器id
+ * @param {} name 选择框id
+ * @param {} form 包含选择框的表单
+ * @param {} isSearch 选择框是否支持搜索
+ */
+function setErrorMark(element,pid,name,form,isSearch){
+	if(!$(element).attr("ischage")){
+		$(form).on("change",element,function(event){
+			var select = $(form).find(pid+" select[name="+name+"]");
+			var val = $(select).val();
+			if(val&&$.trim(val).length>0){
+				var se = isSearch?$(select).next():select;
+				submitDatasuccess(se);
+			}
+		});
+		$(element).attr("ischage","true")
+	}
+	var el = isSearch?$(element).next():element;
+	submitDataError(el,"请选择");
+}
+
+
+
+/**
+ * 根据name查询
+ * @param {} from 
+ * @param {} name 
+ * @return {}
+ */
+function findByName( element,name ) {
+	return $( element ).find( "[name='" + name + "']" );
+}
+
+
+
+
+
+/**
+ * 日期解析
+ * @param date
+ * @returns {Date}
+ */
+function dateParse(date){
+	if(date){
+		var a = date.split(" ");
+        var b = a[0].split("-");
+        var date = new Date();
+        date.setFullYear(b[0], b[1]-1, b[2]);
+        if(a.length > 1){
+            var c = a[1].split(":");
+            date.setHours(c[0] || 0, c[1] || 0, c[2] || 0);
+        }
+		return date;
+	}
+}
+/**
+ * 日期比较
+ * @param date1
+ * @param date2
+ * @returns {Number} date1 - date2
+ */
+function dateCompare(date1,date2){
+	if(typeof date1 == "string"){
+		date1 = dateParse(date1);
+	}
+	if(typeof date2 == "string"){
+		date2 = dateParse(date2);
+	}
+	return date1.getTime() - date2.getTime();
+}
+
+function timeCompare(time1, time2){
+	time1 = time1.replace(":","");
+	time2 = time2.replace(":","");
+	return time1 - time2;
+}
+
+/**
+ * 手动验证数据
+ * @param bool 校验条件
+ * @param el 显示提示的对象
+ * @param msg 提示消息
+ * @returns {Boolean}
+ */
+function checkData(bool, el, msg){
+	if(!bool){
+		dataError(el, msg);
+		return false;
+	}else{
+		datasuccess(el);
+		return true;
+	}
+}
+
+/**
+ * 将表单编辑框转为文字
+ * @param form
+ */
+function inputToText(form){
+	var $form = $(form);
+	var all = $form.find(":input[type!='hidden']");
+	var input = all.filter("input[type='text'],textarea");
+	var select = all.filter("select");
+	var checkbox = all.filter(":radio,:checkbox");
+	var button = all.filter(":button, button");
+	input.each(function(i){
+		$(this).replaceWith("<small>"+$(this).val()+"</small>");
+	});
+	select.each(function(i){
+		$(this).replaceWith("<small>"+$(this).find("option[selected]").text()+"</small>");
+	});
+	checkbox.each(function(i){
+		if($(this).attr("checked")){
+			$(this).remove();
+		}else{
+			$(this).parent().remove();
+		}
+	});
+	button.hide();
+	button.filter(".cancel,.close").show();
+}
+
+/**
+ * 对象是否为空
+ */
+function isEmptyObject(obj){
+	var t;
+    for (t in obj){
+    	if(obj[t].length>0)return !1;
+    } 
+    return !0;
+   
+}
+
+/**
+ * 截取字符串
+ * @param obj
+ * @param length
+ * @returns {String}
+ */
+function substr(obj,length){
+	if(null == length || undefined == length){
+		length = 8;
+	}
+	if(obj == undefined ){
+		obj = "-";
+	}else{
+		if(obj.length > length){
+			obj = obj.substring(0,length) +"...";
+		}
+	}
+	return obj;
+}
+
+
+/**
+ * 下拉框
+ */
+var chosenData = {};
+$.fn.chosenObject = function selectInfo(param){
+	debugger
+	var $this = $(this);
+	var isInit = true;
+	var defaults = {
+		id : "zoneid",//当前页面select框的id
+		hideValue : "bid",//实际传到后台进行筛选的值
+		showValue : "title",//下拉框显示的值
+		showType:"",//选项显示形式
+		showParams:[],//showType为multiple时生效,phone|nickname
+		otherParams:{},	//默认的其他筛选条件
+		url : "",//"common/business/businessInfo.jhtml",//请求数据的url
+		filterVal : "",//过滤的值
+		limit : 50,//分页参数
+		isChosen:true,//是否支持模糊查询
+		isCode:false,//是否显示编号
+		isHistorical:true,//是否使用历史已加载数据
+		isMultiple : false,//是否支持多选
+	    defaultValue:"--请选择--"//默认的显示值
+	};
+	var opts = $.extend(defaults, param);
+	//传到后台的参数	
+	var params = {"limit":opts.limit,"filterVal":opts.filterVal};
+	//获取数据
+	var getData = function(search){
+		var key = opts.url;
+		if(isInit){
+			isInit = false;
+			params[opts.hideValue] = $this.attr("initValue");
+		}else{
+			params[opts.hideValue] = undefined;
+		}
+		if(search){
+			params[opts.showValue] = search;
+		}
+		params = Object.assign(params,opts.otherParams);
+		key += JSON.stringify(params);
+		if(chosenData[key] && opts.isHistorical){
+			return chosenData[key];
+		}else{
+			$.ajax({
+				type: "POST",
+				url : opts.url,
+				async : false,
+				dataType : "json",
+				data: params,
+				success : function(data){
+					chosenData[key] = data.content;
+				}
+			});
+			return chosenData[key];
+		}
+	};
+	
+	//拼装数据
+	var build = function(search){
+		var data = getData(search);
+		if(data){
+			if(opts.isMultiple){
+				$this.attr("multiple","multiple");
+				$this.empty();//清空选项
+				for(var i=0;i<data.length;i++){
+					var hide = data[i][opts.hideValue];
+					var show = data[i][opts.showValue];
+					//如果含有编号则拼装编号
+					if(opts.isCode){
+						$this.append('<option value="'+ hide +'" '+(hide ==$this.attr("initValue")?'selected':'')+'>'+"["+hide+"]"+ show +'</option>');
+					}else{
+						$this.append('<option value="'+ hide +'" '+(hide ==$this.attr("initValue")?'selected':'')+'>'+ show +'</option>');
+					}
+				}
+			}else{
+				$this.empty().append('<option value="">'+opts.defaultValue+'</option>');
+				for(var i=0;i<data.length;i++){
+					var hide = data[i][opts.hideValue];
+					var show = data[i][opts.showValue];
+					
+					var content="";
+					var dataVal="";
+					$.each(opts.showParams, function(index, value, array) {
+						dataVal=data[i][value]==undefined?"":data[i][value];
+						if(dataVal){
+							content+="["+dataVal+"]";
+						}
+					});
+					//如果含有编号则拼装编号
+					if(opts.isCode){
+						if(opts.showType=="multiple"){
+							$this.append('<option value="'+ hide +'" '+(hide ==$this.attr("initValue")?'selected':'')+'>'+"["+hide+"]"+ content +'</option>');
+						}else{
+							$this.append('<option value="'+ hide +'" '+(hide ==$this.attr("initValue")?'selected':'')+'>'+"["+hide+"]"+ show +'</option>');
+						}
+						
+					}else{
+						if(opts.showType=="multiple"){
+							$this.append('<option value="'+ hide +'" '+(hide ==$this.attr("initValue")?'selected':'')+'>'+ content +'</option>');
+						}else{
+							$this.append('<option value="'+ hide +'" '+(hide ==$this.attr("initValue")?'selected':'')+'>'+ show +'</option>');
+						}
+					}
+					
+				}
+			}
+		}
+		
+	};
+	build();
+	
+	
+	//判断是否可以模糊搜索
+	if(opts.isChosen){
+		$this.chosen({
+				search_contains : true,
+				allow_single_deselect : false,
+				remote_function : function(search){
+					if(!opts.isMultiple){
+						build(search);
+					}
+				},
+				width: opts.width?opts.width:"90%"
+		});
+	}
+	$.extend($this, {
+		initData : build
+	});
+	return $this;
+};
+
+
+/**
+ * ajax监听
+ */
+$(document).ajaxComplete(function(event,xhr,ajaxOptions){
+	//登录超时
+	if(xhr.status==1000){
+		//window.parent.location.href=window.parent.location.href;
+		top.location.href=top.location.href;
+		//console.info(top.location.href);
+		//pageRefresh(window);
+	}
+	else if(xhr.status==1001){
+		showEditWindow("系统提示","表单已提交,服务器正在处理... 请勿重复提交!");
+	}
+});
+
+
+function showPopover(dom, msg){
+	$(dom).popover("destroy").popover({
+		content : msg,
+		placement : "top",
+		trigger : "focus"
+	}).popover("show");
+}
+
+//datetime picker
+if($.fn.datetimepicker)
+{
+    $('.form-datetime').datetimepicker(
+    {
+        weekStart: 1,
+        todayBtn:  1,
+        autoclose: 1,
+        todayHighlight: 1,
+        startView: 2,
+        forceParse: 0,
+        showMeridian: 1,
+        format: 'yyyy-mm-dd hh:ii'
+    });
+    $('.form-date').datetimepicker(
+    {
+        language:  'zh-CN',
+        weekStart: 1,
+        todayBtn:  1,
+        autoclose: 1,
+        todayHighlight: 1,
+        startView: 2,
+        minView: 2,
+        forceParse: 0,
+        format: 'yyyy-mm-dd'
+    });
+    $('.form-time').datetimepicker({
+        language:  'zh-CN',
+        weekStart: 1,
+        todayBtn:  1,
+        autoclose: 1,
+        todayHighlight: 1,
+        startView: 1,
+        minView: 0,
+        maxView: 1,
+        forceParse: 0,
+        format: 'hh:ii'
+    });
+}
+/**
+ * 日期对象
+ * @type 
+ */
+var defualt = {
+		element:".form-datetime",//需要绑定日期插件的元素
+		form : null,//所在表单
+		startDateName:null,//开始时间元素
+		endDateName :null,//结束时间元素
+		onChange:true,//是否需要限制开始接受日期选择 默认为限制 传入 false 取消限制
+		overlap:false,//日期可重叠。默认false,开始结束时间不可同一天
+		format:'yyyy-mm-dd',//日期显示格式
+		minuteStep: 5,
+		minView :2,
+		maxView :3,
+		startView : 2
+	};
+/**
+ * 日期封装
+ * @param {} element 日期对象 
+ */
+function limitedDate(element){
+	element = $.extend({},defualt,element);
+	var datetimepicker = $(element.element).datetimepicker({
+				weekStart : 1,
+				autoclose : 1,
+				todayHighlight : 0,
+				minView :element.minView,
+				maxView :element.maxView,
+				forceParse : 0,
+				startView : element.startView,
+				format : element.format,
+				minuteStep : element.minuteStep
+			});
+	if(element.onChange){
+		datetimepicker.on("changeDate",function(evet){
+				var start = findByName(element.form,element.startDateName);
+				var startValue = $(start).val();
+				var end = findByName(element.form,element.endDateName);
+				var endValue = $(end).val();
+				if(startValue){
+					if(element.overlap){
+						$(end).datetimepicker("setStartDate",new Date(dateParse(startValue).getTime()));
+					}else{
+						$(end).datetimepicker("setStartDate",new Date(dateParse(startValue).getTime()+86400000));
+					}
+				}
+				if(endValue){
+					if(element.overlap){
+						$(start).datetimepicker("setEndDate",new Date(dateParse(endValue).getTime()));
+					}else{
+						$(start).datetimepicker("setEndDate",new Date(dateParse(endValue).getTime()-86400000));
+					}
+				}
+				$(this).blur();
+			});
+	}			
+}
+
+	/*-----------------------返回操作带上个页面查询条件处理---------------------------------*/
+
+	/**
+	 * 替换表单&成,以便区分
+	 * @param {} form
+	 * @return {}
+	 */
+	function getFormParam(param,replaceEment,replaceValue){
+		replaceEment=replaceEment||"&";
+		replaceValue = replaceValue||",";
+		var replaceEl = new RegExp(replaceEment,'g');
+		return param.replace(replaceEl,replaceValue);
+	}
+	/**
+	 * 获取url带入上个页面查询参数 判断是否需要返回按钮 如果需要则处理  
+	 * @param {} callbackUrl 上一级页面url  自定义传入
+	 */
+	function createBackButton(){
+		//删除返回按钮
+		removeBackButton();
+		var searchParam = window.location.search.substr(1);
+		//判断是否需要返回按钮
+		var isBackButton = getParam("isBackButton",searchParam);
+		if(isBackButton&&isBackButton==="true"){
+			//获取上个页面查询参数
+			var callbackParam = getParam("callbackParam",searchParam);
+			callbackParam =getFormParam(callbackParam,",","&");
+			//传入上一级url已经查询参数   并创建返回按钮
+			create(callbackParam);
+		}
+	}
+	/**
+	 * 获取url中的参数
+	 * @param {} name 参数名称
+	 * @param {} searchParam url中查询字符串
+	 * @return {}
+	 */
+	function  getParam(name,searchParam) {
+		//window.location.href=decodeURI(window.location.href); 
+	    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+	    var r =searchParam.match(reg);  //匹配目标参数
+	    if (r != null) return decodeURI(r[2]); 
+	    return null; //返回参数值
+	}
+	
+	/**
+	 *	创建按钮
+	 * @param {} callbackUrl 上一级url
+	 * @param {} callbackParam 上一级页面查询参数
+	 */
+	function create(callbackParam){
+		var titeFrame = getOtherIframe('title');
+		var titleDiv = $(titeFrame).find('#title');
+		var a= $(titleDiv).find("a").last();
+		if($(a).length>0){
+			var href = $(a).attr("href")
+			if(callbackParam&& $.trim(callbackParam).length>0){
+				href = href+"?"+callbackParam
+			}
+			var backButtonDiv = $(titeFrame).find('#backButtonDiv');
+			$(backButtonDiv).html("<a id='backButton' class='btn btn-warning' style='position:fixed; margin-top:10px; font-size:12px;' href='javascript:;'><i class='icon-reply'></i>&nbsp;返回上一级</a>");
+			$(backButtonDiv).one("click","#backButton",{"href":href},function(event){
+				var href = baseURI+event.data.href;
+				window.location.href=href;
+				return false;
+			});
+		}
+		
+	}
+	
+	/**
+	 * 移除返回按钮
+	 */
+	function removeBackButton(){
+		var titeFrame = getOtherIframe('title');
+		var backButton = $(titeFrame).find('#backButton');
+		if($(backButton).length>0){
+			$(backButton).remove();
+		}
+	}
+	/**
+	 * 改变添加按钮的url
+	 * @param {} callbackParam
+	 */
+	function updateAddBtnHref(ement,callbackParam){
+		if(ement&&$(ement).length>0){
+			setURL(ement,"href",callbackParam);	
+		}
+		
+	}
+	/**
+	 * 添加url参数
+	 * @param {} ement 元素
+	 * @param {} attr 需要改变值的属性描述
+	 * @param {} callbackParam 参数
+	 */
+	function setURL(ement,attr,callbackParam){
+		var href =$(ement).attr(attr);
+		var index = href.indexOf("?");
+		if(index>0){
+			href = href.substr(0,index);
+		}
+		href = href+"?"+(callbackParam.charAt(0)=='&'?callbackParam.substr(1):callbackParam.substr(0));
+		$(ement).attr(attr,href);
+	}
+	
+	/**
+	 * 模拟post请求页面跳转
+	 */
+	function myPost(url,args){
+	    var body = $(document.body),
+	        form = $("<form method='post'></form>"),
+	        input;
+	    form.attr({"action":url});
+	    $.each(args,function(key,value){
+	        input = $("<input type='hidden'>");
+	        input.attr({"name":key});
+	        input.val(value);
+	        form.append(input);
+	    });
+
+	    form.appendTo(document.body);
+	    form.submit();
+	    document.body.removeChild(form[0]);
+	}
+	
+	
+	 function formatDate(date, fmt)
+	 {
+	     date = date == undefined ? new Date() : date;
+	     date = typeof date == 'number' ? new Date(date) : date;
+	     fmt = fmt || 'yyyy-MM-dd HH:mm:ss';
+	     var obj =
+	     {
+	         'y': date.getFullYear(), // 年份，注意必须用getFullYear
+	         'M': date.getMonth() + 1, // 月份，注意是从0-11
+	         'd': date.getDate(), // 日期
+	         'q': Math.floor((date.getMonth() + 3) / 3), // 季度
+	         'w': date.getDay(), // 星期，注意是0-6
+	         'H': date.getHours(), // 24小时制
+	         'h': date.getHours() % 12 == 0 ? 12 : date.getHours() % 12, // 12小时制
+	         'm': date.getMinutes(), // 分钟
+	         's': date.getSeconds(), // 秒
+	         'S': date.getMilliseconds() // 毫秒
+	     };
+	     var week = ['天', '一', '二', '三', '四', '五', '六'];
+	     for(var i in obj)
+	     {
+	         fmt = fmt.replace(new RegExp(i+'+', 'g'), function(m)
+	         {
+	             var val = obj[i] + '';
+	             if(i == 'w') return (m.length > 2 ? '星期' : '周') + week[val];
+	             for(var j = 0, len = val.length; j < m.length - len; j++) val = '0' + val;
+	             return m.length == 1 ? val : val.substring(val.length - m.length);
+	         });
+	     }
+	     return fmt;
+	 }
+	
+	 
+	 /**
+	  * 获取当前记录数
+	  */
+	 function getCurrentSize(formId,url){
+		var total=0;
+		// 设置同步
+	    $.ajaxSetup({
+	        async: false
+	    });
+		 
+		 $.ajax({
+			 url : url,
+			 type : "post",
+			 dataType : "json",
+			 data:jsonFromt($('#' + formId).serializeArray()),
+			 success : function(result) {
+				 total=result;
+			 }
+		 });
+		 
+		// 恢复异步
+	    $.ajaxSetup({
+	        async: true
+	    });
+	    
+	    return total;
+	 }
+
+
+
+
+
+

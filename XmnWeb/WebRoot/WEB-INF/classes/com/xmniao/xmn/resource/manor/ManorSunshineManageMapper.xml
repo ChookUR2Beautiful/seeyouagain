@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.manor.dao.ManorSunshineManageDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.manor.entity.TManorSunshineManage" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="recommend_number" property="recommendNumber" jdbcType="INTEGER" />
+    <result column="is_spend_energy" property="isSpendEnergy" jdbcType="TINYINT" />
+    <result column="spend_energy_number" property="spendEnergyNumber" jdbcType="INTEGER" />
+    <result column="handsel_number" property="handselNumber" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, recommend_number, is_spend_energy, spend_energy_number, handsel_number
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_manor_sunshine_manage
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_manor_sunshine_manage
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.manor.entity.TManorSunshineManage" >
+    insert into t_manor_sunshine_manage (id, recommend_number, is_spend_energy, 
+      spend_energy_number, handsel_number)
+    values (#{id,jdbcType=INTEGER}, #{recommendNumber,jdbcType=INTEGER}, #{isSpendEnergy,jdbcType=TINYINT}, 
+      #{spendEnergyNumber,jdbcType=INTEGER}, #{handselNumber,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.manor.entity.TManorSunshineManage" >
+    insert into t_manor_sunshine_manage
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="recommendNumber != null" >
+        recommend_number,
+      </if>
+      <if test="isSpendEnergy != null" >
+        is_spend_energy,
+      </if>
+      <if test="spendEnergyNumber != null" >
+        spend_energy_number,
+      </if>
+      <if test="handselNumber != null" >
+        handsel_number,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="recommendNumber != null" >
+        #{recommendNumber,jdbcType=INTEGER},
+      </if>
+      <if test="isSpendEnergy != null" >
+        #{isSpendEnergy,jdbcType=TINYINT},
+      </if>
+      <if test="spendEnergyNumber != null" >
+        #{spendEnergyNumber,jdbcType=INTEGER},
+      </if>
+      <if test="handselNumber != null" >
+        #{handselNumber,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.manor.entity.TManorSunshineManage" >
+    update t_manor_sunshine_manage
+    <set >
+      <if test="recommendNumber != null" >
+        recommend_number = #{recommendNumber,jdbcType=INTEGER},
+      </if>
+      <if test="isSpendEnergy != null" >
+        is_spend_energy = #{isSpendEnergy,jdbcType=TINYINT},
+      </if>
+      <if test="spendEnergyNumber != null" >
+        spend_energy_number = #{spendEnergyNumber,jdbcType=INTEGER},
+      </if>
+      <if test="handselNumber != null" >
+        handsel_number = #{handselNumber,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.manor.entity.TManorSunshineManage" >
+    update t_manor_sunshine_manage
+    set recommend_number = #{recommendNumber,jdbcType=INTEGER},
+      is_spend_energy = #{isSpendEnergy,jdbcType=TINYINT},
+      spend_energy_number = #{spendEnergyNumber,jdbcType=INTEGER},
+      handsel_number = #{handselNumber,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+	<!-- 自定义sql查询区域 -->
+	<sql id="baseSellerCondition">
+		<if test="id != null">
+			AND id = #{id,jdbcType=INTEGER}
+		</if>
+		
+	</sql>
+	
+	<select id="getManorSunshineManageData" resultMap="BaseResultMap" parameterType="com.xmniao.xmn.core.manor.entity.TManorSunshineManage">
+		select
+		<include refid="Base_Column_List" />
+		from t_manor_sunshine_manage
+		<where>
+			1 = 1
+			LIMIT 0,1
+		</where>
+	</select>
+  
+  
+</mapper>

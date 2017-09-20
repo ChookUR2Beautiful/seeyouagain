@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.BursEarningsRankDao" >
+
+  <resultMap id="bursEarningsRankMap" type="com.xmniao.xmn.core.live_anchor.entity.BursEarningsRank" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="uid" property="uid" jdbcType="BIGINT" />
+    <result column="rank_source" property="rankSource" jdbcType="INTEGER" />
+    <result column="rank_id" property="rankId" jdbcType="BIGINT" />
+    <result column="rank_name" property="rankName" jdbcType="VARCHAR" />
+    <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="bursEarningsRank_column_list" >
+    id, uid, rank_source, rank_id, modify_time
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test="uid != null and  uid != '' ">
+  		AND uid = #{uid}
+  	</if>
+  	<if test=" rankSource != null and rankSource != '' ">
+  		AND rank_source = #{rankSource}
+  	</if>
+  </sql>
+  
+  <select id="selectById" resultMap="bursEarningsRankMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="bursEarningsRank_column_list" />
+    from b_urs_earnings_rank
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="selectByBean" resultMap="bursEarningsRankMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.BursEarningsRank" >
+    select 
+    	erank.id, erank.uid, erank.rank_source, erank.rank_id, erank.modify_time,frank.rank_name
+    from 
+    	b_urs_earnings_rank erank
+   	LEFT JOIN b_live_fans_rank frank 
+   		ON erank.rank_id = frank.id
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+  </select>
+
+
+    <resultMap id="selectRankUsersMap" type="HashMap">
+        <result column="uid" property="uid" javaType="String" jdbcType="INTEGER"/>
+        <result column="phone" property="phone" javaType="String" jdbcType="VARCHAR"/>
+    </resultMap>
+    <!--根据等级查询用户-->
+    <select id="selectRankUsers" resultMap="selectRankUsersMap" resultType="map">
+      select
+        u.uid uid,
+        u.phone phone
+        from b_urs_earnings_rank er LEFT JOIN b_urs u ON u.uid = er.uid
+      <include refid="rankUsersConditions"/>
+    </select>
+    <!--根据等级统计用户数量-->
+    <select id="countRankUsers" resultType="java.lang.Integer">
+        select count(1)
+        from b_urs_earnings_rank er
+        <include refid="rankUsersConditions"/>
+    </select>
+
+  <select id="selectRankInfo" resultType="map">
+    SELECT r.rank_name rankName , br.uid uid
+    from b_urs_earnings_rank br
+      join b_live_fans_rank r on br.rank_id = r.id
+    where br.rank_source = 4
+          and br.uid = #{uid}
+  </select>
+
+  <sql id="rankUsersConditions">
+        where rank_id = #{rankid}
+        <if test="selectUserList.size > 0">
+            AND er.uid NOT IN
+            <foreach collection="selectUserList" item="user" open="(" close=")" separator=",">
+                #{user.uid}
+            </foreach>
+        </if>
+    </sql>
+
+    <delete id="deleteById" parameterType="java.lang.Long" >
+    delete from b_urs_earnings_rank
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  
+  
+  <insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.xmn.core.live_anchor.entity.BursEarningsRank" >
+    insert into b_urs_earnings_rank
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="rankSource != null" >
+        rank_source,
+      </if>
+      <if test="rankId != null" >
+        rank_id,
+      </if>
+      <if test="modifyTime != null" >
+        modify_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=BIGINT},
+      </if>
+      <if test="rankSource != null" >
+        #{rankSource,jdbcType=INTEGER},
+      </if>
+      <if test="rankId != null" >
+        #{rankId,jdbcType=BIGINT},
+      </if>
+      <if test="modifyTime != null" >
+        #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.live_anchor.entity.BursEarningsRank" >
+    update b_urs_earnings_rank
+    <set >
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=BIGINT},
+      </if>
+      <if test="rankSource != null" >
+        rank_source = #{rankSource,jdbcType=INTEGER},
+      </if>
+      <if test="rankId != null" >
+        rank_id = #{rankId,jdbcType=BIGINT},
+      </if>
+      <if test="modifyTime != null" >
+        modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+</mapper>

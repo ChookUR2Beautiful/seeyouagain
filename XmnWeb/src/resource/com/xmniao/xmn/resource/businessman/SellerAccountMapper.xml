@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.SellerAccountDao">
+
+	<parameterMap type="SellerAccount" id="sellerAccount" />
+	
+	<resultMap type="SellerAccount" id="sellerAccountMap">
+		<result column="aid" property="aid" />
+		<result column="sellerid" property="sellerid" />
+		<result column="account" property="account" />
+		<result column="nname" property="nname" />
+		<result column="fullname" property="fullname" />
+		<result column="password" property="password" />
+		<result column="levelpass" property="levelpass" />
+		<result column="type" property="type" />
+		<result column="sdate" property="sdate" />
+		<result column="remarks" property="remarks" />
+		<result column="phone" property="phone" />
+		<result column="iostoken" property="iostoken" />
+		<result column="uid" property="uid" />
+		<result column="userstatus" property="userStatus" />
+	</resultMap>
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_log
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						sellerid,
+						account,
+						nname,
+						fullname,
+						password,
+						levelpass,
+						type,
+						sdate,
+						remarks,
+						phone,
+						iostoken,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.sellerid},
+						 #{item.account},
+						 #{item.nname},
+						 #{item.fullname},
+						 #{item.password},
+						 #{item.levelpass},
+						 #{item.type},
+						 #{item.sdate},
+						 #{item.remarks},
+						 #{item.phone},
+						 #{item.iostoken},
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" parameterMap="sellerAccount" >
+		INSERT INTO t_seller_account
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != aid">
+					aid,
+				</if>
+			 	<if test=" null != sellerid">
+					sellerid,
+				</if>
+			 	<if test=" null != account and '' != account ">
+					account,
+				</if>
+			 	<if test=" null != nname and '' != nname ">
+					nname,
+				</if>
+			 	<if test=" null != fullname and '' != fullname ">
+					fullname,
+				</if>
+			 	<if test=" null != password and '' != password ">
+					password,
+				</if>
+			 	<if test=" null != levelpass and '' != levelpass ">
+					levelpass,
+				</if>
+			 	<if test=" null != type">
+					type,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+			 	<if test=" null != remarks and '' != remarks ">
+					remarks,
+				</if>
+				<if test=" null != phone and '' != phone ">
+					phone,
+				</if>
+				<if test=" null != uid">
+					uid,
+				</if>
+				<if test=" null != iostoken and '' != iostoken ">
+					iostoken,
+				</if>
+				
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != aid">
+					 	#{aid},
+				</if>
+			 	<if test=" null != sellerid">
+					 	#{sellerid},
+				</if>
+			 	<if test=" null != account and '' != account ">
+					 	#{account},
+				</if>
+			 	<if test=" null != nname and '' != nname ">
+					 	#{nname},
+				</if>
+			 	<if test=" null != fullname and '' != fullname ">
+					 	#{fullname},
+				</if>
+			 	<if test=" null != password and '' != password ">
+					 	#{password},
+				</if>
+			 	<if test=" null != levelpass and '' != levelpass ">
+					 	#{levelpass},
+				</if>
+			 	<if test=" null != type">
+					 	#{type},
+				</if>
+			 	<if test=" null != sdate">
+					 	#{sdate},
+				</if>
+			 	<if test=" null != remarks and '' != remarks ">
+					 	#{remarks},
+				</if>
+			 	<if test=" null != phone and '' != phone ">
+					 	#{phone},
+				</if>
+				<if test=" null != uid">
+						#{uid},
+				</if>
+				<if test=" null != iostoken and '' != iostoken ">
+					   #{iostoken},
+				</if>
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_seller_account WHERE aid IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterMap="sellerAccount">
+		UPDATE t_seller_account
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != aid">
+					aid = #{aid},
+				</if>
+				<if test=" null != sellerid">
+					sellerid = #{sellerid},
+				</if>
+				<if test=" null != account and '' != account ">
+					account = #{account},
+				</if>
+				<if test=" null != nname">
+					nname = #{nname},
+				</if>
+				<if test=" null != fullname">
+					fullname = #{fullname},
+				</if>
+				<if test=" null != password and '' != password ">
+					password = #{password},
+				</if>
+				<if test=" null != levelpass">
+					levelpass = #{levelpass},
+				</if>
+				<if test=" null != type">
+					type = #{type},
+				</if>
+				<if test=" null != sdate">
+					sdate = #{sdate},
+				</if>
+				<if test=" null != remarks">
+					remarks = #{remarks},
+				</if>
+				<if test=" null != phone and '' != phone ">
+					phone = #{phone},
+				</if>
+				
+				<if test=" null != iostoken and '' != iostoken ">
+					iostoken = #{iostoken},
+				</if>
+				<if test=" null != uid">
+					uid = #{uid},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != aid and '' != aid">
+				aid = #{aid}
+			</if>
+		</where>
+	</update>
+	
+	<select id="getList" resultMap="sellerAccountMap" parameterMap="sellerAccount">
+		SELECT * FROM t_seller_account
+		<where>
+			userstatus=0
+			<if test=" null != aid">
+				AND aid = #{aid}
+			</if>
+			<if test=" null != sellerid">
+				AND sellerid = #{sellerid}
+			</if>
+			<if test=" null != account and '' != account ">
+				AND account LIKE '%${account}%'
+			</if>
+			<if test=" null != nname and '' != nname ">
+				AND nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != fullname and '' != fullname ">
+				AND fullname LIKE '%${fullname}%'
+			</if>
+			<if test=" null != password and '' != password ">
+				AND password LIKE '%${password}%'
+			</if>
+			<if test=" null != levelpass and '' != levelpass ">
+				AND levelpass LIKE '%${levelpass}%'
+			</if>
+			<if test=" null != type">
+				AND type = #{type}
+			</if>
+			<if test=" null != sdate">
+				AND sdate = #{sdate}
+			</if>
+			<if test=" null != remarks and '' != remarks ">
+				AND remarks LIKE '%${remarks}%'
+			</if>
+			<if test=" null != phone and '' != phone ">
+				AND phone LIKE '%${phone}%'
+			</if>
+			<if test=" null != sdateStart and '' != sdateStart">
+				AND sdate&gt;= #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd and '' != sdateEnd">
+				AND sdate&lt;= #{sdateEnd}
+			</if>
+			
+			<if test=" null != iostoken and '' != iostoken ">
+				AND	iostoken = #{iostoken}
+			</if>	
+		</where>
+			ORDER BY aid DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="sellerAccount">
+		SELECT COUNT(*) FROM t_seller_account
+		<where>
+			and userstatus=0
+			<if test=" null != aid">
+				AND aid = #{aid}
+			</if>
+			<if test=" null != sellerid">
+				AND sellerid = #{sellerid}
+			</if>
+			<if test=" null != account and '' != account ">
+				AND account LIKE '%${account}%'
+			</if>
+			<if test=" null != nname and '' != nname ">
+				AND nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != fullname and '' != fullname ">
+				AND fullname LIKE '%${fullname}%'
+			</if>
+			<if test=" null != password and '' != password ">
+				AND password LIKE '%${password}%'
+			</if>
+			<if test=" null != levelpass and '' != levelpass ">
+				AND levelpass LIKE '%${levelpass}%'
+			</if>
+			<if test=" null != type">
+				AND type = #{type}
+			</if>
+			<if test=" null != sdate">
+				AND sdate = #{sdate}
+			</if>
+			<if test=" null != remarks and '' != remarks ">
+				AND remarks LIKE '%${remarks}%'
+			</if>
+			<if test=" null != phone and '' != phone ">
+				AND phone LIKE '%${phone}%'
+			</if>
+			<if test=" null != sdateStart and '' != sdateStart">
+				AND sdate&gt;= #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd and '' != sdateEnd">
+				AND sdate&lt;= #{sdateEnd}
+			</if>
+			
+			<if test=" null != iostoken and '' != iostoken ">
+				AND	iostoken = #{iostoken}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 校验帐号Account唯一性 -->
+	<select id="getAcount" resultType="Long" parameterType="String">
+		SELECT COUNT(aid) FROM t_seller_account WHERE account = #{account} AND type in(1,2,3) and userstatus=0
+	</select>
+	
+	<select id="getMaxId"   resultType="Long">
+		SELECT Max(aid) AS VALUE FROM t_seller_account
+	</select>
+	
+	<select id="getObject" resultMap="sellerAccountMap" parameterType="Long">
+		SELECT * FROM t_seller_account WHERE aid = #{0} and userstatus=0
+	</select>
+	
+	<!-- 查询账号信息集合 -->
+	<select id="getAccountList" resultMap="sellerAccountMap" parameterMap="sellerAccount">
+		SELECT * FROM t_seller_account
+		<where>
+			1=1
+			<if test=" null != sellerid">
+				AND sellerid = #{sellerid}
+			</if>
+			AND type = 1
+			and userstatus=0
+		</where>
+		ORDER BY aid 
+    </select>
+    
+    <!-- 根据商家id删除账号信息 -->
+   	<delete id="deleteAccountInfoBySellerid" parameterType="Object">
+		DELETE FROM t_seller_account WHERE sellerid IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 根据sellerid数组获取该商家的管理员账户 -->
+	<select id="getAdminsBySeller" resultMap="sellerAccountMap" parameterType="Object">
+		SELECT * FROM t_seller_account WHERE type = 1 and userstatus=0 AND sellerid IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</select>
+	
+		<!-- 校验帐号Account唯一性 -->
+	<select id="checkMultipShopAccount" resultType="Long" parameterType="String">
+		SELECT COUNT(tt.account)
+		FROM(
+			SELECT t.account
+			FROM 
+			t_alliance_account t 
+			WHERE t.account=#{account} 
+			UNION ALL 
+			SELECT t1.account
+			FROM 
+			t_seller_account t1
+			WHERE t1.account=#{account} 
+			AND t1.type=4
+		   and t1.userstatus=0
+		) tt
+	</select>
+	
+	<!-- 获取商家主账号 -->
+	<select id="getMainAccount" resultType="map">
+		SELECT account 
+		FROM  t_seller_account
+		WHERE sellerid = #{sellerid}
+		AND par_account IS NULL
+	</select>
+</mapper>

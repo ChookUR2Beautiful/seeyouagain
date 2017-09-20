@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.AllianceShopDao">
+
+	<parameterMap type="AllianceShop" id="allianceShop" />
+	<parameterMap type="AllianceRelation" id="allianceRelation" />
+	
+	
+	<resultMap type="AllianceShop" id="allianceShopMap">	
+		<result column="id" property="id" />
+		<result column="alliance_name" property="allianceName" />
+		<result column="province" property="province" />
+		<result column="provinceNmae" property="provinceNmae" />
+		<result column="city" property="city" />
+		<result column="cityName" property="cityName" />
+		<result column="area" property="area" />
+		<result column="areaName" property="areaName" />
+		<result column="zoneid" property="zoneid" />
+		<result column="zoneName" property="zoneName" />		
+		<result column="address" property="address" />
+		<result column="phoneid" property="phoneid" />		
+		<result column="sdate" property="sdate" />
+		<result column="udate" property="udate" />
+		<result column="description" property="description" />
+	</resultMap>
+	
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_alliance
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						alliance_name,
+						province,
+						city,
+						area,
+						zoneid,
+						address,
+						phoneid,
+						sdate,
+						udate,
+						description
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.allianceName},
+						 #{item.province},
+						 #{item.city},
+						 #{item.area},
+						 #{item.zoneid},
+						 #{item.address},
+						 #{item.phoneid},
+						 #{item.sdate},
+						 #{item.udate},
+						 #{item.description}
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" useGeneratedKeys="true" keyProperty="id" parameterMap="allianceShop" >
+		INSERT INTO t_alliance
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != allianceName and '' != allianceName ">
+					alliance_name,
+				</if>
+			 	<if test=" null != province and '' != allianceName">
+					province,
+				</if>
+			 	<if test=" null != city and '' != city">
+					city,
+				</if>
+			 	<if test=" null != area and '' != area">
+					area,
+				</if>
+			 	<if test=" null != zoneid">
+					zoneid,
+				</if>
+			 	<if test=" null != address and '' != address">
+					address,
+				</if>
+			 	<if test=" null != phoneid and '' != phoneid">
+					phoneid,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+			 	<if test=" null != udate">
+					udate,
+				</if>
+			 	<if test=" null != description and '' != description">
+					description
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != allianceName and '' != allianceName ">
+					#{allianceName},
+				</if>
+			 	<if test=" null != province and '' != allianceName">
+					#{province},
+				</if>
+			 	<if test=" null != city and '' != city">
+					#{city},
+				</if>
+			 	<if test=" null != area and '' != area">
+					#{area},
+				</if>
+			 	<if test=" null != zoneid">
+					#{zoneid},
+				</if>
+			 	<if test=" null != address and '' != address">
+					#{address},
+				</if>
+			 	<if test=" null != phoneid and '' != phoneid">
+					#{phoneid},
+				</if>
+			 	<if test=" null != sdate">
+					#{sdate},
+				</if>
+			 	<if test=" null != udate">
+					#{udate},
+				</if>
+			 	<if test=" null != description and '' != description">
+					#{description}
+				</if>
+				</trim>
+	</insert>
+	
+	
+		<insert id="addReturnId" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterMap="allianceShop" >
+		INSERT INTO t_alliance
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != allianceName and '' != allianceName ">
+					alliance_name,
+				</if>
+			 	<if test=" null != province and '' != allianceName">
+					province,
+				</if>
+			 	<if test=" null != city and '' != city">
+					city,
+				</if>
+			 	<if test=" null != area and '' != area">
+					area,
+				</if>
+			 	<if test=" null != zoneid">
+					zoneid,
+				</if>
+			 	<if test=" null != address and '' != address">
+					address,
+				</if>
+			 	<if test=" null != phoneid and '' != phoneid">
+					phoneid,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+			 	<if test=" null != udate">
+					udate,
+				</if>
+			 	<if test=" null != description and '' != description">
+					description
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != allianceName and '' != allianceName ">
+					#{allianceName},
+				</if>
+			 	<if test=" null != province and '' != allianceName">
+					#{province},
+				</if>
+			 	<if test=" null != city and '' != city">
+					#{city},
+				</if>
+			 	<if test=" null != area and '' != area">
+					#{area},
+				</if>
+			 	<if test=" null != zoneid">
+					#{zoneid},
+				</if>
+			 	<if test=" null != address and '' != address">
+					#{address},
+				</if>
+			 	<if test=" null != phoneid and '' != phoneid">
+					#{phoneid},
+				</if>
+			 	<if test=" null != sdate">
+					#{sdate},
+				</if>
+			 	<if test=" null != udate">
+					#{udate},
+				</if>
+			 	<if test=" null != description and '' != description">
+					#{description}
+				</if>
+				</trim>
+	</insert>
+	
+	<insert id="insertAllianceRelation" parameterType="java.util.ArrayList">
+		INSERT INTO t_alliance_relation 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						id,sellerid
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.id},
+						 #{item.sellerId}
+			</trim>
+		</foreach>
+	</insert>
+	
+		<delete id="deleteAllianceRelation" parameterType="Long">
+			DELETE FROM  t_alliance_relation WHERE id =#{0}
+	</delete>
+	
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_alliance WHERE id IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	
+	
+	
+	<update id="update" parameterMap="allianceShop">
+		UPDATE t_alliance
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != allianceName and '' != allianceName ">
+					alliance_name = #{allianceName},
+				</if>
+			 	<if test=" null != province and '' != allianceName">
+					province = #{province},
+				</if>
+			 	<if test=" null != city and '' != city">
+					city = #{city},
+				</if>
+			 	<if test=" null != area and '' != area">
+					area = #{area},
+				</if>
+			 	<if test=" null != zoneid">
+					zoneid = #{zoneid},
+				</if>
+			 	<if test=" null != address and '' != address">
+					address = #{address},
+				</if>
+			 	<if test=" null != phoneid and '' != phoneid">
+					phoneid = #{phoneid},
+				</if>
+			 	<if test=" null != sdate">
+					sdate = #{sdate},
+				</if>
+			 	<if test=" null != udate">
+					udate = #{udate},
+				</if>
+			 	<if test=" null != description and '' != description">
+					description = #{description}
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != id">
+				id = #{id}
+			</if>
+		</where>
+	</update>
+	
+	<select id="getList" resultMap="allianceShopMap" parameterMap="allianceShop">
+			SELECT  ta.id, ta.alliance_name,ta.phoneid, ta.address,ta.sdate,
+			  tp.title AS provinceNmae,
+			  tc.title AS cityName,
+			  tq.title AS areaName,
+			  tb.title AS   zoneName,
+			  ta.salesman,
+			  (SELECT COUNT(*) FROM t_alliance_relation tl WHERE ta.id = tl.id  ) AS subShopNum
+			FROM
+			  ( SELECT  id,alliance_name,phoneid,address,province,city, area, zoneid, sdate, salesman FROM (SELECT t.*, t1.fullname AS salesman 
+			        FROM t_alliance t LEFT JOIN t_alliance_account t1 ON t.alliance_name = t1.nname) t 
+			  		<where>
+						1=1
+							<if test="null != id">
+								AND id = #{id}
+							</if>
+							<if test=" null != allianceName and '' != allianceName ">
+								AND alliance_name  like '%' #{allianceName} '%'
+							</if>
+						 	<if test=" null != province and '' != province">
+								AND province = #{province}
+							</if>
+						 	<if test=" null != city and '' != city">
+								AND city = #{city}
+							</if>
+						 	<if test=" null != area and '' != area">
+								AND area = #{area}
+							</if>
+						 	<if test=" null != zoneid">
+								AND zoneid = #{zoneid}
+							</if>
+							<if test=" null != address and '' != address">
+								AND address like '%' #{address} '%'
+							</if>
+						 	<if test=" null != phoneid and '' != phoneid">
+								AND phoneid like '%' #{phoneid} '%'
+							</if>
+						 	<if test=" null != sdate">
+								AND sdate = #{sdate}
+							</if>
+						 	<if test=" null != udate">
+								AND udate = #{udate}
+							</if>
+						 	<if test=" null != description and '' != description">
+								AND description = #{description}
+							</if>
+					</where>
+			  ) ta 
+			  
+			  
+			  LEFT JOIN t_area tp ON ta.province = tp.area_id
+			LEFT JOIN t_area tc ON ta.city = tc.area_id
+			LEFT JOIN t_area tq ON ta.area = tq.area_id
+			LEFT JOIN t_business tb ON ta.zoneid = tb.bid
+			  <!-- LEFT JOIN  (SELECT  tp.title AS provinceNmae,tp.area_id AS province, tc.title AS cityName,tc.area_id AS city,ta.title AS areaName,ta.area_id AS areaid,tb.bid AS zoneid,tb.title AS zoneName 
+			    FROM (SELECT  t.`area_id`,t.`title` FROM t_area t  
+			    	<where>
+			    			<if test=" null != province and '' != province">
+								t.area_id= #{province}
+							</if>
+							<if test=" null == province or '' == province">
+								t.pid=0
+							</if>
+			    	</where>
+			    
+			    ) tp 
+			      RIGHT JOIN (SELECT  t.`area_id`,t.`title`, t.`pid` FROM t_area t
+			      	<where>
+			      		1=1
+			    			<if test=" null != province and '' != province">
+								AND t.pid= #{province}
+							</if>
+							<if test=" null != city and '' != city">
+								AND t.area_id= #{city}
+							</if>
+			    	</where>
+			      
+			      ) tc ON tc.pid = tp.area_id 
+			      RIGHT JOIN (SELECT   t.`title`,t.`area_id`, t.`pid` FROM t_area t
+			      	<where>
+			      		1=1
+			    			<if test=" null != city and '' != city">
+								AND t.pid= #{city}
+							</if>
+							<if test=" null != area and '' != area">
+								AND t.area_id= #{area}
+							</if>
+			    	</where>
+			      
+			      ) ta ON ta.pid = tc.area_id 
+			      RIGHT JOIN (SELECT  tb.`bid`,tb.`area_id`,tb.`title`  FROM t_business tb
+			      	<where>
+			      		1=1
+							<if test=" null != area and '' != area">
+								AND tb.area_id= #{area}
+							</if>
+							<if test=" null != zoneid and '' != zoneid">
+								AND tb.bid= #{zoneid}
+							</if>
+			    	</where>
+			      ) tb  ON tb.area_id = ta.area_id
+			  ) tb 
+			    ON ta.province = tb.province 
+			    AND ta.city = tb.city 
+			    AND ta.area = tb.areaid 
+			    AND ta.zoneid = tb.zoneid  	 -->
+		
+			ORDER BY ta.sdate DESC  
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="allianceShop">
+		SELECT COUNT(*) FROM t_alliance
+		<where>
+			1=1
+				<if test=" null != allianceName and '' != allianceName ">
+					AND alliance_name  like '%' #{allianceName} '%'
+				</if>
+			 	<if test=" null != province and '' != province">
+					AND province = #{province}
+				</if>
+			 	<if test=" null != city and '' != city">
+					AND city = #{city}
+				</if>
+			 	<if test=" null != area and '' != area">
+					AND area = #{area}
+				</if>
+			 	<if test=" null != zoneid">
+					AND zoneid = #{zoneid}
+				</if>
+				<if test=" null != address and '' != address">
+					AND address like '%' #{address} '%'
+				</if>
+			 	<if test=" null != phoneid and '' != phoneid">
+					AND phoneid like '%' #{phoneid} '%'
+				</if>
+			 	<if test=" null != sdate">
+					AND sdate = #{sdate}
+				</if>
+			 	<if test=" null != udate">
+					AND udate = #{udate}
+				</if>
+			 	<if test=" null != description and '' != description">
+					AND description = #{description}
+				</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId"  resultType="Integer">
+		SELECT Max(id) AS VALUE FROM t_alliance
+	</select>
+	
+	<select id="getObject" resultMap="allianceShopMap" parameterType="Long">
+		SELECT * FROM t_alliance WHERE id = #{0}
+	</select>
+	
+	 	
+</mapper>

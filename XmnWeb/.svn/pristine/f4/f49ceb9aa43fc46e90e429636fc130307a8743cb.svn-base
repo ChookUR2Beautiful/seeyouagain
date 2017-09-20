@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.reward_dividends.dao.TVerExcitationReceiveDao" >
+
+  <resultMap id="verExcitationReceiveMap" type="com.xmniao.xmn.core.reward_dividends.entity.TVerExcitationReceive" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="project_name" property="projectName" jdbcType="VARCHAR" />
+    <result column="cid" property="cid" jdbcType="INTEGER" />
+    <result column="num" property="num" jdbcType="TINYINT" />
+    <result column="type" property="type" jdbcType="TINYINT" />
+    <result column="worth" property="worth" jdbcType="DOUBLE" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="excitation_date" property="excitationDate" jdbcType="TIMESTAMP" />
+    <result column="receive_date" property="receiveDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  
+  <sql id="verExcitationReceive_column_list" >
+    id, order_no, uid, project_name, cid, num, type, worth, status, excitation_date, 
+    receive_date
+  </sql>
+  
+  <!-- 根据条件查询奖励发放记录列表 -->
+  <select id="getList" resultMap="verExcitationReceiveMap" parameterType="com.xmniao.xmn.core.reward_dividends.entity.TVerExcitationReceive" >
+    select 
+    <include refid="verExcitationReceive_column_list" />
+    from t_ver_excitation_receive
+    <where>
+    	<if test="id != null and id !='' ">
+    		id =#{id}
+    	</if>
+    	<if test="orderNo != null and orderNo !='' ">
+    		order_no = #{orderNo}
+    	</if>
+    	<if test="uid != null and uid !='' ">
+    		uid = #{uid}
+    	</if>
+    	<if test="projectName != null and projectName !='' ">
+    		project_name = #{projectName}
+    	</if>
+    	<if test="status != null and status !='' or status ==0 ">
+    		status = #{status}
+    	</if>
+    </where>
+  </select>
+
+    <!--查询未领取的奖励记录-->
+    <select id="selectUnclaimedByType" resultMap="verExcitationReceiveMap" >
+	SELECT *
+	FROM t_ver_excitation_receive
+	WHERE 1 =1
+	<if test="type != null and type !='' ">
+		AND type = #{type}
+	</if>
+	AND uid = #{uid}
+	AND `status` != 2
+    </select>
+
+</mapper>

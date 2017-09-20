@@ -1,0 +1,391 @@
+/**
+ *
+ */
+package com.xmniao.xmn.core.coupon.service;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.thrift.TException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.base.BaseService;
+import com.xmniao.xmn.core.base.Resultable;
+import com.xmniao.xmn.core.coupon.controller.vo.CouponIssueSystemPushAddRequest;
+import com.xmniao.xmn.core.coupon.dao.CouponDao;
+import com.xmniao.xmn.core.coupon.dao.CouponDetailDao;
+import com.xmniao.xmn.core.coupon.entity.SystemPushCoupon;
+import com.xmniao.xmn.core.coupon.entity.TCoupon;
+import com.xmniao.xmn.core.coupon.entity.TCouponDetail;
+import com.xmniao.xmn.core.coupon.service.thread.SaveSystemPushInfoThread;
+import com.xmniao.xmn.core.coupon.util.CouponUtil;
+import com.xmniao.xmn.core.live_anchor.dao.BursEarningsRankDao;
+import com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy;
+import com.xmniao.xmn.core.thrift.service.liveService.FailureException;
+import com.xmniao.xmn.core.thrift.service.liveService.LiveWalletService;
+import com.xmniao.xmn.core.thrift.service.liveService.ResponseData;
+import com.xmniao.xmn.core.vstar.constant.VstarConstant;
+import com.xmniao.xmn.core.vstar.entity.TVstarRewardSend;
+import com.xmniao.xmn.core.vstar.service.TVstarRewardSendService;
+
+/**
+ * 项目名称：XmnWeb
+ * <p>
+ * 类名称：SystemPushCouponService
+ * <p>
+ * 类描述： 系统推送优惠券Service
+ * <p>
+ * 创建人：  huang'tao
+ * <p>
+ * 创建时间：2017-4-19 下午7:28:02
+ * <p>
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司
+ */
+@Service
+public class SystemPushCouponService extends BaseService<TCouponDetail> {
+
+    /**
+     * 注入粉丝券详情信息
+     */
+    @Autowired
+    private CouponDetailDao couponDetailDao;
+
+    @Autowired
+    private CouponDao couponDao;
+
+    @Autowired
+    private BursEarningsRankDao bursEarningsRankDao;
+
+    @SuppressWarnings("rawtypes")
+    @Override
+    protected BaseDao getBaseDao() {
+        return couponDetailDao;
+    }
+    
+    /**
+	 * 注入直播钱包服务
+	 */
+	@Resource(name = "liveWalletServiceServiceClient")
+	private ThriftClientProxy liveWalletServiceServiceClient;
+	
+	
+	/**
+	 * 注入新时尚大赛发放奖励服务
+	 */
+	@Autowired
+	private TVstarRewardSendService rewardSendService;
+
+
+    /**
+     * 方法描述：设置优惠券详情信息  <br/>
+     * 创建人：  huang'tao <br/>
+     * 创建时间：2017-4-19下午8:47:09 <br/>
+     *
+     * @param couponDetail
+     * @param coupon
+     * @param phone
+     * @param uid
+     */
+    public void setCouponDetailInfo(TCouponDetail couponDetail, TCoupon coupon, String uid, String phone,Integer getWay) {
+        try {
+            couponDetail.setCid(coupon.getCid());
+            couponDetail.setDenomination(coupon.getDenomination());
+            couponDetail.setSerial(CouponUtil.generatorUUID());
+            if(getWay==null){
+            	couponDetail.setGetWay(TCouponDetail.GetWay.SYSTEMPUSH.getIndex());
+            }else{
+            	couponDetail.setGetWay(getWay);
+            }
+            Integer dayNum = coupon.getDayNum();
+            if (dayNum != null) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                Date startDate = sdf.parse(sdf.format(new Date()));
+                couponDetail.setStartDate(startDate);
+                couponDetail.setEndDate(DateUtils.addDays(startDate, dayNum));
+            } else {
+                couponDetail.setStartDate(coupon.getStartDate());//特别注意：优惠券有效期开始时间和结束时间一定要设置好，不然APP端获取不到优惠券的
+                couponDetail.setEndDate(coupon.getEndDate());
+            }
+            couponDetail.setGetStatus(TCouponDetail.GetStatus.GOT.getIndex());//默认未获取
+            couponDetail.setUserStatus(TCouponDetail.UserStatus.UNUSE.getIndex());//默认未使用
+            couponDetail.setUid(new Integer(uid));
+            couponDetail.setPhone(phone);
+            couponDetail.setDateIssue(new Date());//发行时间是，指优惠券生成的时间
+            couponDetail.setSendStatus(TCouponDetail.SendStatus.UNSEND.getIndex());
+            couponDetail.setCtype(coupon.getCtype());
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.log.error("设置优惠券详情信息  异常：" + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 方法描述：批量更新优惠券使用状态 <br/>
+     * 创建人：  huang'tao <br/>
+     * 创建时间：2017-4-20下午2:25:03 <br/>
+     *
+     * @param cdids
+     * @param userStatus
+     * @return
+     */
+    public Resultable updateStatusBatch(String cdids, String userStatus) {
+        Resultable result = new Resultable();
+        try {
+            Map<String, Object> map = new HashMap<String, Object>();
+            if (StringUtils.isNotBlank(cdids)) {
+                map.put("cdids", cdids.split(","));
+                map.put("userStatus", userStatus);
+                couponDetailDao.updateBatch(map);
+                result.setSuccess(true);
+                result.setMsg("操作成功");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setSuccess(false);
+            result.setMsg("操作失败");
+
+        }
+
+        return result;
+    }
+
+
+    /**
+     * 保存系统推送优惠劵
+     * @param couponsList   优惠劵列表
+     * @param selectUsers   排除的用户
+     * @param levelSelect   选取的用户等级
+     */
+    public void saveSystemPushInfo(List<TCoupon> couponsList, String selectUsers, Integer levelSelect) {
+    }
+
+    /**
+     *  @param couponsList   优惠劵列表
+     * @param selectUsers   排除的用户
+     * @param rankid
+     * @param userType
+     */
+    public void saveSystemPushInfo(CouponIssueSystemPushAddRequest request) {
+    	String selectUsers = request.getSelectUsers();
+    	Integer userType = request.getUserType();
+    	Integer rankid = request.getLevelSelect();
+    	Integer getWay = request.getGetWay();
+    	Integer ctype = request.getCtype();
+    	
+
+        // 封装已选取用户列表 [{uid=xx,phone=xx}]
+        ArrayList<HashMap<String, String>> selectUserList = analysingSelectUsers(selectUsers);
+        
+        
+        if(ctype!=null && ctype.intValue()==VstarConstant.REWARD_TYPE.REWARD_TYPE_6){
+        	sendBirdRward(selectUserList,request);
+        }else{
+        	List<TCoupon> couponList = request.convertCouponList();
+        	// 每种优惠劵开启一个分别线程发放
+            for (TCoupon tCoupon : couponList) {
+                // 获取优惠劵信息
+                TCoupon couponInfo = couponDao.getObject(tCoupon.getCid().longValue());
+                couponInfo.setUseNum(tCoupon.getUseNum());
+
+                SaveSystemPushInfoThread saveSystemPushInfoThread = new SaveSystemPushInfoThread(this,selectUserList,couponInfo,userType, rankid,getWay);
+                Thread thread = new Thread(saveSystemPushInfoThread);
+                thread.run();
+            }
+        }
+        
+        //同步新时尚大赛发放奖励记录
+        if(getWay!=null && getWay.intValue()==9){
+        	syncVstarRewardSendMsg(request);
+        }
+
+    }
+
+    /**
+	 * 方法描述：同步新时尚大赛发放奖励记录 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-8-4下午5:52:24 <br/>
+	 * @param request
+	 */
+	private void syncVstarRewardSendMsg(CouponIssueSystemPushAddRequest request) {
+		// TODO Auto-generated method stub 
+		List<TVstarRewardSend> rewardSendList= new ArrayList<TVstarRewardSend>();
+		String selectUsers = request.getSelectUsers();
+    	Integer ctype = request.getCtype();
+    	
+		// 封装已选取用户列表 [{uid=xx,phone=xx}]
+        ArrayList<HashMap<String, String>> userList = analysingSelectUsers(selectUsers);
+        for(HashMap<String,String> userInfo:userList){
+        	String uid = userInfo.get("uid");
+        	String phone = userInfo.get("phone");
+        	
+        	if(ctype!=null && ctype.intValue()==VstarConstant.REWARD_TYPE.REWARD_TYPE_6){
+            	double birdCoin = request.getBirdCoin();
+            	
+            	TVstarRewardSend rewardSend= new TVstarRewardSend();
+            	rewardSend.setUid(new Integer(uid));
+            	rewardSend.setPhone(phone);
+            	rewardSend.setRewardType(ctype);
+            	rewardSend.setRewardDescription(birdCoin+"");
+            	rewardSend.setRewardNum(1);
+            	rewardSend.setCreateTime(new Date());
+            	rewardSend.setUpdateTime(new Date());
+            	rewardSend.setStatus(1);
+            	
+            	rewardSendList.add(rewardSend);
+            }else{
+            	List<TCoupon> couponList = request.convertCouponList();
+                for (TCoupon tCoupon : couponList) {
+                	TVstarRewardSend rewardSend= new TVstarRewardSend();
+                	rewardSend.setUid(new Integer(uid));
+                	rewardSend.setPhone(phone);
+                	rewardSend.setRewardType(ctype);
+                	rewardSend.setRewardDescription(tCoupon.getCname());
+                	rewardSend.setRewardNum(tCoupon.getUseNum());
+                	rewardSend.setCid(tCoupon.getCid());
+                	rewardSend.setCreateTime(new Date());
+                	rewardSend.setUpdateTime(new Date());
+                	rewardSend.setStatus(1);
+                	rewardSendList.add(rewardSend);
+                }
+            }
+        	
+        }
+        
+        if(rewardSendList!=null && rewardSendList.size()>0){
+    		rewardSendService.addBatch(rewardSendList);
+    	}
+	}
+
+	/**
+	 * 方法描述：给选择用户发放鸟币奖励 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-8-4下午2:52:49 <br/>
+	 * @param selectUserList
+	 * @param request
+	 */
+	private void sendBirdRward(
+			ArrayList<HashMap<String, String>> selectUserList,
+			CouponIssueSystemPushAddRequest request) {
+		try {
+			double birdCoin = request.getBirdCoin();
+			if(selectUserList!=null && selectUserList.size()>0){
+				LiveWalletService.Client client = (LiveWalletService.Client)(liveWalletServiceServiceClient.getClient());
+				Map<String, String> paraMap =new HashMap<String,String>();
+				for(HashMap<String,String> userMap:selectUserList){
+					String uid = userMap.get("uid");
+//					String phone = userMap.get("phone");
+					paraMap.put("uid",uid);
+					paraMap.put("rtype", VstarConstant.LIVE_RTYPE_39+"");
+					paraMap.put("zbalance", birdCoin+"");
+					paraMap.put("option", "0");//0 加，1减
+					ResponseData liveWalletOption = client.liveWalletOption(paraMap);
+					this.log.info("给选择用户发放鸟币奖励,执行结果:"+liveWalletOption.toString());
+				}
+			}
+		} catch (FailureException e) {
+			e.printStackTrace();
+			this.log.error(e.getMessage());
+		} catch (TException e) {
+			e.printStackTrace();
+			this.log.error(e.getMessage());
+		}finally{
+			liveWalletServiceServiceClient.returnCon();
+		}
+		
+	}
+
+
+	/**
+     * 封装已选取用户列表
+     * @param selectUsers
+     * @return
+     */
+    public ArrayList<HashMap<String, String>> analysingSelectUsers(String selectUsers) {
+        ArrayList<HashMap<String, String>> selectUserList = new ArrayList<>();
+        String[] userList = selectUsers.split(",");
+        for (String userItem : userList) {
+
+            if (StringUtils.isBlank(userItem)) {
+                continue;
+            }
+
+            HashMap<String, String> selectUser = new HashMap<>();
+            selectUser.put("uid",userItem.split(":;")[0]);
+            selectUser.put("phone",userItem.split(":;")[2]);
+            selectUserList.add(selectUser);
+        }
+        return selectUserList;
+    }
+
+    /**
+     * 方法描述：保存系统推送发放优惠券信息 <br/>
+     * 创建人：  huang'tao <br/>
+     * 创建时间：2017-4-19下午8:19:12 <br/>
+     *
+     * @param systemPushCoupon
+     */
+    public void saveSystemPushInfo(SystemPushCoupon systemPushCoupon) {
+        try {
+            List<TCouponDetail> couponDetailList = new ArrayList<TCouponDetail>();
+
+            Integer cid = systemPushCoupon.getCid();
+            String userIds = systemPushCoupon.getUserIds();
+            Integer sendNum = systemPushCoupon.getSendNum();
+
+            boolean toAdd = cid != null && StringUtils.isNoneBlank(userIds) && sendNum > 0;
+            if (toAdd) {
+                TCoupon coupon = couponDao.getObject(new Long(cid));
+                String[] userList = userIds.split(",");
+
+                // 循环发送数量, 封装coupon_detail 信息
+                for (String userItem : userList) {
+                    String uid = userItem.split(":;")[0];
+                    String phone = userItem.split(":;")[2];
+
+                    for (int i = 0; i < sendNum; i++) {
+                        TCouponDetail couponDetail = new TCouponDetail();
+                        //设置粉丝券详情信息
+                        setCouponDetailInfo(couponDetail, coupon, uid, phone,TCouponDetail.GetWay.SYSTEMPUSH.getIndex());
+                        couponDetailList.add(couponDetail);
+                    }
+                }
+
+            }
+            if (couponDetailList.size() > 0) {
+                addBatch(couponDetailList);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.log.error("保存系统推送发放优惠券信息异常：" + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 根据等级id查询用户
+     * @param rankid 等级
+     * @param selectUserList 排除的用户
+     */
+    public List<HashMap<String, String>> queryRankUsers(Integer rankid, ArrayList<HashMap<String, String>> selectUserList) {
+        return bursEarningsRankDao.selectRankUsers(rankid,selectUserList);
+    }
+
+    /**
+     * 根据等级id统计用户
+     * @param rankid 等级
+     * @param selectUserList 排除的用户
+     * @return
+     */
+    public int countRankUsers(Integer rankid, ArrayList<HashMap<String, String>> selectUserList){
+        return bursEarningsRankDao.countRankUsers(rankid,selectUserList);
+    }
+}

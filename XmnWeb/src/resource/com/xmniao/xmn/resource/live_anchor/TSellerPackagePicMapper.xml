@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TSellerPackagePicDao" >
+  <parameterMap type="SellerPackagePic" id="sellerPackagePic" />
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.live_anchor.entity.TSellerPackagePic" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="pid" property="pid" jdbcType="INTEGER" />
+    <result column="pic_url" property="picUrl" jdbcType="VARCHAR" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+    <result column="pic_type" property="picType" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, pid, pic_url, sort, pic_type
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_seller_package_pic
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_seller_package_pic
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.live_anchor.entity.TSellerPackagePic" >
+    insert into t_seller_package_pic (id, pid, pic_url, 
+      sort, pic_type)
+    values (#{id,jdbcType=INTEGER}, #{pid,jdbcType=INTEGER}, #{picUrl,jdbcType=VARCHAR}, 
+      #{sort,jdbcType=INTEGER}, #{picType,jdbcType=INTEGER})
+  </insert>
+  
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.live_anchor.entity.TSellerPackagePic" >
+    insert into t_seller_package_pic
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="pid != null" >
+        pid,
+      </if>
+      <if test="picUrl != null" >
+        pic_url,
+      </if>
+      <if test="sort != null" >
+        sort,
+      </if>
+      <if test="picType != null" >
+        pic_type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="pid != null" >
+        #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="picUrl != null" >
+        #{picUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null" >
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="picType != null" >
+        #{picType,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.live_anchor.entity.TSellerPackagePic" >
+    update t_seller_package_pic
+    <set >
+      <if test="pid != null" >
+        pid = #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="picUrl != null" >
+        pic_url = #{picUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null" >
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="picType != null" >
+        pic_type = #{picType,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.live_anchor.entity.TSellerPackagePic" >
+    update t_seller_package_pic
+    set pid = #{pid,jdbcType=INTEGER},
+      pic_url = #{picUrl,jdbcType=VARCHAR},
+      sort = #{sort,jdbcType=INTEGER},
+      pic_type = #{picType,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  
+  <!-- 自定义查询区域 -->
+   <select id="getDataListByPid" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_seller_package_pic
+    where pid = #{pid,jdbcType=INTEGER}
+  </select>
+  
+    <!-- 自定义查询区域 -->
+	<select id="deleteDataListByPid" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		delete from t_seller_package_pic
+		    where pid = #{pid,jdbcType=INTEGER}
+	</select>
+  
+</mapper>

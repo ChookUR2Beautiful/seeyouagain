@@ -1,0 +1,1049 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.xmnburs.dao.BursDao">
+
+	<sql id="urs_column_list">
+		uid, uname, nname, password, email, sign, regtime, regip, regcity,
+		regarea, regzoneid,
+		lastloginip, lastlogintime, ukeys, pkeys, pttype, uin, status, zphone, zuid,
+		regtype,
+		channel_id, phone,<!-- phone_area, -->
+		usertype, mike_type, mike_time, mike_start, mike_end,
+		zc_time, ios_token, genussellerid, genusname, jointid, corporate, attach_time,
+		is_virtual,
+		phone_type, app_version, app_series, imei, marks, unionid<!--, openid , user_id -->
+	</sql>
+
+<sql id="whereSQL">
+	<if test="uname != null">
+			AND uname = #{uname,jdbcType=VARCHAR}
+		</if>
+		<if test="nname != null and nname != ''">
+			AND nname like '%${nname}%'
+		</if>
+		<if test="password != null">
+			AND password = #{password,jdbcType=VARCHAR}
+		</if>
+		<if test="email != null">
+			AND email = #{email,jdbcType=VARCHAR}
+		</if>
+		<if test="sign != null">
+			AND sign = #{sign,jdbcType=VARCHAR}
+		</if>
+		<if test="regtime != null">
+			AND regtime = #{regtime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="regip != null">
+			AND regip = #{regip,jdbcType=VARCHAR}
+		</if>
+		<if test="regcity != null">
+			AND regcity = #{regcity,jdbcType=INTEGER}
+		</if>
+		<if test="regarea != null">
+			AND regarea = #{regarea,jdbcType=INTEGER}
+		</if>
+		<if test="regzoneid != null">
+			AND regzoneid = #{regzoneid,jdbcType=INTEGER}
+		</if>
+		<if test="lastloginip != null">
+			AND lastloginip = #{lastloginip,jdbcType=VARCHAR}
+		</if>
+		<if test="lastlogintime != null">
+			AND lastlogintime = #{lastlogintime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="ukeys != null">
+			AND ukeys = #{ukeys,jdbcType=VARCHAR}
+		</if>
+		<if test="pkeys != null">
+			AND pkeys = #{pkeys,jdbcType=VARCHAR}
+		</if>
+		<if test="pttype != null">
+			AND pttype = #{pttype,jdbcType=VARCHAR}
+		</if>
+		<if test="uin != null">
+			AND uin = #{uin,jdbcType=VARCHAR}
+		</if>
+		<if test="status != null">
+			AND status = #{status,jdbcType=INTEGER}
+		</if>
+		<if test="zphone != null">
+			AND zphone = #{zphone,jdbcType=VARCHAR}
+		</if>
+		<if test="zuid != null">
+			AND zuid = #{zuid,jdbcType=VARCHAR}
+		</if>
+		<if test="regtype != null">
+			AND regtype = #{regtype,jdbcType=INTEGER}
+		</if>
+		<if test="channelId != null">
+			AND channel_id = #{channelId,jdbcType=VARCHAR}
+		</if>
+		<if test="phone != null and phone !='' ">
+			AND phone = #{phone,jdbcType=VARCHAR}
+		</if>
+		<if test="phoneArea != null">
+			AND phone_area = #{phoneArea,jdbcType=VARCHAR}
+		</if>
+		<if test="usertype != null">
+			AND usertype = #{usertype,jdbcType=INTEGER}
+		</if>
+		<if test="mikeType != null">
+			AND mike_type = #{mikeType,jdbcType=TINYINT}
+		</if>
+		<if test="mikeTime != null">
+			AND mike_time = #{mikeTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="mikeStart != null">
+			AND mike_start = #{mikeStart,jdbcType=DATE}
+		</if>
+		<if test="mikeEnd != null">
+			AND mike_end = #{mikeEnd,jdbcType=DATE}
+		</if>
+		<if test="zcTime != null">
+			AND zc_time = #{zcTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="iosToken != null">
+			AND ios_token = #{iosToken,jdbcType=VARCHAR}
+		</if>
+		<if test="genussellerid != null">
+			AND genussellerid = #{genussellerid,jdbcType=INTEGER}
+		</if>
+		<if test="genusname != null">
+			AND genusname = #{genusname,jdbcType=VARCHAR}
+		</if>
+		<if test="jointid != null">
+			AND jointid = #{jointid,jdbcType=INTEGER}
+		</if>
+		<if test="corporate != null">
+			AND corporate = #{corporate,jdbcType=VARCHAR}
+		</if>
+		<if test="attachTime != null">
+			AND attach_time = #{attachTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="isVirtual != null">
+			AND is_virtual = #{isVirtual,jdbcType=INTEGER}
+		</if>
+		<if test="phoneType != null">
+			AND phone_type = #{phoneType,jdbcType=BIT}
+		</if>
+		<if test="appVersion != null">
+			AND app_version = #{appVersion,jdbcType=VARCHAR}
+		</if>
+		<if test="appSeries != null">
+			AND app_series = #{appSeries,jdbcType=INTEGER}
+		</if>
+		<if test="imei != null">
+			AND imei = #{imei,jdbcType=VARCHAR}
+		</if>
+		<if test="marks != null">
+			AND marks = #{marks,jdbcType=TINYINT}
+		</if>
+		<if test="unionid != null">
+			AND unionid = #{unionid,jdbcType=VARCHAR}
+		</if>
+		<if test="uid != null">
+			AND uid = #{uid}
+		</if>
+</sql>
+
+
+<select id="getUrsListAndLevelByUids" parameterType="com.xmniao.xmn.core.xmnburs.entity.Burs" resultType="com.xmniao.xmn.core.xmnburs.entity.Burs">
+	 select 
+	 b_urs.uid as uid,nname,level.level_name as levelName,info.phone,info.avatar
+	 from b_urs left join b_urs_info info on b_urs.uid = info.uid
+	 left join b_liver  on b_urs.uid = b_liver.uid
+	 left join b_live_level level on b_liver.level_id = level.id
+	 <where>
+			b_urs.uid in
+			<foreach item="item" index="index" collection="array" open="("
+				separator="," close=") ">
+				#{item}
+			</foreach>
+		</where>
+</select>
+
+<select id="getList" parameterType="com.xmniao.xmn.core.xmnburs.entity.Burs"
+		resultType="com.xmniao.xmn.core.xmnburs.entity.Burs">
+		SELECT
+		uid, uname, nname,
+		password, email, sign,
+		regtime, regip, regcity,
+		regarea, regzoneid, lastloginip,
+		lastlogintime, ukeys, pkeys,
+		pttype, uin, status,
+		zphone, zuid, regtype,
+		channel_id channelId, phone,
+		<!-- phone_area phoneArea, -->
+		usertype, mike_type mikeType, mike_time mikeTime,
+		mike_start mikeStart, mike_end mikeEnd, zc_time zcTime,
+		ios_token iosToken, genussellerid, genusname,
+		jointid, corporate, attach_time attachTime,
+		is_virtual isVirtual, phone_type phoneType, app_version appVersion,
+		app_series appSeries, imei, marks,
+		unionid
+		FROM b_urs
+		WHERE 1=1
+		<include refid="whereSQL"></include>
+		<if test="order != -1">
+			order by regtime desc
+		</if>
+		<if test="limit != -1">
+			limit ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.xmnburs.entity.Burs">
+		SELECT
+				count(1)
+		FROM b_urs
+		WHERE 1=1
+		<include refid="whereSQL"></include>
+	</select>
+
+	<!-- 新增寻蜜鸟用户 -->
+	<insert id="addUrs" parameterType="com.xmniao.xmn.core.xmnburs.entity.Burs"
+		useGeneratedKeys="true" keyProperty="uid">
+		insert into b_urs
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="uid != null">
+				uid,
+			</if>
+			<if test="uname != null">
+				uname,
+			</if>
+			<if test="nname != null">
+				nname,
+			</if>
+			<if test="password != null">
+				password,
+			</if>
+			<if test="email != null">
+				email,
+			</if>
+			<if test="sign != null">
+				sign,
+			</if>
+			<if test="regtime != null">
+				regtime,
+			</if>
+			<if test="regip != null">
+				regip,
+			</if>
+			<if test="regcity != null">
+				regcity,
+			</if>
+			<if test="regarea != null">
+				regarea,
+			</if>
+			<if test="regzoneid != null">
+				regzoneid,
+			</if>
+			<if test="lastloginip != null">
+				lastloginip,
+			</if>
+			<if test="lastlogintime != null">
+				lastlogintime,
+			</if>
+			<if test="ukeys != null">
+				ukeys,
+			</if>
+			<if test="pkeys != null">
+				pkeys,
+			</if>
+			<if test="pttype != null">
+				pttype,
+			</if>
+			<if test="uin != null">
+				uin,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="zphone != null">
+				zphone,
+			</if>
+			<if test="zuid != null">
+				zuid,
+			</if>
+			<if test="regtype != null">
+				regtype,
+			</if>
+			<if test="channelId != null">
+				channel_id,
+			</if>
+			<if test="phone != null">
+				phone,
+			</if>
+			<if test="phoneArea != null">
+				phone_area,
+			</if>
+			<if test="usertype != null">
+				usertype,
+			</if>
+			<if test="mikeType != null">
+				mike_type,
+			</if>
+			<if test="mikeTime != null">
+				mike_time,
+			</if>
+			<if test="mikeStart != null">
+				mike_start,
+			</if>
+			<if test="mikeEnd != null">
+				mike_end,
+			</if>
+			<if test="zcTime != null">
+				zc_time,
+			</if>
+			<if test="iosToken != null">
+				ios_token,
+			</if>
+			<if test="genussellerid != null">
+				genussellerid,
+			</if>
+			<if test="genusname != null">
+				genusname,
+			</if>
+			<if test="jointid != null">
+				jointid,
+			</if>
+			<if test="corporate != null">
+				corporate,
+			</if>
+			<if test="attachTime != null">
+				attach_time,
+			</if>
+			<if test="isVirtual != null">
+				is_virtual,
+			</if>
+			<if test="phoneType != null">
+				phone_type,
+			</if>
+			<if test="appVersion != null">
+				app_version,
+			</if>
+			<if test="appSeries != null">
+				app_series,
+			</if>
+			<if test="imei != null">
+				imei,
+			</if>
+			<if test="marks != null">
+				marks,
+			</if>
+			<if test="unionid != null">
+				unionid,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="uid != null">
+				#{uid,jdbcType=INTEGER},
+			</if>
+			<if test="uname != null">
+				#{uname,jdbcType=VARCHAR},
+			</if>
+			<if test="nname != null">
+				#{nname,jdbcType=VARCHAR},
+			</if>
+			<if test="password != null">
+				#{password,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null">
+				#{email,jdbcType=VARCHAR},
+			</if>
+			<if test="sign != null">
+				#{sign,jdbcType=VARCHAR},
+			</if>
+			<if test="regtime != null">
+				#{regtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="regip != null">
+				#{regip,jdbcType=VARCHAR},
+			</if>
+			<if test="regcity != null">
+				#{regcity,jdbcType=INTEGER},
+			</if>
+			<if test="regarea != null">
+				#{regarea,jdbcType=INTEGER},
+			</if>
+			<if test="regzoneid != null">
+				#{regzoneid,jdbcType=INTEGER},
+			</if>
+			<if test="lastloginip != null">
+				#{lastloginip,jdbcType=VARCHAR},
+			</if>
+			<if test="lastlogintime != null">
+				#{lastlogintime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="ukeys != null">
+				#{ukeys,jdbcType=VARCHAR},
+			</if>
+			<if test="pkeys != null">
+				#{pkeys,jdbcType=VARCHAR},
+			</if>
+			<if test="pttype != null">
+				#{pttype,jdbcType=VARCHAR},
+			</if>
+			<if test="uin != null">
+				#{uin,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+			<if test="zphone != null">
+				#{zphone,jdbcType=VARCHAR},
+			</if>
+			<if test="zuid != null">
+				#{zuid,jdbcType=VARCHAR},
+			</if>
+			<if test="regtype != null">
+				#{regtype,jdbcType=INTEGER},
+			</if>
+			<if test="channelId != null">
+				#{channelId,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null">
+				#{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="phoneArea != null">
+				#{phoneArea,jdbcType=VARCHAR},
+			</if>
+			<if test="usertype != null">
+				#{usertype,jdbcType=INTEGER},
+			</if>
+			<if test="mikeType != null">
+				#{mikeType,jdbcType=TINYINT},
+			</if>
+			<if test="mikeTime != null">
+				#{mikeTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="mikeStart != null">
+				#{mikeStart,jdbcType=DATE},
+			</if>
+			<if test="mikeEnd != null">
+				#{mikeEnd,jdbcType=DATE},
+			</if>
+			<if test="zcTime != null">
+				#{zcTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="iosToken != null">
+				#{iosToken,jdbcType=VARCHAR},
+			</if>
+			<if test="genussellerid != null">
+				#{genussellerid,jdbcType=INTEGER},
+			</if>
+			<if test="genusname != null">
+				#{genusname,jdbcType=VARCHAR},
+			</if>
+			<if test="jointid != null">
+				#{jointid,jdbcType=INTEGER},
+			</if>
+			<if test="corporate != null">
+				#{corporate,jdbcType=VARCHAR},
+			</if>
+			<if test="attachTime != null">
+				#{attachTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="isVirtual != null">
+				#{isVirtual,jdbcType=INTEGER},
+			</if>
+			<if test="phoneType != null">
+				#{phoneType,jdbcType=BIT},
+			</if>
+			<if test="appVersion != null">
+				#{appVersion,jdbcType=VARCHAR},
+			</if>
+			<if test="appSeries != null">
+				#{appSeries,jdbcType=INTEGER},
+			</if>
+			<if test="imei != null">
+				#{imei,jdbcType=VARCHAR},
+			</if>
+			<if test="marks != null">
+				#{marks,jdbcType=TINYINT},
+			</if>
+			<if test="unionid != null">
+				#{unionid,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+
+	<!-- 修改寻蜜鸟用户 -->
+	<update id="updateUrs" parameterType="com.xmniao.xmn.core.xmnburs.entity.Burs">
+		update b_urs
+		<set>
+			<if test="uname != null">
+				uname = #{uname,jdbcType=VARCHAR},
+			</if>
+			<if test="nname != null">
+				nname = #{nname,jdbcType=VARCHAR},
+			</if>
+			<if test="password != null">
+				password = #{password,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null">
+				email = #{email,jdbcType=VARCHAR},
+			</if>
+			<if test="sign != null">
+				sign = #{sign,jdbcType=VARCHAR},
+			</if>
+			<if test="regtime != null">
+				regtime = #{regtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="regip != null">
+				regip = #{regip,jdbcType=VARCHAR},
+			</if>
+			<if test="regcity != null">
+				regcity = #{regcity,jdbcType=INTEGER},
+			</if>
+			<if test="regarea != null">
+				regarea = #{regarea,jdbcType=INTEGER},
+			</if>
+			<if test="regzoneid != null">
+				regzoneid = #{regzoneid,jdbcType=INTEGER},
+			</if>
+			<if test="lastloginip != null">
+				lastloginip = #{lastloginip,jdbcType=VARCHAR},
+			</if>
+			<if test="lastlogintime != null">
+				lastlogintime = #{lastlogintime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="ukeys != null">
+				ukeys = #{ukeys,jdbcType=VARCHAR},
+			</if>
+			<if test="pkeys != null">
+				pkeys = #{pkeys,jdbcType=VARCHAR},
+			</if>
+			<if test="pttype != null">
+				pttype = #{pttype,jdbcType=VARCHAR},
+			</if>
+			<if test="uin != null">
+				uin = #{uin,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="zphone != null">
+				zphone = #{zphone,jdbcType=VARCHAR},
+			</if>
+			<if test="zuid != null">
+				zuid = #{zuid,jdbcType=VARCHAR},
+			</if>
+			<if test="regtype != null">
+				regtype = #{regtype,jdbcType=INTEGER},
+			</if>
+			<if test="channelId != null">
+				channel_id = #{channelId,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null">
+				phone = #{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="phoneArea != null">
+				phone_area = #{phoneArea,jdbcType=VARCHAR},
+			</if>
+			<if test="usertype != null">
+				usertype = #{usertype,jdbcType=INTEGER},
+			</if>
+			<if test="mikeType != null">
+				mike_type = #{mikeType,jdbcType=TINYINT},
+			</if>
+			<if test="mikeTime != null">
+				mike_time = #{mikeTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="mikeStart != null">
+				mike_start = #{mikeStart,jdbcType=DATE},
+			</if>
+			<if test="mikeEnd != null">
+				mike_end = #{mikeEnd,jdbcType=DATE},
+			</if>
+			<if test="zcTime != null">
+				zc_time = #{zcTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="iosToken != null">
+				ios_token = #{iosToken,jdbcType=VARCHAR},
+			</if>
+			<if test="genussellerid != null">
+				genussellerid = #{genussellerid,jdbcType=INTEGER},
+			</if>
+			<if test="genusname != null">
+				genusname = #{genusname,jdbcType=VARCHAR},
+			</if>
+			<if test="jointid != null">
+				jointid = #{jointid,jdbcType=INTEGER},
+			</if>
+			<if test="corporate != null">
+				corporate = #{corporate,jdbcType=VARCHAR},
+			</if>
+			<if test="attachTime != null">
+				attach_time = #{attachTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="isVirtual != null">
+				is_virtual = #{isVirtual,jdbcType=INTEGER},
+			</if>
+			<if test="phoneType != null">
+				phone_type = #{phoneType,jdbcType=BIT},
+			</if>
+			<if test="appVersion != null">
+				app_version = #{appVersion,jdbcType=VARCHAR},
+			</if>
+			<if test="appSeries != null">
+				app_series = #{appSeries,jdbcType=INTEGER},
+			</if>
+			<if test="imei != null">
+				imei = #{imei,jdbcType=VARCHAR},
+			</if>
+			<if test="marks != null">
+				marks = #{marks,jdbcType=TINYINT},
+			</if>
+			<if test="unionid != null">
+				unionid = #{unionid,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where uid = #{uid,jdbcType=INTEGER}
+	</update>
+
+	<select id="checkAccount" parameterType="com.xmniao.xmn.core.xmnburs.dao.BursDao"
+		resultType="long">
+		SELECT COUNT(1) FROM b_urs
+		WHERE 1=1
+		<if test="uname != null">
+			AND uname = #{uname,jdbcType=VARCHAR}
+		</if>
+		<if test="nname != null">
+			AND nname = #{nname,jdbcType=VARCHAR}
+		</if>
+		<if test="password != null">
+			AND password = #{password,jdbcType=VARCHAR}
+		</if>
+		<if test="email != null">
+			AND email = #{email,jdbcType=VARCHAR}
+		</if>
+		<if test="sign != null">
+			AND sign = #{sign,jdbcType=VARCHAR}
+		</if>
+		<if test="regtime != null">
+			AND regtime = #{regtime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="regip != null">
+			AND regip = #{regip,jdbcType=VARCHAR}
+		</if>
+		<if test="regcity != null">
+			AND regcity = #{regcity,jdbcType=INTEGER}
+		</if>
+		<if test="regarea != null">
+			AND regarea = #{regarea,jdbcType=INTEGER}
+		</if>
+		<if test="regzoneid != null">
+			AND regzoneid = #{regzoneid,jdbcType=INTEGER}
+		</if>
+		<if test="lastloginip != null">
+			AND lastloginip = #{lastloginip,jdbcType=VARCHAR}
+		</if>
+		<if test="lastlogintime != null">
+			AND lastlogintime = #{lastlogintime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="ukeys != null">
+			AND ukeys = #{ukeys,jdbcType=VARCHAR}
+		</if>
+		<if test="pkeys != null">
+			AND pkeys = #{pkeys,jdbcType=VARCHAR}
+		</if>
+		<if test="pttype != null">
+			AND pttype = #{pttype,jdbcType=VARCHAR}
+		</if>
+		<if test="uin != null">
+			AND uin = #{uin,jdbcType=VARCHAR}
+		</if>
+		<if test="status != null">
+			AND status = #{status,jdbcType=INTEGER}
+		</if>
+		<if test="zphone != null">
+			AND zphone = #{zphone,jdbcType=VARCHAR}
+		</if>
+		<if test="zuid != null">
+			AND zuid = #{zuid,jdbcType=VARCHAR}
+		</if>
+		<if test="regtype != null">
+			AND regtype = #{regtype,jdbcType=INTEGER}
+		</if>
+		<if test="channelId != null">
+			AND channel_id = #{channelId,jdbcType=VARCHAR}
+		</if>
+		<if test="phone != null">
+			AND phone = #{phone,jdbcType=VARCHAR}
+		</if>
+		<if test="phoneArea != null">
+			AND phone_area = #{phoneArea,jdbcType=VARCHAR}
+		</if>
+		<if test="usertype != null">
+			AND usertype = #{usertype,jdbcType=INTEGER}
+		</if>
+		<if test="mikeType != null">
+			AND mike_type = #{mikeType,jdbcType=TINYINT}
+		</if>
+		<if test="mikeTime != null">
+			AND mike_time = #{mikeTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="mikeStart != null">
+			AND mike_start = #{mikeStart,jdbcType=DATE}
+		</if>
+		<if test="mikeEnd != null">
+			AND mike_end = #{mikeEnd,jdbcType=DATE}
+		</if>
+		<if test="zcTime != null">
+			AND zc_time = #{zcTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="iosToken != null">
+			AND ios_token = #{iosToken,jdbcType=VARCHAR}
+		</if>
+		<if test="genussellerid != null">
+			AND genussellerid = #{genussellerid,jdbcType=INTEGER}
+		</if>
+		<if test="genusname != null">
+			AND genusname = #{genusname,jdbcType=VARCHAR}
+		</if>
+		<if test="jointid != null">
+			AND jointid = #{jointid,jdbcType=INTEGER}
+		</if>
+		<if test="corporate != null">
+			AND corporate = #{corporate,jdbcType=VARCHAR}
+		</if>
+		<if test="attachTime != null">
+			AND attach_time = #{attachTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="isVirtual != null">
+			AND is_virtual = #{isVirtual,jdbcType=INTEGER}
+		</if>
+		<if test="phoneType != null">
+			AND phone_type = #{phoneType,jdbcType=BIT}
+		</if>
+		<if test="appVersion != null">
+			AND app_version = #{appVersion,jdbcType=VARCHAR}
+		</if>
+		<if test="appSeries != null">
+			AND app_series = #{appSeries,jdbcType=INTEGER}
+		</if>
+		<if test="imei != null">
+			AND imei = #{imei,jdbcType=VARCHAR}
+		</if>
+		<if test="marks != null">
+			AND marks = #{marks,jdbcType=TINYINT}
+		</if>
+		<if test="unionid != null">
+			AND unionid = #{unionid,jdbcType=VARCHAR}
+		</if>
+	</select>
+
+
+	<select id="getUrs" parameterType="com.xmniao.xmn.core.xmnburs.entity.Burs"
+		resultType="com.xmniao.xmn.core.xmnburs.entity.Burs">
+		SELECT
+		uid, uname, nname,
+		password, email, sign,
+		regtime, regip, regcity,
+		regarea, regzoneid, lastloginip,
+		lastlogintime, ukeys, pkeys,
+		pttype, uin, status,
+		zphone, zuid, regtype,
+		channel_id channelId, phone,
+		<!-- phone_area phoneArea, -->
+		usertype, mike_type mikeType, mike_time mikeTime,
+		mike_start mikeStart, mike_end mikeEnd, zc_time zcTime,
+		ios_token iosToken, genussellerid, genusname,
+		jointid, corporate, attach_time attachTime,
+		is_virtual isVirtual, phone_type phoneType, app_version appVersion,
+		app_series appSeries, imei, marks,
+		unionid
+		FROM b_urs
+		WHERE 1=1
+		<if test="uname != null">
+			AND uname = #{uname,jdbcType=VARCHAR}
+		</if>
+		<if test="nname != null">
+			AND nname = #{nname,jdbcType=VARCHAR}
+		</if>
+		<if test="password != null">
+			AND password = #{password,jdbcType=VARCHAR}
+		</if>
+		<if test="email != null">
+			AND email = #{email,jdbcType=VARCHAR}
+		</if>
+		<if test="sign != null">
+			AND sign = #{sign,jdbcType=VARCHAR}
+		</if>
+		<if test="regtime != null">
+			AND regtime = #{regtime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="regip != null">
+			AND regip = #{regip,jdbcType=VARCHAR}
+		</if>
+		<if test="regcity != null">
+			AND regcity = #{regcity,jdbcType=INTEGER}
+		</if>
+		<if test="regarea != null">
+			AND regarea = #{regarea,jdbcType=INTEGER}
+		</if>
+		<if test="regzoneid != null">
+			AND regzoneid = #{regzoneid,jdbcType=INTEGER}
+		</if>
+		<if test="lastloginip != null">
+			AND lastloginip = #{lastloginip,jdbcType=VARCHAR}
+		</if>
+		<if test="lastlogintime != null">
+			AND lastlogintime = #{lastlogintime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="ukeys != null">
+			AND ukeys = #{ukeys,jdbcType=VARCHAR}
+		</if>
+		<if test="pkeys != null">
+			AND pkeys = #{pkeys,jdbcType=VARCHAR}
+		</if>
+		<if test="pttype != null">
+			AND pttype = #{pttype,jdbcType=VARCHAR}
+		</if>
+		<if test="uin != null">
+			AND uin = #{uin,jdbcType=VARCHAR}
+		</if>
+		<if test="status != null">
+			AND status = #{status,jdbcType=INTEGER}
+		</if>
+		<if test="zphone != null">
+			AND zphone = #{zphone,jdbcType=VARCHAR}
+		</if>
+		<if test="zuid != null">
+			AND zuid = #{zuid,jdbcType=VARCHAR}
+		</if>
+		<if test="regtype != null">
+			AND regtype = #{regtype,jdbcType=INTEGER}
+		</if>
+		<if test="channelId != null">
+			AND channel_id = #{channelId,jdbcType=VARCHAR}
+		</if>
+		<if test="phone != null">
+			AND phone = #{phone,jdbcType=VARCHAR}
+		</if>
+		<if test="phoneArea != null">
+			AND phone_area = #{phoneArea,jdbcType=VARCHAR}
+		</if>
+		<if test="usertype != null">
+			AND usertype = #{usertype,jdbcType=INTEGER}
+		</if>
+		<if test="mikeType != null">
+			AND mike_type = #{mikeType,jdbcType=TINYINT}
+		</if>
+		<if test="mikeTime != null">
+			AND mike_time = #{mikeTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="mikeStart != null">
+			AND mike_start = #{mikeStart,jdbcType=DATE}
+		</if>
+		<if test="mikeEnd != null">
+			AND mike_end = #{mikeEnd,jdbcType=DATE}
+		</if>
+		<if test="zcTime != null">
+			AND zc_time = #{zcTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="iosToken != null">
+			AND ios_token = #{iosToken,jdbcType=VARCHAR}
+		</if>
+		<if test="genussellerid != null">
+			AND genussellerid = #{genussellerid,jdbcType=INTEGER}
+		</if>
+		<if test="genusname != null">
+			AND genusname = #{genusname,jdbcType=VARCHAR}
+		</if>
+		<if test="jointid != null">
+			AND jointid = #{jointid,jdbcType=INTEGER}
+		</if>
+		<if test="corporate != null">
+			AND corporate = #{corporate,jdbcType=VARCHAR}
+		</if>
+		<if test="attachTime != null">
+			AND attach_time = #{attachTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="isVirtual != null">
+			AND is_virtual = #{isVirtual,jdbcType=INTEGER}
+		</if>
+		<if test="phoneType != null">
+			AND phone_type = #{phoneType,jdbcType=BIT}
+		</if>
+		<if test="appVersion != null">
+			AND app_version = #{appVersion,jdbcType=VARCHAR}
+		</if>
+		<if test="appSeries != null">
+			AND app_series = #{appSeries,jdbcType=INTEGER}
+		</if>
+		<if test="imei != null">
+			AND imei = #{imei,jdbcType=VARCHAR}
+		</if>
+		<if test="marks != null">
+			AND marks = #{marks,jdbcType=TINYINT}
+		</if>
+		<if test="unionid != null">
+			AND unionid = #{unionid,jdbcType=VARCHAR}
+		</if>
+		<if test="uid != null">
+			AND uid = #{uid}
+		</if>
+	</select>
+
+	<select id="getUrsDetailInfo" parameterType="com.xmniao.xmn.core.live_anchor.entity.BLiver"
+		resultType="com.xmniao.xmn.core.live_anchor.entity.BLiver">
+		SELECT
+		<!-- 会员ID -->
+		urs.uid,
+		<!-- 昵称 -->
+		urs.nname AS nickname,
+		<!-- 真实姓名 -->
+		info.name,
+		<!-- 性别 -->
+		info.sex,
+		<!-- 手机号 -->
+		urs.phone,
+		<!-- 头像 -->
+		info.avatar,
+		<!-- 密码 -->
+		urs.`password`,
+		<!-- 身份证号 -->
+		info.idcard,
+		<!-- 出生日期 -->
+		info.birthday
+		FROM
+		b_urs urs
+		LEFT JOIN b_urs_info info ON urs.uid = info.uid
+		WHERE
+		urs.phone = #{phone}
+		LIMIT 0,1
+	</select>
+
+	<select id="getUrsListByUids" parameterType="java.lang.Object"
+		resultType="com.xmniao.xmn.core.xmnburs.entity.Burs">
+		select
+		<include refid="urs_column_list"></include>
+		from
+		b_urs
+		<where>
+			uid in
+			<foreach item="item" index="index" collection="array" open="("
+				separator="," close=") ">
+				#{item}
+			</foreach>
+		</where>
+	</select>
+	
+	<select id="getAnchorIdByUids" parameterType="java.lang.Object"
+		resultType="com.xmniao.xmn.core.xmnburs.entity.Burs">
+		select
+		b_liver.uid,b_liver.id as anchorId
+		from
+		b_urs
+		join b_liver on b_urs.uid = b_liver.uid
+		<where>
+			b_liver.uid in
+			<foreach item="item" index="index" collection="array" open="("
+				separator="," close=") ">
+				#{item}
+			</foreach>
+		</where>
+	</select>
+
+	<!-- 根据用户Uid集合获取会员活动收益等级信息 -->
+	<select id="getUrsEarningsRankByUids" parameterType="java.lang.Object" resultType="map">
+		SELECT
+			rank.uid,
+			CASE
+		WHEN rank.rank_source = 0 THEN
+			'未知'
+		WHEN rank.rank_source = 1 THEN
+			'壕赚VIP'
+		WHEN rank.rank_source = 2 THEN
+			'壕赚商户充值'
+		WHEN rank.rank_source = 3 THEN
+			'壕赚直销'
+		WHEN rank.rank_source = 4 THEN
+			'V客'
+		END rank_source,
+		 IFNULL(fans.rank_name,'') rank_name
+		FROM
+			b_urs_earnings_rank rank
+		LEFT JOIN b_live_fans_rank fans ON rank.rank_id = fans.id
+		<where>
+			rank.uid in
+			<foreach item="item" index="index" collection="array" open="("
+				separator="," close=") ">
+				#{item}
+			</foreach>
+		</where>
+	</select>
+    <select id="selectUrsName" resultType="java.lang.String">
+        SELECT nname FROM b_urs
+        WHERE uid = #{uid}
+    </select>
+
+
+    <select id="queryBurByUname" resultType="com.xmniao.xmn.core.xmnburs.entity.Burs">
+		select * from b_urs WHERE uname = #{uname} limit 1;
+	</select>
+	
+	<select id="getUrsDetailInfoList"  parameterType="java.lang.Object"
+		resultType="com.xmniao.xmn.core.live_anchor.entity.BLiver">
+		SELECT
+		<!-- 会员ID -->
+		urs.uid,
+		<!-- 昵称 -->
+		urs.nname AS nickname,
+		<!-- 真实姓名 -->
+		info.name,
+		<!-- 性别 -->
+		info.sex,
+		<!-- 手机号 -->
+		urs.phone,
+		<!-- 头像 -->
+		info.avatar,
+		<!-- 密码 -->
+		urs.`password`,
+		<!-- 身份证号 -->
+		info.idcard,
+		<!-- 出生日期 -->
+		info.birthday,
+		relation.uid_relation_chain AS uidRelationChain 
+		FROM
+		b_urs urs
+		LEFT JOIN b_urs_info info ON urs.uid = info.uid
+		LEFT JOIN b_urs_earnings_relation relation ON urs.uid = relation.uid
+        <where>
+            1 = 1
+            AND relation.object_oriented = 4 
+			AND urs.uid in
+			<foreach item="item" index="index" collection="array" open="("
+				separator="," close=") ">
+				#{item}
+			</foreach>
+		</where>
+	</select>
+
+	<select id="queryBurByUid" resultType="com.xmniao.xmn.core.xmnburs.entity.Burs">
+		SELECT * FROM b_urs where uid = #{uid};
+	</select>
+	<select id="selectByUids" resultType="com.xmniao.xmn.core.xmnburs.entity.Burs">
+		SELECT * from b_urs where uid in
+		<foreach collection="uids" item="uid" open="(" close=")" separator=",">
+			#{uid}
+		</foreach>
+	</select>
+
+    <!-- 查询V客对应用户信息 -->
+	<select id="getVerUrsDetailInfoList"  parameterType="java.lang.Object" resultType="com.xmniao.xmn.core.xmnburs.entity.Burs" >
+		SELECT urs.uid, urs.nname, urs.phone, t1.rank_name AS levelName FROM b_urs urs
+		INNER JOIN b_urs_earnings_rank t ON urs.uid = t.uid INNER JOIN
+		b_live_fans_rank t1 ON t.rank_id = t1.id
+		WHERE 1 = 1
+		AND t.rank_source = 4
+		AND urs.uid in
+		<foreach item="item" index="index" collection="array" open="("
+				separator="," close=") ">
+				#{item}
+	    </foreach>
+	</select>
+
+</mapper>

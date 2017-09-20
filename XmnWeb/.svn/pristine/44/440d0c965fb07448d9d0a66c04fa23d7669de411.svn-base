@@ -1,0 +1,267 @@
+/**
+ * 
+ */
+package com.xmniao.xmn.core.live_anchor.constant;
+
+/**
+ * 项目名称：XmnWeb_LVB
+ * 
+ * 类名称：LiveConstant
+ *
+ * 类描述：直播常量值
+ * 
+ * 创建人： huang'tao
+ * 
+ * 创建时间：2016-8-26下午3:32:09
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司
+ */
+public class LiveConstant {
+	/**
+	 * 相册类型 1 主播 2 机器人
+	 */
+	public static final Integer IMAGETYPE_ANCHOR=1;
+	
+	/**
+	 * 相册类型 1 主播 2 机器人
+	 */
+	public static final Integer IMAGETYPE_ROBOT=2;
+	
+	/**
+	 * 用户类型 1 主播 2 普通用户
+	 */
+	public static final Integer UTYPE_ANCHOR=1;
+	
+	/**
+	 * 用户类型 1 主播 2 普通用户
+	 */
+	public static final Integer UTYPE_COMMON=2;
+	
+	/**
+	 * 查询所有数据 -1
+	 */
+	public static final Integer PAGE_LIMIT_NO=-1;
+	
+	/**
+	 * 礼物礼包
+	 */
+	public static final String GIFT_BAG_NAME_DEFAULT="礼物礼包";
+	
+	/**
+	 * 礼包礼物默认添加数量
+	 */
+	public static final Integer GIFT_NUMS_DEFAULT=1;
+	
+	/**
+	 * 初始 -1
+	 */
+	public static final Integer LIVE_INITIAL=-1;
+	
+	/**
+	 * 预告 0
+	 */
+	public static final Integer LIVE_ADVANCE=0;
+	
+	/**
+	 * 正在直播 1
+	 */
+	public static final Integer LIVE_UNDERWAY=1;
+	
+	/**
+	 * 回放 3
+	 */
+	public static final Integer LIVE_PLAYBACK=3;
+	
+	/**
+	 * 历史通告 4
+	 */
+	public static final Integer LIVE_HISTORY=4;
+	
+	/**
+	 * 直播结束 5
+	 */
+	public static final Integer LIVE_END=5;
+	
+	
+	public static final Integer SEQUENCE_MIN_VALUE=1;//直播推荐最小排序(值越小，越靠前)
+	
+	public static final Integer SEQUENCE_MAX_VALUE=999;//直播推荐最大排序
+	
+	
+	/**
+	 * 操作类型
+	 */
+    public static class OPERATIONTYPE{
+		/**
+		 * 结束直播
+		 */
+		public static final String END_LIVE="endLive";
+		
+		/**
+		 * 暂停直播
+		 */
+		public static final String SUSPEND_LIVE="suspendLive";
+	}
+
+    /**
+	 * 直播券类型,2 粉丝券 3 预售抵用券
+	 */
+    public static class COUPONTYPE{
+		/**
+		 * 粉丝券
+		 */
+		public static final int COUPON=2;
+		
+		/**
+		 * 预售抵用券
+		 */
+		public static final int VOUCHER=3;
+		
+		/**
+		 * 套餐抵用券
+		 */
+		public static final int COUPESP = 4;
+	}
+    
+    /**
+   	 * 推荐人类型,001 企业推荐人;默认 002 普通推荐人
+   	 */
+   public static class REFERRER_TYPE{
+   		/**
+   		 * 企业推荐人
+   		 */
+   		public static final String ENTERPRISE="001";
+   		
+   		/**
+   		 * 普通推荐人
+   		 */
+   		public static final String COMMON="002";
+   	}
+   
+   /**
+    * ichart图使用颜色
+    */
+   public static final String[] COLORS={"#a5c2d5","#cbab4f","#76a871","#76a871","#a56f8f","#c12c44","#a56f8f","#9f7961"};
+   
+   
+   /**
+    * 鸟豆打赏区间人数统计价格
+    */
+   public static final String[] PRICES={"1-100","101-300","301-500","501-1000","1001-3000","3001-5000","5001-10000","10000+"};
+   
+   /**
+    * 打赏时间统计时间段
+    */
+   public static final String[] TIMES_ZONE={"00:00-9:00","9:00-12:00","12:00-15:00","15:00-18:00","18:00-21:00","21:00-24:00"};
+   
+   
+   /**
+    * 打赏时间统计时间段
+    */
+   public static final String[] TIMES_POINT={"zone9","zone12","zone15","zone18","zone21","zone24"};    
+    
+   /**
+  	 * 支付方式<br/>
+  	 * 1000001:支付宝SDK支付;<br/>
+  	 * 1000003:微信SDK支付;<br/>
+  	 * 1000013:公众号支付;<br/>
+  	 * 1000000：钱包支付;<br/>
+  	 * 1000004：AppStore支付;<br/>
+  	 * 1000014：寻蜜鸟服务窗 ;<br/>
+  	 * 1000021:线下转账<br/>
+  	 */
+  public static class LIVEORDER_PAYTYPE{
+  		
+  		/**
+  		 * 线下转账
+  		 */
+  		public static final String OFFLINE="1000021";
+  	}
+  
+  	/**
+ 	 * 首页推荐，0不推荐，1推荐，默认0
+ 	 */
+	public static class RECOMMENDED_TYPE{
+	 		/**
+	 		 * 企业推荐人
+	 		 */
+	 		public static final int RECOMMENDED_YES=1;
+	 		
+	 		/**
+	 		 * 普通推荐人
+	 		 */
+	 		public static final int RECOMMENDED_NO=0;
+	 }
+	
+	/**
+ 	 * 分红角色 1内购 2外购
+ 	 */
+	public static class DIVIDENDS_ROLE{
+	 		/**
+	 		 * 1内购
+	 		 */
+	 		public static final int DIVIDENDS_PRIVATE=1;
+	 		
+	 		/**
+	 		 * 2外购
+	 		 */
+	 		public static final int DIVIDENDS_PUBLIC=2;
+	 }
+	
+	/**
+ 	 * 礼物类型:1、普通礼物，2、商品礼物，3、套餐礼物
+ 	 */
+	public static class GIFT_KIND{
+	 		/**
+	 		 * 1普通礼物
+	 		 */
+	 		public static final int GIFT_KIND_BASE=1;
+	 		
+	 		/**
+	 		 * 2商品礼物
+	 		 */
+	 		public static final int GIFT_KIND_PRODUCT=2;
+	 		
+	 		/**
+	 		 * 3套餐礼物
+	 		 */
+	 		public static final int GIFT_KIND_COMBO=3;
+	 }
+	
+	/**
+ 	 * 直播鸟币充值渠道 0.常规 1.VIP 2.商家 3.直销 4.V客
+ 	 */
+	public static class OBJECT_ORIENTED{
+		
+			/**
+	 		 * 0.常规
+	 		 */
+	 		public static final int OBJECT_ORIENTED_0=0;
+	 		
+	 		/**
+	 		 * 1VIP
+	 		 */
+	 		public static final int OBJECT_ORIENTED_1=1;
+	 		
+	 		/**
+	 		 * 2商家 
+	 		 */
+	 		public static final int OBJECT_ORIENTED_2=2;
+	 		
+	 		/**
+	 		 * 3直销
+	 		 */
+	 		public static final int OBJECT_ORIENTED_3=3;
+	 		
+	 		/**
+	 		 * 4V客
+	 		 */
+	 		public static final int OBJECT_ORIENTED_4=4;
+	 }
+	
+	/**
+	 * 通告直播间机器人配置redisKey
+	 */
+	public static final String LIVE_ROBOT_SET_KEY="live_robot_set_key$";
+      
+}

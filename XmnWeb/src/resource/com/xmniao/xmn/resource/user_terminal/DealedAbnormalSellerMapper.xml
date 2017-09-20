@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.user_terminal.dao.DealedAbnormalSellerDao">
+    
+    <parameterMap type="AbnormalSeller" id="abnormalSeller" />
+    
+    
+	<resultMap type="AbnormalSeller" id="abnormalSellerMap">
+		<result column="id" property="id" />
+		<result column="type" property="type" />
+		<result column="sellerid" property="sellerid" />
+		<result column="sellername" property="sellername" />
+		<result column="uid" property="uid" />
+		<result column="uname" property="uname" />
+		<result column="phone" property="phone" />
+		<result column="sdate" property="sdate" />
+		<result column="status" property="status" />
+		<result column="edate" property="edate" />
+	</resultMap>
+	<!-- 查询待处理举报商家信息 -->
+	<select id="getAbnormalSellerList" resultMap="abnormalSellerMap" parameterMap="abnormalSeller">
+		SELECT id,type,sellerid,sellername,uid,uname,phone,sdate,status,edate
+        FROM t_abnormal_seller
+		<where>
+		 status != 0
+			<if test=" null != id and ''!= id">
+				AND id=#{id}
+			</if>
+			<if test=" null != type and ''!= type">
+				AND type = #{type}
+			</if>
+			<if test=" null != sdate and ''!= sdate">
+				AND sdate &gt;= #{sdate}
+			</if>
+			<if test=" null != edate and ''!= edate">
+				AND sdate &lt; DATE_ADD(#{edate}, INTERVAL 1 DAY)
+			</if>
+			ORDER BY sdate DESC
+		</where>
+			<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+			</if>
+	</select>
+	
+	<!-- 统计总数 -->
+	<select id="getAbnormalSellerCount" resultType="Long" parameterMap="abnormalSeller">
+		SELECT COUNT(1) FROM t_abnormal_seller
+		<where>
+			1=1
+			<if test=" null != id and ''!= id">
+				AND id=#{id}
+			</if>
+			<if test=" null != type and ''!= type">
+				AND type = #{type}
+			</if>
+			<if test=" null != sdate and ''!= sdate">
+				AND sdate &gt;= #{sdate}
+			</if>
+			<if test=" null != edate and ''!= edate">
+				AND sdate &lt; DATE_ADD(#{edate}, INTERVAL 1 DAY)
+			</if>
+			ORDER BY sdate DESC
+		</where>
+			<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+			</if>
+	</select>
+	
+	<!-- 根据id删除举报商家记录 -->
+	<delete id="deleteInfoById" parameterType="string">
+		DELETE FROM t_abnormal_seller
+		WHERE id = #{id}
+	</delete>
+</mapper>

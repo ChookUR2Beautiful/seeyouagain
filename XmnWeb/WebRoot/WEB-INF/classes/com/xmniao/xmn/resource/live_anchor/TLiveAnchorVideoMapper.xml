@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TLiveAnchorVideoDao" >
+
+
+  <resultMap id="liveAnchorVideoMap" type="com.xmniao.xmn.core.live_anchor.entity.TLiveAnchorVideo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="anchor_id" property="anchorId" jdbcType="INTEGER" />
+    <result column="anchor_name" property="anchorName" jdbcType="VARCHAR" />
+    <result column="cover_url" property="coverUrl" jdbcType="VARCHAR" />
+    <result column="video_url" property="videoUrl" jdbcType="VARCHAR" />
+    <result column="sort" property="sort" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="recommended" property="recommended" jdbcType="INTEGER" />
+    <result column="view_count" property="viewCount" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="liveAnchorVideo_column_list" >
+    id, title, anchor_id, anchor_name , cover_url, video_url, sort, status, create_time, update_time,recommended,view_count
+  </sql>
+  
+  <sql id="whereSQL">
+    <if test="null != title and '' != title">
+  		and title like '%${title}%'
+  	</if>
+  	<if test="null != anchorName and '' != anchorName">
+  		and anchor_name like '%${anchorName}%'
+  	</if>
+  	<if test="null != status and '' != status">
+  		and status=#{status}
+  	</if>
+  	<if test="null != recommended and '' != recommended or 0 == recommended"  >
+  		and recommended=#{recommended}
+  	</if>
+  	
+  </sql>
+  
+  <select id="getObject" resultMap="liveAnchorVideoMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="liveAnchorVideo_column_list" />
+    from t_live_anchor_video
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="getList" resultMap="liveAnchorVideoMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="liveAnchorVideo_column_list" />
+    from t_live_anchor_video
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+    <if test="order != -1">
+    	order by sort asc
+    </if>
+    <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  
+  <select id="count" resultType="java.lang.Long" parameterType="java.lang.Integer" >
+    select 
+    	count(1)
+    from t_live_anchor_video
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+  </select>
+  
+  <delete id="delete" parameterType="Object" >
+    delete from t_live_anchor_video
+    where id in 
+	<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+	</foreach>
+  </delete>
+  
+  
+  <insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveAnchorVideo" >
+    insert into t_live_anchor_video
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="anchorId != null" >
+        anchor_id,
+      </if>
+      <if test="anchorName != null" >
+        anchor_name,
+      </if>
+      <if test="coverUrl != null" >
+        cover_url,
+      </if>
+      <if test="videoUrl != null" >
+        video_url,
+      </if>
+      <if test="sort != null" >
+        sort,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="anchorId != null" >
+        #{anchorId,jdbcType=INTEGER},
+      </if>
+      <if test="anchorName != null" >
+        #{anchorName,jdbcType=VARCHAR},
+      </if>
+      <if test="coverUrl != null" >
+        #{coverUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="videoUrl != null" >
+        #{videoUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null" >
+        #{sort,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveAnchorVideo" >
+    update t_live_anchor_video
+    <set >
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="anchorId != null" >
+        anchor_id = #{anchorId,jdbcType=INTEGER},
+      </if>
+      <if test="anchorName != null" >
+        anchor_name = #{anchorName,jdbcType=VARCHAR},
+      </if>
+      <if test="coverUrl != null" >
+        cover_url = #{coverUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="videoUrl != null" >
+        video_url = #{videoUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null" >
+        sort = #{sort,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="recommended != null" >
+        recommended = #{recommended,jdbcType=INTEGER},
+      </if>
+      <if test="viewCount != null" >
+        view_count = #{viewCount,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 批量更新视频上线状态 -->
+  <update id="updateBatch"  parameterType="map">
+  	UPDATE t_live_anchor_video SET
+  	 <trim  suffixOverrides="," >
+  	<if test="status !=null">
+  		 `status`=#{status},
+  	</if>
+  	<if test="recommended != null">
+  		recommended = #{recommended},
+  	</if>
+  	</trim>
+  	 WHERE id IN
+			 (${ids})
+  </update>
+  
+</mapper>

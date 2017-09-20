@@ -1,0 +1,1115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.billmanagerment.dao.AllBillDao">
+
+	<parameterMap type="Bill" id="bill" />
+	<resultMap type="Bill" id="billMap">
+		<result column="bid" property="bid" />
+		<result column="bid" property="stringBid" />
+		<result column="codeid" property="codeid" />
+		<result column="sellerid" property="sellerid" />
+		<result column="sellername" property="sellername" />
+		<result column="consume_jointid" property="consumejointid" />
+		<result column="consume_corporate" property="consumecorporate" />
+		<result column="genussellerid" property="genussellerid" />
+		<result column="genusname" property="genusname" />
+		<result column="jointid" property="jointid" />
+		<result column="corporate" property="corporate" />
+		<result column="mike_type" property="miketype" />
+		<result column="uid" property="uid" />
+		<result column="nname" property="nname" />
+		<result column="money" property="money" />
+		<result column="profit" property="profit" />
+		<result column="commision" property="commision" />
+		<result column="payment" property="payment" />
+		<result column="rebate" property="rebate" />
+		<result column="aid" property="aid" />
+		<result column="fullname" property="fullname" />
+		<result column="phoneid" property="phoneid" />
+		<result column="status" property="status" />
+	<!-- 	<result column="status" property="strStatus" /> -->
+		<result column="sdate" property="sdate" />
+		<result column="zdate" property="zdate" />
+		<result column="ydate" property="ydate" />
+		<result column="number" property="number" />
+		<result column="paytype" property="paytype" />
+		<result column="isaccount" property="isaccount" />
+		<result column="baseagio" property="baseagio" />
+		<result column="hstatus" property="hstatus" />
+		<result column="commission" property="commission" />
+		<result column="type" property="type" />
+		<result column="area" property="area" />
+		<result column="is_virtual" property="isVirtual" />
+		<result column="payid" property="payid" />
+		<result column="tatitle" property="tatitle" />
+		<result column="flat_agio" property="flatAgio" />
+		<result column="flat_money" property="flatMoney" />
+		<result column="bfirst" property="isFirst" />
+		<result column="cuser" property="cuser" />
+		<result column="cdenom" property="cdenom" />
+		<result column="third_uid" property="thirdUid" />
+		<result column="is_activity" property="isActivity" />
+		<result column="activity_conent" property="activityContent" />
+		<result column="activity_rest" property="activityRest" />
+		<result column="zoneid" property="zoneid" />
+		<result column="normal" property="normal" />
+		<result column="order_source" property="orderSource" />
+		<result column="xmerID" property="xmerID" />
+		<result column="xmerPhoneNo" property="xmerPhoneNo" />
+		<result column="xmerName" property="xmerName" />
+		<result column="xmer_uid" property="xmerUid" />
+		<result column="reduction" property="reduction" />
+		<result column="integral" property="integral" />
+		<result column="coupon_type" property="couponType" />
+		<result column="r_phone" property="rPhone" />
+		<result column="r_user_id" property="rUserId" />
+		<result column="full_reduction" property="fullReduction" />
+		<result column="full_reduction_id" property="fullReductionId" />
+		<result column="ledger_mode" property="ledgerMode" />
+		<result column="live_ledger" property="liveLedger" />
+		<result column="live_ledger_style" property="liveLedgerStyle" />
+		<result column="live_ledger_mode" property="liveLedgerMode" />
+		<result column="live_ledger_ratio" property="liveLedgerRatio" />
+		<result column="live_coin" property="liveCoin" />
+		<result column="live_coin_ratio" property="liveCoinRatio" />
+		<result column="seller_coin" property="sellerCoin" />
+		<result column="saas_channel" property="saasChannel" />
+	</resultMap>
+
+	<!-- 查询所有订单(除待支付) -->
+	<select id="getBillList" resultMap="billMap" parameterMap="bill">
+		SELECT
+		b.* ,(SELECT t.title FROM t_area t WHERE t.area_id=ts.city) AS
+		cityName,
+		(SELECT t.title FROM t_area t WHERE t.area_id=ts.area) AS
+		areaName,
+		tb.title AS zoneName
+		FROM
+		t_bill b <!-- FORCE INDEX(index_status) -->
+		LEFT JOIN t_seller ts ON b.sellerid=ts.sellerid
+		LEFT JOIN t_business tb
+		ON tb.bid = b.zoneid
+		<where>
+			1=1
+			<if test=" 'open' == thirdUidSwitch">
+				AND b.third_uid is not null
+			</if>
+			<if test="liveLedgerStatus !=null and liveLedgerStatus == 1">
+				AND b.is_virtual !=1
+				AND b.live_ledger =1
+				AND b.live_ledger_style =1
+				AND b.status IN (1,3,6,8,10)
+			</if>
+			<if test="liveLedger != null">
+				AND live_ledger = #{liveLedger}
+			</if>
+			<include refid="queryBillCondition"></include>
+		</where>
+		<if test=" order == 1 ">
+			ORDER BY b.sdate DESC
+		</if>
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<!-- 查询所有订单条数(除待支付) -->
+	<select id="billCount" resultType="Long" parameterMap="bill">
+		SELECT count(b.bid) FROM t_bill b <!-- FORCE INDEX(index_status) -->
+		LEFT JOIN t_seller ts ON b.sellerid=ts.sellerid
+		LEFT JOIN t_business tb
+		ON tb.bid = b.zoneid
+		<where>
+			1=1
+			<if test=" 'open' == thirdUidSwitch">
+				AND b.third_uid is not null
+			</if>
+			<if test="liveLedgerStatus !=null and liveLedgerStatus == 1">
+				AND b.is_virtual !=1
+				AND b.live_ledger =1
+				AND b.live_ledger_style =1
+				AND b.status IN (1,3,6,8,10)
+			</if>
+			<if test="liveLedger != null">
+				AND b.live_ledger = #{liveLedger}
+			</if>
+			<include refid="queryBillCondition"></include>
+		</where>
+	</select>
+
+	<!-- 查询5-10份的订单数 -->
+	<select id="billMonthCount" resultType="Long" parameterMap="bill">
+		SELECT
+		COUNT(b.bid)
+		FROM
+		t_bill b <!-- FORCE INDEX (index_status) -->
+		LEFT JOIN t_seller ts
+		ON b.sellerid = ts.sellerid
+		LEFT JOIN t_business tb
+		ON tb.bid = b.zoneid
+		WHERE 1 = 1
+		AND b.is_virtual = 0
+		AND b.status != 0
+		AND b.zdate >= '2015-05-01 00:00:00'
+		AND b.zdate &lt;='2015-10-31 23:59:00'
+	</select>
+
+
+	<!-- 查询订单总金额(除待支付) -->
+	<select id="gettotalAmount" resultType="Double" parameterMap="bill">
+		<!-- SELECT sum(b.money) as totalAmount FROM -->
+		SELECT IFNULL(sum(b.money),0) as totalAmount FROM
+
+		t_bill b <!-- FORCE INDEX(index_status) -->
+		LEFT JOIN t_seller ts ON b.sellerid=ts.sellerid
+		LEFT JOIN t_business tb
+		ON tb.bid = b.zoneid
+		<where>
+			1=1
+			<if test=" 'open' == thirdUidSwitch">
+				AND b.third_uid is not null
+			</if>
+			<if test="liveLedgerStatus !=null and liveLedgerStatus == 1">
+				AND b.is_virtual !=1
+				AND b.live_ledger =1
+				AND b.live_ledger_style =1
+				AND b.status IN (1,3,6,8,10)
+			</if>
+			<if test="liveLedger != null">
+				AND b.live_ledger = #{liveLedger}
+			</if>
+			<include refid="queryBillCondition"></include>
+		</where>
+	</select>
+
+	<!-- 查询所有订单(除待支付)查询条件 -->
+	<sql id="queryBillCondition">
+		AND b.is_virtual=0
+		<if test=" null != stringBid and '' != stringBid ">
+			AND b.bid = #{stringBid}
+		</if>
+		<if test=" null != uid">
+			AND b.uid = #{uid}
+		</if>
+		<if test=" null != sellername and '' != sellername ">
+			AND b.sellername LIKE '%${sellername}%'
+		</if>
+		<if test=" null != nname and '' != nname ">
+			AND b.nname LIKE '%${nname}%'
+		</if>
+		<if test=" null != phoneid and '' != phoneid ">
+			AND b.phoneid = #{phoneid}
+		</if>
+		<if test=" null != genusname and '' != genusname ">
+			AND b.genusname LIKE '%${genusname}%'
+		</if>
+		<if test=" null != strStatus and  strStatus.length > 0 ">
+			<if test=" queryFlag==1 ">
+				AND b.status =#{status}
+			</if>
+			<if test=" queryFlag==2 ">
+				AND b.status in
+				<foreach collection="strStatus" index="index" item="item"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test=" queryFlag==3 ">
+				AND b.status &lt;&gt; 0
+			</if>
+		</if>
+		<if test=" null != codeid">
+			AND b.codeid = #{codeid}
+		</if>
+		<if test=" null != sellerid">
+			AND b.sellerid = #{sellerid}
+		</if>
+		<if test=" null != genussellerid">
+			AND b.genussellerid = #{genussellerid}
+		</if>
+		<if test=" null != isFirst and '' != isFirst ">
+			AND b.bfirst = #{isFirst}
+		</if>
+		<if test=" null != area and '' != area ">
+			AND ts.area = #{area}
+		</if>
+		<if test=" null != city and '' != city ">
+			AND ts.city = #{city}
+		</if>
+		<if test=" null != province and '' != province ">
+			AND ts.province = #{province}
+		</if>
+		<if test=" null != hstatus">
+			AND b.hstatus = #{hstatus}
+		</if>
+		<if test=" null != isVirtual">
+			AND b.is_virtual= #{isVirtual}
+		</if>
+		<if test=" null != zdateStart">
+			AND b.zdate&gt;= #{zdateStart}
+		</if>
+		<if test=" null != zdateEnd">
+			AND b.zdate&lt; #{zdateEnd}
+		</if>
+		<!--商家查询列表用到查询此条件 -->
+		<if test=" null != sdateStart and '' != sdateStart">
+			AND b.sdate&gt;= #{sdateStart}
+		</if>
+		<if test=" null != sdateEnd and ''!= sdateEnd">
+			AND b.sdate&lt;#{sdateEnd}
+		</if>
+		<if test=" null != payid and '' != payid ">
+			AND b.payid= #{payid}
+		</if>
+		<if test=" null != moneyStart and '' != moneyStart">
+			AND b.money&gt;= #{moneyStart}
+		</if>
+		<if test=" null != moneyEnd and ''!= moneyEnd">
+			AND b.money&lt;#{moneyEnd}
+		</if>
+		<if test=" null != paytype and '' != paytype ">
+			AND b.paytype = #{paytype}
+		</if>
+		<if test=" null != isActivity">
+			AND b.is_activity = #{isActivity}
+		</if>
+		<if test="null != thirdUid and'' != thirdUid ">
+			AND b.third_uid =#{thirdUid}
+		</if>
+		<if test="null != zoneid">
+			AND b.zoneid =#{zoneid}
+		</if>
+		<if test="null != normal">
+			AND b.normal =#{normal}
+		</if>
+		<if test=" null != xmerID">
+			AND x.id = #{xmerID}
+		</if>
+
+	</sql>
+
+	<!-- 根据用户ID查询消费订单(status1,2,3)查询条件 -->
+	<sql id="queryBillListByUidCondition">
+		<if test=" null != bid and '' != bid">
+			AND b.bid = #{bid}
+		</if>
+		<if test=" null != sellerid and '' != sellerid">
+			AND b.sellerid = #{sellerid}
+		</if>
+		<if test=" null != sellername and '' != sellername">
+			AND b.sellername like '%${sellername}%'
+		</if>
+		<if test=" null != fullname and '' != fullname">
+			AND b.fullname like '%${fullname}%'
+		</if>
+		<if test=" null != phoneid and '' != phoneid">
+			AND b.phoneid = #{phoneid}
+		</if>
+		<if test=" null != sdateStart and '' != sdateStart">
+			AND b.sdate &gt;= #{sdateStart}
+		</if>
+		<if test=" null != sdateEnd and ''!= sdateEnd">
+			AND b.sdate &lt;= #{sdateEnd}
+		</if>
+	</sql>
+
+
+	<!-- 查询首单(除待支付) -->
+	<select id="getFirstBillList" resultMap="billMap" parameterMap="bill">
+		SELECT
+		b.* ,ts.*,(SELECT t.title FROM t_area t WHERE t.area_id=ts.city)
+		AS
+		cityName,
+		(SELECT t.title FROM t_area t WHERE t.area_id=ts.area) AS
+		areaName
+		FROM
+		t_bill b <!-- FORCE INDEX(index_status) -->
+		LEFT JOIN t_seller ts ON b.sellerid=ts.sellerid
+		<where>
+			b.is_virtual=0
+			<if test=" null != strStatus and strStatus.length > 0 ">
+				AND b.status in
+				<foreach collection="strStatus" index="index" item="item"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test=" null != stringBid and '' != stringBid ">
+				AND b.bid LIKE '%${stringBid}%'
+			</if>
+			<if test=" null != codeid">
+				AND b.codeid = #{codeid}
+			</if>
+			<if test=" null != sellerid">
+				AND b.sellerid = #{sellerid}
+			</if>
+			<if test=" null != uid">
+				AND b.uid LIKE '%${uid}%'
+			</if>
+
+			<if test=" null != area and '' != area ">
+				AND ts.area = #{area}
+			</if>
+			<if test=" null != city and '' != city ">
+				AND ts.city = #{city}
+			</if>
+			<if test=" null != province and '' != province ">
+				AND ts.province = #{province}
+			</if>
+
+			<if test=" null != sellername and '' != sellername ">
+				AND b.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != nname and '' != nname ">
+				AND b.nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				AND b.phoneid LIKE '%${phoneid}%'
+			</if>
+			<if test=" null != genusname and '' != genusname ">
+				AND b.genusname LIKE '%${genusname}%'
+			</if>
+			<if test=" null != hstatus">
+				AND b.hstatus = #{hstatus}
+			</if>
+			<if test=" null != isVirtual">
+				AND b.is_virtual= #{isVirtual}
+			</if>
+			<if test=" null != zdateStart ">
+				AND b.zdate&gt;= #{zdateStart}
+			</if>
+			<if test=" null != zdateEnd ">
+				AND b.zdate&lt; #{zdateEnd}
+			</if>
+			<!--商家查询列表用到查询此条件 -->
+			<if test=" null != sdateStart ">
+				AND b.sdate&gt;= #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd">
+				AND b.sdate&lt;#{sdateEnd}
+			</if>
+			<if test=" null != payid and '' != payid ">
+				AND b.payid= #{payid}
+			</if>
+			<if test=" null != moneyStart ">
+				AND b.money&gt;= #{moneyStart}
+			</if>
+			<if test=" null != moneyEnd">
+				AND b.money&lt;#{moneyEnd}
+			</if>
+			<if test=" null != paytype and '' != paytype ">
+				AND b.paytype = #{paytype}
+			</if>
+			<if test=" null != payid and '' != payid ">
+				AND b.payid = #{payid}
+			</if>
+			AND b.bfirst = 1
+		</where>
+		ORDER BY b.sdate DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<!-- 查询首单条数(除待支付) -->
+	<select id="firstBillCount" resultType="Long" parameterMap="bill">
+		SELECT count(b.bid) FROM t_bill b <!-- FORCE INDEX(index_status) -->
+		LEFT JOIN t_seller ts ON b.sellerid=ts.sellerid
+		<where>
+			b.is_virtual=0
+			<if test=" null != strStatus and strStatus.length > 0 ">
+				AND b.status in
+				<foreach collection="strStatus" index="index" item="item"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+
+			<if test=" null != stringBid and '' != stringBid ">
+				AND b.bid LIKE '%${stringBid}%'
+			</if>
+
+			<if test=" null != codeid">
+				AND b.codeid = #{codeid}
+			</if>
+			<if test=" null != sellerid">
+				AND b.sellerid = #{sellerid}
+			</if>
+			<if test=" null != uid">
+				AND b.uid LIKE '%${uid}%'
+			</if>
+			<if test=" null != area and '' != area ">
+				AND ts.area = #{area}
+			</if>
+			<if test=" null != city and '' != city ">
+				AND ts.city = #{city}
+			</if>
+			<if test=" null != province and '' != province ">
+				AND ts.province = #{province}
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND b.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != nname and '' != nname ">
+				AND b.nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				AND b.phoneid LIKE '%${phoneid}%'
+			</if>
+			<if test=" null != genusname and '' != genusname ">
+				AND b.genusname LIKE '%${genusname}%'
+			</if>
+			<!-- <if test="null != status and status==9"> AND status IN( 1,2,3,4,5,6,7,8) 
+				</if> -->
+			<if test=" null != hstatus">
+				AND b.hstatus = #{hstatus}
+			</if>
+			<if test=" null != isVirtual">
+				AND b.is_virtual= #{isVirtual}
+			</if>
+			<if test=" null != zdateStart">
+				AND b.zdate&gt;= #{zdateStart}
+			</if>
+			<if test=" null != zdateEnd">
+				AND b.zdate&lt;#{zdateEnd}
+			</if>
+			<!--商家查询列表用到查询此条件 -->
+			<if test=" null != sdateStart">
+				AND b.sdate&gt;= #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd">
+				AND b.sdate&lt;#{sdateEnd}
+			</if>
+			<if test=" null != payid and '' != payid ">
+				AND b.payid= #{payid}
+			</if>
+
+			<if test=" null != moneyStart">
+				AND b.money&gt;= #{moneyStart}
+			</if>
+			<if test=" null != moneyEnd">
+				AND b.money&lt;#{moneyEnd}
+			</if>
+			<if test=" null != paytype and '' != paytype ">
+				AND b.paytype = #{paytype}
+			</if>
+			<if test=" null != payid and '' != payid ">
+				AND b.payid = #{payid}
+			</if>
+			AND b.bfirst = 1
+		</where>
+	</select>
+	<!-- 查询首单总金额(除待支付) -->
+	<select id="getFirstTotalAmount" resultType="Double"
+		parameterMap="bill">
+		SELECT sum(b.money) as totalAmount FROM
+		t_bill b <!-- FORCE INDEX(index_status) -->
+		LEFT JOIN t_seller ts ON b.sellerid=ts.sellerid
+		<where>
+			b.is_virtual=0
+			<if test=" null != strStatus and strStatus.length >0 ">
+				AND b.status in
+				<foreach collection="strStatus" index="index" item="item"
+					open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test=" null != stringBid and '' != stringBid ">
+				AND b.bid LIKE '%${stringBid}%'
+			</if>
+			<if test=" null != codeid">
+				AND b.codeid = #{codeid}
+			</if>
+			<if test=" null != sellerid">
+				AND b.sellerid = #{sellerid}
+			</if>
+			<if test=" null != uid">
+				AND b.uid LIKE '%${uid}%'
+			</if>
+			<if test=" null != area and '' != area ">
+				AND ts.area = #{area}
+			</if>
+			<if test=" null != city and '' != city ">
+				AND ts.city = #{city}
+			</if>
+			<if test=" null != province and '' != province ">
+				AND ts.province = #{province}
+			</if>
+
+			<if test=" null != sellername and '' != sellername ">
+				AND b.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != nname and '' != nname ">
+				AND b.nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				AND b.phoneid LIKE '%${phoneid}%'
+			</if>
+			<if test=" null != genusname and '' != genusname ">
+				AND b.genusname LIKE '%${genusname}%'
+			</if>
+			<!-- <if test="null != status and status==9"> AND status IN( 1,2,3,4,5,6,7,8) 
+				</if> -->
+
+			<if test=" null != hstatus">
+				AND b.hstatus = #{hstatus}
+			</if>
+			<if test=" null != isVirtual">
+				AND b.is_virtual= #{isVirtual}
+			</if>
+			<if test=" null != zdateStart">
+				AND b.zdate&gt;= #{zdateStart}
+			</if>
+			<if test=" null != zdateEnd">
+				AND b.zdate&lt;#{zdateEnd}
+			</if>
+			<if test=" null != sdateStart">
+				AND b.sdate&gt;= #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd">
+				AND b.sdate&lt;#{sdateEnd}
+			</if>
+			<if test=" null != payid and '' != payid ">
+				AND b.payid= #{payid}
+			</if>
+			<if test=" null != moneyStart">
+				AND b.money&gt;= #{moneyStart}
+			</if>
+			<if test=" null != moneyEnd">
+				AND b.money&lt;#{moneyEnd}
+			</if>
+			<if test=" null != paytype and '' != paytype ">
+				AND b.paytype = #{paytype}
+			</if>
+			<if test=" null != payid and '' != payid ">
+				AND b.payid = #{payid}
+			</if>
+			AND b.bfirst = 1
+		</where>
+	</select>
+
+	<select id="getObject" resultMap="billMap" parameterType="Long">
+		SELECT
+		* FROM t_bill WHERE bid = #{0}
+	</select>
+
+	<!-- 根据bid查询详情 -->
+	<select id="getBillObject" resultMap="billMap" parameterType="Long">
+		<!-- SELECT tb.* ,ta.area_id AS taareaid,ta.title AS tatitle FROM t_bill 
+			tb LEFT JOIN t_area ta ON tb.area=ta.area_id -->
+		SELECT tb.* ,ta.area_id AS taareaid,ta.title AS tatitle ,
+		tc.area_id AS
+		tcareaid,tc.title AS tctitle,
+		tp.area_id AS tpareaid,tp.title AS
+		tptitle
+		FROM t_bill tb
+		LEFT JOIN t_area ta
+		ON tb.area=ta.area_id
+		LEFT JOIN
+		t_area tc
+		ON ta.pid=tc.area_id
+		LEFT JOIN t_area tp
+		ON tc.pid
+		=tp.area_id
+		WHERE tb.bid = #{0}
+	</select>
+	<!-- 订单金额查询详情 -->
+	<select id="getOrderCmount" resultMap="billMap" parameterType="Long">
+		SELECT tb.profit,
+		tb.commision,
+		tb.payment,
+		tb.give_money
+		FROM t_bill tb
+		WHERE tb.bid = #{0}
+	</select>
+	<!-- 查询待支付订单 -->
+	<select id="getBillNotPayList" resultMap="billMap" parameterMap="bill">
+		SELECT b.* FROM t_bill b <!-- FORCE INDEX(index_status) -->
+		<where>
+			b.is_virtual=0
+			AND b.status=0
+			<if test=" null != bid and '' != bid ">
+				AND bid = #{bid}
+			</if>
+			<if test=" null != codeid">
+				AND codeid = #{codeid}
+			</if>
+			<if test=" null != sellerid">
+				AND sellerid = #{sellerid}
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != nname and '' != nname ">
+				AND nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				AND phoneid = #{phoneid}
+			</if>
+			<if test=" null != genusname and '' != genusname ">
+				AND genusname LIKE '%${genusname}%'
+			</if>
+			<if test=" null != status">
+				AND status = #{status}
+			</if>
+			<!-- <if test="null != status and status==9"> AND status IN( 1,2,3,4,5,6,7,8) 
+				</if> -->
+
+			<if test=" null != hstatus">
+				AND hstatus = #{hstatus}
+			</if>
+			<if test=" null != isVirtual">
+				AND is_virtual= #{isVirtual}
+			</if>
+			<if test=" null != sdateStart">
+				AND b.sdate&gt;= #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd ">
+				AND b.sdate&lt;#{sdateEnd}
+			</if>
+			<if test=" null != moneyStart">
+				AND b.money&gt;= #{moneyStart}
+			</if>
+			<if test=" null != moneyEnd">
+				AND b.money&lt;#{moneyEnd}
+			</if>
+		</where>
+		ORDER BY b.sdate DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<!-- 待支付的条数 -->
+	<select id="getBillNotPayListCount" resultType="Long"
+		parameterMap="bill">
+		SELECT COUNT(b.bid) FROM t_bill b <!-- FORCE INDEX(index_status) -->
+		<where>
+			b.is_virtual=0
+			AND b.status=0
+			<if test=" null != bid and '' != bid ">
+				AND bid = #{bid}
+			</if>
+			<if test=" null != codeid">
+				AND codeid = #{codeid}
+			</if>
+			<if test=" null != sellerid">
+				AND sellerid = #{sellerid}
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != nname and '' != nname ">
+				AND nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				AND phoneid = #{phoneid}
+			</if>
+			<if test=" null != sdateStart">
+				AND b.sdate&gt;= #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd">
+				AND b.sdate&lt;#{sdateEnd}
+			</if>
+			<if test=" null != genusname and '' != genusname ">
+				AND genusname LIKE '%${genusname}%'
+			</if>
+			<if test=" null != status">
+				AND status = #{status}
+			</if>
+
+			<!-- <if test="null != status and status==9"> AND status IN( 1,2,3,4,5,6,7,8) 
+				</if> -->
+			<if test=" null != hstatus">
+				AND hstatus = #{hstatus}
+			</if>
+			<if test=" null != isVirtual">
+				AND is_virtual= #{isVirtual}
+			</if>
+			<if test=" null != moneyStart">
+				AND b.money&gt;= #{moneyStart}
+			</if>
+			<if test=" null != moneyEnd">
+				AND b.money&lt;#{moneyEnd}
+			</if>
+		</where>
+	</select>
+
+	<!-- 待支付的总金额 -->
+	<select id="getnotpaytotalAmount" resultType="Double"
+		parameterMap="bill">
+		SELECT IFNULL(sum(b.money),0) as totalAmount FROM t_bill b <!-- FORCE INDEX(index_status) -->
+		<where>
+			b.is_virtual=0
+			AND b.status=0
+			<if test=" null != bid and '' != bid ">
+				AND bid = #{bid}
+			</if>
+			<if test=" null != codeid">
+				AND codeid = #{codeid}
+			</if>
+			<if test=" null != sellerid">
+				AND sellerid = #{sellerid}
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != nname and '' != nname ">
+				AND nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				AND phoneid = #{phoneid}
+			</if>
+			<if test=" null != genusname and '' != genusname ">
+				AND genusname LIKE '%${genusname}%'
+			</if>
+			<if test=" null != status">
+				AND status = #{status}
+			</if>
+			<!-- <if test="null != status and status==9"> AND status IN( 1,2,3,4,5,6,7,8) 
+				</if> -->
+
+			<if test=" null != hstatus">
+				AND hstatus = #{hstatus}
+			</if>
+			<if test=" null != isVirtual">
+				AND is_virtual= #{isVirtual}
+			</if>
+			<if test=" null != sdateStart">
+				AND b.sdate&gt;= #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd">
+				AND b.sdate&lt;#{sdateEnd}
+			</if>
+
+			<if test=" null != moneyStart">
+				AND b.money&gt;= #{moneyStart}
+			</if>
+			<if test=" null != moneyEnd ">
+				AND b.money&lt;#{moneyEnd}
+			</if>
+		</where>
+	</select>
+
+	<update id="update" parameterMap="bill">
+		UPDATE t_bill
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != status">
+					status = #{status}
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != bid and '' != bid">
+				bid = #{bid}
+			</if>
+		</where>
+	</update>
+
+	<select id="getSpreadBillList" parameterType="String" resultMap="billMap">
+		SELECT tb.*,tsa.fullname AS aidFullname,tsa.uid aidUid,tsa.account AS
+		aidAccount
+		FROM t_seller_account tsa
+		RIGHT JOIN (
+		SELECT t_bill.* FROM t_bill WHERE status != 0 AND sdate LIKE
+		CONCAT(#{date},'%')
+		AND aid IN
+		(SELECT DISTINCT aid FROM t_spread )
+		) tb
+		ON tb.aid=tsa.aid
+		ORDER BY zdate
+	</select>
+
+	<!-- 根据用户ID数组查询订单信息列表 -->
+	<select id="getBillListByUids" parameterType="Object" resultMap="billMap">
+		SELECT
+		t.uid,
+		SUM(money) AS sumMoney
+		FROM
+		t_bill t
+		WHERE
+		t.uid IN
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=") ">
+			#{item}
+		</foreach>
+		AND t.`status` IN ("1", "2", "3")
+		GROUP BY t.uid;
+	</select>
+
+
+	<!-- 根据用户ID查询消费订单列表(status为1,2,3) -->
+	<select id="getBillListByUid" resultMap="billMap" parameterMap="bill">
+		SELECT
+		b.*
+		FROM
+		t_bill b FORCE INDEX(index_status)
+		<where>
+			1=1
+			AND b.uid =#{uid}
+			AND b.`status` IN ("1", "2", "3")
+			<include refid="queryBillListByUidCondition"></include>
+		</where>
+		<if test=" order == 1 ">
+			ORDER BY b.sdate DESC
+		</if>
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<!-- 根据用户ID查询消费订单数(status为1,2,3) -->
+	<select id="getBillCountByUid" resultType="long" parameterMap="bill">
+		SELECT
+		count(1)
+		FROM
+		t_bill b FORCE INDEX(index_status)
+		<where>
+			1=1
+			AND b.uid =#{uid}
+			AND b.`status` IN ("1", "2", "3")
+			<include refid="queryBillListByUidCondition"></include>
+		</where>
+	</select>
+
+	<!-- 查询所有订单(status=2)已返现(已分账) add by lifeng 2016年6月12日上午10:02:25 -->
+	<select id="getAccountedBillList" resultMap="billMap"
+		parameterMap="bill">
+		SELECT
+		b.*
+		FROM
+		t_bill b FORCE INDEX(index_status)
+		<where>
+			b.`status` = #{status}
+			<if test=" null != stringBid and '' != stringBid ">
+				AND b.bid = #{stringBid}
+			</if>
+			<if test=" null != sellerid">
+				AND sellerid = #{sellerid}
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND sellername LIKE '%${sellername}%'
+			</if>
+		</where>
+		<if test="couponType !=null">
+			AND coupon_type = #{couponType}
+		</if>
+		<if test=" order == 1 ">
+			ORDER BY b.sdate DESC
+		</if>
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<!-- 查询所有订单条数(status=2)已返现(已分账) add by lifeng 2016年6月12日上午10:02:25 -->
+	<select id="accountedBillCount" resultType="Long" parameterMap="bill">
+		SELECT
+		count(b.bid)
+		FROM
+		t_bill b FORCE INDEX(index_status)
+		<where>
+			b.`status` = #{status}
+			<if test=" null != stringBid and '' != stringBid ">
+				AND b.bid = #{stringBid}
+			</if>
+			<if test=" null != sellerid">
+				AND sellerid = #{sellerid}
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND sellername LIKE '%${sellername}%'
+			</if>
+			<if test="couponType !=null">
+				AND coupon_type = #{couponType}
+			</if>
+		</where>
+	</select>
+
+	<!-- 获取满减活动列表 -->
+	<select id="getFullReductionList" parameterMap="bill" resultMap="billMap">
+		SELECT * FROM t_bill
+		WHERE full_reduction_id = #{fullReductionId}
+		<if test=" null != bid and '' != bid ">
+			AND bid = #{bid}
+		</if>
+		<if test=" null != phoneid and phoneid != ''">
+			AND phoneid LIKE '%${phoneid}%'
+		</if>
+		<if test=" null != sdateStart">
+			AND sdate &gt; #{sdateStart}
+		</if>
+		<if test=" null != sdateEnd">
+			AND sdate &lt; #{sdateEnd}
+		</if>
+		ORDER BY sdate DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<!-- 统计满减订单总数 -->
+	<select id="countFullReduction" parameterMap="bill" resultType="long">
+		SELECT COUNT(1)
+		FROM t_bill
+		WHERE full_reduction_id = #{fullReductionId}
+		<if test=" null != bid and '' != bid ">
+			AND bid = #{bid}
+		</if>
+		<if test=" null != phoneid and phoneid != ''">
+			AND phoneid LIKE '%${phoneid}%'
+		</if>
+		<if test=" null != sdateStart">
+			AND sdate &gt; #{sdateStart}
+		</if>
+		<if test=" null != sdateEnd">
+			AND sdate &lt; #{sdateEnd}
+		</if>
+	</select>
+
+	<!-- 查询推荐的商家消费订单 -->
+	<select id="getRecommendSellerList" resultMap="billMap" parameterType="Object">
+		SELECT t.sellerid, t.sellername, t.commission, (SELECT SUM(money) FROM
+		t_bill WHERE sellerid = t.sellerid ) AS money, t.xmer_uid  AS uid, t.saas_channel FROM t_bill t
+		INNER JOIN t_saas_sold_order t1 ON t.sellerid = t1.sellerid
+<!-- 		INNER JOIN t_saas_order t2 ON t1.saas_ordersn = t2.ordersn -->
+		<where>
+			1 = 1
+			AND t.STATUS > 0
+			AND t.saas_channel = 3
+			AND t1.status IN (1, 2)
+			AND t.`xmer_uid` IN
+			<foreach item="item" index="index" collection="array" open="("
+				separator="," close=") ">
+				#{item}
+			</foreach>
+		</where>
+		UNION ALL
+		SELECT t.sellerid, t.sellername, t.commission, (SELECT
+		SUM(money) FROM t_bill WHERE sellerid = t.sellerid ) AS money,
+		t.parent_xmer_uid AS uid, t.saas_channel FROM t_bill t
+		INNER JOIN t_saas_sold_order t1 ON t.sellerid = t1.sellerid
+		<!-- INNER JOIN t_saas_order t2 ON t1.saas_ordersn = t2.ordersn -->
+		<where>
+			1 = 1
+			AND t.STATUS > 0
+			AND t.saas_channel = 4
+			AND t1.status IN (1, 2) 
+			AND t.`parent_xmer_uid` IN
+			<foreach item="item" index="index" collection="array" open="("
+				separator="," close=") ">
+				#{item}
+			</foreach>
+		</where>
+	</select>
+
+	<!-- 统计V客推荐的商家 -->
+	<select id="getRecommendSellerInfoList" resultMap="billMap" parameterType="java.lang.Integer">
+		SELECT t.sellerid, t.sellername, t.saas_channel, SUM(t.money) AS
+		sellerTotalProfit, t1.fullname, t1.phoneid, t.status, t.signUid AS uid From (
+		SELECT t.sellerid, t.sellername, t.money, t.xmer_uid AS signUid, t1.status, t.saas_channel FROM t_bill t
+		INNER JOIN t_saas_sold_order t1 ON t.sellerid = t1.sellerid
+<!-- 		INNER JOIN t_saas_order t2 ON t1.saas_ordersn = t2.ordersn -->
+		<where>
+			1 = 1
+			AND t.STATUS > 0
+			AND t.saas_channel = 3
+			AND t1.status IN (1, 2) 
+			AND t.`xmer_uid` = #{uid,jdbcType=INTEGER}
+		</where>
+		UNION ALL
+		SELECT t.sellerid, t.sellername, t.money, t.xmer_uid AS signUid, t1.status,
+		t.saas_channel FROM t_bill t
+		INNER JOIN t_saas_sold_order t1 ON t.sellerid = t1.sellerid
+		<!-- INNER JOIN t_saas_order t2 ON t1.saas_ordersn = t2.ordersn -->
+		<where>
+			1 = 1
+			AND t.STATUS > 0
+			AND t.saas_channel = 4
+			AND t1.status IN (1, 2)  
+			AND t.`parent_xmer_uid` = #{uid,jdbcType=INTEGER}
+		</where>
+		) t LEFT JOIN t_seller t1 ON t.sellerid = t1.sellerid GROUP BY
+		t.sellerid;
+	</select>
+	
+	<!-- 查询出V客签约店铺的消费订单 -->
+    <select id="getVerProfitCountSellerList" resultType="com.xmniao.xmn.core.reward_dividends.entity.TLiveGivedGiftVke" parameterType="com.xmniao.xmn.core.reward_dividends.entity.TLiveGivedGiftVke" >
+        SELECT t.* FROM (
+			SELECT t.bid AS orderNo, t.sellerid, t.sellername, t.commission, t.money, t.xmer_uid AS vkeUid, t.saas_channel AS saasChannel, t.baseagio AS discount, t.sdate
+			FROM t_bill t
+			INNER JOIN t_saas_sold_order t1 ON t.sellerid = t1.sellerid
+<!-- 			INNER JOIN t_saas_order t2 ON t1.saas_ordersn = t2.ordersn -->
+			<where>
+				1 = 1
+				AND t.STATUS > 0
+				AND t.saas_channel = 3
+				AND t1.status = 1 
+		    </where>
+			UNION ALL
+			SELECT t.bid AS orderNo, t.sellerid, t.sellername, t.commission, t.money, t.parent_xmer_uid AS vkeUid, t.saas_channel AS saasChannel, t.baseagio AS discount, t.sdate
+			FROM t_bill t
+			INNER JOIN t_saas_sold_order t1 ON t.sellerid = t1.sellerid
+			<!-- INNER JOIN t_saas_order t2 ON t1.saas_ordersn = t2.ordersn -->
+			<where>
+				1 = 1
+				AND t.STATUS > 0
+				AND t.saas_channel = 4
+				AND t1.status = 1 
+		    </where>
+		) t
+		<where>
+			1 = 1
+		    <if test=" null != vkeUid and '' != vkeUid ">
+			    AND t.vkeUid = #{vkeUid}
+		    </if>
+			<if test=" null != sdateStart">
+				AND t.sdate &gt; #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd">
+				AND t.sdate &lt; #{sdateEnd}
+			</if>
+		</where>
+		ORDER BY sdate DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="countVerProfitBill" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.reward_dividends.entity.TLiveGivedGiftVke" >
+        SELECT COUNT(1) FROM (
+			SELECT t.sellerid, t.sellername, t.commission, t.money, t.xmer_uid AS vkeUid, t.saas_channel AS saasChannel, t.sdate
+			FROM t_bill t
+			INNER JOIN t_saas_sold_order t1 ON t.sellerid = t1.sellerid
+<!-- 			INNER JOIN t_saas_order t2 ON t1.saas_ordersn = t2.ordersn -->
+			<where>
+				1 = 1
+				AND t.STATUS > 0
+				AND t.saas_channel = 3
+				AND t1.status = 1 
+		    </where>
+			UNION ALL
+			SELECT t.sellerid, t.sellername, t.commission, t.money, t.parent_xmer_uid AS vkeUid, t.saas_channel AS saasChannel, t.sdate
+			FROM t_bill t
+			INNER JOIN t_saas_sold_order t1 ON t.sellerid = t1.sellerid
+			<!-- INNER JOIN t_saas_order t2 ON t1.saas_ordersn = t2.ordersn -->
+			<where>
+				1 = 1
+				AND t.STATUS > 0
+				AND t.saas_channel = 4
+				AND t1.status = 1 
+		    </where>
+		) t
+		<where>
+			1 = 1
+		    <if test=" null != vkeUid and '' != vkeUid ">
+			    AND t.vkeUid = #{vkeUid}
+		    </if>
+			<if test=" null != sdateStart">
+				AND t.sdate &gt; #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd">
+				AND t.sdate &lt; #{sdateEnd}
+			</if>
+		</where>
+	</select>
+
+</mapper>

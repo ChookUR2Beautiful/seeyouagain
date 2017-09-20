@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+<mapper namespace="com.xmniao.xmn.core.xmnburs.dao.BursInfoDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.xmnburs.entity.BursInfo" >
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="uname" property="uname" jdbcType="VARCHAR" />
+    <result column="mobilephone" property="mobilephone" jdbcType="VARCHAR" />
+    <result column="model" property="model" jdbcType="VARCHAR" />
+    <result column="resolution" property="resolution" jdbcType="VARCHAR" />
+    <result column="lang" property="lang" jdbcType="VARCHAR" />
+    <result column="brand" property="brand" jdbcType="VARCHAR" />
+    <result column="last_brand" property="lastBrand" jdbcType="VARCHAR" />
+    <result column="last_model" property="lastModel" jdbcType="VARCHAR" />
+    <result column="networktype" property="networktype" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="avatar" property="avatar" jdbcType="VARCHAR" />
+    <result column="qq" property="qq" jdbcType="VARCHAR" />
+    <result column="sex" property="sex" jdbcType="INTEGER" />
+    <result column="birthday" property="birthday" jdbcType="VARCHAR" />
+    <result column="idtype" property="idtype" jdbcType="INTEGER" />
+    <result column="idcard" property="idcard" jdbcType="VARCHAR" />
+    <result column="referrer_member_id" property="referrerMemberId" jdbcType="VARCHAR" />
+    <result column="referrer_name" property="referrerName" jdbcType="VARCHAR" />
+    <result column="referrer_zc_id" property="referrerZcId" jdbcType="INTEGER" />
+    <result column="province" property="province" jdbcType="VARCHAR" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="region" property="region" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="zc_time" property="zcTime" jdbcType="TIMESTAMP" />
+    <result column="interest" property="interest" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <insert id="insertBursInfo" parameterType="com.xmniao.xmn.core.xmnburs.entity.BursInfo" >
+    insert into b_urs_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="uname != null" >
+        uname,
+      </if>
+      <if test="mobilephone != null" >
+        mobilephone,
+      </if>
+      <if test="model != null" >
+        model,
+      </if>
+      <if test="resolution != null" >
+        resolution,
+      </if>
+      <if test="lang != null" >
+        lang,
+      </if>
+      <if test="brand != null" >
+        brand,
+      </if>
+      <if test="lastBrand != null" >
+        last_brand,
+      </if>
+      <if test="lastModel != null" >
+        last_model,
+      </if>
+      <if test="networktype != null" >
+        networktype,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="avatar != null" >
+        avatar,
+      </if>
+      <if test="qq != null" >
+        qq,
+      </if>
+      <if test="sex != null" >
+        sex,
+      </if>
+      <if test="birthday != null" >
+        birthday,
+      </if>
+      <if test="idtype != null" >
+        idtype,
+      </if>
+      <if test="idcard != null" >
+        idcard,
+      </if>
+      <if test="referrerMemberId != null" >
+        referrer_member_id,
+      </if>
+      <if test="referrerName != null" >
+        referrer_name,
+      </if>
+      <if test="referrerZcId != null" >
+        referrer_zc_id,
+      </if>
+      <if test="province != null" >
+        province,
+      </if>
+      <if test="city != null" >
+        city,
+      </if>
+      <if test="region != null" >
+        region,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="zcTime != null" >
+        zc_time,
+      </if>
+      <if test="interest != null" >
+        interest,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="uname != null" >
+        #{uname,jdbcType=VARCHAR},
+      </if>
+      <if test="mobilephone != null" >
+        #{mobilephone,jdbcType=VARCHAR},
+      </if>
+      <if test="model != null" >
+        #{model,jdbcType=VARCHAR},
+      </if>
+      <if test="resolution != null" >
+        #{resolution,jdbcType=VARCHAR},
+      </if>
+      <if test="lang != null" >
+        #{lang,jdbcType=VARCHAR},
+      </if>
+      <if test="brand != null" >
+        #{brand,jdbcType=VARCHAR},
+      </if>
+      <if test="lastBrand != null" >
+        #{lastBrand,jdbcType=VARCHAR},
+      </if>
+      <if test="lastModel != null" >
+        #{lastModel,jdbcType=VARCHAR},
+      </if>
+      <if test="networktype != null" >
+        #{networktype,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="avatar != null" >
+        #{avatar,jdbcType=VARCHAR},
+      </if>
+      <if test="qq != null" >
+        #{qq,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="birthday != null" >
+        #{birthday,jdbcType=VARCHAR},
+      </if>
+      <if test="idtype != null" >
+        #{idtype,jdbcType=INTEGER},
+      </if>
+      <if test="idcard != null" >
+        #{idcard,jdbcType=VARCHAR},
+      </if>
+      <if test="referrerMemberId != null" >
+        #{referrerMemberId,jdbcType=VARCHAR},
+      </if>
+      <if test="referrerName != null" >
+        #{referrerName,jdbcType=VARCHAR},
+      </if>
+      <if test="referrerZcId != null" >
+        #{referrerZcId,jdbcType=INTEGER},
+      </if>
+      <if test="province != null" >
+        #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null" >
+        #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="region != null" >
+        #{region,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="zcTime != null" >
+        #{zcTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="interest != null" >
+        #{interest,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+   <delete id="deleteBursInfo" parameterType="java.lang.Integer" >
+    delete from b_urs_info
+    where uid = #{uid,jdbcType=INTEGER}
+  </delete>
+  
+  <update id="updateBursInfo" parameterType="com.xmniao.xmn.core.xmnburs.entity.BursInfo" >
+    update b_urs_info
+    <set >
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="uname != null" >
+        uname = #{uname,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="avatar != null" >
+        avatar = #{avatar,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        sex = #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="birthday != null" >
+        birthday = #{birthday,jdbcType=VARCHAR},
+      </if>
+      <if test="idcard != null" >
+        idcard = #{idcard,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where uid = #{uid,jdbcType=INTEGER}
+  </update>
+  
+</mapper>

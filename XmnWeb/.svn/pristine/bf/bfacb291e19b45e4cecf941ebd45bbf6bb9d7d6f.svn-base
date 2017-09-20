@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.vstar.dao.DivisionDao">
+	<resultMap id="BaseResultMap" type="com.xmniao.xmn.core.vstar.entity.Division">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="division_name" jdbcType="VARCHAR" property="divisionName" />
+		<result column="city_names" jdbcType="VARCHAR" property="cityNames" />
+		<result column="city_ids" jdbcType="VARCHAR" property="cityIds" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, division_name
+	</sql>
+
+	<update id="deleteCityNotInIds">
+		update t_vstar_division_region set state = 0 where 
+		division_id = #{id} and city_id not in 
+		<foreach collection="cityIdsList" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</update>
+
+	<select id="getList" 
+		resultMap="BaseResultMap">
+		select <include refid="Base_Column_List"></include>,(select group_concat(DISTINCT city_name) from
+		t_vstar_division_region where t_vstar_division_region.division_id =
+		t_vstar_division.id and t_vstar_division_region.state = 1 ) as city_names
+		 from t_vstar_division
+		 order by id desc
+		 <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="java.lang.Long">
+		 select count(1)
+		 from t_vstar_division
+	</select>
+
+	<select id="getObject" parameterType="java.lang.Long"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />,
+		(select group_concat(DISTINCT city_id) from
+		t_vstar_division_region where t_vstar_division_region.division_id =
+		t_vstar_division.id and t_vstar_division_region.state = 1 ) as city_ids
+		from t_vstar_division
+		where id = #{id}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from t_vstar_division
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.xmniao.xmn.core.vstar.entity.Division">
+		insert into t_vstar_division (id, division_name)
+		values (#{id,jdbcType=INTEGER}, #{divisionName,jdbcType=VARCHAR})
+	</insert>
+	<insert id="add" parameterType="com.xmniao.xmn.core.vstar.entity.Division"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into t_vstar_division
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="divisionName != null">
+				division_name,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="divisionName != null">
+				#{divisionName,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="update" parameterType="com.xmniao.xmn.core.vstar.entity.Division">
+		update t_vstar_division
+		<set>
+			<if test="divisionName != null">
+				division_name = #{divisionName,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.vstar.entity.Division">
+		update t_vstar_division
+		set division_name = #{divisionName,jdbcType=VARCHAR}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<select id="getBaseList"  resultMap="BaseResultMap">
+		select 
+			<include refid="Base_Column_List"></include>
+		 from t_vstar_division
+		 order by id desc
+		 <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+</mapper>

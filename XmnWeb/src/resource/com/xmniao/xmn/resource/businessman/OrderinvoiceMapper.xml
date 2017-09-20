@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.OrderinvoiceDao">
+
+	<parameterMap type="Orderinvoice" id="orderinvoice" />
+	
+	<resultMap type="Orderinvoice" id="orderinvoiceMap">
+		<result column="id" property="id" />
+		<result column="seller_name" property="sellerName" />
+		<result column="invoice" property="invoice" />
+		<result column="apply_date" property="applyDate" />
+		<result column="join_date" property="joinDate" />
+		<result column="seller_username" property="sellerUsername" />
+		<result column="seller_address" property="sellerAddress" />
+		<result column="seller_telephone" property="sellerTelephone" />
+		<result column="region_id" property="regionId" />
+		<result column="applied_amount" property="appliedAmount" />
+		<result column="available_amount" property="availableAmount" />
+		<result column="apply_amount" property="applyAmount" />
+		<result column="operation_id" property="operationId" />
+		<result column="operation_name" property="operationName" />
+		<result column="opinion" property="opinion" />
+		<result column="update_date" property="updateDate" />
+		<result column="note" property="note" />
+		<result column="status" property="status" />
+		<result column="taxid" property="taxid" />
+	</resultMap>
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_orderinvoice
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						seller_name,
+						invoice,
+						apply_date,
+						join_date,
+						seller_username,
+						seller_address,
+						seller_telephone,
+						region_id,
+						applied_amount,
+						available_amount,
+						apply_amount,
+						operation_id,
+						operation_name,
+						opinion,
+						update_date,
+						note,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.sellerName},
+						 #{item.invoice},
+						 #{item.applyDate},
+						 #{item.joinDate},
+						 #{item.sellerUsername},
+						 #{item.sellerAddress},
+						 #{item.sellerTelephone},
+						 #{item.regionId},
+						 #{item.appliedAmount},
+						 #{item.availableAmount},
+						 #{item.applyAmount},
+						 #{item.operationId},
+						 #{item.operationName},
+						 #{item.opinion},
+						 #{item.updateDate},
+						 #{item.note},
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" parameterMap="orderinvoice" >
+		INSERT INTO t_orderinvoice
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					id,
+				</if>
+			 	<if test=" null != sellerName and '' != sellerName ">
+					seller_name,
+				</if>
+			 	<if test=" null != invoice and '' != invoice ">
+					invoice,
+				</if>
+			 	<if test=" null != applyDate">
+					apply_date,
+				</if>
+			 	<if test=" null != joinDate">
+					join_date,
+				</if>
+			 	<if test=" null != sellerUsername and '' != sellerUsername ">
+					seller_username,
+				</if>
+			 	<if test=" null != sellerAddress and '' != sellerAddress ">
+					seller_address,
+				</if>
+			 	<if test=" null != sellerTelephone and '' != sellerTelephone ">
+					seller_telephone,
+				</if>
+			 	<if test=" null != regionId and '' != regionId ">
+					region_id,
+				</if>
+			 	<if test=" null != appliedAmount">
+					applied_amount,
+				</if>
+			 	<if test=" null != availableAmount">
+					available_amount,
+				</if>
+			 	<if test=" null != applyAmount">
+					apply_amount,
+				</if>
+			 	<if test=" null != operationId">
+					operation_id,
+				</if>
+			 	<if test=" null != operationName and '' != operationName ">
+					operation_name,
+				</if>
+			 	<if test=" null != opinion and '' != opinion ">
+					opinion,
+				</if>
+			 	<if test=" null != updateDate">
+					update_date,
+				</if>
+			 	<if test=" null != note and '' != note ">
+					note,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					 	#{id},
+				</if>
+			 	<if test=" null != sellerName and '' != sellerName ">
+					 	#{sellerName},
+				</if>
+			 	<if test=" null != invoice and '' != invoice ">
+					 	#{invoice},
+				</if>
+			 	<if test=" null != applyDate">
+					 	#{applyDate},
+				</if>
+			 	<if test=" null != joinDate">
+					 	#{joinDate},
+				</if>
+			 	<if test=" null != sellerUsername and '' != sellerUsername ">
+					 	#{sellerUsername},
+				</if>
+			 	<if test=" null != sellerAddress and '' != sellerAddress ">
+					 	#{sellerAddress},
+				</if>
+			 	<if test=" null != sellerTelephone and '' != sellerTelephone ">
+					 	#{sellerTelephone},
+				</if>
+			 	<if test=" null != regionId and '' != regionId ">
+					 	#{regionId},
+				</if>
+			 	<if test=" null != appliedAmount">
+					 	#{appliedAmount},
+				</if>
+			 	<if test=" null != availableAmount">
+					 	#{availableAmount},
+				</if>
+			 	<if test=" null != applyAmount">
+					 	#{applyAmount},
+				</if>
+			 	<if test=" null != operationId">
+					 	#{operationId},
+				</if>
+			 	<if test=" null != operationName and '' != operationName ">
+					 	#{operationName},
+				</if>
+			 	<if test=" null != opinion and '' != opinion ">
+					 	#{opinion},
+				</if>
+			 	<if test=" null != updateDate">
+					 	#{updateDate},
+				</if>
+			 	<if test=" null != note and '' != note ">
+					 	#{note},
+				</if>
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_orderinvoice WHERE id IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterMap="orderinvoice">
+		UPDATE t_orderinvoice
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != id">
+					id = #{id},
+				</if>
+				<if test=" null != sellerName and '' != sellerName ">
+					seller_name = #{sellerName},
+				</if>
+				<if test=" null != invoice and '' != invoice ">
+					invoice = #{invoice},
+				</if>
+				<if test=" null != applyDate">
+					apply_date = #{applyDate},
+				</if>
+				<if test=" null != joinDate">
+					join_date = #{joinDate},
+				</if>
+				<if test=" null != sellerUsername and '' != sellerUsername ">
+					seller_username = #{sellerUsername},
+				</if>
+				<if test=" null != sellerAddress and '' != sellerAddress ">
+					seller_address = #{sellerAddress},
+				</if>
+				<if test=" null != sellerTelephone and '' != sellerTelephone ">
+					seller_telephone = #{sellerTelephone},
+				</if>
+				<if test=" null != regionId and '' != regionId ">
+					region_id = #{regionId},
+				</if>
+				<if test=" null != appliedAmount">
+					applied_amount = #{appliedAmount},
+				</if>
+				<if test=" null != availableAmount">
+					available_amount = #{availableAmount},
+				</if>
+				<if test=" null != applyAmount">
+					apply_amount = #{applyAmount},
+				</if>
+				<if test=" null != operationId">
+					operation_id = #{operationId},
+				</if>
+				<if test=" null != operationName and '' != operationName ">
+					operation_name = #{operationName},
+				</if>
+				<if test=" null != opinion and '' != opinion ">
+					opinion = #{opinion},
+				</if>
+				<if test=" null != updateDate">
+					update_date = #{updateDate},
+				</if>
+				<if test=" null != note and '' != note ">
+					note = #{note},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != id and '' != id">
+				id = #{id}
+			</if>
+		</where>
+	</update>
+	
+	<select id="getList" resultMap="orderinvoiceMap" parameterMap="orderinvoice">
+		SELECT * FROM t_orderinvoice
+		<where>
+			1=1
+			<if test=" null != id">
+				AND id = #{id}
+			</if>
+			<if test=" null != sellerName and '' != sellerName ">
+				AND seller_name LIKE '%${sellerName}%'
+			</if>
+			<if test=" null != invoice and '' != invoice ">
+				AND invoice LIKE '%${invoice}%'
+			</if>
+			 <!--  <if test=" null != applyDate">
+				AND apply_date = #{applyDate}
+			</if>  --> 
+	
+		 	<!-- <if test=" null != applyDateStart and '' != applyDateStart">
+				AND DATE_FORMAT(applyDate,'%Y-%m-%d')&gt;= #{applyDateStart}
+			</if>
+			<if test=" null != applyDateEnd and '' != applyDateEnd">
+				AND DATE_FORMAT(applyDate,'%Y-%m-%d')&lt;= #{applyDateEnd}
+			</if>  -->
+			<if test=" null != applyDateStart and '' != applyDateStart">
+				AND apply_date&gt;= #{applyDateStart}
+			</if>
+			<if test=" null != applyDateEnd and '' != applyDateEnd">
+				AND apply_date&lt;= #{applyDateEnd}
+			</if>	
+						
+			<if test=" null != joinDate">
+				AND join_date = #{joinDate}
+			</if>
+			<if test=" null != sellerUsername and '' != sellerUsername ">
+				AND seller_username LIKE '%${sellerUsername}%'
+			</if>
+			<if test=" null != sellerAddress and '' != sellerAddress ">
+				AND seller_address LIKE '%${sellerAddress}%'
+			</if>
+			<if test=" null != sellerTelephone and '' != sellerTelephone ">
+				AND seller_telephone LIKE '%${sellerTelephone}%'
+			</if>
+			<if test=" null != regionId and '' != regionId ">
+				AND region_id LIKE '%${regionId}%'
+			</if>
+			<if test=" null != appliedAmount">
+				AND applied_amount = #{appliedAmount}
+			</if>
+			<if test=" null != availableAmount">
+				AND available_amount = #{availableAmount}
+			</if>
+			<!-- <if test=" null != applyAmount">
+				AND apply_amount = #{applyAmount}
+			</if> -->
+			<if test=" null != applyAmountSt and '' != applyAmountSt">
+				AND apply_amount&gt;= #{applyAmountSt}
+			</if>
+			<if test=" null != applyAmountEd and '' != applyAmountEd">
+				AND apply_amount&lt;= #{applyAmountEd}
+			</if>
+			
+			<if test=" null != operationId">
+				AND operation_id = #{operationId}
+			</if>
+			<if test=" null != operationName and '' != operationName ">
+				AND operation_name LIKE '%${operationName}%'
+			</if>
+			<if test=" null != opinion and '' != opinion ">
+				AND opinion LIKE '%${opinion}%'
+			</if>
+			<if test=" null != updateDate">
+				AND update_date = #{updateDate}
+			</if>
+			<if test=" null != note and '' != note ">
+				AND note LIKE '%${note}%'
+			</if>
+		</where>
+			ORDER BY id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="orderinvoice">
+		SELECT COUNT(*) FROM t_orderinvoice
+		<where>
+			1=1
+			<if test=" null != id">
+				AND id = #{id}
+			</if>
+			<if test=" null != sellerName and '' != sellerName ">
+				AND seller_name LIKE '%${sellerName}%'
+			</if>
+			<if test=" null != invoice and '' != invoice ">
+				AND invoice LIKE '%${invoice}%'
+			</if>
+			<!--   <if test=" null != applyDate">
+				AND apply_date = #{applyDate}
+			</if>   -->
+								
+			<if test=" null != applyDateStart and '' != applyDateStart">
+				AND apply_date&gt;= #{applyDateStart}
+			</if>
+			<if test=" null != applyDateEnd and '' != applyDateEnd">
+				AND apply_date&lt;= #{applyDateEnd}
+			</if>			
+			
+			<if test=" null != joinDate">
+				AND join_date = #{joinDate}
+			</if>
+			<if test=" null != sellerUsername and '' != sellerUsername ">
+				AND seller_username LIKE '%${sellerUsername}%'
+			</if>
+			<if test=" null != sellerAddress and '' != sellerAddress ">
+				AND seller_address LIKE '%${sellerAddress}%'
+			</if>
+			<if test=" null != sellerTelephone and '' != sellerTelephone ">
+				AND seller_telephone LIKE '%${sellerTelephone}%'
+			</if>
+			<if test=" null != regionId and '' != regionId ">
+				AND region_id LIKE '%${regionId}%'
+			</if>
+			<if test=" null != appliedAmount">
+				AND applied_amount = #{appliedAmount}
+			</if>
+			<if test=" null != availableAmount">
+				AND available_amount = #{availableAmount}
+			</if>
+			<!-- <if test=" null != applyAmount">
+				AND apply_amount = #{applyAmount}
+			</if> -->
+			<if test=" null != applyAmountSt and '' != applyAmountSt">
+				AND apply_amount&gt;= #{applyAmountSt}
+			</if>
+			<if test=" null != applyAmountEd and '' != applyAmountEd">
+				AND apply_amount&lt;= #{applyAmountEd}
+			</if>
+						
+			<if test=" null != operationId">
+				AND operation_id = #{operationId}
+			</if>
+			<if test=" null != operationName and '' != operationName ">
+				AND operation_name LIKE '%${operationName}%'
+			</if>
+			<if test=" null != opinion and '' != opinion ">
+				AND opinion LIKE '%${opinion}%'
+			</if>
+			<if test=" null != updateDate">
+				AND update_date = #{updateDate}
+			</if>
+			<if test=" null != note and '' != note ">
+				AND note LIKE '%${note}%'
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Long">
+		SELECT Max(id) AS VALUE FROM t_orderinvoice
+	</select>
+	
+	<select id="getObject" resultMap="orderinvoiceMap" parameterType="Long">
+		SELECT * FROM t_orderinvoice WHERE id = #{0}
+	</select>
+	
+</mapper>

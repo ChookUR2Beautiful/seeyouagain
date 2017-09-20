@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.business_statistics.dao.TMicrographTemplateTagDao" >
+
+
+  <resultMap id="micrographTemplateTagMap" type="com.xmniao.xmn.core.business_statistics.entity.TMicrographTemplateTag" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="template_id" property="templateId" jdbcType="INTEGER" />
+    <result column="tag_id" property="tagId" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="micrographTemplateTag_column_list" >
+    id, template_id, tag_id
+  </sql>
+  
+  
+  <select id="getObject" resultMap="micrographTemplateTagMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="micrographTemplateTag_column_list" />
+    from t_micrograph_template_tag
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  
+  <delete id="deleteByTemplateId" parameterType="java.lang.Long" >
+    delete from t_micrograph_template_tag
+    where template_id = #{templateId,jdbcType=INTEGER}
+  </delete>
+  
+  
+  
+  <insert id="add" parameterType="com.xmniao.xmn.core.business_statistics.entity.TMicrographTemplateTag" >
+    insert into t_micrograph_template_tag
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="templateId != null" >
+        template_id,
+      </if>
+      <if test="tagId != null" >
+        tag_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="templateId != null" >
+        #{templateId,jdbcType=INTEGER},
+      </if>
+      <if test="tagId != null" >
+        #{tagId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+   <!-- 批量插入模板标签关系表 -->
+	<insert id="addBatch" parameterType="java.util.ArrayList">
+		INSERT INTO t_micrograph_template_tag
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<include refid="micrographTemplateTag_column_list" /> 
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+			<!-- id, template_id, tag_id -->
+				#{item.id},
+				#{item.templateId},
+				#{item.tagId}
+			</trim>
+		</foreach>
+	</insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.business_statistics.entity.TMicrographTemplateTag" >
+    update t_micrograph_template_tag
+    <set >
+      <if test="templateId != null" >
+        template_id = #{templateId,jdbcType=INTEGER},
+      </if>
+      <if test="tagId != null" >
+        tag_id = #{tagId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+</mapper>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.cloud_design.dao.DMaterialCarouselSourceDao" >
+
+
+  <resultMap id="materialCarouselSourceMap" type="com.xmniao.xmn.core.cloud_design.entity.DMaterialCarouselSource" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="material_id" property="materialId" jdbcType="BIGINT" />
+    <result column="material_carousel_id" property="materialCarouselId" jdbcType="BIGINT" />
+    <result column="pic_url" property="picUrl" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="order_val" property="orderVal" jdbcType="INTEGER" />
+    <result column="creater" property="creater" jdbcType="VARCHAR" />
+    <result column="updater" property="updater" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="font_coordinate" property="fontCoordinate" jdbcType="VARCHAR" />
+    <result column="img_coordinate" property="imgCoordinate" jdbcType="VARCHAR" />
+    <result column="img_size" property="imgSize" jdbcType="VARCHAR" />
+    <result column="font_size" property="fontSize" jdbcType="VARCHAR" />
+    <result column="font" property="font" jdbcType="VARCHAR" />
+    <result column="font_num" property="fontNum" jdbcType="INTEGER" />
+    <result column="font_text" property="fontText" jdbcType="VARCHAR" />
+    <result column="img_type" property="imgType" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  
+  <sql id="materialCarouselSource_column_list" >
+    id, material_id, material_carousel_id, pic_url, remark, order_val, creater, updater, 
+    create_time, update_time, type, font_coordinate, img_coordinate, img_size, font_size, 
+    font, font_num, font_text, img_type
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test="materialId != null and materialId != '' ">
+  		AND material_id = #{materialId}
+  	</if>
+  	<if test="materialCarouselId != null and materialCarouselId != '' ">
+  		AND material_carousel_id = #{materialCarouselId}
+  	</if>
+  	<if test="type != null and type != '' ">
+  		AND type = #{type}
+  	</if>
+  	<if test="imgType != null and imgType != '' ">
+  		AND img_type = #{imgType}
+  	</if>
+  </sql>
+  
+  
+  <select id="getList" resultMap="materialCarouselSourceMap" parameterType="com.xmniao.xmn.core.cloud_design.entity.DMaterialCarouselSource" >
+    select 
+    <include refid="materialCarouselSource_column_list" />
+    from d_material_carousel_source
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+    ORDER BY order_val ASC
+  </select>
+  
+  <!-- 获取图片和文字框架信息 -->
+  <select id="getSourceList" resultMap="materialCarouselSourceMap" parameterType="com.xmniao.xmn.core.cloud_design.entity.DMaterialCarouselSource" >
+    select 
+    <include refid="materialCarouselSource_column_list" />
+    from d_material_carousel_source
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    	AND (type ='002' OR (type='001' and img_type='002'))
+    </where>
+    
+    ORDER BY order_val ASC
+  </select>
+  
+  
+  <delete id="delete" parameterType="com.xmniao.xmn.core.cloud_design.entity.DMaterialCarouselSource" >
+    delete from d_material_carousel_source
+     <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+  </delete>
+  
+  <!-- 批量插入物料模板元数据 -->
+	<insert id="addBatch" parameterType="java.util.ArrayList">
+		INSERT INTO d_material_carousel_source
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<include refid="materialCarouselSource_column_list" /> 
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+			<!-- id, material_id, material_carousel_id, pic_url, remark, order_val, creater, updater, 
+			    create_time, update_time, type, font_coordinate, img_coordinate, img_size, font_size, 
+			    font, font_num, font_text, img_type -->
+				#{item.id},
+				#{item.materialId},
+				#{item.materialCarouselId},
+				#{item.picUrl},
+				#{item.remark},
+				#{item.orderVal},
+				#{item.creater},
+				#{item.updater},
+				#{item.createTime},
+				#{item.updateTime},
+				#{item.type},
+				#{item.fontCoordinate},
+				#{item.imgCoordinate},
+				#{item.imgSize},
+				#{item.fontSize},
+				#{item.font},
+				#{item.fontNum},
+				#{item.fontText},
+				#{item.imgType}
+			</trim>
+		</foreach>
+	</insert>
+  
+</mapper>

@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TLiveGivedGiftDao">
+
+
+	<resultMap id="liveGivedGiftMap"
+		type="com.xmniao.xmn.core.live_anchor.entity.TLiveGivedGift">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="gived_gift_key" property="givedGiftKey"
+			jdbcType="VARCHAR" />
+		<result column="live_record_id" property="liveRecordId"
+			jdbcType="INTEGER" />
+		<result column="liver_id" property="liverId" jdbcType="INTEGER" />
+		<result column="wallet_record_id" property="walletRecordId"
+			jdbcType="INTEGER" />
+		<result column="liver_utype" property="liverUtype" jdbcType="INTEGER" />
+		<result column="anchor_id" property="anchorId" jdbcType="INTEGER" />
+		<result column="anchor_room_no" property="anchorRoomNo"
+			jdbcType="VARCHAR" />
+		<result column="gift_id" property="giftId" jdbcType="INTEGER" />
+		<result column="gift_name" property="giftName" jdbcType="VARCHAR" />
+		<result column="gift_nums" property="giftNums" jdbcType="INTEGER" />
+		<result column="gift_price" property="giftPrice" jdbcType="INTEGER" />
+		<result column="gift_experience" property="giftExperience"
+			jdbcType="INTEGER" />
+		<result column="percentAmount" property="percentamount"
+			jdbcType="DOUBLE" />
+		<result column="status" property="status" jdbcType="BIT" />
+		<result column="advanced_status" property="advancedStatus"
+			jdbcType="INTEGER" />
+		<result column="isfailed" property="isfailed" jdbcType="INTEGER" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="return_coin" property="returnCoin" jdbcType="DECIMAL" />
+		<result column="uid_relation_chain" property="uidRelationChain"
+			jdbcType="LONGVARCHAR" />
+	</resultMap>
+
+	<sql id="liveGivedGift_column_list">
+		id, gived_gift_key, live_record_id, liver_id, wallet_record_id,
+		liver_utype, anchor_id,
+		anchor_room_no, gift_id, gift_name, gift_nums, gift_price, gift_experience,
+		percentAmount,
+		status, advanced_status, isfailed, create_time, update_time,
+		return_coin,uid_relation_chain
+	</sql>
+
+	<sql id="whereSQL">
+		<!-- <if test="eUid !=null and eUid != '' "> AND uid != #{eUid} AND uid_relation_chain 
+			like CONCAT('%',LPAD(${eUid},11,'0'),'%') </if> -->
+			
+		<if test="liverId != null">
+			AND t_live_gived_gift.liver_id = #{liverId}
+		</if>
+
+		<if test=" null != juniorUids and '' != juniorUids ">
+			AND t_live_gived_gift.uid IN
+			<foreach item="item" index="index" collection="juniorUids"
+				open="(" separator="," close=") ">
+				#{item}
+			</foreach>
+		</if>
+
+		<if test="timeType == null or timeType == ''">
+			<if test="startTime !=null and startTime !='' ">
+		  	<![CDATA[
+				AND	DATE_FORMAT(t_live_gived_gift.create_time, '%Y-%m-%d %H:%i:%s') >= DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')
+		  	]]>
+			</if>
+			<if test="endTime !=null and endTime !='' ">
+	  		<![CDATA[
+				AND	DATE_FORMAT(t_live_gived_gift.create_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')
+		  	]]>
+			</if>
+		</if>
+
+		<!-- 昨天 -->
+		<if test="timeType ==1 ">
+			AND DATE_FORMAT(create_time,'%Y-%m-%d') =
+			DATE_FORMAT(DATE_ADD(SYSDATE(), INTERVAL - 1 DAY),'%Y-%m-%d')
+		</if>
+		<!-- 最近一周 -->
+		<if test="timeType ==2 ">
+			AND (
+			create_time BETWEEN DATE_ADD(SYSDATE(), INTERVAL - 6 DAY)
+			AND
+			DATE_ADD(SYSDATE(), INTERVAL - 0 DAY)
+			)
+		</if>
+		<!-- 最近一个月 -->
+		<if test="timeType ==3 ">
+			AND (
+			create_time BETWEEN DATE_ADD(SYSDATE(), INTERVAL - 30 DAY)
+			AND
+			DATE_ADD(SYSDATE(), INTERVAL - 0 DAY)
+			)
+		</if>
+		<!-- 自定义时间 -->
+		<if test="timeType ==4 ">
+			<if test="startTime !=null and startTime !='' ">
+		  	<![CDATA[
+				AND	DATE_FORMAT(t_live_gived_gift.create_time, '%Y-%m-%d') >= DATE_FORMAT(#{startTime}, '%Y-%m-%d')
+		  	]]>
+			</if>
+			<if test="endTime !=null and endTime !='' ">
+	  		<![CDATA[
+				AND	DATE_FORMAT(t_live_gived_gift.create_time, '%Y-%m-%d') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d')
+		  	]]>
+			</if>
+		</if>
+
+		<if test="uids != null">
+			AND t_live_gived_gift.liver_id in
+			<foreach collection="uids" item="item" close=")" open="("
+				separator=",">
+				#{item}
+			</foreach>
+		</if>
+		<if test="anchorId != null">
+			AND t_live_gived_gift.anchor_id = #{anchorId}
+		</if>
+		
+		<if test="liveRecordIds != null">
+			AND t_live_gived_gift.live_record_id in
+			<foreach collection="liveRecordIds" index="index" item="liveRecordId" open="(" separator="," close=")">
+				#{liveRecordId}
+			</foreach>
+		</if>
+		<if test="advancedStatus != null">
+			AND t_live_gived_gift.advanced_status = #{advancedStatus}
+		</if>
+	</sql>
+
+	<resultMap id="LoseGiftResultMap"
+		type="com.xmniao.xmn.core.live_anchor.entity.LoseGift">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="gived_gift_key" jdbcType="VARCHAR" property="givedGiftKey" />
+		<result column="live_record_id" jdbcType="INTEGER" property="liveRecordId" />
+		<result column="liver_id" jdbcType="INTEGER" property="liverId" />
+		<result column="wallet_record_id" jdbcType="INTEGER" property="walletRecordId" />
+		<result column="liver_utype" jdbcType="INTEGER" property="liverUtype" />
+		<result column="anchor_id" jdbcType="INTEGER" property="anchorId" />
+		<result column="anchor_room_no" jdbcType="VARCHAR" property="anchorRoomNo" />
+		<result column="gift_id" jdbcType="INTEGER" property="giftId" />
+		<result column="sale_product_id" jdbcType="INTEGER" property="saleProductId" />
+		<result column="gift_name" jdbcType="VARCHAR" property="giftName" />
+		<result column="order_no" jdbcType="VARCHAR" property="orderNo" />
+		<result column="gift_nums" jdbcType="INTEGER" property="giftNums" />
+		<result column="gift_price" jdbcType="INTEGER" property="giftPrice" />
+		<result column="gift_experience" jdbcType="INTEGER" property="giftExperience" />
+		<result column="percentAmount" jdbcType="DOUBLE" property="percentamount" />
+		<result column="status" jdbcType="TINYINT" property="status" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="advanced_status" jdbcType="INTEGER" property="advancedStatus" />
+		<result column="isfailed" jdbcType="INTEGER" property="isfailed" />
+		<result column="return_coin" jdbcType="DECIMAL" property="returnCoin" />
+		<result column="uid" jdbcType="INTEGER" property="uid" />
+	</resultMap>
+
+	<sql id="LoseGift_List">
+		t_live_gived_gift.id, t_live_gived_gift.gived_gift_key, t_live_gived_gift.live_record_id,
+		t_live_gived_gift.liver_id, t_live_gived_gift.wallet_record_id,
+		t_live_gived_gift.liver_utype, t_live_gived_gift.anchor_id,
+		t_live_gived_gift.anchor_room_no, t_live_gived_gift.gift_id,
+		t_live_gived_gift.sale_product_id, t_live_gived_gift.gift_name,
+		t_live_gived_gift.gift_source, t_live_gived_gift.order_no,
+		t_live_gived_gift.gift_nums,
+		t_live_gived_gift.gift_price, t_live_gived_gift.gift_experience, t_live_gived_gift.percentAmount,
+		t_live_gived_gift.status, t_live_gived_gift.create_time,
+		t_live_gived_gift.update_time, t_live_gived_gift.advanced_status,
+		t_live_gived_gift.isfailed, t_live_gived_gift.return_coin,
+		t_live_gived_gift.uid
+	</sql>
+	
+	<update id="updateBackState" >
+		update t_live_gived_gift set advanced_status = 3,update_time = now() where id = #{id}
+	</update>
+	
+	<select id="getLoseGiftsByIds" resultMap="LoseGiftResultMap">
+		SELECT
+		<include refid="LoseGift_List" />
+		FROM t_live_gived_gift
+		where id in 
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+		 	#{item}
+		</foreach>
+		order by gift_price asc
+	</select>
+	
+	<select id="checkGiveIsLose" resultType="java.lang.Long">
+		SELECT
+		count(1)
+		FROM t_live_gived_gift
+		LEFT JOIN t_live_gift lg ON t_live_gived_gift.gift_id = lg.id
+		JOIN t_live_record record on t_live_gived_gift.live_record_id = record.id
+		WHERE t_live_gived_gift.advanced_status  = 1 AND lg.gift_type = 2
+		AND t_live_gived_gift.anchor_id=record.anchor_id
+		AND record.zhibo_type
+		IN (3,5)
+		AND t_live_gived_gift.percentAmount > 0
+		and t_live_gived_gift.id in
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</select>
+
+
+	<select id="getLoseGifts" resultMap="LoseGiftResultMap">
+		SELECT
+		<include refid="LoseGift_List" />
+		FROM t_live_gived_gift
+		LEFT JOIN t_live_gift lg ON t_live_gived_gift.gift_id = lg.id
+		JOIN t_live_record record on t_live_gived_gift.live_record_id = record.id
+		WHERE t_live_gived_gift.advanced_status  = 1 AND lg.gift_type = 2
+		AND t_live_gived_gift.anchor_id=record.anchor_id
+		AND record.zhibo_type
+		IN (3,5)
+		AND t_live_gived_gift.percentAmount > 0
+		<include refid="whereSQL" />
+		order by create_time desc
+		<if test="limit != -1">
+			LIMIT ${limit*(page-1)},#{limit}
+		</if>
+	</select>
+
+
+	<select id="countLostGift" resultType="java.lang.Long">
+		select count(1)
+		FROM t_live_gived_gift
+		LEFT JOIN t_live_gift lg ON t_live_gived_gift.gift_id = lg.id
+		JOIN t_live_record record on t_live_gived_gift.live_record_id = record.id
+		WHERE t_live_gived_gift.advanced_status = 1 AND lg.gift_type = 2
+		AND t_live_gived_gift.anchor_id=record.anchor_id
+		AND record.zhibo_type
+		IN (3,5)
+		AND t_live_gived_gift.percentAmount > 0
+		<include refid="whereSQL" />
+	</select>
+
+	<select id="getList" resultMap="liveGivedGiftMap"
+		parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveGivedGift">
+		select
+		<include refid="liveGivedGift_column_list" />
+		from t_live_gived_gift
+		<where>
+			1=1
+			<include refid="whereSQL"></include>
+		</where>
+		<if test="order !=-1">
+			order by update_time desc
+		</if>
+		<if test="limit != -1">
+			LIMIT ${limit*(page-1)},#{limit}
+		</if>
+	</select>
+
+	<select id="count" resultType="java.lang.Long"
+		parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveGivedGift">
+		select
+		count(1)
+		from t_live_gived_gift
+		<where>
+			1=1
+			<include refid="whereSQL"></include>
+		</where>
+	</select>
+
+	<!-- 打赏概况统计 -->
+	<select id="generalCount" resultType="java.util.Map"
+		parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveGivedGift">
+		SELECT
+		IFNULL(COUNT(DISTINCT liver_id),0) AS liverNum,
+		IFNULL(COUNT(DISTINCT anchor_id),0) AS anchorNum,
+		IFNULL(SUM(gift_price),0) birdBean
+		FROM
+		t_live_gived_gift
+		<where>
+			1=1
+			<include refid="whereSQL"></include>
+		</where>
+	</select>
+
+	<!-- 礼物打赏统计 -->
+	<select id="giftCount" resultType="java.util.Map"
+		parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveGivedGift">
+		SELECT
+		gift_id AS giftId,
+		gift_name AS giftName,
+		SUM(gift_price) AS
+		birdBean
+		FROM
+		t_live_gived_gift
+		<where>
+			1=1
+			<include refid="whereSQL"></include>
+		</where>
+		GROUP BY
+		gift_id,gift_name
+	</select>
+
+	<!-- 主播获得打赏统计 -->
+	<select id="anchorCount" resultType="java.util.Map"
+		parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveGivedGift">
+		SELECT
+		anchor_id AS anchorId,
+		SUM(gift_price) AS birdBean
+		FROM
+		t_live_gived_gift
+		<where>
+			1=1
+			<include refid="whereSQL"></include>
+		</where>
+		GROUP BY
+		anchor_id
+		ORDER BY
+		birdBean DESC
+		LIMIT 0,10
+	</select>
+
+	<!-- 鸟豆打赏区间统计 -->
+	<select id="birdBeanZoneCount" resultType="java.util.Map"
+		parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveGivedGift">
+		SELECT
+		ELT(
+		INTERVAL (
+		b.bird_bean,
+		0,
+		101,
+		301,
+		501,
+		1001,
+		3001,
+		5001,
+		10001
+		),
+		'1-100',
+		'101-300',
+		'301-500',
+		'501-1000',
+		'1001-3000',
+		'3001-5000',
+		'5001-10000',
+		'10000+'
+		) AS title,
+		COUNT(b.liver_id) AS people,
+		SUM(b.bird_bean) birdBean
+		FROM
+		(
+		SELECT
+		liver_id,
+		SUM(gift_price) AS bird_bean
+		FROM
+		t_live_gived_gift
+		<where>
+			1=1
+			<include refid="whereSQL"></include>
+		</where>
+		GROUP BY
+		liver_id
+		ORDER BY
+		bird_bean
+		) b
+		GROUP BY
+		ELT(
+		INTERVAL (
+		b.bird_bean,
+		0,
+		101,
+		301,
+		501,
+		1001,
+		3001,
+		5001,
+		10001
+		),
+		'1/1-100',
+		'2/101-300',
+		'3/301-500',
+		'4/501-1000',
+		'5/1001-3000',
+		'6/3001-5000',
+		'7/5001-10000',
+		'8/10000+'
+		)
+
+	</select>
+
+	<!-- 打赏时间统计 -->
+	<select id="timeZoneCount" resultType="java.util.Map"
+		parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveGivedGift">
+		select 
+	  		<![CDATA[
+				SUM(CASE WHEN b.time_zone < 9 THEN b.bird_coin ELSE 0 END) AS zone9,
+				SUM(CASE WHEN (b.time_zone>=9 AND b.time_zone < 12) THEN b.bird_coin ELSE 0 END) AS zone12,
+				SUM(CASE WHEN (b.time_zone>=12 AND b.time_zone < 15) THEN b.bird_coin ELSE 0 END) AS zone15,
+				SUM(CASE WHEN (b.time_zone>=15 AND b.time_zone < 18) THEN b.bird_coin ELSE 0 END) AS zone18,
+				SUM(CASE WHEN (b.time_zone>=18 AND b.time_zone < 21) THEN b.bird_coin ELSE 0 END) AS zone21,
+				SUM(CASE WHEN (b.time_zone>=21 AND b.time_zone < 24) THEN b.bird_coin ELSE 0 END) AS zone24
+			]]>
+		FROM
+		(SELECT
+		DATE_FORMAT(create_time, '%H') time_zone,
+		SUM(gift_price) bird_coin
+		FROM
+		t_live_gived_gift
+		<where>
+			1=1
+			<include refid="whereSQL"></include>
+		</where>
+		GROUP BY
+		DATE_FORMAT(create_time, '%H')) b
+
+	</select>
+
+</mapper>

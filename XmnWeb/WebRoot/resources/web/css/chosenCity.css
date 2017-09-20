@@ -1,0 +1,184 @@
+ul {
+	list-style-type: none;
+}
+
+ul li {
+	font-size: 12px;
+	text-align: left;
+}
+
+p {
+	margin: 0;
+}
+
+table.table-d {
+	background: #bbb
+}
+
+table.table-d td {
+	background: #FFF;
+	font-size: 12px;
+	padding: 5px 0;
+}
+
+.table-d .thead td {
+	background: #f5f5f5;
+}
+
+.addbtn {
+	float: right;
+}
+
+.table-d tr {
+	position: relative;
+}
+
+/*表格end*/
+
+/*模态框样式*/
+.address_madal {
+	position: fixed;
+	padding: 0 10px;
+	box-sizing: border-box;
+	width:580px;
+	top:40%;
+	margin-top:-190px;
+	left:50%;
+	margin-left:-290px;
+	border: 1px solid #87b2ee;
+	z-index:9999;
+	background:#fff;
+}
+
+.address_modal_bg{
+	position: fixed;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	opacity:0.6;
+	z-index:9998;
+	background:#000;
+}
+
+.address_madal label{
+	font-weight:normal;
+}
+
+.address_title {
+	width: 100%;
+	height: 30px;
+	line-height: 30px;
+	border-bottom: 1px solid #ccc;
+}
+
+.address_title span {
+	float: left;
+}
+
+.address_title a {
+	float: right;
+}
+
+.ecity {
+	position: relative;
+	display: inline-block;
+	margin-right: 1px;
+	padding-right: 8px;
+	height: 30px;
+	width: 80px;
+	vertical-align: middle;
+}
+
+.group-label {
+	margin-right: 5px;
+	padding: 5px 0 5px 10px;
+	display: inline-block;
+	width: 70px;
+	font-weight: 700;
+}
+
+.showCityPop .gareas {
+	background-color: #FFFEC6;
+	border: solid 1px #f7e4a5;
+	border-bottom: solid 1px #FFFEC6;
+	z-index: 56000;
+}
+
+span.gareas {
+	white-space: nowrap;
+	margin-right: 3px;
+	padding: 4px 4px 1px;
+	display: inline-block;
+	position: relative;
+	height: 17px;
+	border: 1px solid #fff;
+}
+
+.citys {
+	background-color: #FFFEC6;
+	position: absolute;
+	float: right;
+	border: solid 1px #f7e4a5;
+	z-index: 20000;
+	top: 23px;
+	left: 0;
+	width: 214px;
+	display: none;
+	white-space: wrap;
+}
+
+.province-list {
+	width: 410px;
+	display: inline-block;
+	vertical-align: top;
+}
+
+.allowdown {
+	display: inline-block;
+	width: 0;
+	height: 0;
+	color: #8f8f8f;
+	margin-top: -5px;
+	vertical-align: middle;
+	margin-left: 5px;
+	border-top: 4px solid;
+	border-left: 4px solid transparent;
+	border-right: 4px solid transparent;
+	transition: transform .3s;
+	overflow: hidden;
+	cursor: pointer;
+}
+
+.showCityPop {
+	z-index: 55556;
+}
+
+.showCityPop .citys {
+	display: block;
+	z-index: 55900;
+}
+
+.close_button {
+	font-size: 12px;
+	padding: 0;
+}
+
+ul li span.areas {
+	margin-right: 3px;
+	padding: 4px 0 1px 4px;
+	display: inline-block;
+}
+
+.check_num {
+	color: #F60;
+	font-size: 12px;
+	letter-spacing: -1px;
+}
+
+.group-label label{
+	font-weight:bold;
+}
+.confirm_btn{
+	text-align: center;
+}

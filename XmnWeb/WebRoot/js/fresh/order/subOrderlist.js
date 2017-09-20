@@ -1,0 +1,625 @@
+var subOrderList;
+$(document).ready(function() {
+	subOrderList = $('#subOrderList').page({
+		url : 'fresh/subOrder/init/list.jhtml',
+		success : successSubOrder,
+		pageBtnNum :10,
+		pageSize:15,
+		paramForm : 'searchSubBillForm'
+	});
+	
+	//inserTitle(' > 订单管理 > <a href="fresh/subOrder/init.jhtml" target="right">所有订单</a>','allbillSpan',true);
+	
+	//加载快递类型
+	//initCourierType();
+	
+	//验证发货表单
+	validate();
+	
+});
+
+/**
+ * 构件表格
+ * 
+ * @param data
+ * @param obj
+ */
+function successSubOrder(data, obj) {
+	
+	var captionInfo = '<caption style="background:#EED8D8; text-align:left; color:#703636; font-size:16px; line-height:40px;"><font style="float:left;">&nbsp;&nbsp;共计【'+data.total+'】条订单&nbsp;</font></caption>';
+	var callbackParam="isBackButton=true&callbackParam="+getFormParam($("#searchSubBillForm").serialize());
+	obj.find('div').eq(0).scrollTablel({
+	    	tableClass :"table-bordered table-striped info",
+	    	callbackParam : callbackParam,
+	    	caption : captionInfo,
+			//数据
+			data:data.content, 
+			 //数据行
+			cols:[{
+				title : "类型",// 标题
+				name : "",
+				width : 100,// 宽度
+				type:"string",//数据类型
+				customMethod : function(value, data) {
+					if(data.sendUid){
+						return '赠送';
+					}
+					var html='';
+					$.each(data.productList,function(i,item){
+						html+=item.activityStr;
+						if(i!=data.productList.length-1){
+							html+='<hr/>'
+						}
+					});
+					return html;
+				}
+			},{
+				title : "供应商",// 标题
+				name : "supplierName",
+				width : 150,// 宽度
+				type:"string"//数据类型
+			},{
+				title : "商品 ",// 标题
+				name : "",
+				width : 200,// 宽度
+				type:"	",//数据类型
+				customMethod : function(value, data) {
+					var html='';
+					$.each(data.productList,function(i,item){
+						html+=item.pname;
+						if(i!=data.productList.length-1){
+							html+='<hr/>'
+						}
+					});
+					return html;
+				}
+			},{
+				title : "单价",// 标题
+				name : "",
+				width : 100,// 宽度
+				type:"	",//数据类型
+				customMethod : function(value, data) {
+					var html='';
+					$.each(data.productList,function(i,item){
+						html+=item.basePrice?item.basePrice:0;
+						if(i!=data.productList.length-1){
+							html+='<hr/>'
+						}
+					});
+					return html;
+				}
+			},{
+				title : "数量",// 标题
+				name : "",
+				width : 100,// 宽度
+				type:"	",//数据类型
+				customMethod : function(value, data) {
+					var html='';
+					$.each(data.productList,function(i,item){
+						html+=item.wareNum;
+						if(i!=data.productList.length-1){
+							html+='<hr/>'
+						}
+					});
+					return html;
+				}
+			},{
+				title : "实收款",// 标题
+				name : "totalAmount",
+				width : 120,// 宽度
+				type:"string"//数据类型
+			},{
+				title : "配送地址",// 标题
+				name : "address",
+				//sort : "up",
+				width : 300,// 宽度
+				type:"string",//数据类型
+				customMethod : function(value, data) {
+					return data.consignee?data.consignee:''+"    "+data.mobile+"<p/>"+value;
+				}
+			},{
+				title : "订单状态",// 标题
+				name : "status",
+				width : 110,// 宽度
+				type:"string",//数据类型
+				customMethod : function(value, data) {
+					if(data.status==0){
+						return "待发货";
+					} 
+					if(data.status==1){
+						return "已发货";
+					} 
+					if(data.status==2){
+						return "取消订单";
+					}
+					if(data.status==3){
+						return "退款中";
+					}
+					if(data.status==4){
+						return "退款失败";
+					}
+					if(data.status==5){
+						return "已退款";
+					}
+					if(data.status==6){
+						return "订单完成";
+					}
+					return "-";
+				}
+			},{
+				title : "下单时间",// 标题
+				name : "createTime",
+				//sort : "up",
+				width : 180,// 宽度
+				type:"string"//数据类型
+			}],
+				//操作列
+				handleCols : {
+					title : "操作",// 标题
+					queryPermission : ["shipments", "refund", "confirmReceive", "checkSubOrder"],// 不需要选择checkbox处理的权限
+					width : 220,// 宽度
+					// 当前列的中元素
+					cols : [{
+							title : "确认收货",// 标题
+							linkInfoName : "href",
+							linkInfo : {
+							href : "fresh/subOrder/confirmReceive.jhtml",// url
+							param : ["id"],// 参数
+							permission : "confirmReceive"// 列权限
+						    },
+							customMethod : function(value, data){
+								if(data.status==1){
+									var value1 = "<a href=\"javascript:confirmReceive('"+data.id+"')\">" + "确认收货" + "</a>";
+									return value1;
+								}else{
+									var value2 = '<a href="javascript:;" disabled="disabled" style="color:#CDCDCD;"></a>';
+									return value2;
+								}
+							}
+					      },{
+							title : "发货",// 标题
+							linkInfoName : "href",
+							linkInfo : {
+							href : "fresh/subOrder/init/shipments.jhtml",// url
+							param : ["id"],// 参数
+							permission : "shipments"// 列权限
+						    },
+							customMethod : function(value, data){
+								if(data.status==0){
+									var value1 = "<a href=\"javascript:test('"+data.id+"')\">" + "发货" + "</a>";
+									return value1;
+								}else{
+									var value2 = '<a href="javascript:;" disabled="disabled" style="color:#CDCDCD;"></a>';
+									return value2;
+								}
+							}
+					      },
+					      /*{
+							title : "退款",// 标题
+							linkInfoName : "href",
+							linkInfo : {
+								href : "fresh/subOrder/refund.jhtml",// url
+								param : ["id"],// 参数
+								permission : "refund"// 列权限
+							},
+							customMethod : function(value, data){
+		                        if((data.status==0)||(data.status==1)||(data.status==4)||(data.status==6)||(data.hstatus==9)){
+		                            var value1 = "<a href='javascript:refund(\""+data.subOrderSn+"\",\""+data.totalAmount + "\",\"" + data.id + "\")'>" + "退款" + "</a>";
+		                            return value1;
+		                        }else{
+		                        	var value2 = '<a href="javascript:;" disabled="disabled" style="color:#CDCDCD;"></a>';
+									return value2;
+		                        }
+		                    }
+						},*/
+						{
+							title : "订单详情",// 标题
+							linkInfoName : "modal",
+							linkInfo : {
+								modal : {
+									url : "fresh/subOrder/check.jhtml",// url
+									position:"60px",// 模态框显示位置
+									width:"1000px"
+								},
+								param : ["id"],// 参数
+								permission : "checkSubOrder"// 列权限
+						    }
+					      }
+					      ]
+		}},permissions);
+}
+
+/**设置隐藏域的值
+ * @param bid
+ */
+function test(id){
+	$("#subfhModal").modal();
+	$("#subOrderId").val(id);
+}
+/**
+ * 模态框
+ */
+$("#fhconfirm").click(function() {
+	var r = $('#fhform').valid();
+	var courierType = $("#courierType").val();
+	if(courierType==""){
+		submitDataError($("#courierType"),"请选择快递公司!");
+		return false;
+	}
+	console.log($("#courierNumberId"));
+	if(r){
+		$.ajax({
+			url : "fresh/subOrder/shipments.jhtml",
+			type : "post",
+			dataType : "json",
+			data:{"id":$("#subOrderId").val(),"courierType":$("#courierType option:selected").val(),"courierNumber":$("#courierNumberId").val()},
+			success : function(data) {
+					showSmReslutWindow(data.isflag,data.info);
+					subOrderList.reload();
+					$("#courierNumberId").val("");
+					$("#courierType").val("");
+					$("#courierNumberId").attr("placeholder",'');
+					$('#subfhModal').modal('hide');
+			}
+		});
+	}else{
+//		alert("请正确填写物流单号再提交");
+		return false;
+	}
+})
+
+/**
+ * 点击重置按钮 
+ */
+$("#resetBtn").click(function(){
+	window.location.reload();//刷新当前页面
+})
+/**
+ * 取消模态框
+ */
+$("#fhconcel").click(function(){
+	$('#subfhModal').modal('hide');
+	$("#courierType").val("");
+	$("#courierNumberId").val("");
+	$("label.error").hide();
+	$("#courierNumberId").attr("placeholder",'');
+	$("#courierType").css('border','1px solid #ccc');
+	destroyPopover($("#courierType"));
+});
+/**
+ * 关闭发货模态框清空表单数据
+ */
+$("#closeFhModal").click(function(){
+	$("#courierNumberId").val("");
+	$("label.error").hide();
+	$('#subfhModal').modal('hide');
+	$("#courierType").val("");
+	$("#courierNumberId").attr("placeholder",'');
+	$("#courierType").css('border','1px solid #ccc');
+	destroyPopover($("#courierType"));
+});
+/**
+ * 操作提示
+ */
+function showSmReslutWindow(isflag, content) {
+	$('#sm_reslut_window').find('.modal-title').html('操作提示');
+	if (isflag) {
+		$('#sm_reslut_window').find('.modal-body').html('<div class="alert with-icon alert-success"> <i class="icon-ok"></i> <div class="content">' + content + '</div></div>');
+	} else {
+		$('#sm_reslut_window').find('.modal-body').html('<div class="alert with-icon  alert-danger"><i class="icon-remove-sign"></i> <div class="content">' + content + '</div></div>');
+	}
+    $('#sm_reslut_window').modal();
+    setTimeout(function(){
+        $('#sm_reslut_window').modal('hide');
+    }, 2000);
+}
+/**
+ * 验证发货表单
+ */
+function validate(){
+	//验证发货表单
+    $("#fhform").validate({
+	 debug: true,
+	 onfocusout:function(element) {$(element).valid()},
+	 errorElement: "label",
+	 errorClass:"error",
+	 rules:{
+		 courierNumber:{
+             required:true,
+             wlnumRule:true
+         }
+     },
+     messages:{
+    	 courierNumber:{
+             required:"物流单号不能为空"
+         }                                  
+     }
+   });
+}
+/**
+ * 物流单号正则
+ */
+$.validator.addMethod("wlnumRule", function(value, element) { 
+	var length = value.length;
+	var courierType = $("#courierType").val();
+	var courierNumber = /^[A-Za-z0-9]{7,21}$/;
+	return this.optional(element) || ((7 <= length <= 20) && courierNumber.test(value));
+},"物流单号格式错误");
+
+/**
+ * 加载快递公司列表
+ */
+function initCourierType(){
+	$.post('fresh/order/getCourierType.jhtml', '', function(result) {
+		var expressList = JSON.parse(result);
+		var _html = '';
+		_html += '<option value="">请选择</option>';
+		for(var i in expressList){
+			_html += '<option value="'+expressList[i].expressValue+'">'+expressList[i].expressName+'</option>';
+		}
+		$("#courierType").html(_html);
+    }, "json");
+}
+
+/**
+ * 当选择运输方式之后改变格式提示
+ */
+$("#courierType").change(function(){
+	var courierType = $("#courierType").val();
+	//console.log(courierType);
+	if("sfexpress"==courierType){
+		$("#courierNumberId").attr("placeholder",'例：020900000189');
+	}else if("zto"==courierType){
+		$("#courierNumberId").attr("placeholder",'例：618148513844');
+	}else if("yto"==courierType){
+		$("#courierNumberId").attr("placeholder",'例：7340687080');
+	}else if("yunda"==courierType){
+		$("#courierNumberId").attr("placeholder",'例：1100032620849');
+	}else if("sto"==courierType){
+		$("#courierNumberId").attr("placeholder",'以36、46、88等开头');
+	}else if("ttkdex"==courierType){
+		$("#courierNumberId").attr("placeholder",'例：00001300004129');
+	}else if("jd"==courierType){
+		$("#courierNumberId").attr("placeholder",'例：1681533252 或 12150374219');
+	}else if(""==courierType){
+		$("#courierNumberId").attr("placeholder",'');
+		$("label.error").hide();
+	}
+});
+ 
+/**
+ * 物流单号点击事件
+ */
+function kuaidi(courierType,courierNumber){
+	var iTop = (window.screen.height-500)/2; //获得窗口的垂直位置;  
+	var iLeft = (window.screen.width-650)/2; //获得窗口的水平位置;  
+	window.open("http://www.kuaidi100.com/chaxun?"+"com="+courierType+"&nu="+courierNumber, '_blank', 'toolbar=no, directories=no, status=no, menubar=no,scrollbars=yes, width=650, height=500, top='+iTop+', left='+iLeft);
+}
+/**
+ * 退款操作
+ */
+ function refund(subOrderSn,totalAmount,id){
+	 showSmConfirmWindow(function (){
+		 $.ajax({
+	         url : "fresh/subOrder/refund.jhtml",
+	         type : "post",
+	         dataType : "json",
+	         data:'orderNumber=' + subOrderSn + '&money='+ totalAmount + '&remark=""' + '&bid='+ id,
+	         success : function(result) {
+	        	 if (result.success) {
+	     			showSmReslutWindow(result.success, result.msg);
+	     			setTimeout(function() {
+	     				subOrderList.reload();
+	     			}, 3000);
+	     		} else {
+	     			window.messager.warning(result.msg);
+	     		}
+	         }
+	     });
+	 },"确定要退款吗？");
+	 
+ }
+ /**
+  * 导出订单
+  */
+$("#exportSubOrder").click(function(){
+	$("#exportSubOrderModal").modal();
+});
+
+/**
+ * 导出订单（只导父订单）
+ */
+$("#exportSubOrder1").click(function(){
+	$("#exportSubOrderModal1").modal();
+});
+
+/**
+ * 确认导出
+ */
+$("#exportsubconfirm").click(function() {
+	var subsdate = $("#exportSubSdate").val();
+	var subedate = $("#exportSubEdate").val();
+	if(valiSubDate()){
+		if((null != subsdate && "" != subsdate)||(null != subedate && "" != subedate)){
+			//post提交请求
+			var url = "fresh/subOrder/checkdata.jhtml";
+			var data = "subexsdate="+subsdate+"&subexedate="+subedate;
+			$.post(url, data, function(result) {
+				if (result.success) {
+					$("#exportSubOrderModal").modal('hide');
+					$form = $("#exporsubform").attr("action","fresh/subOrder/export.jhtml");
+					$form[0].submit();
+					$("#exportSubSdate").val("");
+					$("#exportSubEdate").val("");
+				} else {
+					window.messager.warning(result.msg);
+				}
+			}, "json");
+			
+		}
+	}else{
+		if((null == subsdate || "" == subsdate)&&(null == subedate || "" == subedate)){
+			alert("下单时间不能为空!");
+		}
+		return false;
+	}
+	
+})
+
+/**
+ * 确认导出（只导父订单）
+ */
+$("#exportsubconfirm1").click(function() {
+	var subsdate = $("#exportSubSdate1").val();
+	var subedate = $("#exportSubEdate1").val();
+	if(valiSubDate1()){
+		if((null != subsdate && "" != subsdate)||(null != subedate && "" != subedate)){
+			//post提交请求
+			var url = "fresh/subOrder/checkdata.jhtml";
+			var data = "subexsdate="+subsdate+"&subexedate="+subedate;
+			console.log(subedate+subsdate);
+			$.post(url, data, function(result) {
+				if (result.success) {
+					$("#exportSubOrderModal1").modal('hide');
+					$form = $("#exporsubform1").attr("action","fresh/subOrder/export1.jhtml");
+					$form[0].submit();
+					$("#exportSubSdate1").val("");
+					$("#exportSubEdate1").val("");
+				} else {
+					window.messager.warning(result.msg);
+				}
+			}, "json");
+			
+		}
+	}else{
+		if((null == subsdate || "" == subsdate)&&(null == subedate || "" == subedate)){
+			alert("下单时间不能为空!");
+		}
+		return false;
+	}
+	
+})
+/**
+ * 取消导出
+ */
+$("#exportsubconcel").click(function(){
+	$("#exportSubSdate").val("");
+	$("#exportSubEdate").val("");
+	$("#exportSubSdate").css('border','1px solid #ccc');
+	$("#exportSubEdate").css('border','1px solid #ccc');
+	destroyPopover($("#exportSubSdate"));
+	destroyPopover($("#exportSubEdate"));
+	$('#exportSubOrderModal').modal('hide')
+});
+
+/**
+ * 取消导出
+ */
+$("#exportsubconcel1").click(function(){
+	$("#exportSubSdate1").val("");
+	$("#exportSubEdate11").val("");
+	$("#exportSubSdate").css('border','1px solid #ccc');
+	$("#exportSubEdate1").css('border','1px solid #ccc');
+	destroyPopover($("#exportSubSdate1"));
+	destroyPopover($("#exportSubEdate1"));
+	$('#exportSubOrderModal1').modal('hide')
+});
+/**
+ * 关闭导出模态框按钮
+ */
+$("#closeSubExportModal").click(function (){
+	$("#exportSubSdate").val("");
+	$("#exportSubEdate").val("");
+});
+/**
+ * 验证导出下单时间
+ */
+function valiSubDate(){
+	$("#exportSubSdate").css('border','1px solid #ccc');
+	$("#exportSubEdate").css('border','1px solid #ccc');
+	destroyPopover($("#exportSubSdate"));
+	destroyPopover($("#exportSubEdate"));
+	var sdate = $("#exportSubSdate").val();
+	var edate = $("#exportSubEdate").val();
+	if((null != sdate && "" != sdate)||(null != edate && "" != edate)){
+		if((null != sdate && "" != sdate)&&(null != edate && "" != edate)){
+			var date1 = new Date(sdate);
+			var sdateMonth = date1.getMonth()+1;
+			var date2 = new Date(edate);
+			var edateMonth = date2.getMonth()+1;
+			if(sdateMonth == edateMonth){
+				$("#exportSubSdate").css('border','1px solid #ccc');
+				$("#exportSubEdate").css('border','1px solid #ccc');
+				destroyPopover($("#exportSubSdate"));
+				destroyPopover($("#exportSubEdate"));
+				return true;
+			}else{
+				submitDataError($("#exportSubSdate"),"暂时不支持跨月导出!");
+				submitDataError($("#exportSubEdate"),"暂时不支持跨月导出!");
+				return false;
+			}
+		}else{
+			return true;
+		}
+	}
+}
+
+/**
+ * 验证导出下单时间(只导父订单)
+ */
+function valiSubDate1(){
+	$("#exportSubSdate1").css('border','1px solid #ccc');
+	$("#exportSubEdate1").css('border','1px solid #ccc');
+	destroyPopover($("#exportSubSdate1"));
+	destroyPopover($("#exportSubEdate1"));
+	var sdate = $("#exportSubSdate1").val();
+	var edate = $("#exportSubEdate1").val();
+	if((null != sdate && "" != sdate)||(null != edate && "" != edate)){
+		if((null != sdate && "" != sdate)&&(null != edate && "" != edate)){
+			var date1 = new Date(sdate);
+			var sdateMonth = date1.getMonth()+1;
+			var date2 = new Date(edate);
+			var edateMonth = date2.getMonth()+1;
+			if(sdateMonth == edateMonth){
+				$("#exportSubSdate1").css('border','1px solid #ccc');
+				$("#exportSubEdate1").css('border','1px solid #ccc');
+				destroyPopover($("#exportSubSdate1"));
+				destroyPopover($("#exportSubEdate1"));
+				return true;
+			}else{
+				submitDataError($("#exportSubSdate1"),"暂时不支持跨月导出!");
+				submitDataError($("#exportSubEdate1"),"暂时不支持跨月导出!");
+				return false;
+			}
+		}else{
+			return true;
+		}
+	}
+}
+
+/**
+ * 确定收货操作
+ */
+ function confirmReceive(id){
+	 showSmConfirmWindow(function (){
+		 $.ajax({
+	         url : "fresh/subOrder/confirmReceive.jhtml",
+	         type : "post",
+	         dataType : "json",
+	         data:'id=' + id,
+	         success : function(result) {
+	        	 if (result.success) {
+	     			showSmReslutWindow(result.success, result.msg);
+	     			setTimeout(function() {
+	     				subOrderList.reload();
+	     			}, 3000);
+	     		} else {
+	     			window.messager.warning(result.msg);
+	     		}
+	         }
+	     });
+	 },"确定已收到货物？");
+	 
+ }
+	 
+	

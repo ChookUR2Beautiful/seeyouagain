@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.BLiveFansRankDao" >
+
+  <resultMap id="liveFansRankMap" type="com.xmniao.xmn.core.live_anchor.entity.BLiveFansRank" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="parent_id" property="parentId" jdbcType="BIGINT" />
+    <result column="rank_name" property="rankName" jdbcType="VARCHAR" />
+    <result column="reward_lowest" property="rewardLowest" jdbcType="DECIMAL" />
+    <result column="reward_highest" property="rewardHighest" jdbcType="DECIMAL" />
+    <result column="referrer_ratio" property="referrerRatio" jdbcType="INTEGER" />
+    <result column="parent_referrer_ratio" property="parentReferrerRatio" jdbcType="INTEGER" />
+    <result column="send_bean" property="sendBean" jdbcType="VARCHAR" />
+    <result column="referrer_reward" property="referrerReward" jdbcType="INTEGER" />
+    <result column="consume_ratio" property="consumeRatio" jdbcType="INTEGER" />
+    <result column="red_packet_type" property="redPacketType" jdbcType="INTEGER" />
+    <result column="red_packet_lowest" property="redPacketLowest" jdbcType="DECIMAL" />
+    <result column="red_packet_mid_lower" property="redPacketMidLower" jdbcType="DECIMAL" />
+    <result column="red_packet_mid_higher" property="redPacketMidHigher" jdbcType="DECIMAL" />
+    <result column="red_packet_highest" property="redPacketHighest" jdbcType="DECIMAL" />
+    <result column="rank_no" property="rankNo" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="pic_url" property="picUrl" jdbcType="VARCHAR" />
+    <result column="rank_type" property="rankType" jdbcType="INTEGER" />
+    <result column="saas_number" property="saasNumber" jdbcType="INTEGER" />
+    <result column="anchor_number" property="anchorNumber" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="liveFansRank_column_list" >
+    r.id, r.parent_id, r.rank_name, r.reward_lowest, r.reward_highest, r.referrer_ratio, r.parent_referrer_ratio, 
+    r.send_bean, r.referrer_reward, r.consume_ratio,r.red_packet_type,r.red_packet_lowest,r.red_packet_highest,
+    r.rank_no, r.create_time, r.update_time,r.pic_url,r.red_packet_mid_lower,r.red_packet_mid_higher,r.rank_type,
+    r.saas_number, r.anchor_number
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test="id != null and id != '' ">
+  		AND id =#{id}
+  	</if>
+  	<if test="rankName != null and rankName != '' ">
+  		AND rank_name like '%${rankName}%'
+  	</if>
+  	<if test="rankType != null and rankType != '' ">
+  		AND rank_type=#{rankType}
+  	</if>
+  </sql>
+  
+  <select id="getFansRank" resultMap="liveFansRankMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="liveFansRank_column_list" />
+    from b_live_fans_rank r
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getList" resultMap="liveFansRankMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.BLiveFansRank" >
+    select 
+    <include refid="liveFansRank_column_list" />,
+    (
+		SELECT
+			count(d.id)
+		FROM
+			b_live_fans_rank_detail d
+		WHERE
+			d.rank_id = r.id
+	) AS rankDetailNum
+    from b_live_fans_rank r
+   	<where>
+   		1=1
+   		<include refid="whereSQL"></include>
+   	</where>
+   	<if test="order != -1">
+		order by rank_type ASC ,rank_no ASC   	
+   	</if>
+   	<if test="limit !=-1">
+   		limit ${(page-1)*limit},#{limit}
+   	</if>
+  </select>
+  
+  <select id="count" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.live_anchor.entity.BLiveFansRank" >
+    select 
+    	count(1)
+    from b_live_fans_rank
+   	<where>
+   		1=1
+   		<include refid="whereSQL"></include>
+   	</where>
+  </select>
+    <!--根据等级类型查询等级列表-->
+    <select id="selectByRankType" resultMap="liveFansRankMap">
+      SELECT id,rank_name FROM `b_live_fans_rank` where rank_type = #{rankType}
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Long" >
+    delete from b_live_fans_rank
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  
+  
+  <insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.xmn.core.live_anchor.entity.BLiveFansRank" >
+    insert into b_live_fans_rank
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="parentId != null" >
+        parent_id,
+      </if>
+      <if test="rankName != null" >
+        rank_name,
+      </if>
+      <if test="rewardLowest != null" >
+        reward_lowest,
+      </if>
+      <if test="rewardHighest != null" >
+        reward_highest,
+      </if>
+      <if test="referrerRatio != null" >
+        referrer_ratio,
+      </if>
+      <if test="parentReferrerRatio != null" >
+        parent_referrer_ratio,
+      </if>
+      <if test="sendBean != null" >
+        send_bean,
+      </if>
+      <if test="referrerReward != null" >
+        referrer_reward,
+      </if>
+      <if test="consumeRatio != null" >
+        consume_ratio,
+      </if>
+      <if test="redPacketType != null" >
+        red_packet_type,
+      </if>
+      <if test="redPacketLowest != null" >
+        red_packet_lowest,
+      </if>
+      <if test="redPacketMidLower != null" >
+        red_packet_mid_lower,
+      </if>
+      <if test="redPacketMidHigher != null" >
+        red_packet_mid_higher,
+      </if>
+      <if test="redPacketHighest != null" >
+        red_packet_highest,
+      </if>
+      <if test="rankNo != null" >
+        rank_no,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="picUrl != null" >
+        pic_url,
+      </if>
+      <if test="rankType != null" >
+        rank_type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="parentId != null" >
+        #{parentId,jdbcType=BIGINT},
+      </if>
+      <if test="rankName != null" >
+        #{rankName,jdbcType=VARCHAR},
+      </if>
+      <if test="rewardLowest != null" >
+        #{rewardLowest,jdbcType=DECIMAL},
+      </if>
+      <if test="rewardHighest != null" >
+        #{rewardHighest,jdbcType=DECIMAL},
+      </if>
+      <if test="referrerRatio != null" >
+        #{referrerRatio,jdbcType=INTEGER},
+      </if>
+      <if test="parentReferrerRatio != null" >
+        #{parentReferrerRatio,jdbcType=INTEGER},
+      </if>
+      <if test="sendBean != null" >
+        #{sendBean,jdbcType=VARCHAR},
+      </if>
+      <if test="referrerReward != null" >
+        #{referrerReward,jdbcType=INTEGER},
+      </if>
+      <if test="consumeRatio != null" >
+        #{consumeRatio,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketType != null" >
+        #{redPacketType,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketLowest != null" >
+        #{redPacketLowest,jdbcType=DECIMAL},
+      </if>
+      <if test="redPacketMidLower != null" >
+        #{redPacketMidLower,jdbcType=DECIMAL},
+      </if>
+      <if test="redPacketMidHigher != null" >
+        #{redPacketMidHigher,jdbcType=DECIMAL},
+      </if>
+      <if test="redPacketHighest != null" >
+        #{redPacketHighest,jdbcType=DECIMAL},
+      </if>
+      <if test="rankNo != null" >
+        #{rankNo,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="picUrl != null" >
+        #{picUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="rankType != null" >
+        #{rankType,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.live_anchor.entity.BLiveFansRank" >
+    update b_live_fans_rank
+    <set >
+      <if test="parentId != null" >
+        parent_id = #{parentId,jdbcType=BIGINT},
+      </if>
+      <if test="rankName != null" >
+        rank_name = #{rankName,jdbcType=VARCHAR},
+      </if>
+      <if test="rewardLowest != null" >
+        reward_lowest = #{rewardLowest,jdbcType=DECIMAL},
+      </if>
+      <if test="rewardHighest != null" >
+        reward_highest = #{rewardHighest,jdbcType=DECIMAL},
+      </if>
+      <if test="referrerRatio != null" >
+        referrer_ratio = #{referrerRatio,jdbcType=INTEGER},
+      </if>
+      <if test="parentReferrerRatio != null" >
+        parent_referrer_ratio = #{parentReferrerRatio,jdbcType=INTEGER},
+      </if>
+      <if test="sendBean != null" >
+        send_bean = #{sendBean,jdbcType=VARCHAR},
+      </if>
+      <if test="referrerReward != null" >
+        referrer_reward = #{referrerReward,jdbcType=INTEGER},
+      </if>
+      <if test="consumeRatio != null" >
+        consume_ratio = #{consumeRatio,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketType != null" >
+        red_packet_type = #{redPacketType,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketLowest != null" >
+        red_packet_lowest = #{redPacketLowest,jdbcType=DECIMAL},
+      </if>
+      <if test="redPacketMidLower != null" >
+        red_packet_mid_lower = #{redPacketMidLower,jdbcType=DECIMAL},
+      </if>
+      <if test="redPacketMidHigher != null" >
+        red_packet_mid_higher = #{redPacketMidHigher,jdbcType=DECIMAL},
+      </if>
+      <if test="redPacketHighest != null" >
+        red_packet_highest = #{redPacketHighest,jdbcType=INTEGER},
+      </if>
+      <if test="rankNo != null" >
+        rank_no = #{rankNo,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="picUrl != null" >
+        pic_url = #{picUrl,jdbcType=TIMESTAMP},
+      </if>
+      <if test="rankType != null" >
+        rankType = #{rankType,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <!-- 同步粉丝等级。中间插入级别，后续粉丝等级+1，空出当前添加的粉丝等级 -->
+  <update id="syncRankNo" parameterType="com.xmniao.xmn.core.live_anchor.entity.BLiveFansRank">
+  	UPDATE b_live_fans_rank
+	SET rank_no = rank_no + 1
+	<where>
+		1=1
+		<![CDATA[
+			AND	rank_no > #{rankNo}
+		]]> 
+		<if test="rankType !=null and rankType != '' ">
+			AND rank_type=#{rankType}
+		</if>
+	</where>
+		
+  </update>
+
+    <!-- 根据V客会员UID查询对应兑换SAAS，主播推荐数 -->
+	<select id="getQuotaByVkeUid" resultMap="liveFansRankMap" >
+		SELECT t.rank_name, t.anchor_number, t.saas_number, rank.uid
+		FROM b_live_fans_rank t
+		INNER JOIN b_urs_earnings_rank rank ON t.id = rank.rank_id
+		<where>
+		  1 = 1 
+		  AND rank.rank_source = 4 
+		  <if test="uid != null">
+		      AND rank.uid = #{uid, jdbcType=INTEGER}
+		  </if>
+		</where>
+	</select> 
+	
+</mapper>

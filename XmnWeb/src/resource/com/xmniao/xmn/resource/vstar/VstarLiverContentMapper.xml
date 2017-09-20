@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.vstar.dao.VstarLiverContentDao">
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.vstar.entity.VstarLiverContent">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="vstar_dict_id" jdbcType="BIGINT" property="vstarDictId" />
+    <result column="cover_img" jdbcType="VARCHAR" property="coverImg" />
+    <result column="anchor_id" jdbcType="INTEGER" property="anchorId" />
+    <result column="begin_time" jdbcType="TIMESTAMP" property="beginTime" />
+    <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+    <result column="foreshow_url" jdbcType="VARCHAR" property="foreshowUrl" />
+    <result column="playback_url" jdbcType="VARCHAR" property="playbackUrl" />
+    <result column="sort_val" jdbcType="INTEGER" property="sortVal" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="content_type" jdbcType="INTEGER" property="contentType" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="zbalance" jdbcType="DECIMAL" property="zbalance" />
+    <result column="amount" jdbcType="DECIMAL" property="amount" />
+    <result column="view_num" jdbcType="INTEGER" property="viewNum" />
+    <result column="pay_num" jdbcType="INTEGER" property="payNum" />
+    <result column="anchor_image" jdbcType="VARCHAR" property="anchorImage" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.xmniao.xmn.core.vstar.entity.VstarLiverContent">
+    <result column="content_text" jdbcType="LONGVARCHAR" property="contentText" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, title, vstar_dict_id, cover_img, anchor_id, begin_time, end_time, foreshow_url, 
+    playback_url, sort_val, status, content_type, create_time, update_time, zbalance, 
+    amount, view_num, pay_num ,anchor_image
+  </sql>
+  <sql id="Blob_Column_List">
+    content_text
+  </sql>
+  
+  <sql id="whereSQL">
+  	 <if test="title!=null and title !=''">
+  	 	and title like '%${title}%'
+  	 </if>
+  </sql>
+  
+  <update id="updateStatusBatch">
+  	 update t_vstar_liver_content set status = #{status} 
+  	 where id in 
+  	 <foreach collection="list" item="item" open="(" close=")" separator=",">
+  	 	 #{item}
+  	 </foreach>
+  </update>
+  
+  <select id="getList" resultMap="ResultMapWithBLOBs" >
+  	 select  <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_vstar_liver_content
+    where 1=1
+    <include refid="whereSQL"></include>
+	order by sort_val desc
+    <if test="limit != -1">
+    	limit ${(page-1)*limit},${limit}
+    </if>
+  </select>
+  
+  <select id="count" resultType="java.lang.Long">
+  	select count(1) from t_vstar_liver_content 
+  	where 1=1
+  	<include refid="whereSQL"></include>
+  </select>  
+  
+  <select id="getObject" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_vstar_liver_content
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from t_vstar_liver_content
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.vstar.entity.VstarLiverContent">
+    insert into t_vstar_liver_content (id, title, vstar_dict_id, 
+      cover_img, anchor_id, begin_time, 
+      end_time, foreshow_url, playback_url, 
+      sort_val, status, content_type, 
+      create_time, update_time, zbalance, 
+      amount, view_num, pay_num, 
+      content_text,anchor_image)
+    values (#{id,jdbcType=BIGINT}, #{title,jdbcType=VARCHAR}, #{vstarDictId,jdbcType=BIGINT}, 
+      #{coverImg,jdbcType=VARCHAR}, #{anchorId,jdbcType=INTEGER}, #{beginTime,jdbcType=TIMESTAMP}, 
+      #{endTime,jdbcType=TIMESTAMP}, #{foreshowUrl,jdbcType=VARCHAR}, #{playbackUrl,jdbcType=VARCHAR}, 
+      #{sortVal,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{contentType,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{zbalance,jdbcType=DECIMAL}, 
+      #{amount,jdbcType=DECIMAL}, #{viewNum,jdbcType=INTEGER}, #{payNum,jdbcType=INTEGER}, 
+      #{contentText,jdbcType=LONGVARCHAR},#{anchorImage,jdbcType=VARCHAR})
+  </insert>
+  <insert id="add" parameterType="com.xmniao.xmn.core.vstar.entity.VstarLiverContent"  useGeneratedKeys="true" keyProperty="id" >
+    insert into t_vstar_liver_content
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="vstarDictId != null">
+        vstar_dict_id,
+      </if>
+      <if test="coverImg != null">
+        cover_img,
+      </if>
+      <if test="anchorId != null">
+        anchor_id,
+      </if>
+      <if test="beginTime != null">
+        begin_time,
+      </if>
+      <if test="endTime != null">
+        end_time,
+      </if>
+      <if test="foreshowUrl != null">
+        foreshow_url,
+      </if>
+      <if test="playbackUrl != null">
+        playback_url,
+      </if>
+      <if test="sortVal != null">
+        sort_val,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="contentType != null">
+        content_type,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="zbalance != null">
+        zbalance,
+      </if>
+      <if test="amount != null">
+        amount,
+      </if>
+      <if test="viewNum != null">
+        view_num,
+      </if>
+      <if test="payNum != null">
+        pay_num,
+      </if>
+      <if test="contentText != null">
+        content_text,
+      </if>
+      <if test="anchorImage != null">
+        anchor_image,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="vstarDictId != null">
+        #{vstarDictId,jdbcType=BIGINT},
+      </if>
+      <if test="coverImg != null">
+        #{coverImg,jdbcType=VARCHAR},
+      </if>
+      <if test="anchorId != null">
+        #{anchorId,jdbcType=INTEGER},
+      </if>
+      <if test="beginTime != null">
+        #{beginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null">
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="foreshowUrl != null">
+        #{foreshowUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="playbackUrl != null">
+        #{playbackUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="sortVal != null">
+        #{sortVal,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="contentType != null">
+        #{contentType,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="zbalance != null">
+        #{zbalance,jdbcType=DECIMAL},
+      </if>
+      <if test="amount != null">
+        #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="viewNum != null">
+        #{viewNum,jdbcType=INTEGER},
+      </if>
+      <if test="payNum != null">
+        #{payNum,jdbcType=INTEGER},
+      </if>
+      <if test="contentText != null">
+        #{contentText,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="anchorImage != null">
+        #{anchorImage,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="update" parameterType="com.xmniao.xmn.core.vstar.entity.VstarLiverContent">
+    update t_vstar_liver_content
+    <set>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="vstarDictId != null">
+        vstar_dict_id = #{vstarDictId,jdbcType=BIGINT},
+      </if>
+      <if test="coverImg != null">
+        cover_img = #{coverImg,jdbcType=VARCHAR},
+      </if>
+      <if test="anchorId != null">
+        anchor_id = #{anchorId,jdbcType=INTEGER},
+      </if>
+      <if test="beginTime != null">
+        begin_time = #{beginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null">
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="foreshowUrl != null">
+        foreshow_url = #{foreshowUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="playbackUrl != null">
+        playback_url = #{playbackUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="sortVal != null">
+        sort_val = #{sortVal,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="contentType != null">
+        content_type = #{contentType,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+        zbalance = #{zbalance,jdbcType=DECIMAL},
+        amount = #{amount,jdbcType=DECIMAL},
+      <if test="viewNum != null">
+        view_num = #{viewNum,jdbcType=INTEGER},
+      </if>
+      <if test="payNum != null">
+        pay_num = #{payNum,jdbcType=INTEGER},
+      </if>
+      <if test="contentText != null">
+        content_text = #{contentText,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="anchorImage != null">
+        anchor_image = #{anchorImage,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.xmniao.xmn.core.vstar.entity.VstarLiverContent">
+    update t_vstar_liver_content
+    set title = #{title,jdbcType=VARCHAR},
+      vstar_dict_id = #{vstarDictId,jdbcType=BIGINT},
+      cover_img = #{coverImg,jdbcType=VARCHAR},
+      anchor_id = #{anchorId,jdbcType=INTEGER},
+      begin_time = #{beginTime,jdbcType=TIMESTAMP},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      foreshow_url = #{foreshowUrl,jdbcType=VARCHAR},
+      playback_url = #{playbackUrl,jdbcType=VARCHAR},
+      sort_val = #{sortVal,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      content_type = #{contentType,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      zbalance = #{zbalance,jdbcType=DECIMAL},
+      amount = #{amount,jdbcType=DECIMAL},
+      view_num = #{viewNum,jdbcType=INTEGER},
+      pay_num = #{payNum,jdbcType=INTEGER},
+      content_text = #{contentText,jdbcType=LONGVARCHAR},
+      anchor_image = #{anchorImage,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.vstar.entity.VstarLiverContent">
+    update t_vstar_liver_content
+    set title = #{title,jdbcType=VARCHAR},
+      vstar_dict_id = #{vstarDictId,jdbcType=BIGINT},
+      cover_img = #{coverImg,jdbcType=VARCHAR},
+      anchor_id = #{anchorId,jdbcType=INTEGER},
+      begin_time = #{beginTime,jdbcType=TIMESTAMP},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      foreshow_url = #{foreshowUrl,jdbcType=VARCHAR},
+      playback_url = #{playbackUrl,jdbcType=VARCHAR},
+      sort_val = #{sortVal,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      content_type = #{contentType,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      zbalance = #{zbalance,jdbcType=DECIMAL},
+      amount = #{amount,jdbcType=DECIMAL},
+      view_num = #{viewNum,jdbcType=INTEGER},
+      pay_num = #{payNum,jdbcType=INTEGER},
+      anchor_image = #{anchorImage,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.DebitcardOrderDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.businessman.entity.TDebitcardOrder" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="uname" property="uname" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="debitcard_id" property="debitcardId" jdbcType="INTEGER" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="sellertype" property="sellertype" jdbcType="INTEGER" />
+    <result column="sellername" property="sellername" jdbcType="VARCHAR" />
+    <result column="pay_coin" property="payCoin" jdbcType="DECIMAL" />
+    <result column="denomination" property="denomination" jdbcType="DECIMAL" />
+    <result column="entry_sellerid" property="entrySellerid" jdbcType="INTEGER" />
+    <result column="entry_sellername" property="entrySellername" jdbcType="VARCHAR" />
+    <result column="entry_selleragio" property="entrySelleragio" jdbcType="DECIMAL" />
+    <result column="pay_state" property="payState" jdbcType="INTEGER" />
+    <result column="quota" property="quota" jdbcType="DECIMAL" />
+    <result column="q_quota" property="qQuota" jdbcType="DECIMAL" />
+    <result column="ledger_level" property="ledgerLevel" jdbcType="INTEGER" />
+    <result column="quantity" property="quantity" jdbcType="INTEGER" />
+    <result column="seller_income" property="sellerIncome" jdbcType="DECIMAL" />
+    <result column="offset_seller_income" property="offsetSellerIncome" jdbcType="DECIMAL" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="pay_time" property="payTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.xmniao.xmn.core.businessman.entity.TDebitcardOrder" extends="BaseResultMap" >
+    <result column="uid_relation_chain" property="uidRelationChain" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, order_no, uid, uname, phone, debitcard_id, sellerid, sellertype, sellername, 
+    pay_coin, denomination, entry_sellerid, entry_sellername, entry_selleragio, pay_state, 
+    quota, q_quota, ledger_level, quantity, seller_income, offset_seller_income, create_time, 
+    pay_time
+  </sql>
+  <sql id="Blob_Column_List" >
+    uid_relation_chain
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_debitcard_order
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_debitcard_order
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.businessman.entity.TDebitcardOrder" >
+    insert into t_debitcard_order
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="orderNo != null" >
+        order_no,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="uname != null" >
+        uname,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="debitcardId != null" >
+        debitcard_id,
+      </if>
+      <if test="sellerid != null" >
+        sellerid,
+      </if>
+      <if test="sellertype != null" >
+        sellertype,
+      </if>
+      <if test="sellername != null" >
+        sellername,
+      </if>
+      <if test="payCoin != null" >
+        pay_coin,
+      </if>
+      <if test="denomination != null" >
+        denomination,
+      </if>
+      <if test="entrySellerid != null" >
+        entry_sellerid,
+      </if>
+      <if test="entrySellername != null" >
+        entry_sellername,
+      </if>
+      <if test="entrySelleragio != null" >
+        entry_selleragio,
+      </if>
+      <if test="payState != null" >
+        pay_state,
+      </if>
+      <if test="quota != null" >
+        quota,
+      </if>
+      <if test="qQuota != null" >
+        q_quota,
+      </if>
+      <if test="ledgerLevel != null" >
+        ledger_level,
+      </if>
+      <if test="quantity != null" >
+        quantity,
+      </if>
+      <if test="sellerIncome != null" >
+        seller_income,
+      </if>
+      <if test="offsetSellerIncome != null" >
+        offset_seller_income,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="payTime != null" >
+        pay_time,
+      </if>
+      <if test="uidRelationChain != null" >
+        uid_relation_chain,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="uname != null" >
+        #{uname,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="debitcardId != null" >
+        #{debitcardId,jdbcType=INTEGER},
+      </if>
+      <if test="sellerid != null" >
+        #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="sellertype != null" >
+        #{sellertype,jdbcType=INTEGER},
+      </if>
+      <if test="sellername != null" >
+        #{sellername,jdbcType=VARCHAR},
+      </if>
+      <if test="payCoin != null" >
+        #{payCoin,jdbcType=DECIMAL},
+      </if>
+      <if test="denomination != null" >
+        #{denomination,jdbcType=DECIMAL},
+      </if>
+      <if test="entrySellerid != null" >
+        #{entrySellerid,jdbcType=INTEGER},
+      </if>
+      <if test="entrySellername != null" >
+        #{entrySellername,jdbcType=VARCHAR},
+      </if>
+      <if test="entrySelleragio != null" >
+        #{entrySelleragio,jdbcType=DECIMAL},
+      </if>
+      <if test="payState != null" >
+        #{payState,jdbcType=INTEGER},
+      </if>
+      <if test="quota != null" >
+        #{quota,jdbcType=DECIMAL},
+      </if>
+      <if test="qQuota != null" >
+        #{qQuota,jdbcType=DECIMAL},
+      </if>
+      <if test="ledgerLevel != null" >
+        #{ledgerLevel,jdbcType=INTEGER},
+      </if>
+      <if test="quantity != null" >
+        #{quantity,jdbcType=INTEGER},
+      </if>
+      <if test="sellerIncome != null" >
+        #{sellerIncome,jdbcType=DECIMAL},
+      </if>
+      <if test="offsetSellerIncome != null" >
+        #{offsetSellerIncome,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="payTime != null" >
+        #{payTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uidRelationChain != null" >
+        #{uidRelationChain,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.businessman.entity.TDebitcardOrder" >
+    update t_debitcard_order
+    <set >
+      <if test="orderNo != null" >
+        order_no = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="uname != null" >
+        uname = #{uname,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="debitcardId != null" >
+        debitcard_id = #{debitcardId,jdbcType=INTEGER},
+      </if>
+      <if test="sellerid != null" >
+        sellerid = #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="sellertype != null" >
+        sellertype = #{sellertype,jdbcType=INTEGER},
+      </if>
+      <if test="sellername != null" >
+        sellername = #{sellername,jdbcType=VARCHAR},
+      </if>
+      <if test="payCoin != null" >
+        pay_coin = #{payCoin,jdbcType=DECIMAL},
+      </if>
+      <if test="denomination != null" >
+        denomination = #{denomination,jdbcType=DECIMAL},
+      </if>
+      <if test="entrySellerid != null" >
+        entry_sellerid = #{entrySellerid,jdbcType=INTEGER},
+      </if>
+      <if test="entrySellername != null" >
+        entry_sellername = #{entrySellername,jdbcType=VARCHAR},
+      </if>
+      <if test="entrySelleragio != null" >
+        entry_selleragio = #{entrySelleragio,jdbcType=DECIMAL},
+      </if>
+      <if test="payState != null" >
+        pay_state = #{payState,jdbcType=INTEGER},
+      </if>
+      <if test="quota != null" >
+        quota = #{quota,jdbcType=DECIMAL},
+      </if>
+      <if test="qQuota != null" >
+        q_quota = #{qQuota,jdbcType=DECIMAL},
+      </if>
+      <if test="ledgerLevel != null" >
+        ledger_level = #{ledgerLevel,jdbcType=INTEGER},
+      </if>
+      <if test="quantity != null" >
+        quantity = #{quantity,jdbcType=INTEGER},
+      </if>
+      <if test="sellerIncome != null" >
+        seller_income = #{sellerIncome,jdbcType=DECIMAL},
+      </if>
+      <if test="offsetSellerIncome != null" >
+        offset_seller_income = #{offsetSellerIncome,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="payTime != null" >
+        pay_time = #{payTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uidRelationChain != null" >
+        uid_relation_chain = #{uidRelationChain,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+  <!-- 自定义查询区域 -->
+
+  <sql id="baseSellerCondition">
+	  <if test="id != null" >
+	      AND t.id = #{id}
+      </if>
+      <if test="phone != null and '' != phone ">
+          AND t.phone = #{phone}
+      </if>
+      <if test="uname != null and '' != uname " >
+          AND t.uname LIKE '%${uname}%'
+      </if>
+      <if test="sellername != null and '' != sellername " >
+          AND t.sellername LIKE '%${sellername}%'
+      </if>
+      
+      <if test="startDay != null and '' != startDay" >
+          <![CDATA[  AND pay_time >= #{startDay} ]]>
+      </if>
+      <if test="endDay != null and '' != endDay" >
+          <![CDATA[  AND pay_time <= #{endDay} ]]>
+      </if>
+  </sql>
+  
+  
+  <select id="getDebitcardOrderDataList" resultMap="BaseResultMap" parameterType="com.xmniao.xmn.core.businessman.entity.TDebitcardOrder">
+		select
+		<include refid="Base_Column_List" />
+		from t_debitcard_order t
+		<where>
+			1 = 1
+			<include refid="baseSellerCondition" />
+		</where>
+		ORDER BY t.create_time DESC, t.id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+  </select>
+  
+  
+    <!-- 总店Count -->
+  <select id="debitcardOrderCount" resultType="Long" parameterType="com.xmniao.xmn.core.businessman.entity.TDebitcardOrder">
+		SELECT COUNT(1) FROM t_debitcard_order t
+		<where>
+			1=1
+			<include refid="baseSellerCondition" />
+		</where>
+	</select>
+  
+  
+</mapper>

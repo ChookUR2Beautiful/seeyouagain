@@ -1,0 +1,422 @@
+@charset "UTF-8";
+/*公共样式*/
+address,article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}
+html{font-size:62.5%;}
+*{font-family: "微软雅黑";box-sizing: border-box;-webkit-touch-callout:none;user-select:none;-webkit-tap-highlight-color:rgba(255,255,255,0);overflow-scrolling:touch;margin:0;padding:0;outline:0;font-style:normal;border:none;background:0 0}
+input,label,select{vertical-align:middle;}
+h1,h2,h3,h4,h5,h6{font-family:normal;}
+input[type=checkbox],input[type=radio]{box-sizing:border-box;}
+input[type=search]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}
+body{font-family: "microsoft yahei";min-width:320px;word-wrap:break-word;line-height:1;cursor:default;-ms-content-zooming:none;-webkit-text-size-adjust:none;-moz-text-size-adjust:none;-ms-text-size-adjust:none;text-size-adjust:none}
+table{border-collapse:collapse;border-spacing:0;}
+caption,th{text-align:left;font-weight:400;}
+dl,li,ol,ul{list-style:none;}
+textarea{resize:none;overflow:auto;vertical-align:top;}
+del{text-decoration:line-through;}
+a,button{cursor:pointer;}
+a,a:hover{text-decoration:none;-webkit-tap-highlight-color:transparent;}
+a:visited{color: #2e2e2e;}
+a{color: #2e2e2e;}
+a:focus{outline:0;-moz-outline:none;}
+img{border:0;vertical-align:middle;-ms-interpolation-mode:bicubic;-webkit-tap-highlight-color:transparent;}
+.flex{display:-webkit-box;display:-moz-box;display:-ms-flexbox;display:flex;}
+.flex-fixed{width:auto;display:block;}
+.flex-auto{-webkit-box-flex:1;-moz-box-flex:1;-webkit-flex:1;-ms-flex:1;flex:1;}
+.bg-fff{
+	background: #fff;
+}
+.gray{
+	background: #f3f3f3;
+}
+
+.clearfix{
+	zoom: 1;
+
+}
+.clearfix:after {
+	content: " ";
+	display: block;
+	height: 0;
+	clear: both;
+}
+.bd-t{
+	border-top: 1px solid #dddddd;
+}
+.bd-r{
+	border-right: 1px solid #dddddd;
+}
+.bd-b{
+	border-bottom: 1px solid #dddddd;
+}
+.bd-l{
+	border-left: 1px solid #dddddd;
+}
+.fl-l{
+	float: left;
+}
+.fl-r{
+	float: right;
+}
+#remarkCtrl .list{
+	padding: 0 15px;
+	
+}
+#remarkCtrl .list .flex{
+	padding-top: 15px;
+}
+#remarkCtrl .list .flex:last-child{
+	border-bottom: 0;
+}
+#remarkCtrl .list .left-box{
+	width: 55px;
+	position: relative;
+}
+#remarkCtrl .list .left-box img{
+	width: 45px;
+	height: 45px;
+	border-radius: 50%;
+}
+#remarkCtrl .list .left-box img.icon{
+	width: 14px;
+	height: 14px;
+	position: absolute;
+	top: 32px;
+    left: 30px;
+}
+#remarkCtrl .list .left-box button{
+	display: block;
+	width: 45px;
+	background: #fff;
+	height: 0.613rem;
+	font-size: 0.32rem;
+	color: #bd9e70;
+	border: 1px solid #bd9e70;
+	vertical-align: top;
+	border-radius: 0.107rem;
+	margin-top: 0.213rem;
+}
+#remarkCtrl .list .left-box button.gray{
+	border: 1px solid #999;
+	color: #999;
+}
+#remarkCtrl .list p.name{
+	height: 30px;
+	line-height: 30px;
+	font-size: 16px;
+	color: #2e2e2e;
+	/*padding-left: 24px;*/
+}
+#remarkCtrl .list p.name span{
+	font-size: 14px;
+}
+#remarkCtrl .list p.address{
+	font-size: 12px;
+	color: #bd9e70;
+}
+#remarkCtrl .list p.boy{
+	background: url("../../images/live/live_icon_boy.png") no-repeat left center;
+	background-size: 0.427rem;
+}
+#remarkCtrl .list p.girl{
+	background: url("../../images/live/live_icon_girl.png") no-repeat left center;
+	background-size: 0.427rem;
+}
+#remarkCtrl .list p.text{
+	font-size: 14px;
+	color: #2e2e2e;
+	line-height: 20px;
+	margin-top: 10px;
+}
+#remarkCtrl .list p.conceal{
+	overflow : hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+}
+#remarkCtrl .list p.pull-btn{
+	font-size: 0.32rem;
+	color: #7b8bb1;
+	margin-top: 0.267rem;
+}
+#remarkCtrl .list .video-box{
+	width: 277px;
+    position: relative;
+    margin-top: 10px;
+    font-size: 0;
+    height: 400px;
+    overflow: auto;
+}
+#remarkCtrl .list .video-box video{
+	hieght:263px;
+}
+#remarkCtrl .list .video-box ul{
+	overflow: hidden;
+}
+#remarkCtrl .list .video-box ul li{
+	float: left;
+	margin-right: 7px;
+	margin-bottom: 7px;
+}
+#remarkCtrl .list .video-box ul li:nth-child(3n+1){
+	margin-right: 0;
+}
+#remarkCtrl .list .video-box img{
+	width: 83px;
+	height: 83px;
+}
+#remarkCtrl .list .video-box span{
+	position: absolute;
+	bottom: 0.267rem;
+    right: 0.267rem;
+    display: block;
+    font-size: 0.32rem;
+    color: #fff;
+    background: rgba(0,0,0,0.4);
+    width: 0.8rem;
+    height: 0.8rem;
+    line-height: 0.76rem;
+    text-align: center;
+    border-radius: 50%;
+}
+#remarkCtrl .list .video-box .lay{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	z-index: 2;
+}
+#remarkCtrl .list .recommend-box img{
+	width: 0.42rem;
+	vertical-align: middle;
+	margin-right: 0.107rem;
+}
+#remarkCtrl .list .recommend-box span{
+	vertical-align: middle;
+	font-size: 0.32rem;
+	color: #999;
+}
+#remarkCtrl .list .recommend-box{
+	overflow: hidden;
+	position: relative;
+	font-size: 0.32rem;
+	height: 1.25rem;
+	line-height: 1.25rem;
+}
+#remarkCtrl .list .recommend-box p{
+	position: absolute;
+	right: 0.4rem;
+	top: 0.35rem;
+	height: 0.613rem;
+}
+#remarkCtrl .list .recommend-box a{
+	display: inline-block;
+	text-align: center;
+	width: 1.52rem;
+	height: 0.613rem;
+	line-height: 0.613rem;
+	border: 1px solid #bd9e70;
+	color: #bd9e70;
+	font-size: 0.293rem;
+	border-radius: 1rem;
+	vertical-align: top;
+	padding-left: 0.24rem;
+	background: url("../../images/remark/operation_icon_01.png") no-repeat 0.2rem center;
+	background-size: 0.32rem;
+}
+#remarkCtrl .list .recommend-box a.edit{
+	background: url("../../images/remark/operation_icon_02.png") no-repeat 0.2rem center;
+	background-size: 0.32rem;
+}
+#remarkCtrl .list .recommend-box a.attention{
+	background: url("../../images/remark/attention_icon.png") no-repeat 0.2rem center;
+	background-size: 0.32rem;
+}
+#remarkCtrl .list .recommend-box a.attention.active{
+	background: url("../../images/remark/attention_icon_active.png") no-repeat 0.2rem center;
+	background-size: 0.32rem;
+}
+#headlineCtrl .list p.name{
+	height: 0.8rem;
+	line-height: 0.8rem;
+}
+#headlineCtrl .list p.name span{
+	font-size: 0.32rem;
+	padding-left: 0.42rem;
+}
+#headlineCtrl .list p.name span.state{
+	color: #999;
+	background: url("../../images/remark/audit_icon_01.png") no-repeat left center;
+	background-size: 0.4rem;
+}
+#headlineCtrl .list p.name span.pass{
+	color: #bd9e70;
+	background: url("../../images/remark/audit_icon_02.png") no-repeat left center;
+	background-size: 0.4rem;
+}
+#headlineCtrl .list p.name span.no-pass{
+	color: #ec4c4c;
+	background: url("../../images/remark/audit_icon_03.png") no-repeat left center;
+	background-size: 0.4rem;
+}
+#headlineCtrl .list p.address{
+	font-size: 0.32rem;
+	color: #bd9e70;
+	margin-bottom: 0.267rem;
+	height: 0.453rem;
+	line-height: 0.453rem;
+}
+#headlineCtrl .list p.address span{
+	padding-left: 0.58rem;
+	background: url("../../images/remark/shop_icon.png") no-repeat left center;
+	background-size: 0.48rem;
+}
+#headlineCtrl .list p.address span.gray{
+	color: #999;
+	background: url("../../images/remark/shop_icon_02.png") no-repeat left center;
+	background-size: 0.48rem;
+}
+#headlineCtrl .list p.address span.site{
+	padding-left: 0.38rem;
+	background: url("../../images/live/live_icon_position.png") no-repeat left center;
+	background-size: 0.3rem;
+}
+#headlineCtrl #remarkCtrl .list .video-box>p.type{
+	position: absolute;
+	font-size: 0.293rem;
+	padding: 0.08rem 0.16rem;
+	left: 0.133rem;
+	top: 0.133rem;
+	color: #fff;
+	background: #f35454;
+	border-radius: 0.08rem;
+}
+#headlineCtrl .btn-box{
+	position: fixed;
+	right: 0.4rem;
+	top: 0.4rem;
+	text-align: right;
+}
+#headlineCtrl .btn-box p{
+	font-size: 0;
+}
+#headlineCtrl .btn-box a{
+	display: inline-block;
+	font-size: 0.293rem;
+	color: #fff;
+	width: 1.04rem;
+	text-align: center;
+	background: #c5a981;
+	border-radius: 50%;
+	height: 1.04rem;
+	vertical-align: middle;
+	line-height: 1.04rem;
+	margin-left: 0.16rem;
+}
+#headlineCtrl .btn-box a.big{
+	font-size: 0.373rem;
+	margin-bottom: 0.16rem;
+}
+#headlineCtrl .btn-box a.my{
+	line-height: 0.4rem;
+	padding-top: 0.1rem;
+}
+#headlineCtrl .btn-box a.return-previous{
+	background: url("../../images/remark/return_btn.png") no-repeat left center;
+	background-size: 100% 100%; 
+}
+#remarkCtrl{
+	width: 375px;
+	height: 667px;
+}
+.big-img-box{
+	display: none;
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: 0;
+	background: #000;
+	z-index: 10;
+}
+.big-img-box img.close-btn{
+
+	width: 0.48rem;
+	height: 0.48rem;
+	position: absolute;
+	left: 0.4rem;
+	top: 0.4rem;
+	margin-top: 0;
+	color: #fff;
+	z-index: 12;
+}
+.big-img-box video,.big-img-box img{
+	width: 100%;
+	height: inherit;
+	max-height: 8rem;
+	margin-top: 4.0rem;
+}
+.big-img-box  span.serial-number{
+	position: absolute;
+	bottom: 0.4rem;
+	right: 0.4rem;
+    font-size: 0.4rem;
+    color: #fff;
+}
+.last-floor{
+	font-size: 0.347rem;
+	color: #999;
+	height: 0.8rem;
+	line-height: 1rem;
+	text-align: center;
+}
+#remarkDetailCtrl #remarkCtrl .list .video-box{
+	height: inherit;
+	overflow: hidden;
+}
+#remarkDetailCtrl #remarkCtrl .list .video-box>div{
+	width: 2.213rem;
+	height: 2.213rem;
+	display: inline-block;
+	margin-right: 0.181rem;
+	margin-bottom: 0.187rem;
+}
+#remarkDetailCtrl #remarkCtrl .list .video-box>div:nth-child(3n+1){
+	margin-right: 0;
+}
+#remarkDetailCtrl #remarkCtrl .list .video-box .box{
+	width: 263px;
+	height: 263px;
+	margin-right: 0;
+}
+#remarkDetailCtrl #remarkCtrl .list .shop-box{
+	padding: 0.4rem;
+	background: #f2f2f2;
+	overflow: hidden;
+}
+#remarkDetailCtrl #remarkCtrl .list .shop-box img{
+	width: 2.56rem;
+	height: 1.92rem;
+	margin-right: 0.213rem;
+	float: left;
+}
+#remarkDetailCtrl #remarkCtrl .list .shop-box a{
+	display: block;
+	width: 100%;
+	height: 100%;
+	background: url("../../images/live/live_arrows_next.png") no-repeat right center;
+	background-size: 0.2rem; 
+}
+#remarkDetailCtrl #remarkCtrl .list .shop-box p{
+	font-size: 0.32rem;
+	color: #999;
+}
+#remarkDetailCtrl #remarkCtrl .list .shop-box p.title{
+	font-size: 0.427rem;
+	line-height: 0.55rem;
+	margin-bottom: 0.373rem;
+}
+#remarkDetailCtrl #remarkCtrl .list .shop-box p span:first-child{
+	margin-right: 0.107rem;
+	padding-right: 0.107rem;
+	border-right: 2px solid #dddddd;
+}

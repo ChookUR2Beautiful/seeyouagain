@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.fresh.dao.ModuleDao">
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.fresh.entity.Module">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="module_name" jdbcType="VARCHAR" property="moduleName" />
+    <result column="image_url" jdbcType="VARCHAR" property="imageUrl" />
+    <result column="jump_url" jdbcType="VARCHAR" property="jumpUrl" />
+    <result column="activity_product_type" jdbcType="INTEGER" property="activityProductType" />
+    <result column="module_type" jdbcType="INTEGER" property="moduleType" />
+    <result column="product_type" jdbcType="INTEGER" property="productType" />
+    <result column="type_id" jdbcType="BIGINT" property="typeId" />
+    <result column="activity_id" jdbcType="BIGINT" property="activityId" />
+    <result column="show_num" jdbcType="INTEGER" property="showNum" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, module_name, image_url, jump_url, activity_product_type, module_type, product_type, 
+    type_id, activity_id, show_num, state, sort, create_time, update_time
+  </sql>
+  <select id="getObject" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_fresh_module
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from t_fresh_module
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.fresh.entity.Module">
+    insert into t_fresh_module (id, module_name, image_url, 
+      jump_url, activity_product_type, module_type, 
+      product_type, type_id, activity_id, 
+      show_num, state, sort, 
+      create_time, update_time)
+    values (#{id,jdbcType=BIGINT}, #{moduleName,jdbcType=VARCHAR}, #{imageUrl,jdbcType=VARCHAR}, 
+      #{jumpUrl,jdbcType=VARCHAR}, #{activityProductType,jdbcType=INTEGER}, #{moduleType,jdbcType=INTEGER}, 
+      #{productType,jdbcType=INTEGER}, #{typeId,jdbcType=BIGINT}, #{activityId,jdbcType=BIGINT}, 
+      #{showNum,jdbcType=INTEGER}, #{state,jdbcType=INTEGER}, #{sort,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.fresh.entity.Module">
+    insert into t_fresh_module
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="moduleName != null">
+        module_name,
+      </if>
+      <if test="imageUrl != null">
+        image_url,
+      </if>
+      <if test="jumpUrl != null">
+        jump_url,
+      </if>
+      <if test="activityProductType != null">
+        activity_product_type,
+      </if>
+      <if test="moduleType != null">
+        module_type,
+      </if>
+      <if test="productType != null">
+        product_type,
+      </if>
+      <if test="typeId != null">
+        type_id,
+      </if>
+      <if test="activityId != null">
+        activity_id,
+      </if>
+      <if test="showNum != null">
+        show_num,
+      </if>
+      <if test="state != null">
+        state,
+      </if>
+      <if test="sort != null">
+        sort,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="moduleName != null">
+        #{moduleName,jdbcType=VARCHAR},
+      </if>
+      <if test="imageUrl != null">
+        #{imageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="jumpUrl != null">
+        #{jumpUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="activityProductType != null">
+        #{activityProductType,jdbcType=INTEGER},
+      </if>
+      <if test="moduleType != null">
+        #{moduleType,jdbcType=INTEGER},
+      </if>
+      <if test="productType != null">
+        #{productType,jdbcType=INTEGER},
+      </if>
+      <if test="typeId != null">
+        #{typeId,jdbcType=BIGINT},
+      </if>
+      <if test="activityId != null">
+        #{activityId,jdbcType=BIGINT},
+      </if>
+      <if test="showNum != null">
+        #{showNum,jdbcType=INTEGER},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null">
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <insert id="add" parameterType="com.xmniao.xmn.core.fresh.entity.Module" useGeneratedKeys="true" keyProperty="id">
+    insert into t_fresh_module
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="moduleName != null">
+        module_name,
+      </if>
+      <if test="imageUrl != null">
+        image_url,
+      </if>
+      <if test="true">
+        jump_url,
+      </if>
+      <if test="activityProductType != null">
+        activity_product_type,
+      </if>
+      <if test="moduleType != null">
+        module_type,
+      </if>
+      <if test="productType != null">
+        product_type,
+      </if>
+      <if test="typeId != null">
+        type_id,
+      </if>
+      <if test="true">
+        activity_id,
+      </if>
+      <if test="showNum != null">
+        show_num,
+      </if>
+      <if test="state != null">
+        state,
+      </if>
+      <if test="sort != null">
+        sort,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="moduleName != null">
+        #{moduleName,jdbcType=VARCHAR},
+      </if>
+      <if test="imageUrl != null">
+        #{imageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="true">
+        #{jumpUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="activityProductType != null">
+        #{activityProductType,jdbcType=INTEGER},
+      </if>
+      <if test="moduleType != null">
+        #{moduleType,jdbcType=INTEGER},
+      </if>
+      <if test="productType != null">
+        #{productType,jdbcType=INTEGER},
+      </if>
+      <if test="typeId != null">
+        #{typeId,jdbcType=BIGINT},
+      </if>
+      <if test="true">
+        #{activityId,jdbcType=BIGINT},
+      </if>
+      <if test="showNum != null">
+        #{showNum,jdbcType=INTEGER},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null">
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.fresh.entity.Module">
+    update t_fresh_module
+    <set>
+      <if test="moduleName != null">
+        module_name = #{moduleName,jdbcType=VARCHAR},
+      </if>
+      <if test="imageUrl != null">
+        image_url = #{imageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="jumpUrl != null">
+        jump_url = #{jumpUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="activityProductType != null">
+        activity_product_type = #{activityProductType,jdbcType=INTEGER},
+      </if>
+      <if test="moduleType != null">
+        module_type = #{moduleType,jdbcType=INTEGER},
+      </if>
+      <if test="productType != null">
+        product_type = #{productType,jdbcType=INTEGER},
+      </if>
+      <if test="typeId != null">
+        type_id = #{typeId,jdbcType=BIGINT},
+      </if>
+      <if test="activityId != null">
+        activity_id = #{activityId,jdbcType=BIGINT},
+      </if>
+      <if test="showNum != null">
+        show_num = #{showNum,jdbcType=INTEGER},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null">
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="update" parameterType="com.xmniao.xmn.core.fresh.entity.Module">
+    update t_fresh_module
+    <set>
+      <if test="moduleName != null">
+        module_name = #{moduleName,jdbcType=VARCHAR},
+      </if>
+      <if test="imageUrl != null">
+        image_url = #{imageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="true">
+        jump_url = #{jumpUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="activityProductType != null">
+        activity_product_type = #{activityProductType,jdbcType=INTEGER},
+      </if>
+      <if test="moduleType != null">
+        module_type = #{moduleType,jdbcType=INTEGER},
+      </if>
+      <if test="productType != null">
+        product_type = #{productType,jdbcType=INTEGER},
+      </if>
+      <if test="typeId != null">
+        type_id = #{typeId,jdbcType=BIGINT},
+      </if>
+      <if test="true">
+        activity_id = #{activityId,jdbcType=BIGINT},
+      </if>
+      <if test="showNum != null">
+        show_num = #{showNum,jdbcType=INTEGER},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null">
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.fresh.entity.Module">
+    update t_fresh_module
+    set module_name = #{moduleName,jdbcType=VARCHAR},
+      image_url = #{imageUrl,jdbcType=VARCHAR},
+      jump_url = #{jumpUrl,jdbcType=VARCHAR},
+      activity_product_type = #{activityProductType,jdbcType=INTEGER},
+      module_type = #{moduleType,jdbcType=INTEGER},
+      product_type = #{productType,jdbcType=INTEGER},
+      type_id = #{typeId,jdbcType=BIGINT},
+      activity_id = #{activityId,jdbcType=BIGINT},
+      show_num = #{showNum,jdbcType=INTEGER},
+      state = #{state,jdbcType=INTEGER},
+      sort = #{sort,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="getList"  resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from t_fresh_module where 1=1
+    <if test="moduleName != null">
+       and  module_name = #{moduleName,jdbcType=VARCHAR}
+      </if>
+      <if test="imageUrl != null">
+       and image_url = #{imageUrl,jdbcType=VARCHAR}
+      </if>
+      <if test="jumpUrl != null">
+        and jump_url = #{jumpUrl,jdbcType=VARCHAR}
+      </if>
+      <if test="activityProductType != null">
+       and  activity_product_type = #{activityProductType,jdbcType=INTEGER}
+      </if>
+      <if test="moduleType != null">
+       and module_type = #{moduleType,jdbcType=INTEGER}
+      </if>
+      <if test="productType != null">
+       and   product_type = #{productType,jdbcType=INTEGER}
+      </if>
+      <if test="typeId != null">
+       and  type_id = #{typeId,jdbcType=BIGINT}
+      </if>
+      <if test="activityId != null">
+       and  activity_id = #{activityId,jdbcType=BIGINT}
+      </if>
+      <if test="showNum != null">
+        and show_num = #{showNum,jdbcType=INTEGER}
+      </if>
+      <if test="state != null">
+       and state = #{state,jdbcType=INTEGER}
+      </if>
+      <if test="sort != null">
+       and  sort = #{sort,jdbcType=INTEGER}
+      </if>
+      <if test="createTime != null">
+        and create_time = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="updateTime != null">
+        and update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="id != null">
+        and id = #{id,jdbcType=BIGINT}
+      </if>
+      <if test="orderBy != null">
+        order by sort ${orderBy}
+      </if>
+  </select>
+  <update id="deleteModule">
+  	update t_fresh_module set state = 2 ,update_time = now() where id = #{id}
+  </update>
+ 
+</mapper>

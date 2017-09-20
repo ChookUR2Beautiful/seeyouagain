@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.user_terminal.dao.BrandSellerDao">
+
+	<parameterMap type="BrandSeller" id="brandSeller" />
+
+	<resultMap type="BrandSeller" id="brandSellerMap">
+		<result column="brand_id" property="brandId" />
+		<result column="brand_name" property="brandName" />
+		<result column="breviary" property="breviary" />
+		<result column="picurl" property="picUrl" />
+		<result column="bewrite" property="bewrite" />
+		<result column="creator" property="creator" />
+		<result column="date_created" property="dateCreated" />
+		<result column="updator" property="updator" />
+		<result column="date_updated" property="dateUpdated" />
+		<result column="is_brand" property="isBrand" />
+		<result column="rebate" property="rebate" />
+		<result column="date_start" property="dateStart" />
+		<result column="date_end" property="dateEnd" />
+		<result column="sort" property="sort" />
+		<result column="is_all" property="isAll" />
+		<result column="province" property="province" />
+		<result column="city" property="city" />
+		<result column="area" property="area" />
+		<result column="agio_agio" property="agioAgio" />
+
+		<result column="pic_low" property="picLow" />
+		<result column="pic_middle" property="picMiddle" />
+		<result column="brand_image_low" property="brandImageLow" />
+		<result column="brand_image_middle" property="brandImageMiddle" />
+		<result column="brand_image_high" property="brandImageHigh" />
+		<result column="activ_cont" property="activCont" />
+		<result column="activ_new_user" property="activNewUser" />
+		<result column="agio" property="agio" />
+	</resultMap>
+
+	<insert id="add" parameterMap="brandSeller">
+		INSERT INTO t_brand_seller
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="null != brandName and '' != brandName">
+				brand_name,
+			</if>
+			<if test="null != breviary and '' != breviary">
+				breviary,
+			</if>
+			<if test="null != picUrl and '' != picUrl">
+				picurl,
+			</if>
+			<if test="null != bewrite and '' != bewrite">
+				bewrite,
+			</if>
+			<if test="null != creator and '' != creator">
+				creator,
+			</if>
+			<if test="null != dateCreated and '' != dateCreated">
+				date_created,
+			</if>
+			<if test="null != updator and '' != updator">
+				updator,
+			</if>
+			<if test="null != dateUpdated and '' != dateUpdated">
+				date_updated,
+			</if>
+			<if test="null != isBrand">
+				is_brand,
+			</if>
+			<if test="null != rebate and '' != rebate">
+				rebate,
+			</if>
+			<if test="null != dateStart and '' != dateStart">
+				date_start,
+			</if>
+			<if test="null != dateEnd and '' != dateEnd">
+				date_end,
+			</if>
+			<if test="null != sort and '' != sort">
+				sort,
+			</if>
+			<if test="null != isAll">
+				is_all,
+			</if>
+			<if test="null != province and '' != province">
+				province,
+			</if>
+			<if test="null != city and '' != city">
+				city,
+			</if>
+			<if test="null != area and '' != area">
+				area,
+			</if>
+			<if test="null != agioAgio">
+				agio_agio,
+			</if>
+			<if test="null != picLow and '' != picLow">
+				pic_low,
+			</if>
+			<if test="null != picMiddle and '' != picMiddle">
+				pic_middle,
+			</if>
+			<if test="null != brandImageLow and '' != brandImageLow">
+				brand_image_low,
+			</if>
+			<if test="null != brandImageMiddle and '' != brandImageMiddle">
+				brand_image_middle,
+			</if>
+			<if test="null != brandImageHigh and '' != brandImageHigh">
+				brand_image_high,
+			</if>
+
+			<if test="null != activCont and '' != activCont">
+				activ_cont,
+			</if>
+			<if test="null != activNewUser and '' != activNewUser">
+				activ_new_user,
+			</if>
+			<if test="null != agio ">
+				agio,
+			</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			<if test="null != brandName and '' != brandName">
+				#{brandName},
+			</if>
+			<if test="null != breviary and '' != breviary">
+				#{breviary},
+			</if>
+			<if test="null != picUrl and '' != picUrl">
+				#{picUrl},
+			</if>
+			<if test="null != bewrite and '' != bewrite">
+				#{bewrite},
+			</if>
+			<if test="null != creator and '' != creator">
+				#{creator},
+			</if>
+			<if test="null != dateCreated and '' != dateCreated">
+				#{dateCreated},
+			</if>
+			<if test="null != updator and '' != updator">
+				#{updator},
+			</if>
+			<if test="null != dateUpdated and '' != dateUpdated">
+				#{dateUpdated},
+			</if>
+			<if test="null != isBrand">
+				#{isBrand},
+			</if>
+			<if test="null != rebate and '' != rebate">
+				#{rebate},
+			</if>
+			<if test="null != dateStart and '' != dateStart">
+				#{dateStart},
+			</if>
+			<if test="null != dateEnd and '' != dateEnd">
+				#{dateEnd},
+			</if>
+			<if test="null != sort and '' != sort">
+				#{sort},
+			</if>
+			<if test="null != isAll">
+				#{isAll},
+			</if>
+			<if test="null != province and '' != province">
+				#{province},
+			</if>
+			<if test="null != city and '' != city">
+				#{city},
+			</if>
+			<if test="null != area and '' != area">
+				#{area},
+			</if>
+			<if test="null != agioAgio">
+				#{agioAgio},
+			</if>
+			<if test="null != picLow and '' != picLow">
+				#{picLow},
+			</if>
+			<if test="null != picMiddle and '' != picMiddle">
+				#{picMiddle},
+			</if>
+			<if test="null != brandImageLow and '' != brandImageLow">
+				#{brandImageLow},
+			</if>
+			<if test="null != brandImageMiddle and '' != brandImageMiddle">
+				#{brandImageMiddle},
+			</if>
+			<if test="null != brandImageHigh and '' != brandImageHigh">
+				#{brandImageHigh},
+			</if>
+
+			<if test="null != activCont and '' != activCont">
+				#{activCont},
+			</if>
+			<if test="null != activNewUser and '' != activNewUser">
+				#{activNewUser},
+			</if>
+			<if test="null != agio ">
+				#{agio},
+			</if>
+		</trim>
+	</insert>
+
+	<select id="getList" resultMap="brandSellerMap" parameterMap="brandSeller">
+		SELECT
+		tbs.*,
+		city.title AS cityTitle,
+		tarea.title,
+		(SELECT
+		GROUP_CONCAT(a.title)
+		FROM
+		t_area a
+		WHERE FIND_IN_SET(
+		a.area_id,
+		REPLACE(tbs.AREA, ';', ',')
+		)) AS areaTitle
+		FROM
+		t_brand_seller tbs
+		LEFT
+		JOIN t_area tarea
+		ON tbs.AREA = tarea.area_id
+		LEFT JOIN t_area city
+		ON
+		tbs.city = city.area_id
+		<where>
+			1=1
+			<if test="null != brandId and '' != brandId">
+				AND brand_id = #{brandId}
+			</if>
+			<if test="null != brandName and '' != brandName">
+				AND brand_name LIKE '%${brandName}%'
+			</if>
+			<if test="null != isAll">
+				AND is_all = #{isAll}
+			</if>
+			<if test="null != province and '' != province">
+				AND province = ${province}
+			</if>
+			<if test="null != city and '' != city">
+				AND city = ${city}
+			</if>
+			<if test="null != area and '' != area">
+				AND FIND_IN_SET('${area}',area)
+			</if>
+			<if test="null != isBrand">
+				AND is_brand = #{isBrand}
+			</if>
+		</where>
+		ORDER BY tbs.date_created DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="count" resultType="Long" parameterMap="brandSeller">
+		SELECT count(*) FROM t_brand_seller tbs
+		<where>
+			1=1
+			<if test="null != brandId and '' != brandId">
+				AND brand_id = #{brandId}
+			</if>
+			<if test="null != brandName and '' != brandName">
+				AND brand_name LIKE '%${brandName}%'
+			</if>
+			<if test="null != isAll">
+				AND is_all = #{isAll}
+			</if>
+			<if test="null != province and '' != province">
+				AND province = ${province}
+			</if>
+			<if test="null != city and '' != city">
+				AND city = ${city}
+			</if>
+			<if test="null != area and '' != area">
+				AND FIND_IN_SET('${area}',area)
+			</if>
+			<if test="null != isBrand">
+				AND is_brand = #{isBrand}
+			</if>
+		</where>
+	</select>
+	<select id="getObject" resultMap="brandSellerMap" parameterType="Long">
+		SELECT * FROM t_brand_seller WHERE brand_id = #{0}
+	</select>
+
+	<update id="update" parameterMap="brandSeller">
+		UPDATE t_brand_seller
+		<set>
+			<trim suffixOverrides=",">
+				<if test="null != brandName and '' != brandName">
+					brand_name = #{brandName},
+				</if>
+				<if test="null != breviary and '' != breviary">
+					breviary = #{breviary},
+				</if>
+				<if test="null != picUrl">
+					picurl = #{picUrl},
+				</if>
+				<if test="null != bewrite and '' != bewrite">
+					bewrite = #{bewrite},
+				</if>
+				<if test="null != creator and '' != creator">
+					creator = #{creator},
+				</if>
+				<if test="null != dateCreated and '' != dateCreated">
+					date_created = #{dateCreated},
+				</if>
+				<if test="null != updator and '' != updator">
+					updator = #{updator},
+				</if>
+				<if test="null != dateUpdated and '' != dateUpdated">
+					date_updated = #{dateUpdated},
+				</if>
+				<if test="null != isBrand">
+					is_brand = #{isBrand},
+				</if>
+				<if test="null != rebate">
+					rebate = #{rebate},
+				</if>
+				<if test="null != dateStart and '' != dateStart">
+					date_start = #{dateStart},
+				</if>
+				<if test="null != dateEnd and '' != dateEnd">
+					date_end = #{dateEnd},
+				</if>
+				<if test="null != sort">
+					sort = #{sort},
+				</if>
+				<if test="null != isAll">
+					is_all = #{isAll},
+				</if>
+				<if test="null != province">
+					province = #{province},
+				</if>
+				<if test="null != city ">
+					city = #{city},
+				</if>
+				<if test="null != area">
+					area = #{area},
+				</if>
+				<if test="null != agioAgio">
+					agio_agio = #{agioAgio},
+				</if>
+				<if test="null != picLow and '' != picLow">
+					pic_low = #{picLow},
+				</if>
+				<if test="null != picMiddle and '' != picMiddle">
+					pic_middle = #{picMiddle},
+				</if>
+				<if test="null != brandImageLow and '' != brandImageLow">
+					brand_image_low = #{brandImageLow},
+				</if>
+				<if test="null != brandImageMiddle and '' != brandImageMiddle">
+					brand_image_middle = #{brandImageMiddle},
+				</if>
+				<if test="null != brandImageHigh and '' != brandImageHigh">
+					brand_image_high = #{brandImageHigh},
+				</if>
+				<if test="null != activCont and '' != activCont">
+					activ_cont = #{activCont},
+				</if>
+				<if test="null != activNewUser and '' != activNewUser">
+					activ_new_user = #{activNewUser},
+				</if>
+				<if test="null != agio ">
+					agio = #{agio},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != brandId">
+				brand_id = #{brandId}
+			</if>
+		</where>
+	</update>
+
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_brand_seller WHERE brand_id IN
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	<delete id="deleteByIds">
+		DELETE FROM t_brand_seller WHERE brand_id IN
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+</mapper>

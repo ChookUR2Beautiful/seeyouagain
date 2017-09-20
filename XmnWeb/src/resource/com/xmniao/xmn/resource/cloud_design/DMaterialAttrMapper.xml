@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.cloud_design.dao.DMaterialAttrDao" >
+
+  <resultMap id="materialAttrMap" type="com.xmniao.xmn.core.cloud_design.entity.DMaterialAttr" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="material_id" property="materialId" jdbcType="BIGINT" />
+    <result column="category_id" property="categoryId" jdbcType="BIGINT" />
+    <result column="category_attr_id" property="categoryAttrId" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="sort_val" property="sortVal" jdbcType="INTEGER" />
+    <result column="pic_url" property="picUrl" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="materialAttr_column_list" >
+    id, material_id, category_id, category_attr_id, name, sort_val, pic_url
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test="materialId != null and materialId != '' ">
+  		AND material_id=#{materialId}
+  	</if>
+  	<if test="categoryAttrIdList != null">
+  		AND category_attr_id IN
+  		<foreach collection="categoryAttrIdList" item="item" index="index"   open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+  	</if>
+  
+  </sql>
+  
+  <select id="getList" resultMap="materialAttrMap" parameterType="com.xmniao.xmn.core.cloud_design.entity.DMaterialAttr">
+  	select 
+    	<include refid="materialAttr_column_list" />,
+    	(
+			SELECT
+				GROUP_CONCAT(
+					val.category_attr_val_id SEPARATOR ','
+				)
+			FROM
+				d_material_attr_val val
+			WHERE
+				val.material_attr_id = attr.id
+		) attrValIds
+    from d_material_attr attr
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+    <if test="limit != -1">
+    	LIMIT ${(page-1)*limit},#{limit}
+    </if>
+  </select>
+  
+  <!-- 根据物料Id删除所有规格 -->
+  <delete id="deleteByMaterialId" parameterType="java.lang.Long" >
+    delete from d_material_attr
+    where material_id = #{materialId,jdbcType=BIGINT}
+  </delete>
+  
+  
+  <insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.xmn.core.cloud_design.entity.DMaterialAttr" >
+    insert into d_material_attr
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="materialId != null" >
+        material_id,
+      </if>
+      <if test="categoryId != null" >
+        category_id,
+      </if>
+      <if test="categoryAttrId != null" >
+        category_attr_id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="sortVal != null" >
+        sort_val,
+      </if>
+      <if test="picUrl != null" >
+        pic_url,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="materialId != null" >
+        #{materialId,jdbcType=BIGINT},
+      </if>
+      <if test="categoryId != null" >
+        #{categoryId,jdbcType=BIGINT},
+      </if>
+      <if test="categoryAttrId != null" >
+        #{categoryAttrId,jdbcType=BIGINT},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="sortVal != null" >
+        #{sortVal,jdbcType=INTEGER},
+      </if>
+      <if test="picUrl != null" >
+        #{picUrl,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <!-- 批量插入商品物料规格 -->
+  <insert id="addBatch" parameterType="com.xmniao.xmn.core.cloud_design.entity.DMaterialAttr" >
+    INSERT INTO d_material_attr
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <include refid="materialAttr_column_list" /> 
+    </trim>
+    VALUES
+   	<foreach item="item" index="index" collection="list" separator=",">
+	   	<trim prefix="(" suffix=")" suffixOverrides=",">
+		        #{item.id},
+		        #{item.materialId},
+		        #{item.categoryId},
+		        #{item.categoryAttrId},
+		        #{item.name},
+		        #{item.sortVal},
+		        #{item.picUrl}
+	      </trim>
+     </foreach>
+  </insert>
+  
+</mapper>

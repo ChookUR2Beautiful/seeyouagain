@@ -1,0 +1,512 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.business_cooperation.dao.StaffDao">
+
+	<parameterMap type="Staff" id="staff" />
+	
+	<resultMap type="Staff" id="staffMap">
+		<result column="staffid" property="staffid" />
+		<result column="jointid" property="jointid" />
+		<result column="category" property="category" />
+		<result column="fullname" property="fullname" />
+		<result column="sex" property="sex" />
+		<result column="nickname" property="nickname" />
+		<result column="headurl" property="headurl" />
+		<result column="phoneid" property="phoneid" />
+		<result column="password" property="password" />
+		<result column="quota" property="quota" />
+		<result column="area" property="area" />
+		<result column="status" property="status" />
+		<result column="sdate" property="sdate" />
+		<result column="imei" property="imei" />
+		<result column="remarks" property="remarks" />
+		<result column="amount" property="amount" />
+		<result column="baseagio" property="baseagio" />
+	</resultMap>
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_staff
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						jointid,
+						category,
+						fullname,
+						sex,
+						nickname,
+						headurl,
+						phoneid,
+						password,
+						quota,
+						area,
+						status,
+						sdate,
+						imei,
+						remarks,
+						amount,
+						baseagio,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.jointid},
+						 #{item.category},
+						 #{item.fullname},
+						 #{item.sex},
+						 #{item.nickname},
+						 #{item.headurl},
+						 #{item.phoneid},
+						 #{item.password},
+						 #{item.quota},
+						 #{item.area},
+						 #{item.status},
+						 #{item.sdate},
+						 #{item.imei},
+						 #{item.remarks},
+						 #{item.amount},
+						 #{item.baseagio},
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="addReturnId" useGeneratedKeys="true" keyProperty="staffid" keyColumn="staffid" parameterMap="staff" >
+		INSERT INTO t_staff
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != staffid">
+					staffid,
+				</if>
+			 	<if test=" null != jointid">
+					jointid,
+				</if>
+			 	<if test=" null != category">
+					category,
+				</if>
+			 	<if test=" null != fullname">
+					fullname,
+				</if>
+			 	<if test=" null != sex">
+					sex,
+				</if>
+			 	<if test=" null != nickname">
+					nickname,
+				</if>
+			 	<if test=" null != headurl and '' != headurl ">
+					headurl,
+				</if>
+			 	<if test=" null != phoneid and '' != phoneid ">
+					phoneid,
+				</if>
+			 	<if test=" null != password and '' != password ">
+					password,
+				</if>
+			 	<if test=" null != quota">
+					quota,
+				</if>
+			 	<if test=" null != area and '' != area ">
+					area,
+				</if>
+			 	<if test=" null != status">
+					status,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+			 	<if test=" null != imei">
+					imei,
+				</if>
+			 	<if test=" null != remarks and '' != remarks ">
+					remarks,
+				</if>
+			 	<if test=" null != amount">
+					amount,
+				</if>
+			 	<if test=" null != baseagio">
+					baseagio,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != staffid">
+					 	#{staffid},
+				</if>
+			 	<if test=" null != jointid">
+					 	#{jointid},
+				</if>
+			 	<if test=" null != category">
+					 	#{category},
+				</if>
+			 	<if test=" null != fullname ">
+					 	#{fullname},
+				</if>
+			 	<if test=" null != sex">
+					 	#{sex},
+				</if>
+			 	<if test=" null != nickname">
+					 	#{nickname},
+				</if>
+			 	<if test=" null != headurl and '' != headurl ">
+					 	#{headurl},
+				</if>
+			 	<if test=" null != phoneid and '' != phoneid ">
+					 	#{phoneid},
+				</if>
+			 	<if test=" null != password and '' != password ">
+					 	#{password},
+				</if>
+			 	<if test=" null != quota">
+					 	#{quota},
+				</if>
+			 	<if test=" null != area and '' != area ">
+					 	#{area},
+				</if>
+			 	<if test=" null != status">
+					 	#{status},
+				</if>
+			 	<if test=" null != sdate">
+					 	#{sdate},
+				</if>
+			 	<if test=" null != imei">
+					 	#{imei},
+				</if>
+			 	<if test=" null != remarks and '' != remarks ">
+					 	#{remarks},
+				</if>
+			 	<if test=" null != amount">
+					 	#{amount},
+				</if>
+			 	<if test=" null != baseagio">
+					 	#{baseagio},
+				</if>
+		</trim>
+	</insert>
+	
+	<insert id="add" parameterMap="staff" >
+		INSERT INTO t_staff
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != staffid">
+					staffid,
+				</if>
+			 	<if test=" null != jointid">
+					jointid,
+				</if>
+			 	<if test=" null != category">
+					category,
+				</if>
+			 	<if test=" null != fullname">
+					fullname,
+				</if>
+			 	<if test=" null != sex">
+					sex,
+				</if>
+			 	<if test=" null != nickname">
+					nickname,
+				</if>
+			 	<if test=" null != headurl and '' != headurl ">
+					headurl,
+				</if>
+			 	<if test=" null != phoneid and '' != phoneid ">
+					phoneid,
+				</if>
+			 	<if test=" null != password and '' != password ">
+					password,
+				</if>
+			 	<if test=" null != quota">
+					quota,
+				</if>
+			 	<if test=" null != area and '' != area ">
+					area,
+				</if>
+			 	<if test=" null != status">
+					status,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+			 	<if test=" null != imei">
+					imei,
+				</if>
+			 	<if test=" null != remarks and '' != remarks ">
+					remarks,
+				</if>
+			 	<if test=" null != amount">
+					amount,
+				</if>
+			 	<if test=" null != baseagio">
+					baseagio,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != staffid">
+					 	#{staffid},
+				</if>
+			 	<if test=" null != jointid">
+					 	#{jointid},
+				</if>
+			 	<if test=" null != category">
+					 	#{category},
+				</if>
+			 	<if test=" null != fullname ">
+					 	#{fullname},
+				</if>
+			 	<if test=" null != sex">
+					 	#{sex},
+				</if>
+			 	<if test=" null != nickname">
+					 	#{nickname},
+				</if>
+			 	<if test=" null != headurl and '' != headurl ">
+					 	#{headurl},
+				</if>
+			 	<if test=" null != phoneid and '' != phoneid ">
+					 	#{phoneid},
+				</if>
+			 	<if test=" null != password and '' != password ">
+					 	#{password},
+				</if>
+			 	<if test=" null != quota">
+					 	#{quota},
+				</if>
+			 	<if test=" null != area and '' != area ">
+					 	#{area},
+				</if>
+			 	<if test=" null != status">
+					 	#{status},
+				</if>
+			 	<if test=" null != sdate">
+					 	#{sdate},
+				</if>
+			 	<if test=" null != imei">
+					 	#{imei},
+				</if>
+			 	<if test=" null != remarks and '' != remarks ">
+					 	#{remarks},
+				</if>
+			 	<if test=" null != amount">
+					 	#{amount},
+				</if>
+			 	<if test=" null != baseagio">
+					 	#{baseagio},
+				</if>
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_staff WHERE staffid IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterMap="staff">
+		UPDATE t_staff
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != staffid">
+					staffid = #{staffid},
+				</if>
+				<if test=" null != jointid">
+					jointid = #{jointid},
+				</if>
+				<if test=" null != category">
+					category = #{category},
+				</if>
+				<if test=" null != fullname">
+					fullname = #{fullname},
+				</if>
+				<if test=" null != sex">
+					sex = #{sex},
+				</if>
+				<if test=" null != nickname">
+					nickname = #{nickname},
+				</if>
+				<if test=" null != headurl and '' != headurl ">
+					headurl = #{headurl},
+				</if>
+				<if test=" null != phoneid and '' != phoneid ">
+					phoneid = #{phoneid},
+				</if>
+				<if test=" null != password and '' != password ">
+					password = #{password},
+				</if>
+				<if test=" null != quota">
+					quota = #{quota},
+				</if>
+				<if test=" null != area and '' != area ">
+					area = #{area},
+				</if>
+				<if test=" null != status">
+					status = #{status},
+				</if>
+				<if test=" null != sdate">
+					sdate = #{sdate},
+				</if>
+				<if test=" null != imei">
+					imei = #{imei},
+				</if>
+				<if test=" null != remarks and '' != remarks ">
+					remarks = #{remarks},
+				</if>
+				<if test=" null != amount">
+					amount = #{amount},
+				</if>
+				<if test=" null != baseagio">
+					baseagio = #{baseagio},
+				</if>
+			</trim>
+		</set>
+		<where>
+			1=1 
+			<if test="null != staffid and '' != staffid">
+				AND staffid = #{staffid} 
+			</if>
+			<!-- add by lifeng 20160627 17:52:10 -->
+			<if test="null != jointid and '' != jointid">
+				AND jointid = #{jointid} 
+			</if>
+		</where>
+	</update>
+	
+	<select id="getList" resultMap="staffMap" parameterMap="staff">
+		SELECT * FROM t_staff
+		<where>
+			1=1
+			<if test=" null != staffid">
+				AND staffid = #{staffid}
+			</if>
+			<if test=" null != jointid">
+				AND jointid = #{jointid}
+			</if>
+			<if test=" null != category">
+				AND category = #{category}
+			</if>
+			<if test=" null != fullname and '' != fullname ">
+				AND fullname LIKE '%${fullname}%'
+			</if>
+			<if test=" null != sex">
+				AND sex = #{sex}
+			</if>
+			<if test=" null != nickname and '' != nickname ">
+				AND nickname LIKE '%${nickname}%'
+			</if>
+			<if test=" null != headurl and '' != headurl ">
+				AND headurl LIKE '%${headurl}%'
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				AND phoneid LIKE '%${phoneid}%'
+			</if>
+			<if test=" null != password and '' != password ">
+				AND password LIKE '%${password}%'
+			</if>
+			<if test=" null != quota">
+				AND quota = #{quota}
+			</if>
+			<if test=" null != area and '' != area ">
+				AND area LIKE '%${area}%'
+			</if>
+			<if test=" null != status">
+				AND status = #{status}
+			</if>
+			<if test=" null != sdate">
+				AND sdate = #{sdate}
+			</if>
+			<if test=" null != imei and '' != imei ">
+				AND imei LIKE '%${imei}%'
+			</if>
+			<if test=" null != remarks and '' != remarks ">
+				AND remarks LIKE '%${remarks}%'
+			</if>
+			<if test=" null != amount">
+				AND amount = #{amount}
+			</if>
+			<if test=" null != baseagio">
+				AND baseagio = #{baseagio}
+			</if>
+		</where>
+			ORDER BY staffid DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="staff">
+		SELECT COUNT(*) FROM t_staff
+		<where>
+			1=1
+			<if test=" null != staffid">
+				AND staffid = #{staffid}
+			</if>
+			<if test=" null != jointid">
+				AND jointid = #{jointid}
+			</if>
+			<if test=" null != category">
+				AND category = #{category}
+			</if>
+			<if test=" null != fullname and '' != fullname ">
+				AND fullname LIKE '%${fullname}%'
+			</if>
+			<if test=" null != sex">
+				AND sex = #{sex}
+			</if>
+			<if test=" null != nickname and '' != nickname ">
+				AND nickname LIKE '%${nickname}%'
+			</if>
+			<if test=" null != headurl and '' != headurl ">
+				AND headurl LIKE '%${headurl}%'
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				AND phoneid = #{phoneid}
+			</if>
+			<if test=" null != password and '' != password ">
+				AND password LIKE '%${password}%'
+			</if>
+			<if test=" null != quota">
+				AND quota = #{quota}
+			</if>
+			<if test=" null != area and '' != area ">
+				AND area LIKE '%${area}%'
+			</if>
+			<if test=" null != status">
+				AND status = #{status}
+			</if>
+			<if test=" null != sdate">
+				AND sdate = #{sdate}
+			</if>
+			<if test=" null != imei and '' != imei ">
+				AND imei LIKE '%${imei}%'
+			</if>
+			<if test=" null != remarks and '' != remarks ">
+				AND remarks LIKE '%${remarks}%'
+			</if>
+			<if test=" null != amount">
+				AND amount = #{amount}
+			</if>
+			<if test=" null != baseagio">
+				AND baseagio = #{baseagio}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Long">
+		SELECT Max(staffid) AS VALUE FROM t_staff
+	</select>
+	
+	<select id="getObject" resultMap="staffMap" parameterType="Long">
+		SELECT * FROM t_staff WHERE staffid = #{0}
+	</select>
+	
+	<!-- 根据合作尚id查询管理员信息 -->
+	<select id="getStaffByJointid" resultMap="staffMap" parameterType="Long">
+		SELECT * FROM t_staff WHERE category = 2 AND jointid = #{0}
+	</select>
+	
+	
+	<!-- 根据合作尚id查询员工信息 -->
+	<select id="getStaffsByJointid" resultMap="staffMap" parameterType="Long">
+		SELECT * FROM t_staff WHERE jointid = #{0} order by category desc,staffid
+	</select>
+	
+	<!-- 根据jointid数组获取该合作商的管理员账户 -->
+	<select id="getAdminsByJoint" resultMap="staffMap" parameterType="Object">
+		SELECT * FROM t_staff WHERE category = 2 AND jointid IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</select>
+</mapper>

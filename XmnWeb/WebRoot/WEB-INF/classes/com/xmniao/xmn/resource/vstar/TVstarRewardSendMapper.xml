@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.vstar.dao.TVstarRewardSendDao" >
+
+
+  <resultMap id="vstarRewardSendMap" type="com.xmniao.xmn.core.vstar.entity.TVstarRewardSend" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="nname" property="nname" jdbcType="VARCHAR" />
+    <result column="reward_type" property="rewardType" jdbcType="INTEGER" />
+    <result column="reward_description" property="rewardDescription" jdbcType="VARCHAR" />
+    <result column="reward_num" property="rewardNum" jdbcType="INTEGER" />
+    <result column="cid" property="cid" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="cname" property="cname" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  
+  <sql id="vstarRewardSend_column_list" >
+    id, uid, phone, reward_type, reward_description,reward_num,cid, create_time, update_time, 
+    status
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test="nname!=null and nname!='' ">
+  		and player.nname like '%${nname}%'
+  	</if>
+  	<if test="phone !=null and phone !='' ">
+  		and reward.phone like '%${phone}%'
+  	</if>
+  	<if test="rewardType !=null and rewardType !='' or rewardType==0 ">
+  		and reward.reward_type =#{rewardType}
+  	</if>
+  	<if test="startTime !=null and startTime!=''">
+  		<![CDATA[
+  			and DATE_FORMAT(reward.create_time,'%Y-%m-%d') >= DATE_FORMAT(#{startTime},'%Y-%m-%d')
+  		]]>
+  	</if>
+  	<if test="endTime !=null and endTime != ''">
+  		<![CDATA[
+  			and DATE_FORMAT(reward.create_time,'%Y-%m-%d') <= DATE_FORMAT(#{endTime},'%Y-%m-%d')
+  		]]>
+  	</if>
+  </sql>
+  
+  
+  <select id="getObject" resultMap="vstarRewardSendMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="vstarRewardSend_column_list" />
+    from t_vstar_reward_send
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getList" resultMap="vstarRewardSendMap" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarRewardSend" >
+    	SELECT
+			reward.id,
+			reward.uid,
+			reward.phone,
+			reward.reward_type,
+			reward.reward_description,
+			reward.create_time,
+			reward.update_time,
+			reward.`status`,
+			player.nname,
+			coupon.cname
+		FROM
+			t_vstar_reward_send reward
+		LEFT JOIN t_vstar_player_info player ON reward.uid = player.uid
+		LEFT JOIN t_coupon coupon on coupon.cid=reward.cid
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    	<if test="order != -1">
+    		ORDER BY reward.create_time DESC
+    	</if>
+    	<if test="limit != -1">
+    		LIMIT ${(page-1)*limit},#{limit}
+    	</if>
+    </where>
+  </select>
+  
+  <select id="count" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarRewardSend" >
+    select 
+    	count(1)
+    FROM
+			t_vstar_reward_send reward
+	LEFT JOIN t_vstar_player_info player ON reward.uid = player.uid
+	LEFT JOIN t_coupon coupon on coupon.cid=reward.cid
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+  </select>
+  
+  
+  <delete id="delete" parameterType="java.lang.Long" >
+    delete from t_vstar_reward_send
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  
+  
+  <insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarRewardSend" >
+    insert into t_vstar_reward_send
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="rewardDescription != null" >
+        reward_description,
+      </if>
+      <if test="rewardNum != null" >
+        reward_num,
+      </if>
+      <if test="cid != null" >
+        cid,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="rewardType != null" >
+        #{rewardType,jdbcType=INTEGER},
+      </if>
+      <if test="rewardDescription != null" >
+        #{rewardDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="rewardNum != null" >
+        #{rewardNum,jdbcType=TIMESTAMP},
+      </if>
+      <if test="cid != null" >
+        #{cid,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+  <!-- 批量插入新时尚大赛发放奖励记录 -->
+  <insert id="addBatch" parameterType="java.util.ArrayList">
+	INSERT INTO t_vstar_reward_send
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+		<include refid="vstarRewardSend_column_list" /> 
+	</trim>
+	VALUES
+	<foreach item="item" index="index" collection="list" separator=",">
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+		<!-- id, uid, phone,  reward_type, reward_description,rewardNum,cid, create_time, update_time, status -->
+			#{item.id},
+			#{item.uid},
+			#{item.phone},
+			#{item.rewardType},
+			#{item.rewardDescription},
+			#{item.rewardNum},
+			#{item.cid},
+			#{item.createTime},
+			#{item.updateTime},
+			#{item.status}
+		</trim>
+	</foreach>
+  </insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarRewardSend" >
+    update t_vstar_reward_send
+    <set >
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="rewardType != null" >
+        reward_type = #{rewardType,jdbcType=INTEGER},
+      </if>
+      <if test="rewardDescription != null" >
+        reward_description = #{rewardDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+</mapper>

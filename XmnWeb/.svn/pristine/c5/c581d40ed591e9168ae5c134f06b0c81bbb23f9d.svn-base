@@ -1,0 +1,744 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.common.dao.AreaDao">
+
+	<parameterMap type="Area" id="area" />
+
+	<resultMap type="Area" id="areaMap">
+		<result column="area_id" property="areaId" />
+		<result column="title" property="title" />
+		<result column="pid" property="pid" />
+		<result column="region_id" property="regionId" />
+		<result column="status" property="status" />
+		<result column="firstletter" property="firstletter" />
+
+		<result column="hot" property="hot" />
+		<result column="sdate" property="sdate" />
+		<result column="is_del" property="isDel" />
+		<result column="short" property="shorts" />
+		<result column="pinyin" property="pinyin" />
+		<result column="upid" property="upid" />
+		<result column="locationId" property="locationId" />
+		<result column="is_city" property="isCity" />
+
+		<result column="pTitle" property="ptitle" />
+		<result column="cTitle" property="ctitle" />
+		<result column="aTitle" property="atitle" />
+		<result column="btitle" property="btitle" />
+		<result column="pArea_id" property="pareaId" />
+		<result column="cArea_id" property="careaId" />
+		<result column="aArea_id" property="aareaId" />
+		<result column="bNum" property="bnum" />
+		<result column="corporate" property="corporate" />
+	</resultMap>
+
+	<select id="getTownsByCityIds" resultMap="areaMap">
+		select
+		a.*,a.title as aTitle,a.area_id as cArea_id,b.title as cTitle,b.area_id as aArea_id,c.title as pTitle,c.area_id as  pArea_id from (select * from t_area
+		where is_del = 0 and pid in (select area_id from t_area where is_del =
+		0 and area_id in 
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+		 	#{item}	
+		</foreach>
+		) ) a join (select * from t_area where is_del =
+		0 and area_id in 
+		<foreach collection="list" item="item2" open="(" close=")" separator=",">
+		 	#{item2}	
+		</foreach>
+		) b on a.pid = b.area_id
+		left join t_area c on
+		b.pid = c.area_id
+	</select>
+
+	<select id="getDivisionRNoChooseCitys" resultMap="areaMap">
+		SELECT
+		a.*,
+		concat_ws('', b.title, a.title) AS btitle
+		FROM
+		(
+		SELECT
+		*
+		FROM
+		t_area
+		WHERE
+		pid IN (
+		SELECT
+		area_id
+		FROM
+		t_area
+		WHERE
+		pid = 0
+		AND is_del = 0
+		)
+		) a
+		JOIN (
+		SELECT
+		*
+		FROM
+		t_area
+		WHERE
+		pid = 0
+		AND is_del = 0
+		) b ON a.pid = b.area_id
+		WHERE
+		a.area_id NOT IN (
+		SELECT DISTINCT
+		city_id
+		FROM
+		t_vstar_division_region
+		WHERE
+		state = 1
+		<if test="id != null">
+			and division_id &lt;> #{id}
+		</if>
+		)
+	</select>
+
+	<insert id="addBatch" parameterType="java.util.ArrayList">
+		INSERT INTO t_log
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			title,
+			pid,
+			region_id,
+			status,
+			firstletter,
+			hot,
+			sdate,
+			is_del,
+			short,
+			pinyin,
+			upid,
+			locationId,
+			is_city,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list"
+			separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				#{item.title},
+				#{item.pid},
+				#{item.regionId},
+				#{item.status},
+				#{item.firstletter},
+				#{item.hot},
+				#{item.sdate},
+				#{item.isDel},
+				#{item.shorts},
+				#{item.pinyin},
+				#{item.upid},
+				#{item.locationId},
+				#{item.isCity},
+			</trim>
+		</foreach>
+	</insert>
+
+
+
+
+
+	<insert id="add" parameterMap="area">
+		INSERT INTO t_area
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test=" null != areaId">
+				area_id,
+			</if>
+			<if test=" null != title and '' != title ">
+				title,
+			</if>
+			<if test=" null != pid">
+				pid,
+			</if>
+			<if test=" null != regionId and '' != regionId ">
+				region_id,
+			</if>
+			<if test=" null != status">
+				status,
+			</if>
+			<if test=" null != firstletter and '' != firstletter ">
+				firstletter,
+			</if>
+			<if test=" null != hot">
+				hot,
+			</if>
+			<if test=" null != sdate and '' != sdate ">
+				sdate,
+			</if>
+			<if test=" null != isDel">
+				is_del,
+			</if>
+			<if test=" null != shorts and '' != shorts ">
+				short,
+			</if>
+			<if test=" null != pinyin">
+				pinyin,
+			</if>
+			<if test=" null != upid and '' != upid ">
+				upid,
+			</if>
+			<if test=" null != locationId">
+				locationId,
+			</if>
+			<if test=" null != isCity and '' != isCity ">
+				is_city,
+			</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			<if test=" null != areaId">
+				#{areaId},
+			</if>
+			<if test=" null != title and '' != title ">
+				#{title},
+			</if>
+			<if test=" null != pid">
+				#{pid},
+			</if>
+			<if test=" null != regionId and '' != regionId ">
+				#{regionId},
+			</if>
+			<if test=" null != status">
+				#{status},
+			</if>
+			<if test=" null != firstletter and '' != firstletter ">
+				#{firstletter},
+			</if>
+
+			<if test=" null != hot">
+				#{hot},
+			</if>
+			<if test=" null != sdate and '' != sdate ">
+				#{sdate},
+			</if>
+			<if test=" null != isDel">
+				#{is_del},
+			</if>
+			<if test=" null != shorts and '' != shorts ">
+				#{short},
+			</if>
+			<if test=" null != pinyin">
+				#{pinyin},
+			</if>
+			<if test=" null != upid and '' != upid ">
+				#{upid},
+			</if>
+			<if test=" null != locationId">
+				#{locationId},
+			</if>
+			<if test=" null != isCity and '' != isCity ">
+				#{is_city},
+			</if>
+		</trim>
+	</insert>
+
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_area WHERE area_id IN
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=") ">
+			#{item}
+		</foreach>
+	</delete>
+
+	<select id="getObjectByIds" resultMap="areaMap" parameterType="string">
+		SELECT area_id,title,pid FROM t_area WHERE area_id IN
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=") ">
+			#{item}
+		</foreach>
+	</select>
+
+	<update id="update" parameterMap="area">
+		UPDATE t_area
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != areaId">
+					area_id = #{areaId},
+				</if>
+				<if test=" null != title and '' != title ">
+					title = #{title},
+				</if>
+				<if test=" null != pid">
+					pid = #{pid},
+				</if>
+				<if test=" null != regionId and '' != regionId ">
+					region_id = #{regionId},
+				</if>
+				<if test=" null != status">
+					status = #{status},
+				</if>
+				<if test=" null != firstletter">
+					firstletter = #{firstletter},
+				</if>
+
+				<if test=" null != hot">
+					hot = #{firstletter},
+				</if>
+				<if test=" null != sdate ">
+					sdate = #{sdate},
+				</if>
+				<if test=" null != isDel">
+					is_del = #{isDel},
+				</if>
+				<if test=" null != shorts ">
+					short = #{shorts},
+				</if>
+				<if test=" null != pinyin">
+					pinyin = #{pinyin},
+				</if>
+				<if test=" null != upid ">
+					upid = #{upid},
+				</if>
+				<if test=" null != locationId">
+					locationId = #{locationId},
+				</if>
+				<if test=" null != isCity ">
+					is_city = #{isCity},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != areaId and '' != areaId">
+				area_id = #{areaId}
+			</if>
+		</where>
+	</update>
+
+	<select id="getList" resultMap="areaMap" parameterMap="area">
+		SELECT * FROM t_area
+		<where>
+			1=1
+			<if test=" null != areaId">
+				AND area_id = #{areaId}
+			</if>
+			<if test=" null != title and '' != title ">
+				AND title LIKE '%${title}%'
+			</if>
+			<if test=" null != pid">
+				AND pid = #{pid}
+			</if>
+			<if test=" null != regionId and '' != regionId ">
+				AND region_id LIKE '%${regionId}%'
+			</if>
+			<if test=" null != status">
+				AND status = #{status}
+			</if>
+			<if test=" null != firstletter and '' != firstletter ">
+				AND firstletter LIKE '%${firstletter}%'
+			</if>
+		</where>
+		ORDER BY area_id
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="getArea" resultMap="areaMap">
+		SELECT * FROM t_area
+	</select>
+
+	<select id="count" resultType="Long" parameterMap="area">
+		SELECT COUNT(area_id) FROM t_area
+		<where>
+			1=1
+			<if test=" null != areaId">
+				AND area_id = #{areaId}
+			</if>
+			<if test=" null != title and '' != title ">
+				AND title LIKE '%${title}%'
+			</if>
+			<if test=" null != pid">
+				AND pid = #{pid}
+			</if>
+			<if test=" null != regionId and '' != regionId ">
+				AND region_id LIKE '%${regionId}%'
+			</if>
+			<if test=" null != status">
+				AND status = #{status}
+			</if>
+			<if test=" null != firstletter and '' != firstletter ">
+				AND firstletter LIKE '%${firstletter}%'
+			</if>
+		</where>
+	</select>
+
+	<select id="getMaxId" resultType="Integer">
+		SELECT Max(area_id) AS VALUE
+		FROM t_area
+	</select>
+
+	<select id="getObject" resultMap="areaMap" parameterType="Long">
+		SELECT
+		* FROM t_area WHERE area_id = #{0}
+	</select>
+
+
+	<select id="getObjectById" resultMap="areaMap" parameterType="Long">
+		SELECT
+		ta.area_id ,
+		ta.title ,
+		tc.title AS cTitle,
+		tp.title AS pTitle
+		FROM
+		(SELECT
+		area_id,
+		title,
+		pid
+		FROM
+		t_area WHERE area_id = #{0}) ta
+		LEFT JOIN
+		(SELECT
+		area_id,
+		title,
+		pid
+		FROM
+		t_area) tc
+		ON ta.pid = tc.area_id
+		LEFT JOIN
+		(SELECT
+		area_id,
+		title
+		FROM
+		t_area) tp
+		ON tc.pid = tp.area_id
+	</select>
+
+	<!--查询一级菜单（省） -->
+	<select id="selectProvince" resultMap="areaMap">
+		SELECT * FROM t_area WHERE
+		pid = 0
+	</select>
+
+	<!-- 2级菜单（市） -->
+	<select id="selectCity" parameterType="java.lang.Integer"
+		resultMap="areaMap">
+		select * from t_area where pid=#{areaId}
+	</select>
+
+	<!-- 3级菜单（区、县） -->
+	<select id="selectArea" parameterType="java.lang.Integer"
+		resultMap="areaMap">
+		select * from t_area where pid = #{areaId}
+	</select>
+
+	<!-- 根据区域Id查找区域详细信息（父节点） -->
+	<select id="findAreaInfo" parameterType="java.lang.Integer"
+		resultMap="areaMap">
+		select * from t_area where area_id = #{areaId}
+	</select>
+
+	<!-- 查找兄弟节点 -->
+	<select id="findBrother" parameterType="java.lang.Integer"
+		resultMap="areaMap">
+		select t.* from t_area area,t_area t
+		where t.pid = area.pid
+		and area.area_id = #{areaId}
+	</select>
+
+
+	<!-- 查询区域列表 -->
+	<select id="getAreaList" resultMap="areaMap" parameterMap="area">
+		SELECT tp.title AS pTitle,
+		tp.area_id AS pArea_id,
+		tc.title AS cTitle,
+		tc.area_id AS cArea_id,
+		ta.title AS aTitle,
+		ta.area_id AS aArea_id,
+		<!-- 商圈数 -->
+		(SELECT COUNT(1) FROM t_business tb WHERE tb.area_id = ta.area_id) AS
+		bNum
+
+		<!-- 所属合作商 -->
+		,(SELECT max(tj.corporate) FROM t_joint tj WHERE
+		FIND_IN_SET(ta.area_id,REPLACE(tj.AREA, ';', ','))) AS corporate
+		FROM
+		(SELECT * FROM t_area t WHERE t.pid = 0) tp <!-- 省 -->
+		LEFT JOIN
+		t_area tc ON tc.pid = tp.area_id <!-- 市 -->
+		LEFT JOIN
+		t_area ta ON ta.pid = tc.area_id <!-- 区 -->
+		<where>
+			1=1 AND ta.area_id IS NOT NULL
+			<if test=" null != pareaId">
+				AND tp.area_id = #{pareaId}
+			</if>
+			<if test=" null != careaId">
+				AND tc.area_id = #{careaId}
+			</if>
+			<if test=" null != aareaId">
+				AND ta.area_id = #{aareaId}
+			</if>
+		</where>
+		ORDER BY ta.sdate DESC ,pArea_id
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<!-- <select id="getAreaList" resultMap="areaMap" parameterMap="area"> SELECT 
+		city.title AS cTitle, city.area_id AS cArea_id, t.title AS aTitle, t.area_id 
+		AS aArea_id, t.pid, (SELECT COUNT(1) FROM t_business tb WHERE tb.area_id 
+		= t.area_id) AS bNum, (SELECT MAX(tj.corporate) FROM t_joint tj WHERE FIND_IN_SET( 
+		t.area_id, REPLACE(tj.AREA, ';', ',') )) AS corporate, t.* FROM t_area t 
+		LEFT JOIN t_area city ON t.pid=city.area_id <where> 1=1 AND t.pid != 0 AND 
+		t.region_id IS NULL <if test=" null != careaId"> AND city.area_id = #{careaId} 
+		</if> <if test=" null != aareaId"> AND t.area_id = #{aareaId} </if> <if test=" 
+		null != status"> AND t.status = #{status} </if> </where> ORDER BY t.sdate 
+		DESC,cArea_id <if test=" limit != -1 "> LIMIT ${(page-1)*limit},#{limit} 
+		</if> </select> -->
+
+	<!-- 数量 -->
+	<!-- <select id="getAreaListCount" resultType="Long" parameterMap="area"> 
+		SELECT COUNT(1) FROM (SELECT * FROM t_area t WHERE t.pid = 0) tp LEFT JOIN 
+		t_area tc ON tc.pid = tp.area_id LEFT JOIN t_area ta ON ta.pid = tc.area_id 
+		<where> 1=1 <if test=" null != pareaId"> AND tp.area_id = #{pareaId} </if> 
+		<if test=" null != careaId"> AND tc.area_id = #{careaId} </if> <if test=" 
+		null != aareaId"> AND ta.area_id = #{aareaId} </if> <if test=" null != status"> 
+		AND ta.status = #{status} </if> </where> </select> <select id="getAreaListCount" 
+		resultType="Long" parameterMap="area"> SELECT COUNT(1) FROM t_area t LEFT 
+		JOIN t_area city ON t.pid=city.area_id <where> 1=1 AND t.pid != 0 AND t.region_id 
+		IS NULL <if test=" null != careaId"> AND city.area_id = #{careaId} </if> 
+		<if test=" null != aareaId"> AND t.area_id = #{aareaId} </if> <if test=" 
+		null != status"> AND t.status = #{status} </if> </where> </select> -->
+	<select id="getAreaListCount" resultType="Long" parameterMap="area">
+		SELECT COUNT(1)
+		FROM
+		(SELECT * FROM t_area t WHERE t.pid = 0) tp
+		LEFT
+		JOIN
+		t_area tc ON tc.pid = tp.area_id
+		LEFT JOIN
+		t_area ta ON ta.pid =
+		tc.area_id
+		<where>
+			1=1
+			<if test=" null != pareaId">
+				AND tp.area_id = #{pareaId}
+			</if>
+			<if test=" null != careaId">
+				AND tc.area_id = #{careaId}
+			</if>
+			<if test=" null != aareaId">
+				AND ta.area_id = #{aareaId}
+			</if>
+		</where>
+	</select>
+	<!-- <select id="getCityAndArea" resultMap="areaMap" parameterMap="area"> 
+		SELECT * FROM t_area t WHERE t.region_id!=0 </select> -->
+
+	<select id="getAreaInBusinessList" resultMap="areaMap"
+		parameterMap="area">
+		SELECT
+		tp.title AS pTitle,
+		tc.title AS cTitle,
+		ta.title AS aTitle,
+		tb.title AS btitle
+		FROM (
+		SELECT
+		t.`pid`,t.`area_id`,t.`title`FROM t_area
+		t where t.area_id = #{areaId}
+		) ta
+		LEFT JOIN t_area tc
+		ON ta.pid =
+		tc.area_id
+		LEFT JOIN t_area tp
+		ON tc.pid = tp.area_id
+		LEFT JOIN
+		t_business tb
+		ON tb.area_id = ta.area_id
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<!-- 查询开通商圈的城市 -->
+	<select id="getOpenBusinessCity" resultMap="areaMap">
+		SELECT
+		ta.`area_id`,ta.`title` FROM t_area ta WHERE ta.area_id IN (SELECT
+		ta.`pid` FROM t_area ta WHERE ta.area_id IN (SELECT DISTINCT
+		tb.area_id FROM t_business tb))
+	</select>
+
+	<select id="getAreaInBusinessListCount" resultType="Long"
+		parameterType="Long">
+		SELECT
+		count(*)
+		FROM (
+		SELECT
+		t.`pid`,t.`area_id`,t.`title`FROM t_area t where t.area_id = #{0}
+		) ta
+		LEFT JOIN t_area tc
+		ON ta.pid = tc.area_id
+		LEFT JOIN t_area tp
+		ON tc.pid
+		= tp.area_id
+		LEFT JOIN t_business tb
+		ON tb.area_id = ta.area_id
+	</select>
+
+	<!-- 验证区域唯一性 -->
+	<select id="checkArea" resultType="Long" parameterType="String">
+		SELECT
+		COUNT(1) FROM t_joint tj WHERE `status`=1 AND
+		FIND_IN_SET(#{0},REPLACE(tj.AREA, ';', ','))
+	</select>
+
+	<!-- 或去联动用所有区域 -->
+	<select id="getLdAll" resultMap="areaMap" parameterMap="area">
+		SELECT area_id,title,pid FROM t_area
+		<where>
+			1=1
+			<if test=" null != areaId">
+				AND area_id = #{areaId}
+			</if>
+			<if test=" null != title and '' != title ">
+				AND title LIKE '%${title}%'
+			</if>
+			<if test=" null != pid">
+				AND pid = #{pid}
+			</if>
+			<if test=" null != regionId and '' != regionId ">
+				AND region_id LIKE '%${regionId}%'
+			</if>
+			<if test=" null != status">
+				AND status = #{status}
+			</if>
+			<if test=" null != firstletter and '' != firstletter ">
+				AND firstletter LIKE '%${firstletter}%'
+			</if>
+		</where>
+		ORDER BY area_id
+	</select>
+
+	<select id="getCityListContent" resultMap="areaMap"
+		parameterMap="area">
+		SELECT
+		p.title AS ptitle,
+		p.area_id AS pareaId,
+		t.title AS ctitle,
+		t.area_id AS careaId,
+		t.pid,
+		t.* ,
+		(SELECT COUNT(1) FROM t_area un WHERE
+		un.region_id!=0 AND un.pid=p.area_id
+		AND un.status=0) AS openNum,
+		(SELECT COUNT(1) FROM t_area un WHERE un.region_id!=0 AND
+		un.pid=p.area_id
+		AND un.status=1) AS lockNum
+		FROM
+		t_area t
+		LEFT JOIN
+		t_area p
+		ON t.pid = p.area_id
+		<where>
+			1=1 AND t.region_id!=0
+			<if test=" null != pareaId">
+				AND p.area_id = #{pareaId}
+			</if>
+			<if test=" null != careaId">
+				AND t.area_id = #{careaId}
+			</if>
+			<if test=" null != status">
+				AND t.status = #{status}
+			</if>
+		</where>
+		ORDER BY t.sdate DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="getCityListTotal" resultType="Long" parameterMap="area">
+		SELECT COUNT(1)
+		FROM
+		t_area t
+		LEFT JOIN t_area p
+		ON t.pid = p.area_id
+		<where>
+			1=1 AND t.region_id!=0
+			<if test=" null != pareaId">
+				AND p.area_id = #{pareaId}
+			</if>
+			<if test=" null != careaId">
+				AND t.area_id = #{careaId}
+			</if>
+			<if test=" null != status">
+				AND t.status = #{status}
+			</if>
+		</where>
+	</select>
+
+
+	<select id="getBussinessInAreaListContent" resultMap="areaMap"
+		parameterMap="area">
+		SELECT
+		tp.title AS pTitle,
+		tc.title AS cTitle,
+		ta.title AS aTitle,
+		tb.title AS btitle,
+		tb.bid
+		FROM (
+		SELECT
+		t.`pid`,t.`area_id`,t.`title`FROM t_area t where t.area_id = #{areaId}
+		) ta
+		LEFT JOIN t_area tc
+		ON ta.pid = tc.area_id
+		LEFT JOIN t_area tp
+		ON
+		tc.pid = tp.area_id
+		LEFT JOIN t_business tb
+		ON tb.area_id = ta.area_id
+		<where>
+			<if test=" null != status">
+				tb.is_open = #{status}
+			</if>
+			<if test=" null != btitle and '' != btitle">
+				AND tb.title LIKE '%${btitle}%'
+			</if>
+		</where>
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="getBussinessInAreaListTotal" resultType="Long"
+		parameterMap="area">
+		SELECT
+		count(*)
+		FROM (
+		SELECT
+		t.`pid`,t.`area_id`,t.`title`FROM t_area t
+		where t.area_id = #{areaId}
+		) ta
+		LEFT JOIN t_area tc
+		ON ta.pid =
+		tc.area_id
+		LEFT JOIN t_area tp
+		ON tc.pid = tp.area_id
+		LEFT JOIN
+		t_business tb
+		ON tb.area_id = ta.area_id
+		<where>
+			<if test=" null != status">
+				tb.is_open = #{status}
+			</if>
+			<if test=" null != btitle and '' != btitle">
+				AND tb.title LIKE '%${btitle}%'
+			</if>
+		</where>
+	</select>
+
+	<update id="updateAreaStatus" parameterMap="area">
+		UPDATE t_area
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != status">
+					status = #{status},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != areaId and '' != areaId">
+				pid = #{areaId}
+			</if>
+		</where>
+	</update>
+
+</mapper>

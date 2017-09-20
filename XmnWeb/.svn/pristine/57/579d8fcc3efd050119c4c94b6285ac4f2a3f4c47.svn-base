@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.marketingmanagement.dao.MaterialDao">
+	
+	<parameterMap type="TMaterial" id="tMaterial"></parameterMap>
+	
+	<resultMap type="TMaterial" id="TMaterialMap">
+		<result column="id" property="id" />
+		<result column="name" property="name" />
+		<result column="thumbnail" property="thumbnail" />
+		<result column="price" property="price" />
+		<result column="status" property="status" />
+		<result column="ismust" property="ismust" />
+		<result column="sold_quantity" property="sold_quantity" />
+		<result column="create_time" property="create_time" />
+	</resultMap>
+	
+	
+	<select id="getMaterialList" resultMap="TMaterialMap" parameterMap="tMaterial">
+		SELECT   
+			id,name,thumbnail,price,status,ismust,sold_quantity,create_time  
+		FROM  t_material   
+		WHERE 1=1 
+		<if test="name != null and name != '' ">
+			AND name LIKE '%${name}%'
+		</if>
+		<if test="status != null and status != '' or 0 == status ">
+			AND status = #{status}
+		</if>
+		<if test="ismust != null and ismust != '' or 0 == ismust ">
+			AND ismust =  #{ismust} 
+		</if>
+		ORDER BY create_time desc 
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	
+	<select id="getMaterialListCount" resultType="long" parameterMap="tMaterial">
+		SELECT  count(1)  FROM  t_material t WHERE 1=1 
+		<if test="name != null and name != '' ">
+			AND name LIKE '%${name}%'
+		</if>
+		<if test="status != null and status != '' or 0 == status ">
+			AND status = #{status}
+		</if>
+		<if test="ismust != null and ismust != '' or 0 == ismust ">
+			AND ismust =  #{ismust} 
+		</if>
+	</select>
+	
+	<select id="getMaterialInfo" resultType="com.xmniao.xmn.core.marketingmanagement.entity.TMaterial" parameterType="Long">
+		SELECT   
+			id,name,thumbnail,price,status,ismust,sold_quantity,create_time  
+		FROM  t_material   
+		WHERE 1=1  and id = #{id} 
+	</select>
+	
+	
+	<insert id="add"  parameterType="com.xmniao.xmn.core.marketingmanagement.entity.TMaterial">  
+<!-- 			sold_quantity,#{sold_quantity} -->
+		 INSERT INTO 
+		 	t_material(name, thumbnail, price, status, ismust,  create_time) 
+		 VALUES
+		 	(#{name}, #{thumbnail},#{price},#{status},#{ismust},#{create_time,jdbcType=DATE})        
+
+	</insert>
+	
+	
+	<update id="update"  parameterType="com.xmniao.xmn.core.marketingmanagement.entity.TMaterial">  
+		UPDATE 
+			t_material  
+		SET 
+			name=#{name} ,
+			thumbnail=#{thumbnail},
+			price=#{price}  ,
+			status=#{status}  ,
+			ismust=#{ismust}  
+<!-- 			, -->
+<!-- 			sold_quantity=#{sold_quantity}   -->
+		WHERE id=#{id}
+
+	</update>
+	
+</mapper>

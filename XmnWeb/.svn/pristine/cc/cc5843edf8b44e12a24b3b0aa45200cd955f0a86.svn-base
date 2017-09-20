@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.marketingmanagement.dao.BargainProductDao">
+
+	<parameterMap type="BargainProduct" id="bargainProduct" />
+	<parameterMap type="TBargainPrice" id="tBargainPrice" />
+	
+	<resultMap type="BargainProduct" id="bargainProductMap">
+		<result column="bp_id" property="bpid" />
+		<result column="bid" property="bid" />
+		<result column="activity_name" property="activityname" />
+		<result column="sellerid" property="sellerid" />
+		<result column="pname" property="pname" />
+		<result column="user" property="user" />
+		<result column="original_price" property="originalprice" />
+		<result column="price" property="price" />
+		<result column="quota" property="quota" />
+		<result column="quota_num" property="quotanum" />
+		<result column="sale_num" property="salenum" />
+		<result column="start_date" property="startdate" />
+		<result column="end_date" property="enddate" />
+		<result column="image" property="image" />
+		<result column="refund" property="refund" />
+		<result column="order" property="order" />
+		<result column="status" property="status" />
+		<result column="add_user" property="adduser" />
+		<result column="add_time" property="addtime" />
+		<result column="upd_ateuser" property="updateuser" />
+		<result column="upd_atetime" property="updatetime" />
+		<result column="is_rebate" property="isrebate" />
+		
+		<result column="sellername" property="sellername" />
+		<result column="province" property="province" />
+		<result column="city" property="city" />
+		<result column="area" property="area" />
+		<result column="purchase_price" property="purchasePrice" />
+		<result column="html" property="html" />
+	</resultMap>
+	
+	<resultMap type="TBargainPrice" id="tBargainPriceMap">
+		<result column="id" property="id" />
+		<result column="bid" property="bid" />
+		<result column="start_time" property="startTime" />
+		<result column="end_time" property="endTime" />
+		<result column="price" property="price" />
+		<result column="status" property="status" />
+	</resultMap>
+	<sql id="whereSql">
+		<if test=" null != sellerid">
+			AND tbp.sellerid = #{sellerid}
+		</if>
+		<if test=" null != sellername and '' != sellername ">
+			AND ts.sellername  LIKE '%${sellername}%'
+		</if>
+		<if test=" null != address and '' != address ">
+			AND ts.address  LIKE '%${address}%'
+		</if>
+		<if test=" null != province and '' != province ">
+			AND ts.province = #{province}
+		</if> 
+		<if test=" null != city and '' != city ">
+			AND ts.city = #{city}
+		</if>
+		<if test=" null != startdate and '' != startdate ">
+			AND tbp.start_date &gt;= #{startdate}
+		</if>
+		<if test=" null != enddate and '' != enddate ">
+			AND tbp.start_date &lt;= #{enddate}
+		</if>
+		<if test=" null != status">
+			AND tbp.status = #{status}
+		</if>
+		<if test=" null != user">
+			AND tbp.user = #{user}
+		</if>
+		<if test=" null != refund and '' != refund">
+			AND tbp.refund = #{refund}
+		</if>
+		<if test=" null != isrebate">
+			AND tbp.is_rebate = #{isrebate}
+		</if>
+	</sql>
+	<select id="getList" resultMap="bargainProductMap" parameterMap="bargainProduct">
+		 SELECT tbp.*,ts.sellername,ts.province,ts.city,ts.area,ts.address FROM t_bargain_product tbp LEFT JOIN t_seller ts ON tbp.sellerid = ts.sellerid
+		<where>
+			1=1
+			<include refid="whereSql" />
+		</where>
+			ORDER BY tbp.bp_id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="count" resultType="Long" parameterMap="bargainProduct">
+		SELECT COUNT(*) FROM t_bargain_product tbp LEFT JOIN t_seller ts ON tbp.sellerid = ts.sellerid
+		<where>
+			1=1 
+			<include refid="whereSql" />
+		</where>
+	</select>
+	
+	<select id="getSellerCount" resultType="Long" parameterMap="bargainProduct">
+		SELECT COUNT(sellerid) FROM t_bargain_product WHERE sellerid = #{sellerid};
+	</select>
+	
+	<select id="getObject" resultMap="bargainProductMap" parameterType="Long">
+		SELECT * FROM t_bargain_product WHERE bp_id = #{0}
+<!-- 		SELECT t1.*,t2.* FROM t_bargain_product t1 LEFT JOIN t_bargain_price t2 ON t1.bp_id=t2.bid WHERE t1.bp_id = #{0}
+ -->	</select>
+	
+	<insert id="addReturnId" useGeneratedKeys="true" keyProperty="bpid" keyColumn="bp_id" parameterMap="bargainProduct" >
+		INSERT INTO t_bargain_product
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != bid">
+					bid,
+				</if>
+			 	<if test=" null != activityname and '' != activityname ">
+					activity_name,
+				</if>
+			 	<if test=" null != sellerid">
+					sellerid,
+				</if>
+				<if test=" null != pname and '' != pname ">
+					pname,
+				</if>
+			 	<if test=" null != user and '' != user ">
+					user,
+				</if>
+			 	<if test=" null != originalprice">
+					original_price,
+				</if>
+			 	<if test=" null != price ">
+					price,
+				</if>
+				<if test=" null != quota">
+					quota,
+				</if>
+			 	<if test=" null != quotanum">
+					quota_num,
+				</if>
+			 	<if test=" null != salenum">
+					sale_num,
+				</if>
+			 	<if test=" null != startdate">
+					start_date,
+				</if>
+				<if test=" null != enddate">
+					end_date,
+				</if>
+			 	<if test=" null != image">
+					image,
+				</if>
+			 	<if test=" null != refund and '' != refund ">
+					refund,
+				</if>
+			 	<if test=" null != order">
+					order,
+				</if>
+				<if test=" null != status">
+					status,
+				</if>
+			 	<if test=" null != adduser">
+					add_user,
+				</if>
+			 	<if test=" null != addtime">
+					add_time,
+				</if>
+			 	<if test=" null != updateuser and '' != updateuser ">
+					update_user,
+				</if>
+			 	<if test=" null != updatetime">
+					update_time,
+				</if>
+			 	<if test=" null != isrebate">
+					is_rebate,
+				</if>
+				<if test=" null != purchasePrice">
+					purchase_price,
+				</if>
+				<if test=" null != everyday">
+					everyday,
+				</if>
+				<if test=" null != html and '' != html">
+					html,
+				</if>
+				<if test=" null != cash">
+					cash,
+				</if>
+				<if test=" null != integral">
+					integral,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != bid">
+					#{bid},
+				</if>
+			 	<if test=" null != activityname and '' != activityname ">
+					#{activityname},
+				</if>
+			 	<if test=" null != sellerid">
+					#{sellerid},
+				</if>
+				<if test=" null != pname and '' != pname ">
+					#{pname},
+				</if>
+			 	<if test=" null != user and '' != user ">
+					#{user},
+				</if>
+			 	<if test=" null != originalprice">
+					#{originalprice},
+				</if>
+			 	<if test=" null != price">
+					#{price},
+				</if>
+				<if test=" null != quota ">
+					#{quota},
+				</if>
+			 	<if test=" null != quotanum">
+					#{quotanum},
+				</if>
+			 	<if test=" null != salenum">
+					#{salenum},
+				</if>
+			 	<if test=" null != startdate">
+					#{startdate},
+				</if>
+				<if test=" null != enddate">
+					#{enddate},
+				</if>
+			 	<if test=" null != image">
+					#{image},
+				</if>
+			 	<if test=" null != refund and '' != refund">
+					#{refund},
+				</if>
+			 	<if test=" null != order">
+					#{order},
+				</if>
+				<if test=" null != status">
+					#{status},
+				</if>
+			 	<if test=" null != adduser">
+					#{adduser},
+				</if>
+			 	<if test=" null != addtime">
+					#{addtime},
+				</if>
+			 	<if test=" null != updateuser and '' != updateuser ">
+					#{updateuser},
+				</if>
+			 	<if test=" null != updatetime">
+					#{updatetime},
+				</if>
+			 	<if test=" null != isrebate">
+					#{isrebate},
+				</if>
+				<if test=" null != purchasePrice">
+					#{purchasePrice},
+				</if>
+				<if test=" null != everyday">
+					#{everyday},
+				</if>
+				<if test=" null != html and '' != html">
+					#{html},
+				</if>
+				<if test=" null != cash">
+					#{cash},
+				</if>
+				<if test=" null != integral">
+					#{integral},
+				</if>
+		</trim>
+	</insert>
+	<update id="update"  parameterMap="bargainProduct">
+		UPDATE t_bargain_product
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != bid">
+					bid = #{bid},
+				</if>
+			 	<if test=" null != activityname and '' != activityname ">
+					activity_name = #{activityname},
+				</if>
+			 	<if test=" null != sellerid">
+					sellerid= #{sellerid},
+				</if>
+				<if test=" null != pname and '' != pname ">
+					pname = #{pname},
+				</if>
+			 	<if test=" null != user and '' != user ">
+					user = #{user},
+				</if>
+			 	<if test=" null != originalprice and '' != originalprice">
+					original_price = #{originalprice},
+				</if>
+			 	<if test=" null != price and '' != price ">
+					price = #{price},
+				</if>
+				<if test=" null != quota">
+					quota = #{quota},
+				</if>
+			 	<if test=" null != quotanum">
+					quota_num = #{quotanum},
+				</if>
+			 	<if test=" null != salenum">
+					sale_num = #{salenum},
+				</if>
+			 	<if test=" null != startdate">
+					start_date = #{startdate},
+				</if>
+				<if test=" null != enddate">
+					end_date = #{enddate},
+				</if>
+			 	<if test=" null != image">
+					image = #{image},
+				</if>
+			 	<if test=" null != refund">
+					refund = #{refund},
+				</if>
+			 	<if test=" null != order">
+					order= #{order},
+				</if>
+				<if test=" null != status">
+					status= #{status},
+				</if>
+			 	<if test=" null != adduser">
+					add_user= #{adduser},
+				</if>
+			 	<if test=" null != addtime">
+					add_time = #{addtime},
+				</if>
+			 	<if test=" null != updateuser and '' != updateuser ">
+					update_user= #{updateuser},
+				</if>
+			 	<if test=" null != updatetime">
+					update_time = #{updatetime},
+				</if>
+			 	<if test=" null != isrebate">
+					is_rebate= #{isrebate},
+				</if>
+				<if test=" null != purchasePrice">
+					purchase_price = #{purchasePrice},
+				</if>
+				<if test=" null != everyday">
+					everyday=#{everyday},
+				</if>
+				<if test=" null != html">
+					html=#{html},
+				</if>
+				<if test=" null != cash">
+					cash=#{cash},
+				</if>
+				<if test=" null != integral">
+					integral=#{integral},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != bpid">
+				bp_id = #{bpid}
+			</if>
+		</where>
+	</update>
+	
+	<select id="getBargainProductList" resultMap="tBargainPriceMap" parameterType="Long">
+		SELECT * FROM t_bargain_price WHERE bid = #{bid}
+	</select>
+	
+	
+	<insert id="addTBargainPrice" parameterMap="tBargainPrice" >
+		INSERT INTO t_bargain_price
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != bid">
+					bid,
+				</if>
+			 	<if test=" null != startTime and '' != startTime">
+					start_time,
+				</if>
+			 	<if test=" null != endTime and '' != endTime">
+					end_time,
+				</if>			 					
+				<if test=" null != price">
+					price,
+				</if>
+				<if test=" null != status">
+					status,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != bid">
+					 	#{bid},
+				</if>
+			 	<if test=" null != startTime and '' != startTime">
+					 	#{startTime},
+				</if>
+			 	<if test=" null != endTime and '' != endTime">
+					 	#{endTime},
+				</if>
+				<if test=" null != price">
+						#{price},
+				</if>
+				<if test=" null != status">
+						#{status},
+				</if>
+		</trim>
+	</insert> 
+	
+	<delete id="deleteAllByBpid" parameterType="Long">
+		DELETE FROM	t_bargain_price WHERE bid =#{0}
+	</delete>	
+	
+	<update id="updateSellerLandmark">
+		UPDATE t_bargain_product 
+		SET longitude=#{longitude},latitude=#{latitude} 
+		WHERE sellerid=#{sellerid}
+	</update>
+</mapper>

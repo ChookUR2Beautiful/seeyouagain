@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.manor.dao.ManorFlowerBranchMapper" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.manor.entity.ManorFlowerBranch" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="parent_id" property="parentId" jdbcType="VARCHAR" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="location" property="location" jdbcType="INTEGER" />
+    <result column="level" property="level" jdbcType="INTEGER" />
+    <result column="zid" property="zid" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, parent_id, uid, location, level, zid
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_manor_flower_branch
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_manor_flower_branch
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.manor.entity.ManorFlowerBranch" >
+    insert into t_manor_flower_branch (id, parent_id, uid, 
+      location, level, zid
+      )
+    values (#{id,jdbcType=VARCHAR}, #{parentId,jdbcType=VARCHAR}, #{uid,jdbcType=INTEGER}, 
+      #{location,jdbcType=INTEGER}, #{level,jdbcType=INTEGER}, #{zid,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.manor.entity.ManorFlowerBranch" >
+    insert into t_manor_flower_branch
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="parentId != null" >
+        parent_id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="location != null" >
+        location,
+      </if>
+      <if test="level != null" >
+        level,
+      </if>
+      <if test="zid != null" >
+        zid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        #{parentId,jdbcType=VARCHAR},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="location != null" >
+        #{location,jdbcType=INTEGER},
+      </if>
+      <if test="level != null" >
+        #{level,jdbcType=INTEGER},
+      </if>
+      <if test="zid != null" >
+        #{zid,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.manor.entity.ManorFlowerBranch" >
+    update t_manor_flower_branch
+    <set >
+      <if test="parentId != null" >
+        parent_id = #{parentId,jdbcType=VARCHAR},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="location != null" >
+        location = #{location,jdbcType=INTEGER},
+      </if>
+      <if test="level != null" >
+        level = #{level,jdbcType=INTEGER},
+      </if>
+      <if test="zid != null" >
+        zid = #{zid,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.manor.entity.ManorFlowerBranch" >
+    update t_manor_flower_branch
+    set parent_id = #{parentId,jdbcType=VARCHAR},
+      uid = #{uid,jdbcType=INTEGER},
+      location = #{location,jdbcType=INTEGER},
+      level = #{level,jdbcType=INTEGER},
+      zid = #{zid,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <!--查询所有下级节点-->
+  <select id="selectAllSubBranch" resultMap="BaseResultMap">
+    select b.*
+    from t_manor_flower_branch b
+    JOIN t_manor_flower_branch_chain c ON b.id = c.branch_id
+    JOIN t_manor_flower_branch init_b ON c.parent_id = init_b.id
+    WHERE init_b.uid = #{uid}
+    order by b.level asc , b.location asc
+    limit 1000
+  </select>
+    <select id="countByTypeInBranch" resultType="java.lang.Integer">
+      SELECT count(1)
+      FROM t_manor_flower f , t_manor_flower_branch_chain c
+      WHERE f.branch_id = c.branch_id
+      AND c.parent_id = #{branch.id} AND f.type = #{flowerTyped}
+    </select>
+  <select id="countByTypeAndFloristInBranch" resultType="java.lang.Integer">
+    SELECT count(1)
+    FROM t_manor_flower f, t_manor_flower_branch_chain c
+    WHERE f.branch_id = c.branch_id
+          AND c.parent_id = #{branch.id} AND f.type = #{flowerType}
+          AND f.florist_uid = #{branch.uid}
+  </select>
+
+
+  <!--查询关系链下所有共享的花朵数量-->
+  <select id="countFlowerByTypeInBranch" resultType="com.xmniao.xmn.core.manor.entity.ManorFlowerCount">
+    SELECT
+    count(1)    count,
+    #{branch.location} location,
+    #{flowerType} type
+    from t_manor_flower f, t_manor_flower_branch_chain c
+    where c.parent_id =  #{branch.id}
+    and f.branch_id = c.branch_id
+    and f.share_type in <foreach collection="shareTypes" item="shareType" open="(" close=")" separator=",">#{shareType}</foreach>
+    and f.type in <foreach collection="types" item="flowerType" open="(" close=")" separator=",">#{flowerType}</foreach>
+    <choose>
+      <when test="perishType == 1">and f.perish_time > now()</when>
+      <when test="perishType == 2">and f.perish_time > now() and DATE_ADD(now(),INTERVAL 10 DAY) > f.perish_time and f.florist_uid = #{branch.uid}</when>
+      <when test="perishType == 3">and now() > f.perish_time  and f.florist_uid = #{branch.uid} </when>
+    </choose>
+  </select>
+
+  <!--  查询关系链下所有 仅计算本人收益的花-->
+  <select id="countFlowerByTypeAndFloristInBranch" resultType="com.xmniao.xmn.core.manor.entity.ManorFlowerCount">
+    SELECT
+    count(1) count,
+    #{branch.location} location,
+    #{flowerType} type
+    from t_manor_flower f, t_manor_flower_branch_chain c
+    where c.parent_id = #{branch.id}
+    and f.branch_id = c.branch_id and f.florist_uid = #{floristUid}
+    and f.share_type in <foreach collection="shareTypes" item="shareType" open="(" close=")" separator=",">#{shareType}</foreach>
+    and f.type in <foreach collection="types" item="flowerType" open="(" close=")" separator=",">#{flowerType}</foreach>
+    <choose>
+      <when test="perishType == 1">and f.perish_time > now()</when>
+      <when test="perishType == 2">and f.perish_time > now() and DATE_ADD(now(),INTERVAL 10 DAY) > f.perish_time </when>
+      <when test="perishType == 3">and now() > f.perish_time </when>
+    </choose>
+
+  </select>
+</mapper>

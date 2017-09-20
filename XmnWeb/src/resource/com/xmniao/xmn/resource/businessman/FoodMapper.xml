@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.FoodDao">
+
+	<parameterMap type="Food" id="food" />
+
+	<resultMap type="Food" id="foodMap">
+		<result column="id" property="id" />
+		<result column="fid" property="fid" />
+		<result column="sellerid" property="sellerId" />
+		<result column="foodname" property="foodName" />
+		<result column="cprice" property="cprice" />
+		<result column="oprice" property="oprice" />
+		<result column="atag" property="atag" />
+		<result column="num" property="num" />
+		<result column="bigpic" property="bigPic" />
+		<result column="smallpic" property="smallPic" />
+		<result column="bannum" property="banNum" />
+		<result column="sellnum" property="sellNum" />
+		<result column="sdate" property="sdate" />
+		<result column="pdate" property="pdate" />
+		<result column="source" property="source" />
+		<result column="datastatus" property="datastatus" />
+		<result column="remark" property="remark" />
+	</resultMap>
+
+	<insert id="addBatch" parameterType="java.util.ArrayList">
+		INSERT INTO t_food
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			fid,
+			sellerid,
+			foodname,
+			cprice,
+			oprice,
+			atag,
+			num,
+			bigpic,
+			smallpic,
+			bannum,
+			sellnum,
+			sdate,
+			pdate,
+			source,
+			datastatus,
+			remark,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list"
+			separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				#{item.fid},
+				#{item.sellerId},
+				#{item.foodName},
+				#{item.cprice},
+				#{item.oprice},
+				#{item.atag},
+				#{item.num},
+				#{item.bigPic},
+				#{item.smallPic},
+				#{item.sellNum},
+				#{item.sdate},
+				#{item.pdate},
+				#{item.datastatus},
+				#{item.remark},
+			</trim>
+		</foreach>
+	</insert>
+
+	<insert id="add" parameterMap="food">
+		INSERT INTO t_food
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test=" null != fid">
+				fid,
+			</if>
+			<if test=" null != sellerId">
+				sellerid,
+			</if>
+			<if test=" null != foodName and '' != foodName ">
+				foodname,
+			</if>
+			<if test=" null != cprice ">
+				cprice,
+			</if>
+			<if test=" null != oprice">
+				oprice,
+			</if>
+			<if test=" null != atag">
+				atag,
+			</if>
+			<if test=" null != num">
+				num,
+			</if>
+			<if test=" null != bigPic and '' != bigPic">
+				bigpic,
+			</if>
+			<if test=" null != smallPic and '' != smallPic">
+				smallpic,
+			</if>
+			<if test=" null != banNum">
+				bannum,
+			</if>
+			<if test=" null != sellNum">
+				sellnum,
+			</if>
+			<if test=" null != sdate and '' != sdate ">
+				sdate,
+			</if>
+			<if test=" null != pdate and '' != pdate ">
+				pdate,
+			</if>
+			<if test=" null != source and '' != source ">
+				source,
+			</if>
+			<if test=" null != datastatus">
+				datastatus,
+			</if>
+			<if test=" null != remark and '' != remark ">
+				remark,
+			</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			<if test=" null != fid">
+				#{fid},
+			</if>
+			<if test=" null != sellerId">
+				#{sellerId},
+			</if>
+			<if test=" null != foodName and '' != foodName ">
+				#{foodName},
+			</if>
+			<if test=" null != cprice ">
+				#{cprice},
+			</if>
+			<if test=" null != oprice">
+				#{oprice},
+			</if>
+			<if test=" null != atag">
+				#{atag},
+			</if>
+			<if test=" null != num">
+				#{num},
+			</if>
+			<if test=" null != bigPic and '' != bigPic ">
+				#{bigPic},
+			</if>
+			<if test=" null != smallPic and '' != smallPic ">
+				#{smallPic},
+			</if>
+			<if test=" null != banNum">
+				#{banNum},
+			</if>
+			<if test=" null != sellNum">
+				#{sellNum},
+			</if>
+			<if test=" null != sdate and '' != sdate ">
+				#{sdate},
+			</if>
+			<if test=" null != pdate and '' != pdate ">
+				#{pdate},
+			</if>
+			<if test=" null != source and '' != source ">
+				#{source},
+			</if>
+			<if test=" null != datastatus and '' != datastatus ">
+				#{datastatus},
+			</if>
+			<if test=" null != remark and '' != remark ">
+				#{remark},
+			</if>
+		</trim>
+	</insert>
+
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_food WHERE id IN
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=") ">
+			#{item}
+		</foreach>
+	</delete>
+
+	<update id="updateAllFoodAtagIsNot" parameterMap="food">
+		UPDATE t_food
+		set atag = 0
+		<where>
+			1=1
+			<if test=" null != sellerId">
+				AND sellerid = #{sellerId}
+			</if>
+			<if test=" null == sellerId">
+				AND 1!=1
+			</if>
+		</where>
+	</update>
+
+	<update id="update" parameterMap="food">
+		UPDATE t_food
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != fid">
+					fid = #{fid},
+				</if>
+				<if test=" null != sellerId">
+					sellerid = #{sellerId},
+				</if>
+				<if test=" null != foodName and '' != foodName ">
+					foodname = #{foodName},
+				</if>
+				<if test=" null != cprice ">
+					cprice = #{cprice},
+				</if>
+				<if test=" null != oprice">
+					oprice = #{oprice},
+				</if>
+				<if test=" null != atag">
+					atag = #{atag},
+				</if>
+				<if test=" null != num">
+					num = #{num},
+				</if>
+				<if test=" null != bigPic">
+					bigpic = #{bigPic},
+				</if>
+				<if test=" null != smallPic">
+					smallpic = #{smallPic},
+				</if>
+				<if test=" null != banNum">
+					bannum = #{banNum},
+				</if>
+				<if test=" null != sellNum">
+					bannum = #{sellNum},
+				</if>
+				<if test=" null != sdate and '' != sdate ">
+					sdate = #{sdate},
+				</if>
+				<if test=" null != pdate and '' != pdate ">
+					pdate = #{pdate},
+				</if>
+				<if test=" null != source and '' != source ">
+					source = #{source},
+				</if>
+				<if test=" null != datastatus">
+					datastatus = #{datastatus},
+				</if>
+				<if test=" null != remark and '' != remark ">
+					remark = #{remark},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != id ">
+				id = #{id}
+			</if>
+		</where>
+	</update>
+
+	<select id="getList" resultMap="foodMap" parameterMap="food">
+		SELECT
+		tf.*
+		FROM
+		t_food tf
+		<where>
+			1=1
+			AND tf.datastatus!=2
+			<if test=" null != sellerId">
+				AND tf.sellerid = #{sellerId}
+			</if>
+		</where>
+		ORDER BY id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+
+	</select>
+
+	<select id="count" resultType="Long" parameterMap="food">
+		SELECT COUNT(*) FROM t_food tf
+		<where>
+			1=1
+			AND tf.datastatus != 2
+			<if test=" null != sellerId">
+				AND sellerid = #{sellerId}
+			</if>
+			<if test=" null != fid">
+				AND fid = #{fid}
+			</if>
+		</where>
+	</select>
+
+	<select id="getMaxId" resultType="Integer">
+		SELECT Max(sellerid) AS VALUE
+		FROM t_food
+	</select>
+
+	<select id="getObject" resultMap="foodMap" parameterType="Long">
+		SELECT
+		* FROM t_food WHERE id = #{0}
+	</select>
+	<!-- 批量更新菜品图片 -->
+    <update id="batchUpdate"  parameterType="Object">
+          <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+                update t_food 
+                set foodname="${item.picname}",smallpic="${item.picurl}",bigpic="${item.picurl}"
+                where id = ${item.picid}
+         </foreach>
+    </update>
+	<!-- 批量新增菜品图片 -->
+    <insert id="batchAdd" parameterType="Object">
+		INSERT INTO t_food
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test=" null != sellerid">
+                    sellerid,
+                </if>
+                 <if test=" null != foodName">
+                    foodName,
+                </if>
+                 <if test=" null != bigPic">
+                    bigPic,
+                </if>
+                 <if test=" null != smallPic">
+                    smallPic,
+                </if>
+                 <if test=" null != datastatus">
+                    datastatus,
+                </if>
+                 <if test=" null != sdate">
+                    sdate,
+                </if>
+        </trim>
+        <if test="list != null"> 
+		<foreach collection="list" item="item" index="index" separator="," >
+			<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+				<if test=" null != sellerid">
+		           #{item.sellerid},
+		        </if>
+				<if test=" null != picname">
+		           #{item.picname},
+		        </if>
+		        <if test=" null != picurl">
+		           #{item.picurl},
+		        </if>
+		        <if test=" null != picurl">
+		           #{item.picurl},
+		        </if>
+		        <if test=" null != datastatus">
+		           #{item.datastatus},
+		        </if>
+		        <if test=" null != sdate">
+		           #{item.updateDate},
+		        </if>
+			</trim>
+		</foreach>
+		</if>
+    </insert>
+</mapper>

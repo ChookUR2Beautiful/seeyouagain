@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.business_area.dao.TstaffRankingDao">
+
+	<parameterMap type="TstaffRanking" id="staffRanking" />
+
+	<resultMap type="TstaffRanking" id="staffRankingMap">
+		<result column="staffid" property="staffid" />
+		<result column="fullname" property="fullname" />
+		<result column="sellername" property="sellername" />
+		<result column="phoneid" property="phoneid" />
+		<result column="corporate" property="corporate" />
+		<result column="legalperson" property="legalperson" />
+		<result column="sellerSignCount" property="sellerSignCount" />
+		<result column="sellerNoValidationCount" property="sellerNoValidationCount" />
+		<result column="registerRecordCount" property="registerRecordCount" />
+		<result column="sellerAuditCount" property="sellerAuditCount" />
+		<result column="sellerCount" property="sellerCount" />
+		<result column="jointName" property="jointName" />
+		<result column="cityName" property="cityName" />
+		<result column="areaName" property="areaName" />
+		<result column="tpNameid" property="tpNameid" />
+		<result column="cityNameid" property="cityNameid" />
+		<result column="areaNameid" property="areaNameid" />
+		<result column="jointid" property="jointid" />
+
+	</resultMap>
+
+	<select id="getList" resultMap="staffRankingMap" parameterMap="staffRanking">
+		SELECT
+		a.staffid AS staffid,
+		a.fullname AS fullname,
+		a.phoneid AS
+		phoneid,
+		b.corporate AS corporate,
+		b.legalperson AS legalperson,
+		(SELECT
+		COUNT(*) FROM t_seller 
+		FORCE INDEX(index_status)
+		WHERE t_seller.staffid = a.staffid AND
+		t_seller.status = 3 ) AS sellerSignCount,
+		(SELECT
+		COUNT(*) FROM t_seller
+		FORCE INDEX(index_status)
+		WHERE t_seller.staffid = a.staffid AND
+		t_seller.status in (1,2,3,4,5) )
+		AS sellerCount,
+		<!-- (SELECT COUNT(*) FROM t_seller WHERE t_seller.staffid = a.staffid 
+			AND t_seller.status = 0) AS sellerNoValidationCount, -->
+		(SELECT COUNT(*) FROM t_register_record d WHERE d.staffid=a.staffid)
+		AS registerRecordCount,
+		(SELECT COUNT(*) FROM t_seller WHERE
+		t_seller.staffid = a.staffid
+		AND t_seller.status = 1) AS sellerAuditCount,
+		(SELECT COUNT(*) FROM t_seller WHERE t_seller.staffid = a.staffid
+		AND t_seller.status = 2) AS sellerNoPassCount,
+		<!-- (SELECT COUNT(*) FROM t_seller WHERE t_seller.staffid = a.staffid 
+			) sellerCount, -->
+		ta.title AS areaName,
+		ta.area_id,
+		ta.pid,
+		tc.area_id,
+		tp.area_id,
+		tc.title
+		AS cityName
+		FROM
+		t_staff a
+		LEFT JOIN t_joint b ON a.jointid = b.jointid
+		LEFT JOIN t_area ta ON a.area=ta.area_id
+		LEFT JOIN t_area tc ON
+		tc.area_id=ta.pid
+		LEFT JOIN t_area tp ON tp.area_id=tc.pid
+		<where>
+			1=1
+			<if test=" null != fullname and '' != fullname ">
+				AND a.fullname LIKE '%${fullname}%'
+			</if>
+			<if test=" null != corporate and '' != corporate ">
+				AND b.corporate LIKE '%${corporate}%'
+			</if>
+			<if test=" null != tpNameid">
+				AND tp.area_id = #{tpNameid}
+			</if>
+			<if test=" null != cityNameid">
+				AND tc.area_id = #{cityNameid}
+			</if>
+			<if test=" null != areaNameid ">
+				AND ta.area_id = #{areaNameid}
+			</if>
+			<if test=" null != jointid">
+				AND b.jointid = #{jointid}
+			</if>
+		</where>
+		ORDER BY sellerSignCount DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="count" resultType="Long" parameterMap="staffRanking">
+		SELECT COUNT(1) FROM(
+		SELECT
+		a.staffid AS staffid,
+		a.fullname AS
+		fullname,
+		a.phoneid AS phoneid,
+		b.corporate AS corporate,
+		b.legalperson
+		AS legalperson,
+		b.jointid,
+		(SELECT COUNT(*) FROM t_seller WHERE
+		t_seller.staffid = a.staffid AND
+		t_seller.status = 3 ) AS
+		sellerSignCount,
+		(SELECT
+		COUNT(*) FROM t_seller 
+		FORCE INDEX(index_status)
+		WHERE t_seller.staffid =
+		a.staffid AND
+		t_seller.status in (1,2,3,4,5) ) AS sellerCount,
+		<!-- (SELECT COUNT(*) FROM t_seller WHERE t_seller.staffid = a.staffid 
+			AND t_seller.status = 0) AS sellerNoValidationCount, -->
+		(SELECT COUNT(*) FROM t_register_record d WHERE d.staffid=a.staffid)
+		AS registerRecordCount,
+		(SELECT COUNT(*) FROM t_seller WHERE
+		t_seller.staffid = a.staffid
+		AND t_seller.status = 1) AS sellerAuditCount,
+		(SELECT COUNT(*) FROM t_seller WHERE t_seller.staffid = a.staffid
+		AND t_seller.status = 2) AS sellerNoPassCount,
+		<!-- (SELECT COUNT(*) FROM t_seller WHERE t_seller.staffid = a.staffid 
+			) sellerCount, -->
+		ta.title AS areaName,
+		ta.area_id AS taareaid,
+		ta.pid,
+		tc.area_id AS
+		tcareaid,
+		tp.area_id AS tpareaid,
+		tc.title AS cityName
+		FROM
+		t_staff a
+		LEFT
+		JOIN t_joint b ON a.jointid = b.jointid
+		LEFT JOIN t_area ta ON
+		a.area=ta.area_id
+		LEFT JOIN t_area tc ON tc.area_id=ta.pid
+		LEFT JOIN
+		t_area tp ON tp.area_id=tc.pid
+		ORDER BY sellerSignCount DESC
+		) biao
+		<where>
+			1=1
+			<if test=" null != fullname and '' != fullname ">
+				AND biao.fullname LIKE '%${fullname}%'
+			</if>
+			<if test=" null != corporate and '' != corporate ">
+				AND biao.corporate LIKE '%${corporate}%'
+			</if>
+			<if test=" null != tpNameid">
+				AND biao.tpareaid = #{tpNameid}
+			</if>
+			<if test=" null != cityNameid">
+				AND biao.tcareaid = #{cityNameid}
+			</if>
+			<if test=" null != areaNameid ">
+				AND biao.taareaid = #{areaNameid}
+			</if>
+			<if test=" null != jointid">
+				AND biao.jointid = #{jointid}
+			</if>
+		</where>
+	</select>
+	<!-- 签约数信息 -->
+	<select id="getSignedInfo" resultMap="staffRankingMap"
+		parameterMap="staffRanking">
+
+		SELECT b.fullname,a.sellername,a.signdate AS xdate,a.sellerid FROM (SELECT * FROM
+		t_seller WHERE
+		t_seller.staffid = #{staffid} AND t_seller.status = 3)
+		AS a ,
+
+		(SELECT * FROM t_staff t WHERE t.staffid = #{staffid}) AS b
+
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<!-- 签约数条数 -->
+	<select id="getSignedInfoCount" resultType="Long" parameterMap="staffRanking">
+
+		SELECT count(*) FROM t_seller WHERE t_seller.status = 3
+		and
+		t_seller.staffid = #{staffid}
+	</select>
+	<!-- 签到数信息 -->
+	<select id="getInitSignIn" resultMap="staffRankingMap"
+		parameterMap="staffRanking">
+		SELECT *,a.sdate As xdate FROM (SELECT * FROM t_register_record tr
+		WHERE tr.staffid=#{staffid}) AS a,
+		(SELECT ts.sellername,ts.sellerid FROM t_seller
+		ts WHERE ts.sellerid
+		IN(SELECT tr.sellerid FROM t_register_record tr
+		WHERE tr.staffid=#{staffid}))AS
+		b
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<!-- 签到数条数 -->
+	<select id="getInitSignInCount" resultType="Long" parameterMap="staffRanking">
+		SELECT count(*) FROM t_register_record tr WHERE tr.staffid=#{staffid}
+	</select>
+
+	<!-- 商家信息 -->
+	<select id="getBusinesses" resultMap="staffRankingMap"
+		parameterMap="staffRanking">
+		SELECT (SELECT tr.fullname FROM t_staff tr WHERE
+		tr.staffid=#{staffid}) AS fullname ,t.sellername,t.status,t.sellerid
+		FROM t_seller t WHERE t.staffid=#{staffid} and t.status !=0
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<!-- 商家条数 -->
+	<select id="getBusinessesCount" resultType="Long" parameterMap="staffRanking">
+		SELECT count(*)
+		FROM t_seller t WHERE t.staffid=#{staffid} and t.status !=0
+	</select>
+	<!-- 商家审核中信息 -->
+	<select id="getExamineBusinesses" resultMap="staffRankingMap"
+		parameterMap="staffRanking">
+        SELECT (SELECT tr.fullname FROM t_staff tr WHERE
+		tr.staffid=#{staffid}) AS fullname ,t.sellername,t.status,t.sellerid
+		FROM t_seller t WHERE t.staffid=#{staffid} AND t.status=1
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<!-- 商家审核中条数 -->
+	<select id="getExamineBusinessesCount" resultType="Long" parameterMap="staffRanking">
+		SELECT count(*)
+		FROM t_seller t WHERE t.staffid=#{staffid} AND t.status=1
+	</select>
+	
+	<!-- 未通过审核中商家信息 -->
+	<select id="getNoPassBusinesses" resultMap="staffRankingMap"
+		parameterMap="staffRanking">
+        SELECT (SELECT tr.fullname FROM t_staff tr WHERE
+		tr.staffid=#{staffid}) AS fullname ,t.sellername,t.status,t.sellerid
+		FROM t_seller t WHERE t.staffid=#{staffid} AND t.status=2
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<!-- 未通过审核中商家条数 -->
+	<select id="getNoPassBusinessesCount" resultType="Long" parameterMap="staffRanking">
+		SELECT count(*)
+		FROM t_seller t WHERE t.staffid=#{staffid} AND t.status=2
+	</select>
+</mapper>

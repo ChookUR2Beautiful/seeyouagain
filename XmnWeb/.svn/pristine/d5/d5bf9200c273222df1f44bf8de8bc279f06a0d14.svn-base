@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.user_terminal.dao.ShareDao">
+	<parameterMap type="TShare" id="tShare" />
+	<parameterMap type="TShareRange" id="tShareRange" />
+	<!-- 分享信息表-->	
+	<resultMap type="TShare" id="tShareMap">
+		<result column="sid" property="sid" />
+		<result column="title" property="title" />
+		<result column="link" property="link" />
+		<result column="range" property="range" />
+		<result column="sellerid" property="sellerid" />
+		<result column="sellername" property="sellername" />
+	</resultMap>
+	<!-- 分享信息范围表-->	
+	<resultMap type="TShareRange" id="tShareRangeMap">
+		<result column="rid" property="rid" />
+		<result column="sid" property="sid" />
+		<result column="range_type" property="rangetype" />
+		<result column="range_content" property="rangecontent" />
+		<result column="province" property="province" />
+	</resultMap>
+ 	
+	<!-- 可重用的Where 条件 -->
+	<sql id="whereSQL">
+		<if test=" null != sid">
+			AND ts.sid = #{sid}
+		</if>
+		<if test=" null != title and '' != title ">
+			AND ts.title LIKE '%${title}%'
+		</if>
+		<if test=" null != link and '' != link ">
+			AND ts.link LIKE '%${link}%'
+		</if>
+		<if test=" null != range">
+			AND ts.range = #{range}
+		</if>
+	</sql>
+	<!-- 可重用的插入语句中表的列 -->
+	<sql id="insertColumnSQL">
+		<if test=" null != title and '' != title">
+			title,
+		</if>
+		<if test=" null != link and '' != link ">
+			link,
+		</if>
+		<if test=" null != range">
+			`range`,
+		</if>
+	</sql>
+	<!-- 可重用的插入语句中表的值 -->
+	<sql id="insertValuesSQL">
+		<if test=" null != title and ''!=title">
+			#{title},
+		</if>
+		<if test=" null != link and '' != link ">
+			#{link},
+		</if>
+		<if test=" null != range">
+			#{range},
+		</if>
+	</sql>
+	<insert id="add" parameterMap="tShare">
+		INSERT INTO `t_share`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<include refid="insertColumnSQL"></include>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			<include refid="insertValuesSQL"></include>
+		</trim>
+	</insert>
+	<!-- 更新动态设置值 -->
+	<sql id="updateSetSQL">
+		<if test=" null != title and ''!=title">
+			ts.title = #{title},
+		</if>
+		<if test=" null != link and '' != link ">
+			ts.link = #{link},
+		</if>
+		<if test=" null != range">
+			ts.range = #{range},
+		</if>
+	</sql>
+	<update id="update" parameterMap="tShare">
+		UPDATE t_share ts
+		<set>
+			<trim suffixOverrides=",">
+				<include refid="updateSetSQL"></include>
+			</trim>
+		</set>
+		WHERE ts.sid=#{sid}
+	</update>
+	
+	<select id="getList" resultMap="tShareMap" parameterMap="tShare">
+		SELECT * FROM t_share ts
+		<where>
+			1=1
+			<include refid="whereSQL"></include>
+		</where>
+		ORDER BY ts.sid DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="count" resultType="Long" parameterMap="tShare">
+		SELECT COUNT(*) FROM t_share ts
+		<where>
+			1=1
+			<include refid="whereSQL"></include>
+		</where>
+	</select>
+	
+	<select id="getListByCid" resultMap="tShareRangeMap"
+		parameterType="Long">
+		SELECT * FROM t_share_range
+		<where>
+			sid = #{sid}
+		</where>
+	</select>
+	
+	<delete id="deleteAllBySid" parameterType="Long">
+		DELETE FROM	t_share_range WHERE sid =#{0}
+	</delete>
+	
+	<!-- 更新 -->
+	 <update id="updateTShareRange" parameterMap="tShareRange">
+		UPDATE t_share_range
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != sid">
+					sid = #{sid},
+				</if>
+				<if test=" null != rangetype ">
+					range_type = #{rangetype},
+				</if>
+			 	<if test=" null != rangecontent  and '' != rangecontent ">
+					range_content = #{rangecontent},
+				</if>
+				<if test=" null != province and '' != province ">
+					province = #{province},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != rid">
+				rid = #{rid}
+			</if>
+		</where>
+	</update>
+	 
+	<insert id="addTShareRange" parameterMap="tShareRange" >
+		INSERT INTO t_share_range
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != sid">
+					sid,
+				</if>
+			 	<if test=" null != rangetype">
+					range_type,
+				</if>
+			 	<if test=" null != rangecontent  and '' != rangecontent ">
+					range_content,
+				</if>			 					
+				<if test=" null != province and '' != province ">
+					province,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != sid">
+					 	#{sid},
+				</if>
+			 	<if test=" null != rangetype">
+					 	#{rangetype},
+				</if>
+			 	<if test=" null != rangecontent   and '' != rangecontent ">
+					 	#{rangecontent},
+				</if>
+				<if test=" null != province and '' != province ">
+						#{province},
+				</if>
+		</trim>
+	</insert> 
+	
+	<select id="getListBySellerIdAndJoinSellerName" resultMap="tShareMap" parameterType="Long">
+		SELECT tcr.*, ts.sellername AS sellername,ts.sellerid  FROM t_share_range tcr LEFT JOIN t_seller ts ON tcr.range_content = ts.sellerid WHERE sid =#{0}
+	</select>
+	
+	<select id="getMaxId" resultType="Long">
+		SELECT Max(sid) AS VALUE FROM t_share
+	</select>
+	<select id="getObject" resultMap="tShareMap" parameterType="Long">
+		SELECT * FROM t_share WHERE sid = #{0}
+	</select>
+</mapper>

@@ -1,0 +1,1052 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TLiveRecordDao" >
+
+  <resultMap id="liveRecordMap" type="com.xmniao.xmn.core.live_anchor.entity.TLiveRecord" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="anchor_id" property="anchorId" jdbcType="INTEGER" />
+    <result column="nname" property="nname" jdbcType="VARCHAR" />
+    <result column="avatar" property="avatar" jdbcType="VARCHAR" />
+    <result column="anchor_room_no" property="anchorRoomNo" jdbcType="VARCHAR" />
+    <result column="anchor_room_password" property="anchorRoomPassword" jdbcType="VARCHAR" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="sellername" property="sellername" jdbcType="VARCHAR" />
+    <result column="seller_alias" property="sellerAlias" jdbcType="VARCHAR" />
+    <result column="seller_city" property="sellerCity" jdbcType="VARCHAR" />
+    <result column="longitude" property="longitude" jdbcType="DOUBLE" />
+    <result column="latitude" property="latitude" jdbcType="DOUBLE" />
+    <result column="seller_status" property="sellerStatus" jdbcType="INTEGER" />
+    <result column="zhibo_address" property="zhiboAddress" jdbcType="VARCHAR" />
+    <result column="zhibo_type" property="zhiboType" jdbcType="INTEGER" />
+    <result column="zhibo_playback_url" property="zhiboPlaybackUrl" jdbcType="VARCHAR" />
+    <result column="zhibo_title" property="zhiboTitle" jdbcType="VARCHAR" />
+    <result column="zhibo_cover" property="zhiboCover" jdbcType="VARCHAR" />
+    <result column="video_type" property="videoType" jdbcType="INTEGER" />
+    <result column="video_label" property="videoLabel" jdbcType="VARCHAR" />
+    <result column="plan_start_date" property="planStartDate" jdbcType="TIMESTAMP" />
+    <result column="plan_end_date" property="planEndDate" jdbcType="TIMESTAMP" />
+    <result column="start_date" property="startDate" jdbcType="TIMESTAMP" />
+    <result column="end_date" property="endDate" jdbcType="TIMESTAMP" />
+    <result column="zhibo_duration" property="zhiboDuration" jdbcType="INTEGER" />
+    <result column="concerned_nums" property="concernedNums" jdbcType="INTEGER" />
+    <result column="view_count" property="viewCount" jdbcType="INTEGER" />
+    <result column="show_view_count" property="showViewCount" jdbcType="INTEGER" />
+    <result column="income_egg_nums" property="incomeEggNums" jdbcType="INTEGER" />
+    <result column="sequence_no" property="sequenceNo" jdbcType="INTEGER" />
+    <result column="seller_sequ_no" property="sellerSequNo" jdbcType="INTEGER" />
+    <result column="seq_lock_status" property="seqLockStatus" jdbcType="INTEGER" />
+    <result column="isQianZhi" property="isqianzhi" jdbcType="INTEGER" />
+    <result column="isHorizontalScreen" property="ishorizontalscreen" jdbcType="INTEGER" />
+    <result column="live_start_type" property="liveStartType" jdbcType="INTEGER" />
+    <result column="device_type" property="deviceType" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="vedio_url" property="vedioUrl" jdbcType="VARCHAR" />
+    <result column="channel_id" property="channelId" jdbcType="VARCHAR" />
+    <result column="channel_status" property="channelStatus" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="isAppoint" property="isAppoint" jdbcType="INTEGER" />
+    <result column="telphones" property="telphones" jdbcType="VARCHAR" />
+    <result column="introduce" property="introduce" jdbcType="VARCHAR" />
+    <result column="haveCoupon" property="haveCoupon" jdbcType="INTEGER" />
+    <result column="zhibo_thumbnail" property="zhiboThumbnail" jdbcType="VARCHAR" />
+    <result column="pageview" property="pageview" jdbcType="INTEGER" />
+    <result column="sex" property="sex" jdbcType="INTEGER" />
+    <result column="recommended" property="recommended" jdbcType="INTEGER" />
+    <result column="stick" property="stick" jdbcType="INTEGER" />
+    <result column="live_topic" property="liveTopic" jdbcType="INTEGER" />
+    <result column="show_other_seller" property="showOtherSeller" jdbcType="INTEGER" />
+    <result column="sign_type" property="signType" jdbcType="INTEGER" />
+    <result column="root_role" property="rootRole" jdbcType="INTEGER" />
+    <result column="is_valid" property="isValid" jdbcType="INTEGER" />
+    <result column="is_custom_share" property="isCustomShare" jdbcType="INTEGER" />
+    <result column="custom_share_title" property="customShareTitle" jdbcType="VARCHAR" />
+    <result column="custom_share_desc" property="customShareDesc" jdbcType="VARCHAR" />    
+    <result column="player_name" property="playerName" jdbcType="VARCHAR" />    
+    <result column="fans_count" property="fansCount" jdbcType="INTEGER" />    
+    <result column="see_count" property="seeCount" jdbcType="BIGINT" />    
+    <result column="is_robot_init" property="isRobotInit" jdbcType="BIGINT" />    
+  </resultMap>
+  
+  <sql id="live_record_columns" >
+    t_live_record.id, t_live_record.anchor_id, t_live_record.nname, avatar, anchor_room_no, anchor_room_password, sellerid, sellername, 
+    seller_alias, seller_city, longitude, latitude, seller_status, zhibo_address, zhibo_type, 
+    zhibo_playback_url, zhibo_title, zhibo_cover, video_type, video_label, plan_start_date, 
+    plan_end_date, start_date, end_date, zhibo_duration, concerned_nums, view_count, 
+    show_view_count, income_egg_nums, sequence_no, seller_sequ_no, seq_lock_status, isQianZhi, 
+    isHorizontalScreen, live_start_type, device_type, status, vedio_url, channel_id, 
+    channel_status, t_live_record.create_time, t_live_record.update_time, isAppoint, telphones, introduce, haveCoupon, 
+    zhibo_thumbnail, pageview, sex, t_live_record.recommended, stick, live_topic, show_other_seller, 
+    sign_type, root_role , is_valid, is_custom_share, custom_share_title, custom_share_desc,is_robot_init
+  </sql>
+  
+  <!-- Where 查询条件 -->
+  <sql id="whereSQL">
+  		<!-- 默认 1启用   0停用 -->
+  			AND status ='1'
+  		<!-- 直播编号 -->
+		<if test=" null != id">
+			AND id = #{id}
+		</if>
+		<if test="startTime !=null and startTime !='' ">
+		  	<![CDATA[
+				AND	DATE_FORMAT(plan_start_date, '%Y-%m-%d %H:%i') >= DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i')
+		  	]]> 
+	  	</if>
+	  	<if test="endTime !=null and endTime !='' ">
+	  		<![CDATA[
+				AND	DATE_FORMAT(plan_start_date, '%Y-%m-%d %H:%i') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i')
+		  	]]>
+	  	</if>
+	  	<!-- 统计当月数据 -->
+	  	<if test="currentMonth !=null and currentMonth !='' ">
+	  		<![CDATA[
+				AND	DATE_FORMAT(plan_start_date, '%Y-%m') = DATE_FORMAT(SYSDATE(), '%Y-%m')
+		  	]]>
+	  	</if>
+		<!-- 主播Id -->
+		<if test=" null != anchorId">
+			AND anchor_id = #{anchorId}
+		</if>
+		<!-- 用户昵称 -->
+		<if test=" null != nname and '' != nname">
+			AND nname like '%${nname}%'
+		</if>
+		<!-- 直播类型 -1 初始 0 预告 1 正在直播  2暂停直播 3 回放  4 无回放  5结束直播-->
+		<if test=" null != zhiboType and '' != zhiboType  or 0 == zhiboType">
+			AND zhibo_type = #{zhiboType}
+		</if>
+		<!-- 直播管理正在直播列表 -->
+		<if test=" '1,2'==zhiboTypeParam ">
+			AND zhibo_type in ('1','2')
+		</if>
+		<!-- -1初始 0 预告 1 正在直播 -->
+		<if test=" '-1,0,1'==zhiboTypeParam ">
+			AND zhibo_type in ('-1','0','1')
+		</if>
+		<!-- 通告管理历史通告/结束直播列表 -->
+		<if test=" '4,5'==zhiboTypeParam ">
+			AND zhibo_type in ('4','5')
+		</if>
+		<!-- 直播标题 -->
+		<if test=" null != zhiboTitle and '' != zhiboTitle">
+			AND zhibo_title like '%${zhiboTitle}%'
+		</if>
+		<!-- 开播类型 -->
+		<if test=" null != liveStartType and '' != liveStartType or 0== liveStartType">
+			AND live_start_type =#{liveStartType}
+		</if>
+		<if test=" null != recommended and '' != recommended or 0== recommended">
+			AND recommended=#{recommended}
+		</if>
+		<!-- 商家别名/活动主题 -->
+		<if test=" null != sellerAlias and '' != sellerAlias">
+			AND seller_alias like '%${sellerAlias}%'
+		</if>
+		<!-- 预告置顶状态 -->
+		<if test=" null != stick and '' != stick or 0== stick">
+			AND stick = #{stick}
+		</if>
+		<!-- 主播签约状态 -->
+		<if test=" null != signType and '' != signType or 0== signType">
+			AND sign_type=#{signType}
+		</if>
+		<!-- 主播兼职类型 -->
+		<if test=" null != rootRole and '' != rootRole">
+			AND  root_role=#{rootRole}
+		</if>
+		<if test=" null != idList">
+			AND id in
+			<foreach item="item" index="index" collection="idList"  open="(" separator="," close=") ">
+			 #{item}
+			</foreach>
+		</if>
+		<!-- 搜索框输入值 -->
+		<if test="null != showValue and '' != showValue">
+			AND (nname like '%${showValue}%' OR zhibo_title like '%${showValue}%')
+		</if>
+		
+		<if test=" null != customShareTitle and '' != customShareTitle">
+			AND custom_share_title like '%${customShareTitle}%'
+		</if>
+		<if test=" null != customShareDesc and '' != customShareDesc">
+			AND custom_share_desc like '%${customShareDesc}%'
+		</if>		
+  </sql>
+  
+  
+  <sql id="vstarWhereSQL">
+  		<!-- 默认 1启用   0停用 -->
+  			AND t_live_record.status ='1'
+  		<!-- 直播编号 -->
+  			AND t_live_record.plan_start_date > t_vstar_player_info.create_time
+		<if test=" null != id">
+			AND t_live_record.id = #{id}
+		</if>
+		<if test="startTime !=null and startTime !='' ">
+		  	<![CDATA[
+				AND	DATE_FORMAT(t_live_record.plan_start_date, '%Y-%m-%d %H:%i') >= DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i')
+		  	]]> 
+	  	</if>
+	  	<if test="endTime !=null and endTime !='' ">
+	  		<![CDATA[
+				AND	DATE_FORMAT(t_live_record.plan_start_date, '%Y-%m-%d %H:%i') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i')
+		  	]]>
+	  	</if>
+	  	<!-- 统计当月数据 -->
+	  	<if test="currentMonth !=null and currentMonth !='' ">
+	  		<![CDATA[
+				AND	DATE_FORMAT(t_live_record.plan_start_date, '%Y-%m') = DATE_FORMAT(SYSDATE(), '%Y-%m')
+		  	]]>
+	  	</if>
+		<!-- 主播Id -->
+		<if test=" null != anchorId">
+			AND t_live_record.anchor_id = #{anchorId}
+		</if>
+		<!-- 用户昵称 -->
+		<if test=" null != nname and '' != nname">
+			AND t_live_record.nname like '%${nname}%'
+		</if>
+		<!-- 直播类型 -1 初始 0 预告 1 正在直播  2暂停直播 3 回放  4 无回放  5结束直播-->
+		<if test=" null != zhiboType and '' != zhiboType  or 0 == zhiboType">
+			AND t_live_record.zhibo_type = #{zhiboType}
+		</if>
+		<!-- 直播管理正在直播列表 -->
+		<if test=" '1,2'==zhiboTypeParam ">
+			AND t_live_record.zhibo_type in ('1','2')
+		</if>
+		<!-- -1初始 0 预告 1 正在直播 -->
+		<if test=" '-1,0,1'==zhiboTypeParam ">
+			AND t_live_record.zhibo_type in ('-1','0','1')
+		</if>
+		<!-- 通告管理历史通告/结束直播列表 -->
+		<if test=" '4,5'==zhiboTypeParam ">
+			AND t_live_record.zhibo_type in ('4','5')
+		</if>
+		<!-- 直播标题 -->
+		<if test=" null != zhiboTitle and '' != zhiboTitle">
+			AND t_live_record.zhibo_title like '%${zhiboTitle}%'
+		</if>
+		<!-- 开播类型 -->
+		<if test=" null != liveStartType and '' != liveStartType or 0== liveStartType">
+			AND t_live_record.live_start_type =#{liveStartType}
+		</if>
+		<if test=" null != recommended and '' != recommended or 0== recommended">
+			AND t_live_record.recommended=#{recommended}
+		</if>
+		<!-- 商家别名/活动主题 -->
+		<if test=" null != sellerAlias and '' != sellerAlias">
+			AND t_live_record.seller_alias like '%${sellerAlias}%'
+		</if>
+		<!-- 预告置顶状态 -->
+		<if test=" null != stick and '' != stick or 0== stick">
+			AND t_live_record.stick = #{stick}
+		</if>
+		<!-- 主播签约状态 -->
+		<if test=" null != signType and '' != signType or 0== signType">
+			AND t_live_record.sign_type=#{signType}
+		</if>
+		<!-- 主播兼职类型 -->
+		<if test=" null != rootRole and '' != rootRole">
+			AND  t_live_record.root_role=#{rootRole}
+		</if>
+		<if test=" null != idList">
+			AND t_live_record.id in
+			<foreach item="item" index="index" collection="idList"  open="(" separator="," close=") ">
+			 #{item}
+			</foreach>
+		</if>
+		<!-- 搜索框输入值 -->
+		<if test="null != showValue and '' != showValue">
+			AND (t_live_record.nname like '%${showValue}%' OR t_live_record.zhibo_title like '%${showValue}%')
+		</if>
+		
+		<if test=" null != customShareTitle and '' != customShareTitle">
+			AND t_live_record.custom_share_title like '%${customShareTitle}%'
+		</if>
+		<if test=" null != customShareDesc and '' != customShareDesc">
+			AND t_live_record.custom_share_desc like '%${customShareDesc}%'
+		</if>		
+		<if test="playerId !=null">
+			AND t_vstar_player_info.id = #{playerId}
+		</if>
+		<if test="playerPhone !=null and playerPhone != ''">
+			AND t_vstar_player_info.phone= #{playerPhone}
+		</if>
+		<if test="playerName != null and playerName != ''">
+			AND t_vstar_player_info.nname like '%${playerName}%'
+		</if>
+		<if test="liveDate != null and liveDate != ''">
+			AND date_format(t_live_record.plan_start_date, '%Y-%m-%d') = #{liveDate}
+		</if>
+  </sql>
+  
+  <select id="getListVstar"  resultMap="liveRecordMap" >
+  	   select 
+	    <include refid="live_record_columns" />,t_vstar_player_info.nname as player_name,t_vstar_player_info.fans_count,(select count(1) from t_live_view_record where t_live_view_record.live_record_id = t_live_record.id ) as  see_count 
+    from t_live_record
+    JOIN t_vstar_player_info ON t_vstar_player_info.liver_id = t_live_record.anchor_id
+    <where>
+    	1=1
+    	<include refid="vstarWhereSQL"></include>
+    </where>
+    order by plan_start_date DESC
+    <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <select id="countVstar"  resultType="java.lang.Long" >
+  	   select 
+	   count(1)
+    from t_live_record
+    JOIN t_vstar_player_info ON t_vstar_player_info.liver_id = t_live_record.anchor_id
+    <where>
+    	1=1
+    	<include refid="vstarWhereSQL"></include>
+    </where>
+  </select>
+  
+  <select id="countRecordByBurs"  resultType="java.util.HashMap">
+  	  select count(1)  as count,anchor_id anchorId  from t_live_record   where  anchor_id  in  
+  	  <foreach collection="list" item="item" open="(" close=")" separator="," >
+  	  	 #{item.anchorId}
+  	  </foreach>
+  </select>
+  
+  <update id="updateIncomeEggNums">
+  	 update t_live_record set income_egg_nums =  income_egg_nums + #{percentamount},update_time = now()  where id = #{liveRecordId} 
+  </update>
+  
+  <select id="getObject" resultMap="liveRecordMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="live_record_columns" />
+    from t_live_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="getList" resultMap="liveRecordMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRecord" >
+    select 
+	    <include refid="live_record_columns" />
+    from t_live_record
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+    <if test="order != -1">
+    	 order by plan_start_date DESC
+    </if>
+    <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <!-- 获取带行号的分页查询记录 -->
+  <select id="getListWithRowNum" resultMap="liveRecordMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRecord" >
+    select 
+	    <include refid="live_record_columns" />
+    from t_live_record
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+    order by plan_start_date DESC
+    <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <select id="count" resultType="Long" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRecord">
+		SELECT COUNT(1) FROM t_live_record
+		<where>
+			1=1
+			<include refid="whereSQL"></include>
+		</where>
+  </select>
+  
+  
+  <delete id="deleteById" parameterType="java.lang.Integer" >
+    delete from t_live_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  
+  <insert id="add"  useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRecord" >
+    insert into t_live_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="anchorId != null" >
+        anchor_id,
+      </if>
+      <if test="nname != null" >
+        nname,
+      </if>
+      <if test="avatar != null" >
+        avatar,
+      </if>
+      <if test="anchorRoomNo != null" >
+        anchor_room_no,
+      </if>
+      <if test="anchorRoomPassword != null" >
+        anchor_room_password,
+      </if>
+      <if test="sellerid != null" >
+        sellerid,
+      </if>
+      <if test="sellername != null" >
+        sellername,
+      </if>
+      <if test="sellerAlias != null" >
+        seller_alias,
+      </if>
+      <if test="sellerCity != null" >
+        seller_city,
+      </if>
+      <if test="longitude != null" >
+        longitude,
+      </if>
+      <if test="latitude != null" >
+        latitude,
+      </if>
+      <if test="sellerStatus != null" >
+        seller_status,
+      </if>
+      <if test="zhiboAddress != null" >
+        zhibo_address,
+      </if>
+      <if test="zhiboType != null" >
+        zhibo_type,
+      </if>
+      <if test="zhiboPlaybackUrl != null" >
+        zhibo_playback_url,
+      </if>
+      <if test="zhiboTitle != null" >
+        zhibo_title,
+      </if>
+      <if test="zhiboCover != null" >
+        zhibo_cover,
+      </if>
+      <if test="videoType != null" >
+        video_type,
+      </if>
+      <if test="videoLabel != null" >
+        video_label,
+      </if>
+      <if test="planStartDate != null" >
+        plan_start_date,
+      </if>
+      <if test="planEndDate != null" >
+        plan_end_date,
+      </if>
+      <if test="startDate != null" >
+        start_date,
+      </if>
+      <if test="endDate != null" >
+        end_date,
+      </if>
+      <if test="zhiboDuration != null" >
+        zhibo_duration,
+      </if>
+      <if test="concernedNums != null" >
+        concerned_nums,
+      </if>
+      <if test="viewCount != null" >
+        view_count,
+      </if>
+      <if test="showViewCount != null" >
+        show_view_count,
+      </if>
+      <if test="incomeEggNums != null" >
+        income_egg_nums,
+      </if>
+      <if test="sequenceNo != null" >
+        sequence_no,
+      </if>
+      <if test="sellerSequNo != null" >
+        seller_sequ_no,
+      </if>
+      <if test="seqLockStatus != null" >
+        seq_lock_status,
+      </if>
+      <if test="isqianzhi != null" >
+        isQianZhi,
+      </if>
+      <if test="ishorizontalscreen != null" >
+        isHorizontalScreen,
+      </if>
+      <if test="liveStartType != null" >
+        live_start_type,
+      </if>
+      <if test="deviceType != null" >
+        device_type,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="vedioUrl != null" >
+        vedio_url,
+      </if>
+      <if test="channelId != null" >
+        channel_id,
+      </if>
+      <if test="channelStatus != null" >
+        channel_status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="isAppoint != null" >
+        isAppoint,
+      </if>
+      <if test="telphones != null" >
+        telphones,
+      </if>
+      <if test="introduce != null" >
+        introduce,
+      </if>
+      <if test="haveCoupon != null" >
+        haveCoupon,
+      </if>
+      <if test="zhiboThumbnail != null" >
+        zhibo_thumbnail,
+      </if>
+      <if test="pageview != null" >
+        pageview,
+      </if>
+      <if test="sex != null" >
+        sex,
+      </if>
+      <if test="recommended != null" >
+        recommended,
+      </if>
+      <if test="stick != null" >
+        stick,
+      </if>
+      <if test="liveTopic != null" >
+        live_topic,
+      </if>
+      <if test="showOtherSeller != null" >
+        show_other_seller,
+      </if>
+      <if test="signType != null" >
+        sign_type,
+      </if>
+      <if test="rootRole != null" >
+        root_role,
+      </if>
+      <if test="isValid != null" >
+        is_valid,
+      </if>
+      <if test="customShareTitle != null" >
+        custom_share_title,
+      </if>
+      <if test="customShareDesc != null" >
+        custom_share_desc,
+      </if>   
+      <if test="isRobotInit != null" >
+        is_robot_init,
+      </if>       
+      
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="anchorId != null" >
+        #{anchorId,jdbcType=INTEGER},
+      </if>
+      <if test="nname != null" >
+        #{nname,jdbcType=VARCHAR},
+      </if>
+      <if test="avatar != null" >
+        #{avatar,jdbcType=VARCHAR},
+      </if>
+      <if test="anchorRoomNo != null" >
+        #{anchorRoomNo,jdbcType=VARCHAR},
+      </if>
+      <if test="anchorRoomPassword != null" >
+        #{anchorRoomPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="sellerid != null" >
+        #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="sellername != null" >
+        #{sellername,jdbcType=VARCHAR},
+      </if>
+      <if test="sellerAlias != null" >
+        #{sellerAlias,jdbcType=VARCHAR},
+      </if>
+      <if test="sellerCity != null" >
+        #{sellerCity,jdbcType=VARCHAR},
+      </if>
+      <if test="longitude != null" >
+        #{longitude,jdbcType=DOUBLE},
+      </if>
+      <if test="latitude != null" >
+        #{latitude,jdbcType=DOUBLE},
+      </if>
+      <if test="sellerStatus != null" >
+        #{sellerStatus,jdbcType=INTEGER},
+      </if>
+      <if test="zhiboAddress != null" >
+        #{zhiboAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="zhiboType != null" >
+        #{zhiboType,jdbcType=INTEGER},
+      </if>
+      <if test="zhiboPlaybackUrl != null" >
+        #{zhiboPlaybackUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="zhiboTitle != null" >
+        #{zhiboTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="zhiboCover != null" >
+        #{zhiboCover,jdbcType=VARCHAR},
+      </if>
+      <if test="videoType != null" >
+        #{videoType,jdbcType=INTEGER},
+      </if>
+      <if test="videoLabel != null" >
+        #{videoLabel,jdbcType=VARCHAR},
+      </if>
+      <if test="planStartDate != null" >
+        #{planStartDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="planEndDate != null" >
+        #{planEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="startDate != null" >
+        #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="zhiboDuration != null" >
+        #{zhiboDuration,jdbcType=INTEGER},
+      </if>
+      <if test="concernedNums != null" >
+        #{concernedNums,jdbcType=INTEGER},
+      </if>
+      <if test="viewCount != null" >
+        #{viewCount,jdbcType=INTEGER},
+      </if>
+      <if test="showViewCount != null" >
+        #{showViewCount,jdbcType=INTEGER},
+      </if>
+      <if test="incomeEggNums != null" >
+        #{incomeEggNums,jdbcType=INTEGER},
+      </if>
+      <if test="sequenceNo != null" >
+        #{sequenceNo,jdbcType=INTEGER},
+      </if>
+      <if test="sellerSequNo != null" >
+        #{sellerSequNo,jdbcType=INTEGER},
+      </if>
+      <if test="seqLockStatus != null" >
+        #{seqLockStatus,jdbcType=INTEGER},
+      </if>
+      <if test="isqianzhi != null" >
+        #{isqianzhi,jdbcType=INTEGER},
+      </if>
+      <if test="ishorizontalscreen != null" >
+        #{ishorizontalscreen,jdbcType=INTEGER},
+      </if>
+      <if test="liveStartType != null" >
+        #{liveStartType,jdbcType=INTEGER},
+      </if>
+      <if test="deviceType != null" >
+        #{deviceType,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="vedioUrl != null" >
+        #{vedioUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="channelId != null" >
+        #{channelId,jdbcType=VARCHAR},
+      </if>
+      <if test="channelStatus != null" >
+        #{channelStatus,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isAppoint != null" >
+        #{isAppoint,jdbcType=INTEGER},
+      </if>
+      <if test="telphones != null" >
+        #{telphones,jdbcType=VARCHAR},
+      </if>
+      <if test="introduce != null" >
+        #{introduce,jdbcType=VARCHAR},
+      </if>
+      <if test="haveCoupon != null" >
+        #{haveCoupon,jdbcType=INTEGER},
+      </if>
+      <if test="zhiboThumbnail != null" >
+        #{zhiboThumbnail,jdbcType=VARCHAR},
+      </if>
+      <if test="pageview != null" >
+        #{pageview,jdbcType=INTEGER},
+      </if>
+      <if test="sex != null" >
+        #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="recommended != null" >
+        #{recommended,jdbcType=INTEGER},
+      </if>
+      <if test="stick != null" >
+        #{stick,jdbcType=INTEGER},
+      </if>
+      <if test="liveTopic != null" >
+        #{liveTopic,jdbcType=INTEGER},
+      </if>
+      <if test="showOtherSeller != null" >
+        #{showOtherSeller,jdbcType=INTEGER},
+      </if>
+      <if test="signType != null" >
+        #{signType,jdbcType=INTEGER},
+      </if>
+      <if test="rootRole != null" >
+        #{rootRole,jdbcType=INTEGER},
+      </if>
+      <if test="isValid != null" >
+        #{isValid,jdbcType=INTEGER},
+      </if>
+      <if test="customShareTitle != null" >
+        custom_share_title = #{customShareTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="customShareDesc != null" >
+        custom_share_desc = #{customShareDesc,jdbcType=VARCHAR},
+      </if>   
+      <if test="isRobotInit != null" >
+        is_robot_init = #{isRobotInit,jdbcType=INTEGER},
+      </if>     
+    </trim>
+  </insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRecord" >
+    update t_live_record
+    <set >
+      <if test="anchorId != null" >
+        anchor_id = #{anchorId,jdbcType=INTEGER},
+      </if>
+      <if test="nname != null" >
+        nname = #{nname,jdbcType=VARCHAR},
+      </if>
+      <if test="avatar != null" >
+        avatar = #{avatar,jdbcType=VARCHAR},
+      </if>
+      <if test="anchorRoomNo != null" >
+        anchor_room_no = #{anchorRoomNo,jdbcType=INTEGER},
+      </if>
+      <if test="sellerid != null" >
+        sellerid = #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="sellername != null" >
+        sellername = #{sellername,jdbcType=VARCHAR},
+      </if>
+      
+      <if test="sellerAlias != null" >
+        seller_alias = #{sellerAlias,jdbcType=VARCHAR},
+      </if>
+      <if test="longitude != null" >
+        longitude = #{longitude,jdbcType=DOUBLE},
+      </if>
+      <if test="latitude != null" >
+        latitude = #{latitude,jdbcType=DOUBLE},
+      </if>
+      
+      <if test="sellerCity != null" >
+        seller_city = #{sellerCity,jdbcType=VARCHAR},
+      </if>
+      <if test="sellerStatus != null" >
+        seller_status = #{sellerStatus,jdbcType=BIT},
+      </if>
+      <if test="zhiboAddress != null" >
+        zhibo_address = #{zhiboAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="zhiboType != null" >
+        zhibo_type = #{zhiboType,jdbcType=INTEGER},
+      </if>
+      <if test="zhiboPlaybackUrl != null" >
+        zhibo_playback_url = #{zhiboPlaybackUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="zhiboTitle != null" >
+        zhibo_title = #{zhiboTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="zhiboCover != null" >
+        zhibo_cover = #{zhiboCover,jdbcType=VARCHAR},
+      </if>
+      <if test="planStartDate != null" >
+        plan_start_date = #{planStartDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="planEndDate != null" >
+        plan_end_date = #{planEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="startDate != null" >
+        start_date = #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        end_date = #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="zhiboDuration != null" >
+        zhibo_duration = #{zhiboDuration,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=BIT},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="concernedNums != null" >
+        concerned_nums = #{concernedNums,jdbcType=INTEGER},
+      </if>
+      <if test="viewCount != null" >
+        view_count = #{viewCount,jdbcType=INTEGER},
+      </if>
+      <if test="showViewCount != null" >
+        show_view_count = #{showViewCount,jdbcType=INTEGER},
+      </if>
+      <if test="sequenceNo != null" >
+        sequence_no = #{sequenceNo,jdbcType=INTEGER},
+      </if>
+      <if test="sellerSequNo != null" >
+        seller_sequ_no=#{sellerSequNo,jdbcType=INTEGER},
+      </if>
+      <if test="videoType != null" >
+        video_type=#{videoType,jdbcType=INTEGER},
+      </if>
+      <if test="videoLabel != null" >
+        video_label=#{videoLabel,jdbcType=VARCHAR},
+      </if>
+      <if test="isAppoint != null" >
+        isAppoint=#{isAppoint,jdbcType=INTEGER},
+      </if>
+      <if test="telphones != null" >
+        telphones=#{telphones,jdbcType=VARCHAR},
+      </if>
+   	  <if test="introduce != null" >
+        introduce=#{introduce,jdbcType=VARCHAR},
+      </if>
+      <if test="haveCoupon != null" >
+        haveCoupon=#{haveCoupon,jdbcType=VARCHAR},
+      </if>
+      <if test="zhiboThumbnail != null" >
+        zhibo_thumbnail=#{zhiboThumbnail,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        sex=#{sex,jdbcType=INTEGER},
+      </if>
+      <if test="liveTopic != null" >
+        live_topic=#{liveTopic,jdbcType=INTEGER},
+      </if>
+      <if test="showOtherSeller != null" >
+        show_other_seller=#{showOtherSeller,jdbcType=INTEGER},
+      </if>
+      <if test="signType != null" >
+        sign_type=#{signType,jdbcType=INTEGER},
+      </if>
+      <if test="rootRole != null" >
+        root_role=#{rootRole,jdbcType=INTEGER},
+      </if>
+      <if test="isValid != null" >
+        is_valid=#{isValid,jdbcType=INTEGER},
+      </if>
+      <if test="isCustomShare != null" >
+        is_custom_share = #{isCustomShare,jdbcType=INTEGER},
+      </if>
+      <if test="customShareTitle != null" >
+        custom_share_title = #{customShareTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="customShareDesc != null" >
+        custom_share_desc = #{customShareDesc,jdbcType=VARCHAR},
+      </if> 
+      <if test="isRobotInit != null" >
+        is_robot_init = #{isRobotInit,jdbcType=INTEGER},
+      </if>        
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <update id="updateSequenceNo" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRecord">
+  	UPDATE t_live_record
+	SET sequence_no = sequence_no - 1
+	WHERE
+		sequence_no > #{sequenceNo,jdbcType=INTEGER}
+  </update>
+  
+  <select id="getMaxSequenceNo" resultType="Integer">
+		SELECT MAX(sequence_no) AS sequenceNo from t_live_record
+  </select>
+  
+  
+  <!-- 更新目标记录序列号.将A移动到B,则B为目标记录.offset 偏移量,-1上移,1下移 -->
+  <update id="updateTargetSequenceNo" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRecord">
+  	UPDATE t_live_record
+	SET sequence_no = sequence_no + #{offset,jdbcType=INTEGER}
+	WHERE
+		sequence_no = #{sequenceNo,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 根据主播分组统计直播时长等信息 -->
+  <select id="getLiveInfoByAnchor" resultType="com.xmniao.xmn.core.live_anchor.entity.BLiver">
+	  	SELECT
+			anchor_id AS id,
+			IFNULL(SUM(zhibo_duration/60),0) liveMinute,
+			count(anchor_id) recordNum
+		FROM
+			t_live_record
+		WHERE
+			anchor_id IS NOT NULL
+		AND `status` = '1'
+		AND DATE_FORMAT(plan_start_date, '%Y-%m') = DATE_FORMAT(SYSDATE(), '%Y-%m')
+		GROUP BY
+			anchor_id
+	</select>
+	
+  <!-- 根据主播分组统计直播总时长等信息 -->
+  <select id="getLiveTotalInfoByAnchor" resultType="com.xmniao.xmn.core.live_anchor.entity.BLiver">
+	  	SELECT
+			anchor_id AS id,
+			IFNULL(SUM(zhibo_duration/60),0) liveMinute,
+			count(anchor_id) recordNum
+		FROM
+			t_live_record
+		WHERE
+			anchor_id IS NOT NULL
+		AND `status` = '1'
+		GROUP BY
+			anchor_id
+	</select>
+	
+	<!-- 根据主播ID统计直播时长 -->
+	<select id="getLiveTimeByAnchorId" resultType="java.math.BigDecimal" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRecord">
+		SELECT
+			IFNULL(
+				SUM(
+					TIMESTAMPDIFF(MINUTE, start_date, end_date)
+				),
+				0
+			) liveMinute
+		FROM
+			t_live_record
+		WHERE
+			anchor_id = #{anchorId}
+	</select>
+	
+	<!-- 根据商家ID获取城市名称 -->
+	<select id="getSellerCityName" resultType="com.xmniao.xmn.core.live_anchor.entity.TLiveRecord" parameterType="java.lang.Integer">
+		SELECT
+			title AS sellerCityName,
+			sellerid,
+			sellername,
+			address zhiboAddress
+		FROM
+			t_seller s
+		LEFT JOIN t_area a ON s.city = a.area_id
+		WHERE
+			sellerid = #{sellerid,jdbcType=INTEGER}
+	</select>
+	
+	<!-- 将主播通告置为无效 -->
+	<update id="updateRecordStatus" parameterType="java.lang.Integer">
+		UPDATE t_live_record
+		SET `status` = '0'
+		WHERE
+			anchor_id = #{anchor_id}
+	</update>
+	
+	<!-- 统计直播时长 -->
+	<select id="countZhiboDuration" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRecord">
+		SELECT
+			SUM(zhibo_duration) AS zhiboDuration
+		FROM
+			t_live_record
+		<where>
+			1=1
+			<include refid="whereSQL"></include>
+		</where>
+	</select>
+	
+	<!-- 更新直播首页推荐，置顶，推荐排序等信息 -->
+	<update id="updateRecommendedInfo" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRecord" >
+    update t_live_record
+    <set >
+      <if test="sequenceNo != null" >
+        sequence_no = #{sequenceNo,jdbcType=INTEGER},
+      </if>
+      <if test="recommended != null" >
+        recommended = #{recommended,jdbcType=INTEGER},
+      </if>
+      <if test="stick != null" >
+        stick = #{stick,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+	<select id="getFreshmanRecordInfoList" resultMap="liveRecordMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRecord">
+		select
+		<include refid="live_record_columns" />
+		from t_live_record 
+		<where>
+			1=1
+			<include refid="whereSQL"></include>
+			AND NOT EXISTS (SELECT rid FROM t_live_recommend_record tr WHERE
+			rtype = #{rtype,jdbcType=INTEGER} 
+			<if test="moduleType != null" >
+                AND module_type=#{moduleType,jdbcType=INTEGER}
+            </if>
+			AND t_live_record.id = tr.rid)
+		</where>
+
+		<if test="order != -1">
+			order by plan_start_date DESC
+		</if>
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+  
+  	<!-- 1、分组统计新时尚大赛主播场次 -->
+	<select id="getLiveInfoList" resultType="map" parameterType="map">
+		SELECT
+			<!-- 选手直播用户ID -->
+			anchor_id AS liverId,
+			<!-- 直播场次 -->
+			IFNULL(count(id),0) AS liveCount,
+			<!-- 直播时长 -->
+			IFNULL(SUM(zhibo_duration/60),0) AS liveTimeCount 
+		FROM
+			t_live_record
+		WHERE
+			zhibo_type IN ('3', '4', '5')
+		AND zhibo_duration >= 1800
+		<if test="liverIds !=null and liverIds !='' ">
+			AND anchor_id IN 
+			<foreach collection="liverIds" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		AND `status`='1'
+		GROUP BY anchor_id
+	</select>
+  
+</mapper>

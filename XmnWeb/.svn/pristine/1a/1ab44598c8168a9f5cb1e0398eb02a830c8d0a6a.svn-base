@@ -1,0 +1,49 @@
+package com.xmniao.xmn.core.vstar.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.vstar.entity.FashionTicketSeat;
+
+public interface FashionTicketSeatDao extends BaseDao<FashionTicketSeat>{
+    int deleteByPrimaryKey(Integer id);
+
+    int insert(FashionTicketSeat record);
+
+    int insertSelective(FashionTicketSeat record);
+
+    FashionTicketSeat selectByPrimaryKey(Integer id);
+
+    int updateByPrimaryKeySelective(FashionTicketSeat record);
+
+    int updateByPrimaryKey(FashionTicketSeat record);
+
+	/**
+	 * 方法描述：在此处添加方法描述 <br/>
+	 * 创建人： jianming <br/>
+	 * 创建时间：2017年6月1日下午7:50:58 <br/>
+	 * @param list
+	 * @return
+	 */
+	List<FashionTicketSeat> getListByIds(List<String> list);
+
+	/**
+	 * 方法描述：在此处添加方法描述 <br/>
+	 * 创建人： jianming <br/>
+	 * 创建时间：2017年6月2日下午6:52:55 <br/>
+	 * @param asList
+	 * @param integer 
+	 */
+	void activateIds(@Param("list")List<String> asList,@Param("fid") Integer integer);
+
+	/**
+	 * 方法描述：在此处添加方法描述 <br/>
+	 * 创建人： jianming <br/>
+	 * 创建时间：2017年6月6日下午5:27:53 <br/>
+	 * @param sids
+	 * @return
+	 */
+	List<FashionTicketSeat> getByIdAndStatus(List<String> sids);
+}

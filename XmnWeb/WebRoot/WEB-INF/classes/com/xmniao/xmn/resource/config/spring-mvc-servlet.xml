@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
+	http://www.springframework.org/schema/mvc 
+	http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd 
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+	
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
+		p:location="classpath:conf_config.properties"
+		p:fileEncoding="utf-8" />
+		
+
+   	<!-- JSON转换器 -->
+	<bean id="fastJsonHttpMessageConverter" class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+		<property name="supportedMediaTypes">
+			<list>
+				<value>application/json;charset=UTF-8</value>
+			</list>
+		</property>
+	</bean>
+	
+
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<ref bean="fastJsonHttpMessageConverter" /><!-- json转换器 -->
+			</list>
+		</property>
+	</bean>
+	
+	
+	<!-- 过滤器 -->
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"> 
+		<property name="interceptors">
+			<list>
+				<bean class="com.xmniao.xmn.core.util.handler.TokenHandler"/>
+				<bean class="com.xmniao.xmn.core.util.handler.LoggingHandler"/> 
+			</list>
+		</property>
+	</bean>	
+	
+	
+	<bean class="com.xmniao.xmn.core.base.Import.context.DefaultContext">
+		<property name="configName" value="com/xmniao/xmn/resource/config/excelModeMappingl.xml"></property>
+	</bean>
+	
+	<!-- 自动注入Controller层 -->
+	<context:component-scan base-package="com.xmniao" >
+  		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service" /> 
+	</context:component-scan>
+	
+		
+
+	<!-- 配置视图解析器，将ModelAndView及字符串解析为具体的页面 -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+		p:viewClass="org.springframework.web.servlet.view.JstlView" p:prefix="/WEB-INF/view/"
+		p:suffix=".jsp" />
+	
+	<!-- 文件上传 -->
+	<bean id="multipartResolver"
+        class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="1100000000" />
+    </bean>
+</beans>

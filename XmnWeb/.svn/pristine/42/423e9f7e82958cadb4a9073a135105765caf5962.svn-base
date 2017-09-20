@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.cloud_design.dao.DMaterialCategoryDao" >
+
+
+  <resultMap id="materialCategoryMap" type="com.xmniao.xmn.core.cloud_design.entity.DMaterialCategory" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="parent_id" property="parentId" jdbcType="BIGINT" />
+    <result column="level" property="level" jdbcType="INTEGER" />
+    <result column="layers" property="layers" jdbcType="VARCHAR" />
+    <result column="order_val" property="orderVal" jdbcType="INTEGER" />
+    <result column="pic_url" property="picUrl" jdbcType="VARCHAR" />
+    <result column="is_recommend" property="isRecommend" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  
+  <sql id="materialCategory_column_list" >
+    id, name, parent_id, level, layers, order_val, pic_url, is_recommend
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test=" null != name and '' != name ">
+  		AND category.`name` like '%${name}%'
+  	</if>
+  	
+  </sql>
+  
+  
+  <select id="selectById" resultMap="materialCategoryMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="materialCategory_column_list" />,
+    	(
+			SELECT
+				group_concat(relation.material_attr_id SEPARATOR ',')
+			FROM
+				d_material_category_attr_relation relation
+			WHERE
+				relation.category_id = category.id
+		) attrIds,
+		(
+			SELECT
+				group_concat(
+					tagrel.material_tag_id SEPARATOR ','
+				)
+			FROM
+				d_material_category_tag_relation tagrel
+			WHERE
+				tagrel.category_id = category.id
+		) tagIds
+    from d_material_category category
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getList" resultMap="materialCategoryMap" parameterType="com.xmniao.xmn.core.cloud_design.entity.DMaterialCategory" >
+    SELECT
+		<include refid="materialCategory_column_list" />, 
+		(
+			SELECT
+				group_concat(relation.material_attr_val SEPARATOR '、')
+			FROM
+				d_material_category_attr_relation relation
+			WHERE
+				relation.category_id = category.id
+		) attrs,
+		(
+			SELECT
+				group_concat(
+					tagrel.material_tag_val SEPARATOR '、'
+				)
+			FROM
+				d_material_category_tag_relation tagrel
+			WHERE
+				tagrel.category_id = category.id
+		) tags
+	FROM
+		d_material_category category
+	<where>
+		1=1 
+		<include refid="whereSQL"></include>
+	</where>
+	ORDER BY category.order_val ASC
+	<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <select id="count" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.cloud_design.entity.DMaterialCategory" >
+    select 
+    	count(id)
+    from d_material_category category
+    	<where>
+    		1=1
+    		<include refid="whereSQL"></include>
+    	</where>
+  </select>
+  
+  <delete id="deleteById" parameterType="java.lang.Long" >
+    delete from d_material_category
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  
+  
+  <insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.xmn.core.cloud_design.entity.DMaterialCategory" >
+    insert into d_material_category
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="parentId != null" >
+        parent_id,
+      </if>
+      <if test="level != null" >
+        level,
+      </if>
+      <if test="layers != null" >
+        layers,
+      </if>
+      <if test="orderVal != null" >
+        order_val,
+      </if>
+      <if test="picUrl != null" >
+        pic_url,
+      </if>
+      <if test="isRecommend != null" >
+        is_recommend,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        #{parentId,jdbcType=BIGINT},
+      </if>
+      <if test="level != null" >
+        #{level,jdbcType=INTEGER},
+      </if>
+      <if test="layers != null" >
+        #{layers,jdbcType=VARCHAR},
+      </if>
+      <if test="orderVal != null" >
+        #{orderVal,jdbcType=INTEGER},
+      </if>
+      <if test="picUrl != null" >
+        #{picUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="isRecommend != null" >
+        #{isRecommend,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.cloud_design.entity.DMaterialCategory" >
+    update d_material_category
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        parent_id = #{parentId,jdbcType=BIGINT},
+      </if>
+      <if test="level != null" >
+        level = #{level,jdbcType=INTEGER},
+      </if>
+      <if test="layers != null" >
+        layers = #{layers,jdbcType=VARCHAR},
+      </if>
+      <if test="orderVal != null" >
+        order_val = #{orderVal,jdbcType=INTEGER},
+      </if>
+      <if test="picUrl != null" >
+        pic_url = #{picUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="isRecommend != null" >
+        is_recommend = #{isRecommend,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+</mapper>

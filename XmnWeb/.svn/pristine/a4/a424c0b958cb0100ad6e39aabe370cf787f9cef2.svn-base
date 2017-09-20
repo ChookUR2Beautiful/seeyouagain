@@ -1,0 +1,1302 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.BLiverDao" >
+
+  <resultMap id="liverMap" type="com.xmniao.xmn.core.live_anchor.entity.BLiver" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="utype" property="utype" jdbcType="INTEGER" />
+    <result column="anchor_room_no" property="anchorRoomNo" jdbcType="VARCHAR" />
+    <result column="height" property="height" jdbcType="DECIMAL" />
+    <result column="weight" property="weight" jdbcType="DECIMAL" />
+    <result column="three_dimensional" property="threeDimensional" jdbcType="VARCHAR" />
+    <!-- 个人说明 -->
+    <result column="self_comment" property="selfComment" jdbcType="VARCHAR" />
+    <result column="ledger_ratio" property="ledgerRatio" jdbcType="DECIMAL" />
+    <result column="rank_id" property="rankId" jdbcType="INTEGER" />
+    <result column="rank_no" property="rankNo" jdbcType="INTEGER" />
+    <result column="achievement" property="achievement" jdbcType="VARCHAR" />
+    <result column="current_expe" property="currentExpe" jdbcType="INTEGER" />
+    <result column="concern_nums" property="concernNums" jdbcType="INTEGER" />
+    <result column="concerned_nums" property="concernedNums" jdbcType="INTEGER" />
+    <result column="give_gifts_nums" property="giveGiftsNums" jdbcType="INTEGER" />
+    <result column="gived_gifts_nums" property="givedGiftsNums" jdbcType="INTEGER" />
+    <result column="praised_nums" property="praisedNums" jdbcType="INTEGER" />
+    <result column="view_duration" property="viewDuration" jdbcType="REAL" />
+    <result column="live_duration" property="liveDuration" jdbcType="REAL" />
+    <result column="status" property="status" jdbcType="BIT" />
+    <!-- 商家是否可见 -->
+    <result column="seller_look_status" property="sellerLookStatus" jdbcType="INTEGER" />
+    <result column="msg_status" property="msgStatus" jdbcType="BIT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="weixin" property="weixin" jdbcType="VARCHAR" />
+    <result column="isInside" property="isInside" jdbcType="INTEGER" />
+    <result column="group_id" property="groupId" jdbcType="VARCHAR" />
+    <result column="wechat_pic" property="wechatPic" jdbcType="VARCHAR" />
+    <result column="sale_coupon_ratio" property="saleCouponRatio" jdbcType="DECIMAL" />
+    <result column="use_coupon_ration" property="useCouponRation" jdbcType="DECIMAL" />
+    <result column="sort_val" property="sortVal" jdbcType="INTEGER" />
+    <result column="introduce_mv" property="introduceMv" jdbcType="VARCHAR" />
+    <result column="office_name" property="officeName" jdbcType="VARCHAR" />
+    <result column="enterprise_uid" property="enterpriseUid" jdbcType="INTEGER" />
+    <result column="enterprise_nname" property="enterpriseNname" jdbcType="VARCHAR" />
+    <result column="uid_relation_chain" property="uidRelationChain" jdbcType="LONGVARCHAR" />
+    <result column="uid_relation_chain_nname" property="uidRelationChainNname" jdbcType="LONGVARCHAR" />
+    <result column="uid_relation_chain_level" property="uidRelationChainLevel" jdbcType="INTEGER" />
+    <!-- indirect_uid -->
+    <result column="indirect_uid" property="indirectUid" jdbcType="INTEGER" />
+    <result column="indirect_nname" property="indirectNname" jdbcType="VARCHAR" />
+    <result column="fans_rank_no" property="fansRankNo" jdbcType="INTEGER" />
+    <result column="fans_rank_name" property="fansRankName" jdbcType="VARCHAR" />
+    <result column="fans_rank_id" property="fansRankId" jdbcType="INTEGER" />
+    <result column="referrer_type" property="referrerType" jdbcType="VARCHAR" />
+    
+    <result column="order_amount" property="orderAmount" jdbcType="DECIMAL" />
+    <result column="comsum_amount" property="comsumAmount" jdbcType="DECIMAL" />
+    <result column="comsum_ledger" property="comsumLedger" jdbcType="DECIMAL" />
+    <result column="privilege_ledger" property="privilegeLedger" jdbcType="DECIMAL" />
+    <result column="expected_priviledge_ledger" property="expectedPriviledgeLedger" jdbcType="DECIMAL" />
+    <result column="current_consume_ledger" property="currentConsumeLedger" jdbcType="DECIMAL" />
+    <result column="current_dividend_ledger" property="currentDividendLedger" jdbcType="DECIMAL" />
+    <result column="current_recommend_ledger" property="currentRecommendLedger" jdbcType="DECIMAL" />
+    
+    <result column="red_packet_authority" property="redPacketAuthority" jdbcType="INTEGER" />
+    <result column="user_platform" property="userPlatform" jdbcType="INTEGER" />
+    <result column="object_oriented" property="objectOriented" jdbcType="INTEGER" />
+    <result column="dividends_role" property="dividendsRole" jdbcType="INTEGER" />
+    <result column="referrer_sellerid" property="referrerSellerid" jdbcType="INTEGER" />
+    <result column="junior_limit_ratio" property="juniorLimitRatio" jdbcType="DECIMAL" />
+    <result column="object_oriented_val" property="objectOrientedVal" jdbcType="VARCHAR" />
+    <result column="sign_type" property="signType" jdbcType="INTEGER" />
+    <result column="level_id" property="levelId" jdbcType="INTEGER" />
+    <result column="root_role" property="rootRole" jdbcType="INTEGER" />
+    <result column="level_name" property="levelName" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="province" property="province" jdbcType="INTEGER" />
+    <result column="city" property="city" jdbcType="INTEGER" />
+    <result column="order_status" property="orderStatus" jdbcType="INTEGER" />
+    <result column="ver_uid" property="verUid" jdbcType="INTEGER" />
+    <result column="ver_phone" property="verPhone" jdbcType="VARCHAR" />
+    <result column="ver_name" property="verName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="live_column_list" >
+    liver.id, liver.uid, liver.utype, liver.anchor_room_no, liver.height, liver.weight, liver.three_dimensional,liver.self_comment, liver.ledger_ratio, 
+    liver.rank_id, liver.rank_no, liver.achievement, liver.current_expe, liver.concern_nums, liver.concerned_nums, liver.give_gifts_nums, 
+    liver.gived_gifts_nums, liver.praised_nums, liver.view_duration, liver.live_duration, liver.status,liver.seller_look_status, liver.msg_status, 
+    liver.create_time, liver.update_time , liver.phone , liver.weixin , liver.isInside , liver.group_id, liver.wechat_pic, liver.sale_coupon_ratio,
+    liver.use_coupon_ration, liver.sort_val, liver.introduce_mv, liver.office_name, liver.enterprise_uid, liver.enterprise_nname ,
+    <!-- liver.uid_relation_chain,liver.uid_relation_chain_nname, liver.uid_relation_chain_level, liver.indirect_uid, -->
+    liver.fans_rank_no, liver.fans_rank_name, liver.fans_rank_id , 
+    liver.referrer_type,liver.red_packet_authority,liver.user_platform,liver.object_oriented,liver.dividends_role,liver.referrer_sellerid,
+    liver.junior_limit_ratio,liver.sign_type,liver.level_id,liver.root_role,liver.remark,liver.province,liver.city,liver.order_status
+  </sql>
+  <sql id="base_column">
+    `id`, `uid`, `utype`, `sign_type`, `anchor_room_no`, `phone`, `weixin`, `height`,
+    `weight`, `age`, `three_dimensional`, `self_comment`, `ledger_ratio`, `rank_id`, `rank_no`,
+    `achievement`, `current_expe`, `concern_nums`, `concerned_nums`, `give_gifts_nums`,
+    `gived_gifts_nums`, `praised_nums`, `view_duration_day`, `live_duration_day`,
+    `view_duration`, `live_duration`, `status`, `isInside`, `msg_status`,
+    `seller_look_status`, `group_id`, `group_name`, `create_time`, `update_time`, `wechat_pic`,
+    `sale_coupon_ratio`, `use_coupon_ration`, `isTlsRegister`, `register_source`, `wechat_group`,
+    `sort_val`, `introduce_mv`, `linktype`, `office_name`, `enterprise_uid`, `enterprise_nname`,
+    `uid_relation_chain`, `uid_relation_chain_nname`, `uid_relation_chain_level`, `indirect_uid`,
+    `fans_rank_no`, `fans_rank_name`, `fans_rank_id`, `referrer_type`, `red_packet_authority`, `user_platform`,
+    `object_oriented`, `dividends_role`, `referrer_sellerid`, `referrer_sellertype`, `junior_limit_ratio`,
+    `level_id`, `root_role`, `remark`, `province`, `city`
+  </sql>
+
+  <sql id="ursInfo_column_list">
+  	<!-- 昵称 -->
+	urs.nname AS nickname,
+	<!-- 真实姓名 -->
+	info.name,
+	<!-- 性别 -->
+	info.sex,
+	<!-- 手机号 -->
+	urs.phone,
+	<!-- 头像 -->
+	info.avatar,
+	<!-- 密码 -->
+	urs.`password`,
+	<!-- 身份证号 -->
+	info.idcard,
+	<!-- 出生日期 -->
+	info.birthday 
+  </sql>
+  
+  <sql id="journal_column_list">
+	<!-- 充值总金额 -->
+	journal.order_amount,
+	<!-- 总打赏鸟豆 -->
+	journal.comsum_amount,
+	<!-- 总可返打赏面额 -->
+	journal.comsum_ledger,
+	<!-- 预计还可返的奖励面额 -->
+	journal.expected_priviledge_ledger,
+	<!-- 当前已返打赏面额 -->
+	journal.current_consume_ledger,
+	<!-- 当前已返分红红包金额 -->
+	journal.current_dividend_ledger,
+	<!-- 当前已返推荐面额 -->
+	journal.current_recommend_ledger
+  </sql>
+  
+  <sql id="relation_column_list">
+  	relation.uid_relation_chain,
+  	relation.uid_relation_chain_level, 
+  	relation.indirect_uid,
+  	relation.referrer_sellerid
+  </sql>
+  
+  <!-- Where 查询条件 -->
+  <sql id="whereSQL">
+  		<if test=" null != id and '' != id ">
+  			AND liver.id=#{id}
+  		</if>
+  		<if test=" null != uid and '' != uid ">
+  			AND liver.uid=#{uid}
+  		</if>
+  		<!-- 1 主播 2 普通用户 -->
+  		<if test=" null != utype and '' != utype">
+			AND utype =#{utype}
+		</if>
+			<!-- AND utype = 1 -->
+		<if test=" null != nickname and '' != nickname">
+			AND urs.nname like '%${nickname}%'
+		</if>
+		<if test=" null != phone and '' != phone">
+			AND liver.phone =#{phone}
+		</if>
+		<if test=" null != sellerLookStatus and '' != sellerLookStatus">
+			AND seller_look_status =#{sellerLookStatus}
+		</if>
+		<if test=" null != referrerType and '' != referrerType">
+			AND referrer_type =#{referrerType}
+		</if>
+		<if test="ids != null and ids != ''">
+			AND liver.id in
+			<foreach item="item" index="index" collection="ids"  open="(" separator="," close=") ">
+		 		#{item}
+			</foreach>
+		</if>
+		
+		<if test=" null != showValue and '' != showValue">
+			AND (urs.nname like '%${showValue}%' OR liver.phone like '%${showValue}%')
+		</if>
+		
+		<if test=" null != referrerType and '' != referrerType">
+			AND referrer_type=#{referrerType}
+		</if>
+		
+		<!-- filterVal 当前会员的uid,用于排除等下级 -->
+		<if test=" null != filterVal and '' != filterVal">
+			AND uid_relation_chain NOT LIKE '%${filterVal}%'
+		</if>
+		<if test=" null != userPlatform and '' != userPlatform ">
+  			AND liver.user_platform=#{userPlatform}
+  		</if>
+  		<if test=" null != dividendsRole and '' != dividendsRole ">
+  			AND liver.dividends_role=#{dividendsRole}
+  		</if>
+  		<if test=" null != status and '' != status">
+  			AND liver.status=#{status}
+  		</if>
+  		<if test=" null != signType and '' != signType or 0== signType">
+  			AND liver.sign_type = #{signType}
+  		</if>
+  		<if test=" null != rootRole and '' != rootRole">
+  			AND liver.root_role = #{rootRole}
+  		</if>
+  		<!-- 主播等级 -->
+  		<if test=" null != levelId and '' != levelId ">
+  			AND liver.level_id=#{levelId}
+  		</if>
+
+  		<!-- 来源备注 -->
+  		<if test=" null != remark and '' != remark ">
+  			AND liver.remark like '%${remark}%'
+  		</if>
+  		<!-- 省 -->
+  		<if test=" null != province and '' != province ">
+  			AND liver.province=#{province}
+  		</if>
+  		<!-- 市 -->
+  		<if test=" null != city and '' != city ">
+  			AND liver.city=#{city}
+  		</if>
+  		<if test=" null != orderStatus and '' != orderStatus or 0==orderStatus ">
+  			AND liver.order_status=#{orderStatus}
+  		</if>
+
+  </sql>
+  
+  <select id="getUidByAnchirId" resultType="java.lang.Integer">
+  	 select uid from b_liver where id = #{id}
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="liverMap" parameterType="java.lang.Integer" >
+    select 
+	    <include refid="live_column_list" />,
+	    <include refid="ursInfo_column_list" />
+    FROM
+		b_liver liver
+	LEFT JOIN b_urs urs ON liver.uid = urs.uid
+	LEFT JOIN b_urs_info info ON urs.uid = info.uid
+    where 
+    	id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectBLiver" resultMap="liverMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.BLiver" >
+    select 
+	    <include refid="live_column_list" />,
+	    <include refid="ursInfo_column_list" />,
+	    relation.uid_relation_chain,
+     	relation.uid_relation_chain_level,
+		relation.indirect_uid
+    FROM
+		b_liver liver
+	LEFT JOIN b_urs urs ON liver.uid = urs.uid
+	LEFT JOIN b_urs_info info ON urs.uid = info.uid
+	LEFT JOIN b_urs_earnings_relation relation on relation.uid=liver.uid
+	<if test=" null != objectOriented and '' != objectOriented or objectOriented == 0">
+  			AND relation.object_oriented=#{objectOriented}
+	</if>
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+    LIMIT 0,1
+  </select>
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from b_liver
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  
+  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.xmn.core.live_anchor.entity.BLiver" >
+    insert into b_liver
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="utype != null" >
+        utype,
+      </if>
+      <if test="anchorRoomNo != null" >
+        anchor_room_no,
+      </if>
+      <if test="height != null" >
+        height,
+      </if>
+      <if test="weight != null" >
+        weight,
+      </if>
+      <if test="threeDimensional != null" >
+        three_dimensional,
+      </if>
+      <if test="selfComment != null" >
+        self_comment,
+      </if>
+      <if test="ledgerRatio != null" >
+        ledger_ratio,
+      </if>
+      <if test="rankId != null" >
+        rank_id,
+      </if>
+      <if test="rankNo != null" >
+        rank_no,
+      </if>
+      <if test="achievement != null" >
+        achievement,
+      </if>
+      <if test="currentExpe != null" >
+        current_expe,
+      </if>
+      <if test="concernNums != null" >
+        concern_nums,
+      </if>
+      <if test="concernedNums != null" >
+        concerned_nums,
+      </if>
+      <if test="giveGiftsNums != null" >
+        give_gifts_nums,
+      </if>
+      <if test="givedGiftsNums != null" >
+        gived_gifts_nums,
+      </if>
+      <if test="praisedNums != null" >
+        praised_nums,
+      </if>
+      <if test="viewDuration != null" >
+        view_duration,
+      </if>
+      <if test="liveDuration != null" >
+        live_duration,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="sellerLookStatus != null" >
+        seller_look_status,
+      </if>
+      <if test="msgStatus != null" >
+        msg_status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="weixin != null" >
+        weixin,
+      </if>
+      <if test="isInside != null" >
+        isInside,
+      </if>
+      <if test="wechatPic != null" >
+        wechat_pic,
+      </if>
+      <if test="saleCouponRatio != null" >
+        sale_coupon_ratio,
+      </if>
+      <if test="useCouponRation != null" >
+        use_coupon_ration,
+      </if>
+      <if test="sortVal != null" >
+        sort_val,
+      </if>
+      <if test="introduceMv != null" >
+        introduce_mv,
+      </if>
+      <if test="officeName != null" >
+        office_name,
+      </if>
+      <!-- 会员关系链 -->
+       <if test="enterpriseUid != null" >
+        enterprise_uid,
+      </if>
+       <if test="enterpriseNname != null" >
+        enterprise_nname,
+      </if>
+       <if test="uidRelationChain != null" >
+        uid_relation_chain,
+      </if>
+       <if test="uidRelationChainNname != null" >
+        uid_relation_chain_nname,
+      </if>
+       <if test="uidRelationChainLevel != null" >
+        uid_relation_chain_level,
+      </if>
+      <if test="indirectUid != null" >
+        indirect_uid,
+      </if>
+      <!-- 粉丝级别 -->
+      <if test="fansRankNo != null" >
+        fans_rank_no,
+      </if>
+      <if test="fansRankName != null" >
+        fans_rank_name,
+      </if>
+      <if test="fansRankId != null" >
+        fans_rank_id,
+      </if>
+      
+      <if test="referrerType != null" >
+        referrer_type,
+      </if>
+      <if test="redPacketAuthority != null" >
+        red_packet_authority,
+      </if>
+      
+      <if test="userPlatform != null" >
+        user_platform,
+      </if>
+      <if test="objectOriented != null" >
+        object_oriented,
+      </if>
+      <if test="dividendsRole != null" >
+        dividends_role,
+      </if>
+      <if test="juniorLimitRatio != null" >
+        junior_limit_ratio,
+      </if>
+      
+      <if test="signType != null" >
+        sign_type,
+      </if>
+      <if test="levelId != null" >
+        level_id,
+      </if>
+      <if test="rootRole != null" >
+        root_role,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="province != null" >
+        province,
+      </if>
+      <if test="city != null" >
+        city,
+      </if>
+      <if test="orderStatus != null" >
+        order_status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="utype != null" >
+        #{utype,jdbcType=INTEGER},
+      </if>
+      <if test="anchorRoomNo != null" >
+        #{anchorRoomNo,jdbcType=INTEGER},
+      </if>
+      <if test="height != null" >
+        #{height,jdbcType=DECIMAL},
+      </if>
+      <if test="weight != null" >
+        #{weight,jdbcType=DECIMAL},
+      </if>
+      <if test="threeDimensional != null" >
+        #{threeDimensional,jdbcType=VARCHAR},
+      </if>
+      <if test="selfComment != null" >
+        #{selfComment,jdbcType=VARCHAR},
+      </if>
+      <if test="ledgerRatio != null" >
+        #{ledgerRatio,jdbcType=DECIMAL},
+      </if>
+      <if test="rankId != null" >
+        #{rankId,jdbcType=INTEGER},
+      </if>
+      <if test="rankNo != null" >
+        #{rankNo,jdbcType=INTEGER},
+      </if>
+      <if test="achievement != null" >
+        #{achievement,jdbcType=VARCHAR},
+      </if>
+      <if test="currentExpe != null" >
+        #{currentExpe,jdbcType=INTEGER},
+      </if>
+      <if test="concernNums != null" >
+        #{concernNums,jdbcType=INTEGER},
+      </if>
+      <if test="concernedNums != null" >
+        #{concernedNums,jdbcType=INTEGER},
+      </if>
+      <if test="giveGiftsNums != null" >
+        #{giveGiftsNums,jdbcType=INTEGER},
+      </if>
+      <if test="givedGiftsNums != null" >
+        #{givedGiftsNums,jdbcType=INTEGER},
+      </if>
+      <if test="praisedNums != null" >
+        #{praisedNums,jdbcType=INTEGER},
+      </if>
+      <if test="viewDuration != null" >
+        #{viewDuration,jdbcType=REAL},
+      </if>
+      <if test="liveDuration != null" >
+        #{liveDuration,jdbcType=REAL},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=BIT},
+      </if>
+      <if test="sellerLookStatus != null" >
+        #{sellerLookStatus,jdbcType=INTEGER},
+      </if>
+      <if test="msgStatus != null" >
+        #{msgStatus,jdbcType=BIT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="weixin != null" >
+        #{weixin,jdbcType=VARCHAR},
+      </if>
+      <if test="isInside != null" >
+        #{isInside,jdbcType=INTEGER},
+      </if>
+      <if test="wechatPic != null" >
+        #{wechatPic,jdbcType=VARCHAR},
+      </if>
+      <if test="saleCouponRatio != null" >
+        #{saleCouponRatio,jdbcType=VARCHAR},
+      </if>
+      <if test="useCouponRation != null" >
+        #{useCouponRation,jdbcType=VARCHAR},
+      </if>
+      <if test="sortVal != null" >
+        #{sortVal,jdbcType=INTEGER},
+      </if>
+      <if test="introduceMv != null" >
+        #{introduceMv,jdbcType=VARCHAR},
+      </if>
+      <if test="officeName != null" >
+        #{officeName,jdbcType=VARCHAR},
+      </if>
+      <!-- 会员关系链 -->
+       <if test="enterpriseUid != null" >
+        #{enterpriseUid,jdbcType=INTEGER},
+      </if>
+       <if test="enterpriseNname != null" >
+        #{enterpriseNname,jdbcType=VARCHAR},
+      </if>
+       <if test="uidRelationChain != null" >
+        #{uidRelationChain,jdbcType=LONGVARCHAR},
+      </if>
+       <if test="uidRelationChainNname != null" >
+        #{uidRelationChainNname,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="uidRelationChainLevel != null" >
+        #{uidRelationChainLevel,jdbcType=INTEGER},
+      </if>
+      <if test="indirectUid != null" >
+        #{indirectUid,jdbcType=INTEGER},
+      </if>
+      <!-- 粉丝级别 -->
+       <if test="fansRankNo != null" >
+        #{fansRankNo,jdbcType=INTEGER},
+      </if>
+      <if test="fansRankName != null" >
+        #{fansRankName,jdbcType=VARCHAR},
+      </if>
+      <if test="fansRankId != null" >
+        #{fansRankId,jdbcType=INTEGER},
+      </if>
+      
+      <if test="referrerType != null" >
+        #{referrerType,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketAuthority != null" >
+        #{redPacketAuthority,jdbcType=INTEGER},
+      </if>
+      
+      <if test="userPlatform != null" >
+        #{userPlatform,jdbcType=INTEGER},
+      </if>
+      <if test="objectOriented != null" >
+        #{objectOriented,jdbcType=INTEGER},
+      </if>
+      <if test="dividendsRole != null" >
+        #{dividendsRole,jdbcType=INTEGER},
+      </if>
+      <if test="juniorLimitRatio != null" >
+        #{juniorLimitRatio,jdbcType=DECIMAL},
+      </if>
+      
+      <if test="signType != null" >
+        #{signType,jdbcType=INTEGER},
+      </if>
+      <if test="levelId != null" >
+        #{levelId,jdbcType=INTEGER},
+      </if>
+      <if test="rootRole != null" >
+        #{rootRole,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="province != null" >
+        #{province,jdbcType=INTEGER},
+      </if>
+      <if test="city != null" >
+        #{city,jdbcType=INTEGER},
+      </if>
+      <if test="orderStatus != null" >
+        #{orderStatus,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.live_anchor.entity.BLiver" >
+    update b_liver
+    <set >
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="utype != null" >
+        utype = #{utype,jdbcType=INTEGER},
+      </if>
+      <if test="anchorRoomNo != null" >
+        anchor_room_no = #{anchorRoomNo,jdbcType=INTEGER},
+      </if>
+      <if test="height != null" >
+        height = #{height,jdbcType=DECIMAL},
+      </if>
+      <if test="weight != null" >
+        weight = #{weight,jdbcType=DECIMAL},
+      </if>
+      <if test="threeDimensional != null" >
+        three_dimensional = #{threeDimensional,jdbcType=VARCHAR},
+      </if>
+      <if test="selfComment != null" >
+        self_comment = #{selfComment,jdbcType=VARCHAR},
+      </if>
+      <if test="ledgerRatio != null" >
+        ledger_ratio = #{ledgerRatio,jdbcType=DECIMAL},
+      </if>
+      <if test="rankId != null" >
+        rank_id = #{rankId,jdbcType=INTEGER},
+      </if>
+      <if test="rankNo != null" >
+        rank_no = #{rankNo,jdbcType=INTEGER},
+      </if>
+      <if test="achievement != null" >
+        achievement = #{achievement,jdbcType=VARCHAR},
+      </if>
+      <if test="currentExpe != null" >
+        current_expe = #{currentExpe,jdbcType=INTEGER},
+      </if>
+      <if test="concernNums != null" >
+        concern_nums = #{concernNums,jdbcType=INTEGER},
+      </if>
+      <if test="concernedNums != null" >
+        concerned_nums = #{concernedNums,jdbcType=INTEGER},
+      </if>
+      <if test="giveGiftsNums != null" >
+        give_gifts_nums = #{giveGiftsNums,jdbcType=INTEGER},
+      </if>
+      <if test="givedGiftsNums != null" >
+        gived_gifts_nums = #{givedGiftsNums,jdbcType=INTEGER},
+      </if>
+      <if test="praisedNums != null" >
+        praised_nums = #{praisedNums,jdbcType=INTEGER},
+      </if>
+      <if test="viewDuration != null" >
+        view_duration = #{viewDuration,jdbcType=REAL},
+      </if>
+      <if test="liveDuration != null" >
+        live_duration = #{liveDuration,jdbcType=REAL},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=BIT},
+      </if>
+      <if test="sellerLookStatus != null" >
+        seller_look_status = #{sellerLookStatus,jdbcType=INTEGER},
+      </if>
+      <if test="msgStatus != null" >
+        msg_status = #{msgStatus,jdbcType=BIT},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="weixin != null" >
+        weixin = #{weixin,jdbcType=VARCHAR},
+      </if>
+      <if test="isInside != null" >
+        isInside = #{isInside,jdbcType=VARCHAR},
+      </if>
+      <if test="wechatPic != null" >
+        wechat_pic = #{wechatPic,jdbcType=VARCHAR},
+      </if>
+      <if test="saleCouponRatio != null" >
+        sale_coupon_ratio = #{saleCouponRatio,jdbcType=VARCHAR},
+      </if>
+      <if test="useCouponRation != null" >
+        use_coupon_ration = #{useCouponRation,jdbcType=VARCHAR},
+      </if>
+      <if test="sortVal != null" >
+        sort_val=#{sortVal,jdbcType=INTEGER},
+      </if>
+      <if test="introduceMv != null" >
+        introduce_mv=#{introduceMv,jdbcType=VARCHAR},
+      </if>
+      <if test="officeName != null" >
+        office_name=#{officeName,jdbcType=VARCHAR},
+      </if>
+      <!-- 会员关系链 -->
+       <if test="enterpriseUid != null" >
+        enterprise_uid=#{enterpriseUid,jdbcType=INTEGER},
+      </if>
+       <if test="enterpriseNname != null" >
+        enterprise_nname=#{enterpriseNname,jdbcType=VARCHAR},
+      </if>
+       <if test="uidRelationChain != null" >
+        uid_relation_chain=#{uidRelationChain,jdbcType=LONGVARCHAR},
+      </if>
+       <if test="uidRelationChainNname != null" >
+        uid_relation_chain_nname=#{uidRelationChainNname,jdbcType=LONGVARCHAR},
+      </if>
+       <if test="uidRelationChainLevel != null" >
+        uid_relation_chain_level=#{uidRelationChainLevel,jdbcType=INTEGER},
+      </if>
+      <if test="indirectUid != null" >
+        indirect_uid=#{indirectUid,jdbcType=INTEGER},
+      </if>
+      <if test="referrerType != null" >
+        referrer_type=#{referrerType,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketAuthority != null" >
+        red_packet_authority=#{redPacketAuthority,jdbcType=INTEGER},
+      </if>
+      
+      <if test="userPlatform != null" >
+        user_platform=#{userPlatform,jdbcType=INTEGER},
+      </if>
+      <if test="objectOriented != null" >
+        object_oriented=#{objectOriented,jdbcType=INTEGER},
+      </if>
+      <if test="dividendsRole != null" >
+        dividends_role=#{dividendsRole,jdbcType=INTEGER},
+      </if>
+      <if test="juniorLimitRatio != null" >
+        junior_limit_ratio=#{juniorLimitRatio,jdbcType=DECIMAL},
+      </if>
+      
+      <if test="signType != null" >
+        sign_type= #{signType,jdbcType=INTEGER},
+      </if>
+      <if test="levelId != null" >
+        level_id=#{levelId,jdbcType=INTEGER},
+      </if>
+      <if test="rootRole != null" >
+        root_role=#{rootRole,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark=#{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="province != null" >
+        province=#{province,jdbcType=INTEGER},
+      </if>
+      <if test="city != null" >
+        city=#{city,jdbcType=INTEGER},
+      </if>
+      <if test="orderStatus != null" >
+        order_status=#{orderStatus,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  
+  <select id="getList" resultMap="liverMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.BLiver" >
+    select 
+    	<include refid="live_column_list" />,
+	    <include refid="ursInfo_column_list" />,
+		level.level_name AS level_name,
+		ver_relation.uid AS ver_uid,
+	    ver_info.phone AS ver_phone,
+	    ver_info.nname AS ver_name
+    from 
+    	b_liver liver
+    LEFT JOIN b_urs urs ON liver.uid = urs.uid
+	LEFT JOIN b_urs_info info ON urs.uid = info.uid
+	LEFT JOIN b_live_level level ON liver.level_id = level.id
+	LEFT JOIN b_ver_anchor_relation ver_relation ON liver.uid = ver_relation.anchor_uid AND ver_relation.recommend_status = '2'
+	LEFT JOIN b_urs ver_info ON ver_info.uid = ver_relation.uid
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+    <if test="order != -1 ">
+    	 order by sort_val desc
+    </if>
+    <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <!-- 直播会员列表，包含统计信息 -->
+  <select id="getLiveMemberList" resultMap="liverMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.BLiver" >
+    select 
+    	<include refid="live_column_list" />,
+	    <!-- 昵称 -->
+		urs.nname AS nickname,
+	    <!-- 真实姓名 -->
+		info.name,
+		<!-- 手机号 -->
+		urs.phone,
+	    <include refid="journal_column_list" />,
+	    <include refid="relation_column_list" />,
+	    indirect.nname as indirect_nname
+    from 
+    	b_liver liver
+    LEFT JOIN b_urs urs ON liver.uid = urs.uid
+    LEFT JOIN b_urs_earnings_relation relation ON liver.uid = relation.uid AND relation.object_oriented = 4
+    LEFT JOIN b_urs indirect ON relation.indirect_uid = indirect.uid
+	LEFT JOIN b_liver_journal_count  journal ON liver.uid=journal.uid
+    LEFT JOIN b_urs_info info ON urs.uid = info.uid
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+    <!-- 查看下级 -->
+    <if test="uidViewJunior != null and uidViewJunior != '' ">
+    	and relation.uid_relation_chain like CONCAT('%',LPAD(${uidViewJunior},11,'0'),'%')
+    	and relation.uid != #{uidViewJunior}
+    </if>
+    <if test="userDescription != null and userDescription != '' ">
+    	and EXISTS (select 1 from b_urs_earnings_rank earning where earning.uid = liver.uid and earning.rank_source=#{userDescription})
+    </if>
+    <if test="order != -1 ">
+    	 order by liver.update_time desc
+    </if>
+    <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <!-- 获取等下级会员 -->
+  <select id="getJuniorList" resultMap="liverMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.BLiver" >
+    select 
+    	<include refid="live_column_list" />,
+	    <include refid="ursInfo_column_list" />
+    from 
+    	b_liver liver
+    LEFT JOIN b_urs urs ON liver.uid = urs.uid
+	LEFT JOIN b_urs_info info ON urs.uid = info.uid
+    <where>
+    	1=1
+    	<if test=" null != uidStr and '' != uidStr">
+    		and liver.uid_relation_chain like '%${uidStr}%'
+    	</if>
+    </where>
+    <if test="order != -1 ">
+    	 order by uid_relation_chain_level ASC
+    </if>
+  </select>
+  
+  <select id="count" resultType="Long" parameterType="com.xmniao.xmn.core.live_anchor.entity.BLiver">
+		select 
+	    	count(1)
+	    from 
+	    	b_liver liver
+	    LEFT JOIN b_urs urs ON liver.uid = urs.uid
+    	LEFT JOIN b_urs_earnings_relation relation ON liver.uid = relation.uid AND relation.object_oriented = 4
+		<where>
+			1=1
+			<include refid="whereSQL"></include>
+		</where>
+		<!-- 查看下级 -->
+	    <if test="uidViewJunior != null and uidViewJunior != '' ">
+	    	and relation.uid_relation_chain like CONCAT('%',LPAD(${uidViewJunior},11,'0'),'%')
+	    	and relation.uid != #{uidViewJunior}
+	    </if>
+	    <if test="userDescription != null and userDescription != '' ">
+    		and EXISTS (select 1 from b_urs_earnings_rank earning where earning.uid = liver.uid and earning.rank_source=#{userDescription})
+    	</if>
+  </select>
+  
+  <!-- 根据用户id数组查询主播信息 -->
+	<select id="selectLiversByUids" resultMap="liverMap" parameterType="Object">
+		 SELECT
+			<include refid="live_column_list"></include>
+		FROM
+			b_liver liver
+		WHERE
+			uid IN
+		 <foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+		 	#{item}
+		</foreach>
+	</select>
+	
+	<!-- 根据用户id数组查询主播及会员信息 -->
+	<select id="selectLiverInfoByIds" resultMap="liverMap" parameterType="Object">
+		 SELECT
+			bl.id,
+			bu.nname AS nickname
+		FROM
+			b_liver bl
+		LEFT JOIN b_urs bu ON bl.uid = bu.uid
+		WHERE
+			bl.id IN 
+		 <foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+		 	#{item}
+		</foreach>
+	</select>
+	
+  	<select id="getGroupId" resultType="java.lang.String" parameterType="java.lang.Integer">
+  		select group_name from b_liver where id = #{id}; 
+  	</select>
+  	
+  	<!-- 获取关注该主播的用户ID数组 -->
+  	<select id="getLiverStartId" resultType="java.lang.String" parameterType="java.lang.Integer">
+  		select liver_str_id from t_live_focus where liver_end_id = #{anchorId}
+  	
+  	</select>
+  	
+  	<!-- 更新普通用户关注主播数量 -->
+  	<update id="updateConcernNums" parameterType="Object">
+  		UPDATE b_liver
+			SET concern_nums = concern_nums - 1
+		WHERE
+			id IN 
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+		 	#{item}
+		</foreach>
+  	</update>
+  	
+  	<!-- 根据主播ID删除关注信息 -->
+  	<delete id="deleteFocusByAnchorId" parameterType="java.lang.Integer">
+  		DELETE
+		FROM
+			t_live_focus
+		WHERE
+			liver_end_id = #{anchorId}
+  	</delete>
+  	
+  	<!-- 统计企业级推荐人下线人数 (已作废)-->
+  	<select id="countJuniorsGroupByEUid" resultMap="liverMap" parameterType="java.util.Map">
+  		SELECT
+			count(id) AS juniors,
+			enterprise_uid
+		FROM
+			b_liver
+		<where>
+			1=1
+			<if test=" null != uids and '' != uids">
+				AND enterprise_uid in
+				<foreach item="item" index="index" collection="uids"  open="(" separator="," close=") ">
+				 	#{item}
+				</foreach>
+			</if>
+		</where>
+		GROUP BY
+			enterprise_uid
+  	</select>
+  	
+  	<!-- 统计企业级推荐人下线人数 -->
+  	<select id="countJuniorsByEUids" resultMap="liverMap" parameterType="java.util.Map">
+  		SELECT
+			uid,
+			(
+				SELECT
+					count(id)
+				FROM
+					b_liver l
+				WHERE
+					l.uid != b.uid
+				AND l.uid_relation_chain LIKE CONCAT('%',LPAD(b.uid,11,'0'),'%')
+			) AS juniors
+		FROM
+			b_liver b
+		WHERE
+			referrer_type = '001'
+		AND b.uid IN
+		<foreach item="item" index="index" collection="uids"  open="(" separator="," close=") ">
+				 	#{item}
+		</foreach>
+  	</select>
+  	
+  	<!-- 统计下线人数 -->
+  	<select id="countJuniorsByUid" resultMap="liverMap" parameterType="java.lang.Integer">
+  		SELECT
+			uid,
+			(
+				SELECT
+					count(id)
+				FROM
+					b_liver l
+				WHERE
+					l.uid != b.uid
+				AND l.uid_relation_chain LIKE CONCAT('%',LPAD(b.uid,11,'0'),'%')
+			) AS juniors
+		FROM
+			b_liver b
+		WHERE
+			b.uid=#{uid}
+  	</select>
+  	
+  <!-- 根据用户uid数组查询级别最高的企业级用户信息 -->
+  <select id="selectEnterpriseByUids" resultMap="liverMap" parameterType="Object">
+    SELECT
+		<include refid="live_column_list"></include>,
+		urs.nname AS nickname
+	FROM
+		b_liver liver
+	LEFT JOIN b_urs urs ON urs.uid = liver.uid
+	WHERE
+	1=1
+	AND liver.referrer_type = '001'
+	AND	liver.uid IN
+	    <foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+	      #{item}
+	    </foreach>
+	ORDER BY
+		liver.uid_relation_chain_level DESC
+	LIMIT 0,1
+  </select>
+  
+  <!-- 根据直播会员id数组批量更新主播分成 -->
+  <update id="updateRatioBatchByIds" parameterType="com.xmniao.xmn.core.live_anchor.entity.AnchorRatioBean" >
+    update b_liver
+    <set >
+      <if test="ledgerRatio != null" >
+        ledger_ratio = #{ledgerRatio,jdbcType=DECIMAL},
+      </if>
+      <if test="saleCouponRatio != null" >
+        sale_coupon_ratio = #{saleCouponRatio,jdbcType=DECIMAL},
+      </if>
+      <if test="useCouponRation != null" >
+        use_coupon_ration = #{useCouponRation,jdbcType=DECIMAL},
+      </if>
+    </set>
+    <where>
+    	utype='1'
+    	<if test="idArray !=null and idArray != '' ">
+    	AND id IN
+    		<foreach item="item" index="index" collection="idArray"  open="(" separator="," close=") ">
+	      		#{item}
+	    	</foreach>
+    	</if>
+    </where>
+  </update>
+  
+  <!-- 更新会员关系链等信息 -->
+  <update id="updateRelationChainInfo" parameterType="com.xmniao.xmn.core.live_anchor.entity.BLiver" >
+    update b_liver
+    <set >
+      <!-- 会员关系链 -->
+      <if test="enterpriseUid != null" >
+        enterprise_uid=#{enterpriseUid,jdbcType=INTEGER},
+      </if>
+       <if test="enterpriseNname != null" >
+        enterprise_nname=#{enterpriseNname,jdbcType=VARCHAR},
+      </if>
+       <if test="uidRelationChain != null" >
+        uid_relation_chain=#{uidRelationChain,jdbcType=LONGVARCHAR},
+      </if>
+       <if test="uidRelationChainNname != null" >
+        uid_relation_chain_nname=#{uidRelationChainNname,jdbcType=LONGVARCHAR},
+      </if>
+       <if test="uidRelationChainLevel != null" >
+        uid_relation_chain_level=#{uidRelationChainLevel,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 更新会员间接上级为null -->
+  <update id="updateIndirect2Null" parameterType="com.xmniao.xmn.core.live_anchor.entity.BLiver" >
+    update b_liver
+    <set >
+      <!-- 间接上级-->
+        indirect_uid = null,
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <!-- 查询主播名字信息 -->
+  <select id="selectFloatAdvertLivesInfo" resultMap="liverMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.BLiver">
+    SELECT
+		<include refid="live_column_list"></include>,
+		urs.nname AS nickname
+	FROM
+		b_liver liver
+	LEFT JOIN b_urs urs ON urs.uid = liver.uid
+	WHERE
+	1=1
+    <include refid="whereSQL"></include>
+	ORDER BY
+		liver.uid_relation_chain_level DESC
+  </select>
+  
+  <!-- 统计主播信息 -->
+  <select id="countAnchor" resultType="map" parameterType="map">
+  	SELECT 	
+		SUM(CASE WHEN (sign_type='1' and `status`='1') THEN 1 ELSE 0 END ) col0 ,						<!-- 签约主播 -->
+		SUM(CASE WHEN (sign_type='0' and root_role='1' and `status`='1') THEN 1 ELSE 0 END ) col1 ,		<!-- 兼职主播-普通 -->
+		SUM(CASE WHEN (sign_type='0' and root_role='2' and `status`='1') THEN 1 ELSE 0 END ) col2 ,		<!-- 兼职主播-工会 -->
+		SUM(CASE WHEN (sign_type='0' and root_role='3' and `status`='1') THEN 1 ELSE 0 END ) col3 ,		<!-- 兼职主播-活动-->
+		SUM(CASE WHEN (sign_type='0' and root_role='4' and `status`='1') THEN 1 ELSE 0 END ) col4 ,		<!-- 兼职主播-其他 -->
+    	SUM(CASE WHEN `status`='0' THEN 1 ELSE 0 END ) col5 ,											<!-- 删除主播 -->
+	    SUM(CASE WHEN (sign_type='2' and `status`='1') THEN 1 ELSE 0 END ) col6,						<!-- 公司账号 -->
+	    SUM(CASE WHEN (sign_type='4' and `status`='1') THEN 1 ELSE 0 END ) col7							<!-- 大赛主播 -->
+	from b_liver where utype ='1'
+  </select>
+
+  <!--根据uid 查询一个b_liver-->
+  <select id="selectByUid" resultMap="liverMap">
+    SELECT <include refid="base_column"/>
+    FROM b_liver
+    WHERE uid = #{uid}
+  </select>
+
+  <!--根据uid查询所有下级-->
+  <select id="selectSubordinate" resultMap="liverMap">
+    SELECT <include refid="base_column"/>
+    FROM b_liver
+    WHERE uid_relation_chain LIKE CONCAT('%',LPAD(#{uid},11,'0'),'%') order by uid_relation_chain_level asc
+  </select>
+
+  <!--查询归属下级-->
+  <select id="selectByIndirectUid" resultMap="liverMap">
+    SELECT <include refid="base_column"/>
+    FROM b_liver
+    WHERE indirect_uid = #{uid}
+  </select>
+
+  <!--统计直接下级-->
+  <select id="countDirectSubordinateByUid" resultType="java.lang.Integer">
+    SELECT count(1)
+    FROM b_liver
+    WHERE uid_relation_chain
+    LIKE CONCAT('%',LPAD(#{uid},11,'0'),',___________')
+  </select>
+
+  <!--查询直接下级-->
+  <select id="selectDirectSubordinates" resultMap="liverMap">
+    SELECT <include refid="base_column"/>
+    FROM b_liver
+    WHERE uid_relation_chain
+    LIKE CONCAT('%',LPAD(#{uid},11,'0'),',___________')
+  </select>
+
+  <!--查询V客等级-->
+  <select id="queryLiverLevel" resultType="java.lang.String">
+    SELECT r.rank_name
+    from b_urs_earnings_rank u
+      LEFT JOIN b_live_fans_rank r on u.rank_id = r.id
+    where u.uid = ${uid} and u.rank_source = 4
+  </select>
+  <select id="likeLiverByPhone" resultMap="liverMap">
+    SELECT phone,uid from b_liver WHERE phone like concat('%',${phone},"%") limit 10
+  </select>
+  <select id="likeLiverByUid" resultMap="liverMap">
+    SELECT phone,uid from b_liver WHERE uid like concat('%',${uid},"%") limit 10
+  </select>
+
+	<select id="getUrsDetailInfoByUid" parameterType="java.lang.Integer"
+		resultType="com.xmniao.xmn.core.live_anchor.entity.BLiver">
+		SELECT
+		<!-- 会员ID -->
+		urs.uid,
+		<!-- 昵称 -->
+		urs.nname AS nickname,
+		<!-- 真实姓名 -->
+		info.name,
+		<!-- 性别 -->
+		info.sex,
+		<!-- 手机号 -->
+		urs.phone,
+		<!-- 头像 -->
+		info.avatar,
+		<!-- 密码 -->
+		urs.`password`,
+		<!-- 身份证号 -->
+		info.idcard,
+		<!-- 出生日期 -->
+		info.birthday,
+		tr.id,
+		tr.perform_experience as performExperience,
+		tr.experience_resume as experienceResume,
+		tr.interests,
+		tr.style_label as styleLabel
+		FROM
+		b_urs urs
+		LEFT JOIN b_urs_info info ON urs.uid = info.uid
+		LEFT JOIN b_liver tr ON tr.uid = info.uid
+		WHERE
+		urs.uid = #{uid}
+		LIMIT 0,1
+	</select>
+	
+	<!-- 获取充值的总金额 -->
+	<select id="getRecommendOrderAmountList" resultType="map" parameterType="Object">
+		SELECT order_amount AS orderAmount, uid FROM b_liver_journal_count
+		<where>
+			1 = 1
+			AND `uid` IN
+			<foreach item="item" index="index" collection="array" open="("
+				separator="," close=") ">
+				#{item}
+			</foreach>
+		</where>
+	</select>
+	
+	<!--统计主播的真实粉丝数  -->
+	<select id="getRealFansList" resultType="com.xmniao.xmn.core.live_anchor.entity.BLiver" parameterType="map">
+		SELECT
+			t.uid,
+			count(uid) AS realFansNum
+		FROM
+			(
+				SELECT
+					player_uid AS uid,
+					uid AS start_uid
+				FROM
+					t_vstar_like
+				WHERE
+					type = '1'
+				AND is_cancel = '1'
+				<if test="uidList !=null and uidList !='' ">
+					AND	player_uid IN 
+						<foreach collection="uidList" item="item" index="index" open="(" separator="," close=")">
+							#{item}
+						</foreach>
+				</if>
+				
+				UNION
+				
+				SELECT
+					end_uid AS uid,
+					str_uid AS start_uid
+				FROM
+					t_live_focus
+				WHERE
+					fans_type = '1'
+				<if test="uidList !=null and uidList !='' ">
+					AND	end_uid IN 
+						<foreach collection="uidList" item="item" index="index" open="(" separator="," close=")">
+							#{item}
+						</foreach>
+				</if>
+			) t
+		<where>
+			1=1
+		</where>
+		GROUP BY
+			t.uid
+	</select>
+	
+	<!-- 获取主播机器人粉丝数列表 -->
+	<select id="getRobotFansList" resultType="com.xmniao.xmn.core.live_anchor.entity.BLiver" parameterType="map">
+		SELECT
+			end_uid AS uid,
+			count(end_uid) AS robotFansNum
+		FROM
+			t_live_focus
+		WHERE
+			fans_type = '2'
+		AND end_uid IN 
+		<foreach collection="uidList" item="item" index="index" open="(" separator="," close=")" >
+			#{item}
+		</foreach>
+		GROUP BY end_uid
+	</select>
+	
+</mapper>

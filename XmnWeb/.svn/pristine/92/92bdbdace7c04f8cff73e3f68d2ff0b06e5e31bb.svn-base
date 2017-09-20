@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.business_statistics.dao.TMicrographModuleDao">
+
+
+  <resultMap id="micrographModuleMap" type="com.xmniao.xmn.core.business_statistics.entity.TMicrographModule">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="page_id" jdbcType="INTEGER" property="pageId" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="left_style" jdbcType="DECIMAL" property="leftStyle" />
+    <result column="top" jdbcType="DECIMAL" property="top" />
+    <result column="width" jdbcType="DECIMAL" property="width" />
+    <result column="height" jdbcType="DECIMAL" property="height" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="image" jdbcType="VARCHAR" property="image" />
+    <result column="font_size" jdbcType="INTEGER" property="fontSize" />
+    <result column="font_num" jdbcType="INTEGER" property="fontNum" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="font_coordinate" jdbcType="VARCHAR" property="fontCoordinate" />
+    <result column="img_coordinate" jdbcType="VARCHAR" property="imgCoordinate" />
+    <result column="img_size" jdbcType="VARCHAR" property="imgSize" />
+    <result column="sort_val" jdbcType="INTEGER" property="sortVal" />
+  </resultMap>
+  
+  
+  <sql id="micrographModule_column_list">
+    id, page_id, type, left_style, top, width, height, remark, image, font_size, font_num, 
+    create_time, update_time, status, font_coordinate, img_coordinate, img_size,sort_val
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test="pageId != null and pageId != ''">
+  		AND page_id=#{pageId}
+  	</if>
+  </sql>
+  
+  <select id="getObject" parameterType="java.lang.Long" resultMap="micrographModuleMap">
+    select 
+    <include refid="micrographModule_column_list" />
+    from t_micrograph_module
+    where id = #{id}
+  </select>
+  
+  <select id="getList" parameterType="java.lang.Long" resultMap="micrographModuleMap">
+    select 
+    <include refid="micrographModule_column_list" />
+    from t_micrograph_module
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+  </select>
+  
+  
+  <delete id="delete" parameterType="java.lang.Object">
+    delete from t_micrograph_module
+    where id in
+    <foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+	</foreach>
+  </delete>
+  
+  <delete id="deleteByPageId" parameterType="java.lang.Integer">
+    delete from t_micrograph_module
+    where page_id = #{pageId}
+  </delete>
+  
+  <insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.xmn.core.business_statistics.entity.TMicrographModule">
+    insert into t_micrograph_module
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="pageId != null">
+        page_id,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="leftStyle != null">
+        left_style,
+      </if>
+      <if test="top != null">
+        top,
+      </if>
+      <if test="width != null">
+        width,
+      </if>
+      <if test="height != null">
+        height,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="image != null">
+        image,
+      </if>
+      <if test="fontSize != null">
+        font_size,
+      </if>
+      <if test="fontNum != null">
+        font_num,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="fontCoordinate != null">
+        font_coordinate,
+      </if>
+      <if test="imgCoordinate != null">
+        img_coordinate,
+      </if>
+      <if test="imgSize != null">
+        img_size,
+      </if>
+      <if test="sortVal != null">
+        sort_val,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="pageId != null">
+        #{pageId,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="leftStyle != null">
+        #{leftStyle,jdbcType=DECIMAL},
+      </if>
+      <if test="top != null">
+        #{top,jdbcType=DECIMAL},
+      </if>
+      <if test="width != null">
+        #{width,jdbcType=DECIMAL},
+      </if>
+      <if test="height != null">
+        #{height,jdbcType=DECIMAL},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="image != null">
+        #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="fontSize != null">
+        #{fontSize,jdbcType=INTEGER},
+      </if>
+      <if test="fontNum != null">
+        #{fontNum,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="fontCoordinate != null">
+        #{fontCoordinate,jdbcType=VARCHAR},
+      </if>
+      <if test="imgCoordinate != null">
+        #{imgCoordinate,jdbcType=VARCHAR},
+      </if>
+      <if test="imgSize != null">
+        #{imgSize,jdbcType=VARCHAR},
+      </if>
+      <if test="sortVal != null">
+        #{sortVal,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+  
+    <!-- 批量插入微图助力页面模块信息 -->
+	<insert id="addBatch" parameterType="java.util.ArrayList">
+		INSERT INTO t_micrograph_module
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<include refid="micrographModule_column_list" /> 
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+			<!-- id, page_id, type, left_style, top, width, height, remark, image, font_size, font_num, create_time, update_time, status, font_coordinate, img_coordinate, img_size,sort_val -->
+				#{item.id},
+				#{item.pageId},
+				#{item.type},
+				#{item.leftStyle},
+				#{item.top},
+				#{item.width},
+				#{item.height},
+				#{item.remark},
+				#{item.image},
+				#{item.fontSize},
+				#{item.fontNum},
+				#{item.createTime},
+				#{item.updateTime},
+				#{item.status},
+				#{item.fontCoordinate},
+				#{item.imgCoordinate},
+				#{item.imgSize},
+				#{item.sortVal}
+			</trim>
+		</foreach>
+	</insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.business_statistics.entity.TMicrographModule">
+    update t_micrograph_module
+    <set>
+      <if test="pageId != null">
+        page_id = #{pageId,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="leftStyle != null">
+        left_style = #{leftStyle,jdbcType=DECIMAL},
+      </if>
+      <if test="top != null">
+        top = #{top,jdbcType=DECIMAL},
+      </if>
+      <if test="width != null">
+        width = #{width,jdbcType=DECIMAL},
+      </if>
+      <if test="height != null">
+        height = #{height,jdbcType=DECIMAL},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="image != null">
+        image = #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="fontSize != null">
+        font_size = #{fontSize,jdbcType=INTEGER},
+      </if>
+      <if test="fontNum != null">
+        font_num = #{fontNum,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="fontCoordinate != null">
+        font_coordinate=#{fontCoordinate,jdbcType=VARCHAR},
+      </if>
+      <if test="imgCoordinate != null">
+        img_coordinate=#{imgCoordinate,jdbcType=VARCHAR},
+      </if>
+      <if test="imgSize != null">
+        img_size=#{imgSize,jdbcType=VARCHAR},
+      </if>
+      <if test="sortVal != null">
+        sort_val=#{sortVal,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  
+</mapper>

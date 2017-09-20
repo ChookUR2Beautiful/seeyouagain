@@ -1,0 +1,69 @@
+package com.xmniao.xmn.core.manor.dao;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.manor.entity.FlowerNode;
+import com.xmniao.xmn.core.manor.entity.TManorFlowerRelation;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+import java.util.Map;
+
+
+public interface ManorFlowerRelationDao extends BaseDao<TManorFlowerRelation> {
+	
+    int deleteByPrimaryKey(Integer id);
+
+    int insert(TManorFlowerRelation record);
+
+    int insertSelective(TManorFlowerRelation record);
+
+    TManorFlowerRelation selectByPrimaryKey(Integer id);
+
+    int updateByPrimaryKeySelective(TManorFlowerRelation record);
+
+    int updateByPrimaryKey(TManorFlowerRelation record);
+    
+    TManorFlowerRelation getFlowerRelationInfo(TManorFlowerRelation record);
+    
+    List<TManorFlowerRelation> getFlowerRelationNumberInfo(Map<String, Integer> params);
+
+    /**
+     * 查询子节点
+     * @param uid
+     * @return
+     */
+    List<FlowerNode> selectSubNodes(Integer uid);
+
+
+    /**
+     * 根据节点查询该节点下的说所有花
+     * @param node
+     * @return
+     */
+    List<TManorFlowerRelation> selectByNode(@Param("node") TManorFlowerRelation node);
+
+
+
+    List<TManorFlowerRelation> getCurrentFlowerRelationCount(Object[] objects);
+
+
+    List<TManorFlowerRelation> getTotalFlowerRelationCount(Object[] objects);
+
+
+    /**
+     * 查询用户初始节点
+     * @param uid
+     * @return
+     */
+    FlowerNode selectInitNode(Integer uid);
+
+    List<FlowerNode> selectAllNode(@Param("initNode") FlowerNode initNode);
+
+    Integer selectLocationByRelationChain(String relationChain);
+
+    List<FlowerNode> selectAllNodeEx(@Param("uid") Integer uid);
+
+    Integer countPerishedFlowers(@Param("nodeId") Integer nodeId);
+
+    Integer countLivedFlowers(Integer nodeId);
+}

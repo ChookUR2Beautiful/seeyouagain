@@ -1,0 +1,152 @@
+package com.xmniao.xmn.core.manor.entity;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+
+import com.alibaba.fastjson.annotation.JSONField;
+
+public class TManorHoneyManage extends TManorUserInfo{
+    /**
+	 * 商店兑换管理-兑换管理
+	 */
+	private static final long serialVersionUID = 6573985205148336843L;
+
+	private Integer id;
+
+    private Double rate;
+
+    private Integer sellPotLimit;
+
+    private Integer potHoney;
+    
+    private String sunshineCouponJson;
+    
+    private List<TManorSunshineCoupon> manorSunshineCouponList;
+    
+    
+    //　自定义字段
+    private Integer uid;
+    
+    private Integer channel;  //收支渠道
+    
+    private BigDecimal num;  //兑换阳光数量
+    
+    private BigDecimal exchangeNumber;  //兑换优惠券/红包数量
+    
+    private BigDecimal exchangeAmount;  //兑换单个优惠券/红包面额
+    
+    private Date createTime;  //记录时间
+    
+    private List<TManorFlowerConvert> manorFlowerConvertList;  //黄金庄园花朵套餐信息
+    
+    public Integer getUid() {
+		return uid;
+	}
+
+	public void setUid(Integer uid) {
+		this.uid = uid;
+	}
+
+	public Integer getChannel() {
+		return channel;
+	}
+
+	public void setChannel(Integer channel) {
+		this.channel = channel;
+	}
+
+	public BigDecimal getNum() {
+		return num;
+	}
+
+	public void setNum(BigDecimal num) {
+		this.num = num;
+	}
+
+	public BigDecimal getExchangeNumber() {
+		return exchangeNumber;
+	}
+
+	public void setExchangeNumber(BigDecimal exchangeNumber) {
+		this.exchangeNumber = exchangeNumber;
+	}
+
+	public BigDecimal getExchangeAmount() {
+		return exchangeAmount;
+	}
+
+	public void setExchangeAmount(BigDecimal exchangeAmount) {
+		this.exchangeAmount = exchangeAmount;
+	}
+
+	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+	
+	public List<TManorFlowerConvert> getManorFlowerConvertList() {
+		return manorFlowerConvertList;
+	}
+
+	public void setManorFlowerConvertList(
+			List<TManorFlowerConvert> manorFlowerConvertList) {
+		this.manorFlowerConvertList = manorFlowerConvertList;
+	}
+    
+    //　自定义字段
+  
+
+	public List<TManorSunshineCoupon> getManorSunshineCouponList() {
+		return manorSunshineCouponList;
+	}
+
+	public void setManorSunshineCouponList(
+			List<TManorSunshineCoupon> manorSunshineCouponList) {
+		this.manorSunshineCouponList = manorSunshineCouponList;
+	}
+
+	public String getSunshineCouponJson() {
+		return sunshineCouponJson;
+	}
+
+	public void setSunshineCouponJson(String sunshineCouponJson) {
+		this.sunshineCouponJson = sunshineCouponJson;
+	}
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Double getRate() {
+        return rate;
+    }
+
+    public void setRate(Double rate) {
+        this.rate = rate;
+    }
+
+    public Integer getSellPotLimit() {
+        return sellPotLimit;
+    }
+
+    public void setSellPotLimit(Integer sellPotLimit) {
+        this.sellPotLimit = sellPotLimit;
+    }
+
+    public Integer getPotHoney() {
+        return potHoney;
+    }
+
+    public void setPotHoney(Integer potHoney) {
+        this.potHoney = potHoney;
+    }
+}

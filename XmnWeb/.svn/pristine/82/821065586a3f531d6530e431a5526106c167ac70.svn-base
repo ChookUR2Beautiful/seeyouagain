@@ -1,0 +1,216 @@
+<%@ page language="java" import="java.util.*,java.net.*" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <base href="<%=basePath%>">
+    <title>报名审核管理</title>
+	<meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="cache-control" content="no-cache">
+	<meta http-equiv="expires" content="0"> 
+	<link href="<%=path%>/resources/web/css/view.css" rel="stylesheet">   
+	<link href="<%=path%>/resources/zui/css/zui.css" rel="stylesheet">   
+	<link href="<%=path%>/resources/zui/lib/chosen/chosen.css" rel="stylesheet">
+  </head>
+  
+  <body  style="overflow-x: auto;overflow-y: auto;min-width: 1024px;background:#EEE" class="doc-views with-navbar">
+	<div id="prompt" style="position: fixed; height: 100%; width: 100%; z-index: 9; background: url(resources/page/loading.gif) #FFF no-repeat center; filter: alpha(opacity =  50); opacity: 0.5; display: none;"></div>
+	
+	<!-- 导航栏 -->
+	<ul id="myTab" class="nav nav-tabs">
+		<li class="active"><a href="#tab1" data-toggle="tab">报名审核</a></li>
+		<li class=""><a href="#tab2" data-toggle="tab">试播审核</a></li>
+		<li class=""><a href="#tab3" data-toggle="tab">限制中</a></li>
+	</ul>
+	
+	<div class="tab-content">
+		<!-- 报名审核star -->
+		<div id="tab1" class="tab-pane in active">
+			<div class="panel">
+					<div class="panel-body">
+						<form class="form-horizontal" role="form" id="searchForm1">
+						<!-- 参赛状态 1.已报名 2.报名审核通过  3.报名审核拒绝 4.实名认证待审核 5.实名认证通过 6.实名认证拒绝 7.试播审核通过 8.试播审核拒绝  -->
+						<input type="hidden"  name="statusParam" value="1,2,3">
+						<!-- 受限制的 -->
+						<input type="hidden"  name="confining" value="0">
+							<div class="form-group">
+									<table style="width:100%;">
+										<tbody>
+											<tr>
+												<td style="width:5%;"><h5>&nbsp;&nbsp;选手编号：</h5></td>
+												<td style="width:25%;"><input type="text" class="form-control"  name="id" style = "width:85%;"></td>
+												<td style="width:5%;"><h5>&nbsp;&nbsp;选手名称：</h5></td>
+												<td style="width:25%;"><input type="text" class="form-control"  name="nname" style = "width:85%;"></td>
+												<td style="width:5%;"><h5>手机号码：</h5></td>
+												<td style="width:30%;"><input type="text" class="form-control"  name="phone" style = "width:66%;"></td>
+											</tr>
+											<tr>
+												<td style="width:5%;"><h5>&nbsp;&nbsp;区域：</h5></td>
+												<td style="width:25%;">
+													<div class="input-group" id="ld1"  style="width:88%">
+													</div>
+												</td>
+												<td style="width:5%;"><h5></h5></td>
+												<td style="width:25%;">
+												</td>
+												<td colspan="2" style="width:35%;">
+													<div class="submit" style="text-align: left;">
+														<input class="submit radius-3" type="button"  value="查询全部"  data-bus = 'query' />
+														<input  class="reset radius-3" type="reset" value="重置全部"   data-bus = 'reset' />
+													</div>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+			
+							<c:if test="${!empty param.page}">
+								<input type="hidden" value="${param.page}" name="page" />
+							</c:if>
+						</form>
+					</div>
+			</div>
+			
+			<div class="panel panel-default">
+				<div class="panel-body data">
+					<div class="btn-group" style="margin-bottom: 5px;">
+						<c:if
+							test="${null!=btnAu['VstarEnroll/manage/auditSet'] && btnAu['VstarEnroll/manage/auditSet']}">
+							<button type="button" class="btn btn-success" data-type="ajax"
+								data-title="设置" data-url="VstarEnroll/manage/auditSet/init.jhtml"
+								data-toggle="modal" data-width="auto">
+								<span class="icon-plus"></span>&nbsp;设置
+							</button>
+						</c:if>
+					</div>
+					<div id="enrollList1"></div>
+				</div>
+			</div>
+		</div>
+		<!-- 报名审核end -->
+		
+		<!-- 试播审核star -->
+		<div id="tab2" class="tab-pane">
+			<div class="panel">
+					<div class="panel-body">
+						<form class="form-horizontal" role="form" id="searchForm2">
+						<!-- 参赛状态 1.已报名 2.报名审核通过  3.报名审核拒绝 4.实名认证待审核 5.实名认证通过 6.实名认证拒绝 7.试播审核通过 8.试播审核拒绝 -->
+						<input type="hidden"  name="statusParam" value="5,7,8">
+						<!-- 受限制的 -->
+						<input type="hidden"  name="confining" value="0">
+							<div class="form-group">
+									<table style="width:100%;">
+										<tbody>
+											<tr>
+												<td style="width:5%;"><h5>&nbsp;&nbsp;选手编号：</h5></td>
+												<td style="width:25%;"><input type="text" class="form-control"  name="id" style = "width:85%;"></td>
+												<td style="width:5%;"><h5>&nbsp;&nbsp;选手名称：</h5></td>
+												<td style="width:25%;"><input type="text" class="form-control"  name="nname" style = "width:85%;"></td>
+												<td style="width:5%;"><h5>手机号码：</h5></td>
+												<td style="width:30%;"><input type="text" class="form-control"  name="phone" style = "width:66%;"></td>
+											</tr>
+											<tr>
+												<td style="width:5%;"><h5>&nbsp;&nbsp;区域：</h5></td>
+												<td style="width:25%;">
+													<div class="input-group" id="ld2"  style="width:88%">
+													</div>
+												</td>
+												<td style="width:5%;"><h5></h5></td>
+												<td style="width:25%;">
+												</td>
+												<td colspan="2" style="width:35%;">
+													<div class="submit" style="text-align: left;">
+														<input class="submit radius-3" type="button"  value="查询全部"  data-bus = 'query' />
+														<input  class="reset radius-3" type="reset" value="重置全部"   data-bus = 'reset' />
+													</div>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+			
+							<c:if test="${!empty param.page}">
+								<input type="hidden" value="${param.page}" name="page" />
+							</c:if>
+						</form>
+					</div>
+			</div>
+			
+			<div class="panel panel-default">
+				<div class="panel-body data">
+					<div id="enrollList2"></div>
+				</div>
+			</div>
+		</div>
+		<!-- 试播审核end -->
+		
+		<!-- 限制中start -->
+		<div id="tab3" class="tab-pane">
+			<div class="panel">
+					<div class="panel-body">
+						<form class="form-horizontal" role="form" id="searchForm3">
+						<!-- 受限制的 -->
+						<input type="hidden"  name="confining" value="1">
+							<div class="form-group">
+									<table style="width:100%;">
+										<tbody>
+											<tr>
+												<td style="width:5%;"><h5>&nbsp;&nbsp;选手编号：</h5></td>
+												<td style="width:25%;"><input type="text" class="form-control"  name="id" style = "width:85%;"></td>
+												<td style="width:5%;"><h5>&nbsp;&nbsp;选手名称：</h5></td>
+												<td style="width:25%;"><input type="text" class="form-control"  name="nname" style = "width:85%;"></td>
+												<td style="width:5%;"><h5>手机号码：</h5></td>
+												<td style="width:30%;"><input type="text" class="form-control"  name="phone" style = "width:66%;"></td>
+											</tr>
+											<tr>
+												<td style="width:5%;"><h5>&nbsp;&nbsp;区域：</h5></td>
+												<td style="width:25%;">
+													<div class="input-group" id="ld3"  style="width:88%">
+													</div>
+												</td>
+												<td style="width:5%;"><h5></h5></td>
+												<td style="width:25%;">
+												</td>
+												<td colspan="2" style="width:35%;">
+													<div class="submit" style="text-align: left;">
+														<input class="submit radius-3" type="button"  value="查询全部"  data-bus = 'query' />
+														<input  class="reset radius-3" type="reset" value="重置全部"   data-bus = 'reset' />
+													</div>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+			
+							<c:if test="${!empty param.page}">
+								<input type="hidden" value="${param.page}" name="page" />
+							</c:if>
+						</form>
+					</div>
+			</div>
+			
+			<div class="panel panel-default">
+				<div class="panel-body data">
+					<div id="enrollList3"></div>
+				</div>
+			</div>
+		</div>
+		<!-- 限制中end -->
+		
+	</div>
+	
+	
+	<script type="text/json" id="permissions">
+		{update:'${ btnAu['VstarEnroll/manage/update']}'}
+    </script>
+	<jsp:include page="../common.jsp"></jsp:include>
+	<script src="<%=path%>/resources/zui/lib/chosen/chosen.js"></script>
+	<script src="<%=path%>/ux/js/ld2.js"></script>
+	<script src="<%=path%>/js/vstar/vstarEnrollManage.js"></script>
+  </body>
+</html>

@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.manor.dao.ManorInfoDao" >
+  <parameterMap type="ManorInfo" id="manorInfo"></parameterMap>
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.manor.entity.TManorInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="super_uid" property="superUid" jdbcType="INTEGER" />
+    <result column="manor_status" property="manorStatus" jdbcType="INTEGER" />
+    <result column="manor_level" property="manorLevel" jdbcType="INTEGER" />
+    <result column="manor_deadline" property="manorDeadline" jdbcType="TIMESTAMP" />
+    <result column="build_status" property="buildStatus" jdbcType="INTEGER" />
+    <result column="build_time" property="buildTime" jdbcType="TIMESTAMP" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, uid, super_uid, manor_status, manor_level, manor_deadline, build_status, build_time, create_time, 
+    update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from b_manor_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from b_manor_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.manor.entity.TManorInfo" >
+    insert into b_manor_info (id, uid, manor_status, 
+      manor_level, manor_deadline, build_status, 
+      build_time, create_time, update_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{uid,jdbcType=INTEGER}, #{manorStatus,jdbcType=INTEGER}, 
+      #{manorLevel,jdbcType=INTEGER}, #{manorDeadline,jdbcType=TIMESTAMP}, #{buildStatus,jdbcType=INTEGER}, 
+      #{buildTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.manor.entity.TManorInfo" >
+    insert into b_manor_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="manorStatus != null" >
+        manor_status,
+      </if>
+      <if test="manorLevel != null" >
+        manor_level,
+      </if>
+      <if test="manorDeadline != null" >
+        manor_deadline,
+      </if>
+      <if test="buildStatus != null" >
+        build_status,
+      </if>
+      <if test="buildTime != null" >
+        build_time,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="manorStatus != null" >
+        #{manorStatus,jdbcType=INTEGER},
+      </if>
+      <if test="manorLevel != null" >
+        #{manorLevel,jdbcType=INTEGER},
+      </if>
+      <if test="manorDeadline != null" >
+        #{manorDeadline,jdbcType=TIMESTAMP},
+      </if>
+      <if test="buildStatus != null" >
+        #{buildStatus,jdbcType=INTEGER},
+      </if>
+      <if test="buildTime != null" >
+        #{buildTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.manor.entity.TManorInfo" >
+    update b_manor_info
+    <set >
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="manorStatus != null" >
+        manor_status = #{manorStatus,jdbcType=INTEGER},
+      </if>
+      <if test="manorLevel != null" >
+        manor_level = #{manorLevel,jdbcType=INTEGER},
+      </if>
+      <if test="manorDeadline != null" >
+        manor_deadline = #{manorDeadline,jdbcType=TIMESTAMP},
+      </if>
+      <if test="buildStatus != null" >
+        build_status = #{buildStatus,jdbcType=INTEGER},
+      </if>
+      <if test="buildTime != null" >
+        build_time = #{buildTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="purchasable != null" >
+        purchasable = #{purchasable,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.manor.entity.TManorInfo" >
+    update b_manor_info
+    set uid = #{uid,jdbcType=INTEGER},
+      manor_status = #{manorStatus,jdbcType=INTEGER},
+      manor_level = #{manorLevel,jdbcType=INTEGER},
+      manor_deadline = #{manorDeadline,jdbcType=TIMESTAMP},
+      build_status = #{buildStatus,jdbcType=INTEGER},
+      build_time = #{buildTime,jdbcType=TIMESTAMP},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!--   自定义sql专区 -->
+  
+   <!-- 庄园会员列表查询条件 -->
+  <sql id="baseSellerCondition">
+      <if test="id != null" >
+          AND t.id = #{id}
+      </if>
+      <if test="uid != null" >
+          AND t.uid = #{uid,jdbcType=INTEGER}
+      </if>
+      <if test="manorStatus != null" >
+          AND t.manor_status = #{manorStatus,jdbcType=INTEGER}
+      </if>
+      <if test="purchasable != null" >
+          AND t.purchasable = #{purchasable,jdbcType=INTEGER}
+      </if>
+      <if test="createTime != null" >
+        AND t.create_time = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="updateTime != null" >
+        AND t.update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+      
+  </sql>  
+  
+  <select id="countManorMember" resultType="Long" parameterMap="manorInfo">
+		SELECT COUNT(1) FROM b_manor_info t
+		INNER JOIN b_urs_earnings_relation tr ON t.uid = tr.uid  AND tr.object_oriented = 9
+			LEFT JOIN b_urs urs ON t.uid = urs.uid 
+			LEFT JOIN b_urs_info info ON t.uid = info.uid 
+			LEFT JOIN b_manor_level tl ON t.manor_level = tl.no
+		<where>
+			1=1
+			<include refid="baseSellerCondition" />
+			<if test="nickname !=null and '' != nickname">
+				AND urs.nname LIKE '%${nickname}%'
+			</if>
+		    <if test="phone !=null and '' != phone">
+				AND info.phone = #{phone,jdbcType=VARCHAR} 
+			</if>
+		</where>
+  </select>
+  
+   <!-- 庄园会员列表 -->
+   <select id="getManorMemberList" resultMap="BaseResultMap" parameterMap="manorInfo">
+		SELECT
+		    t.*
+		    , urs.nname AS nickname, urs.phone, info.name, tl.name AS levelName,
+		    tr.uid_relation_chain AS uidRelationChain FROM b_manor_info t 
+			INNER JOIN b_urs_earnings_relation tr ON t.uid = tr.uid  AND tr.object_oriented = 9
+			LEFT JOIN b_urs urs ON t.uid = urs.uid 
+			LEFT JOIN b_urs_info info ON t.uid = info.uid 
+			LEFT JOIN b_manor_level tl ON t.manor_level = tl.id
+		<where>
+			1 = 1
+			<include refid="baseSellerCondition" />
+			<if test="nickname !=null and '' != nickname">
+				AND urs.nname LIKE '%${nickname}%'
+			</if>
+		    <if test="phone !=null and '' != phone">
+				AND info.phone = #{phone,jdbcType=VARCHAR} 
+			</if>
+		</where>
+		ORDER BY t.update_time DESC, t.id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit}, #{limit}
+		</if>
+	</select>
+
+	<select id="getManorMemberLevelNameList" resultType="map" parameterType="Object">
+		SELECT t.uid, tr.name as levelName FROM b_manor_info t INNER JOIN b_manor_level tr
+		ON t.manor_level = tr.id
+		<where>
+			1 = 1
+			AND t.uid IN
+			<foreach item="item" index="index" collection="array" open="("
+				separator="," close=") ">
+				#{item}
+			</foreach>
+		</where>
+	</select>
+</mapper>

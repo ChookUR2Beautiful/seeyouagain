@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.fresh.dao.HotSaleManageDao">
+
+  <sql id="InfoFieldList" >
+    pid, codeId, standard, pname, goodsName, classa, secondary, price, discount, 
+    batching, weight, suttle, quality, isAdditives, packing, production, brandName, pstatus, 
+    crafts, sellType, deal, place, province, city, stored, store, sales, choice, cname, 
+    address, licenseId, tel, rdate, udate, dstatus, sort, supplierId, supplierName, breviary,salesInfo,isIntegral,
+    purchasePrice,integral,saleType,cash,allowRefund,deliveryType,expWeight,expTid,deliveryCity,notDeliveryCity,saleCity,notSaleCity,
+    goodsSerial,barcode  
+  </sql>
+  <sql id="DetailFieldList">
+    fid, codeId, pic1, pic2, pic3, pic4, pic5, delivery, postnote, servicenote, img1, 
+    img2, img3, img4, img5, img6, img7, img8, img9, img10, img11, img12, rdate, udate, 
+    sort, remarks,html
+  </sql>
+	<!-- 按需求查询产品列表 -->
+	<select id="getProductList" resultType="com.xmniao.xmn.core.fresh.entity.ProductInfo" parameterType="com.xmniao.xmn.core.fresh.entity.ProductInfo">
+ 		SELECT 
+			pid, codeId, standard, pname, goodsName, classa, secondary, price, discount, 
+		    batching, weight, suttle, quality, isAdditives, packing, production, brandName, pstatus, 
+		    crafts, sellType, deal, place, province, city, stored, store, sales, choice,choiceSort, cname, 
+		    address, licenseId, tel, rdate, udate, dstatus, sort, supplierId, breviary,salesInfo,isIntegral,
+		    purchasePrice,integral,saleType,cash,allowRefund,deliveryType,expWeight,expTid,deliveryCity,notDeliveryCity,saleCity,notSaleCity,
+		    goodsSerial,barcode ,tft1.name classaStr,tft2.name secondaryStr,ta1.title provinceStr,ta2.title cityStr,
+			tp.supplierName,tp.contacts,tp.supplierPhone,tp.supplierAddress,tpt.expTitle 
+		FROM
+			t_product_info tinfo
+		LEFT JOIN 
+			(SELECT id,NAME FROM t_fresh_type) tft1 
+    	ON 
+    		tft1.id = tinfo.classa
+  		LEFT JOIN 
+  			(SELECT id,NAME FROM t_fresh_type) tft2 
+    	ON 
+    		tft2.id = tinfo.secondary 
+    	LEFT JOIN
+    		(SELECT area_id,title FROM t_area) ta1
+    	ON ta1.area_id = tinfo.province	
+    	LEFT JOIN
+    		(SELECT area_id,title FROM t_area ) ta2
+    	ON ta2.area_id = tinfo.city	
+    	LEFT JOIN 
+    		(SELECT supplierId AS spId,supplierName,contacts,phone AS supplierPhone,address AS supplierAddress FROM t_supplier WHERE `status` = '0') tp 
+    	ON tp.spId = tinfo.supplierId 
+    	LEFT JOIN 
+    		(SELECT title AS expTitle,tid FROM t_postage_template) tpt 
+    	ON tpt.tid = tinfo.expTid 
+    	LEFT JOIN 
+    		(SELECT id,fid FROM t_fresh_type where dstatus = 0) type 
+    	ON type.id = tinfo.classa
+		WHERE 1=1
+			<if test="pname != null and pname != ''">and pname like '%${pname}%'</if>
+			<if test="goodsName != null and goodsName != ''">and goodsName like '%${goodsName}%'</if>
+			<if test="codeId != null">and codeId=#{codeId}</if>
+			<if test="pstatus != null">and pstatus=#{pstatus}</if>
+			<if test="tel != null and tel != ''">and tel like '${tel}'</if>
+			<if test="supplierId != null">and supplierId =#{supplierId}</if>
+			<if test="supplierName != null and supplierName != ''">and supplierName like '%${supplierName}%'</if>
+			<if test="classa !=null and classa != ''">and (classa=#{classa} or type.fid = #{classa})</if>
+			<if test="minPrice != null"><![CDATA[ and discount >= #{minPrice}]]></if>
+			<if test="maxPrice != null"><![CDATA[ and discount <= #{maxPrice}]]></if> 
+			<if test="province != null and province != ''">AND province = #{province}</if>
+    		<if test="city != null and city != ''">AND city = #{city}</if>
+    		<if test="choice != null">AND choice = #{choice}</if>
+		ORDER BY choiceSort DESC, sales DESC  
+		<if test=" limit != -1 ">LIMIT ${(page-1)*limit},#{limit}</if>
+	
+	</select>
+	
+	<!-- 查询产品详情 -->
+	<select id="getProductDetail" parameterType="int" resultType="com.xmniao.xmn.core.fresh.entity.ProductDetail">
+		select <include refid="DetailFieldList" /> from t_product_details where codeId=#{codeId}
+	</select>
+	
+	<!-- 查询符合需求的产品列表总数 -->
+	<select id="getProductCount" resultType="long" parameterType="com.xmniao.xmn.core.fresh.entity.ProductInfo">
+		 SELECT COUNT(1) FROM t_product_info
+		 LEFT JOIN 
+    		(SELECT id,fid FROM t_fresh_type where dstatus = 0) type 
+    	ON type.id = t_product_info.classa
+		 where 1=1
+			<if test="pname != null and pname != ''">and pname like '%${pname}%'</if>
+			<if test="goodsName != null and goodsName != ''">and goodsName like '%${goodsName}%'</if>
+			<if test="codeId != null">and codeId=#{codeId}</if>
+			<if test="pstatus != null">and pstatus=#{pstatus}</if>
+			<if test="tel != null and tel != ''">and tel like '${tel}'</if>
+			<if test="supplierId != null">and supplierId =#{supplierId}</if>
+			<if test="supplierName != null and supplierName != ''">and supplierName like '%${supplierName}%'</if>
+			<if test="classa !=null and classa != ''">and (classa=#{classa} or type.fid = #{classa})</if>
+			<if test="minPrice != null"><![CDATA[ and discount >= #{minPrice}]]></if>
+			<if test="maxPrice != null"><![CDATA[ and discount <= #{maxPrice}]]></if>
+			<if test="province != null and province != ''">AND province = #{province}</if>
+    		<if test="city != null and city != ''">AND city = #{city}</if>
+    		<if test="choice != null">AND choice = #{choice}</if>
+	</select>
+	
+	<select id="getFreshAllInfo" resultType="map">
+		SELECT 
+		    pid, info.codeId, standard, pname, goodsName, classa, secondary, price, discount, 
+		    batching, weight, suttle, quality, isAdditives, packing, production, brandName, pstatus, 
+		    crafts, sellType, deal, place, province, city, stored, store, sales, choice, cname, 
+		    address, licenseId, tel,  dstatus,info.sort, supplierId, tp.supplierName, tp.contacts, 
+		    tp.supplierPhone, tp.supplierAddress, breviary, salesInfo, 
+		    isIntegral,integral,saleType,cash,purchasePrice,allowRefund,deliveryType,expWeight,expTid,
+		    deliveryCity,notDeliveryCity,saleCity,notSaleCity,goodsSerial,barcode,purchasePrice,
+		    fid,  pic1, pic2, pic3, pic4, pic5, delivery, postnote, servicenote, img1, 
+		    img2, img3, img4, img5, img6, img7, img8, img9, img10, img11, img12, 
+		    detail.sort picsort, remarks,html
+	    FROM 
+	    	t_product_info info 
+	    LEFT JOIN 
+	    	t_product_details detail
+	    ON 
+	    	info.codeId = detail.codeId 
+	    LEFT JOIN 
+    		(SELECT supplierId AS spId,supplierName,contacts,phone AS supplierPhone,address AS supplierAddress FROM t_supplier WHERE `status` = '0') tp 
+    	ON 
+    		tp.spId = info.supplierId 
+	    WHERE  
+	    	info.pid=#{pid}
+	</select>
+	
+	<!-- 修改热气热面产品的排序 -->
+	<update id="updateChoiceSortByPid" parameterType="com.xmniao.xmn.core.fresh.entity.ProductInfo">
+		UPDATE 
+			t_product_info 
+		<set>
+			<trim suffixOverrides=",">
+				<if test="null != choiceSort">
+					choiceSort = #{choiceSort},
+				</if>
+				<if test="null != udate">
+					udate = #{udate},
+				</if>
+			</trim>
+		</set>
+		WHERE 
+			pid = #{pid} 
+	</update>
+	
+</mapper>

@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.cloud_design.dao.DMaterialDao" >
+
+  <resultMap id="materialMap" type="com.xmniao.xmn.core.cloud_design.entity.DMaterial" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="category_id" property="categoryId" jdbcType="BIGINT" />
+    <result column="tag_id" property="tagId" jdbcType="BIGINT" />
+    <result column="supplier_id" property="supplierId" jdbcType="BIGINT" />
+    <result column="sold_times" property="soldTimes" jdbcType="INTEGER" />
+    <result column="base_price" property="basePrice" jdbcType="DECIMAL" />
+    <result column="sale_price" property="salePrice" jdbcType="DECIMAL" />
+    <result column="weight" property="weight" jdbcType="DECIMAL" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="finishTime" property="finishtime" jdbcType="INTEGER" />
+    <result column="no" property="no" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="monthly_sales" property="monthlySales" jdbcType="INTEGER" />
+    <result column="payment_number" property="paymentNumber" jdbcType="INTEGER" />
+    <result column="pic_url" property="picUrl" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="LONGVARCHAR" />
+    <result column="html_content" property="htmlContent" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  
+  
+  <sql id="materialMap_column_list" >
+    id, category_id,tag_id, supplier_id, sold_times, base_price, sale_price, weight, title, 
+    remark, create_time, update_time, finishTime, no, type, monthly_sales, payment_number, 
+    pic_url, status ,content ,html_content
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test=" null != id and '' != id">
+  		AND id = #{id}
+  	</if>
+  	<if test=" null != title and '' != title">
+  		AND title like '%${title}%'
+  	</if>
+  
+  </sql>
+  
+  
+  <select id="selectById" resultMap="materialMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="materialMap_column_list" />
+    from d_material
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getList" resultMap="materialMap" parameterType="com.xmniao.xmn.core.cloud_design.entity.DMaterial" >
+    select 
+    <include refid="materialMap_column_list" />
+    from d_material
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+    ORDER BY update_time DESC
+   	<if test=" limit != -1 ">
+		LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <select id="count" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.cloud_design.entity.DMaterial" >
+    select 
+    	count(id)
+    from d_material
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+  </select>
+  
+  
+  <insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.xmn.core.cloud_design.entity.DMaterial" >
+    insert into d_material
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="categoryId != null" >
+        category_id,
+      </if>
+      <if test="tagId != null" >
+        tag_id,
+      </if>
+      <if test="supplierId != null" >
+        supplier_id,
+      </if>
+      <if test="soldTimes != null" >
+        sold_times,
+      </if>
+      <if test="basePrice != null" >
+        base_price,
+      </if>
+      <if test="salePrice != null" >
+        sale_price,
+      </if>
+      <if test="weight != null" >
+        weight,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="finishtime != null" >
+        finishTime,
+      </if>
+      <if test="no != null" >
+        no,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="monthlySales != null" >
+        monthly_sales,
+      </if>
+      <if test="paymentNumber != null" >
+        payment_number,
+      </if>
+      <if test="picUrl != null" >
+        pic_url,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+      <if test="htmlContent != null" >
+        html_content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="categoryId != null" >
+        #{categoryId,jdbcType=BIGINT},
+      </if>
+      <if test="tagId != null" >
+        #{tagId,jdbcType=BIGINT},
+      </if>
+      <if test="supplierId != null" >
+        #{supplierId,jdbcType=BIGINT},
+      </if>
+      <if test="soldTimes != null" >
+        #{soldTimes,jdbcType=INTEGER},
+      </if>
+      <if test="basePrice != null" >
+        #{basePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="salePrice != null" >
+        #{salePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="weight != null" >
+        #{weight,jdbcType=DECIMAL},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="finishtime != null" >
+        #{finishtime,jdbcType=INTEGER},
+      </if>
+      <if test="no != null" >
+        #{no,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="monthlySales != null" >
+        #{monthlySales,jdbcType=INTEGER},
+      </if>
+      <if test="paymentNumber != null" >
+        #{paymentNumber,jdbcType=INTEGER},
+      </if>
+      <if test="picUrl != null" >
+        #{picUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="htmlContent != null" >
+        #{htmlContent,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.cloud_design.entity.DMaterial" >
+    update d_material
+    <set >
+      <if test="categoryId != null" >
+        category_id = #{categoryId,jdbcType=BIGINT},
+      </if>
+      <if test="tagId != null" >
+        tag_id = #{tagId,jdbcType=BIGINT},
+      </if>
+      <if test="supplierId != null" >
+        supplier_id = #{supplierId,jdbcType=BIGINT},
+      </if>
+      <if test="soldTimes != null" >
+        sold_times = #{soldTimes,jdbcType=INTEGER},
+      </if>
+      <if test="basePrice != null" >
+        base_price = #{basePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="salePrice != null" >
+        sale_price = #{salePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="weight != null" >
+        weight = #{weight,jdbcType=DECIMAL},
+      </if>
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="finishtime != null" >
+        finishTime = #{finishtime,jdbcType=INTEGER},
+      </if>
+      <if test="no != null" >
+        no = #{no,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="monthlySales != null" >
+        monthly_sales = #{monthlySales,jdbcType=INTEGER},
+      </if>
+      <if test="paymentNumber != null" >
+        payment_number = #{paymentNumber,jdbcType=INTEGER},
+      </if>
+      <if test="picUrl != null" >
+        pic_url = #{picUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="htmlContent != null" >
+        html_content = #{htmlContent,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <!-- 批量更新商品上架状态 -->
+  <update id="updateBatch"  parameterType="map">
+  	UPDATE d_material SET `status`=#{status} WHERE id IN
+  	<foreach item="item" index="index" collection="ids"  open="(" separator="," close=") ">
+			 #{item}
+	</foreach>
+  </update>
+  
+  
+</mapper>

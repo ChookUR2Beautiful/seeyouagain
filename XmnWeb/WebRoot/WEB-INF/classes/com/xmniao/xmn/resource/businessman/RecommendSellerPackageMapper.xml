@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.RecommendSellerPackageDao">
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.businessman.entity.RecommendSellerPackage">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="sellerid" jdbcType="INTEGER" property="sellerid" />
+    <result column="selling_price" jdbcType="DECIMAL" property="sellingPrice" />
+    <result column="selling_coin_price" jdbcType="DECIMAL" property="sellingCoinPrice" />
+    <result column="original_price" jdbcType="DECIMAL" property="originalPrice" />
+    <result column="stock" jdbcType="INTEGER" property="stock" />
+    <result column="sales" jdbcType="INTEGER" property="sales" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="ledger_type" jdbcType="INTEGER" property="ledgerType" />
+    <result column="ledger_ratio" jdbcType="DECIMAL" property="ledgerRatio" />
+    <result column="sale_start_time" jdbcType="TIMESTAMP" property="saleStartTime" />
+    <result column="sale_end_time" jdbcType="TIMESTAMP" property="saleEndTime" />
+    <result column="use_start_time" jdbcType="TIMESTAMP" property="useStartTime" />
+    <result column="use_end_time" jdbcType="TIMESTAMP" property="useEndTime" />
+    <result column="forbid_start_time" jdbcType="TIMESTAMP" property="forbidStartTime" />
+    <result column="forbid_end_time" jdbcType="TIMESTAMP" property="forbidEndTime" />
+    <result column="look_num" jdbcType="INTEGER" property="lookNum" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="highly_recommended" jdbcType="INTEGER" property="highlyRecommended" />
+    <result column="home_sort" jdbcType="INTEGER" property="homeSort" />
+    		<result column="province_name" jdbcType="VARCHAR" property="provinceName" />
+		<result column="city_name" jdbcType="VARCHAR" property="cityName" />
+		<result column="sub_name" jdbcType="VARCHAR" property="subName" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.xmniao.xmn.core.businessman.entity.RecommendSellerPackageWithBLOBs">
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+    <result column="notice" jdbcType="LONGVARCHAR" property="notice" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    t_seller_package.id, 
+    t_seller_package.title, 
+    t_seller_package.sellerid, 
+    t_seller_package.selling_price, 
+    t_seller_package.selling_coin_price, 
+    t_seller_package.original_price, 
+    t_seller_package.stock, 
+    t_seller_package.sales, 
+    t_seller_package.status, 
+    t_seller_package.ledger_type, 
+    t_seller_package.ledger_ratio, 
+    t_seller_package.sale_start_time, 
+    t_seller_package.sale_end_time,
+     t_seller_package.use_start_time, 
+    t_seller_package.use_end_time, 
+    t_seller_package.forbid_start_time, 
+    t_seller_package.forbid_end_time, 
+    t_seller_package.look_num, 
+    t_seller_package.update_time, 
+    t_seller_package.highly_recommended, 
+    t_seller_package.home_sort
+  </sql>
+  <sql id="Blob_Column_List">
+    content, notice
+  </sql>
+  <update id="updateHomeSort" parameterType="com.xmniao.xmn.core.businessman.entity.RecommendSellerPackage">
+  	update t_seller_package set home_sort = #{homeSort} where id = #{id}
+  </update>
+  <select id="getPackageChoose" parameterType="com.xmniao.xmn.core.businessman.entity.RecommendSellerPackage" resultMap="ResultMapWithBLOBs">
+  	select
+  	<include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_seller_package
+    where home_sort is null
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_seller_package
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_seller_package
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.businessman.entity.RecommendSellerPackageWithBLOBs">
+    insert into t_seller_package (id, title, sellerid, 
+      selling_price, selling_coin_price, original_price, 
+      stock, sales, status, 
+      ledger_type, ledger_ratio, sale_start_time, 
+      sale_end_time, use_start_time, use_end_time, 
+      forbid_start_time, forbid_end_time, look_num, 
+      update_time, highly_recommended, home_sort, 
+      content, notice)
+    values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{sellerid,jdbcType=INTEGER}, 
+      #{sellingPrice,jdbcType=DECIMAL}, #{sellingCoinPrice,jdbcType=DECIMAL}, #{originalPrice,jdbcType=DECIMAL}, 
+      #{stock,jdbcType=INTEGER}, #{sales,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, 
+      #{ledgerType,jdbcType=INTEGER}, #{ledgerRatio,jdbcType=DECIMAL}, #{saleStartTime,jdbcType=TIMESTAMP}, 
+      #{saleEndTime,jdbcType=TIMESTAMP}, #{useStartTime,jdbcType=TIMESTAMP}, #{useEndTime,jdbcType=TIMESTAMP}, 
+      #{forbidStartTime,jdbcType=TIMESTAMP}, #{forbidEndTime,jdbcType=TIMESTAMP}, #{lookNum,jdbcType=INTEGER}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{highlyRecommended,jdbcType=INTEGER}, #{homeSort,jdbcType=INTEGER}, 
+      #{content,jdbcType=LONGVARCHAR}, #{notice,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.businessman.entity.RecommendSellerPackageWithBLOBs">
+    insert into t_seller_package
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="sellerid != null">
+        sellerid,
+      </if>
+      <if test="sellingPrice != null">
+        selling_price,
+      </if>
+      <if test="sellingCoinPrice != null">
+        selling_coin_price,
+      </if>
+      <if test="originalPrice != null">
+        original_price,
+      </if>
+      <if test="stock != null">
+        stock,
+      </if>
+      <if test="sales != null">
+        sales,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="ledgerType != null">
+        ledger_type,
+      </if>
+      <if test="ledgerRatio != null">
+        ledger_ratio,
+      </if>
+      <if test="saleStartTime != null">
+        sale_start_time,
+      </if>
+      <if test="saleEndTime != null">
+        sale_end_time,
+      </if>
+      <if test="useStartTime != null">
+        use_start_time,
+      </if>
+      <if test="useEndTime != null">
+        use_end_time,
+      </if>
+      <if test="forbidStartTime != null">
+        forbid_start_time,
+      </if>
+      <if test="forbidEndTime != null">
+        forbid_end_time,
+      </if>
+      <if test="lookNum != null">
+        look_num,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="highlyRecommended != null">
+        highly_recommended,
+      </if>
+      <if test="homeSort != null">
+        home_sort,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="notice != null">
+        notice,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="sellerid != null">
+        #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="sellingPrice != null">
+        #{sellingPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="sellingCoinPrice != null">
+        #{sellingCoinPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="originalPrice != null">
+        #{originalPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="stock != null">
+        #{stock,jdbcType=INTEGER},
+      </if>
+      <if test="sales != null">
+        #{sales,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="ledgerType != null">
+        #{ledgerType,jdbcType=INTEGER},
+      </if>
+      <if test="ledgerRatio != null">
+        #{ledgerRatio,jdbcType=DECIMAL},
+      </if>
+      <if test="saleStartTime != null">
+        #{saleStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="saleEndTime != null">
+        #{saleEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="useStartTime != null">
+        #{useStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="useEndTime != null">
+        #{useEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="forbidStartTime != null">
+        #{forbidStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="forbidEndTime != null">
+        #{forbidEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lookNum != null">
+        #{lookNum,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="highlyRecommended != null">
+        #{highlyRecommended,jdbcType=INTEGER},
+      </if>
+      <if test="homeSort != null">
+        #{homeSort,jdbcType=INTEGER},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="notice != null">
+        #{notice,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="getList" parameterType="com.xmniao.xmn.core.businessman.entity.RecommendSellerPackage" resultMap="ResultMapWithBLOBs">
+     select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />,a.title as province_name,b.title as city_name,t.sellername as subName
+    from t_seller_package
+    left join t_seller t on  t_seller_package.sellerid=t.sellerid 
+    left join t_area a on t.province=a.area_id
+		left join t_area b on  t.city=b.area_id
+     where t_seller_package.home_sort is not null
+    <if test="provinceId != null and cityId != null">
+				and t.province = #{provinceId,jdbcType=INTEGER}
+				and t.city = #{cityId,jdbcType=INTEGER}
+			</if>
+  </select>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.businessman.entity.RecommendSellerPackageWithBLOBs">
+    update t_seller_package
+    <set>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="sellerid != null">
+        sellerid = #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="sellingPrice != null">
+        selling_price = #{sellingPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="sellingCoinPrice != null">
+        selling_coin_price = #{sellingCoinPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="originalPrice != null">
+        original_price = #{originalPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="stock != null">
+        stock = #{stock,jdbcType=INTEGER},
+      </if>
+      <if test="sales != null">
+        sales = #{sales,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="ledgerType != null">
+        ledger_type = #{ledgerType,jdbcType=INTEGER},
+      </if>
+      <if test="ledgerRatio != null">
+        ledger_ratio = #{ledgerRatio,jdbcType=DECIMAL},
+      </if>
+      <if test="saleStartTime != null">
+        sale_start_time = #{saleStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="saleEndTime != null">
+        sale_end_time = #{saleEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="useStartTime != null">
+        use_start_time = #{useStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="useEndTime != null">
+        use_end_time = #{useEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="forbidStartTime != null">
+        forbid_start_time = #{forbidStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="forbidEndTime != null">
+        forbid_end_time = #{forbidEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lookNum != null">
+        look_num = #{lookNum,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="highlyRecommended != null">
+        highly_recommended = #{highlyRecommended,jdbcType=INTEGER},
+      </if>
+      <if test="homeSort != null">
+        home_sort = #{homeSort,jdbcType=INTEGER},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="notice != null">
+        notice = #{notice,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.xmniao.xmn.core.businessman.entity.RecommendSellerPackageWithBLOBs">
+    update t_seller_package
+    set title = #{title,jdbcType=VARCHAR},
+      sellerid = #{sellerid,jdbcType=INTEGER},
+      selling_price = #{sellingPrice,jdbcType=DECIMAL},
+      selling_coin_price = #{sellingCoinPrice,jdbcType=DECIMAL},
+      original_price = #{originalPrice,jdbcType=DECIMAL},
+      stock = #{stock,jdbcType=INTEGER},
+      sales = #{sales,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      ledger_type = #{ledgerType,jdbcType=INTEGER},
+      ledger_ratio = #{ledgerRatio,jdbcType=DECIMAL},
+      sale_start_time = #{saleStartTime,jdbcType=TIMESTAMP},
+      sale_end_time = #{saleEndTime,jdbcType=TIMESTAMP},
+      use_start_time = #{useStartTime,jdbcType=TIMESTAMP},
+      use_end_time = #{useEndTime,jdbcType=TIMESTAMP},
+      forbid_start_time = #{forbidStartTime,jdbcType=TIMESTAMP},
+      forbid_end_time = #{forbidEndTime,jdbcType=TIMESTAMP},
+      look_num = #{lookNum,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      highly_recommended = #{highlyRecommended,jdbcType=INTEGER},
+      home_sort = #{homeSort,jdbcType=INTEGER},
+      content = #{content,jdbcType=LONGVARCHAR},
+      notice = #{notice,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.businessman.entity.RecommendSellerPackage">
+    update t_seller_package
+    set title = #{title,jdbcType=VARCHAR},
+      sellerid = #{sellerid,jdbcType=INTEGER},
+      selling_price = #{sellingPrice,jdbcType=DECIMAL},
+      selling_coin_price = #{sellingCoinPrice,jdbcType=DECIMAL},
+      original_price = #{originalPrice,jdbcType=DECIMAL},
+      stock = #{stock,jdbcType=INTEGER},
+      sales = #{sales,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      ledger_type = #{ledgerType,jdbcType=INTEGER},
+      ledger_ratio = #{ledgerRatio,jdbcType=DECIMAL},
+      sale_start_time = #{saleStartTime,jdbcType=TIMESTAMP},
+      sale_end_time = #{saleEndTime,jdbcType=TIMESTAMP},
+      use_start_time = #{useStartTime,jdbcType=TIMESTAMP},
+      use_end_time = #{useEndTime,jdbcType=TIMESTAMP},
+      forbid_start_time = #{forbidStartTime,jdbcType=TIMESTAMP},
+      forbid_end_time = #{forbidEndTime,jdbcType=TIMESTAMP},
+      look_num = #{lookNum,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      highly_recommended = #{highlyRecommended,jdbcType=INTEGER},
+      home_sort = #{homeSort,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

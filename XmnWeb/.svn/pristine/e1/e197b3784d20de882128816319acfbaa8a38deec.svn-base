@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TLiveBroadcastDao" >
+
+  <resultMap id="liveBroadcastMap" type="com.xmniao.xmn.core.live_anchor.entity.TLiveBroadcast" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="assign_room" property="assignRoom" jdbcType="INTEGER" />
+    <result column="record_id" property="recordId" jdbcType="INTEGER" />
+    <result column="nickname" property="nickname" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="play_amount" property="playAmount" jdbcType="INTEGER" />
+    <result column="immediate" property="immediate" jdbcType="INTEGER" />
+    <result column="send_time" property="sendTime" jdbcType="TIMESTAMP" />
+    <result column="send_status" property="sendStatus" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="liveBroadcast_column_list" >
+    id, assign_room, record_id, nickname, content, play_amount, immediate, send_time, send_status, 
+    create_time, update_time
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test=" null != sendTime and '' != sendTime">
+  		send_time  = #{sendTime}
+  	</if>
+  	<if test=" null != nickname and '' != nickname">
+  		nickname  = #{nickname}
+  	</if>
+  </sql>
+  
+  <select id="getList" resultMap="liveBroadcastMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="liveBroadcast_column_list" />
+    from t_live_broadcast
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+    order by update_time desc
+    <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <select id="count" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveBroadcast">
+  	SELECT
+		count(id)
+	FROM
+		t_live_broadcast
+	<where>
+		1=1
+		<include refid="whereSQL"></include>
+	</where>
+  </select>
+  
+  
+  <select id="selectById" resultMap="liveBroadcastMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="liveBroadcast_column_list" />
+    from t_live_broadcast
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <delete id="deleteById" parameterType="java.lang.Integer" >
+    delete from t_live_broadcast
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  
+  <insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveBroadcast" >
+    insert into t_live_broadcast
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="assignRoom != null" >
+        assign_room,
+      </if>
+      <if test="recordId != null" >
+        record_id,
+      </if>
+      <if test="nickname != null" >
+        nickname,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+      <if test="playAmount != null" >
+        play_amount,
+      </if>
+      <if test="immediate != null" >
+        immediate,
+      </if>
+      <if test="sendTime != null" >
+        send_time,
+      </if>
+      <if test="sendStatus != null" >
+        send_status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="assignRoom != null" >
+        #{assignRoom,jdbcType=INTEGER},
+      </if>
+      <if test="recordId != null" >
+        #{recordId,jdbcType=INTEGER},
+      </if>
+      <if test="nickname != null" >
+        #{nickname,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="playAmount != null" >
+        #{playAmount,jdbcType=INTEGER},
+      </if>
+      <if test="immediate != null" >
+        #{immediate,jdbcType=INTEGER},
+      </if>
+      <if test="sendTime != null" >
+        #{sendTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sendStatus != null" >
+        #{sendStatus,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveBroadcast" >
+    update t_live_broadcast
+    <set >
+      <if test="assignRoom != null" >
+        assign_room = #{assignRoom,jdbcType=INTEGER},
+      </if>
+        record_id = #{recordId,jdbcType=INTEGER},
+      <if test="nickname != null" >
+        nickname = #{nickname,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="playAmount != null" >
+        play_amount = #{playAmount,jdbcType=INTEGER},
+      </if>
+      <if test="immediate != null" >
+        immediate = #{immediate,jdbcType=INTEGER},
+      </if>
+      <if test="sendTime != null" >
+        send_time = #{sendTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sendStatus != null" >
+        send_status = #{sendStatus,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+</mapper>

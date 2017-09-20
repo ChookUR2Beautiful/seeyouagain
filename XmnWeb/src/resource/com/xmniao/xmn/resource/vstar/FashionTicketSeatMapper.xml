@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.vstar.dao.FashionTicketSeatDao">
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.vstar.entity.FashionTicketSeat">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="fid" jdbcType="INTEGER" property="fid" />
+    <result column="seat_name" jdbcType="VARCHAR" property="seatName" />
+    <result column="seats" jdbcType="INTEGER" property="seats" />
+    <result column="num" jdbcType="INTEGER" property="num" />
+    <result column="default_seats" jdbcType="INTEGER" property="defaultSeats" />
+    <result column="total_seats" jdbcType="INTEGER" property="totalSeats" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="zone_range_min" jdbcType="INTEGER" property="zoneRangeMin" />
+    <result column="zone_range_max" jdbcType="INTEGER" property="zoneRangeMax" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, fid, seat_name, seats, num, default_seats, total_seats, status, zone_range_min, 
+    zone_range_max
+  </sql>
+  
+  <sql id="whereSQL">
+  	 <if test="fid != null">
+  	 	and fid = #{fid}
+  	 </if>
+  	 <if test="id != null">
+  	 	and id = #{id}
+  	 </if>
+  </sql>
+  
+  <select id="getByIdAndStatus" resultMap="BaseResultMap">
+  	    select <include refid="Base_Column_List" />
+    from t_vstar_tickets_seat
+    where id in 
+    <foreach collection="list" item="item" open="(" close=")" separator=",">
+    	#{item}
+    </foreach>
+    and status = 1
+  </select>
+  
+  <select id="getListByFid" resultMap="BaseResultMap">
+  	 select <include refid="Base_Column_List" />
+    from t_vstar_tickets_seat
+    where fid = #{fid}
+  </select>
+  
+  <update id="activateIds">
+  	 update t_vstar_tickets_seat set status = 0,fid = #{fid} 
+  	 where id in 
+  	 <foreach collection="list" item="item" open="(" close=")" separator=",">
+  	 	#{item}
+  	 </foreach>
+  </update>
+  
+  <select id="getListByIds" resultMap="BaseResultMap">
+  	 select <include refid="Base_Column_List" />
+    from t_vstar_tickets_seat
+    where id in
+    <foreach collection="list" item="item" open="(" close=")" separator=",">
+    	#{item}
+    </foreach>
+  </select>
+  
+  <select id="getList" resultMap="BaseResultMap">
+  	 select 
+    <include refid="Base_Column_List" />
+    from t_vstar_tickets_seat
+    where 1=1
+    <include refid="whereSQL"/>
+  </select>
+  
+  <select id="getObject" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_vstar_tickets_seat
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_vstar_tickets_seat
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.vstar.entity.FashionTicketSeat">
+    insert into t_vstar_tickets_seat (id, fid, seat_name, 
+      seats, num, default_seats, 
+      total_seats, status, zone_range_min, 
+      zone_range_max)
+    values (#{id,jdbcType=INTEGER}, #{fid,jdbcType=INTEGER}, #{seatName,jdbcType=VARCHAR}, 
+      #{seats,jdbcType=INTEGER}, #{num,jdbcType=INTEGER}, #{defaultSeats,jdbcType=INTEGER}, 
+      #{totalSeats,jdbcType=INTEGER}, #{status,jdbcType=TINYINT}, #{zoneRangeMin,jdbcType=INTEGER}, 
+      #{zoneRangeMax,jdbcType=INTEGER})
+  </insert>
+  <insert id="add" parameterType="com.xmniao.xmn.core.vstar.entity.FashionTicketSeat" useGeneratedKeys="true" keyProperty="id">
+    insert into t_vstar_tickets_seat
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="fid != null">
+        fid,
+      </if>
+      <if test="seatName != null">
+        seat_name,
+      </if>
+      <if test="seats != null">
+        seats,
+      </if>
+      <if test="num != null">
+        num,
+      </if>
+      <if test="defaultSeats != null">
+        default_seats,
+      </if>
+      <if test="totalSeats != null">
+        total_seats,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="zoneRangeMin != null">
+        zone_range_min,
+      </if>
+      <if test="zoneRangeMax != null">
+        zone_range_max,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="fid != null">
+        #{fid,jdbcType=INTEGER},
+      </if>
+      <if test="seatName != null">
+        #{seatName,jdbcType=VARCHAR},
+      </if>
+      <if test="seats != null">
+        #{seats,jdbcType=INTEGER},
+      </if>
+      <if test="num != null">
+        #{num,jdbcType=INTEGER},
+      </if>
+      <if test="defaultSeats != null">
+        #{defaultSeats,jdbcType=INTEGER},
+      </if>
+      <if test="totalSeats != null">
+        #{totalSeats,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="zoneRangeMin != null">
+        #{zoneRangeMin,jdbcType=INTEGER},
+      </if>
+      <if test="zoneRangeMax != null">
+        #{zoneRangeMax,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="update" parameterType="com.xmniao.xmn.core.vstar.entity.FashionTicketSeat">
+    update t_vstar_tickets_seat
+    <set>
+      <if test="fid != null">
+        fid = #{fid,jdbcType=INTEGER},
+      </if>
+      <if test="seatName != null">
+        seat_name = #{seatName,jdbcType=VARCHAR},
+      </if>
+      <if test="seats != null">
+        seats = #{seats,jdbcType=INTEGER},
+      </if>
+      <if test="num != null">
+        num = #{num,jdbcType=INTEGER},
+      </if>
+      <if test="defaultSeats != null">
+        default_seats = #{defaultSeats,jdbcType=INTEGER},
+      </if>
+      <if test="totalSeats != null">
+        total_seats = #{totalSeats,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="zoneRangeMin != null">
+        zone_range_min = #{zoneRangeMin,jdbcType=INTEGER},
+      </if>
+      <if test="zoneRangeMax != null">
+        zone_range_max = #{zoneRangeMax,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.vstar.entity.FashionTicketSeat">
+    update t_vstar_tickets_seat
+    set fid = #{fid,jdbcType=INTEGER},
+      seat_name = #{seatName,jdbcType=VARCHAR},
+      seats = #{seats,jdbcType=INTEGER},
+      num = #{num,jdbcType=INTEGER},
+      default_seats = #{defaultSeats,jdbcType=INTEGER},
+      total_seats = #{totalSeats,jdbcType=INTEGER},
+      status = #{status,jdbcType=TINYINT},
+      zone_range_min = #{zoneRangeMin,jdbcType=INTEGER},
+      zone_range_max = #{zoneRangeMax,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

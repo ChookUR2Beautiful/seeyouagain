@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.vstar.dao.TicketsDetailDao">
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.vstar.entity.TicketsDetail">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="fid" jdbcType="INTEGER" property="fid" />
+    <result column="sid" jdbcType="INTEGER" property="sid" />
+    <result column="zone_no" jdbcType="INTEGER" property="zoneNo" />
+    <result column="seat_no" jdbcType="INTEGER" property="seatNo" />
+    <result column="sell_status" jdbcType="INTEGER" property="sellStatus" />
+    <result column="lock_time" jdbcType="TIMESTAMP" property="lockTime" />
+    <result column="use_status" jdbcType="INTEGER" property="useStatus" />
+    <result column="use_time" jdbcType="TIMESTAMP" property="useTime" />
+    <result column="uid" jdbcType="INTEGER" property="uid" />
+    <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
+    <result column="use_end_time" jdbcType="TIMESTAMP" property="useEndTime" />
+    <result column="seat_name" jdbcType="VARCHAR" property="seatName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    t_vstar_tickets_detail.id, 
+    t_vstar_tickets_detail.fid, 
+    t_vstar_tickets_detail.sid, 
+    t_vstar_tickets_detail.zone_no, 
+    t_vstar_tickets_detail.seat_no, 
+    t_vstar_tickets_detail.sell_status, 
+    t_vstar_tickets_detail.lock_time, 
+    t_vstar_tickets_detail.use_status, 
+    t_vstar_tickets_detail.use_time, 
+    t_vstar_tickets_detail.uid, 
+    t_vstar_tickets_detail.order_no
+  </sql>
+  
+  <select id="getByIds" resultMap="BaseResultMap">
+  	 select <include refid="Base_Column_List" />
+  	 from  t_vstar_tickets_detail
+  	 where id in
+  	  <foreach collection="list" item="item" open="(" close=")" separator=",">
+  	  	 #{item}
+  	  </foreach>
+  </select>
+  
+  <update id="updateToSell">
+       update t_vstar_tickets_detail set sell_status = 2,uid = #{uid},order_no = #{orderNo}
+       where id = #{id}
+       and sell_status = 0
+  </update>
+  
+  <select id="getByOrderId" resultMap="BaseResultMap">
+  	 select     <include refid="Base_Column_List" />,t_vstar_tickets.use_end_time,t_vstar_tickets_seat.seat_name
+    from t_vstar_tickets_detail
+    join t_vstar_tickets_order on t_vstar_tickets_detail.order_no = t_vstar_tickets_order.order_no
+  	join t_vstar_tickets on t_vstar_tickets_detail.fid = t_vstar_tickets.id
+  	join t_vstar_tickets_seat on t_vstar_tickets_detail.sid = t_vstar_tickets_seat.id 
+    where t_vstar_tickets_order.id = #{id}
+  </select>
+  
+  <select id="getSellByIds" resultMap="BaseResultMap" >
+  	 select     <include refid="Base_Column_List" />,t_vstar_tickets_seat.seat_name
+  	  from t_vstar_tickets_detail
+  	  join t_vstar_tickets_seat on t_vstar_tickets_detail.sid = t_vstar_tickets_seat.id
+  	  where t_vstar_tickets_detail.id in
+  	  <foreach collection="list" item="item" open="(" close=")" separator=",">
+  	  	 #{item}
+  	  </foreach>
+  	  and sell_status &lt;> 0
+  </select>
+  
+  <select id="getSellingByTicketsId" resultMap="BaseResultMap">
+  	 select     <include refid="Base_Column_List" />,t_vstar_tickets_seat.seat_name
+  	  from t_vstar_tickets_detail
+  	  join t_vstar_tickets_seat on t_vstar_tickets_detail.sid = t_vstar_tickets_seat.id
+  	  where t_vstar_tickets_detail.fid = #{id}
+  	  and sell_status = 0
+  	  and uid is null
+  </select>
+  
+  <insert id="addBatch" parameterType="java.util.List">
+  	 INSERT INTO t_vstar_tickets_detail
+  	 <trim prefix="(" suffix=")" suffixOverrides=",">
+        fid,
+        sid,
+        zone_no,
+        seat_no,
+        sell_status,
+        use_status,
+      </trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.fid},
+						 #{item.sid},
+						 #{item.zoneNo},
+						 #{item.seatNo},
+						 #{item.sellStatus},
+						 #{item.useStatus},
+			</trim>
+		</foreach>
+  </insert>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_vstar_tickets_detail
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_vstar_tickets_detail
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.vstar.entity.TicketsDetail">
+    insert into t_vstar_tickets_detail (id, fid, sid, 
+      zone_no, seat_no, sell_status, 
+      lock_time, use_status, use_time, 
+      uid, order_no)
+    values (#{id,jdbcType=INTEGER}, #{fid,jdbcType=INTEGER}, #{sid,jdbcType=INTEGER}, 
+      #{zoneNo,jdbcType=INTEGER}, #{seatNo,jdbcType=INTEGER}, #{sellStatus,jdbcType=INTEGER}, 
+      #{lockTime,jdbcType=TIMESTAMP}, #{useStatus,jdbcType=INTEGER}, #{useTime,jdbcType=TIMESTAMP}, 
+      #{uid,jdbcType=INTEGER}, #{orderNo,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.vstar.entity.TicketsDetail">
+    insert into t_vstar_tickets_detail
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="fid != null">
+        fid,
+      </if>
+      <if test="sid != null">
+        sid,
+      </if>
+      <if test="zoneNo != null">
+        zone_no,
+      </if>
+      <if test="seatNo != null">
+        seat_no,
+      </if>
+      <if test="sellStatus != null">
+        sell_status,
+      </if>
+      <if test="lockTime != null">
+        lock_time,
+      </if>
+      <if test="useStatus != null">
+        use_status,
+      </if>
+      <if test="useTime != null">
+        use_time,
+      </if>
+      <if test="uid != null">
+        uid,
+      </if>
+      <if test="orderNo != null">
+        order_no,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="fid != null">
+        #{fid,jdbcType=INTEGER},
+      </if>
+      <if test="sid != null">
+        #{sid,jdbcType=INTEGER},
+      </if>
+      <if test="zoneNo != null">
+        #{zoneNo,jdbcType=INTEGER},
+      </if>
+      <if test="seatNo != null">
+        #{seatNo,jdbcType=INTEGER},
+      </if>
+      <if test="sellStatus != null">
+        #{sellStatus,jdbcType=INTEGER},
+      </if>
+      <if test="lockTime != null">
+        #{lockTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="useStatus != null">
+        #{useStatus,jdbcType=INTEGER},
+      </if>
+      <if test="useTime != null">
+        #{useTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uid != null">
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="orderNo != null">
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.vstar.entity.TicketsDetail">
+    update t_vstar_tickets_detail
+    <set>
+      <if test="fid != null">
+        fid = #{fid,jdbcType=INTEGER},
+      </if>
+      <if test="sid != null">
+        sid = #{sid,jdbcType=INTEGER},
+      </if>
+      <if test="zoneNo != null">
+        zone_no = #{zoneNo,jdbcType=INTEGER},
+      </if>
+      <if test="seatNo != null">
+        seat_no = #{seatNo,jdbcType=INTEGER},
+      </if>
+      <if test="sellStatus != null">
+        sell_status = #{sellStatus,jdbcType=INTEGER},
+      </if>
+      <if test="lockTime != null">
+        lock_time = #{lockTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="useStatus != null">
+        use_status = #{useStatus,jdbcType=INTEGER},
+      </if>
+      <if test="useTime != null">
+        use_time = #{useTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uid != null">
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="orderNo != null">
+        order_no = #{orderNo,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.vstar.entity.TicketsDetail">
+    update t_vstar_tickets_detail
+    set fid = #{fid,jdbcType=INTEGER},
+      sid = #{sid,jdbcType=INTEGER},
+      zone_no = #{zoneNo,jdbcType=INTEGER},
+      seat_no = #{seatNo,jdbcType=INTEGER},
+      sell_status = #{sellStatus,jdbcType=INTEGER},
+      lock_time = #{lockTime,jdbcType=TIMESTAMP},
+      use_status = #{useStatus,jdbcType=INTEGER},
+      use_time = #{useTime,jdbcType=TIMESTAMP},
+      uid = #{uid,jdbcType=INTEGER},
+      order_no = #{orderNo,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

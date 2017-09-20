@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.jobmanage.dao.UserCVDao">
+    
+    <parameterMap type="UserCV" id="userCV" />
+	<resultMap type="UserCV" id="userCVMap">
+		<result column="id" property="id" />
+		<result column="uid" property="uid" />
+		<result column="name" property="name" />
+		<result column="headpic" property="headpic" />
+		<result column="sex" property="sex" />
+		<result column="age" property="age" />
+		<result column="phoneid" property="phoneid" />
+		<result column="degrees" property="degrees" />
+		<result column="experie" property="experie" />
+		<result column="salary" property="salary" />
+		<result column="work_province" property="workProvince" />
+		<result column="work_city" property="workCity" />
+		<result column="is_hide" property="isHide" />
+		<result column="shield_shop" property="shieldShop" />
+		<result column="status" property="status" />
+		<result column="sdate" property="sdate" />
+		<result column="update_date" property="updateDate" />
+	</resultMap>
+	<resultMap type="recruitTag" id="recruitTagMap">
+	<result column="tagname" property="name" />
+	</resultMap>
+	<!-- 查询用户简历列表-->
+	<select id="selectUserCVInfoList" resultMap="userCVMap" parameterMap="userCV">
+		SELECT buc.`id`,buc.`uid`,buc.`name`,buc.headpic,buc.sex,buc.`age`,buc.`phoneid`,buc.`degrees`,buc.`experie`,
+        buc.`salary`,buc.`work_province`,(SELECT GROUP_CONCAT(a.title) FROM t_area a WHERE FIND_IN_SET(a.area_id,REPLACE(buc.work_city, ';', ','))) AS work_city,buc.`is_hide`,buc.`status`,buc.`shield_shop`,buc.`sdate`,buc.`update_time`
+        FROM b_user_cv buc
+		<where>
+		 1=1   AND buc.status = 1
+			<if test=" null != sex">
+				AND buc.sex = #{sex} 
+			</if>
+			<if test=" null != phoneid and ''!= phoneid">
+				 AND buc.phoneid LIKE '%${phoneid}%'
+			</if>
+			<if test=" null != name and ''!= name">
+				 AND buc.name LIKE '%${name}%'
+			</if>
+			<if test=" null != sdate and ''!= sdate">
+				AND buc.sdate &gt;= #{sdate}
+			</if>
+			<if test=" null != edate and ''!= edate">
+				AND buc.sdate &lt; DATE_ADD(#{edate}, INTERVAL 1 DAY)
+			</if>
+			ORDER BY buc.sdate DESC
+		</where>
+			<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+			</if>
+	</select>
+	<!-- 查询用户简历列表总条数 -->
+	<select id="userCVInfoCount" resultType="Long" parameterMap="userCV">
+		SELECT COUNT(*) FROM b_user_cv buc
+		<where>
+		 1=1 AND buc.status = 1
+			<if test=" null != sex">
+				AND buc.sex = #{sex} 
+			</if>
+			<if test=" null != phoneid and ''!= phoneid">
+				 AND buc.phoneid LIKE '%${phoneid}%'
+			</if>
+			<if test=" null != name and ''!= name">
+				 AND buc.name LIKE '%${name}%'
+			</if>
+			<if test=" null != sdate and ''!= sdate">
+				AND buc.sdate &gt;= #{sdate}
+			</if>
+			<if test=" null != edate and ''!= edate">
+				AND buc.sdate &lt; DATE_ADD(#{edate}, INTERVAL 1 DAY)
+			</if>
+		</where>
+	</select>
+	<!-- 导出用户简历列表 -->
+	<select id="exportUserCVList" resultMap="userCVMap" parameterMap="userCV">
+		SELECT buc.`id`,buc.`uid`,buc.`name`,buc.headpic,buc.sex,buc.`age`,buc.`phoneid`,buc.`degrees`,buc.`experie`,
+        buc.`salary`,buc.`work_province`,(SELECT GROUP_CONCAT(a.title) FROM t_area a WHERE FIND_IN_SET(a.area_id,REPLACE(buc.work_city, ';', ','))) AS work_city,buc.`is_hide`,buc.`status`,buc.`shield_shop`,buc.`sdate`,buc.`update_time`
+        FROM b_user_cv buc 
+		<where>
+		 1=1   AND buc.status = 1   
+		 	<if test=" null != sex">
+				AND buc.sex = #{sex} 
+			</if>
+			<if test=" null != phoneid and ''!= phoneid">
+				 AND buc.phoneid LIKE '%${phoneid}%'
+			</if>
+			<if test=" null != name and ''!= name">
+				 AND buc.name LIKE '%${name}%'
+			</if>
+			<if test=" null != sdate and ''!= sdate">
+				AND buc.sdate &gt;= #{sdate}
+			</if>
+			<if test=" null != edate and ''!= edate">
+				AND buc.sdate &lt; DATE_ADD(#{edate}, INTERVAL 1 DAY)
+			</if>
+			ORDER BY buc.sdate DESC
+		</where>
+	</select>
+	<!-- 逻辑删除 -->
+	<delete id="deleteUserCVById" parameterType="Object">
+		UPDATE b_user_cv SET status = 0 WHERE id IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	<!-- 根据标签类型用户简历id查询对应的标签名 -->
+	<select id="selectTanameByID" resultMap="recruitTagMap" parameterType="map">
+      SELECT 
+      t.tagname
+    FROM
+      b_tag_entity e 
+      INNER JOIN b_recruit_tag t 
+        ON  e.tag_id = t.id
+    WHERE e.entity_type = #{tagType} 
+      AND e.pojo_id = #{resumeId}
+    </select>
+</mapper>

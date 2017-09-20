@@ -1,0 +1,94 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%
+	String path = request.getContextPath();
+	String basePath = request.getScheme() + "://"
+			+ request.getServerName() + ":" + request.getServerPort()
+			+ path + "/";
+%>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<base href="<%=basePath%>">
+
+<title>添加机器人</title>
+
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+
+<link href="<%=path%>/resources/zui/lib/datetimepicker/datetimepicker.min.css" rel="stylesheet"> 
+<link href="<%=path%>/resources/webuploader/webuploader.css" rel="stylesheet">
+<link href="<%=path%>/resources/upload/upload.css" rel="stylesheet">
+</head>
+<body>
+	<form id="editFrom" role="form" class="form-horizontal">
+		
+		<c:if test="${!empty robotSetInfo}">
+			<input type="hidden" name="id" value="${robotSetInfo.id}">
+		</c:if>
+		
+		<input type="hidden" name="isCommon" value="${isCommon}">
+		<input type="hidden" name="recordId" value="${recordId}">
+		<div class="form-group">
+			<label class="col-md-3 control-label">默认机器人：<span style="color:red;">*</span></label>
+			<div class="col-md-7">
+				<input type="text" class="form-control" name="robotMinNums" id="robotMinNums" placeholder="房间开播默认机器人数量"
+					value="${robotSetInfo.robotMinNums}">
+				<h5>每个房间固定配置的机器人</h5>	
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-md-3 control-label">匹配机器人：<span style="color:red;">*</span></label>
+			<div class="col-md-3">
+				<input type="text" class="form-control" id="robotSetMixNums" name="robotSetMixNums"  placeholder="最小值"
+					value="${robotSetInfo.robotSetMixNums}">
+			</div>
+			<div class="col-md-1">至</div>
+			<div class="col-md-3">
+				<input type="text" class="form-control" id="robotSetMaxNums" name="robotSetMaxNums"  placeholder="最大值"
+					value="${robotSetInfo.robotSetMaxNums}">
+			</div>
+			
+			<label class="col-md-3 "> </label>
+			<h5 class="col-md-7">在默认机器人上增加随机匹配的机器人</h5>
+		</div>
+		<div class="form-group">
+			<label class="col-md-3 control-label">机器人上限：<span style="color:red;">*</span></label>
+			<div class="col-md-7">
+				<input type="text" class="form-control" name="robotMaxNums" id="robotMaxNums" placeholder="真人数量达到此值时,房间不再进入机器人"
+					value="${robotSetInfo.robotMaxNums}">
+				<h5>默认机器人+随机机器人的上限</h5>	
+			</div>
+			
+		</div>
+		
+		<div class="form-group">
+			<label class="col-md-3 control-label">显示倍数：<span style="color:red;">*</span></label>
+			<div class="col-md-7">
+				<input type="text" class="form-control" name="multiple"  placeholder="显示浏览总数将会*倍数对外显示"
+					value="${robotSetInfo.multiple}">
+				<h5>显示浏览总数将会*倍数对外显示</h5>	
+			</div>
+			
+		</div>
+		
+		<div class="form-group">
+			<div class="text-center" style="padding:10px 0 10px 0;">
+				<button type="submit" class="btn btn-success" id="ensure">
+					<span class="icon-ok" ></span> 保 存
+				</button>
+				&nbsp;&nbsp;
+				<button type="reset" class="btn btn-default" data-dismiss="modal">
+					<span class="icon-remove"></span> 取 消
+				</button>
+			</div>
+		</div>
+	</form>
+	<script src="<%=path%>/resources/zui/lib/datetimepicker/datetimepicker.min.js"></script>
+	<script src="<%=path%>/resources/webuploader/webuploader.js"></script>
+	<script src="<%=path%>/resources/upload/upload.js"></script>
+	<script src="<%=path%>/js/live_anchor/robotSetEdit.js?v=1.0.3"></script>
+</body>
+</html>

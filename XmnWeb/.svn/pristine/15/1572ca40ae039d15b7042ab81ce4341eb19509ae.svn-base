@@ -1,0 +1,200 @@
+/**
+ * 
+ */
+package com.xmniao.xmn.core.live_anchor.service;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.thrift.TException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.base.BaseService;
+import com.xmniao.xmn.core.live_anchor.dao.TLivePayOrderDao;
+import com.xmniao.xmn.core.live_anchor.entity.TLivePayOrder;
+import com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy;
+import com.xmniao.xmn.core.thrift.exception.FailureException;
+import com.xmniao.xmn.core.thrift.service.liveService.LiveOrderService;
+import com.xmniao.xmn.core.thrift.service.liveService.ResponseData;
+import com.xmniao.xmn.core.util.DateUtil;
+import com.xmniao.xmn.core.xmnburs.entity.Burs;
+import com.xmniao.xmn.core.xmnburs.service.BursService;
+
+/**
+ * 
+ * 项目名称：XmnWeb
+ * 
+ * 类名称：TLivePayOrderService
+ * 
+ * 类描述： 
+ * 
+ * 创建人：  huang'tao
+ * 
+ * 创建时间：2016-9-1 下午4:38:11 
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司 
+ */
+
+@Service
+public class TLivePayOrderService extends BaseService<TLivePayOrder> {
+
+	/**
+	 * 注入直播支付订单服务
+	 */
+	@Autowired
+	private TLivePayOrderDao livePayOrderDao;
+	
+	/**
+	 * 注入寻蜜鸟用户服务
+	 */
+	@Autowired
+	private BursService bursService;
+	
+	/**
+	 * 注入企业推荐人服务
+	 */
+	@Autowired
+	private TLiveReferrerService referrerService;
+	
+	/**
+	 * 注入直播订单服务
+	 */
+	@Resource(name="liveOrderServiceClient")
+	private ThriftClientProxy liveOrderServiceClient;
+	
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected BaseDao getBaseDao() {
+		return livePayOrderDao;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：获取包含寻蜜鸟用户信息的直播支付订单列表
+	 * 创建人：  huang'tao
+	 * 创建时间：2016-9-2上午11:30:45
+	 * @param livePayOrder
+	 * @return
+	 */
+	public List<TLivePayOrder> getListContainUrsInfo(TLivePayOrder livePayOrder){
+		List<TLivePayOrder> livePayOrderList=new ArrayList<TLivePayOrder>();
+		List<Object> uids=new ArrayList<Object>();
+		
+		//从企业级推荐人列表进入
+		String eUid = livePayOrder.geteUid();//当前企业用户的uid
+		if(StringUtils.isNotBlank(eUid)){
+			List<String> juniorUidList = referrerService.getJuniorUidList(eUid);
+			if(juniorUidList!=null && juniorUidList.size()>0){
+				livePayOrder.setJuniorUids(juniorUidList);
+			}
+		}
+		
+		
+		List<TLivePayOrder> list = getList(livePayOrder);
+		if(list!=null && list.size()>0){
+			for(TLivePayOrder order:list){
+				uids.add(order.getUid());
+			}
+			
+			List<Object> uidList = new ArrayList<>(new HashSet<>(uids));//去除重复uid
+			List<Burs> ursList = bursService.getUrsListByUids(uidList.toArray());
+			if(ursList!=null && ursList.size()>0){
+				for(TLivePayOrder order:list){
+					for(Burs urs:ursList){
+						if(urs.getUid()!=null&&order.getUid()!=null){
+							if(urs.getUid().compareTo(order.getUid())==0){
+								order.setNname(urs.getNname());
+								order.setPhone(urs.getPhone());
+								break;
+							}
+						}
+						
+					}
+					livePayOrderList.add(order);
+				}
+			}
+			
+		}
+		
+		return livePayOrderList;
+	}
+
+	/**
+	 * 方法描述：在此处添加方法描述 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-1-4上午9:45:43 <br/>
+	 * @param livePayOrder
+	 */
+	public ResponseData saveInfo(TLivePayOrder livePayOrder) {
+		ResponseData responseData= new ResponseData();
+		livePayOrder.setCreateTime(new Date());
+		String orderNo="05"+com.xmniao.xmn.core.util.StringUtils.generateOrderNo();
+		livePayOrder.setOrderNo(orderNo);
+		int count = livePayOrderDao.addReturnId(livePayOrder);
+		if(count>0){
+			Map<String,String> paramMap=new HashMap<String,String>();
+			paramMap.put("bid", livePayOrder.getOrderNo());
+			paramMap.put("status", "1");//支付状态 0 支付失败 1 支付成功
+			paramMap.put("payType", livePayOrder.getPayType());
+			paramMap.put("payId", "");
+			paramMap.put("payCode", "");
+			paramMap.put("zdate", DateUtil.formatDate(new Date(), DateUtil.Y_M_D_HMS));
+			responseData = updateLiveOrder(paramMap);
+			
+			if(responseData ==null ){
+				
+			}
+		}
+		return responseData;
+	}
+	
+	/**
+	 * 更新直播订单
+	 * @param request
+	 * @return
+	 * @throws FailureException
+	 * @throws TException
+	 */
+	public ResponseData updateLiveOrder(Map<String,String> paramMap) {
+		LiveOrderService.Client client = (LiveOrderService.Client)(liveOrderServiceClient.getClient());//业务服务
+		ResponseData responseData = null;
+		try {
+			responseData = client.updateLiveOrder(paramMap);
+		} catch (Exception e) {
+			this.log.debug("更新直播订单失败");
+		} finally {
+			liveOrderServiceClient.returnCon();
+		}
+		return responseData;
+	}
+
+	/**
+	 * 方法描述：设置直播支付订单查询参数 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-1-15下午3:17:37 <br/>
+	 * @param livePayOrder
+	 */
+	public void setLivePayOrderRequest(TLivePayOrder livePayOrder) {
+		if(StringUtils.isNotBlank(livePayOrder.getPhone())){
+			Burs burs = new Burs();
+			burs.setPhone(livePayOrder.getPhone());
+			Burs urs = bursService.getUrs(burs);
+			if(urs==null){
+				livePayOrder.setUid(-1);
+			}else{
+				livePayOrder.setUid(urs.getUid());
+			}
+		}
+	}
+	
+
+}

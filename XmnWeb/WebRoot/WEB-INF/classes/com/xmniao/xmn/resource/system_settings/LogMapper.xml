@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.system_settings.dao.LogDao">
+
+	<parameterMap type="Log" id="log" />
+	
+	<resultMap type="Log" id="logMap">
+		<result column="log_id" property="logId" />
+		<result column="user_id" property="userId" />
+		<result column="log_ip" property="logIp" />
+		<result column="log_type" property="logType" />
+		<result column="log_state" property="logState" />
+		<result column="log_parame" property="logParame" />
+		<result column="log_date" property="logDate" />
+		<result column="log_note" property="logNote" />
+		<result column="log_remark" property="logRemark" />
+		<result column="username" property="username" />
+	</resultMap>
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_log
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						user_id,
+						log_ip,
+						log_type,
+						log_state,
+						log_parame,
+						log_date,
+						log_note,
+						log_remark,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.userId},
+						 #{item.logIp},
+						 #{item.logType},
+						 #{item.logState},
+						 #{item.logParame},
+						 #{item.logDate},
+						 #{item.logNote},
+						 #{item.logRemark},
+						 
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" parameterMap="log" >
+		INSERT INTO t_log
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != logId">
+					log_id,
+				</if>
+			 	<if test=" null != userId">
+					user_id,
+				</if>
+			 	<if test=" null != logIp and '' != logIp ">
+					log_ip,
+				</if>
+			 	<if test=" null != logType and '' != logType ">
+					log_type,
+				</if>
+			 	<if test=" null != logState">
+					log_state,
+				</if>
+			 	<if test=" null != logParame and '' != logParame ">
+					log_parame,
+				</if>
+			 	<if test=" null != logDate">
+					log_date,
+				</if>
+			 	<if test=" null != logNote and '' != logNote ">
+					log_note,
+				</if>
+				<if test=" null != logRemark and '' != logRemark ">
+					log_remark,
+				</if>
+				<if test=" null != errorInfo and '' != errorInfo ">
+					error_info,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != logId">
+					 	#{logId},
+				</if>
+			 	<if test=" null != userId">
+					 	#{userId},
+				</if>
+			 	<if test=" null != logIp and '' != logIp ">
+					 	#{logIp},
+				</if>
+			 	<if test=" null != logType and '' != logType ">
+					 	#{logType},
+				</if>
+			 	<if test=" null != logState">
+					 	#{logState},
+				</if>
+			 	<if test=" null != logParame and '' != logParame ">
+					 	#{logParame},
+				</if>
+			 	<if test=" null != logDate">
+					 	#{logDate},
+				</if>
+			 	<if test=" null != logNote and '' != logNote ">
+					 	#{logNote},
+				</if>
+				<if test=" null != logRemark and '' != logRemark ">
+					#{logRemark},
+				</if>
+				<if test=" null != errorInfo and '' != errorInfo ">
+					#{errorInfo},
+				</if>
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_log WHERE log_id IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterMap="log">
+		UPDATE t_log
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != logId">
+					log_id = #{logId},
+				</if>
+				<if test=" null != userId">
+					user_id = #{userId},
+				</if>
+				<if test=" null != logIp and '' != logIp ">
+					log_ip = #{logIp},
+				</if>
+				<if test=" null != logType and '' != logType ">
+					log_type = #{logType},
+				</if>
+				<if test=" null != logState">
+					log_state = #{logState},
+				</if>
+				<if test=" null != logParame and '' != logParame ">
+					log_parame = #{logParame},
+				</if>
+				<if test=" null != logDate">
+					log_date = #{logDate},
+				</if>
+				<if test=" null != logNote and '' != logNote ">
+					log_note = #{logNote},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != logId and '' != logId">
+				log_id = #{logId}
+			</if>
+		</where>
+	</update>
+	
+	<select id="getList" resultMap="logMap" parameterMap="log">
+		SELECT A.*,B.username FROM t_log A 
+		LEFT JOIN t_user B 
+		ON A.user_id=B.user_id
+		<where>
+			1=1
+			<if test=" null != logId">
+				AND A.log_id = #{logId}
+			</if>
+			<if test=" null != userId">
+				AND A.user_id = #{userId}
+			</if>
+			<if test=" null != logIp and '' != logIp ">
+				AND A.log_ip LIKE '%${logIp}%'
+			</if>
+			<if test=" null != logType and '' != logType ">
+				AND A.log_type LIKE '%${logType}%'
+			</if>
+			<if test=" null != logState">
+				AND A.log_state = #{logState}
+			</if>
+			<if test=" null != logParame and '' != logParame ">
+				AND A.log_parame LIKE '%${logParame}%'
+			</if>
+			<!-- <if test=" null != logDate">
+				AND A.log_date = #{logDate}
+			</if> -->
+
+			 <if test=" null != logDateStart and '' != logDateStart">
+				AND A.log_date&gt;= #{logDateStart}
+			</if>
+			<if test=" null != logDateEnd and '' != logDateEnd">
+				AND A.log_date&lt;= #{logDateEnd}
+			</if> 
+			
+			<if test=" null != logNote and '' != logNote ">
+				AND A.log_note LIKE '%${logNote}%'
+			</if>
+			<if test=" null != logRemark and '' != logRemark ">
+				AND A.log_remark LIKE '%${logRemark}%'
+			</if>
+			
+			<if test=" null != username and '' != username ">
+				AND B.username LIKE '%${username}%'
+			</if>
+		</where>
+			ORDER BY log_id DESC  LIMIT ${(page-1)*limit},#{limit}
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="log">
+		<!-- SELECT COUNT(*) FROM t_log -->
+		SELECT COUNT(*) FROM t_log A LEFT JOIN t_user B ON A.user_id=B.user_id
+		<where>
+			1=1
+			<if test=" null != logId">
+				AND A.log_id = #{logId}
+			</if>
+			<if test=" null != userId">
+				AND A.user_id = #{userId}
+			</if>
+			<if test=" null != logIp and '' != logIp ">
+				AND A.log_ip LIKE '%${logIp}%'
+			</if>
+			<if test=" null != logType and '' != logType ">
+				AND A.log_type LIKE '%${logType}%'
+			</if>
+			<if test=" null != logState">
+				AND A.log_state = #{logState}
+			</if>
+			<if test=" null != logParame and '' != logParame ">
+				AND A.log_parame LIKE '%${logParame}%'
+			</if>
+			<!-- <if test=" null != logDate">
+				AND A.log_date = #{logDate}
+			</if> -->
+			 <if test=" null != logDateStart and '' != logDateStart">
+				AND A.log_date&gt;= #{logDateStart}
+			</if>
+			<if test=" null != logDateEnd and '' != logDateEnd">
+				AND A.log_date&lt;= #{logDateEnd}
+			</if> 
+			
+			<if test=" null != logNote and '' != logNote ">
+				AND A.log_note LIKE '%${logNote}%'
+			</if>
+			
+			<if test=" null != username and '' != username ">
+				AND B.username LIKE '%${username}%'
+			</if>
+			<if test=" null != logRemark and '' != logRemark ">
+				AND A.log_remark LIKE '%${logRemark}%'
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Long">
+		SELECT Max(log_id) AS VALUE FROM t_log
+	</select>
+	
+	<select id="getObject" resultMap="logMap" parameterType="Long">
+		SELECT * FROM t_log WHERE log_id = #{0}
+	</select>
+	
+</mapper>

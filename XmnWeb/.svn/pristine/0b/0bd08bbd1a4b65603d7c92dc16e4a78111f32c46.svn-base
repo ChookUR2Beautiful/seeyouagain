@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.manor.dao.ManorMarketTransDynamicDao" >
+  <parameterMap type="ManorMarketTransDynamic" id="manorMarketTransDynamic"></parameterMap>
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.manor.entity.TManorMarketTransDynamic" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="dialogue_type" property="dialogueType" jdbcType="INTEGER" />
+    <result column="trans_id" property="transId" jdbcType="BIGINT" />
+    <result column="price_id" property="priceId" jdbcType="BIGINT" />
+    <result column="pid" property="pid" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="receive_uid" property="receiveUid" jdbcType="INTEGER" />
+    <result column="ruling_price" property="rulingPrice" jdbcType="DOUBLE" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, dialogue_type, trans_id, uid, receive_uid, ruling_price, content, create_date
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_manor_market_trans_dynamic
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_manor_market_trans_dynamic
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.manor.entity.TManorMarketTransDynamic" >
+    insert into t_manor_market_trans_dynamic (id, dialogue_type, trans_id, 
+      uid, receive_uid, ruling_price, 
+      content, create_date)
+    values (#{id,jdbcType=BIGINT}, #{dialogueType,jdbcType=INTEGER}, #{transId,jdbcType=BIGINT}, 
+      #{uid,jdbcType=INTEGER}, #{receiveUid,jdbcType=INTEGER}, #{rulingPrice,jdbcType=DOUBLE}, 
+      #{content,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.manor.entity.TManorMarketTransDynamic" >
+    insert into t_manor_market_trans_dynamic
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="dialogueType != null" >
+        dialogue_type,
+      </if>
+      <if test="transId != null" >
+        trans_id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="receiveUid != null" >
+        receive_uid,
+      </if>
+      <if test="rulingPrice != null" >
+        ruling_price,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+      <if test="createDate != null" >
+        create_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="dialogueType != null" >
+        #{dialogueType,jdbcType=INTEGER},
+      </if>
+      <if test="transId != null" >
+        #{transId,jdbcType=BIGINT},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="receiveUid != null" >
+        #{receiveUid,jdbcType=INTEGER},
+      </if>
+      <if test="rulingPrice != null" >
+        #{rulingPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.manor.entity.TManorMarketTransDynamic" >
+    update t_manor_market_trans_dynamic
+    <set >
+      <if test="dialogueType != null" >
+        dialogue_type = #{dialogueType,jdbcType=INTEGER},
+      </if>
+      <if test="transId != null" >
+        trans_id = #{transId,jdbcType=BIGINT},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="receiveUid != null" >
+        receive_uid = #{receiveUid,jdbcType=INTEGER},
+      </if>
+      <if test="rulingPrice != null" >
+        ruling_price = #{rulingPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.manor.entity.TManorMarketTransDynamic" >
+    update t_manor_market_trans_dynamic
+    set dialogue_type = #{dialogueType,jdbcType=INTEGER},
+      trans_id = #{transId,jdbcType=BIGINT},
+      uid = #{uid,jdbcType=INTEGER},
+      receive_uid = #{receiveUid,jdbcType=INTEGER},
+      ruling_price = #{rulingPrice,jdbcType=DOUBLE},
+      content = #{content,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  
+    <!--  自定义查询区域 -->
+    <!-- 市集管理列表查询条件 -->
+	<sql id="baseSellerCondition">
+		<if test="id != null">
+			AND id = #{id}
+		</if>
+		<if test="dialogueType != null">
+			AND dialogue_type = #{dialogueType,jdbcType=INTEGER}
+		</if>
+		<if test="transId != null">
+			AND trans_id = #{transId,jdbcType=INTEGER}
+		</if>
+        <if test="priceId != null" >
+        	AND price_id = #{priceId,jdbcType=INTEGER}
+        </if>
+        <if test="pid != null">
+			AND pid = #{pid,jdbcType=INTEGER}
+		</if>
+		<if test="createDate != null">
+			AND create_date = #{createDate,jdbcType=TIMESTAMP}
+		</if>
+	</sql>  
+	
+	<select id="getList" resultMap="BaseResultMap" parameterMap="manorMarketTransDynamic">
+		SELECT
+		t.*
+		From t_manor_market_trans_dynamic t
+		<where>
+			1 = 1
+			<include refid="baseSellerCondition" />
+			<if test="content !=null and '' != content">
+				AND content LIKE '%${content}%'
+			</if>
+<!-- 			<if test="phone !=null and '' != phone"> -->
+<!-- 				AND phone = #{phone,jdbcType=VARCHAR} -->
+<!-- 			</if> -->
+		</where>
+		ORDER BY t.create_date DESC, t.id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit}, #{limit}
+		</if>
+	</select>
+
+	<select id="count" resultType="Long" parameterMap="manorMarketTransDynamic">
+		SELECT
+		COUNT(1)
+		From t_manor_market_trans_dynamic t
+		<where>
+			1 = 1
+			<if test="content !=null and '' != content">
+				AND content LIKE '%${content}%'
+			</if>
+		</where>
+	</select>
+  
+</mapper>

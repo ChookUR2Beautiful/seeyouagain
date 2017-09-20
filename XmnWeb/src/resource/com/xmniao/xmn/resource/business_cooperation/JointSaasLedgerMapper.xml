@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.business_cooperation.dao.JointSaasLedgerDao">
+	<parameterMap type="jointSaasLedger" id="jointsaasLedger"/>
+	
+	<insert id="addJointSaasLedger" parameterType="jointsaasLedger">
+		INSERT INTO t_joint_saas_ledger 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+		 	<if test="null != jointid">
+				jointid,
+			</if>
+		 	<if test="null != sellerid">
+				sellerid,
+			</if>
+		 	<if test="null != xmerUid">
+				xmer_uid,
+			</if>
+		 	<if test="null != saasBid">
+				saas_bid,
+			</if>
+		 	<if test="null != commison and '' != commison">
+				commison,
+			</if>
+			<if test="null != date and '' != date">
+				date,
+			</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+		 	<if test=" null != jointid">
+				 #{jointid},
+			</if>
+			 <if test="null != sellerid">
+				#{sellerid},
+			</if>
+		 	<if test="null != xmerUid">
+				#{xmerUid},
+			</if>
+		 	<if test="null != saasBid">
+				#{saasBid},
+			</if>
+		 	<if test="null != commison and '' != commison">
+				#{commison},
+			</if>
+			<if test="null != date and '' != date">
+				#{date},
+			</if>
+		</trim>
+	</insert>
+	
+</mapper>

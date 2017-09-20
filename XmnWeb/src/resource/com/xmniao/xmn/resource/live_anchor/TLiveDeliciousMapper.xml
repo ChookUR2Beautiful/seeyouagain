@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TLiveDeliciousDao" >
+  <parameterMap type="LiveDelicious" id="liveDelicious"></parameterMap>
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.live_anchor.entity.TLiveDelicious" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="classify_id" property="classifyId" jdbcType="INTEGER" />
+    <result column="tag_id" property="tagId" jdbcType="INTEGER" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+    <result column="rtype" property="rtype" jdbcType="INTEGER" />    
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, title, classify_id, tag_id, rtype, sort, create_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_live_delicious
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_live_delicious
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveDelicious" >
+    insert into t_live_delicious (id, title, classify_id, 
+      tag_id, sort, rtype, create_time, update_time)
+    values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{classifyId,jdbcType=INTEGER}, 
+      #{tagId,jdbcType=INTEGER}, #{rtype,jdbcType=INTEGER}, #{sort,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveDelicious" >
+    insert into t_live_delicious
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="classifyId != null" >
+        classify_id,
+      </if>
+      <if test="tagId != null" >
+        tag_id,
+      </if>
+      <if test="rtype != null" >
+        rtype,
+      </if>      
+      <if test="sort != null" >
+        sort,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="classifyId != null" >
+        #{classifyId,jdbcType=INTEGER},
+      </if>
+      <if test="tagId != null" >
+        #{tagId,jdbcType=INTEGER},
+      </if>
+      <if test="rtype != null" >
+        #{rtype,jdbcType=INTEGER},
+      </if>      
+      <if test="sort != null" >
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveDelicious" >
+    update t_live_delicious
+    <set >
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="classifyId != null" >
+        classify_id = #{classifyId,jdbcType=INTEGER},
+      </if>
+      <if test="tagId != null" >
+        tag_id = #{tagId,jdbcType=INTEGER},
+      </if>
+      <if test="rtype != null" >
+        rtype = #{rtype,jdbcType=INTEGER},
+      </if>      
+      <if test="sort != null" >
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveDelicious" >
+    update t_live_delicious
+    set title = #{title,jdbcType=VARCHAR},
+      classify_id = #{classifyId,jdbcType=INTEGER},
+      tag_id = #{tagId,jdbcType=INTEGER},
+      rtype = #{rtype,jdbcType=INTEGER},      
+      sort = #{sort,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  
+    <!-- 自定义区或 -->
+	<sql id="baseDeliciousCondition">
+		<if test="id != null">
+			AND t.id = #{id}
+		</if>
+		<if test="rtype!= null">
+			AND rtype = #{rtype}
+		</if>
+	</sql>
+
+	<select id="getLiveDeliciousList" resultMap="BaseResultMap" parameterMap="liveDelicious">
+		select
+		t.*
+		, tr.tag_name as tagName
+		FROM t_live_delicious t LEFT JOIN t_live_classify_tag tr 
+		ON t.tag_id = tr.id
+		<where>
+			1 = 1
+			<include refid="baseDeliciousCondition"></include>
+			<if test="title !=null and '' != title">
+				AND t.title LIKE '%${title}%'
+			</if>
+		    <if test="tagName !=null and '' != tagName">
+				AND tr.tag_name LIKE '%${tagName}%'
+			</if>
+		</where>
+		ORDER BY update_time DESC, id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit}, #{limit}
+		</if>
+	</select>
+
+	<select id="countLiveDelicious" resultType="Long" parameterMap="liveDelicious">
+		SELECT COUNT(1) FROM t_live_delicious t LEFT JOIN t_live_classify_tag tr 
+		ON t.tag_id = tr.id
+		<where>
+			1=1
+			<include refid="baseDeliciousCondition" />
+			<if test="title !=null and '' != title">
+				AND title LIKE '%${title}%'
+			</if>
+		    <if test="tagName !=null and '' != tagName">
+				AND tr.tag_name LIKE '%${tagName}%'
+			</if>			
+		</where>
+
+	</select>
+  
+</mapper>

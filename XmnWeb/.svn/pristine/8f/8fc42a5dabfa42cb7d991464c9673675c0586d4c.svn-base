@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:util="http://www.springframework.org/schema/util"	
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-3.2.xsd 
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-3.2.xsd 
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+	http://www.springframework.org/schema/util
+    http://www.springframework.org/schema/util/spring-util-3.2.xsd">
+	
+	<!-- 支付服务连接池 -->
+	<bean id="payConnectionSpringfactory" class="com.xmniao.xmn.core.thrift.client.common.factory.ThriftConnectionSpringFactory">
+		<property name="ip" value="${thrift.pay.ip}" />
+		<property name="port" value="${thrift.pay.port}" />
+		<property name="maxActive" value="${thrift.public.maxActive}" />
+		<property name="maxIdle" value="${thrift.public.maxIdle}" />
+		<property name="testOnBorrow" value="${thrift.public.testOnBorrow}" />
+		<property name="testOnReturn" value="${thrift.public.testOnReturn}" />
+		<property name="testWhileIdle" value="${thrift.public.testWhileIdle}" />
+		<property name="conTimeOut" value="${thrift.public.conTimeOut}" />
+		<!-- <property name="maxWait" value="50"></property> -->
+	</bean>
+	<!-- 分账服务连接池 -->
+	<bean id="ledgerConnectionSpringfactory" class="com.xmniao.xmn.core.thrift.client.common.factory.ThriftConnectionSpringFactory">
+		<property name="ip" value="${thrift.ledger.ip}" />
+		<property name="port" value="${thrift.ledger.port}" />
+		<property name="maxActive" value="${thrift.public.maxActive}" />
+		<property name="maxIdle" value="${thrift.public.maxIdle}" />
+		<property name="testOnBorrow" value="${thrift.public.testOnBorrow}" />
+		<property name="testOnReturn" value="${thrift.public.testOnReturn}" />
+		<property name="testWhileIdle" value="${thrift.public.testWhileIdle}" />
+		<property name="conTimeOut" value="${thrift.public.conTimeOut}" />
+		<!-- <property name="maxWait" value="50"></property> -->
+	</bean>
+	<!-- 分账服务  thrift服务端连接参数配置 -->
+	<bean id="thriftClientUtil" class="com.xmniao.xmn.core.thrift.util.ThriftClientUtil">
+	<property name="configMaps">
+	    <util:map map-class="java.util.HashMap">
+	                 <!-- 业务系统服务端参数 -->
+                <entry key="BusineAccountService_ip" value="${thrift.ledger.ip}" />
+                <entry key="BusineAccountService_port" value="${thrift.ledger.port}" />
+		</util:map>
+		</property>
+	</bean>
+	<!-- 业务服务连接池 -->
+	<bean id="businessConnectionSpringfactory" class="com.xmniao.xmn.core.thrift.client.common.factory.ThriftConnectionSpringFactory">
+		<property name="ip" value="${thrift.business.ip}" />
+		<property name="port" value="${thrift.business.port}" />
+		<property name="maxActive" value="${thrift.public.maxActive}" />
+		<property name="maxIdle" value="${thrift.public.maxIdle}" />
+		<property name="testOnBorrow" value="${thrift.public.testOnBorrow}" />
+		<property name="testOnReturn" value="${thrift.public.testOnReturn}" />
+		<property name="testWhileIdle" value="${thrift.public.testWhileIdle}" />
+		<property name="conTimeOut" value="${thrift.public.conTimeOut}" />
+		<property name="maxWait" value="50"></property>
+	</bean>
+	<bean id="ledgerConnectionManager" class="com.xmniao.xmn.core.thrift.client.common.ConnectionManager">
+		<property name="thriftConnectionProvider" ref="ledgerConnectionSpringfactory" />
+	</bean>
+	<bean id="payConnectionManager" class="com.xmniao.xmn.core.thrift.client.common.ConnectionManager">
+		<property name="thriftConnectionProvider" ref="payConnectionSpringfactory" />
+	</bean>
+	<bean id="businessConnectionManager" class="com.xmniao.xmn.core.thrift.client.common.ConnectionManager">
+		<property name="thriftConnectionProvider" ref="businessConnectionSpringfactory" />
+	</bean>
+	<!-- 分账服务争议订单接口 -->
+	<bean id="ledgerServiceClient" class="com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy">
+		<property name="service" value="com.xmniao.xmn.core.thrift.service.ledgerService.BusineAccountService" />
+		<property name="connectionManager" ref="ledgerConnectionManager" />	
+		<property name="serviceName" value="BusineAccountService"></property>	
+	</bean>
+	
+	<!-- 分账服务商家、会员提现查询接口 -->
+	<bean id="commonServiceClient" class="com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy">
+		<property name="service" value="com.xmniao.xmn.core.thrift.service.commonService.CommonAccountService" />
+		<property name="connectionManager" ref="ledgerConnectionManager" />	
+		<property name="serviceName" value="CommonAccountService"></property>	
+	</bean>
+	<!-- 分账服务合作商提现查询接口 -->
+	<bean id="jointServiceClient" class="com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy">
+		<property name="service" value="com.xmniao.xmn.core.thrift.service.jointService.JointeAccountService" />
+		<property name="connectionManager" ref="ledgerConnectionManager" />	
+		<property name="serviceName" value="JointeAccountService"></property>	
+	</bean>
+	<!--分账服务用户取消申请订单退款服务接口 -->
+	<bean id="memberAccountService" class="com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy">
+		<property name="service" value="com.xmniao.xmn.core.thrift.service.memberAccountService.MemberAccountService" />
+		<property name="connectionManager" ref="ledgerConnectionManager" />	
+		<property name="serviceName" value="MemberAccountService"></property>
+	</bean>
+	<!--分账服务新版分账规则服务接口 -->
+	<bean id="splitServiceClient" class="com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy">
+		<property name="service" value="com.xmniao.xmn.core.thrift.service.ledgerService.SplitService" />
+		<property name="connectionManager" ref="ledgerConnectionManager" />	
+		<property name="serviceName" value="SplitService"></property>
+	</bean>
+	<!-- 支付服务新增钱包接口 -->
+	<bean id="synthesizeServiceClient" class="com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy">
+		<property name="service" value="com.xmniao.xmn.core.thrift.service.synthesizeService.SynthesizeService" />
+		<property name="connectionManager" ref="payConnectionManager" />	
+		<property name="serviceName" value="SynthesizeService"></property>	
+	</bean>
+
+	<!--支付服务退款服务接口 -->
+	<bean id="payRefundServiceClient" class="com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy">
+		<property name="service" value="com.xmniao.xmn.core.thrift.service.payRefundService.PayRefundService" />
+		<property name="connectionManager" ref="payConnectionManager" />	
+		<property name="serviceName" value="PayRefundService"></property>
+	</bean>
+	<!-- 生鲜订单退款服务接口 -->
+	<bean id="freshRefundServiceClient" class="com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy">
+		<property name="service" value="com.xmniao.xmn.core.thrift.service.payRefundService.FreshRefundService" />
+		<property name="connectionManager" ref="payConnectionManager" />	
+		<property name="serviceName" value="FreshRefundService"></property>
+	</bean>
+   	<!--支付服务银行卡资料服务 -->
+	<bean id="mentionAccountServiceClient" class="com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy">
+		<property name="service" value="com.xmniao.xmn.core.thrift.service.synthesizeService.MentionAccountService" />
+		<property name="connectionManager" ref="payConnectionManager" />	
+		<property name="serviceName" value="MentionAccountService"></property>
+	</bean>
+	<!--业务服务退款订单转正常 订单恢复接口移交支付服务中，此接口暂时没用-->
+	<bean id="busiSysOrderServiceClient" class="com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy">
+		<property name="service" value="com.xmniao.xmn.core.thrift.service.businessService.BusiSysOrderService" />
+		<property name="connectionManager" ref="businessConnectionManager" />	
+		<property name="serviceName" value="BusiSysOrderService"></property>
+	</bean>
+	
+	<!-- 支付服务新增直播钱包接口 -->
+	<bean id="liveWalletServiceServiceClient" class="com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy">
+		<property name="service" value="com.xmniao.xmn.core.thrift.service.liveService.LiveWalletService" />
+		<property name="connectionManager" ref="payConnectionManager" />	
+		<property name="serviceName" value="LiveWalletService"></property>	
+	</bean>
+	
+	<!--业务服务手动分账订单开始分账，目前仅限直播分账模式订单-->
+	<bean id="orderServiceClient" class="com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy">
+		<property name="service" value="com.xmniao.xmn.core.thrift.service.orderService.OrderService" />
+		<property name="connectionManager" ref="businessConnectionManager" />	
+		<property name="serviceName" value="OrderService"></property>
+	</bean>
+	
+	<!--业务服务商家直播信息统计-->
+	<bean id="liveOrderServiceClient" class="com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy">
+		<property name="service" value="com.xmniao.xmn.core.thrift.service.liveService.LiveOrderService" />
+		<property name="connectionManager" ref="businessConnectionManager" />	
+		<property name="serviceName" value="LiveOrderService"></property>
+	</bean>
+	
+	
+	<!--业务服务商家收藏、浏览、消费统计-->
+	<bean id="sellerServiceClient" class="com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy">
+		<property name="service" value="com.xmniao.xmn.core.thrift.service.businessService.SellerService" />
+		<property name="connectionManager" ref="businessConnectionManager" />	
+		<property name="serviceName" value="SellerService"></property>
+	</bean>
+
+	<!--业务服务购买体验卡订单-->
+	<bean id="experienceofficerOrderServiceClient" class="com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy">
+		<property name="service" value="com.xmniao.xmn.core.thrift.service.experienceofficer.ExperienceOfficerOrderService" />
+		<property name="connectionManager" ref="businessConnectionManager" />	
+		<property name="serviceName" value="ExperienceOfficerOrderService"></property>
+	</bean>
+		
+	<!--支付服务 体验卡服务-->
+	<bean id="experiencecardServiceClient" class="com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy">
+		<property name="service" value="com.xmniao.xmn.core.thrift.service.experienceofficer.ExperiencecardService" />
+		<property name="connectionManager" ref="payConnectionManager" />	
+		<property name="serviceName" value="ExperiencecardService"></property>
+	</bean>
+		
+		
+	<!--支付服务 储值卡服务-->
+	<bean id="valueCardServiceClient" class="com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy">
+		<property name="service" value="com.xmniao.xmn.core.thrift.service.valueCardService.ValueCardService" />
+		<property name="connectionManager" ref="payConnectionManager" />	
+		<property name="serviceName" value="ValueCardService"></property>
+	</bean>
+	
+	
+	<!--支付服务 寻蜜客服务-->
+	<bean id="xmerWalletServicClient" class="com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy">
+		<property name="service" value="com.xmniao.xmn.core.thrift.service.xmerWalletService.XmerWalletService" />
+		<property name="connectionManager" ref="payConnectionManager" />	
+		<property name="serviceName" value="XmerWalletService"></property>
+	</bean>
+	
+	<!-- 支付服务新增 提现手续费率接口 -->
+	<bean id="walletExpansionServiceClient" class="com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy">
+		<property name="service" value="com.xmniao.xmn.core.thrift.service.liveService.WalletExpansionService" />
+		<property name="connectionManager" ref="payConnectionManager" />	
+		<property name="serviceName" value="WalletExpansionService"></property>	
+	</bean>
+	
+	<!--业务服务用户服务-->
+	<bean id="userServiceClient" class="com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy">
+		<property name="service" value="com.xmniao.xmn.core.thrift.service.userService.UserService" />
+		<property name="connectionManager" ref="businessConnectionManager" />	
+		<property name="serviceName" value="UserService"></property>
+	</bean>
+
+	<!-- 用户庄园的阳光收益或支出流水接口 -->
+	<bean id="manorRelatedServiceClient" class="com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy">
+		<property name="service" value="com.xmniao.xmn.core.thrift.service.manorService.ManorRelatedService" />
+		<property name="connectionManager" ref="payConnectionManager" />	
+		<property name="serviceName" value="ManorRelatedService"></property>	
+	</bean>	
+	
+	<!-- 用户ID获取庄园用户的花蜜和阳光 -->
+	<bean id="manorPropsThriftServiceClient" class="com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy">
+		<property name="service" value="com.xmniao.xmn.core.thrift.service.manorService.ManorPropsThriftService" />
+		<property name="connectionManager" ref="payConnectionManager" />	
+		<property name="serviceName" value="ManorPropsThriftService"></property>	
+	</bean>	
+	
+</beans>

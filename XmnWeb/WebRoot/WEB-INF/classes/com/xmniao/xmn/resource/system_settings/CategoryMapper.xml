@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.system_settings.dao.CategoryDao">
+
+	<parameterMap type="Category" id="category" />
+	
+	<resultMap type="Category" id="categoryMap">
+		<result column="tid" property="tid" />
+		<result column="tradename" property="tradename" />
+		<result column="pid" property="pid" />
+		<result column="status" property="status" />
+		<result column="sdate" property="sdate" />
+		<result column="number" property="number" />
+		<result column="order_num" property="orderNum" />
+		<result column="show_big_img" property="showBigImg" />
+		<result column="show_small_img" property="showSmallImg" />
+		<result column="isremove" property="isremove" />
+		<result column="hot" property="hot" />
+		<result column="type" property="type" />
+		<result column="url" property="url" />
+		<!-- <result column="website" property="url" />
+		<result column="redirectType" property="url" /> -->
+		
+		
+	</resultMap>
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_trade
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						tradename,
+						pid,
+						status,
+						sdate,
+						number,
+						order_num,
+						show_big_img,
+						show_small_img,
+						hot,
+						type,
+						url
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.tradename},
+						 #{item.pid},
+						 #{item.status},
+						 #{item.sdate},
+						 #{item.number},
+						 #{item.orderNum},
+						 #{item.showBigImg},
+						 #{item.showSmallImg},
+						 #{item.hot},
+						 #{item.type},
+						 #{item.url}
+						
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" parameterMap="category" >
+		INSERT INTO t_trade
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != tradename and '' != tradename">
+					tradename,
+				</if>
+			 	<if test=" null != pid ">
+					pid,
+				</if>
+			 	<if test=" null !=status ">
+					status,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+			 	<if test=" null != number">
+					number,
+				</if>
+				<if test=" null != orderNum">
+					order_num,
+				</if>
+			 	<if test=" null != showBigImg and '' != showBigImg ">
+					show_big_img,
+				</if>
+				<if test=" null != showSmallImg and '' != showSmallImg ">
+					show_small_img,
+				</if>
+				<if test=" null != hot">
+					hot,
+				</if>
+				<if test=" null != type">
+					type,
+				</if>
+				<if test=" null != url and '' != url">
+					url
+				</if>
+				
+				
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != tradename">
+					 	#{tradename},
+				</if>
+				<if test=" null != pid ">
+					#{pid},
+				</if>
+			 	<if test=" null != status ">
+					 	#{status},
+				</if>
+			 	<if test=" null != sdate ">
+					 	#{sdate},
+				</if>
+			 	<if test=" null != number">
+					 	#{number},
+				</if>
+			 	<if test=" null != orderNum ">
+					 	#{orderNum},
+				</if>
+			 		<if test=" null != showBigImg and '' != showBigImg ">
+					#{showBigImg},
+				</if>
+				<if test=" null != showSmallImg and '' != showSmallImg ">
+					#{showSmallImg},
+				</if>
+				<if test=" null != hot">
+					#{hot},
+				</if>
+				<if test=" null != type">
+					#{type},
+				</if>
+				<if test=" null != url and '' != url">
+					#{url}
+				</if>
+		</trim>
+	</insert>
+	
+	<update id="update" parameterMap="category">
+		UPDATE t_trade
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != tradename and '' != tradename ">
+					tradename = #{tradename},
+				</if>
+				<if test=" null != pid ">
+					pid = #{pid},
+				</if>
+				<if test=" null != status ">
+					 status = #{status},
+				</if>
+			 	<if test=" null != sdate ">
+					 	sdate = #{sdate},
+				</if>
+			 	<if test=" null != number">
+					 	number = #{number},
+				</if>
+			 	<if test=" null != orderNum ">
+					 	order_num = #{orderNum},
+				</if>
+			 		<if test=" null != showBigImg">
+					show_big_img = #{showBigImg},
+				</if>
+				<if test=" null != showSmallImg">
+					show_small_img = #{showSmallImg},
+				</if>
+				<if test=" null != hot">
+					hot = #{hot},
+				</if>
+				<if test=" null != type">
+					type = #{type},
+				</if>
+				<if test=" null != url and '' != url">
+					url = #{url}
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != tid">
+				tid = #{tid}
+			</if>
+		</where>
+	</update>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_trade WHERE tid IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<delete id="deleteById" parameterType="Long">
+		DELETE FROM t_trade WHERE tid = #{0} OR pid=#{0}
+	</delete>
+	
+	
+	
+	<select id="getParentList" resultMap="categoryMap" parameterMap="category">
+		SELECT 
+	      tr.*,
+	      IF(COUNT(ts.`category`) > 0, 1, 0) AS isremove 
+	    FROM
+	      (SELECT 
+	        tid,tradename,pid,order_num
+	      FROM
+	        t_trade 
+	      WHERE pid = 0) tr 
+	      LEFT JOIN (SELECT DISTINCT category FROM t_seller )ts 
+	        ON tr.tid = ts.`category` 
+	    GROUP BY tr.tid ORDER BY tr.order_num DESC LIMIT ${(page-1)*limit},#{limit}
+	</select>
+	
+	<select id="getParent" resultMap="categoryMap" >
+		SELECT * FROM t_trade WHERE pid=0 ORDER BY order_num DESC 
+	</select>
+	
+	
+	<select id="getFirstTraderList" resultMap="categoryMap" parameterMap="category">
+		SELECT ft.*,IFNULL(ftNumber.twoNum,0)AS number FROM 
+		(	
+			SELECT tid,tradename ,order_num  FROM t_trade 
+			<where>
+				pid=0 
+				<if test=" null != tid">
+					AND tid = #{tid}
+				</if>
+				<if test=" null != tradename and '' != tradename ">
+					AND tradename LIKE concat('%',#{tradename},'%')
+				</if>
+			</where>  
+		)ft LEFT JOIN 
+		(SELECT pid,COUNT(tid)AS twoNum FROM t_trade GROUP BY pid)ftNumber ON ft.tid = ftNumber.pid ORDER BY ft.order_num DESC 
+		LIMIT ${(page-1)*limit},#{limit}
+	</select>
+	
+	<select id="getFirstTraderListCount" resultType="Long" parameterMap="category">
+		SELECT 
+		 count(*)
+		FROM
+		  t_trade 
+		<where>
+				pid=0 
+				<if test=" null != tid">
+					AND tid = #{tid}
+				</if>
+				<if test=" null != tradename and '' != tradename ">
+					AND tradename LIKE concat('%',#{tradename},'%')
+				</if>
+		</where>  
+	</select>
+	
+	<select id="getTwoTraderListByPid" resultMap="categoryMap" parameterMap="category">
+		SELECT 
+		  tid,
+		  tradename,
+		  number,
+		  order_num 
+		FROM
+		  t_trade 
+		  
+		  <where>
+				pid = #{pid} 
+				<if test=" null != tid">
+					AND tid = #{tid}
+				</if>
+				<if test=" null != tradename and '' != tradename ">
+					AND tradename LIKE concat('%',#{tradename},'%')
+				</if>
+		</where>  
+		ORDER BY order_num DESC 
+		LIMIT ${(page-1)*limit},#{limit}
+	</select>
+	
+	<select id="getTwoTraderListByPidCount" resultType="Long" parameterMap="category">
+		SELECT 
+		 count(*)
+		FROM
+		  t_trade 
+		 <where>
+				pid = #{pid} 
+				<if test=" null != tid">
+					AND tid = #{tid}
+				</if>
+				<if test=" null != tradename and '' != tradename ">
+					AND tradename LIKE concat('%',#{tradename},'%')
+				</if>
+		</where>
+	</select>
+	
+	
+	<select id="getSubList" resultMap="categoryMap" parameterType="java.util.ArrayList">
+		SELECT 
+	      tr.*,
+	      IF(COUNT(ts.`genre`) > 0, 1, 0) AS isremove 
+	    FROM
+			(SELECT tid,tradename,pid,order_num FROM t_trade WHERE pid IN 
+			<foreach item="item" index="index" collection="list"  open="(" separator="," close=") ">
+				 #{item.tid}
+			</foreach>
+			)tr LEFT JOIN (SELECT  category, genre FROM t_seller GROUP BY genre) ts 
+	        ON tr.pid = ts.`category` AND tr.tid=ts.`genre`
+	    GROUP BY tr.tid ORDER BY tr.order_num DESC
+	
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="category">
+		SELECT COUNT(*) FROM t_trade where pid=0
+<!-- 		<where>
+			1=1
+			<if test=" null != id">
+				AND tid = #{tid}
+			</if>
+			<if test=" null != tradename and '' != tradename ">
+					AND tradename = #{tradename},
+				</if>
+				<if test=" null != pid ">
+					AND pid = #{pid},
+				</if>
+				<if test=" null != status ">
+					AND  status = #{status},
+				</if>
+			 	<if test=" null != sdate ">
+					 	AND sdate = #{sdate},
+				</if>
+			 	<if test=" null != number">
+					 AND	number = #{number},
+				</if>
+			 	<if test=" null != orderNum ">
+					 	AND order_num = #{orderNum},
+				</if>
+			 		<if test=" null != showBigImg and '' != showBigImg ">
+					AND show_big_img = #{showBigImg},
+				</if>
+				<if test=" null != showSmallImg and '' != showSmallImg ">
+					AND show_small_img = #{showSmallImg}
+				</if>
+		</where> -->
+	</select>
+	
+	
+	
+	<select id="getLdAll" resultMap="categoryMap">
+		SELECT * FROM t_trade ORDER BY hot DESC,order_num DESC 
+	</select>
+	
+	<select id="getMaxId"   resultType="Long">
+		SELECT Max(tid) AS VALUE FROM t_trade
+	</select>
+	
+	<select id="getObject" resultMap="categoryMap" parameterType="Long">
+		SELECT * FROM t_trade WHERE tid = #{0}
+	</select>
+	
+	
+</mapper>

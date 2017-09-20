@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.fresh.dao.BillFreshSubDao">
+    
+    <parameterMap type="TBillFreshSub" id="billFreshSub"/>
+    
+	<resultMap type="TBillFreshSub" id="billFreshSubMap">
+		<result column="id" property="id"/>
+		<result column="order_sn" property="orderSn"/>
+		<result column="sub_order_sn" property="subOrderSn"/>
+		<result column="supplier_id" property="supplierId"/>
+		<result column="supplierName" property="supplierName"/>
+		<result column="uid" property="uid"/>
+		<result column="total_amount" property="totalAmount"/>
+		<result column="preferential" property="preferential"/>
+		<result column="cash_amount" property="cashAmount"/>
+		<result column="balance_amount" property="balanceAmount"/>
+		<result column="integral_amount" property="integralAmount"/>
+		<result column="freight" property="freight"/>
+		<result column="status" property="status"/>
+		<result column="courier_number" property="courierNumber"/>
+		<result column="courier_type" property="courierType"/>
+		<result column="strCourierType" property="strCourierType"/>
+		<result column="delivery_time" property="deliveryTime"/>
+		<result column="create_time" property="createTime"/>
+		<result column="modify_time" property="modifyTime"/>
+		<result column="memo" property="memo"/>
+		<result column="address" property="address"/>
+		<result column="mobile" property="mobile"/>
+		<result column="consignee" property="consignee"/>
+		<result column="version" property="version"/>
+		<result column="operator" property="operator"/>
+		<result column="hstatus" property="hstatus"/>
+		<result column="commission" property="commission"/>
+		<result column="coin_amount" property="coinAmount"/>
+		<result column="paytype" property="paytype"/>
+		<result column="phoneid" property="phoneid"/>
+		<result column="send_uid" property="sendUid"/>
+		
+		<collection ofType="TProductBill" property="productList" column="subOrderSn" >
+			<id column="sub_id" property="sub_id"/>  
+            <result column="pname" property="pname" />
+            <result column="suttle" property="suttle" />
+            <result column="codeId" property="codeId" />
+		    <result column="price" property="price" />
+		    <result column="goodsNum" property="goodsNum" />  
+		    <result column="activityId" property="activityId"/>
+		    <result column="wareNum" property="wareNum"/>
+		    <result column="type" property="type"/>
+		    <result column="base_price" property="basePrice"/>
+		</collection>
+		
+	</resultMap>
+	
+	
+	
+	<select id="selectProductBill" resultType="TProductBill">
+		 select <include refid="Product_Bill_List"/>  from t_product_bill where sub_bid = #{subOrderSn}
+	</select>
+	
+	<sql id="Base_Column_List">
+   t_bill_fresh_sub.id,
+	order_sn,
+	sub_order_sn,
+	t_bill_fresh_sub.supplier_id,
+	t_bill_fresh_sub.uid,
+	total_amount,
+	preferential,
+	cash_amount,
+	coin_amount,
+	balance_amount,
+	integral_amount,
+	t_bill_fresh_sub.freight,
+	t_bill_fresh_sub. STATUS,
+	courier_number,
+	courier_type,
+	delivery_time,
+	t_bill_fresh_sub.create_time,
+	modify_time,
+	memo,
+	t_bill_fresh_sub.rid,
+	t_bill_fresh_sub.address,
+	t_bill_fresh_sub.mobile,
+	consignee,
+	t_bill_fresh_sub.version,
+	operator,
+	t_bill_fresh_sub.commission,
+	t_bill_fresh_sub.hstatus,
+	t_bill_fresh_sub.remind_express,
+	t_bill_fresh_sub.expTid,
+	t_product_bill.id,
+	t_product_bill.codeId,
+	activityId,
+	activity_type,
+	t_product_bill.breviary,
+	t_product_bill.pname,
+	t_product_bill.bid,
+	sub_bid,
+	t_product_bill.wareNum,
+	t_product_bill.rdate,
+	t_product_bill.udate,
+	t_product_bill.price,
+	t_product_bill.goodsName,
+	t_product_bill.suttle,
+	t_product_bill.freight,
+	t_product_bill.supplier_id,
+	t_product_bill.integral,
+	t_product_bill.purchasePrice,
+	attr_val,
+	attr_id,
+	attr_amount,
+	attrids,
+	attr_str,
+	t_product_bill.expWeight,
+	t_product_bill.expTid,
+	t_product_bill.type,
+	t_product_bill.base_price
+  </sql>
+  
+  <sql id="Product_Bill_List">
+    t_product_bill.id, t_product_bill.codeId, activityId, activity_type, t_product_bill.breviary, t_product_bill.pname, t_product_bill.bid, sub_bid, t_product_bill.wareNum, t_product_bill.rdate, 
+    t_product_bill.udate, t_product_bill.price, t_product_bill.goodsName, t_product_bill.suttle, t_product_bill.freight, t_product_bill.supplier_id, t_product_bill.integral, t_product_bill.purchasePrice, attr_val, 
+    attr_id, attr_amount, attrids, attr_str, t_product_bill.expWeight, t_product_bill.expTid
+  </sql>
+	
+	<!-- 查询条件 -->
+	<sql id="queryTBillFreshSubCondition">
+		<if test="null != id">
+			AND tbfs.id = #{id} 
+		</if>
+		<if test="null != orderSn and '' != orderSn">
+			AND tbfs.order_sn = #{orderSn}
+		</if>
+		<if test="null != subOrderSn and '' != subOrderSn">
+			AND tbfs.sub_order_sn = #{subOrderSn}
+		</if>
+		<if test="null != supplierId">
+			AND tbfs.supplier_id = #{supplierId}
+		</if>
+		<if test="null != uid">
+			AND tbfs.uid = #{uid}
+		</if>
+		<if test="null != totalAmount">
+			AND tbfs.total_amount = #{totalAmount}
+		</if>
+		<if test="null != preferential">
+			AND tbfs.preferential = #{preferential}
+		</if>
+		<if test="null != cashAmount">
+			AND tbfs.cash_amount = #{cashAmount}
+		</if>
+		<if test="null != balanceAmount">
+			AND tbfs.balance_amount = #{balanceAmount}
+		</if>
+		<if test="null != integralAmount">
+			AND tbfs.integral_amount = #{integralAmount}
+		</if>
+		<if test="null != freight">
+			AND tbfs.freight = #{freight}
+		</if>
+		<if test="null != status">
+			AND tbfs.status = #{status}
+		</if>
+		<if test="null != courierNumber and '' != courierNumber">
+			AND tbfs.courier_number LIKE '%${courierNumber}%'
+		</if>
+		<if test="null != courierType and '' != courierType">
+			AND tbfs.courier_type LIKE '%${courierType}%'
+		</if>
+		<if test=" null != subCreateSdate and '' != subCreateSdate">
+			AND tbfs.create_time &gt; #{subCreateSdate} 
+		</if>
+		<if test=" null != subCreateEdate and ''!= subCreateEdate">
+			AND tbfs.create_time &lt; DATE_ADD(#{subCreateEdate}, INTERVAL 1 DAY) 
+		</if>
+		<if test=" null != subDeliverySdate and ''!= subDeliverySdate">
+			AND tbfs.delivery_time &gt;= #{subDeliverySdate}
+		</if>
+		<if test=" null != subDeliveryEdate and ''!= subDeliveryEdate">
+			AND tbfs.delivery_time &lt; DATE_ADD(#{subDeliveryEdate}, INTERVAL 1 DAY)
+		</if>
+		<if test="null != memo and '' != memo">
+			AND tbfs.memo LIKE '%${memo}%'
+		</if>
+		<if test="null != address and '' != address">
+			AND tbfs.address LIKE '%${address}%'
+		</if>
+		<if test="null != mobile and '' != mobile">
+			AND tbfs.mobile = #{mobile}
+		</if>
+		<if test="null != consignee and '' != consignee">
+			AND tbfs.consignee LIKE '%${consignee}%'
+		</if>
+		<if test="null != hstatus">
+			AND tbfs.hstatus = #{hstatus}
+		</if>
+		<if test="null != deliveryTime and '' != deliveryTime">
+			AND tbfs.delivery_time &gt; #{deliveryTime} AND tbfs.delivery_time &lt; DATE_ADD(#{deliveryTime}, INTERVAL 1 DAY) 
+		</if>
+	</sql>
+	
+	<sql id="whereSQL">
+	    <if test="null != subOrderSn and '' != subOrderSn">
+			AND t_bill_fresh_sub.sub_order_sn like '%${subOrderSn}%'
+		</if>
+		<if test="null !=mobile and '' != mobile">
+			AND t_bill_fresh_sub.mobile like '%${mobile}%'
+		</if>
+		<if test="consignee !=null and consignee != ''">
+			AND t_bill_fresh_sub.consignee like '%${consignee}%'
+		</if>
+		<if test=" null != subCreateSdate and '' != subCreateSdate">
+			AND t_bill_fresh_sub.create_time &gt; #{subCreateSdate} 
+		</if>
+		<if test=" null != subCreateEdate and ''!= subCreateEdate">
+			AND t_bill_fresh_sub.create_time &lt; DATE_ADD(#{subCreateEdate}, INTERVAL 1 DAY) 
+		</if>
+		<if test="activityType !=null">
+			<choose>
+				<when test="activityType == 0">
+					and  (t_product_bill.activityId is null  or t_product_bill = '')                                                                                                                                                                                                                         
+				</when>
+				<when test="activityType == 1">
+					and t_product_bill.activityId is not null and (t_product_bill.type is null or t_product_bill.type = 0)
+				</when>
+				<when test="activityType == 3">
+					and t_product_bill.type = 3
+				</when>
+				<when test="activityType == 4">
+					and t_product_bill.type = 4
+				</when>
+				<when test="activityType == 5">
+					and t_bill_fresh.send_uid is not null
+				</when>
+			</choose>
+		</if>
+		<if test="null != status">
+			AND t_bill_fresh_sub.status = #{status}
+		</if>
+	</sql>
+	
+	
+	
+	<!-- 查询列表 -->
+	<select id="getTBillFreshSubList" resultMap="billFreshSubMap" parameterMap="billFreshSub">
+		SELECT 
+			<include refid="Base_Column_List"/>,<include refid="Product_Bill_List"></include>,t_product_bill.type,t_product_bill.base_price,
+			t_bill_fresh.send_uid
+		FROM 
+			t_bill_fresh_sub
+			left join (select <include refid="Product_Bill_List"></include>,t_fresh_activity_common.type,t_product_info.price as base_price from t_product_bill left join t_fresh_activity_common on t_product_bill.activityId=t_fresh_activity_common.id
+			left join t_product_info on t_product_bill.codeId=t_product_info.codeId) t_product_bill
+			  on t_bill_fresh_sub.sub_order_sn=t_product_bill.sub_bid
+			left join t_bill_fresh on t_bill_fresh.bid=t_bill_fresh_sub.order_sn
+		<where>
+		 	1=1
+		 	<include refid="whereSQL"/>
+		</where>
+		ORDER BY t_bill_fresh_sub.create_time DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<!-- 条件查询总记录数 -->
+	<select id="tbillFreshSubCount" resultType="Long" parameterMap="billFreshSub">
+		SELECT COUNT(t_bill_fresh_sub.id) FROM t_bill_fresh_sub
+		left join (select <include refid="Product_Bill_List"></include>,t_fresh_activity_common.type,t_product_info.price as base_price from t_product_bill left join t_fresh_activity_common on t_product_bill.activityId=t_fresh_activity_common.id
+			left join t_product_info on t_product_bill.codeId=t_product_info.codeId) t_product_bill
+			  on t_bill_fresh_sub.sub_order_sn=t_product_bill.sub_bid
+			  left join t_bill_fresh on t_bill_fresh.bid=t_bill_fresh_sub.order_sn
+		<where>
+		 	1=1
+		 	<include refid="whereSQL"/>
+		</where>
+	</select>
+	<!-- 条件查询订单详细 -->
+	<select id="getBillFreshSub" resultMap="billFreshSubMap" parameterMap="billFreshSub">
+		SELECT 
+			tbfs.`id`, tbfs.`order_sn`, tbfs.`sub_order_sn`, tbfs.`supplier_id`, tbfs.`uid`, tbfs.`total_amount`, tbfs.`preferential`, tbfs.`cash_amount`, 
+			tbfs.`balance_amount`, tbfs.`integral_amount`, tbfs.`freight`, tbfs.`status`, tbfs.`courier_number`, tex.express_name AS strCourierType, tbfs.`courier_type`, tbfs.`delivery_time`, 
+			tbfs.`create_time`, tbfs.`modify_time`, tbfs.`memo`, tbfs.`address`, tbfs.`mobile`, tbfs.`consignee`, tbfs.`version`, tbfs.`operator`,tbfs.`commission`,
+			tbfs.`hstatus` 
+		FROM 
+			t_bill_fresh_sub tbfs 
+		LEFT JOIN t_express tex ON tex.express_value = tbfs.courier_type 
+		<where>
+		 	1=1
+			<include refid="queryTBillFreshSubCondition"></include>
+		</where>
+	</select>
+	
+	<!-- 条件查询订单详细 商品的列表信息-->
+	<select id="getBillFreshSubProd" resultType="com.xmniao.xmn.core.fresh.entity.TProductBill" parameterType="map">
+		SELECT 
+			id, codeId, pname, bid, sub_bid, wareNum as goodsNum, rdate, udate, price, 
+			goodsName, suttle, freight, supplier_id AS supplierId, integral, purchasePrice,  
+			attr_val AS attrVal, attr_id AS attrId, attr_amount AS attrMount 
+		FROM 
+			t_product_bill 
+		WHERE 
+			sub_bid = #{sub_order_sn}
+	</select>
+	
+	<!-- 查询导出数据 -->
+	<select id="getBillFreshSubForExport" resultMap="billFreshSubMap" parameterMap="billFreshSub">
+		SELECT 
+			tbfs.`id`, tbfs.`order_sn`, tbfs.`sub_order_sn`, tbfs.`supplier_id`, tbfs.`uid`, tbfs.`total_amount`, tbfs.`preferential`, tbfs.`cash_amount`, 
+			tbfs.`balance_amount`, tbfs.`integral_amount`, tbfs.`freight`, tbfs.`status`, tbfs.`courier_number`, tbfs.`courier_type`, tbfs.`delivery_time`, 
+			tbfs.`create_time`, tbfs.`modify_time`, tbfs.`memo`, tbfs.`address`, tbfs.`mobile`, tbfs.`consignee`, tbfs.`version`, tbfs.`operator`,tbfs.`commission`,
+			tbfs.`hstatus` , t2.`goodsName`, t2.`pname`, t2.`suttle`,t2.`codeId`,t2.`price`,t2.`wareNum` AS goodsNum
+		FROM 
+			t_bill_fresh_sub tbfs 
+		LEFT JOIN t_product_bill t2
+		ON t2.sub_bid = tbfs.sub_order_sn 
+	  	<where>
+	  		1=1 
+	  		<if test=" null != subexsdate and ''!= subexsdate and (null == subexedate or ''== subexedate)">
+				AND DATE_FORMAT(tbfs.create_time, '%Y-%m-%d') = #{subexsdate}
+			</if>
+			<if test=" null != subexedate and ''!= subexedate and (null == subexsdate or ''== subexsdate)">
+				AND DATE_FORMAT(tbfs.create_time, '%Y-%m-%d') = #{subexedate}
+			</if>
+			<if test="null != subexsdate and ''!= subexsdate and null != subexedate and ''!= subexedate">
+				AND DATE_FORMAT(tbfs.create_time, '%Y-%m-%d') BETWEEN #{subexsdate} AND #{subexedate} 
+			</if>
+	  		ORDER BY tbfs.delivery_time DESC
+	  </where> 
+	</select>
+	
+	<!-- 根据id查询订单详细 (批量)-->
+	<select id="getBillFreshSubList" resultMap="billFreshSubMap" parameterType="Object">
+	     SELECT 
+	     	tbfs.`id`, tbfs.`order_sn`, tbfs.`sub_order_sn`, tbfs.`supplier_id`, tbfs.`uid`, tbfs.`total_amount`, tbfs.`preferential`, tbfs.`cash_amount`, 
+			tbfs.`balance_amount`, tbfs.`integral_amount`, tbfs.`freight`, tbfs.`status`, tbfs.`courier_number`, tbfs.`courier_type`, tbfs.`delivery_time`, 
+			tbfs.`create_time`, tbfs.`modify_time`, tbfs.`memo`, tbfs.`address`, tbfs.`mobile`, tbfs.`consignee`, tbfs.`version`, tbfs.`operator`,tbfs.`commission`,
+			tbfs.`hstatus`, t2.`goodsName`, t2.`pname`, t2.`suttle`,t2.`codeId`,t2.`price`,t2.`wareNum` AS goodsNum
+	     FROM `t_bill_fresh_sub` tbfs 
+	     LEFT JOIN  `t_product_bill` t2 
+	     ON  t2.sub_bid = tbfs.sub_order_sn 
+	     WHERE tbfs.sub_order_sn IN  
+	        
+ 	    <foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+	       #{item} 
+ 	    </foreach> 
+    </select>
+	
+	<!-- 判断是否有订单数据 -->
+	<select id="checkdata" resultType="Integer" parameterMap="billFreshSub" >
+	 	SELECT COUNT(tbfs.id) FROM `t_bill_fresh_sub` tbfs 
+		<where>
+	  		1=1 
+	  		<if test=" null != subexsdate and ''!= subexsdate and (null == subexedate or ''== subexedate)">
+				AND DATE_FORMAT(tbfs.create_time, '%Y-%m-%d') = #{subexsdate}
+			</if>
+			<if test=" null != subexedate and ''!= subexedate and (null == subexsdate or ''== subexsdate)">
+				AND DATE_FORMAT(tbfs.create_time, '%Y-%m-%d') = #{subexedate}
+			</if>
+			<if test="null != subexsdate and ''!= subexsdate and null != subexedate and ''!= subexedate">
+				AND DATE_FORMAT(tbfs.create_time, '%Y-%m-%d') BETWEEN #{subexsdate} AND #{subexedate} 
+			</if>
+		  </where> 
+	</select>
+	<!-- 更新物流状态 -->
+	<update id="updateSubCourier" parameterType="Map">
+		UPDATE t_bill_fresh_sub 
+		<set>
+			<if test="courierType != null">
+				t_bill_fresh_sub.`courier_type`=#{courierType},
+			</if>
+			<if test="courierNumber != null">
+				t_bill_fresh_sub.`courier_number`=#{courierNumber},
+			</if>
+			<if test="deliveryTime != null">
+				t_bill_fresh_sub.`delivery_time`=#{deliveryTime},
+			</if>
+			t_bill_fresh_sub.`status`=1 
+		</set>
+		WHERE t_bill_fresh_sub.`id`=#{subOrderId} 
+	</update>
+	<!-- 确认收货，更新订单状态为status=6，更新订单修改的时间为当前系统时间 -->
+	<update id="updateSubReceive" parameterType="Map">
+		UPDATE t_bill_fresh_sub 
+		<set>
+			<if test="null != modifyTime and '' != modifyTime">
+				t_bill_fresh_sub.`modify_time` = #{modifyTime},
+			</if>
+			<if test="null != status">
+				t_bill_fresh_sub.`status` = #{status},
+			</if>
+			<if test="null != memo and '' != memo">
+				t_bill_fresh_sub.`memo` = #{memo}, 
+			</if>
+			<if test="null != operator and '' != operator">
+				t_bill_fresh_sub.`operator` = #{operator} 
+			</if>
+		</set>
+		WHERE t_bill_fresh_sub.`id`=#{id} 
+	</update>
+</mapper>

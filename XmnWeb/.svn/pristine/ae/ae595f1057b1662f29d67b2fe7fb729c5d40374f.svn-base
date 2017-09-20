@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.ClassifyDao">
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.businessman.entity.Classify">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="classify_type" jdbcType="INTEGER" property="classifyType" />
+    <result column="classify_name" jdbcType="VARCHAR" property="classifyName" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, classify_type, classify_name, update_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_live_classify
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="getList" parameterType="com.xmniao.xmn.core.businessman.entity.Classify" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_live_classify where 1=1
+      <if test="classifyType != null">
+       and classify_type = #{classifyType,jdbcType=INTEGER}
+      </if>
+      <if test="classifyName != null and classifyName != ''">
+       and classify_name like '%${classifyName}%'
+      </if>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_live_classify
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.businessman.entity.Classify">
+    insert into t_live_classify (id, classify_type, classify_name, 
+      update_time)
+    values (#{id,jdbcType=INTEGER}, #{classifyType,jdbcType=INTEGER}, #{classifyName,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="add" parameterType="com.xmniao.xmn.core.businessman.entity.Classify" useGeneratedKeys="true" keyProperty="id">
+    insert into t_live_classify
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="classifyType != null">
+        classify_type,
+      </if>
+      <if test="classifyName != null and classifyName != ''">
+        classify_name,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="classifyType != null">
+        #{classifyType,jdbcType=INTEGER},
+      </if>
+      <if test="classifyName != null and classifyName != ''">
+        #{classifyName,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.businessman.entity.Classify">
+    update t_live_classify
+    <set>
+      <if test="classifyType != null">
+        classify_type = #{classifyType,jdbcType=INTEGER},
+      </if>
+      <if test="classifyName != null">
+        classify_name = #{classifyName,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.businessman.entity.Classify">
+    update t_live_classify
+    set classify_type = #{classifyType,jdbcType=INTEGER},
+      classify_name = #{classifyName,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="getClassifyListByType" parameterType="Object" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+       From t_live_classify where 1=1
+       and classify_type = 2
+       <if test="ids != null and ids != ''">
+				and id in  
+				<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">  
+  					#{item}  
+ 				</foreach>
+		</if>
+  </select>
+  
+</mapper>

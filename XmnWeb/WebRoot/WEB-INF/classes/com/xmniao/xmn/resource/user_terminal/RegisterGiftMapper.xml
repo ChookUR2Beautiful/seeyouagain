@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.user_terminal.dao.RegisterGiftDao" >
+	<parameterMap type="TRegisterGift" id="registerGift" />
+	   
+	<resultMap type="TRegisterGift" id="registerGiftMap">
+	    <id column="id" property="id" jdbcType="INTEGER" />
+	    <result column="gift_type" property="giftType" jdbcType="INTEGER" />
+	    <result column="quota" property="quota" jdbcType="DOUBLE" />
+	    <result column="coupon_id" property="couponId" jdbcType="INTEGER" />
+	    <result column="num" property="num" jdbcType="INTEGER" />
+	    <result column="edate" property="edate" jdbcType="TIMESTAMP" />
+	    <collection  resultMap="couponMap" property="coupon" />
+	</resultMap>
+	
+	<resultMap type="Coupon" id="couponMap">
+		<result column="cid" property="cid" />
+		<result column="cname" property="cname" />
+		<result column="denomination" property="denomination" />
+		<result column="validity_desc" property="validityDesc" />
+		<result column="start_date" property="startDate" />
+		<result column="end_date" property="endDate" />
+		<result column="condition" property="condition" />
+		<result column="use_num" property="useNum" />
+		<result column="pic" property="pic" />
+		<result column="breviary" property="breviary" />
+		<result column="showall" property="showAll" />
+		<result column="is_all_seller" property="isAllSeller" />
+		<result column="cid" property="value" />
+		<result column="day_num" property="dayNum" />
+		<result column="rule" property="rule" />
+	</resultMap> 
+	
+	<select id="getGiftList" parameterMap="registerGift" resultMap="registerGiftMap">
+	SELECT 
+		rg.`id`,rg.`gift_type`,rg.`quota`,rg.`num`,rg.`coupon_id`,rg.`edate`,
+		c.`denomination`,c.`condition`,c.`use_num`,c.`day_num`
+	FROM t_register_gift  rg  LEFT JOIN  t_coupon  c ON rg.`coupon_id`=c.cid 
+	<if test="limit != -1">
+		LIMIT ${(page-1)*limit},#{limit}
+	</if>
+	</select>
+	
+	<select id="getGiftCount" parameterMap="registerGift" resultType="Long">
+	SELECT COUNT(1)
+	FROM t_register_gift  rg  LEFT JOIN  t_coupon  c ON rg.`coupon_id`=c.cid 
+	</select>
+	
+	<select id="getRegisterGift" parameterType="int" resultMap="registerGiftMap">
+	SELECT 
+		rg.`id`,rg.`gift_type`,rg.`quota`,rg.`num`,rg.`coupon_id`,rg.`edate`,
+		`denomination`,`condition`,`use_num`,`day_num`
+	FROM t_register_gift  rg  LEFT JOIN  t_coupon  c ON rg.`coupon_id`=c.`cid` 
+	WHERE rg.`id`=#{id}	
+	</select>
+	
+	<update id="updateRegisterGift" parameterMap="registerGift">
+	    update t_register_gift
+	    <set >
+	      <if test="giftType != null" >
+	        gift_type = #{giftType},
+	      </if>
+	      <if test="quota != null" >
+	        quota = #{quota},
+	      </if>
+	      <if test="couponId != null" >
+	        coupon_id = #{couponId},
+	      </if>
+	      <if test="num != null" >
+	        num = #{num},
+	      </if>
+	      <if test="edate != null" >
+	        edate = #{edate},
+	      </if>
+	    </set>
+	    where id = #{id}
+	</update>
+
+		
+	<insert id="addRegisterGift" parameterMap="registerGift">
+	    insert into t_register_gift
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="giftType != null" >
+	        gift_type,
+	      </if>
+	      <if test="quota != null" >
+	        quota,
+	      </if>
+	      <if test="couponId != null" >
+	        coupon_id,
+	      </if>
+	      <if test="num != null" >
+	        num,
+	      </if>
+	      <if test="edate != null" >
+	        edate,
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="giftType != null" >
+	        #{giftType},
+	      </if>
+	      <if test="quota != null" >
+	        #{quota},
+	      </if>
+	      <if test="couponId != null" >
+	        #{couponId},
+	      </if>
+	      <if test="num != null" >
+	        #{num},
+	      </if>
+	      <if test="edate != null" >
+	        #{edate},
+	      </if>
+	    </trim>
+	</insert>
+	
+	<delete id="deleteRegisterGift" parameterType="int">
+		DELETE FROM t_register_gift WHERE id=#{id}
+	</delete>
+	
+	<select id="getRegisterGiftPic" resultType="map">
+		select id,type,img from t_xmn_common_img where type in (1,2)
+	</select>
+	
+	<insert id="addImg" parameterType="java.util.List">
+	insert into t_xmn_common_img (type,img,edate)
+	values
+	<foreach collection="list" item="item" index="index" separator="," >
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	        #{item.type},
+	        #{item.img},
+	        #{item.edate},
+	    </trim>
+  	</foreach>
+	</insert>
+	
+	<update id="updateImg" parameterType="map">
+	update t_xmn_common_img
+	set
+	     img = #{img},
+	     edate = #{edate}
+	where id=#{id}  	
+	</update>
+</mapper>

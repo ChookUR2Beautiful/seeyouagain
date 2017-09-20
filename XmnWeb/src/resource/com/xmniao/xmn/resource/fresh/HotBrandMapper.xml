@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.fresh.dao.HotBrandDao">
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.fresh.entity.HotBrand">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <result column="brand_id" jdbcType="BIGINT" property="brandId" />
+    <result column="type_id" jdbcType="BIGINT" property="typeId" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="image_url" jdbcType="VARCHAR" property="imageUrl" />
+    <result column="jump_url" jdbcType="VARCHAR" property="jumpUrl" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, state, brand_id, type_id, title, image_url, jump_url, sort, update_time, create_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_fresh_hot_brand
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from t_fresh_hot_brand
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.fresh.entity.HotBrand">
+    insert into t_fresh_hot_brand (id, state, brand_id, 
+      type_id, title, image_url, 
+      jump_url, sort, update_time, 
+      create_time)
+    values (#{id,jdbcType=BIGINT}, #{state,jdbcType=INTEGER}, #{brandId,jdbcType=BIGINT}, 
+      #{typeId,jdbcType=BIGINT}, #{title,jdbcType=VARCHAR}, #{imageUrl,jdbcType=VARCHAR}, 
+      #{jumpUrl,jdbcType=VARCHAR}, #{sort,jdbcType=INTEGER}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.fresh.entity.HotBrand">
+    insert into t_fresh_hot_brand
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="state != null">
+        state,
+      </if>
+      <if test="brandId != null">
+        brand_id,
+      </if>
+      <if test="typeId != null">
+        type_id,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="imageUrl != null">
+        image_url,
+      </if>
+      <if test="jumpUrl != null">
+        jump_url,
+      </if>
+      <if test="sort != null">
+        sort,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="brandId != null">
+        #{brandId,jdbcType=BIGINT},
+      </if>
+      <if test="typeId != null">
+        #{typeId,jdbcType=BIGINT},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="imageUrl != null">
+        #{imageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="jumpUrl != null">
+        #{jumpUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null">
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <insert id="add" parameterType="com.xmniao.xmn.core.fresh.entity.HotBrand">
+    insert into t_fresh_hot_brand
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="state != null">
+        state,
+      </if>
+      <if test="brandId != null">
+        brand_id,
+      </if>
+      <if test="typeId != null">
+        type_id,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="imageUrl != null">
+        image_url,
+      </if>
+      <if test="jumpUrl != null">
+        jump_url,
+      </if>
+      <if test="sort != null">
+        sort,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="brandId != null">
+        #{brandId,jdbcType=BIGINT},
+      </if>
+      <if test="typeId != null">
+        #{typeId,jdbcType=BIGINT},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="imageUrl != null">
+        #{imageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="jumpUrl != null">
+        #{jumpUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null">
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.fresh.entity.HotBrand">
+    update t_fresh_hot_brand
+    <set>
+      <if test="state != null">
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="brandId != null">
+        brand_id = #{brandId,jdbcType=BIGINT},
+      </if>
+      <if test="typeId != null">
+        type_id = #{typeId,jdbcType=BIGINT},
+      </if>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="imageUrl != null">
+        image_url = #{imageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="jumpUrl != null">
+        jump_url = #{jumpUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null">
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.fresh.entity.HotBrand">
+    update t_fresh_hot_brand
+    set state = #{state,jdbcType=INTEGER},
+      brand_id = #{brandId,jdbcType=BIGINT},
+      type_id = #{typeId,jdbcType=BIGINT},
+      title = #{title,jdbcType=VARCHAR},
+      image_url = #{imageUrl,jdbcType=VARCHAR},
+      jump_url = #{jumpUrl,jdbcType=VARCHAR},
+      sort = #{sort,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <update id="deleteByType">
+  	 update t_fresh_hot_brand
+    set state = 2,update_time = now() where type_id = #{typeId}
+  </update>
+  
+  <select id="getList" resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from t_fresh_hot_brand where 1=1
+    <if test="state != null">
+       and state = #{state,jdbcType=INTEGER}
+      </if>
+      <if test="brandId != null">
+       and brand_id = #{brandId,jdbcType=BIGINT}
+      </if>
+      <if test="typeId != null">
+        and type_id = #{typeId,jdbcType=BIGINT}
+      </if>
+      <if test="title != null">
+        and title = #{title,jdbcType=VARCHAR}
+      </if>
+      <if test="imageUrl != null">
+        and image_url = #{imageUrl,jdbcType=VARCHAR}
+      </if>
+      <if test="jumpUrl != null">
+        and  jump_url = #{jumpUrl,jdbcType=VARCHAR}
+      </if>
+      <if test="sort != null">
+        and sort = #{sort,jdbcType=INTEGER}
+      </if>
+      <if test="updateTime != null">
+       and update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="createTime != null">
+       and create_time = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="id != null">
+       and id = #{id,jdbcType=BIGINT}
+      </if>
+      <if test="orderBy != null">
+       order by sort ${orderBy}
+      </if>
+  </select>
+  
+  <update id="deleteBrand">
+  	 update t_fresh_hot_brand set state = 2,update_time = now() where type_id = #{typeId}
+  </update>
+</mapper>

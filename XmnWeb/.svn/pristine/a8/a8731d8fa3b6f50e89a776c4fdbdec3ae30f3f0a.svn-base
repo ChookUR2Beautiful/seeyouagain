@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TLiveReferrerCensusDao" >
+
+
+  <resultMap id="liveReferrerMap" type="com.xmniao.xmn.core.live_anchor.entity.TLiveReferrerCensus" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="enterprise_uid" property="enterpriseUid" jdbcType="BIGINT" />
+    <result column="junior_recharge" property="juniorRecharge" jdbcType="DECIMAL" />
+    <result column="junior_reward" property="juniorReward" jdbcType="DECIMAL" />
+    <result column="junior_consume" property="juniorConsume" jdbcType="DECIMAL" />
+    <result column="census_date" property="censusDate" jdbcType="TIMESTAMP" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  
+  <sql id="liveReferrer_column_list" >
+    id, enterprise_uid, junior_recharge, junior_reward, junior_consume,census_date, create_time
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test="startTime !=null and startTime !='' ">
+	  	<![CDATA[
+			AND	DATE_FORMAT(census_date, '%Y-%m-%d') >= DATE_FORMAT(#{startTime}, '%Y-%m-%d')
+	  	]]> 
+  	</if>
+  	<if test="endTime !=null and endTime !='' ">
+  		<![CDATA[
+			AND	DATE_FORMAT(census_date, '%Y-%m-%d') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d')
+	  	]]>
+  	</if>
+  	<if test="uids !=null and uids !='' ">
+		AND enterprise_uid in
+		<foreach item="item" index="index" collection="uids"  open="(" separator="," close=") ">
+		 	#{item}
+		</foreach>
+  	</if>
+  
+  </sql>
+  
+  
+  <select id="getObject" resultMap="liveReferrerMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="liveReferrer_column_list" />
+    from t_live_referrer_census
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <!-- 根据企业级uid分组统计下线数据(已作废) -->
+  <select id="countJuniorInfoGroupByEuid" resultMap="liveReferrerMap" parameterType="java.util.Map" >
+    SELECT
+		enterprise_uid,
+		IFNULL(SUM(junior_recharge),0) AS junior_recharge,
+		IFNULL(SUM(junior_reward),0) AS junior_reward,
+		IFNULL(SUM(junior_consume),0) AS junior_consume
+	FROM
+		t_live_referrer_census rc
+	<where>
+		1=1
+		<include refid="whereSQL"></include>
+	</where>
+	GROUP BY
+		rc.enterprise_uid
+  </select>
+  
+  
+  <insert id="add" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveReferrerCensus" >
+    insert into t_live_referrer_census
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="enterpriseUid != null" >
+        enterprise_uid,
+      </if>
+      <if test="juniorRecharge != null" >
+        junior_recharge,
+      </if>
+      <if test="juniorReward != null" >
+        junior_reward,
+      </if>
+      <if test="juniorConsume != null" >
+        junior_consume,
+      </if>
+      <if test="censusDate != null" >
+        census_date,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="enterpriseUid != null" >
+        #{enterpriseUid,jdbcType=BIGINT},
+      </if>
+      <if test="juniorRecharge != null" >
+        #{juniorRecharge,jdbcType=DECIMAL},
+      </if>
+      <if test="juniorReward != null" >
+        #{juniorReward,jdbcType=DECIMAL},
+      </if>
+      <if test="juniorConsume != null" >
+        #{juniorConsume,jdbcType=DECIMAL},
+      </if>
+      <if test="censusDate != null" >
+        #{censusDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  
+	<!-- 批量插入直播用户企业级推荐人下线统计信息 -->
+	<insert id="addBatch" parameterType="java.util.ArrayList">
+		INSERT INTO t_live_referrer_census
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<include refid="liveReferrer_column_list" /> 
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+			<!-- id, enterprise_uid, junior_recharge, junior_reward, junior_consume,census_date, create_time -->
+				#{item.id},
+				#{item.enterpriseUid},
+				#{item.juniorRecharge},
+				#{item.juniorReward},
+				#{item.juniorConsume},
+				#{item.censusDate},
+				#{item.createTime}
+			</trim>
+		</foreach>
+	</insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveReferrerCensus" >
+    update t_live_referrer_census
+    <set >
+      <if test="enterpriseUid != null" >
+        enterprise_uid = #{enterpriseUid,jdbcType=BIGINT},
+      </if>
+      <if test="juniorRecharge != null" >
+        junior_recharge = #{juniorRecharge,jdbcType=DECIMAL},
+      </if>
+      <if test="juniorReward != null" >
+        junior_reward = #{juniorReward,jdbcType=DECIMAL},
+      </if>
+      <if test="juniorConsume != null" >
+        junior_consume = #{juniorConsume,jdbcType=DECIMAL},
+      </if>
+      <if test="censusDate != null" >
+        census_date = #{censusDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  
+  <!-- 下线累计充值统计(已作废) -->
+  <select id="juniorRechargeCount"  resultType="java.util.Map" parameterType="java.util.Map">
+  	SELECT
+		IFNULL(SUM(payment),0) AS recharge
+	FROM
+		t_live_pay_order
+	WHERE
+		<!-- uid_relation_chain LIKE '%${uid}%' -->
+		uid_relation_chain LIKE CONCAT('%',LPAD(${uid},11,'0'),'%')
+	AND uid != #{uid}
+	AND ( create_time BETWEEN #{countDate} AND #{nextDate} )
+  </select>
+  
+  
+  <!-- 下线累计打赏统计(已作废) -->
+  <select id="juniorRewardCount" resultType="java.util.Map" parameterType="java.util.Map">
+  	SELECT
+		IFNULL(SUM(gift_price), 0) AS reward
+	FROM
+		t_live_gived_gift
+	WHERE
+		<!-- uid_relation_chain LIKE '%${uid}%' -->
+		uid_relation_chain LIKE CONCAT('%',LPAD(${uid},11,'0'),'%')
+	AND uid != #{uid}
+	AND ( create_time BETWEEN #{countDate} AND #{nextDate} )
+  </select>
+  
+  <!-- 下线累计消费统计(已作废) -->
+  <select id="juniorConsumeCount" resultType="java.util.Map" parameterType="java.util.Map" >
+  	SELECT
+		IFNULL(SUM(money), 0) AS consume
+	FROM
+		t_bill
+	WHERE
+		<!-- uid_relation_chain LIKE '%${uid}%' -->
+		uid_relation_chain LIKE CONCAT('%',LPAD(${uid},11,'0'),'%')
+	AND uid != #{uid}
+	AND `status` != '0'
+	AND ( sdate BETWEEN #{countDate} AND #{nextDate} )
+  </select>
+  
+  <!-- 根据uid获取下级uid数组 -->
+  <select id="getJuniorUidsByUid" resultType="java.util.Map" parameterType="java.util.Map">
+  	SELECT
+		uid
+	FROM
+		b_liver
+	WHERE
+		uid_relation_chain LIKE CONCAT('%',LPAD(${uid},11,'0'),'%')
+	AND uid != #{uid}
+  </select>
+  
+  <!-- 统计下线累计充值 -->
+  <select id="juniorRechargeCountByUids" resultType="java.util.Map" parameterType="java.util.Map">
+  	SELECT
+		IFNULL(SUM(payment), 0) AS recharge
+	FROM
+		t_live_pay_order
+	WHERE
+		pay_state = '1'
+	<if test="uids !=null and uids !='' ">
+		AND uid IN
+		<foreach item="item" index="index" collection="uids"  open="(" separator="," close=") ">
+		 	#{item}
+		</foreach>
+  	</if>
+	<if test="startTime !=null and startTime !='' ">
+	  	<![CDATA[
+			AND	DATE_FORMAT(create_time, '%Y-%m-%d') >= DATE_FORMAT(#{startTime}, '%Y-%m-%d')
+	  	]]> 
+  	</if>
+  	<if test="endTime !=null and endTime !='' ">
+  		<![CDATA[
+			AND	DATE_FORMAT(create_time, '%Y-%m-%d') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d')
+	  	]]>
+  	</if>
+  </select>
+  
+  <!-- 统计下线累计打赏 -->
+  <select id="juniorRewardCountByUids" resultType="java.util.Map" parameterType="java.util.Map">
+	SELECT
+		IFNULL(SUM(gift_price), 0) AS reward
+	FROM
+		t_live_gived_gift
+	WHERE
+		1 = 1
+	<if test="uids !=null and uids !='' ">
+		AND uid IN
+		<foreach item="item" index="index" collection="uids"  open="(" separator="," close=") ">
+		 	#{item}
+		</foreach>
+  	</if>
+  	<if test="startTime !=null and startTime !='' ">
+	  	<![CDATA[
+			AND	DATE_FORMAT(create_time, '%Y-%m-%d') >= DATE_FORMAT(#{startTime}, '%Y-%m-%d')
+	  	]]> 
+  	</if>
+  	<if test="endTime !=null and endTime !='' ">
+  		<![CDATA[
+			AND	DATE_FORMAT(create_time, '%Y-%m-%d') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d')
+	  	]]>
+  	</if>
+  </select>
+  
+   <!-- 下线累计消费统计 -->
+  <select id="juniorConsumeCountByUids" resultType="java.util.Map" parameterType="java.util.Map" >
+  	SELECT
+		IFNULL(SUM(total_amount), 0) AS consume
+	FROM
+		t_coupon_order
+	WHERE
+		`status` = '1'
+	<if test="uids !=null and uids !='' ">
+		AND uid IN
+		<foreach item="item" index="index" collection="uids"  open="(" separator="," close=") ">
+		 	#{item}
+		</foreach>
+  	</if>
+  	<if test="startTime !=null and startTime !='' ">
+	  	<![CDATA[
+			AND	DATE_FORMAT(create_time, '%Y-%m-%d') >= DATE_FORMAT(#{startTime}, '%Y-%m-%d')
+	  	]]> 
+  	</if>
+  	<if test="endTime !=null and endTime !='' ">
+  		<![CDATA[
+			AND	DATE_FORMAT(create_time, '%Y-%m-%d') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d')
+	  	]]>
+  	</if>
+  </select>
+  
+  
+  <!-- 统计下线充值总金额 -->
+  <select id="juniorAmountCountByUids" resultType="java.util.Map" parameterType="java.util.Map">
+  	SELECT
+		IFNULL(SUM(order_amount), 0) AS amountTotal
+	FROM
+		b_liver_journal_count
+	WHERE
+		1 = 1
+	<if test="uids !=null and uids !='' ">
+		AND uid IN
+		<foreach item="item" index="index" collection="uids"  open="(" separator="," close=") ">
+		 	#{item}
+		</foreach>
+  	</if>
+  </select>
+  
+  
+  
+</mapper>

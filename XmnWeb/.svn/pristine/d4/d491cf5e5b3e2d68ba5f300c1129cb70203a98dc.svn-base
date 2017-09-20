@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TFloatAdvertDao" >
+  <parameterMap type="FloatAdvert" id="floatAdvert" />
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.live_anchor.entity.TFloatAdvert" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="cid" property="cid" jdbcType="INTEGER" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="pic_url" property="picUrl" jdbcType="VARCHAR" />
+    <result column="anchor_ids" property="anchorIds" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, cid, start_time, end_time, pic_url, anchor_ids, status, update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_live_fans_coupon_advertising
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_live_fans_coupon_advertising
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.live_anchor.entity.TFloatAdvert" >
+    insert into t_live_fans_coupon_advertising (id, cid, start_time, 
+      end_time, pic_url, anchor_ids, 
+      status, update_time)
+    values (#{id,jdbcType=INTEGER}, #{cid,jdbcType=INTEGER}, #{startTime,jdbcType=TIMESTAMP}, 
+      #{endTime,jdbcType=TIMESTAMP}, #{picUrl,jdbcType=VARCHAR}, #{anchorIds,jdbcType=VARCHAR}, 
+      #{status,jdbcType=INTEGER}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterMap="floatAdvert" >
+    insert into t_live_fans_coupon_advertising
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="cid != null" >
+        cid,
+      </if>
+      <if test="startTime != null" >
+        start_time,
+      </if>
+      <if test="endTime != null" >
+        end_time,
+      </if>
+      <if test="picUrl != null" >
+        pic_url,
+      </if>
+      <if test="anchorIds != null" >
+        anchor_ids,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="cid != null" >
+        #{cid,jdbcType=INTEGER},
+      </if>
+      <if test="startTime != null" >
+        #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="picUrl != null" >
+        #{picUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="anchorIds != null" >
+        #{anchorIds,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  <!-- 更新数据记录 -->
+  <update id="update" parameterType="com.xmniao.xmn.core.live_anchor.entity.TFloatAdvert" >
+    update t_live_fans_coupon_advertising
+    <set >
+      <if test="cid != null" >
+        cid = #{cid,jdbcType=INTEGER},
+      </if>
+      <if test="startTime != null" >
+        start_time = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="picUrl != null" >
+        pic_url = #{picUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="anchorIds != null" >
+        anchor_ids = #{anchorIds,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 自定义内容 -->
+  
+    <!-- 总店列表 -->
+  <select id="getFoatAdvertList" resultMap="BaseResultMap" parameterMap="floatAdvert">
+        SELECT t1.*, tc.cname FROM t_live_fans_coupon_advertising t1 
+            LEFT JOIN  (SELECT cid, cname FROM t_coupon WHERE ctype = 2 ) tc ON t1.cid = tc.cid 
+		<where>
+			1 = 1
+			<include refid="baseSellerCondition" />
+			<if test=" null != cname and '' != cname ">
+				AND tc.cname LIKE '%${cname}%'
+			</if>
+			
+			<if test=" null != startTime">
+				AND t1.start_time &gt;= #{startTime}
+			</if>
+			<if test=" null != endTime">
+				AND t1.end_time &lt;= #{endTime}
+			</if>
+			
+		</where>
+		    ORDER BY t1.update_time DESC, t1.id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit}, #{limit}
+		</if>
+  </select>
+  
+  <!-- 总店Count -->
+  <select id="floatAdvertCount" resultType="Long" parameterMap="floatAdvert">
+		SELECT COUNT(1) FROM t_live_fans_coupon_advertising t1
+		<where>
+			1=1
+			<include refid="baseSellerCondition" />
+		</where>
+  </select>
+  
+  
+    <!-- 商家列表查询条件 -->
+  <sql id="baseSellerCondition">
+      <if test="id != null" >
+          AND t1.id = #{id}
+      </if>
+      <if test="null != cid and '' != cid " >
+          AND t1.cid = #{cid}
+      </if>
+      <if test="anchorIds != null" >
+          AND t1.anchorIds = #{anchorIds}
+      </if>
+      <if test="status != null" >
+          AND t1.status = #{status}
+      </if>
+  </sql>
+  
+  <!-- 删除广告信息 -->
+    <delete id="delete" parameterType="Object">
+		DELETE FROM t_live_fans_coupon_advertising WHERE id IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+
+	<!-- 更新数据记录 -->
+	<update id="updateStatusOption" parameterType="com.xmniao.xmn.core.live_anchor.entity.TFloatAdvert">
+		update t_live_fans_coupon_advertising
+		set update_time = #{updateTime}
+		, status = #{status,jdbcType=INTEGER}
+		WHERE id IN
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=") ">
+			#{item}
+		</foreach>
+	</update>
+  
+</mapper>

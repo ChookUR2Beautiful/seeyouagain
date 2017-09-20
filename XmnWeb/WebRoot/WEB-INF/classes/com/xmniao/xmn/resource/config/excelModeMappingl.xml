@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<models>
+	<model class="com.xmniao.xmn.core.businessman.entity.TSellerSubsidy">
+		<property name="sellerid"  excelTitleName="商家编号"  dataType="int" maxLength="15"   />
+		<property name="sellername"  excelTitleName="商家名称" dataType="String" maxLength="15"  />
+		<property name="province"  excelTitleName="省编号" dataType="int" maxLength="15"   />
+		<property name="city"  excelTitleName="市编号" dataType="int" maxLength="15"   />
+		<property name="area"  excelTitleName="区域编号" dataType="int" maxLength="15"   />
+		<property name="phoneid"  excelTitleName="服务员帐号（手机号）" dataType="int" maxLength="15"   />
+		<property name="ordernum"  excelTitleName="满足条件订单数" dataType="int"  maxLength="15"  />
+		<property name="subsidyamount"  excelTitleName="应发店员补贴(元）" dataType="String" maxLength="11"   ></property>
+	</model>
+	
+	<model class="com.xmniao.xmn.core.coupon.entity.TCouponDetail">
+		<property name="uid"  excelTitleName="用户编号"  dataType="int" maxLength="15"   />
+		<property name="phone"  excelTitleName="手机号码" dataType="int" maxLength="11"  />
+	</model>
+	
+	<!-- 生鲜产品信息实体类 -->
+	<model class="com.xmniao.xmn.core.fresh.entity.ProductInfo">
+		<property name="pname"  excelTitleName="产品名称"  dataType="String" maxLength="100"   />
+		<property name="brandName"  excelTitleName="品牌名称" dataType="String" maxLength="100"  />
+		<!-- 20001|美食,20002|食品,20003|美妆,20004|百货 -->
+		<property name="classaVal"  excelTitleName="产品分类" dataType="String" maxLength="50"  />
+		<property name="purchasePrice"  excelTitleName="采购价（元）" dataType="String" maxLength="10"  />
+		<property name="price"  excelTitleName="原价（元）" dataType="String" maxLength="10"  />
+		<!-- <property name="discount"  excelTitleName="产品售价（元）" dataType="String" maxLength="10"  /> -->
+		<property name="cash"  excelTitleName="积分价（现金）" dataType="String" maxLength="10"  />
+		<property name="integral"  excelTitleName="积分价（积分）" dataType="String" maxLength="10"  />
+		<property name="sort"  excelTitleName="产品排序" dataType="String" maxLength="10"  />
+		<!-- 0 不允许 1 允许 -->
+		<property name="allowRefundVal"  excelTitleName="是否支持退款（是/否）" dataType="String" maxLength="10"  />
+		<!-- 默认规格 -->
+		<property name="prpoName"  excelTitleName="规格名称" dataType="String" maxLength="10"  />
+		<property name="groupName"  excelTitleName="规格选项" dataType="String" maxLength="10"  />
+		<property name="amount"  excelTitleName="规格加价" dataType="String" maxLength="10"  />
+		<property name="stock"  excelTitleName="规格库存" dataType="int" maxLength="10"  />
+		<!-- 配送方式 0快递 1虚拟物品 2到店自提 3兑换码 -->
+		<property name="deliveryTypeVal"  excelTitleName="配送方式" dataType="String" maxLength="10"  />
+		<property name="expWeight"  excelTitleName="快递计重（kg）" dataType="String" maxLength="10"  />
+		<!-- 0不是精选    1是精选 -->
+		<property name="choiceVal"  excelTitleName="是否精选（是/否）" dataType="String" maxLength="1"  />
+		<!-- 0无添加    1有添加 -->
+		<property name="supplierName"  excelTitleName="供应商名称" dataType="String" maxLength="20"  />
+	</model>
+	
+	<model class="com.xmniao.xmn.core.fresh.entity.FreshBrand">
+		<property name="name"  excelTitleName="品牌名"  dataType="String" maxLength="15"   />
+		<property name="typeName"  excelTitleName="品牌分类" dataType="String" maxLength="15"  />
+		<property name="remark"  excelTitleName="品牌说明" dataType="String" maxLength="150"   />
+	</model>
+	
+	<!-- 直播会员/主播实体 -->
+	<model class="com.xmniao.xmn.core.live_anchor.entity.BLiver">
+		<property name="phone"  excelTitleName="手机号"  dataType="String" maxLength="15"   />
+		<property name="nickname"  excelTitleName="昵称"  dataType="String" maxLength="15"   />
+		<property name="name"  excelTitleName="真实姓名"  dataType="String" maxLength="15"   />
+		<property name="sellerLookStatus"  excelTitleName="商家可查看"  dataType="Integer"    />
+		<property name="isInside"  excelTitleName="内部账号"  dataType="Integer"   />
+		<property name="sex"  excelTitleName="性别"  dataType="Integer"   />
+		<property name="avatar"  excelTitleName="头像图url"  dataType="String" maxLength="15"   />
+		<property name="wechatPic"  excelTitleName="微信群图url"  dataType="String" maxLength="15"   />
+		<property name="password"  excelTitleName="密码"  dataType="String" maxLength="15"   />
+		<property name="idcard"  excelTitleName="身份证号"  dataType="String" maxLength="15"   />
+		<property name="weixin"  excelTitleName="微信号"  dataType="String" maxLength="15"   />
+		<property name="birthdayData"  excelTitleName="出生日期"  dataType="Long"   />
+		<property name="ledgerRatio"  excelTitleName="送礼分成"  dataType="BigDecimal"  />
+		<property name="saleCouponRatio"  excelTitleName="粉丝券销售分成"  dataType="BigDecimal"   />
+		<property name="useCouponRation"  excelTitleName="粉丝券使用分成"  dataType="BigDecimal"  />
+		<property name="introduceMv"  excelTitleName="主播介绍视频url"  dataType="String"   />
+		<property name="officeName"  excelTitleName="主播来源"  dataType="String" maxLength="15"   />
+		<property name="sortVal"  excelTitleName="主播排序"  dataType="Integer"   />
+	</model>
+</models>

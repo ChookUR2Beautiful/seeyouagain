@@ -1,0 +1,190 @@
+var enrollList1;//实名审核
+var imgRoot = $("#fastfdsHttp").val();
+
+$(document).ready(function() {
+	inserTitle('> 新食尚大赛> <a href="VstarContent/manage/init.jhtml" target="right">V客学堂</a>','enrollConfirm',true);
+	
+	pageInit();
+	
+	//上架
+	putaway();
+	
+	//下架
+	removeOffshelf();
+});
+
+/**
+ * 加载页面数据
+ */
+function pageInit(){
+	enrollList1 = $('#enrollList1').page({
+		url : 'VstarContent/manage/init/list.jhtml',
+		success : success,
+		pageBtnNum : 10,//默认翻页按钮数量
+		pageSize : 10,//每页条数
+		paramForm : 'searchForm1',
+		param :{}
+	});
+}
+
+
+/**
+ * 查询实名审核信息成功回调函数
+ * @param data
+ * @param obj
+ */
+function success(data, obj) {
+	var formId = "searchForm1", title = "V客学堂资料列表", subtitle = "条信息";
+	var captionInfo = '<caption style="background:#EED8D8; text-align:left; color:#703636; font-size:16px; line-height:40px;">&nbsp;&nbsp;'
+			+ title
+			+ '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font>共计【'
+			+ data.total
+			+ '】' + subtitle + '&nbsp;</font></caption>';
+	var callbackParam = "isBackButton=true&callbackParam="
+			+ getFormParam($("#" + formId).serialize());
+
+	obj.find('div').eq(0).scrollTablel({
+		identifier : "id",
+		callbackParam : callbackParam,
+		data : data.content,
+		caption : captionInfo,
+		checkable : true,
+		// 操作列
+		handleCols : {
+			title : "操作",// 标题
+			queryPermission : [ "update"],// 不需要选择checkbox处理的权限
+			width : 120,// 宽度
+			// 当前列的中元素
+			cols : [ 
+				 {
+					title : "修改",// 标题
+					linkInfoName : "href",
+					linkInfo : {
+						href : "VstarContent/manage/update/init.jhtml",// url
+						param : ["id"],// 参数
+						permission : "update"// 列权限
+					}
+				 }
+			]
+		},
+		cols : [ {
+			title : "编号",
+			name : "id",
+			type : "string",
+			width : 70
+		},{
+			title : "教学标题",
+			name : "title",
+			type : "string",
+			width : 220
+		},{
+			title : "教学类型",
+			name : "contentType",
+			type : "string",
+			width : 210,
+			customMethod:function(value,data){
+				var result="";
+				switch (value) {
+				case 1:
+					result="图文教学";
+					break;
+				case 2:
+					result="H5活动";
+					break;
+				case 3:
+					result="图片素材";
+					break;
+
+				default:
+					result="图文教学";
+					break;
+				}
+				
+				return result;
+			}
+		},{
+			title : "观看人数",
+			name : "viewNum",
+			type : "string",
+			width : 210
+		},{
+			title : "付费人数",
+			name : "payNum",
+			type : "string",
+			width : 210
+		},{
+			title : "状态",
+			name : "status",
+			type : "string",
+			width : 100,
+			customMethod:function(value,data){
+				var result="上架中";
+				if(value == '1'){
+					result='上架中';
+				}else if(value=='2'){
+					result='已下架';
+				}
+				return result;
+			}
+		} ]
+	}, permissions);
+}
+
+
+
+/**
+ * 批量上线
+ */	
+function putaway(){
+	$("#putaway").click(function(){
+		console.log(enrollList1.getIds());
+		if(!enrollList1.getIds()){
+			showWarningWindow("warning","请至少选择一条记录！");
+			return;
+		}
+		if(!enrollList1.validateChose("status", "2", "已上架的资料不可执行此操作")){
+			return;
+		}
+		var data = {ids:enrollList1.getIds(),status:'1'};
+		updateBatch(data,"你确定要上架选中信息？");
+	});
+}
+
+/**
+ * 批量下架
+ */	
+function removeOffshelf(){
+	$("#removeOffshelf").click(function(){
+		console.log(enrollList1.getIds());
+		if(!enrollList1.getIds()){
+			showWarningWindow("warning","请至少选择一条记录！");
+			return;
+		}
+		if(!enrollList1.validateChose("status", "1", "已下架的资料不可执行此操作")){
+			return;
+		}
+		var data = {ids:enrollList1.getIds(),status:'2'};
+		updateBatch(data,"你确定要下架选中信息？");
+	});
+}
+
+/**
+* 批量更新商品上架状态
+* @param data
+* @param title
+*/
+function updateBatch(data,title){
+	showSmConfirmWindow(function() {
+					$.ajax({
+				        type: "POST",
+				        url: "VstarContent/manage/updateStatusBatch.jhtml",
+				        data: data,
+				        dataType: "json",
+				        success: function(result){
+							showSmReslutWindow(result.success, result.msg);
+							enrollList1.reload();
+				         }
+				    });
+			},title);
+}
+

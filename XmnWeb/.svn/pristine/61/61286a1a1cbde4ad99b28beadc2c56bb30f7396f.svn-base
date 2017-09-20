@@ -1,0 +1,447 @@
+/**
+ * 
+ */
+package com.xmniao.xmn.core.reward_dividends.service;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.apache.commons.lang.StringUtils;  
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.base.BaseService;
+import com.xmniao.xmn.core.base.Pageable;
+import com.xmniao.xmn.core.billmanagerment.dao.AllBillDao;
+import com.xmniao.xmn.core.billmanagerment.entity.Bill;
+import com.xmniao.xmn.core.live_anchor.dao.BLiveFansRankDao;
+import com.xmniao.xmn.core.live_anchor.dao.BLiverDao;
+import com.xmniao.xmn.core.live_anchor.dao.BVerAnchorRelationDao;
+import com.xmniao.xmn.core.live_anchor.entity.BLiveFansRank;
+import com.xmniao.xmn.core.live_anchor.entity.BLiver;
+import com.xmniao.xmn.core.live_anchor.entity.BVerAnchorRelation;
+import com.xmniao.xmn.core.live_anchor.service.TLiveAnchorService;
+import com.xmniao.xmn.core.reward_dividends.dao.TLivePrivilegeDao;
+import com.xmniao.xmn.core.reward_dividends.entity.TLivePrivilege;
+import com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy;
+import com.xmniao.xmn.core.thrift.service.ResponsePageList;
+import com.xmniao.xmn.core.thrift.service.liveService.ResponseIDKeyData;
+import com.xmniao.xmn.core.xmermanagerment.dao.TSaasSoldOrderDao;
+import com.xmniao.xmn.core.xmnburs.entity.Burs;
+import com.xmniao.xmn.core.xmnburs.service.BursService;
+
+@Service
+public class RecommendMemberService extends BaseService<TLivePrivilege> {
+
+	@Autowired
+	private TLivePrivilegeDao livePrivilegeDao;
+	
+	@Autowired
+	private BLiveFansRankDao liveFansRankDao;
+	
+	@Autowired
+	private BursService bursService;
+	
+	@Autowired
+	private TLiveAnchorService liveAnchorService;
+	
+	@Autowired
+	private TSaasSoldOrderDao saasSoldOrderDao;
+	
+	@Autowired
+	private BVerAnchorRelationDao verAnchorRelationDao;
+	
+	@Autowired
+	private BLiverDao liverDao;
+	
+	
+	@Autowired
+	private AllBillDao allBillDao;
+	
+	/**
+	 * 注入扩展钱包服务
+	 */
+	@Resource(name = "walletExpansionServiceClient")
+	private ThriftClientProxy walletExpansionServiceClient;
+	
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected BaseDao getBaseDao() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+    //1 2 10, 2 5 25, 3 10 50, 5 30 150;
+	public Pageable<TLivePrivilege> getLivePrivilegeInfoList(TLivePrivilege livePrivilege) {
+		Pageable<TLivePrivilege> livePrivilegeInfoList = new Pageable<TLivePrivilege>(livePrivilege);
+		Long totalNum = (long) 0;
+		//通过电话号码/用户昵称查询
+		if (StringUtils.isNotBlank(livePrivilege.getPhone()) || StringUtils.isNotBlank(livePrivilege.getNickname())  ) {
+			Burs burs = new Burs();
+			if (StringUtils.isNotBlank(livePrivilege.getPhone()) ) {
+				String phone = livePrivilege.getPhone();
+				burs.setPhone(phone);
+			}
+			if (StringUtils.isNotBlank(livePrivilege.getNickname()) ) {
+				String nickname = livePrivilege.getNickname();
+				burs.setNname(nickname);
+			}		
+			List<Burs> bursList = bursService.getUrsList(burs);
+			if (bursList != null && bursList.size() > 0 ){
+				livePrivilege.setUid(bursList.get(0).getUid());
+			}else{
+				livePrivilegeInfoList.setTotal(totalNum);
+			    return livePrivilegeInfoList;
+			}
+		}
+	
+		//分页查询(要根据uid分组)V客信息
+		List<TLivePrivilege> livePrivilegeList = livePrivilegeDao.getRecommendMemberList(livePrivilege);
+		if (livePrivilegeList != null){
+			//设置V客等级
+			BLiveFansRank fansRank = new BLiveFansRank();
+			fansRank.setRankType(2);  //V客类型
+			List<BLiveFansRank> liveFansRankList = liveFansRankDao.getList(fansRank);  //v客等级
+			List<Integer> uids=new ArrayList<Integer>();
+			for (TLivePrivilege bean: livePrivilegeList){
+				if (liveFansRankList != null){
+					for (BLiveFansRank object: liveFansRankList){
+						if (bean.getLedgerLevel()!= null && bean.getLedgerLevel().equals(Integer.parseInt(object.getId().toString()))){
+							 bean.setRankName(object.getRankName());
+						}
+					}
+				}
+				//查询用户uid
+				Integer uid = bean.getUid();
+				if(uid != null){
+					uids.add(uid);
+				}
+			}
+			
+			//查询用户信息, V客推荐主播信息, V客签约店铺信息
+			if(uids!=null && uids.size()>0){
+				List<BLiver> liverList = liveAnchorService.getUrsDetailInfoList(uids.toArray());
+				if (liverList != null ){
+					for (TLivePrivilege bean: livePrivilegeList){
+						for (BLiver object: liverList){
+							if (bean.getUid()!= null && bean.getUid().equals(object.getUid()) ){
+								if (object.getNickname() != null)   //昵称
+									bean.setNickname(object.getNickname());
+								if (object.getName() != null)   //真实姓名
+									bean.setName(object.getName());
+								if (object.getPhone() != null)  //手机号码
+									bean.setPhone(object.getPhone());
+							}
+						}
+					}
+				}
+				//统计多笔充值订单推荐的主播,商家名额
+				List<TLivePrivilege> livePrivilegeByUidList = livePrivilegeDao.getRecommendMemberListByUids(uids.toArray());	
+				if (livePrivilegeByUidList != null ){
+					for (TLivePrivilege bean: livePrivilegeList){
+						Integer totalRecommendLive = 0, totalRecommendSeller = 0;
+						for (TLivePrivilege object: livePrivilegeByUidList){
+							if (bean.getUid()!= null && bean.getUid().equals(object.getUid()) ){
+								totalRecommendLive += object.getTotalRecommendLive();  //推荐的主播名额总数
+								totalRecommendSeller += object.getTotalRecommendSeller(); //推荐的商家名额总数
+							}
+						}
+						bean.setTotalRecommendSellerStr(String.valueOf(totalRecommendSeller));
+						bean.setTotalRecommendLiveStr(String.valueOf(totalRecommendLive));
+					}
+				}
+				//获取商家已推荐数量
+				List<Map<String, String>> recommendSellerCountList = saasSoldOrderDao.getRecommendSellerCountList(uids.toArray());
+				if (recommendSellerCountList != null ){
+					for (TLivePrivilege bean: livePrivilegeList){
+						for (Map<String, String> object: recommendSellerCountList){
+							if (bean.getUid()!= null && bean.getUid().equals(object.get("uid")) ){
+								if (object.get("number") != null){   //已推荐的商家数据
+									bean.setRecommendSeller(Integer.parseInt(String.valueOf(object.get("number"))));
+								}
+							}
+						}
+					}
+				}
+				//获取主播已推荐数量
+				List<Map<String, String>> recommendLiveCountList = verAnchorRelationDao.getRecommendLiveCountList(uids.toArray());
+				if (recommendLiveCountList != null ){
+					for (TLivePrivilege bean: livePrivilegeList){
+						for (Map<String, String> object: recommendLiveCountList){
+							if (bean.getUid()!= null && bean.getUid().equals(object.get("uid")) ){
+								if (object.get("number") != null) {  //已推荐的商家数据
+									bean.setRecommendLive(Integer.parseInt(String.valueOf(object.get("number"))));
+								}
+							}
+						}
+					}
+				}
+				//获取消费订单
+				List<Bill> recommendSellerList = allBillDao.getRecommendSellerList(uids.toArray());
+				if (recommendSellerList != null ){
+					for (TLivePrivilege bean: livePrivilegeList){
+						BigDecimal sellerProfitAmount = new BigDecimal("0");
+						for (Bill object: recommendSellerList){
+							if (bean.getUid()!= null && bean.getUid().equals(object.getUid()) ){
+								if (object.getCommission() != null && object.getSaasChannel() != null) {  //已推荐的商家数据
+									JSONObject json = JSON.parseObject(object.getCommission());  
+									if (object.getSaasChannel().equals(3) ){//3V客SAAS签约 4主播(V客赠送)SAAS签约
+										if (json.getString("mike_amount") != null){
+											sellerProfitAmount = sellerProfitAmount.add(new BigDecimal(json.getString("mike_amount")).setScale(2, BigDecimal.ROUND_HALF_UP));
+										}
+									}else{
+										if (json.getString("parent_mike_amount") != null){
+											sellerProfitAmount = sellerProfitAmount.add(new BigDecimal(json.getString("parent_mike_amount")).setScale(2, BigDecimal.ROUND_HALF_UP));
+										}
+									}
+								}
+							}
+						}
+						if (sellerProfitAmount.compareTo(new BigDecimal("0")) != 0)
+						    bean.setSellerProfitAmount(sellerProfitAmount.setScale(2, BigDecimal.ROUND_HALF_UP));
+					}
+				}
+				
+				//查询主播贡献的总收益
+				if (uids.size() > 0)
+					this.searchLiverTotalProfitList(uids, livePrivilegeList);
+			}
+		}
+		
+		totalNum = livePrivilegeDao.countRecommendMember(livePrivilege);
+		livePrivilegeInfoList.setContent(livePrivilegeList);
+		livePrivilegeInfoList.setTotal(totalNum);
+		
+	    return livePrivilegeInfoList;
+	}
+	
+	
+	
+	/**
+	 * 方法描述：主播贡献的总收益 <br/>
+	 * 创建人： Administrator <br/>
+	 * 创建时间：2017年8月3日下午6:35:31 <br/>
+	 * @param uids
+	 * @param livePrivilegeList
+	 */
+	public void searchLiverTotalProfitList(List<Integer> uids, List<TLivePrivilege> livePrivilegeList) {
+		
+		try {
+			List<String> uidList = new ArrayList<String>();
+	        for (Integer id : uids) { 
+	        	uidList.add(String.valueOf(id));
+	        }
+			//连接接口进行查询
+			com.xmniao.xmn.core.thrift.service.liveService.WalletExpansionService.Client client = (com.xmniao.xmn.core.thrift.service.liveService.WalletExpansionService.Client) 
+					(walletExpansionServiceClient.getClient());
+			log.info("查询主播贡献的收益开始");
+			ResponsePageList resultList = client.getExpansionByUids(uidList, 10);
+			
+			if(resultList.dataInfo.state == 0){
+				this.getSellerTotalProfitFromMap(resultList.pageList, livePrivilegeList);
+			}else{
+				log.error("调用查询主播贡献的收益失败");
+				throw new RuntimeException("查询主播贡献的收益失败, 错误信息:"+ resultList.dataInfo.getMsg());
+
+			}
+//			log.info("查询储值卡充值消费详细记录结束，返回值：" + livePurseDataList.size());
+		} catch (Exception e) {
+			log.error("查询主播贡献的收益失败", e);
+//			throw new ApplicationException("查询直播钱包异常", e, new Object[] { uid });
+		} finally {
+			walletExpansionServiceClient.returnCon();
+		}
+	}
+	
+	/**
+	 * 方法描述：获得商户收益 <br/>
+	 * 创建人： Administrator <br/>
+	 * 创建时间：2017年8月3日下午6:35:58 <br/>
+	 * @param pramsMapList
+	 * @param livePrivilegeList
+	 * @throws Exception
+	 */
+	public void getSellerTotalProfitFromMap(List<Map<String,String>> pramsMapList, List<TLivePrivilege> livePrivilegeList) throws Exception{
+		for (TLivePrivilege livePrivilege: livePrivilegeList) {
+			if (livePrivilege.getUid() != null){
+				for (Map<String, String> object : pramsMapList) {
+					if (StringUtils.isNotBlank(object.get("uid")) && livePrivilege.getUid().equals(Integer.parseInt(object.get("uid"))) ){
+						if (StringUtils.isNotBlank(object.get("totalAmount")) ){ //获得商户收益(历史收益)
+							BigDecimal totalAmount = new BigDecimal(object.get("totalAmount"));
+							totalAmount = totalAmount.setScale(2, BigDecimal.ROUND_HALF_UP);  
+							livePrivilege.setLiveProfitAmount(totalAmount);
+						}
+					}
+				}
+			}
+		}
+	}
+	
+
+	/**
+	 * 方法描述：放弃推荐主播 <br/>
+	 * 创建人： Administrator <br/>
+	 * 创建时间：2017年7月24日下午5:58:56 <br/>
+	 * @param verAnchorRelation
+	 * @return
+	 * @throws Exception
+	 */
+	public int updateOptionState(BVerAnchorRelation verAnchorRelation) throws Exception{
+		//更改数据库中的推荐状态 anchor_uid:推荐主播uid
+		verAnchorRelation.setUpdateTime(new Date());
+		
+		return verAnchorRelationDao.updateOptionState(verAnchorRelation);
+	}
+	
+	/**
+	 * 方法描述：获取推荐主播收益明细信息 <br/>
+	 * 创建人： Administrator <br/>
+	 * 创建时间：2017年8月3日下午3:44:04 <br/>
+	 * @param livePrivilege
+	 * @return
+	 */
+	public List<BVerAnchorRelation> getVerRecommendLiveDetailList(TLivePrivilege livePrivilege){
+		//查询用户uid
+		Integer uid = livePrivilege.getUid();
+		//查询推荐的主播信息
+		List<BVerAnchorRelation> verAnchorRelationList = verAnchorRelationDao.getRecommendLiveList(uid);
+		
+		//通过接口查询主播的收益信息
+		this.searchLiveProfitList(uid, verAnchorRelationList);
+	
+		return verAnchorRelationList;
+	}
+	
+	
+	
+	/**
+	 * 方法描述：查询主播的累计收益与贡献给V客的收益 <br/>
+	 * 创建人： Administrator <br/>
+	 * 创建时间：2017年8月4日上午11:46:24 <br/>
+	 * @param uid
+	 * @param verAnchorRelationList
+	 */
+	public void searchLiveProfitList(Integer uid, List<BVerAnchorRelation> verAnchorRelationList) {
+		StringBuffer sb = new StringBuffer();
+		for (BVerAnchorRelation verAnchorRelation: verAnchorRelationList) {
+			if (verAnchorRelation.getUid() != null){
+				sb.append("," + verAnchorRelation.getUid());
+			}
+		}
+		String liverIds = "";
+		if (sb.length() > 1){
+			liverIds = sb.toString().substring(1);
+			
+			try {
+				//连接接口进行查询
+				com.xmniao.xmn.core.thrift.service.liveService.WalletExpansionService.Client client = (com.xmniao.xmn.core.thrift.service.liveService.WalletExpansionService.Client) 
+						(walletExpansionServiceClient.getClient());
+				log.info("查询主播的累计收益与贡献给V客的收益记录开始");
+				Map<String, String> params = new HashMap<String, String>();
+				params.put("uid", uid.toString());  //用户id  (V客)
+				params.put("liverIds", liverIds);  //主播uid
+				ResponseIDKeyData  resultList = client.getIncomeByLivers(params);
+				if (resultList.state == 0) {
+					getLiveProfitFromMap(resultList.resultMap, verAnchorRelationList);
+				}else{
+					log.error("调用查询主播的累计收益与贡献给V客的收益失败");
+					throw new RuntimeException("查询主播的累计收益与贡献给V客的收益失败, 错误信息:"+ resultList.getMsg());
+				}
+//				log.info("查询储值卡充值消费详细记录结束，返回值：" + livePurseDataList.size());
+
+			} catch (Exception e) {
+				log.error("查询直播钱包失败", e);
+//				throw new ApplicationException("查询直播钱包异常", e, new Object[] { uid });
+			} finally {
+				walletExpansionServiceClient.returnCon();
+			}
+		}
+
+	}
+	
+	public void getLiveProfitFromMap(Map<String, Map<String,String>> paramsMap, List<BVerAnchorRelation> verAnchorRelationList) throws Exception{
+		for (BVerAnchorRelation verAnchorRelation: verAnchorRelationList) {
+			Map<String,String> resultMap = paramsMap.get(verAnchorRelation.getUid().toString());
+			if (StringUtils.isNotBlank(resultMap.get("amountTotal")) ){  //统计收益
+				BigDecimal amountTotal = new BigDecimal(resultMap.get("amountTotal"));
+				amountTotal = amountTotal.setScale(2, BigDecimal.ROUND_HALF_UP);  
+				verAnchorRelation.setFromLiveProfit(amountTotal);
+			}
+			if (StringUtils.isNotBlank(resultMap.get("balanceTotal")) ){ //主播累计鸟蛋
+				BigDecimal rate = new BigDecimal(resultMap.get("balanceTotal")).setScale(2, BigDecimal.ROUND_HALF_UP);
+				verAnchorRelation.setLiveTotalProfit(rate);
+			}
+		}
+	}
+	
+	
+	/**
+	 * 方法描述：获取推荐商户收益明细信息 <br/>
+	 * 创建人： Administrator <br/>
+	 * 创建时间：2017年8月3日下午3:44:04 <br/>
+	 * @param livePrivilege
+	 * @return
+	 */
+	public List<Bill> getVerRecommendSellerDetailList(TLivePrivilege livePrivilege){
+		List<Integer> uids=new ArrayList<Integer>();
+		//V客uid
+		Integer uid = livePrivilege.getUid();
+		if(uid != null){
+			uids.add(uid);
+		}
+		//统计推荐的商家信息
+		List<Bill> billList = allBillDao.getRecommendSellerInfoList(uid);
+		//查询推荐的商家订单列表
+		List<Bill> sellerBillList = allBillDao.getRecommendSellerList(uids.toArray());
+		//统计商家贡献给主播的收益
+		for (Bill bill :billList){
+			BigDecimal sellerProfitAmount = new BigDecimal("0");
+			for (Bill object :sellerBillList){
+				if ( bill.getSellerid().equals(object.getSellerid()) ){
+					if (object.getCommission() != null && object.getSaasChannel() != null) {  //已推荐的商家数据
+						JSONObject json = JSON.parseObject(object.getCommission());  
+						if (object.getSaasChannel().equals(3) ){//3V客SAAS签约 4主播(V客赠送)SAAS签约
+							if (json.getString("mike_amount") != null){
+								sellerProfitAmount = sellerProfitAmount.add(new BigDecimal(json.getString("mike_amount")).setScale(2, BigDecimal.ROUND_HALF_UP));
+							}
+						}else{
+							if (json.getString("parent_mike_amount") != null){
+								sellerProfitAmount = sellerProfitAmount.add(new BigDecimal(json.getString("mike_amount")).setScale(2, BigDecimal.ROUND_HALF_UP));
+							}
+						}
+					}
+				}
+			}
+			bill.setFromSellerProfit(sellerProfitAmount);  //商家贡献收益
+		}
+		return billList;
+	}
+	
+	/**
+	 * 方法描述：放弃主播推荐名额<br/>
+	 * 创建人： Administrator <br/>
+	 * 创建时间：2017年8月4日下午5:40:05 <br/>
+	 * @param verAnchorRelation
+	 * @return
+	 * @throws Exception
+	 */
+	public int abandonVerAnchorRelation(Integer uid) throws Exception{
+		BVerAnchorRelation verAnchorRelation = new BVerAnchorRelation();
+		//更改数据库中的推荐状态 anchor_uid:推荐主播uid
+		verAnchorRelation.setAnchorUid(uid);
+		verAnchorRelation.setUpdateTime(new Date());
+		verAnchorRelation.setRecommendStatus(4);  //推荐状态 1 审核中 2 审核通过 3 审核被拒 4 放弃
+		
+		return verAnchorRelationDao.abandonVerAnchorRelation(verAnchorRelation);
+	}
+
+}

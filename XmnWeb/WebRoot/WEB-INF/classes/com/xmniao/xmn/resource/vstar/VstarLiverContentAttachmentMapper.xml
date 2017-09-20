@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.vstar.dao.VstarLiverContentAttachmentDao">
+	<resultMap id="BaseResultMap"
+		type="com.xmniao.xmn.core.vstar.entity.VstarLiverContentAttachment">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="content_id" jdbcType="BIGINT" property="contentId" />
+		<result column="file_type" jdbcType="VARCHAR" property="fileType" />
+		<result column="file_name" jdbcType="VARCHAR" property="fileName" />
+		<result column="file_url" jdbcType="VARCHAR" property="fileUrl" />
+		<result column="sort_val" jdbcType="INTEGER" property="sortVal" />
+		<result column="status" jdbcType="INTEGER" property="status" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="file_size" jdbcType="BIGINT" property="fileSize" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, content_id, file_type, file_name, file_url, sort_val,
+		status,
+		create_time, update_time,file_size
+	</sql>
+
+	<select id="getListByContentId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_vstar_liver_content_attachment
+		where content_id = #{id}
+	</select>
+
+	<update id="activateContextId">
+		update t_vstar_liver_content_attachment set content_id = #{id}
+		where id
+		in
+		<foreach collection="list" item="item" open="(" close=")"
+			separator=",">
+			#{item}
+		</foreach>
+	</update>
+
+	<select id="selectByPrimaryKey" parameterType="java.lang.Long"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_vstar_liver_content_attachment
+		where id = #{id,jdbcType=BIGINT}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		delete from
+		t_vstar_liver_content_attachment
+		where id = #{id,jdbcType=BIGINT}
+	</delete>
+	<insert id="insert"
+		parameterType="com.xmniao.xmn.core.vstar.entity.VstarLiverContentAttachment">
+		insert into t_vstar_liver_content_attachment (id,
+		content_id, file_type,
+		file_name, file_url, sort_val,
+		status,
+		create_time, update_time,
+		file_size
+		)
+		values (#{id,jdbcType=BIGINT},
+		#{contentId,jdbcType=BIGINT},
+		#{fileType,jdbcType=VARCHAR},
+		#{fileName,jdbcType=VARCHAR}, #{fileUrl,jdbcType=VARCHAR},
+		#{sortVal,jdbcType=INTEGER},
+		#{status,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{updateTime,jdbcType=TIMESTAMP},
+		#{fileSize,jdbcType=BIGINT}
+		)
+	</insert>
+	<insert id="add"
+		parameterType="com.xmniao.xmn.core.vstar.entity.VstarLiverContentAttachment"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into t_vstar_liver_content_attachment
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="contentId != null">
+				content_id,
+			</if>
+			<if test="fileType != null">
+				file_type,
+			</if>
+			<if test="fileName != null">
+				file_name,
+			</if>
+			<if test="fileUrl != null">
+				file_url,
+			</if>
+			<if test="sortVal != null">
+				sort_val,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+			<if test="fileSize != null">
+				file_size,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=BIGINT},
+			</if>
+			<if test="contentId != null">
+				#{contentId,jdbcType=BIGINT},
+			</if>
+			<if test="fileType != null">
+				#{fileType,jdbcType=VARCHAR},
+			</if>
+			<if test="fileName != null">
+				#{fileName,jdbcType=VARCHAR},
+			</if>
+			<if test="fileUrl != null">
+				#{fileUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="sortVal != null">
+				#{sortVal,jdbcType=INTEGER},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="fileSize != null">
+				#{fileSize,jdbcType=BIGINT},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective"
+		parameterType="com.xmniao.xmn.core.vstar.entity.VstarLiverContentAttachment">
+		update t_vstar_liver_content_attachment
+		<set>
+			<if test="contentId != null">
+				content_id = #{contentId,jdbcType=BIGINT},
+			</if>
+			<if test="fileType != null">
+				file_type = #{fileType,jdbcType=VARCHAR},
+			</if>
+			<if test="fileName != null">
+				file_name = #{fileName,jdbcType=VARCHAR},
+			</if>
+			<if test="fileUrl != null">
+				file_url = #{fileUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="sortVal != null">
+				sort_val = #{sortVal,jdbcType=INTEGER},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="fileSize != null">
+				file_size = #{fileSize,jdbcType=BIGINT},
+			</if>
+		</set>
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKey"
+		parameterType="com.xmniao.xmn.core.vstar.entity.VstarLiverContentAttachment">
+		update t_vstar_liver_content_attachment
+		set content_id =
+		#{contentId,jdbcType=BIGINT},
+		file_type = #{fileType,jdbcType=VARCHAR},
+		file_name = #{fileName,jdbcType=VARCHAR},
+		file_url =
+		#{fileUrl,jdbcType=VARCHAR},
+		sort_val = #{sortVal,jdbcType=INTEGER},
+		status = #{status,jdbcType=INTEGER},
+		create_time =
+		#{createTime,jdbcType=TIMESTAMP},
+		update_time =
+		#{updateTime,jdbcType=TIMESTAMP},
+		file_size =
+		#{fileSize,jdbcType=BIGINT}
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+</mapper>

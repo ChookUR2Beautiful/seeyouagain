@@ -1,0 +1,25 @@
+package com.xmniao.xmn.core.manor.dao;
+
+import java.util.List;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.manor.entity.TManorMarketTrans;
+
+
+public interface ManorMarketTransDao extends BaseDao<TManorMarketTrans>{
+    int deleteByPrimaryKey(Long id);
+
+    int insert(TManorMarketTrans record);
+
+    int insertSelective(TManorMarketTrans record);
+
+    TManorMarketTrans selectByPrimaryKey(Long id);
+
+    int updateByPrimaryKeySelective(TManorMarketTrans record);
+
+    int updateByPrimaryKey(TManorMarketTrans record);
+    
+    public List<TManorMarketTrans> getManorMarketTransList(TManorMarketTrans record);
+    
+    public Long countManorMarket(TManorMarketTrans record);
+}

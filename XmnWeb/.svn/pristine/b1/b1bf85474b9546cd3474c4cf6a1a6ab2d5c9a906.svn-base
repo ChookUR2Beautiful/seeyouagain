@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.coupon.dao.CouponStatisticsDao">
+
+	<parameterMap type="CouponStatistics" id="couponStatistics" />
+
+	<resultMap type="CouponStatistics" id="couponStatisticsMap">	
+		<result column="issue_id" property="issueid" />
+		<result column="cid" property="cid" />
+		<result column="activity_name" property="activityName" />
+		<result column="activity_type" property="activityType" />
+		<result column="status" property="status" />
+		<result column="issueVolume" property="issueVolume" />
+		<result column="gotNum" property="gotNum" />
+		<result column="lockedNum" property="lockedNum" />
+		<result column="unUseNum" property="unUseNum" />
+		<result column="usedNum" property="usedNum" />
+		<result column="usedAmount" property="usedAmount" />
+		<result column="denomination" property="denomination" />
+		<result column="user_money" property="userMoney" />
+		<result column="date_issue" property="dateIssue" />
+		<result column="order_no" property="orderNo" />
+		
+		<result column="phone" property="phone" />
+		<result column="uid" property="uid" />
+		<result column="serial" property="serial" />
+		<result column="get_time" property="getTime" />
+		<result column="lock_time" property="lockTime" />
+		<result column="userStatus" property="userStatus" />
+		<result column="get_way" property="getWay" />
+		<result column="showall" property="showall" />
+		<result column="start_date" property="startDate" />
+		<result column="end_date" property="endDate" />
+		<result column="sellerNum" property="sellerNum" />
+		
+		<result column="ccid" property="ccid" />
+		<result column="provinces" property="provinces" />
+		<result column="city" property="city" />
+		<result column="cname" property="cname" />
+	</resultMap>
+
+	<!-- 可重用的Where 条件 -->
+	<sql id="whereSQL">
+		<if test=" null != activityName and '' != activityName">
+			AND i.activity_name LIKE '%${activityName}%'
+		</if>
+		<if test=" null != issueid">
+			AND i.issue_id = #{issueid}
+		</if>
+		<if test=" null != activityType and '' != activityType">
+			AND i.activity_type = #{activityType}
+		</if>
+		<if test=" null != status and '' != status">
+			AND i.status = #{status}
+		</if>
+	</sql>
+	<!-- 优惠券可重用的Where 条件 -->
+	<sql id="CouponWhereSQL">
+		<if test=" null != cid">
+			AND t.cid = #{cid}
+		</if>
+		<if test=" null != cname and '' != cname">
+			AND t.cname LIKE '%${cname}%'
+		</if>
+		<if test=" null != denominationLow and '' != denominationLow">
+			AND t.denomination &gt;= #{denominationLow}
+		</if>
+		<if test=" null != denominationTop and '' != denominationTop">
+			AND t.denomination &lt;= #{denominationTop}
+		</if>
+		<if test=" null != startDate and '' != startDate">
+			AND t.start_date &gt;= #{startDate}
+		</if>
+		<if test=" null != endDate and '' != endDate">
+			AND t.start_date &lt;= #{endDate}
+		</if>
+	</sql>
+	<select id="getList" resultMap="couponStatisticsMap" parameterMap="couponStatistics">
+			SELECT
+			i.issue_id,
+			i.activity_name,
+			i.activity_type,
+			i.status,
+			(SELECT  SUM(tr.issue_volume)   FROM t_coupon_issue_ref tr  WHERE tr.issue_id = i.issue_id) AS issueVolume,
+			IFNULL(v.unUseNum, 0) AS unUseNum,
+			IFNULL(v.gotNum,0)AS gotNum,
+			IFNULL(v.lockedNum,0)AS lockedNum,
+			IFNULL(v.usedNum,0) AS usedNum,
+			IFNULL(v.usedAmount,0) AS usedAmount
+			FROM
+			t_coupon_issue i LEFT JOIN v_coupon_detail v ON i.issue_id = v.issue_id
+		<where>
+			1=1
+	 		<include refid="whereSQL"></include>
+ 		</where>
+		ORDER BY i.issue_id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="count" resultType="Long" parameterMap="couponStatistics">
+		SELECT COUNT(*) FROM t_coupon_issue i LEFT JOIN v_coupon_detail v ON i.issue_id = v.issue_id
+		<where>
+			1=1
+ 			<include refid="whereSQL"></include>
+		</where>
+	</select>
+
+
+	<select id="getUnUseList" resultMap="couponStatisticsMap" parameterMap="couponStatistics">
+			SELECT
+			t.issue_id,t.denomination,t.get_way,t.user_money,t.date_issue, <!-- r.bid as orderNo ,-->t.phone,t.uid,t.serial,t.get_time,t.lock_time,t.user_status,t.start_date,t.end_date,t.user_time as userTime
+			FROM
+			t_coupon_detail t
+			<!-- LEFT JOIN t_coupon_relation r ON t.cdid=r.cdid --> 
+		<where>
+			1=1
+			<if test=" null != userStatus">
+				AND t.user_status = #{userStatus}
+			</if>
+			<if test=" null != getStatus">
+				AND t.get_status = #{getStatus}
+			</if>
+			<if test=" null != issueid">
+				AND t.issue_id = #{issueid}
+			</if>
+			<if test=" null != phone and '' != phone">
+				AND t.phone = #{phone}
+			</if>
+			<if test=" null != dateStart and '' != dateStart">
+				AND t.get_time&gt;= #{dateStart}
+			</if>
+			<if test=" null != dateEnd and '' != dateEnd">
+				AND t.get_time&lt;= #{dateEnd}
+			</if>
+		</where>
+		ORDER BY t.issue_id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="getUnUseListCount" resultType="Long" parameterMap="couponStatistics">
+		SELECT count(1)	FROM t_coupon_detail tc
+			<!-- LEFT JOIN t_coupon_relation r ON tc.cdid=r.cdid -->
+		<where>
+			1=1
+			<if test=" null != userStatus">
+				AND tc.user_status = #{userStatus}
+			</if>
+			<if test=" null != getStatus">
+				AND tc.get_status = #{getStatus}
+			</if>
+			<if test=" null != issueid">
+				AND tc.issue_id = #{issueid}
+			</if>
+			<if test=" null != phone and '' != phone">
+				AND tc.phone = #{phone}
+			</if>
+			<if test=" null != dateStart and '' != dateStart">
+				AND tc.get_time&gt;= #{dateStart}
+			</if>
+			<if test=" null != dateEnd and '' != dateEnd">
+				AND tc.get_time&lt;= #{dateEnd}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getCouponList" resultMap="couponStatisticsMap" parameterMap="couponStatistics">
+		SELECT
+		t.cid,
+		t.cname,
+		t.denomination,
+		t.condition,
+		t.showall,
+		t.start_date,
+		t.end_date,
+		v.*,
+		(SELECT
+		SUM(tr.issue_volume) 
+		FROM
+		t_coupon_issue_ref tr
+		WHERE tr.cid = t.cid) AS issueVolume,
+		(SELECT COUNT(1) FROM t_coupon_seller ts WHERE ts.cid=t.cid AND ts.ltype = 1 AND include = 1) AS sellerNum,
+		IFNULL(v.unUseNum, 0) AS unUseNum,
+		IFNULL(v.gotNum, 0) AS gotNum,
+		IFNULL(v.lockedNum, 0) AS lockedNum,
+		IFNULL(v.usedNum, 0) AS usedNum,
+		IFNULL(v.usedAmount, 0) AS usedAmount
+		FROM
+		t_coupon t
+		LEFT JOIN v_coupon_detail_cid v
+		ON t.cid = v.cid 
+		<where>
+			1=1
+ 	 		<include refid="CouponWhereSQL"></include>
+  		</where>
+		ORDER BY t.cid DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="getCouponCount" resultType="Long" parameterMap="couponStatistics">
+		SELECT COUNT(*) FROM
+  		t_coupon t
+  		LEFT JOIN v_coupon_detail_cid v 
+    	ON t.cid = v.cid
+		<where>
+			1=1
+		<include refid="CouponWhereSQL"></include>
+	</where>
+	</select>
+	
+	<select id="getCouponUnUseOrUsedList" resultMap="couponStatisticsMap" parameterMap="couponStatistics">
+			SELECT
+			t.cid,t.denomination,t.get_way,t.user_money,t.date_issue, <!-- r.bid as orderNo ,-->t.phone,t.uid,t.serial,t.get_time,t.get_way,t.lock_time,t.user_status,t.start_date,t.end_date,t.user_time as userTime
+			FROM
+			t_coupon_detail t 
+			<!-- LEFT JOIN t_coupon_relation r ON t.cdid=r.cdid -->
+		<where>
+			1=1
+			<if test=" null != userStatus">
+				AND t.user_status = #{userStatus}
+			</if>
+			<if test=" null != getStatus">
+				AND t.get_status = #{getStatus}
+			</if>
+			<if test=" null != cid">
+				AND t.cid = #{cid}
+			</if>
+			<if test=" null != phone and '' != phone">
+				AND t.phone = #{phone}
+			</if>
+			<if test=" null != dateStart and '' != dateStart">
+				AND t.get_time&gt;= #{dateStart}
+			</if>
+			<if test=" null != dateEnd and '' != dateEnd">
+				AND t.get_time&lt;= #{dateEnd}
+			</if>
+		</where>
+		ORDER BY t.cid DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="getCouponUnUseOrUsedCount" resultType="Long" parameterMap="couponStatistics">
+		SELECT	count(1) FROM t_coupon_detail tc 
+			<!-- LEFT JOIN t_coupon_relation r ON tc.cdid=r.cdid -->
+		<where>
+			1=1
+			<if test=" null != userStatus">
+				AND tc.user_status = #{userStatus}
+			</if>
+			<if test=" null != getStatus">
+				AND tc.get_status = #{getStatus}
+			</if>
+			<if test=" null != cid">
+				AND tc.cid = #{cid}
+			</if>
+			<if test=" null != phone and '' != phone">
+				AND tc.phone = #{phone}
+			</if>
+			<if test=" null != dateStart and '' != dateStart">
+				AND tc.get_time&gt;= #{dateStart}
+			</if>
+			<if test=" null != dateEnd and '' != dateEnd">
+				AND tc.get_time&lt;= #{dateEnd}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getViewAreaList" resultMap="couponStatisticsMap" parameterMap="couponStatistics">
+			SELECT t.*,tc.cname FROM t_coupon_city t LEFT JOIN t_coupon tc ON t.cid = tc.cid
+		<where>
+			1=1
+			<if test=" null != cid">
+				AND t.cid = #{cid}
+			</if>
+			<if test=" null != provinces and '' != provinces">
+				AND t.provinces = #{provinces}
+			</if>
+			<if test=" null != city and '' != city">
+				AND t.city = #{city}
+			</if>
+		</where>
+		ORDER BY t.ccid DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="getViewAreaCount" resultType="Long" parameterMap="couponStatistics">
+		SELECT COUNT(*) FROM t_coupon_city t
+		<where>
+			1=1
+			<if test=" null != cid">
+				AND t.cid = #{cid}
+			</if>
+			<if test=" null != provinces and '' != provinces">
+				AND t.provinces = #{provinces}
+			</if>
+			<if test=" null != city and '' != city">
+				AND t.city = #{city}
+			</if>
+		</where>
+	</select>
+	<select id="getMaxId" resultType="Integer">
+		SELECT Max(issue_id) AS VALUE FROM
+		t_coupon_issue
+	</select>
+
+	<select id="getObject" resultMap="couponStatisticsMap" parameterType="Long">
+		SELECT * FROM t_coupon_issue WHERE issue_id = #{0}
+	</select>
+
+</mapper>

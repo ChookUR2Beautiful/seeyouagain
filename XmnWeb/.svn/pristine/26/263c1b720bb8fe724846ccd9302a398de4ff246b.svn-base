@@ -1,0 +1,545 @@
+/**
+ * 
+ */
+package com.xmniao.xmn.core.live_anchor.service;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.base.BaseService;
+import com.xmniao.xmn.core.base.Resultable;
+import com.xmniao.xmn.core.live_anchor.constant.LiveConstant;
+import com.xmniao.xmn.core.live_anchor.dao.BLiverDao;
+import com.xmniao.xmn.core.live_anchor.dao.TLiveGivedGiftDao;
+import com.xmniao.xmn.core.live_anchor.dao.TLiveRecordDao;
+import com.xmniao.xmn.core.live_anchor.entity.BLiver;
+import com.xmniao.xmn.core.live_anchor.entity.LoseGift;
+import com.xmniao.xmn.core.live_anchor.entity.TLiveGeneralCount;
+import com.xmniao.xmn.core.live_anchor.entity.TLiveGivedGift;
+import com.xmniao.xmn.core.thrift.client.proxy.ThriftClientProxy;
+import com.xmniao.xmn.core.thrift.service.liveService.LiveWalletService;
+import com.xmniao.xmn.core.thrift.service.liveService.LiveWalletService.Client;
+import com.xmniao.xmn.core.thrift.service.liveService.ResponseData;
+import com.xmniao.xmn.core.util.DateUtil;
+import com.xmniao.xmn.core.util.PageConstant;
+
+/**
+ * 
+ * 项目名称：XmnWeb_LIVE_170105
+ * 
+ * 类名称：TLiveGivedGiftService
+ * 
+ * 类描述： 直播打赏礼物Service
+ * 
+ * 创建人：  huang'tao
+ * 
+ * 创建时间：2016-12-27 下午1:57:51 
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司 
+ */
+@Service
+public class TLiveGivedGiftService extends BaseService<TLiveGivedGift> {
+	
+	/**
+	 * 注入打赏礼物记录服务
+	 */
+	@Autowired
+	private TLiveGivedGiftDao liveGivedGiftDao;
+	
+	@Autowired
+	private TLiveRecordDao liveRecordDao;
+	
+	@Autowired
+	private BLiverDao bLiverDao;
+	
+	
+	/**
+	 * 注入直播用户服务
+	 */
+	@Autowired
+	private BLiverDao liverDao;
+	
+	/**
+	 * 注入企业推荐人服务
+	 */
+	@Autowired
+	private TLiveReferrerService referrerService;
+	
+	@Resource(name="liveWalletServiceServiceClient")
+	private ThriftClientProxy thriftClientProxy;
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected BaseDao getBaseDao() {
+		return liveGivedGiftDao;
+	}
+
+	/**
+	 * 方法描述：获取礼物打赏纪录列表 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2016-12-27下午4:24:30 <br/>
+	 * @param liveGivedGift
+	 * @return
+	 */
+	public List<TLiveGivedGift> getGivedGiftList(TLiveGivedGift liveGivedGift) {
+		
+		//从企业级推荐人列表进入
+		Long eUid = liveGivedGift.geteUid();//当前企业用户的uid
+		if(eUid!=null){
+			List<String> juniorUidList = referrerService.getJuniorUidList(eUid.toString());
+			if(juniorUidList!=null && juniorUidList.size()>0){
+				liveGivedGift.setJuniorUids(juniorUidList);
+			}
+		}
+		
+		List<TLiveGivedGift> list = liveGivedGiftDao.getList(liveGivedGift);
+		setTLiveGivedGiftListUrsMsg(list);
+		return list;
+	}
+	
+	public boolean setLiver(TLiveGivedGift liveGivedGift) {
+		if(StringUtils.isNotBlank(liveGivedGift.getNickname())||StringUtils.isNotBlank(liveGivedGift.getPhone())){
+			BLiver bLiver = new BLiver();
+			bLiver.setNickname(liveGivedGift.getNickname());
+			bLiver.setPhone(liveGivedGift.getPhone());
+			List<BLiver> ursList = getLivers(bLiver);
+			if(ursList.isEmpty()){
+				return false;
+			}else{
+				List<Integer> uids=new ArrayList<>();
+				for (BLiver burs2 : ursList) {
+					uids.add(burs2.getId());
+				}
+				liveGivedGift.setUids(uids);
+			}
+		}
+		return true;
+	}
+	
+
+	private void setTLiveGivedGiftListUrsMsg(List<? extends TLiveGivedGift> list) {
+		List<Object> liverIds=new ArrayList<>();
+		List<Object> anchorIds=new ArrayList<>();
+		if(list!=null && list.size()>0){
+			for(TLiveGivedGift givedGift:list){
+				liverIds.add(givedGift.getLiverId());
+				anchorIds.add(givedGift.getAnchorId());
+			}
+			
+			List<Object> liverIdList = new ArrayList<>(new HashSet<>(liverIds));//去除重复直播用户id
+			BLiver liver=new BLiver();
+			liver.setIds(liverIdList);
+			liver.setOrder(PageConstant.NOT_ORDER);
+			liver.setLimit(PageConstant.PAGE_LIMIT_NO);
+			List<BLiver> liverInfoList = liverDao.getList(liver);//直播用户信息列表
+			
+			
+			List<Object> anchorIdList = new ArrayList<>(new HashSet<>(anchorIds));//去除重复直播主播id
+			BLiver anchor= new BLiver();
+			anchor.setIds(anchorIdList);
+			anchor.setOrder(PageConstant.NOT_ORDER);
+			anchor.setLimit(PageConstant.PAGE_LIMIT_NO);
+			List<BLiver> anchorInfoList = liverDao.getList(anchor);
+			
+			for(TLiveGivedGift givedGift:list){
+				if(liverInfoList!=null && liverInfoList.size()>0){
+					for(BLiver liverInfo:liverInfoList){
+						if(givedGift.getLiverId().compareTo(liverInfo.getId())==0){
+						   givedGift.setNickname(liverInfo.getNickname());
+						   givedGift.setUid(liverInfo.getUid());
+						   givedGift.setPhone(liverInfo.getPhone());
+						   givedGift.setEnterpriseNname(liverInfo.getEnterpriseNname());
+						   givedGift.setSuperior(liverInfo.getSuperior());
+						   givedGift.setLedgerRatio(liverInfo.getLedgerRatio());
+						   break;
+						}
+					}
+				}
+				
+				if(anchorInfoList!=null && anchorInfoList.size()>0){
+					for(BLiver anchorInfo:anchorInfoList){
+						if(givedGift.getAnchorId().compareTo(anchorInfo.getId())==0){
+							givedGift.setAnchorName(anchorInfo.getNickname());
+							break;
+						}
+					}
+					
+				}
+			}
+			
+			
+		}
+	}
+	
+	
+	/**
+	 * 
+	 * 方法描述：打赏礼物概况统计 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2016-12-28下午3:15:10 <br/>
+	 * @param liveGivedGift
+	 * @return
+	 */
+	public Map<String,Object> generalCount(TLiveGivedGift liveGivedGift){
+		Map<String, Object> generalCount = liveGivedGiftDao.generalCount(liveGivedGift);
+		String startTime="";
+		String endTime="";
+		//查询时间类型 1昨天,2最近一周,3最近一个月,4自定义时间
+		String timeType = liveGivedGift.getTimeType()==null?"1":liveGivedGift.getTimeType();
+		switch (timeType) {
+		case "1":
+			startTime=DateUtil.getSpecifiedDate(DateUtil.YESTERDAY);
+			endTime=DateUtil.getSpecifiedDate(DateUtil.YESTERDAY);
+			break;
+		case "2":
+			startTime=DateUtil.getSpecifiedDate(DateUtil.LAST_WEEK);
+			endTime=DateUtil.formatDate(new Date(), DateUtil.Y_M_D);
+			break;
+		case "3":
+			startTime=DateUtil.getSpecifiedDate(DateUtil.LAST_MONTY);
+			endTime=DateUtil.formatDate(new Date(), DateUtil.Y_M_D);
+			break;
+		case "4":
+			startTime=liveGivedGift.getStartTime();
+			endTime=liveGivedGift.getEndTime();
+			break;
+
+		default:
+			break;
+		}
+		BigDecimal birdBean = (BigDecimal) generalCount.get("birdBean");//鸟豆
+		BigDecimal money = birdBean.divide(new BigDecimal(10), 2,BigDecimal.ROUND_HALF_EVEN);//打赏金额
+		Long liverNum=(Long) generalCount.get("liverNum");//打赏人数
+		
+		BigDecimal perCapitaLiver=new BigDecimal(0);
+		if(liverNum.compareTo(0l)>0){
+			perCapitaLiver=money.divide(new BigDecimal(liverNum), 2, BigDecimal.ROUND_HALF_EVEN);//人均打赏金额
+		}
+		Long anchorNum = (Long) generalCount.get("anchorNum");//主播人数
+		BigDecimal perCapitaAnchor = new BigDecimal(0);
+		if(anchorNum.compareTo(0l)>0){
+			perCapitaAnchor=money.divide(new BigDecimal(anchorNum), 2, BigDecimal.ROUND_HALF_EVEN);//主播人均获得打赏金额
+		}
+		generalCount.put("money", money);
+		generalCount.put("perCapitaLiver", perCapitaLiver);
+		generalCount.put("perCapitaAnchor", perCapitaAnchor);
+		generalCount.put("startTime", startTime);
+		generalCount.put("endTime", endTime);
+		return generalCount;
+	}
+
+	/**
+	 * 方法描述：在此处添加方法描述 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2016-12-29下午2:37:47 <br/>
+	 * @param liveGivedGift
+	 * @return
+	 */
+	public Object getGeneralCountBean(TLiveGivedGift liveGivedGift) {
+		List<TLiveGeneralCount> list=new ArrayList<TLiveGeneralCount>();
+		TLiveGeneralCount bean=new TLiveGeneralCount();
+		Map<String, Object> map = generalCount(liveGivedGift);
+		bean.setStartTime((String)map.get("startTime"));
+		bean.setEndTime((String)map.get("endTime"));
+		bean.setBirdBean((BigDecimal)map.get("birdBean"));
+		bean.setMoney((BigDecimal)map.get("money"));
+		bean.setLiverNum((Long)map.get("liverNum"));
+		bean.setPerCapitaLiver((BigDecimal)map.get("perCapitaLiver"));
+		bean.setAnchorNum((Long)map.get("anchorNum"));
+		bean.setPerCapitaAnchor((BigDecimal)map.get("perCapitaAnchor"));
+		list.add(bean);
+		return list;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：打赏礼物统计 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2016-12-29下午4:40:47 <br/>
+	 * @param liveGivedGift
+	 * @return
+	 */
+	public List<Map<String,Object>> giftCount(TLiveGivedGift liveGivedGift){
+		return liveGivedGiftDao.giftCount(liveGivedGift);
+	}
+
+	/**
+	 * 方法描述：获取打赏礼物统计信息 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2016-12-29下午4:51:54 <br/>
+	 * @param liveGivedGift
+	 * @return
+	 */
+	public List<Map<String, Object>> getGiftCount(TLiveGivedGift liveGivedGift) {
+		int index=0;
+		int length = LiveConstant.COLORS.length;
+		List<Map<String,Object>> giftMapList=new ArrayList<Map<String,Object>>();
+		List<Map<String,Object>> giftCount = liveGivedGiftDao.giftCount(liveGivedGift);
+		for(Map<String,Object> giftMap:giftCount){
+			Map<String,Object> map=new HashMap<String,Object>();
+			map.put("name", giftMap.get("giftName"));
+			BigDecimal birdBean = (BigDecimal) giftMap.get("birdBean");
+			map.put("value",birdBean.divideToIntegralValue(new BigDecimal(10)));
+			map.put("color", LiveConstant.COLORS[index%length]);
+			giftMapList.add(map);
+			index++;
+		}
+		return giftMapList;
+	}
+	
+	
+	/**
+	 * 
+	 * 方法描述：主播获得打赏统计 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2016-12-29下午6:25:29 <br/>
+	 * @param liveGivedGift
+	 * @return
+	 */
+	public List<Map<String,Object>> anchorCount(TLiveGivedGift liveGivedGift){
+		return liveGivedGiftDao.anchorCount(liveGivedGift);
+	}
+
+	/**
+	 * 方法描述：获取主播获得打赏统计数据 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2016-12-29下午6:28:46 <br/>
+	 * @param liveGivedGift
+	 * @return
+	 */
+	public List<Map<String, Object>> getAnchorCount(TLiveGivedGift liveGivedGift) {
+		// TODO Auto-generated method stub
+		Map<String, Object> generalCount = liveGivedGiftDao.generalCount(liveGivedGift);
+		BigDecimal birdBeanTotal = (BigDecimal) generalCount.get("birdBean");//总打赏鸟豆
+		BigDecimal multiplicand=new BigDecimal(100);
+		BigDecimal divisor=new BigDecimal(10);
+		List<BLiver> anchorList=new ArrayList<BLiver>();
+		List<Integer> anchorIds=new ArrayList<Integer>();
+		List<Map<String,Object>> anchorCount = liveGivedGiftDao.anchorCount(liveGivedGift);//主播排行榜top 9
+		for(Map<String,Object> anchorMap:anchorCount){
+			Integer anchorId = (Integer) anchorMap.get("anchorId");
+			anchorIds.add(anchorId);
+		}
+		//selectLiverInfoByIds
+		if(anchorIds!=null && anchorIds.size()>0){
+			anchorList=liverDao.selectLiverInfoByIds(anchorIds.toArray());
+		}
+		
+		int index=0;
+		int length = LiveConstant.COLORS.length;
+		for(Map<String,Object> anchorMap:anchorCount){
+			Integer anchorId=(Integer) anchorMap.get("anchorId");
+			BigDecimal  birdBean= (BigDecimal) anchorMap.get("birdBean");
+			for(BLiver anchorBean:anchorList){
+				if(anchorId.compareTo(anchorBean.getId())==0){
+					String nickname = anchorBean.getNickname();
+					anchorMap.put("name", nickname);
+					anchorMap.put("birdCoin", birdBean.divide(divisor, 2, BigDecimal.ROUND_HALF_EVEN));
+					anchorMap.put("value", birdBean.divide(divisor, 2, BigDecimal.ROUND_HALF_EVEN));
+					anchorMap.put("ratio", birdBean.divide(birdBeanTotal, 4, BigDecimal.ROUND_HALF_EVEN).multiply(multiplicand));
+					anchorMap.put("color", LiveConstant.COLORS[index%length]);
+					index++;
+					break;
+				}
+			}
+		}
+		return anchorCount;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：鸟豆打赏区间人数统计 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2016-12-28下午3:15:10 <br/>
+	 * @param liveGivedGift
+	 * @return
+	 */
+	public List<Map<String,Object>> birdBeanZoneCount(TLiveGivedGift liveGivedGift){
+		return liveGivedGiftDao.birdBeanZoneCount(liveGivedGift);
+	}
+	
+	
+	/**
+	 * 
+	 * 方法描述：获取鸟豆打赏区间人数统计 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2016-12-28下午3:15:10 <br/>
+	 * @param liveGivedGift
+	 * @return
+	 */
+	public List<Map<String,Object>> getBirdBeanZoneCount(TLiveGivedGift liveGivedGift){
+		 List<Map<String,Object>> birdBeanZoneCount = liveGivedGiftDao.birdBeanZoneCount(liveGivedGift);
+		 List<Map<String,Object>> birdBeanZoneInit=new ArrayList<Map<String,Object>>();
+		 Long peopleTotal=0l;
+		 BigDecimal multiplicand=new BigDecimal(100);
+		 int length = LiveConstant.COLORS.length;
+		 int index=0;
+		 for(Map<String,Object> map:birdBeanZoneCount){
+			 Long people = (Long) map.get("people");
+			 peopleTotal+=people;
+		 }
+		 
+		 //初始化鸟豆打赏区间人数统计数据
+		 for(String title:LiveConstant.PRICES){
+			 Map<String,Object> map=new HashMap<String,Object>();
+			 map.put("title", title);//区间
+			 map.put("ratio", 0);//占比
+			 map.put("people", 0);//人数
+			 map.put("perCapita", 0);//人均
+			 map.put("color", LiveConstant.COLORS[index%length]);
+			 birdBeanZoneInit.add(map);
+			 index++;
+		 }
+		 
+		 for(Map<String,Object> zoneInitMap:birdBeanZoneInit){
+			 String initTitle = (String) zoneInitMap.get("title");
+			 for(Map<String,Object> zoneCountMap:birdBeanZoneCount){
+				 String countTitle = (String) zoneCountMap.get("title");
+				 BigDecimal people = new BigDecimal(zoneCountMap.get("people").toString());
+				 BigDecimal bridBean = (BigDecimal) zoneCountMap.get("birdBean");
+				 if(initTitle.equals(countTitle)){
+					 zoneInitMap.put("ratio",people.divide(new BigDecimal(peopleTotal), 2, BigDecimal.ROUND_HALF_EVEN).multiply(multiplicand) );
+					 zoneInitMap.put("people", zoneCountMap.get("people"));
+					 zoneInitMap.put("value", zoneCountMap.get("people"));
+					 zoneInitMap.put("perCapita", bridBean.divide(people, 2, BigDecimal.ROUND_HALF_EVEN) );
+					 break;
+				 }
+			 }
+		 }
+		 return birdBeanZoneInit;
+	}
+	
+	
+	/**
+	 * 
+	 * 方法描述：打赏时间统计<br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2016-12-30下午3:58:06 <br/>
+	 * @param liveGivedGift
+	 * @return
+	 */
+	public Map<String,Object> timeZoneCount(TLiveGivedGift liveGivedGift){
+		return liveGivedGiftDao.timeZoneCount(liveGivedGift);
+	}
+	
+	/**
+	 * 
+	 * 方法描述：打赏时间统计<br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2016-12-30下午3:58:06 <br/>
+	 * @param liveGivedGift
+	 * @return
+	 */
+	public List<Map<String,Object>> getTimeZoneCount(TLiveGivedGift liveGivedGift){
+		List<Map<String,Object>> timeZoneCountInit=new ArrayList<Map<String,Object>>();
+		int colorLength = LiveConstant.COLORS.length;
+		int index=0;
+		BigDecimal divisor=new BigDecimal(10);
+		Map<String, Object> timeZoneCount = liveGivedGiftDao.timeZoneCount(liveGivedGift);
+		if(timeZoneCount!=null){
+			for(String time_zone:LiveConstant.TIMES_ZONE){
+				BigDecimal birdBean = (BigDecimal) timeZoneCount.get(LiveConstant.TIMES_POINT[index]);
+				Map<String,Object> map=new HashMap<String,Object>();
+				map.put("name", time_zone);
+				map.put("value", birdBean.divide(divisor, 2, BigDecimal.ROUND_HALF_EVEN));
+				map.put("color", LiveConstant.COLORS[index%colorLength]);
+				timeZoneCountInit.add(map);
+				index++;
+			}
+		}
+		return timeZoneCountInit;
+	}
+
+	/**
+	 * 方法描述：在此处添加方法描述 <br/>
+	 * 创建人： jianming <br/>
+	 * 创建时间：2017年3月29日下午2:31:47 <br/>
+	 * @param bLiver
+	 * @return
+	 */
+	public List<BLiver> getLivers(BLiver bLiver) {
+		return liverDao.getList(bLiver);
+	}
+
+	/**
+	 * 方法描述：查询所有礼物打赏丢失记录
+	 * 创建人： jianming <br/>
+	 * 创建时间：2017年5月28日上午10:14:40 <br/>
+	 * @param gift
+	 * @return
+	 */
+	public List<LoseGift> getLostGift(LoseGift gift) {
+		List<LoseGift> loseGifts = liveGivedGiftDao.getLoseGifts(gift);
+		setTLiveGivedGiftListUrsMsg(loseGifts);
+		return loseGifts;
+	}
+
+	/**
+	 * 方法描述：统计所有礼物打赏丢失记录数
+	 * 创建人： jianming <br/>
+	 * 创建时间：2017年5月28日上午11:24:13 <br/>
+	 * @param gift
+	 * @return
+	 */
+	public Long countLostGift(LoseGift gift) {
+		return liveGivedGiftDao.countLostGift(gift);
+	}
+
+	/**
+	 * 方法描述：归还丢失礼物打赏鸟币
+	 * 创建人： jianming <br/>
+	 * 创建时间：2017年5月28日下午6:06:42 <br/>
+	 * @param list
+	 * @return
+	 */
+	public Resultable giveBack(List<String> list) {
+		Long count=liveGivedGiftDao.checkGiveIsLose(list);
+		if(count<list.size()){
+			return Resultable.defeat("重复操作");
+		}
+		List<LoseGift> loseGifts = liveGivedGiftDao.getLoseGiftsByIds(list);
+		setTLiveGivedGiftListUrsMsg(loseGifts);
+		//往钱包添加鸟币	新增rtype 订单号填礼物记录id
+		LiveWalletService.Client client = (Client) thriftClientProxy.getClient();
+		int defalt = 0;
+		int success = 0;
+		HashMap<String,String> paramMap = new HashMap<>();
+		paramMap.put("option", "0");
+		paramMap.put("rtype", "30");
+		for (LoseGift loseGift : loseGifts) {
+			try {
+				paramMap.put("uid",loseGift.getUid().toString());
+				paramMap.put("balance", loseGift.getPercentamount().toString());
+				paramMap.put("remarks", loseGift.getId().toString());
+				paramMap.put("description", loseGift.getGiftName());
+				paramMap.put("liveRecordId", loseGift.getLiveRecordId().toString());
+				ResponseData responseData = client.liveWalletOption(paramMap);
+				if(0==responseData.getState()){
+					//更改礼物状态
+					//累加通告鸟币
+				  liveGivedGiftDao.updateBackState(loseGift.getId());
+				  liveRecordDao.updateIncomeEggNums(loseGift.getLiveRecordId(),loseGift.getPercentamount());
+				  success++;
+				}
+			} catch (Exception e) {
+				log.error("调用支付服务返回鸟蛋出现异常   礼物记录id为"+loseGift.getId(),e);
+				defalt++;
+			}
+		}
+		thriftClientProxy.returnCon();
+		return Resultable.success("操作成功"+success+"条,失败"+defalt+"条");
+	}
+
+}

@@ -1,0 +1,201 @@
+package com.xmniao.xmn.core.util.logRecord;
+
+import java.lang.reflect.Field;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.ibatis.reflection.DefaultReflectorFactory;
+import org.apache.ibatis.reflection.MetaObject;
+import org.apache.ibatis.reflection.ReflectorFactory;
+import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
+import org.apache.ibatis.reflection.factory.ObjectFactory;
+import org.apache.ibatis.reflection.wrapper.DefaultObjectWrapperFactory;
+import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
+import org.springframework.core.MethodParameter;
+import org.springframework.web.method.HandlerMethod;
+
+import com.alibaba.fastjson.JSONObject;
+import com.xmniao.xmn.core.util.StringUtils;
+import com.xmniao.xmn.core.util.handler.annotation.RequestLogging;
+import com.xmniao.xmn.core.util.mybatis.interceptor.DataAuthorityInterceptor;
+
+public class AccessParamRecord implements LogRecord {
+	private static final Class<RequestLogging> REQUEST_LOGGING_CLASS = RequestLogging.class;
+
+	private  final String basePakge="com.xmniao.xmn.core.*.entity";
+	private final static Charset UTF8     = Charset.forName("UTF-8");
+	
+	   /**
+     * 默认ObjectFactory
+     */
+    private static final ObjectFactory DEFAULT_OBJECT_FACTORY = new DefaultObjectFactory();
+    /**
+     * 默认ObjectWrapperFactory
+     */
+    private static final ObjectWrapperFactory DEFAULT_OBJECT_WRAPPER_FACTORY = new DefaultObjectWrapperFactory();
+    /**
+     * 默认ReflectorFactory
+     */
+    private static final ReflectorFactory DEFAULT_REFLECTOR_FACTORY = new DefaultReflectorFactory();
+	 
+    /**
+     * CR.
+     */
+	private static final byte CR = (byte) '\r';
+
+
+    /**
+     * LF.
+     */
+	private static final byte LF = (byte) '\n';
+	@Override
+	public void logRecord(LogRecordElement logRecordElement,HttpServletRequest request, HttpServletResponse response,HandlerMethod handlerMethod) {
+		logRecordElement.getLog().setLogParame(paramInfo(handlerMethod.getMethodParameters(), request));
+	}
+	
+	/**
+	 * 生成访问参数
+	 * 
+	 * @param Parameter
+	 * @param request
+	 * @return
+	 */
+	@SuppressWarnings("rawtypes")
+	private String paramInfo(MethodParameter[] Parameter,HttpServletRequest request) {
+		String param=null;
+		StringBuilder sb = new StringBuilder();
+		boolean isRecord = false;
+		boolean isCollection =false;
+		for (MethodParameter m : Parameter) {
+			param=null;
+			Class clazz = m.getParameterType();
+			String type = clazz.getName();
+			String parameterName = m.getParameterName();
+			if(StringUtils.checkPackge(0, basePakge, 0, type)){
+				param = getObjectFieldValue(clazz,request);
+				isRecord = true;
+			}else if(clazz==String.class){
+				param = getParameterValues(request,parameterName);
+				isRecord = true;
+			}else if(clazz.isPrimitive()){
+				param = getParameterValues(request,parameterName);
+				isRecord = true;
+			}
+			else if(clazz.isArray()){
+				type = "数组";
+				isCollection = true;
+				isRecord = true;
+			}
+			else if(clazz.isAssignableFrom(List.class)){
+				type = "List";
+				isCollection = true;
+				isRecord = true;
+			}
+			else if(clazz.isAssignableFrom(Set.class)){
+				type = "Set";
+				isCollection = true;
+				isRecord = true;
+			}
+			else if(clazz.isAssignableFrom(Map.class)){
+				type = "Map";
+				isCollection = true;
+				isRecord = true;
+			}
+			if(isCollection){
+				try {
+					MetaObject inHandle = MetaObject.forObject(request.getInputStream(),DataAuthorityInterceptor.DEFAULT_OBJECT_FACTORY, DataAuthorityInterceptor.DEFAULT_OBJECT_WRAPPER_FACTORY, DataAuthorityInterceptor.DEFAULT_REFLECTOR_FACTORY);
+					byte[] bytes = 	(byte[])inHandle.getValue("ib.bb.buff");
+					int endLen = 0;
+					int startLen= 0;
+					byte chr = 0;
+					int end = 0;
+					for(int i=0;i<bytes.length;i++){
+						if(bytes[i]==chr){
+							end = 0;
+							for(int j=0;j<20;j++){
+								end = i+j;
+								if(bytes[end]!=chr){
+									i = end;
+									break;
+								}
+							}
+							if(i != end){
+								endLen = i ;
+								for(;i>0;i--){
+									chr = bytes[i];
+									if(chr==CR || chr==LF){
+										startLen = i+1 ;
+										break;
+									}
+								}
+								break;
+							}
+							
+						}
+					}
+					param = new String(bytes, startLen,  endLen-startLen,UTF8);
+					
+				}catch (Exception e) {
+					param = "参数解析异常,"+e.getMessage();
+				}
+			}
+			if(isRecord){
+				isRecord = false;
+				sb.append(String.format("类型:【 %s】 参数名称: 【 %s】 参数: 【%s】,", type,parameterName,param));
+			/*	sb.append("类型: 【 ");
+				sb.append(type);
+				sb.append("】 参数名称: 【");
+				sb.append(parameterName);
+				sb.append("】 参数: 【");
+				sb.append(param);
+				sb.append("】,");*/
+			}
+		}
+		return (sb.replace(sb.length()-1, sb.length(), "").toString());
+	}
+	
+	
+	/**
+	 * 生成对象参数描述
+	 * @param clazz
+	 * @param request
+	 * @return
+	 */
+	@SuppressWarnings("rawtypes")
+	private String getObjectFieldValue(Class clazz,HttpServletRequest request){
+			Map<String, String> map= new HashMap<>(clazz.getDeclaredFields().length);
+			for(Field field :clazz.getDeclaredFields()){
+				RequestLogging fieldAnnotation = field.getAnnotation(REQUEST_LOGGING_CLASS);
+				if(fieldAnnotation==null){
+					String fieldName=field.getName();
+					String value = getParameterValues(request,fieldName);
+					map.put(fieldName, value);	
+				}
+			}
+			return JSONObject.toJSONString(map);
+	}
+	
+	/**
+	 * 获取参数
+	 * @param request
+	 * @param parameterName
+	 * @return
+	 */
+	private String getParameterValues(HttpServletRequest request,String parameterName){
+		String[] parameterValues = request.getParameterValues(parameterName);
+		if (StringUtils.hasLength(parameterValues)) {
+			return parameterValues.length > 1 ? StringUtils
+					.arrayToDelimitedString(parameterValues, ",")
+					: parameterValues[0];
+			
+		}
+		return null;
+	}	
+
+}

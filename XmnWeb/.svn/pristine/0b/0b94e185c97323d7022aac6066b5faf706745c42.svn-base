@@ -1,0 +1,77 @@
+/**
+ * 
+ */
+package com.xmniao.xmn.test.vstar;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import com.xmniao.xmn.core.vstar.entity.TVstarEnroll;
+import com.xmniao.xmn.core.vstar.entity.TVstarPlayerInfo;
+import com.xmniao.xmn.core.vstar.service.TVstarEnrollService;
+import com.xmniao.xmn.core.vstar.service.TVstarPlayerInfoService;
+
+/**
+ * 
+ * 项目名称：XmnWeb
+ * 
+ * 类名称：TVstarPlayerInfoServiceTest
+ * 
+ * 类描述： 在此处添加类描述
+ * 
+ * 创建人：  huang'tao
+ * 
+ * 创建时间：2017-4-24 下午4:04:57 
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司 
+ */
+
+public class TVstarPlayerInfoServiceTest {
+	
+	private ApplicationContext application;
+	
+	private TVstarPlayerInfoService starPlayerInfoService;
+	
+	private TVstarEnrollService vstarEnrollService;
+	
+	@Before
+	public void before() {
+		application = new ClassPathXmlApplicationContext("classpath:/com/xmniao/xmn/resource/config/spring-context.xml");
+		starPlayerInfoService = application.getBean(TVstarPlayerInfoService.class);
+		vstarEnrollService = application.getBean(TVstarEnrollService.class);
+	}
+	
+
+//	@Test
+	public void add(){
+		TVstarPlayerInfo playerInfo = new TVstarPlayerInfo();
+		playerInfo.setEnrollId(6);
+		playerInfo.setNname("我就想改个名字");
+		
+		starPlayerInfoService.add(playerInfo );
+	}
+	
+	@Test
+	public void getList(){
+		TVstarPlayerInfo vstarPlayerInfo = new TVstarPlayerInfo();
+		TVstarEnroll enroll = new TVstarEnroll();
+		List<TVstarEnroll> enrollList = vstarEnrollService.getList(enroll);
+		List<Integer> enrollIds= new ArrayList<Integer>();
+		for(TVstarEnroll enrollBean:enrollList){
+			Integer id = enrollBean.getId();
+			enrollIds.add(id);
+		}
+		vstarPlayerInfo.setEnrollIds(enrollIds);
+		List<TVstarPlayerInfo> list = starPlayerInfoService.getList(vstarPlayerInfo);
+		for(TVstarPlayerInfo playerInfo:list){
+			System.out.println(playerInfo.toString());
+		}
+		
+	}
+
+}

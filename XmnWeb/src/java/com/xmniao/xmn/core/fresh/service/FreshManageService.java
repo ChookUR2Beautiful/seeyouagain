@@ -1,0 +1,821 @@
+package com.xmniao.xmn.core.fresh.service;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.base.BaseService;
+import com.xmniao.xmn.core.base.Resultable;
+import com.xmniao.xmn.core.common.entity.TArea;
+import com.xmniao.xmn.core.common.service.AreaService;
+import com.xmniao.xmn.core.fresh.dao.FreshManageDao;
+import com.xmniao.xmn.core.fresh.dao.FreshTypeDao;
+import com.xmniao.xmn.core.fresh.dao.PostageTemplateDao;
+import com.xmniao.xmn.core.fresh.dao.SaleGroupDao;
+import com.xmniao.xmn.core.fresh.dao.SalePropertyDao;
+import com.xmniao.xmn.core.fresh.dao.SalePropertyValueDao;
+import com.xmniao.xmn.core.fresh.entity.ActivityGroup;
+import com.xmniao.xmn.core.fresh.entity.ActivityProduct;
+import com.xmniao.xmn.core.fresh.entity.FreshType;
+import com.xmniao.xmn.core.fresh.entity.ProductDetail;
+import com.xmniao.xmn.core.fresh.entity.ProductInfo;
+import com.xmniao.xmn.core.fresh.entity.TSaleGroup;
+import com.xmniao.xmn.core.fresh.entity.TSaleProperty;
+import com.xmniao.xmn.core.fresh.entity.TSalePropertyValue;
+
+@Service
+public class FreshManageService extends BaseService<ProductInfo> {
+	private Logger log = LoggerFactory.getLogger(FreshManageService.class);
+	
+	@Autowired
+	private FreshManageDao freshmanagermentDao;
+
+	@Autowired
+	private FreshTypeDao freshTypeDao;
+
+	@Autowired
+	private AreaService areaService;
+	
+	@Autowired
+	private PostageTemplateDao postageTemplateDao;
+	
+	@Autowired
+	private PostageTemplateService postageTemplateService;
+	
+	@Autowired
+	private StringRedisTemplate stringRedisTemplate;
+	
+	@Autowired
+	private SaleGroupDao saleGroupDao;
+	
+	@Autowired
+	private SalePropertyDao salePropertyDao;
+	
+	@Autowired
+	private SalePropertyValueDao salePropertyValueDao;
+	
+	@Override
+	protected BaseDao<FreshType> getBaseDao() {
+		return freshTypeDao;
+	}
+
+	@Autowired
+	private ActivityProductService activityProductService;
+	/*
+	 * 获取产品列表数据
+	 */
+	public List<ProductInfo> selectProductInfoList(ProductInfo productInfo) {
+		List<ProductInfo> productList = null;
+		try {
+			productList = freshmanagermentDao.getProductList(productInfo);
+		} catch (Exception e) {
+			log.info("获取积分产品列表异常：" , e);
+			e.printStackTrace();
+		}
+		return productList;
+	}
+
+	/*
+	 * 获取产品总数
+	 */
+	public long selectProductInfoCount(ProductInfo productInfo) {
+		return freshmanagermentDao.getProductCount(productInfo);
+	}
+
+	/*
+	 * 获取产品详情
+	 */
+	public ProductDetail selectProductDetail(int codeId) {
+		return freshmanagermentDao.getProductDetail(codeId);
+	}
+
+	/*
+	 * 添加产品信息
+	 */
+	@Transactional
+	public void addProduct(ProductInfo freshInfo, ProductDetail productDetail,
+			Long codeId) throws RuntimeException {
+		Date now = new Date();
+		freshInfo.setCodeId(codeId);
+		freshInfo.setRdate(now);
+		freshInfo.setUdate(now);
+		productDetail.setCodeId(codeId);
+		productDetail.setRdate(now);
+		productDetail.setUdate(now);
+		//如果配送城市和不配送城市都为空，那么设置支持配送的城市为全国
+		if((freshInfo.getDeliveryCity()==null || freshInfo.getDeliveryCity().equals("")) && (freshInfo.getNotDeliveryCity()==null || freshInfo.getNotDeliveryCity().equals(""))){
+			freshInfo.setDeliveryCity(postageTemplateService.getCityAreaIds());
+		}
+		if((freshInfo.getSaleCity()==null||freshInfo.getSaleCity().equals("")) && (freshInfo.getNotSaleCity()==null||freshInfo.getNotSaleCity().equals(""))){
+			freshInfo.setSaleCity(postageTemplateService.getCityAreaIds());
+		}
+		freshmanagermentDao.addInfo(freshInfo);
+		freshmanagermentDao.addDetail(productDetail);
+		
+		/**
+		 * 保存商品的属性相关
+		 */
+		List<String> propList = freshInfo.getPropList();//属性名
+		List<String> propValList = freshInfo.getPropValList();//属性值
+		List<TSaleGroup> saleGroupList = freshInfo.getSaleGroupList();
+		if(propList != null && propList.size()>0 && propValList != null && propValList.size()>0 && saleGroupList!=null && saleGroupList.size()>0){
+			saveSalePropAndGroup(propList,propValList,saleGroupList,freshInfo);
+		}
+	}
+
+	/*
+	 * 更新产品信息
+	 */
+	@Transactional
+	public void updateProduct(ProductInfo freshInfo, ProductDetail productDetail)
+			throws RuntimeException {
+		Date now = new Date();
+		freshInfo.setUdate(now);
+		productDetail.setUdate(now);
+		//如果配送城市和不配送城市都为空，那么设置支持配送的城市为全国
+		if((freshInfo.getDeliveryCity()==null || freshInfo.getDeliveryCity().equals("")) && (freshInfo.getNotDeliveryCity()==null || freshInfo.getNotDeliveryCity().equals(""))){
+			freshInfo.setDeliveryCity(postageTemplateService.getCityAreaIds());
+		}
+		if((freshInfo.getSaleCity()==null||freshInfo.getSaleCity().equals("")) && (freshInfo.getNotSaleCity()==null||freshInfo.getNotSaleCity().equals(""))){
+			freshInfo.setSaleCity(postageTemplateService.getCityAreaIds());
+		}
+		
+		//更新商品属性，商品属性值，商品销售分组
+		List<TSaleProperty> propertyList = freshInfo.getPropertyList();//属性名和属性值
+		//
+		List<String> propList = freshInfo.getPropList();//属性名
+		List<String> propValList = freshInfo.getPropValList();//属性值以逗号隔开例如：土豪金,32g,5.0英寸
+		//
+		List<TSaleGroup> saleGroupList = freshInfo.getSaleGroupList();//商品销售分组
+		//
+		if(propList==null && propValList==null){
+			//未点击-->生成商品属性参数表按钮，更新数据即可
+			if(propertyList!=null){
+				for (TSaleProperty tSaleProperty : propertyList) {
+					tSaleProperty.setCodeId(freshInfo.getCodeId());
+					//更新属性名
+					salePropertyDao.update(tSaleProperty);
+					for(TSalePropertyValue spv : tSaleProperty.getPropertyValueList()){
+						salePropertyValueDao.update(spv);
+					}
+				}
+			}else{
+				//1.查询原来的属性名并删除该属性名下所有的属性值
+				TSaleProperty param = new TSaleProperty();
+				param.setCodeId(freshInfo.getCodeId());
+				List<TSaleProperty> resProps = salePropertyDao.getList(param);
+				//1.1如果原来存在属性名，则得到属性名id
+				if(resProps!=null && resProps.size()>0){
+					List<Integer> propIds = new ArrayList<Integer>();
+					for(TSaleProperty saleProp : salePropertyDao.getList(param)){
+						propIds.add(saleProp.getId());
+					}
+					//1.2根据属性名id批量删除对应的属性值
+					salePropertyValueDao.batchDelete(propIds);
+				}
+				//2.删除该产品对应的属性名
+				salePropertyDao.deleteByCodeId(freshInfo.getCodeId());
+			}
+			if(saleGroupList!=null){
+				Integer store = 0;
+				for (TSaleGroup tSaleGroup : saleGroupList) {
+					saleGroupDao.update(tSaleGroup);
+					store+=tSaleGroup.getStock();
+				}
+				freshInfo.setStore(store);
+			}else{
+				//删除该商品对应的分组
+				saleGroupDao.deleteByCodeId(freshInfo.getCodeId());
+			}
+		}else{
+			//保存商品的属性和属性值
+			Map<String,Integer> propValMap = new HashMap<String,Integer>();//商品的属性值的map（属性值：属性值id）
+			TSaleProperty obj = new TSaleProperty();
+			obj.setCodeId(freshInfo.getCodeId());
+			//1.1原有的属性名和属性名id的map
+			Map<Integer,String> old_id_props = new HashMap<Integer,String>();
+			if(salePropertyDao.getList(obj)!=null){
+				for (TSaleProperty oldProp : salePropertyDao.getList(obj)) {
+					old_id_props.put(oldProp.getId(), oldProp.getProperty());
+				}
+			}
+			//1.2新增的属性名id和属性名map
+			Map<Integer,String> new_id_props = new HashMap<Integer,String>();
+			for (int i=0;i<propList.size();i++) {
+				TSaleProperty saleProperty = new TSaleProperty();
+				saleProperty.setCodeId(freshInfo.getCodeId());
+				//saleProperty.setSort(i+1);//设置排序
+				String[] split = propList.get(i).split(":");
+				String prop_id_sort = split[0];
+				String propVal_ids = split[1];
+				//修改属性名,字符串为'属性名|属性名id|属性排序'
+				String[] pisa = prop_id_sort.split("\\|");
+				saleProperty.setProperty(pisa[0]);//属性名
+				if(!pisa[2].equals("propSort")){//属性排序
+					saleProperty.setSort(Integer.parseInt(pisa[2]));
+				}
+				if(!pisa[1].equals("propId")){//包含id则更新，否则添加
+					saleProperty.setId(Integer.parseInt(pisa[1]));
+					new_id_props.put(Integer.parseInt(pisa[1]), pisa[0]);
+					salePropertyDao.update(saleProperty);
+				}else{//中间属性名id为''则直接保存
+					salePropertyDao.add(saleProperty);
+				}
+				//修改属性值
+				String[] propValArr = propVal_ids.split(",");//属性值：土豪金,古德白
+				//a.如果是修改属性名，则查询该属性名对应的所有的属性值，并封装成old_id_propVals
+				Map<Integer,String> old_id_propVals = new HashMap<Integer,String>();
+				TSalePropertyValue param = new TSalePropertyValue();
+				param.setPropertyId(saleProperty.getId());
+				List<TSalePropertyValue> old_propValues = salePropertyValueDao.getList(param);
+				if(old_propValues!=null){
+					for (TSalePropertyValue tpv : old_propValues) {
+						old_id_propVals.put(tpv.getId(), tpv.getValue());
+					}
+				}
+				//b.修改属性值
+				Map<Integer,String> new_id_propVals = new HashMap<Integer,String>();
+				for (int j=0;j< propValArr.length ;j++) {
+					TSalePropertyValue salePropVal = new TSalePropertyValue();
+					salePropVal.setPropertyId(saleProperty.getId());//属性值对应的属性名id
+					if(propValArr[j].split("\\|").length>1){//如果该属性值包含有属性值id，则修改，并把修改的属性值的id和值保存为新的new_propVal_ids
+						salePropVal.setValue(propValArr[j].split("\\|")[0]);
+						salePropVal.setId(Integer.parseInt(propValArr[j].split("\\|")[1]));
+						salePropertyValueDao.update(salePropVal);
+						new_id_propVals.put(salePropVal.getId(), salePropVal.getValue());
+						if(!propValMap.containsKey(propValArr[j].split("\\|")[0])){
+							propValMap.put(propValArr[j].split("\\|")[0], salePropVal.getId());
+						}
+					}else{
+						salePropVal.setValue(propValArr[j]);
+						salePropertyValueDao.add(salePropVal);
+						if(!propValMap.containsKey(propValArr[j])){
+							propValMap.put(propValArr[j], salePropVal.getId());
+						}
+					}
+				}
+				//c遍历old_id_propVals，如果new_id_propVals中不包含有old_id_props种的key则删除该条属性名
+				if(old_id_propVals!=null){
+					for(Entry<Integer, String> entry : old_id_propVals.entrySet()){
+						if(!new_id_propVals.containsKey(entry.getKey())){
+							salePropertyValueDao.deleteById(entry.getKey());
+						}
+					}
+				}
+			}
+			
+			//1.3 遍历old_id_props，如果new_id_props中不包含有old_id_props种的key则删除该条属性名
+			if(old_id_props != null){
+				for(Entry<Integer, String> entry : old_id_props.entrySet()){
+					if(!new_id_props.containsKey(entry.getKey())){
+						salePropertyDao.deleteById(entry.getKey());
+					}
+				}
+			}
+			
+			//保存商品销售分组
+			saleGroupDao.deleteByCodeId(freshInfo.getCodeId());//删除分组
+			saveSaleGroup(propValList, propValMap, saleGroupList, freshInfo);
+			
+		}
+		
+		int uInfoNum = freshmanagermentDao.updateInfo(freshInfo);
+		int uDetailNum = freshmanagermentDao.updateDetail(productDetail);
+		if (uInfoNum != 1 || uDetailNum != 1) {
+			log.info("codeId为" + freshInfo.getCodeId()
+					+ "的产品，更新结果不正常，分别更新的info表及details表的数据条数为" + uInfoNum + ","
+					+ uDetailNum);
+		}
+	}
+
+	public List<FreshType> getClassa() {
+
+		return freshTypeDao.getAllFreshType();
+	}
+
+	/**
+	 * 获取一级生鲜类别 
+	 * 创建人： huang'tao 
+	 * 创建时间：2016-6-18上午11:39:36
+	 * @param freshType
+	 * @return
+	 */
+	public List<FreshType> getParentList(FreshType freshType) {
+		return freshTypeDao.getParentList(freshType);
+	}
+
+
+	/**
+	 * 获取二级生鲜类别 
+	 * 创建人： huang'tao 
+	 * 创建时间：2016-6-18上午11:40:57
+	 * @param parentFreshType
+	 * @return
+	 */
+	public Map<Integer, List<FreshType>> getSubList(
+			List<FreshType> parentFreshType) {
+		Map<Integer, List<FreshType>> map = null;
+		List<FreshType> freshTypes = freshTypeDao.getSubList(parentFreshType);
+		if (null != freshTypes && !freshTypes.isEmpty()) {
+			map = new HashMap<Integer, List<FreshType>>();
+			setFreshType(freshTypes, map);
+		}
+		return map;
+	}
+
+	/**
+	 * 创建人： huang'tao 
+	 * 创建时间：2016-6-18上午11:45:20
+	 * @param freshTypes
+	 * @param map
+	 */
+	private void setFreshType(List<FreshType> freshTypes,
+			Map<Integer, List<FreshType>> map) {
+		for (FreshType freshType : freshTypes) {
+			int fid = freshType.getFid();
+			addTAreas(fid, freshType, map);
+		}
+	}
+
+	/**
+	 * 设置二级生鲜类别与一级生鲜类别级联关系map,key为一级类别ID,value为一级类别对应的二级类别集合
+	 * 创建人： huang'tao 
+	 * 创建时间：2016-6-18上午11:47:59
+	 * @param fid
+	 * @param freshType
+	 * @param map
+	 */
+	private void addTAreas(int fid, FreshType freshType,
+			Map<Integer, List<FreshType>> map) {
+		List<FreshType> sublist = !map.containsKey(fid) ? new ArrayList<FreshType>()
+				: map.get(fid);
+		sublist.add(freshType);
+		map.put(fid, sublist);
+	}
+
+	public Map<String, Object> getFreshAllInfo(Integer pid) {
+		Map<String, Object> freshInfo = freshmanagermentDao.getFreshAllInfo(pid);
+		//商品属性的信息
+		TSaleProperty prop = new TSaleProperty();
+		prop.setCodeId(Long.parseLong(freshInfo.get("codeId")+""));
+		List<TSaleProperty> propList = salePropertyDao.getList(prop);
+		if(propList != null && propList.size()>0){
+			for (TSaleProperty saleProperty : propList) {
+				TSalePropertyValue salePropVal = new TSalePropertyValue();
+				salePropVal.setPropertyId(saleProperty.getId());
+				saleProperty.setPropertyValueList(salePropertyValueDao.getList(salePropVal));
+			}
+			freshInfo.put("propertyList", propList);
+		}
+		//商品的销售分组
+		TSaleGroup saleGroup = new TSaleGroup();
+		saleGroup.setCodeId(Long.parseLong(freshInfo.get("codeId")+""));
+		List<TSaleGroup> saleGroupList = saleGroupDao.getList(saleGroup);
+		if(saleGroupList != null && saleGroupList.size()>0){
+			for (TSaleGroup tSaleGroup : saleGroupList) {
+				List<String> pvValues = new ArrayList<String>();
+				for(String pvId : tSaleGroup.getPvIds().split(",")){
+					pvValues.add(salePropertyValueDao.getObject(Long.parseLong(pvId)).getValue());
+				}
+				tSaleGroup.setPvValues(pvValues);
+			}
+			freshInfo.put("saleGroupList", saleGroupList);
+		}
+		//
+		
+		//配送城市和销售城市
+		String deliveryCity = (String)freshInfo.get("deliveryCity");
+		if(deliveryCity != null && !deliveryCity.equals("")){
+			String[] deliveryCitys = deliveryCity.replace(" ", "").split(",");
+			freshInfo.put("strDeliveryCity",getStrCitys(deliveryCitys));
+		}
+		
+		String notDeliveryCity = (String)freshInfo.get("notDeliveryCity");
+		if(notDeliveryCity != null && !notDeliveryCity.equals("")){
+			String[] notDeliveryCitys = notDeliveryCity.split(",");
+			freshInfo.put("strNotDeliveryCity",getStrCitys(notDeliveryCitys));
+		}
+		
+		String saleCity = (String)freshInfo.get("saleCity");
+		if(saleCity != null && !saleCity.equals("")){
+			String[] saleCitys = saleCity.split(",");
+			freshInfo.put("strSaleCity",getStrCitys(saleCitys));
+		}
+		
+		String notSaleCity = (String)freshInfo.get("notSaleCity");
+		if(notSaleCity != null && !notSaleCity.equals("")){
+			String[] notSaleCitys = notSaleCity.split(",");
+			freshInfo.put("strNotSaleCity",getStrCitys(notSaleCitys));
+		}
+		return freshInfo;
+	}
+	
+	/**
+	 * @Description: 根据供应商的supplierId查询一条产品
+	 * @Param:productInfo
+	 * @return:ProductInfo
+	 * @author:lifeng
+	 * @time:2016年6月18日下午2:22:29
+	 */
+	public ProductInfo getProductByParam(String supplierId){
+		ProductInfo productInfo = new ProductInfo();
+		if(StringUtils.isNotBlank(supplierId)){
+			productInfo.setSupplierId(Integer.parseInt(supplierId));
+		}
+		return freshmanagermentDao.getProductInfoByParam(productInfo);
+	}
+
+	/**
+	 * 创建人： huang'tao
+	 * 创建时间：2016-6-18下午2:34:05
+	 * @param freshType
+	 * @return
+	 */
+	public Object count(FreshType freshType) {
+		return freshTypeDao.count(freshType);
+	}
+
+	/**
+	 * 创建人： huang'tao
+	 * 创建时间：2016-6-18下午3:01:38
+	 * @return
+	 */
+	public Object getParent() {
+		return freshTypeDao.getParent();
+	}
+
+	/**
+	 * 添加生鲜类别
+	 * 创建人： huang'tao
+	 * 创建时间：2016-6-18下午3:30:38
+	 * @param freshType
+	 */
+	public void add(FreshType freshType) {
+		freshTypeDao.add(freshType);
+	}
+
+	/**
+	 * 更新生鲜类别
+	 * 创建人： huang'tao
+	 * 创建时间：2016-6-20上午9:22:19
+	 * @param freshType
+	 */
+	public void update(FreshType freshType) {
+		freshTypeDao.update(freshType);
+	}
+	
+	/**
+	 * 方法描述：在此处添加方法描述
+	 * 创建人： lifeng
+	 * 创建时间：2016年7月16日下午5:18:10
+	 * @param cityIds
+	 * @return
+	 */
+	public String getStrCitys(String[] cityIds){
+		StringBuilder sb = new StringBuilder();
+		if(cityIds.length > 0){
+			List<TArea> areas = areaService.getObjectByIds(cityIds);
+			if(areas != null){
+				for (int i=0;i< areas.size(); i++) {
+					if(i!=0 && areas.get(i)!=null ){
+						sb.append(",");
+					}
+					sb.append(areas.get(i).getTitle());
+				}
+			}
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * 方法描述：产品批量上线，下线
+	 * 创建人： lifeng
+	 * 创建时间：2016年7月21日上午11:14:10
+	 * @param objects
+	 * @param productInfo
+	 * @return
+	 */
+	@Transactional(propagation = Propagation.REQUIRED)
+	public boolean batch(Object[] objects, ProductInfo productInfo) {
+		boolean num = false;
+		if (null != objects) {
+			productInfo.setArray(objects);
+			try {
+				productInfo.setUdate(new Date());
+				Integer count = freshmanagermentDao.batch(productInfo);//0待上线    1已上线     2已售罄     3已下线
+				num = (count != null && count > 0);
+			} catch (Exception e) {
+				log.error("积分产品上线异常", e);
+			}
+		}
+		return num;
+	}
+	//add by lifeng 20160809 10:06:10
+	private void saveSalePropAndGroup(List<String> propList,List<String> propValList,List<TSaleGroup> saleGroupList,ProductInfo freshInfo){
+		//保存商品的属性和属性值
+		Map<String,Integer> propValMap = new HashMap<String,Integer>();//商品的属性值的map（属性值：属性值id）
+		for (int i=0;i<propList.size();i++) {
+			TSaleProperty saleProperty = new TSaleProperty();
+			saleProperty.setCodeId(freshInfo.getCodeId());
+			String prop_id = propList.get(i).split(":")[0];
+			String[] pisa = prop_id.split("\\|");
+			saleProperty.setProperty(pisa[0]);//属性名：颜色
+			if(!pisa[2].equals("propSort")){//属性排序
+				saleProperty.setSort(Integer.parseInt(pisa[2]));
+			}
+			salePropertyDao.add(saleProperty);
+			String[] propValArr = propList.get(i).split(":")[1].split(",");//属性值：土豪金,古德白
+			for (int j=0;j< propValArr.length ;j++) {
+				TSalePropertyValue salePropVal = new TSalePropertyValue();
+				salePropVal.setPropertyId(saleProperty.getId());
+				salePropVal.setValue(propValArr[j]);
+				salePropertyValueDao.add(salePropVal);
+				if(!propValMap.containsKey(propValArr[j])){
+					propValMap.put(propValArr[j], salePropVal.getId());
+				}
+			}
+		}
+		saveSaleGroup(propValList, propValMap, saleGroupList, freshInfo);
+	}
+	//保存商品销售分组
+	private void saveSaleGroup(List<String> propValList,Map<String,Integer> propValMap,List<TSaleGroup> saleGroupList,ProductInfo freshInfo){
+		/**
+		 * 保存商品销售分组
+		 */
+		Integer store=0;
+		for (int i = 0; i < propValList.size(); i++) {
+			String propVal = propValList.get(i);
+			String[] propValArr = propVal.split(",");
+			//1.得到属性值id数组
+			int[] propIdArr = new int[propValArr.length];
+			for (int j=0;j<propValArr.length;j++) {
+				propIdArr[j] = propValMap.get(propValArr[j]);
+			}
+			//2.1保存未排序的pv_ids
+			StringBuilder sb1 = new StringBuilder();
+			for (int j=0;j<propIdArr.length;j++) {
+				if(j>0){
+					sb1.append(",");
+				}
+				sb1.append(propIdArr[j]);
+			}
+			//2.2保存按照id大小排序后的pv_ids_sort
+			Arrays.sort(propIdArr);
+			StringBuilder sb2 = new StringBuilder();
+			for (int j=0;j<propIdArr.length;j++) {
+				if(j>0){
+					sb2.append(",");
+				}
+				sb2.append(propIdArr[j]);
+			}
+			TSaleGroup saleGroup = new TSaleGroup();
+			saleGroup.setCodeId(freshInfo.getCodeId());
+			saleGroup.setPvIds(sb1.toString());
+			saleGroup.setPvIdsSort(sb2.toString());
+			saleGroup.setAmount(saleGroupList.get(i).getAmount());
+			saleGroup.setStock(saleGroupList.get(i).getStock());
+			if(saleGroupList.get(i).getSort()!=null){
+				saleGroup.setSort(saleGroupList.get(i).getSort());
+			}
+			//saleGroup.setSort(i+1);
+			saleGroupDao.add(saleGroup);
+			store+=saleGroup.getStock();
+		}
+		freshInfo.setStore(store);
+		freshmanagermentDao.updateStore(freshInfo);
+	}
+
+	/**
+	 * 方法描述：在此处添加方法描述
+	 * 创建人： lifeng
+	 * 创建时间：2016年8月12日下午4:05:35
+	 * @param productInfo
+	 */
+	public void updateSortByPid(ProductInfo productInfo) {
+		freshmanagermentDao.updateSortByPid(productInfo);
+	}
+
+	/**
+	 * 方法描述：获取商品属性列表
+	 * 创建人： lifeng
+	 * 创建时间：2016年8月16日上午11:05:54
+	 * @param codeId
+	 * @return
+	 */
+	public List<TSaleProperty> getPropertyList(Long codeId) {
+		List<TSaleProperty> salePropertyList = new ArrayList<>();
+		TSaleProperty saleProperty = new TSaleProperty();
+		saleProperty.setCodeId(codeId);
+		if(saleProperty!=null){
+			salePropertyList =  salePropertyDao.getList(saleProperty);
+		}
+		return salePropertyList;
+	}
+
+	/**
+	 * 方法描述: 获取商品属性分组集合
+	 * 创建人： lifeng
+	 * 创建时间：2016年8月16日上午11:11:07
+	 * @param codeId
+	 * @return
+	 */
+	public List<TSaleGroup> getSaleGroupList(Long codeId) {
+		List<TSaleGroup> saleGroupList = new ArrayList<>();
+		TSaleGroup saleGroup = new TSaleGroup();
+		if(codeId != null){
+			saleGroup.setCodeId(codeId);
+			saleGroupList = saleGroupDao.getList(saleGroup);
+			for (TSaleGroup tSaleGroup : saleGroupList) {
+				String[] pvIdArr = tSaleGroup.getPvIds().split(",");
+				List<String> pvValues = new ArrayList<>();
+				for (int i=0;i<pvIdArr.length;i++) {
+					pvValues.add(salePropertyValueDao.getObject(Long.parseLong(pvIdArr[i])).getValue());
+				}
+				tSaleGroup.setPvValues(pvValues);
+			}
+		}
+		return saleGroupList;
+	}
+
+	/**
+	 * 方法描述：获取商品choose列表
+	 * 创建人： jianming <br/>
+	 * 创建时间：2016年12月27日下午4:40:09 <br/>
+	 * @param productInfo
+	 * @return
+	 */
+	public List<ProductInfo> getProductInfoSelect(ProductInfo productInfo) {
+		return freshmanagermentDao.getProductInfoSelect(productInfo);
+	}
+
+	/**
+	 * 方法描述：根据codeid查询
+	 * 创建人： jianming <br/>
+	 * 创建时间：2016年12月28日下午9:13:08 <br/>
+	 * @param codeId
+	 * @return
+	 */
+	public ProductInfo getByCodeId(Long codeId) {
+		return freshmanagermentDao.getByCodeId(codeId);
+	}
+
+	/**
+	 * 方法描述：根据编号和规格id查询规格
+	 * 创建人： jianming <br/>
+	 * 创建时间：2016年12月29日上午11:23:18 <br/>
+	 * @param codeId
+	 * @param pvIds
+	 * @return
+	 */
+	public TSaleGroup getGroupsByPvid(Long codeId, String pvIds) {
+		ActivityGroup activityGroup = new ActivityGroup();
+		activityGroup.setCodeId(codeId);
+		activityGroup.setPvIds(pvIds);
+		return saleGroupDao.findbyPvid(activityGroup);
+	}
+
+	/**
+	 * 方法描述：检查参品是否在活动中
+	 * 创建人： jianming <br/>
+	 * 创建时间：2017年1月7日上午11:07:31 <br/>
+	 * @param pid
+	 * @return
+	 */
+	public Resultable updateCheck(Long codeId) {
+		try {
+			List<ActivityProduct> activityProducts= activityProductService.getByCodeId(codeId);
+			if(activityProducts!=null&&activityProducts.size()>0){
+				return new Resultable(false,"该产品正在活动中...暂不支持修改");
+			}else{
+				return new Resultable(true, "赶紧改");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Resultable(false,"服务器繁忙,请联系管理员");
+		}
+	}
+
+	/**
+	 * 方法描述：检查参品是否在活动中
+	 * 创建人： jianming <br/>
+	 * 创建时间：2017年1月12日下午6:09:04 <br/>
+	 * @param parseInt
+	 * @return
+	 */
+	public Resultable updateCheck(String pid) {
+		try {
+			ProductInfo productInfo = freshmanagermentDao.getObject(new Long(pid));
+			List<ActivityProduct> activityProducts= activityProductService.getByCodeId(productInfo.getCodeId());
+			if(activityProducts!=null&&activityProducts.size()>0){
+				return new Resultable(false,"该产品正在活动中...暂不支持修改");
+			}else{
+				return new Resultable(true, "赶紧改");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Resultable(false,"服务器繁忙,请联系管理员");
+		}
+	}
+
+	/**
+	 * 方法描述：转移库存
+	 * 创建人： jianming <br/>
+	 * 创建时间：2017年1月19日下午2:08:39 <br/>
+	 * @param activityProduct
+	 */
+	public void transferStore(ActivityProduct activityProduct) {
+		freshmanagermentDao.transferStore(activityProduct);
+	}
+
+	/**
+	 * 方法描述：修改活动时修改商品库存
+	 * 创建人： jianming <br/>
+	 * 创建时间：2017年1月19日下午2:20:20 <br/>
+	 * @param codeId 
+	 * @param i
+	 */
+	public void updateActivityProduct(int store, Long codeId) {
+		freshmanagermentDao.updateActivityProduct(store,codeId);
+	}
+	
+	
+	/**
+	 * 
+	 * 方法描述：修改活动时修改商品和规格库存
+	 * 创建人： jianming <br/>
+	 * 创建时间：2017年2月24日上午11:58:32 <br/>
+	 * @param store  还原库存数
+	 * @param codeId  商品编号
+	 * @param pvIds	  规格编号
+	 */
+	@Transactional(propagation = Propagation.REQUIRED)
+	public void updateActivityProductAndGroup(int store, Long codeId,String pvIds){
+		if(StringUtils.isNotBlank(pvIds)){
+			int i=saleGroupDao.updateActivityGroup(store,codeId,pvIds);
+			if(i>0){
+				freshmanagermentDao.updateActivityProduct(store,codeId);
+			}
+		}else{
+			freshmanagermentDao.updateActivityProduct(store,codeId);
+		}
+	}
+	
+	/**
+	 * 
+	 * 方法描述：规格和商品库存一起扣
+	 * 创建人： jianming <br/>
+	 * 创建时间：2017年2月24日上午11:56:21 <br/>
+	 * @param store
+	 * @param codeId
+	 * @param pvIds
+	 */
+	@Transactional(propagation = Propagation.REQUIRED)
+	public void transferStoreAndGroup(int store, Long codeId,String pvIds){
+		if(StringUtils.isNotBlank(pvIds)){
+			int i = saleGroupDao.transferStore(store,codeId,pvIds);
+			if(i>0){
+				freshmanagermentDao.transferStore(store,codeId);
+			}
+		}else{
+			freshmanagermentDao.transferStore(store,codeId);
+		}
+	}
+
+	/**
+	 * 方法描述：根据商品类型查询商品
+	 * 创建人： jianming <br/>
+	 * 创建时间：2017年5月18日下午6:34:47 <br/>
+	 * @param typeId
+	 * @return
+	 */
+	public List<ProductInfo> getProductInfoByType(Integer typeId) {
+		return freshmanagermentDao.getProductInfoByType(typeId);
+	}
+
+	/**
+	 * 方法描述：根据多个codeId获取商品
+	 * 创建人： jianming <br/>
+	 * 创建时间：2017年8月8日下午1:55:56 <br/>
+	 * @param asList
+	 * @return
+	 */
+	public List<ProductInfo> getByCodeIds(List<String> codeIds) {
+		return freshmanagermentDao.getByCodeIds(codeIds);
+	}
+
+	
+}

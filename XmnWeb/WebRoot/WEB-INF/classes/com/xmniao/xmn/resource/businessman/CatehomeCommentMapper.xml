@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.CatehomeCommentDao">
+	<resultMap id="BaseResultMap"
+		type="com.xmniao.xmn.core.businessman.entity.CatehomeComment">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="sellerid" jdbcType="INTEGER" property="sellerid" />
+		<result column="seller_type" jdbcType="INTEGER" property="sellerType" />
+		<result column="sort" jdbcType="INTEGER" property="sort" />
+		<result column="state" jdbcType="INTEGER" property="state" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="area" jdbcType="VARCHAR" property="area" />
+		<result column="sellername" jdbcType="VARCHAR" property="sellername" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, sellerid, seller_type, sort, state, create_time, update_time
+	</sql>
+
+	<sql id="whereSQL">
+		and state = 1
+	</sql>
+	
+	<update id="deleteComment">
+		update t_catehome_comment set state = 2,update_time = now() where id = #{id}
+	</update>
+	
+	<update id="updateCommentSort">
+		update t_catehome_comment set sort = #{sort},update_time = now() where id = #{id}
+	</update>
+
+	<select id="getList" resultMap="BaseResultMap">
+		SELECT <include refid="Base_Column_List"/>,(select sellername from t_experience_comment comment where
+		comment.sellerid=t_catehome_comment.sellerid and
+		comment.seller_type=t_catehome_comment.seller_type LIMIT 0,1 ) as sellername,
+		IF(t_catehome_comment.seller_type=1,(
+		select concat(a.title,',',b.title) from t_seller
+		left join t_area a on t_seller.province=a.area_id
+		left join t_area b on t_seller.city=b.area_id
+		where t_catehome_comment.sellerid = t_seller.sellerid
+		),
+		(select concat(a.title,',',b.title) from t_unsigned_seller
+		left join t_area a on t_unsigned_seller.province=a.area_id
+		left join t_area b on t_unsigned_seller.city=b.area_id
+		where t_catehome_comment.sellerid = t_unsigned_seller.unsigned_sellerid
+		)
+		) as area
+		FROM `t_catehome_comment`
+		where 1=1
+		<include refid="whereSQL"/>
+		order by sort desc
+	</select>
+
+	<select id="selectByPrimaryKey" parameterType="java.lang.Long"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_catehome_comment
+		where id = #{id,jdbcType=BIGINT}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		delete from t_catehome_comment
+		where id = #{id,jdbcType=BIGINT}
+	</delete>
+	<insert id="insert"
+		parameterType="com.xmniao.xmn.core.businessman.entity.CatehomeComment">
+		insert into t_catehome_comment (id, sellerid, seller_type,
+		sort, state, create_time,
+		update_time)
+		values (#{id,jdbcType=BIGINT}, #{sellerid,jdbcType=INTEGER},
+		#{sellerType,jdbcType=INTEGER},
+		#{sort,jdbcType=INTEGER}, #{state,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP},
+		#{updateTime,jdbcType=TIMESTAMP})
+	</insert>
+	<insert id="add"
+		parameterType="com.xmniao.xmn.core.businessman.entity.CatehomeComment">
+		insert into t_catehome_comment
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="sellerid != null">
+				sellerid,
+			</if>
+			<if test="sellerType != null">
+				seller_type,
+			</if>
+			<if test="sort != null">
+				sort,
+			</if>
+			<if test="state != null">
+				state,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=BIGINT},
+			</if>
+			<if test="sellerid != null">
+				#{sellerid,jdbcType=INTEGER},
+			</if>
+			<if test="sellerType != null">
+				#{sellerType,jdbcType=INTEGER},
+			</if>
+			<if test="sort != null">
+				#{sort,jdbcType=INTEGER},
+			</if>
+			<if test="state != null">
+				#{state,jdbcType=INTEGER},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective"
+		parameterType="com.xmniao.xmn.core.businessman.entity.CatehomeComment">
+		update t_catehome_comment
+		<set>
+			<if test="sellerid != null">
+				sellerid = #{sellerid,jdbcType=INTEGER},
+			</if>
+			<if test="sellerType != null">
+				seller_type = #{sellerType,jdbcType=INTEGER},
+			</if>
+			<if test="sort != null">
+				sort = #{sort,jdbcType=INTEGER},
+			</if>
+			<if test="state != null">
+				state = #{state,jdbcType=INTEGER},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKey"
+		parameterType="com.xmniao.xmn.core.businessman.entity.CatehomeComment">
+		update t_catehome_comment
+		set sellerid = #{sellerid,jdbcType=INTEGER},
+		seller_type = #{sellerType,jdbcType=INTEGER},
+		sort = #{sort,jdbcType=INTEGER},
+		state = #{state,jdbcType=INTEGER},
+		create_time = #{createTime,jdbcType=TIMESTAMP},
+		update_time = #{updateTime,jdbcType=TIMESTAMP}
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+</mapper>

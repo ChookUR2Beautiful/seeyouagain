@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.CatehomeMustBuyDao">
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.businessman.entity.CatehomeMustBuy">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="type_id" jdbcType="INTEGER" property="typeId" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="type_name" jdbcType="VARCHAR" property="typeName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    t_catehome_mustbuy.id, 
+    t_catehome_mustbuy.type_id, 
+    t_catehome_mustbuy.type, 
+    t_catehome_mustbuy.state, 
+    t_catehome_mustbuy.sort, 
+    t_catehome_mustbuy.create_time, 
+    t_catehome_mustbuy.update_time
+  </sql>
+  
+  <sql id="whereSQL">
+  	and state = 1
+  </sql>
+  
+  <select id="getList"  resultMap="BaseResultMap" >
+  	   select  <include refid="Base_Column_List" />,t_fresh_type.name as type_name
+    from t_catehome_mustbuy
+    left join t_fresh_type on t_fresh_type.id = t_catehome_mustbuy.type_id
+    where 1=1
+    <include refid="whereSQL"/>
+    order by sort desc
+  </select>
+  
+  <update id="updateMustbuySort">
+  	 update t_catehome_mustbuy set sort = #{sort},update_time = now() where id = #{id}
+  </update>
+  
+  <update id="deleteMustbuy">
+  	 update t_catehome_mustbuy set state = 2 where id = #{id}
+  </update>
+  
+  <select id="countByType" resultType="java.lang.Long">
+  	 select count(1) from t_catehome_mustbuy 
+  	 where type = #{type}
+  	 and state = 1
+  </select>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_catehome_mustbuy
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from t_catehome_mustbuy
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.businessman.entity.CatehomeMustBuy">
+    insert into t_catehome_mustbuy (id, type_id, type, 
+      state, sort, create_time, 
+      update_time)
+    values (#{id,jdbcType=BIGINT}, #{typeId,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, 
+      #{state,jdbcType=INTEGER}, #{sort,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="add" parameterType="com.xmniao.xmn.core.businessman.entity.CatehomeMustBuy">
+    insert into t_catehome_mustbuy
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="typeId != null">
+        type_id,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="state != null">
+        state,
+      </if>
+      <if test="sort != null">
+        sort,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="typeId != null">
+        #{typeId,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null">
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.businessman.entity.CatehomeMustBuy">
+    update t_catehome_mustbuy
+    <set>
+      <if test="typeId != null">
+        type_id = #{typeId,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null">
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.businessman.entity.CatehomeMustBuy">
+    update t_catehome_mustbuy
+    set type_id = #{typeId,jdbcType=INTEGER},
+      type = #{type,jdbcType=INTEGER},
+      state = #{state,jdbcType=INTEGER},
+      sort = #{sort,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

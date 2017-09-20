@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.marketingmanagement.dao.ExtensionsetDao">
+
+	<parameterMap type="ExtensionSet" id="extensionSet" />
+
+	<resultMap type="ExtensionSet" id="extensionSetMap">
+		<result column="id" property="id" />
+		<result column="date_start" property="dateStart" />
+		<result column="date_end" property="dateEnd" />
+		<result column="is_add_marketing_list" property="isAddMarketingList" />
+		<result column="extension_type" property="extensionType" />
+		<result column="data_state" property="dataState" />
+		<result column="updator" property="updator" />
+		<result column="sellerid" property="sellerId" />
+		<result column="sellername" property="sellername" />
+		<result column="sort" property="sort" />
+		<result column="is_first" property="isFirst" />
+		
+	</resultMap>
+
+	<select id="getExtensionSetList" resultMap="extensionSetMap"
+		parameterMap="extensionSet">
+		SELECT
+		t.id,t.date_start,t.date_end,t.sort,t.is_add_marketing_list,t.extension_type,t.data_state,t.updator,t1.sellerid,t1.sellername,t1.province,t1.city,t1.area,t4.title,t1.tel,t1.address,t2.account,t3.corporate,t3.jointid,ta5.provinceName,tsd.is_first
+		FROM t_extension_set t
+		LEFT JOIN t_seller t1 ON t.sellerid=t1.sellerid
+		LEFT JOIN t_seller_detailed tsd ON t1.sellerid=tsd.sellerid
+		LEFT JOIN t_seller_account t2 ON t.sellerid=t2.sellerid AND t2.type=1 and t2.userstatus=0
+		LEFT JOIN
+		t_joint
+		t3 ON t1.jointid = t3.jointid
+		LEFT JOIN t_area t4 ON t1.area = t4.area_id 
+		LEFT JOIN (SELECT ta2.title AS provinceName,ta1.area_id,ta1.pid FROM t_area ta1 JOIN t_area ta2 WHERE ta1.pid = ta2.area_id) ta5 ON t1.area = ta5.area_id
+		<where>
+			1=1
+			AND t.data_state=1
+			AND t.is_add_marketing_list=1 
+			AND t1.status=3
+			<if test=" null != province and '' != province ">
+				AND t1.province = #{province}
+			</if>
+			<if test=" null != city and '' != city ">
+				AND t1.city = #{city}
+			</if>
+			<if test=" null != sellerId and '' != sellerId ">
+				AND t1.sellerid = #{sellerId}
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND t1.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != tel and '' != tel ">
+				AND t1.tel LIKE '%${tel}%'
+			</if>
+			<if test=" null != extensionType and '' != extensionType ">
+				AND t.extension_type = #{extensionType}
+			</if>
+			<if test=" null != isFirst and '' != isFirst ">
+				AND tsd.is_first = #{isFirst}
+			</if>
+			<!-- <if test=" null != extensionTypes and '' != extensionTypes ">
+				AND t.extension_type in #{extensionTypes}
+			</if> -->
+		</where>
+		ORDER BY t.sort DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+
+	<select id="getExtensionSetCount" resultType="Long"
+		parameterMap="extensionSet">
+		SELECT count(1) FROM  t_extension_set t
+		LEFT JOIN t_seller t1 ON t.sellerid=t1.sellerid
+		LEFT JOIN t_seller_detailed tsd ON t1.sellerid=tsd.sellerid
+		LEFT JOIN t_seller_account t2 ON t.sellerid=t2.sellerid AND t2.type=1 and t2.userstatus=0
+		LEFT JOIN
+		t_joint
+		t3 ON t1.jointid = t3.jointid
+		LEFT JOIN t_area t4 ON t1.area = t4.area_id 
+		LEFT JOIN (SELECT ta2.title AS provinceName,ta1.area_id,ta1.pid FROM t_area ta1 JOIN t_area ta2 WHERE ta1.pid = ta2.area_id) ta5 ON t1.area = ta5.area_id
+		<where>
+			1=1
+			AND t.data_state=1
+			AND t.is_add_marketing_list=1 
+			AND t1.status=3
+			<if test=" null != province and '' != province ">
+				AND t1.province = #{province}
+			</if>
+			<if test=" null != city and '' != city ">
+				AND t1.city = #{city}
+			</if>
+			<if test=" null != sellerId and '' != sellerId ">
+				AND t1.sellerid = #{sellerId}
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND t1.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != tel and '' != tel ">
+				AND t1.tel LIKE '%${tel}%'
+			</if>
+			<if test=" null != extensionType and '' != extensionType ">
+				AND t.extension_type = #{extensionType}
+			</if>
+			<if test=" null != isFirst and '' != isFirst ">
+				AND tsd.is_first = #{isFirst}
+			</if>
+		</where>
+	</select>
+	<select id="getSortExist" resultType="Long" parameterMap="extensionSet">
+		SELECT COUNT(sort) AS sortCount FROM t_extension_set
+		<where>
+			1=1
+			AND data_state=1
+			<if test=" null != sort and '' != sort ">
+			AND sort = #{sort} 
+			</if>
+		</where>
+	</select>
+	<!-- 更新 -->
+	<update id="update" parameterMap="extensionSet">
+		UPDATE t_extension_set
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != dateStart">
+					date_start = #{dateStart},
+				</if>			
+				<if test=" null != dateEnd ">
+					date_end = #{dateEnd},
+				</if>
+			 	<if test=" null != sort ">
+					sort = #{sort},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != id and '' != id">
+				id = #{id}
+			</if>
+		</where>
+	</update>
+	
+	<update id="delete" parameterType="Object">
+		UPDATE t_extension_set set data_state = 0 where id in
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=") ">
+			#{item}
+		</foreach>
+	</update>
+	
+	<select id="getObject" resultMap="extensionSetMap" parameterType="Long">
+	        SELECT t1.*,t2.sellername FROM t_extension_set t1 LEFT JOIN t_seller t2 ON t1.sellerid=t2.sellerid WHERE t1.id= #{0}
+	</select>	
+</mapper>

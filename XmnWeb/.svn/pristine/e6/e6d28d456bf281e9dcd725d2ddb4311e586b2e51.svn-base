@@ -1,0 +1,510 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.user_terminal.dao.TpostDao">
+
+	<parameterMap type="TPost" id="tPost" />
+	
+	<resultMap type="TPost" id="tPostMap">
+		<result column="tid" property="tid" />
+		<result column="uid" property="uid" />
+		<result column="nname" property="nname" />
+		<result column="avatar" property="avatar" />
+		<result column="content" property="content" />
+		<result column="sdate" property="sdate" />
+		<result column="count" property="count" />
+		<result column="number" property="number" />
+		<result column="status" property="status" />	
+		<result column="reason" property="reason" />
+	</resultMap>
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_post
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						uid,
+						nname,
+						avatar,
+						content,
+						sdate,
+						count,
+						number,
+						status,					
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.uid},
+						 #{item.nname},
+						 #{item.avatar},
+						 #{item.content},
+						 #{item.sdate},
+						 #{item.count},
+						 #{item.number},
+						 #{item.status},
+					
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" parameterMap="tPost" >
+		INSERT INTO t_post
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != uid">
+					uid,
+				</if>
+			 	<if test=" null != nname  and '' != nname ">
+					nname,
+				</if>
+			 	<if test=" null != avatar and '' != avatar ">
+					avatar,
+				</if>			 					
+			 	<if test=" null != content and '' != content ">
+					content,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+			 	<if test=" null != count">
+					count,
+				</if>
+			 	<if test=" null != number">
+					number,
+				</if>
+				<if test=" null != status">
+					status,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != uid">
+					 	#{uid},
+				</if>
+			 	<if test=" null != nname and '' != nname ">
+					 	#{nname},
+				</if>
+			 	<if test=" null != avatar and '' != avatar ">
+					 	#{avatar},
+				</if>
+			 	<if test=" null != content and '' != content ">
+					 	#{content},
+				</if>
+			   <if test=" null != sdate">
+					 	#{sdate},
+				</if>
+			 	<if test=" null != count">
+					 	#{count},
+				</if>
+			 	<if test=" null != number">
+					 	#{number},
+				</if>
+			 	<if test=" null != status">
+					 	#{status},
+				</if>
+			 	
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_post WHERE tid IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterMap="tPost">
+		UPDATE t_post
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != tid">
+					tid = #{tid},
+				</if>
+				<if test=" null != uid">
+					uid = #{uid},
+				</if>			
+				<if test=" null != nname and '' != nname ">
+					nname = #{nname},
+				</if>
+				<if test=" null != avatar and '' != avatar ">
+					avatar = #{avatar},
+				</if>
+				<if test=" null != content and '' != content ">
+					content = #{content},
+				</if>				
+				<if test=" null != sdate">
+					sdate = #{sdate},
+				</if>
+				<if test=" null != count">
+					count = #{count},
+				</if>
+				<if test=" null != number">
+					number = #{number},
+				</if>
+				<if test=" null != status">
+					status = #{status},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != tid and '' != tid">
+				tid = #{tid}
+			</if>
+		</where>
+	</update>
+	
+	<!-- 帖子列表删除0——》1 -->
+	<update id="updatePostStatus" parameterMap="tPost">
+		UPDATE t_post SET status = #{status}
+		WHERE tid IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</update>
+	
+	<select id="getList" resultMap="tPostMap" parameterMap="tPost">
+		SELECT * FROM t_post
+		<where>
+			1=1
+			<if test=" null != tid">
+				AND tid = #{tid}
+			</if>
+			<if test=" null != uid">
+				AND uid = #{uid}
+			</if>			
+			<if test=" null != nname and '' != nname ">
+				AND nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != avatar and '' != avatar ">
+				AND avatar LIKE '%${avatar}%'
+			</if>
+			<if test=" null != content and '' != content ">
+				AND content LIKE '%${content}%'
+			</if>
+			<if test=" null != sdate ">
+				AND sdate = #{sdate}
+			</if>
+			<if test=" null != count">
+				AND count = #{count}
+			</if>
+			<if test=" null != number">
+				AND number = #{number}
+			</if>
+			<if test=" null != status">
+				AND status = #{status}
+			</if>
+		</where>
+			ORDER BY tid DESC 
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="tPost">
+		SELECT COUNT(*) FROM t_post
+		<where>
+			1=1
+			<if test=" null != tid">
+				AND tid = #{tid}
+			</if>
+			<if test=" null != uid">
+				AND uid = #{uid}
+			</if>			
+			<if test=" null != nname and '' != nname ">
+				AND nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != avatar and '' != avatar ">
+				AND avatar LIKE '%${avatar}%'
+			</if>
+			<if test=" null != content and '' != content ">
+				AND content LIKE '%${content}%'
+			</if>
+			<if test=" null != sdate ">
+				AND sdate = #{sdate}
+			</if>
+			<if test=" null != count">
+				AND count = #{count}
+			</if>
+			<if test=" null != number">
+				AND number = #{number}
+			</if>
+			<if test=" null != status">
+				AND status = #{status}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Integer">
+		SELECT Max(tid) AS VALUE FROM t_post
+	</select>
+	
+	<select id="getObject" resultMap="tPostMap" parameterType="Long">
+		SELECT * FROM t_post WHERE tid = #{0}
+	</select>
+			
+	<!-- 帖子列表 -->
+	<select id="getZeroList" resultMap="tPostMap" parameterMap="tPost">
+		SELECT * FROM t_post tp  
+		<where>
+			tp.status=0
+			<if test=" null != tid">
+				AND tid = #{tid}
+			</if>
+			<if test=" null != uid">
+				AND uid = #{uid}
+			</if>			
+			<if test=" null != nname and '' != nname ">
+				AND nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != avatar and '' != avatar ">
+				AND avatar LIKE '%${avatar}%'
+			</if>
+			<if test=" null != content and '' != content ">
+				AND content LIKE '%${content}%'
+			</if>
+			<!-- <if test=" null != sdate ">
+				AND sdate = #{sdate}
+			</if> -->
+			<if test=" null != lbsdateStart and '' != lbsdateStart">
+				AND sdate&gt;= #{lbsdateStart}
+			</if>
+			<if test=" null != lbsdateEnd and '' != lbsdateEnd">
+				AND sdate&lt;= #{lbsdateEnd}
+			</if>
+			<if test=" null != count">
+				AND count = #{count}
+			</if>
+			<if test=" null != number">
+				AND number = #{number}
+			</if>
+			<if test=" null != status">
+				AND status = #{status}
+			</if>
+		</where>
+			ORDER BY tid DESC 
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="getZeroListCount" resultType="Long" parameterMap="tPost">
+		SELECT COUNT(*) FROM t_post tp 
+		<where>
+			tp.status=0
+			<if test=" null != tid">
+				AND tid = #{tid}
+			</if>
+			<if test=" null != uid">
+				AND uid = #{uid}
+			</if>			
+			<if test=" null != nname and '' != nname ">
+				AND nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != avatar and '' != avatar ">
+				AND avatar LIKE '%${avatar}%'
+			</if>
+			<if test=" null != content and '' != content ">
+				AND content LIKE '%${content}%'
+			</if>
+			<!-- <if test=" null != sdate ">
+				AND sdate = #{sdate}
+			</if> -->
+			<if test=" null != lbsdateStart and '' != lbsdateStart">
+				AND sdate&lt;= #{lbsdateStart}
+			</if>
+			<if test=" null != lbsdateEnd and '' != lbsdateEnd">
+				AND sdate&lt;= #{lbsdateEnd}
+			</if>
+			<if test=" null != count">
+				AND count = #{count}
+			</if>
+			<if test=" null != number">
+				AND number = #{number}
+			</if>
+			<if test=" null != status">
+				AND status = #{status}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 举报列表 -->
+	<select id="getTwoList" resultMap="tPostMap" parameterMap="tPost">
+	<!-- 	SELECT tp.tid, tp.nname,tp.content, tp.sdate,tp.status,tpr.reason FROM t_post tp 
+		LEFT JOIN t_post_report tpr ON tp.tid=tpr.tid  -->
+		SELECT * FROM t_post tp 
+		LEFT JOIN t_post_report tpr ON tp.tid=tpr.tid 
+       
+		<where>
+			tp.status=2
+			<if test=" null != tid">
+				AND tp.tid = #{tid}
+			</if>
+			<if test=" null != uid">
+				AND tp.uid = #{uid}
+			</if>			
+			<if test=" null != nname and '' != nname ">
+				AND tp.nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != avatar and '' != avatar ">
+				AND tp.avatar LIKE '%${avatar}%'
+			</if>
+			<if test=" null != content and '' != content ">
+				AND tp.content LIKE '%${content}%'
+			</if>
+			<if test=" null != reason and '' != reason ">
+				AND tpr.reason LIKE '%${reason}%'
+			</if>				
+			<!-- <if test=" null != sdate ">
+				AND tp.sdate = #{sdate}
+			</if> -->
+			<if test=" null != jbsdateStart and '' != jbsdateStart">
+				AND tp.sdate&lt;= #{jbsdateStart}
+			</if>
+			<if test=" null != jbsdateEnd and '' != jbsdateEnd">
+				AND tp.sdate&lt;= #{jbsdateEnd}
+			</if>
+			
+			<if test=" null != count">
+				AND tp.count = #{count}
+			</if>
+			<if test=" null != number">
+				AND tp.number = #{number}
+			</if>
+			<if test=" null != status">
+				AND tp.status = #{status}
+			</if>
+		</where>
+			ORDER BY tp.tid DESC 
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="getTwoListCount" resultType="Long" parameterMap="tPost">
+		SELECT COUNT(1) FROM t_post tp  
+		LEFT JOIN t_post_report tpr ON tp.tid=tpr.tid 
+    
+		<where>
+			 tp.status=2
+			<if test=" null != tid">
+				AND tp.tid = #{tid}
+			</if>
+			<if test=" null != uid">
+				AND tp.uid = #{uid}
+			</if>			
+			<if test=" null != nname and '' != nname ">
+				AND tp.nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != avatar and '' != avatar ">
+				AND tp.avatar LIKE '%${avatar}%'
+			</if>
+			<if test=" null != content and '' != content ">
+				AND tp.content LIKE '%${content}%'
+			</if>
+			<if test=" null != reason and '' != reason ">
+				AND tpr.reason LIKE '%${reason}%'
+			</if>				
+			<!-- <if test=" null != sdate ">
+				AND tp.sdate = #{sdate}
+			</if> -->
+			<if test=" null != jbsdateStart and '' != jbsdateStart">
+				AND tp.sdate&lt;= #{jbsdateStart}
+			</if>
+			<if test=" null != jbsdateEnd and '' != jbsdateEnd">
+				AND tp.sdate&lt;= #{jbsdateEnd}
+			</if>
+			<if test=" null != count">
+				AND tp.count = #{count}
+			</if>
+			<if test=" null != number">
+				AND tp.number = #{number}
+			</if>
+			<if test=" null != status">
+				AND tp.status = #{status}
+			</if>
+		</where>
+	</select>
+	
+		<!-- 回收站 -->
+	<select id="getOneList" resultMap="tPostMap" parameterMap="tPost">
+		SELECT * FROM t_post tp  
+		<where>
+			tp.status=1
+			<if test=" null != tid">
+				AND tid = #{tid}
+			</if>
+			<if test=" null != uid">
+				AND uid = #{uid}
+			</if>			
+			<if test=" null != nname and '' != nname ">
+				AND nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != avatar and '' != avatar ">
+				AND avatar LIKE '%${avatar}%'
+			</if>
+			<if test=" null != content and '' != content ">
+				AND content LIKE '%${content}%'
+			</if>
+			<!-- <if test=" null != sdate ">
+				AND sdate = #{sdate}
+			</if> -->
+			<if test=" null != scsdateStart and '' != scsdateStart">
+				AND sdate&lt;= #{scsdateStart}
+			</if>
+			<if test=" null != scsdateEnd and '' != scsdateEnd">
+				AND sdate&lt;= #{scsdateEnd}
+			</if>
+	
+			<if test=" null != count">
+				AND count = #{count}
+			</if>
+			<if test=" null != number">
+				AND number = #{number}
+			</if>
+			<if test=" null != status">
+				AND status = #{status}
+			</if>
+		</where>
+			ORDER BY tid DESC 
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="getOneListCount" resultType="Long" parameterMap="tPost">
+		SELECT COUNT(*) FROM t_post tp 
+		<where>
+			tp.status=1
+			<if test=" null != tid">
+				AND tid = #{tid}
+			</if>
+			<if test=" null != uid">
+				AND uid = #{uid}
+			</if>			
+			<if test=" null != nname and '' != nname ">
+				AND nname LIKE '%${nname}%'
+			</if>
+			<if test=" null != avatar and '' != avatar ">
+				AND avatar LIKE '%${avatar}%'
+			</if>
+			<if test=" null != content and '' != content ">
+				AND content LIKE '%${content}%'
+			</if>
+			<!-- <if test=" null != sdate ">
+				AND sdate = #{sdate}
+			</if> -->
+			<if test=" null != scsdateStart and '' != scsdateStart">
+				AND sdate&lt;= #{scsdateStart}
+			</if>
+			<if test=" null != scsdateEnd and '' != scsdateEnd">
+				AND sdate&lt;= #{scsdateEnd}
+			</if>
+			<if test=" null != count">
+				AND count = #{count}
+			</if>
+			<if test=" null != number">
+				AND number = #{number}
+			</if>
+			<if test=" null != status">
+				AND status = #{status}
+			</if>
+		</where>
+	</select>
+	
+</mapper>

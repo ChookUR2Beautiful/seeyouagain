@@ -1,0 +1,196 @@
+/**
+ * Created by Joney on 2017/8/16.
+ */
+
+Date.prototype.format = function (fmt) { //author: meizz
+    var o = {
+        "M+": this.getMonth() + 1, //月份
+        "d+": this.getDate(), //日
+        "h+": this.getHours(), //小时
+        "m+": this.getMinutes(), //分
+        "s+": this.getSeconds(), //秒
+        "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+        "S": this.getMilliseconds() //毫秒
+    };
+    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+    for (var k in o)
+        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+    return fmt;
+}
+
+/** 初始化数据表格 */
+
+cols = [
+    // 数据表格列头
+    {width: 4, text: '操作', type: 'String', flex: true, colClass: ''},
+    {width: 20, text: '#', type: 'number', flex: true, colClass: ''},
+    {width: 20, text: '用户编号', type: 'number', flex: true, colClass: ''},
+    {width: 30, text: '手机号码', type: 'string', flex: true, colClass: ''},
+    {width: 10, text: '面额', type: 'string', flex: true, colClass: ''},
+    {width: 20, text: '使用状态', type: 'string', flex: true, colClass: ''},
+    {width: 20, text: '获取方式', type: 'string', flex: true, colClass: ''},
+    {width: 40, text: '优惠劵名称', type: 'string', flex: true, colClass: ''},
+    {width: 40, text: '优惠劵类型', type: 'string', flex: true, colClass: ''},
+    {width: 80, text: '推送时间', type: 'date', flex: true},
+]
+tableOption = {
+    data : {cols : cols, rows:{}},
+//        checkable: true,   // 复选框
+    sortable: false,    // 是否可排序
+    fixedRightWidth : "50%",
+    scrollPos : "in",
+    fixCellHeight :false
+}
+$table = $("#coupon-table");
+$table.datatable(tableOption);
+
+
+$(function(){
+    loadCouponList()
+})
+
+
+
+
+
+/** 加载表格数据  page : 页数*/
+function loadTableData(page){
+    $(".table tr").remove();
+    $.ajax({
+        url : "list.jhtml",
+        data : {page :page, limit : 10,uid:uid,ctype : ctype, cname : cname ,phone : phone, uid :uid},
+        success : function (resultData){
+
+            var rows = [];
+            $.each(resultData.context.couponList,function(index,item){
+
+                var dataIssue = new Date(item.dateIssue).format("yyyy-MM-dd hh:mm:ss");
+                // 使用状态，0未使用，1锁定，2已使用  3  已过期并退款
+                var userStatus;
+                switch (item.userStatus){
+                    case 0: userStatus = "未使用"; break;
+                    case 1: userStatus = "锁定"; break;
+                    case 2: userStatus = "已使用"; break;
+                    case 3: userStatus = "已过期并退款"; break;
+                    default: userStatus = "";
+                }
+                // 获取方式，1摇一摇，2满返，3短信获取 4直接发放,5：订单后刮优惠劵；6:分享后刮优惠劵;7.系统推送; 8.庄园激活奖励
+                var getWay;
+                switch (item.getWay){
+                    case 1 : getWay = "摇一摇";break;
+                    case 2 : getWay = "满返";break;
+                    case 3 : getWay = "短信获取";break;
+                    case 4 : getWay = "直接发放";break;
+                    case 5 : getWay = "订单后刮优惠劵";break;
+                    case 6 : getWay = "分享后刮优惠劵";break;
+                    case 7 : getWay = "系统推送";break;
+                    case 8 : getWay = "庄园激活奖励";break;
+                    default : getWay = "";
+                }
+                //  0 消费优惠劵  1商城优惠劵 5平台通用优惠劵
+                // 1生鲜现金卷(可以和组合支付)  2 粉丝券 3 预售抵用券 4套餐抵用券 5寻蜜鸟全平台通用券
+                var ctype;
+                switch (item.ctype){
+                    case 0 : ctype = "消费优惠劵";   break;
+                    case 1 : ctype = "商城优惠劵";   break;
+                    case 2 : ctype = "粉丝券";   break;
+                    case 3 : ctype = "预售抵用券";   break;
+                    case 4 : ctype = "套餐抵用券";   break;
+                    case 5 : ctype = "平台通用优惠劵"; break;
+                    default : ctype = "";
+                }
+                rows.push({checked: false,empty:false ,data: [
+                    item.userStatus == 0 ? "<a href='javascript:void(0)' onclick='deleteCouponDetail(this)' class='center'><i class='icon-trash center'></i></a>" : "",
+                    item.cdid ? item.cdid : "",
+                    item.uid    ? item.uid :"" ,
+                    item.phone  ? item.phone :"",
+                    item.denomination ,
+                    userStatus ,
+                    getWay,
+                    item.cname,
+                    ctype,
+                    dataIssue],
+                    id : item.cdid,
+                });
+
+            });
+            $table.datatable("load",{cols:cols,rows:rows});
+        }
+    });
+
+}
+
+/** 清除参数 */
+function clearParams(){
+    $("#uid").val("");
+    $("#ctype").val("");
+    $("#phone").val("");
+    $("#uname").val("");
+    loadCouponList();
+}
+
+/** 加载优惠劵列表 */
+function loadCouponList(){
+    uid = $("#uid").val();
+    cname = $("#uname").val();
+    phone = $("#phone").val();
+    ctype = $("#ctype").val();
+
+    /** 初始化分页条 */
+    $.ajax({
+        url:"count.jhtml",
+        data : {uid:uid,ctype : ctype, cname : cname ,phone : phone, uid :uid},
+        success : function(resultData){
+            var paginationOption = {
+                bootstrapMajorVersion:3,
+                currentPage: 1,
+                numberOfPages: 10,
+                totalPages:resultData.context.count / 10 + 1,
+                onPageClicked : function(e,originalEvent,type,page){
+                    // 页码点击事件
+                    loadTableData(page);
+                }
+            }
+            $("#pagination").bootstrapPaginator(paginationOption);
+
+        }
+
+    })
+
+
+    loadTableData(1);
+}
+
+
+
+/** 删除优惠劵 */
+function deleteCouponDetail(deleteElem){
+    console.log("删除优惠劵");
+    var cdid = $(deleteElem).parents("tr").attr("data-id");
+    if(cdid){
+        console.log("删除:"+cdid);
+        if(window.confirm("是否删除优惠劵:"+cdid)){
+            $.ajax({
+                url: "deleteCoupon.jhtml",
+                data : {cdid : cdid},
+                type: "post",
+                async: true,
+                success: function (data) {
+                    if (data.state == 0) {
+                        $(deleteElem).parents("tr:first").remove();
+                    }else{
+                        alert(data.message);
+                    }
+
+                },
+                error: function () {
+                    alert("数据加载失败!");
+                }
+            });
+
+        }
+    }
+}
+
+
+

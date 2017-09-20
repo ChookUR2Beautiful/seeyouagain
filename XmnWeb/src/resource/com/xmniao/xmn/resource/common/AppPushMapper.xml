@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.common.dao.AppPushDao">
+
+	<parameterMap type="AppPush" id="appPush" />
+	
+	<resultMap type="AppPush" id="appPushMap">
+		<result column="tid" property="tid" />
+		<result column="title" property="title" />
+		<result column="content" property="content" />
+		<result column="status" property="status" />
+		<result column="type" property="type" />
+		<result column="action" property="action" />
+		<result column="sdate" property="sdate" />
+		<result column="tdate" property="tdate" />
+		<result column="edate" property="edate" />
+		<result column="object" property="object" />
+		<result column="remind" property="remind" />
+		<result column="client" property="client" />
+		<result column="contenttype" property="contenttype" />
+		<result column="province" property="province" />
+		<result column="city" property="city" />
+		<result column="sendType" property="sendType" />
+	</resultMap>
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_log
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						title,
+						content,
+						status,
+						type,
+						action,
+						sdate,
+						tdate,
+						edate,
+						object,
+						remind,
+						client,
+						contenttype,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.title},
+						 #{item.content},
+						 #{item.status},
+						 #{item.type},
+						 #{item.action},
+						 #{item.sdate},
+						 #{item.tdate},
+						 #{item.edate},
+						 #{item.object},
+						 #{item.remind},
+						 #{item.client},
+						 #{item.contenttype},
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" parameterMap="appPush" >
+		INSERT INTO t_app_push
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != tid">
+					tid,
+				</if>
+			 	<if test=" null != title and '' != title ">
+					title,
+				</if>
+			 	<if test=" null != content and '' != content ">
+					content,
+				</if>
+			 	<if test=" null != status">
+					status,
+				</if>
+			 	<if test=" null != type">
+					type,
+				</if>
+			 	<if test=" null != action and '' != action ">
+					action,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+			 	<if test=" null != tdate">
+					tdate,
+				</if>
+			 	<if test=" null != edate">
+					edate,
+				</if>
+			 	<if test=" null != object and '' != object ">
+					object,
+				</if>
+			 	<if test=" null != remind">
+					remind,
+				</if>
+			 	<if test=" null != client">
+					client,
+				</if>
+			 	<if test=" null != contenttype">
+					contenttype,
+				</if>
+				<if test=" null != province">
+					province,
+				</if>
+				<if test=" null != city">
+					city,
+				</if>
+				<if test=" null != sendType">
+					send_type,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != tid">
+					 	#{tid},
+				</if>
+			 	<if test=" null != title and '' != title ">
+					 	#{title},
+				</if>
+			 	<if test=" null != content and '' != content ">
+					 	#{content},
+				</if>
+			 	<if test=" null != status">
+					 	#{status},
+				</if>
+			 	<if test=" null != type">
+					 	#{type},
+				</if>
+			 	<if test=" null != action and '' != action ">
+					 	#{action},
+				</if>
+			 	<if test=" null != sdate">
+					 	#{sdate},
+				</if>
+			 	<if test=" null != tdate">
+					 	#{tdate},
+				</if>
+			 	<if test=" null != edate">
+					 	#{edate},
+				</if>
+			 	<if test=" null != object and '' != object ">
+					 	#{object},
+				</if>
+			 	<if test=" null != remind">
+					 	#{remind},
+				</if>
+			 	<if test=" null != client">
+					 	#{client},
+				</if>
+			 	<if test=" null != contenttype">
+					 	#{contenttype},
+				</if>
+				<if test=" null != province">
+					#{province},
+				</if>
+				<if test=" null != city">
+					#{city},
+				</if>
+				<if test=" null != sendType">
+					#{sendType},
+				</if>
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_app_push WHERE tid IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterMap="appPush">
+		UPDATE t_app_push
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != tid">
+					tid = #{tid},
+				</if>
+				<if test=" null != title and '' != title ">
+					title = #{title},
+				</if>
+				<if test=" null != content and '' != content ">
+					content = #{content},
+				</if>
+				<if test=" null != status">
+					status = #{status},
+				</if>
+				<if test=" null != type">
+					type = #{type},
+				</if>
+				<if test=" null != action and '' != action ">
+					action = #{action},
+				</if>
+				<if test=" null != sdate">
+					sdate = #{sdate},
+				</if>
+				<if test=" null != tdate">
+					tdate = #{tdate},
+				</if>
+				<if test=" null != edate">
+					edate = #{edate},
+				</if>
+				<if test=" null != object and '' != object ">
+					object = #{object},
+				</if>
+				<if test=" null != remind">
+					remind = #{remind},
+				</if>
+				<if test=" null != client">
+					client = #{client},
+				</if>
+				<if test=" null != contenttype">
+					contenttype = #{contenttype},
+				</if>
+				<if test=" null != province">
+					province = #{province},
+				</if>
+				<if test=" null != city">
+					city = #{city},
+				</if>
+				<if test=" null != sendType">
+					send_type = #{sendType},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != tid and '' != tid">
+				tid = #{tid}
+			</if>
+		</where>
+	</update>
+	
+	<select id="getList" resultMap="appPushMap" parameterMap="appPush">
+		SELECT * FROM t_app_push
+		<where>
+			1=1
+			<if test=" null != tid">
+				AND tid = #{tid}
+			</if>
+			<if test=" null != title and '' != title ">
+				AND title LIKE '%${title}%'
+			</if>
+			<if test=" null != content and '' != content ">
+				AND content LIKE '%${content}%'
+			</if>
+			<if test=" null != status">
+				AND status = #{status}
+			</if>
+			<if test=" null != type">
+				AND type = #{type}
+			</if>
+			<if test=" null != action and '' != action ">
+				AND action LIKE '%${action}%'
+			</if>
+			<if test=" null != sdate">
+				AND sdate = #{sdate}
+			</if>
+			<if test=" null != tdate">
+				AND tdate = #{tdate}
+			</if>
+			<!-- <if test=" null != edate">
+				AND edate = #{edate}
+			</if> -->			
+			<if test=" null != edateStart and '' != edateStart">
+				AND edate&gt;= #{edateStart}
+			</if>
+			<if test=" null != edateEnd and '' != edateEnd">
+				AND edate&lt;= #{edateEnd}
+			</if>	
+			
+			<if test=" null != object and '' != object ">
+				AND object LIKE '%${object}%'
+			</if>
+			<if test=" null != remind">
+				AND remind = #{remind}
+			</if>
+			<if test=" null != client">
+				AND client = #{client}
+			</if>
+			<if test=" null != contenttype">
+				AND contenttype = #{contenttype}
+			</if>
+		</where>
+			ORDER BY tid DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="appPush">
+		SELECT COUNT(*) FROM t_app_push
+		<where>
+			1=1
+			<if test=" null != tid">
+				AND tid = #{tid}
+			</if>
+			<if test=" null != title and '' != title ">
+				AND title LIKE '%${title}%'
+			</if>
+			<if test=" null != content and '' != content ">
+				AND content LIKE '%${content}%'
+			</if>
+			<if test=" null != status">
+				AND status = #{status}
+			</if>
+			<if test=" null != type">
+				AND type = #{type}
+			</if>
+			<if test=" null != action and '' != action ">
+				AND action LIKE '%${action}%'
+			</if>
+			<if test=" null != sdate">
+				AND sdate = #{sdate}
+			</if>
+			<if test=" null != tdate">
+				AND tdate = #{tdate}
+			</if>
+		<!-- 	<if test=" null != edate">
+				AND edate = #{edate}
+			</if> -->
+			<if test=" null != edateStart and '' != edateStart">
+				AND edate&gt;= #{edateStart}
+			</if>
+			<if test=" null != edateEnd and '' != edateEnd">
+				AND edate&lt;= #{edateEnd}
+			</if>	
+			
+			<if test=" null != object and '' != object ">
+				AND object LIKE '%${object}%'
+			</if>
+			<if test=" null != remind">
+				AND remind = #{remind}
+			</if>
+			<if test=" null != client">
+				AND client = #{client}
+			</if>
+			<if test=" null != contenttype">
+				AND contenttype = #{contenttype}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId" resultType="Long">
+		SELECT Max(tid) AS VALUE FROM t_app_push
+	</select>
+	
+	<select id="getObject" resultMap="appPushMap" parameterType="Long">
+		SELECT * FROM t_app_push WHERE tid = #{0}
+	</select>
+	
+</mapper>

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.business_statistics.dao.TMicrographPageDao">
+
+
+  <resultMap id="micrographPageMap" type="com.xmniao.xmn.core.business_statistics.entity.TMicrographPage">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="template_id" jdbcType="INTEGER" property="templateId" />
+    <result column="page" jdbcType="INTEGER" property="page" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="background_image" jdbcType="VARCHAR" property="backgroundImage" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="width" jdbcType="INTEGER" property="width" />
+    <result column="height" jdbcType="INTEGER" property="height" />
+  </resultMap>
+  
+  
+  <sql id="micrographPage_column_list">
+    id, template_id, page, create_time, update_time, background_image, status,width ,height
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test="templateId != null and templateId != '' ">
+  		and template_id =#{templateId}
+  	</if>
+  
+  </sql>
+  
+  <select id="getObject" parameterType="java.lang.Long" resultMap="micrographPageMap">
+    select 
+    <include refid="micrographPage_column_list" />
+    from t_micrograph_page
+    where id = #{id}
+  </select>
+  
+  <select id="getMaxIdByTemplateId" parameterType="com.xmniao.xmn.core.business_statistics.entity.TMicrographPage" resultType="java.lang.Integer">
+    SELECT
+		count(1) AS maxId
+	FROM
+		t_micrograph_page
+	WHERE
+		template_id = #{templateId}
+  </select>
+  
+  <select id="getList" parameterType="com.xmniao.xmn.core.business_statistics.entity.TMicrographPage" resultMap="micrographPageMap">
+    select 
+    <include refid="micrographPage_column_list" />
+    from t_micrograph_page
+   	<where>
+   		1=1
+   		<include refid="whereSQL"></include>
+   	</where>
+  </select>
+  
+  
+  <delete id="delete" parameterType="java.lang.Object">
+    delete from t_micrograph_page
+    where id in
+    <foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+	</foreach>
+  </delete>
+  
+  <insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.xmn.core.business_statistics.entity.TMicrographPage">
+    insert into t_micrograph_page
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="templateId != null">
+        template_id,
+      </if>
+      <if test="page != null">
+        page,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="backgroundImage != null">
+        background_image,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="width != null">
+        width,
+      </if>
+      <if test="height != null">
+        height,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="templateId != null">
+        #{templateId,jdbcType=INTEGER},
+      </if>
+      <if test="page != null">
+        #{page,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="backgroundImage != null">
+        #{backgroundImage,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="width != null">
+        #{width,jdbcType=INTEGER},
+      </if>
+      <if test="height != null">
+        #{height,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.business_statistics.entity.TMicrographPage">
+    update t_micrograph_page
+    <set>
+      <if test="templateId != null">
+        template_id = #{templateId,jdbcType=INTEGER},
+      </if>
+      <if test="page != null">
+        page = #{page,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="backgroundImage != null">
+        background_image = #{backgroundImage,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="width != null">
+        width = #{width,jdbcType=INTEGER},
+      </if>
+      <if test="height != null">
+        height = #{height,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+</mapper>

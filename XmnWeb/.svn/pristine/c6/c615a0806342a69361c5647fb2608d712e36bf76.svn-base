@@ -1,0 +1,683 @@
+var anchorList;
+var initListUrl = "anchor/manage/init/list.jhtml";
+var imgRoot = $("#fastfdsHttp").val();
+$(function() {
+	inserTitle(
+			' > 直播频道管理 > <a href="anchor/manage/init.jhtml" target="right">主播管理</a>',
+			'userSpan', true);
+	anchorList = $("#anchorList").page({
+		url : initListUrl,
+		success : success,
+		pageBtnNum : 10,
+		paramForm : 'searchForm',
+		param : {
+			activityType : "5"
+		}
+	});
+	
+	//导出
+	$("#exportAnchor").click(function(){
+		var path="anchor/manage/export.jhtml";
+		$form = $("#searchForm").attr("action",path);
+		$form[0].submit();
+	});	
+	
+	/**
+	 * 导出无效产品
+	 */
+	$("#exportFailingBtn").click(function(){
+		 $.ajax({
+			 url : "anchor/manage/add/initFailInfo.jhtml",
+			 type : "post",
+			 dataType : "json",
+			 data:{},
+			 success : function(result) {
+				 $("#failTable tr").empty();
+				var lst = eval(result);
+	            for ( var i = 0; i < lst.length; i++) {
+	                var name = lst[i].name;
+	                var path = lst[i].path;
+	                $("#failTable").append("<tr><td>序号"+(i+1)+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td><a href="+path+">"+name+"</a></td></tr>");         
+	            }
+				$("#exportFailingModal").modal();
+			 }
+		 });
+	});
+	
+	/**
+	 * 确认导出
+	 */
+	$("#exportconfirm").click(function(){
+		$form = $("#exportform").attr("action","anchor/manage/exportFailingInfo.jhtml");
+		var importserial=$("#importserial").val();
+		if(importserial=="" || importserial ==undefined){
+			showWarningWindow("warning","请选择导出文件!");
+			setTimeout(function(){
+				$('#sm_reslut_window').modal('hide');
+			}, 1500);
+			return ;
+		}
+		$form[0].submit();
+		$("#exportFailingModal").modal('hide');
+	});
+	
+	//批量修改分成
+	updateBatchRatio();
+	
+	//加载主播分类统计信息
+	loadCountAnchor();
+	
+	//初始化主播等级下拉框
+	liveLevelIdInit();
+	
+	//批量修改粉丝配置
+	configureFansBatch();
+
+});
+
+
+/**
+ * 初始化主播等级下拉框
+ */
+function liveLevelIdInit(){
+	$("#levelId").chosenObject({
+		hideValue : "id",
+		showValue : "levelName",
+		url : "liveLevel/manage/initAnchorLevelId.jhtml",
+		isChosen:true,//是否支持模糊查询
+		isCode:true,//是否显示编号
+		isHistorical:false,//是否使用历史已加载数据
+		width:"67%"
+	});
+}
+
+/*
+ * 绑定签约类型change事件,0 兼职主播，1 签约主播，2测试账号
+ * 
+ */
+$("#signType").change(function(){
+	var signType=$("#signType").val();
+	if(signType==0){
+		$("#rootRole").css("display","inline");
+	}else{
+		$("#rootRole").css("display","none");
+		$("#rootRole").find("option[value='']").attr("selected",true);
+	}
+});
+
+
+//初始化方法
+function initImportInfo(){
+	 $.ajax({
+		 url : "anchor/manage/add/initFailInfo.jhtml",
+		 type : "post",
+		 dataType : "json",
+		 data:{},
+		 success : function(result) {
+			 $("#failTable tr").empty();
+			var lst = eval(result);
+            for (var i = 0; i < lst.length; i++) {
+                var name = lst[i].name;
+                var path = lst[i].path;
+				
+                $("#failTable").append("<tr><td><a href="+path+">"+name+"</a></td></tr>");         
+            }
+			$("#exportFailingModal").modal();
+		 }
+	 });
+
+}
+
+function success(data, obj) {
+	var formId = "searchForm", title = "主播列表", subtitle = "个主播";
+	var captionInfo = '<caption style="background:#EED8D8; text-align:left; color:#703636; font-size:16px; line-height:40px;">&nbsp;&nbsp;'
+			+ title
+			+ '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font>共计【'
+			+ data.total
+			+ '】' + subtitle + '&nbsp;</font></caption>';
+	var callbackParam = "isBackButton=true&callbackParam="
+			+ getFormParam($("#" + formId).serialize());
+
+	obj.find('div').eq(0).scrollTablel({
+		identifier : "id",
+		callbackParam : callbackParam,
+		data : data.content,
+		caption : captionInfo,
+		checkable : true,
+		// 操作列
+		handleCols : {
+			title : "操作",// 标题
+			queryPermission : [ "update","detail","delete" ],// 不需要选择checkbox处理的权限
+			width : 150,// 宽度
+			// 当前列的中元素
+			cols : [ 
+		        {
+					title : "绑定银行卡",// 标题
+					linkInfoName : "href",
+					width : 50,
+					linkInfo : {
+						href : "anchor/manage/bindCardInit/init.jhtml",
+						param : ["uid","nickname"],
+						permission : "bindCard"
+					},
+					customMethod : function(value, data) {
+						var result = '<a href="javascript:void(0)" title="启用状态的主播才可绑定银行卡"  class="hidden"></a>';
+						if(data.status!=undefined && data.status == 1){
+							result = value;
+						}
+						return result;
+					}
+				},{
+					title : "启用",// 标题
+					linkInfoName : "href",
+					linkInfo : {
+						href : "anchor/manage/delete.jhtml",// url
+						param : ["id"],// 参数
+						permission : "delete"// 列权限
+					},
+					customMethod : function(value, data){
+							var result="";
+							if(!data.status){
+								result = "<a href='javascript:setStatus(\""+data.id+"\",\""+1+"\")'>" + "启用" + "</a>";
+							}
+							return result;
+				    }
+				 }, {
+					title : "停用",// 标题
+					linkInfoName : "href",
+					linkInfo : {
+						href : "anchor/manage/delete.jhtml",// url
+						param : ["id"],// 参数
+						permission : "delete"// 列权限
+					},
+					customMethod : function(value, data){
+						 	var result ="";
+							if(data.status){
+								result = "<a href='javascript:confirmDelete(\""+data.id+"\",\""+data.uid+"\")'>" + "停用" + "</a>";
+							}
+							 return result;
+				    }
+				 }, {
+						title : "修改",// 标题
+						linkInfoName : "href",
+						linkInfo : {
+							href : "anchor/manage/update/init.jhtml",
+							param : [ "id" ],
+							permission : "update"
+						}
+				} , {
+					title : "查看",// 标题
+					linkInfoName : "href",
+					linkInfo : {
+						href : "anchor/manage/update/init/anchorView.jhtml",
+						param : [ "id" ],
+						permission : "update"
+					}
+				} 
+			]
+		},
+		cols : [ {
+			title : "主播ID",
+			name : "id",
+			type : "string",
+			width : 150
+		}, {
+			title : "主播来源",
+			name : "anchorType",
+			type : "string",
+			width : 150
+		}, {
+			title : "接单权限",
+			name : "orderStatusStr",
+			type : "string",
+			width : 150
+		},  {
+			title : "主播信息",
+			name : "avatar",
+			type : "string",
+			width : 180,
+			customMethod : function(value, data) {
+				var anchorInfo="";
+				try{
+					anchorInfo +='<img style="width:50px;height:50px;float:left;margin-right:5px;" src="'+imgRoot+value + '"/>';
+					anchorInfo += data.nickname;
+					var levelName=data.levelName==undefined?"-":data.levelName;
+					anchorInfo += "("+levelName+")";
+					anchorInfo +="<br/>";
+					anchorInfo += data.phone;
+				}catch (e) {
+					console.log(e);
+				}
+				return anchorInfo;
+			}
+		},  {
+			title : "主播推荐人",
+			name : "verInfo",
+			type : "string",
+			width : 180,
+			customMethod : function(value, data) {
+				var verInfo="-";
+				try{
+					if(data.verName){
+						verInfo=data.verName;
+					}
+					if(data.verPhone){
+						verInfo=verInfo=="-"?"":verInfo;
+						verInfo+="<br/>("+data.verPhone+")";
+					}
+				}catch (e) {
+					console.log(e);
+				}
+				return verInfo;
+			}
+		},{
+			title : "当月场次",
+			name : "recordNum",
+			type : "string",
+			width : 150,
+			isLink : true,
+			link : {
+				linkInfoName : "href",
+				linkInfo : {
+					href : "liveRecord/manage/init.jhtml"
+				},
+				param : ["id","currentMonth"],
+				permission : "detail"
+			},
+			customMethod : function(value, data) {
+				try {
+					if (undefined == data.recordNum) {
+						return "0";
+					} else {
+						value = value.replace("currentMonth=", "currentMonth=Y");
+						return $(value).html(data.recordNum)[0].outerHTML;
+					}
+				} catch (e) {
+					console.log(e);
+				}
+			}
+		},{
+			title : "当月直播时长",
+			name :"liveTimeStr",
+			type : "string",
+			width : 150,
+			isLink : true,
+			link : {
+				linkInfoName : "href",
+				linkInfo : {
+					href : "liveRecord/manage/liveTimeInit.jhtml"
+				},
+				param : ["id","currentMonth"],
+				permission : "liveTimeInit"
+			},
+			customMethod : function(value, data) {
+				if(undefined==data.liveTimeStr){
+					return "0";
+				}else{
+					var result;
+					try{
+						value = value.replace("currentMonth=", "currentMonth=Y");
+						result = $(value).length>0?data.liveTimeStr+"<br>"+$(value).html("查看全部")[0].outerHTML:"-";
+					}catch(e){
+						console.log(e);
+						result = "-";
+					}
+					return result;
+				}
+			}
+		} ,{
+			title : "总场次",
+			name : "totalRecordNum",
+			type : "string",
+			width : 150,
+			isLink : true,
+			link : {
+				linkInfoName : "href",
+				linkInfo : {
+					href : "liveRecord/manage/init.jhtml"
+				},
+				param : ["id","currentMonth"],
+				permission : "detail"
+			},
+			customMethod : function(value, data) {
+				try {
+					if (undefined == data.totalRecordNum) {
+						return "0";
+					} else {
+						value = value.replace("currentMonth=", "currentMonth=");
+						return $(value).html(data.totalRecordNum)[0].outerHTML;
+					}
+				} catch (e) {
+					console.log(e);
+				}
+			}
+		},{
+			title : "总直播时长",
+			name :"totalLiveTimeStr",
+			type : "string",
+			width : 150,
+			isLink : true,
+			link : {
+				linkInfoName : "href",
+				linkInfo : {
+					href : "liveRecord/manage/liveTimeInit.jhtml"
+				},
+				param : ["id","currentMonth"],
+				permission : "liveTimeInit"
+			},
+			customMethod : function(value, data) {
+				if(undefined==data.totalLiveTimeStr){
+					return "0";
+				}else{
+					var result;
+					try{
+						value = value.replace("currentMonth=", "currentMonth=");
+						result = $(value).length>0?data.totalLiveTimeStr+"<br>"+$(value).html("查看全部")[0].outerHTML:"-";
+					}catch(e){
+						console.log(e);
+						result = "-";
+					}
+					return result;
+				}
+			}
+		} , {
+			title : "当前鸟蛋数",
+			name : "balance",
+			type : "string",
+			width : 150
+		}/*, {
+			title : "粉丝数量",
+			name : "concernedNums",
+			type : "string",
+			width : 150
+		}*/, {
+			title : "真实粉丝数",
+			name : "realFansNum",
+			type : "string",
+			width :150
+		} , {
+			title : "机器人粉丝数",
+			name : "robotFansNum",
+			type : "string",
+			width :150
+		} , {
+			title : "显示粉丝数",
+			name : "totalFansNum",
+			type : "string",
+			width :150
+		} ,{
+			title : "打赏分成",
+			name : "ledgerRatioSign",
+			type : "string",
+			width : 150
+		} ,/*{
+			title : "主播昵称",
+			name : "nickname",
+			type : "string",
+			width : 150
+		}, {
+			title : "等级",
+			name : "achievement",
+			type : "string",
+			width : 150
+		}, {
+			title : "主播手机号",
+			name : "phone",
+			type : "string",
+			width : 150
+		}, {
+			title : "主播排序",
+			name : "sortVal",
+			type : "string",
+			width : 150
+		}, {
+			title : "主播房间号",
+			name : "anchorRoomNo",
+			type : "string",
+			width : 150
+		},{
+			title : "个人信息",
+			name : "id",
+			type : "string",
+			isLink : true,
+			link : {
+				linkInfoName : "modal",
+				linkInfo : {
+					modal : {
+						url : "anchor/manage/detail/init.jhtml",
+						width : "auto",	
+						title : " 个人信息" 
+					}
+				},
+				param : ["id"],
+				permission : "detail",
+			},
+			customMethod : function(value, data) {
+				return $(value).html("查看详情");
+			},
+			width : 150
+		},{
+			title : "图文详情",
+			name : "imageCount",
+			type : "string",
+			isLink : true,
+			link : {
+				linkInfoName : "href",
+				linkInfo : {
+					href : "anchorBusiness/manage/anchorImage/anchorImageInit.jhtml"
+				},
+				param : ["id"],
+				permission : "anchorImageInit"
+			},
+			customMethod : function(value, data) {
+//				debugger;
+				if(undefined==data.imageCount){
+					return "-";
+				}else{
+					var result;
+					try{
+						result = $(value).length>0?data.imageCount+"<br>"+$(value).html("编辑相册")[0].outerHTML:"-";
+					}catch(e){
+						console.log(e);
+						result = "-";
+					}
+					return result;
+				}
+			},
+			width : 150
+		}, {
+			title : "关注",
+			name : "concernNums",
+			type : "string",
+			width : 150
+		} , {
+			title : "送出",
+			name : "giveGiftsNums",
+			type : "string",
+			width : 150
+		} , {
+			title : "鸟蛋总额(礼物、私信、弹幕收入)",
+			name : "birdEggTotal",
+			type : "string",
+			width : 250
+		} ,{
+			title : "送礼分成",
+			name : "ledgerRatioSign",
+			type : "string",
+			width : 150
+		} ,{
+			title : "售出粉丝券分成",
+			name : "saleCouponRatioSign",
+			type : "string",
+			width : 150
+		} ,{
+			title : "使用粉丝券分成",
+			name : "useCouponRationSign",
+			type : "string",
+			width : 150
+		},{
+			title : "主播来源",
+			name : "officeName",
+			type : "string",
+			width : 150
+		} ,
+		{
+			title : "正在直播",
+			name : "--",
+			type : "string",
+			width : 150,
+			customMethod : function(value, data) {
+				var result;
+				switch (value) {
+				case 1:
+					result = "直播地址";
+					break;
+				default:
+					result = "暂无直播";
+					break;
+				}
+				return result;
+			}
+		} ,{
+			title : "回放",
+			name : "playbackNum",
+			type : "string",
+			width : 150
+		} */
+		 ]
+	}, permissions);
+}
+
+/**
+ * 删除操作
+ */
+ function confirmDelete(id,uid){
+	 showSmConfirmWindow(function (){
+		 $.ajax({
+			 url : "anchor/manage/delete.jhtml",
+			 type : "post",
+			 dataType : "json",
+			 data:{id:id,uid:uid},
+			 success : function(result) {
+				 if (result.success) {
+					 showSmReslutWindow(result.success, result.msg);
+					 setTimeout(function() {
+						 anchorList.reload();
+						 loadCountAnchor();
+					 }, 3000);
+				 } else {
+					 window.messager.warning(result.msg);
+				 }
+			 }
+		 });
+	 },"该主播的所有通告将置为无效，并清零直播钱包数据，确定要停用吗？");
+ }
+ 
+ /**
+  * 主播状态设置
+  * @param id
+  * @param status
+  */
+  function setStatus(id,status){
+ 	 $.ajax({
+          url : "anchor/manage/update/init/updateStatus.jhtml",
+          type : "post",
+          dataType : "json",
+          data:{"id":id,"status":status},
+          success : function(result) {
+         	 if (result.success) {
+      			showSmReslutWindow(result.success, result.msg);
+      			setTimeout(function() {
+      				anchorList.reload();
+      				loadCountAnchor();
+      			}, 1000);
+      		} else {
+      			window.messager.warning(result.msg);
+      		}
+          }
+      });
+  }
+ 
+ 
+ /**
+  * 批量修改分成
+  */	
+ function updateBatchRatio(){
+ 	$("#updateBatchRatio").click(function(){
+ 		console.log(anchorList.getIds());
+ 		var ids=anchorList.getIds();
+ 		if(!anchorList.getIds()){
+ 			showWarningWindow("warning","请至少选择一条记录！");
+ 			return;
+ 		}
+ 		var modalTrigger = new ModalTrigger({
+ 			title:'修改选中主播分成',
+			type : 'ajax',
+			url : 'anchor/manage/updateBatchRatio/init.jhtml?ids=' + ids ,
+			toggle : 'modal'
+		});
+		modalTrigger.show();
+ 		
+ 	});
+ }
+ 
+ /**
+  * 批量配置粉丝
+  */
+ function configureFansBatch(){
+	 $("#configureFansBatch").click(function(){
+	 		var ids=anchorList.getIds();
+	 		var uids=anchorList.getValue("uid");
+	 		console.log("ids="+ids+";uids="+uids);
+	 		if(!anchorList.getIds()){
+	 			showWarningWindow("warning","请至少选择一条记录！");
+	 			return;
+	 		}
+	 		var modalTrigger = new ModalTrigger({
+	 			title:'修改选中主播机器人粉丝',
+				type : 'ajax',
+				url : 'anchor/manage/configureFansBatch/init.jhtml?ids='+ids+'&uids=' + uids ,
+				toggle : 'modal'
+			});
+			modalTrigger.show();
+	 		
+	 	});
+ }
+ 
+ 
+ /**
+  * 加载主播分类统计信息
+  */
+ function loadCountAnchor(){
+ 	$.ajax({
+ 		 url : "anchor/manage/init/loadCountAnchor.jhtml",
+ 		 type : "post",
+ 		 dataType : "json",
+ 		 data:{},
+ 		 success : function(result) {
+ 			 if (result.success) {
+ 				 var data=result.data;
+ 				 var content='';
+ 					//加载统计区间表单数据
+ 				 if(data){
+ 					 content +="<tr>"
+ 						 + "       <td>"+data.col0+"</td>"  				//签约主播
+ 		                 + "       <td>"+data.col1+"</td>"  				//兼职主播-普通
+ 		                 + "       <td>"+data.col2+"</td>"				 	//兼职主播-工会
+ 		                 + "       <td>"+data.col3+"</td>"	 				//兼职主播-活动
+ 		                 + "       <td>"+data.col4+"</td>"  				//兼职主播-其他
+ 		                 + "       <td>"+data.col5+"</td>"  				//删除主播
+ 		                 + "       <td>"+data.col6+"</td>"					//公司账号
+ 		                 + "       <td>"+data.col7+"</td>"					//大赛主播
+ 		                 + "</tr>" ;
+ 				 }else{
+ 					 content +="<tr ><td colspan='6'>暂无数据</td></tr>";
+ 				 }
+ 					 
+ 			        $("#countAnchor").html(content);
+ 			 } else {
+ 				 showSmReslutWindow(result.success, result.msg);
+ 			 }
+ 		 }
+ 	 });
+ }

@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.user_terminal.dao.TTopicCommentDao">
+
+	<parameterMap type="TTopicComment" id="tTopicComment" />
+	
+	<resultMap type="TTopicComment" id="tTopicCommentMap">
+		<result column="id" property="id" />
+		<result column="topic_id" property="topicId" />
+		<result column="content" property="content" />
+		<result column="userid" property="userId" />
+		<result column="nname" property="nname" />
+		<result column="type" property="type" />
+		<result column="time" property="time" />
+		<result column="status" property="status" />
+		<result column="pid" property="pid" />
+	</resultMap>
+	
+	<insert id="add" parameterMap="tTopicComment" >
+		INSERT INTO t_xmn_comm
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					`id`,
+				</if>
+			 	<if test=" null != topicId ">
+					`topic_id`,
+				</if>
+			 	<if test=" null != content and '' != content ">
+					`content`,
+				</if>			 					
+			 	<if test=" null != userId ">
+					`userid`,
+				</if>
+			 	<if test=" null != nname and '' != nname">
+					`nname`,
+				</if>
+			 	<if test=" null != type">
+					`type`,
+				</if>
+			 	<if test=" null != time">
+					`time`,
+				</if>
+				<if test=" null != status">
+					`status`,
+				</if>
+				<if test=" null != pid">
+					`pid`,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					 	#{id},
+				</if>
+			 	<if test=" null != topicId">
+					 	#{topicId},
+				</if>
+			 	<if test=" null != content and '' != content ">
+					 	#{content},
+				</if>
+			 	<if test=" null != userId ">
+					 	#{userId},
+				</if>
+			   <if test=" null != nname and '' != nname">
+					 	#{nname},
+				</if>
+			 	<if test=" null != type">
+					 	#{type},
+				</if>
+			 	<if test=" null != time">
+					 	#{time},
+				</if>
+			 	<if test=" null != status">
+					 	#{status},
+				</if>
+				<if test=" null != pid">
+					 	#{pid},
+				</if>
+			 	
+		</trim>
+	</insert>
+	
+	<!-- 根据id，删除单挑记录   使用与删除单条评论  和 回复-->
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_xmn_comm WHERE id IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 删除回复  在删除评论时，调用该方法，级联删除评论的所有回复-->
+	<delete id="deleteReply" parameterType="Object">
+		DELETE FROM t_xmn_comm WHERE pid IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 删除话题相关的评论和回复 -->
+	<delete id="deleteTopicComent" parameterType="Object">
+		DELETE FROM t_xmn_comm WHERE `topic_id` IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterMap="tTopicComment">
+		UPDATE t_xmn_comm
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != id">
+					 	`id` = #{id},
+				</if>
+			 	<if test=" null != topicId">
+					 	`topic_id` = #{topicId},
+				</if>
+			 	<if test=" null != content and '' != content ">
+					 	`content` = #{content},
+				</if>
+			 	<if test=" null != userId ">
+					 	`userId` = #{userId},
+				</if>
+			   <if test=" null != nname and '' != nname">
+					 	`nname` = #{nname},
+				</if>
+			 	<if test=" null != type">
+					 	`type` = #{type},
+				</if>
+			 	<if test=" null != time">
+					 	`time` = #{time},
+				</if>
+			 	<if test=" null != status">
+					 	`status` = #{status},
+				</if>
+				<if test=" null != pid">
+					 	`pid` = #{pid},
+				</if>
+				
+			</trim>
+		</set>
+		<where>
+			<if test="null != id and '' != id">
+				id = #{id}
+			</if>
+		</where>
+	</update>
+	
+	<select id="count" resultType="Long" parameterMap="tTopicComment">
+		SELECT COUNT(*) FROM t_xmn_comm
+		<where>
+			1=1
+			<if test=" null != id">
+				AND `id` = #{id}
+			</if>
+			<if test=" null != topicId">
+				AND `topic_id` = #{topicId}
+			</if>			
+			<if test=" null != content and '' != content ">
+				AND `content` LIKE '%${content}%'
+			</if>
+			<if test=" null != userId and '' != userId ">
+				AND `userid` = #{userId}
+			</if>
+			<if test=" null != nname and '' != nname ">
+				AND `nname` LIKE '%${nname}%'
+			</if>
+			<if test=" null != type ">
+				AND `type` = #{type}
+			</if>
+			<if test=" null != time">
+				AND `time` = #{time}
+			</if>
+			<if test=" null != status">
+				AND `status` = #{status}
+			</if>
+			<if test=" null != pid">
+				AND `pid` = #{pid}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 统计topic的评论数 -->
+	<select id="countComment" resultType="Long" parameterType="Integer">
+		SELECT COUNT(*) FROM t_xmn_comm 
+		WHERE `topic_id` = #{0} 
+		AND `type` = 0
+		AND `pid` = 0
+	</select>
+	
+	<select id="getList" resultMap="tTopicCommentMap" parameterType="tTopicComment">
+		SELECT * FROM t_xmn_comm
+		<where>
+			1=1
+			<if test=" null != id">
+				AND `id` = #{id}
+			</if>
+			<if test=" null != topicId">
+				AND `topic_id` = #{topicId}
+			</if>			
+			<if test=" null != content and '' != content ">
+				AND `content` LIKE '%${content}%'
+			</if>
+			<if test=" null != userId and '' != userId ">
+				AND `userid` = #{userId}
+			</if>
+			<if test=" null != nname and '' != nname ">
+				AND `nname` LIKE '%${nname}%'
+			</if>
+			<if test=" null != type ">
+				AND `type` = #{type}
+			</if>
+			<if test=" null != time">
+				AND `time` = #{time}
+			</if>
+			<if test=" null != status">
+				AND `status` = #{status}
+			</if>
+			<if test=" null != pid">
+				AND `pid` = #{pid}
+			</if>
+		</where>
+			ORDER BY id DESC 
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<!-- 获取topic相关的话题的评论  -->
+	<select id="getTopicCommentList" resultMap="tTopicCommentMap" parameterType="Long">
+		SELECT * FROM t_xmn_comm
+			WHERE `topic_id` = #{0} 
+			AND `type` = 0 
+			AND `pid` = 0 
+		ORDER BY id 
+	</select>
+	
+	<select id="getMaxId"   resultType="Integer">
+		SELECT Max(id) AS VALUE FROM t_xmn_comm
+	</select>
+	
+	<select id="getObject" resultMap="tTopicCommentMap" parameterType="Long">
+		SELECT * FROM t_xmn_comm WHERE id = #{0}
+	</select>
+			
+</mapper>

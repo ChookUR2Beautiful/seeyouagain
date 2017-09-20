@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.SpecialTopicRelationDao" >
+  <parameterMap type="SpecialTopicRelation" id="specialTopicRelation" />
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.businessman.entity.TSpecialTopicRelation" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="topic_type" property="topicType" jdbcType="INTEGER" />
+    <result column="sub_id" property="subId" jdbcType="VARCHAR" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="sub_name" property="subName" jdbcType="LONGVARCHAR" />
+  </resultMap>
+   
+  <sql id="Base_Column_List" >
+    id, fid, topic_type, sub_id, sort, update_time, sub_name
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_special_topic_relation
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_special_topic_relation
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.businessman.entity.TSpecialTopicRelation" >
+    insert into t_special_topic_relation
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="fid != null" >
+        fid,
+      </if>
+      <if test="topicType != null" >
+        topic_type,
+      </if>
+      <if test="subId != null" >
+        sub_id,
+      </if>
+      <if test="sort != null" >
+        sort,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="subName != null" >
+        sub_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="fid != null" >
+        #{fid,jdbcType=INTEGER},
+      </if>
+      <if test="topicType != null" >
+        #{topicType,jdbcType=INTEGER},
+      </if>
+      <if test="subId != null" >
+        #{subId,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null" >
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="subName != null" >
+        #{subName,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.businessman.entity.TSpecialTopicRelation" >
+    update t_special_topic_relation
+    <set >
+      <if test="fid != null" >
+        fid = #{fid,jdbcType=INTEGER},
+      </if>
+      <if test="topicType != null" >
+        topic_type = #{topicType,jdbcType=INTEGER},
+      </if>
+      <if test="subId != null" >
+        sub_id = #{subId,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null" >
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="subName != null" >
+        sub_name = #{subName,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+
+	<!-- 自定义SQL区域; -->
+	<select id="getSpecialTopicRelationDataList" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_special_topic_relation
+		where fid = #{fid,jdbcType=INTEGER}
+	</select>
+
+
+	<!-- 关联的商户信息 -->
+	<select id="getSellerRelationDataList" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT
+		<include refid="Base_Column_List" />
+		, tr.address AS relationAddress FROM t_special_topic_relation t
+		INNER JOIN (SELECT * FROM t_seller WHERE ismultiple = 0) tr ON t.sub_id = tr.sellerid
+		WHERE t.fid = #{fid,jdbcType=INTEGER}
+	</select>
+	
+	<!-- 关联的连锁店信息 -->
+	<select id="getMultipRelationDataList" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT
+		<include refid="Base_Column_List" />
+		, tr.address AS relationAddress FROM t_special_topic_relation t
+		INNER JOIN (SELECT * FROM t_seller WHERE ismultiple = 1) tr ON t.sub_id = tr.sellerid
+		WHERE t.fid = #{fid,jdbcType=INTEGER}
+	</select>
+
+
+	<!-- 关联的区域理店信息 -->
+	<select id="getAllianceRelationDataList" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT 
+		<include refid="Base_Column_List" />
+        , tr.subShopNum AS relationNum FROM t_special_topic_relation t
+		INNER JOIN (SELECT t.id as trId,
+		(SELECT COUNT(*) FROM t_alliance_relation tl WHERE t.id = tl.id ) AS subShopNum
+		FROM t_alliance t) tr  ON t.sub_id = tr.trId
+		WHERE t.fid = #{fid,jdbcType=INTEGER}
+	</select>
+
+	<!-- 关联的预告信息 -->
+	<select id="getBeforliveRelationDataList" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT 
+		<include refid="Base_Column_List" />
+		, tr.zhibo_title, tr.sellername as relationName, tr.nname as relationStore FROM
+		t_special_topic_relation t
+		INNER JOIN (SELECT t.id as trId, t.zhibo_title, t.sellername, t.nname FROM t_live_record t) tr
+		ON t.sub_id = tr.trId
+		WHERE t.fid = #{fid,jdbcType=INTEGER}
+	</select>
+	
+	
+	<!-- 关联的粉丝券信息 -->
+	<select id="getFansCouponRelationDataList" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT <include refid="Base_Column_List" />
+		, tr.cid, tr.cname as relationName, tr.sellername as relationStore FROM t_special_topic_relation t
+		INNER JOIN (SELECT t.cid, t.cname, t1.sellername FROM t_coupon t LEFT
+		JOIN t_seller t1 ON t.sellerid = t1.sellerid) tr
+		ON t.sub_id = tr.cid
+		WHERE t.fid = #{fid,jdbcType=INTEGER}
+	</select>
+	
+	
+	<!-- 关联的套餐信息 -->
+	<select id="getSellerPackageRelationDataList" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT 
+		<include refid="Base_Column_List" />
+		, tr.sellername FROM t_special_topic_relation t
+		INNER JOIN (SELECT t.id as trId, t1.sellername
+		FROM t_seller_package t LEFT JOIN t_seller t1 ON t.sellerid = t1.sellerid) tr
+		ON t.sub_id = tr.trId
+        WHERE t.fid = #{fid,jdbcType=INTEGER}
+	</select>
+	       
+	       
+	<!-- 关联的粉丝券信息 -->
+	<select id="getProductInfoRelationDataList" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT 
+		<include refid="Base_Column_List" />
+		, tr.store FROM t_special_topic_relation t
+		INNER JOIN (SELECT t.pid, t.store
+		FROM t_product_info t ) tr
+		ON t.sub_id = tr.pid WHERE t.fid = 15;
+
+	</select>
+
+
+	<delete id="deleteSpecialTopicRelationByFid" parameterType="java.lang.Integer">
+		delete from t_special_topic_relation
+		where fid = #{fid,jdbcType=INTEGER}
+	</delete>      
+
+	
+</mapper>

@@ -1,0 +1,186 @@
+package com.xmniao.xmn.core.live_anchor.entity;
+
+import java.util.Date;
+
+import com.xmniao.xmn.core.base.BaseEntity;
+
+public class BVerAnchorRelation extends BaseEntity {
+	
+    /**
+	 * 主播招募管理
+	 */
+	private static final long serialVersionUID = -612311430048221070L;
+
+	private Integer id;
+
+    private Integer uid;
+
+    private Integer rechargeId;
+
+    private Integer anchorUid;
+
+    private Integer recommendStatus;
+
+    private String refuseReason;
+
+    private Date createTime;
+
+    private Date updateTime;
+    
+    // 自定义字段
+    private String phone;
+
+    private String name;
+
+    private Integer sex;
+    
+    private Integer liveType;
+    
+    private String liveTypeDesc;
+
+    private String sourceChannelDesc;
+    
+    private String nickname;
+ 
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone  = phone == null ? null : phone.trim();
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name  = name == null ? null : name.trim();
+	}
+
+	public Integer getSex() {
+		return sex;
+	}
+
+	public void setSex(Integer sex) {
+		this.sex = sex;
+	}
+	
+	
+	public Integer getLiveType() {
+		return liveType;
+	}
+
+	public void setLiveType(Integer liveType) {
+		this.liveType = liveType;
+	}
+
+	public String getLiveTypeDesc() {
+		return liveTypeDesc;
+	}
+
+	public void setLiveTypeDesc(String liveTypeDesc) {
+		this.liveTypeDesc = liveTypeDesc;
+	}
+
+	public String getSourceChannelDesc() {
+		return sourceChannelDesc;
+	}
+
+	public void setSourceChannelDesc(String sourceChannelDesc) {
+		this.sourceChannelDesc = sourceChannelDesc;
+	}
+	
+	 // 自定义字段结束
+	
+
+	public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getUid() {
+        return uid;
+    }
+
+    public void setUid(Integer uid) {
+        this.uid = uid;
+    }
+
+    public Integer getRechargeId() {
+        return rechargeId;
+    }
+
+    public void setRechargeId(Integer rechargeId) {
+        this.rechargeId = rechargeId;
+    }
+
+    public Integer getAnchorUid() {
+        return anchorUid;
+    }
+
+    public void setAnchorUid(Integer anchorUid) {
+        this.anchorUid = anchorUid;
+    }
+
+    public Integer getRecommendStatus() {
+        return recommendStatus;
+    }
+
+    public void setRecommendStatus(Integer recommendStatus) {
+        this.recommendStatus = recommendStatus;
+    }
+
+    public String getRefuseReason() {
+        return refuseReason;
+    }
+
+    public void setRefuseReason(String refuseReason) {
+        this.refuseReason = refuseReason == null ? null : refuseReason.trim();
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
+	public String getNickname() {
+		return nickname;
+	}
+
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
+	}
+
+	@Override
+	public String toString() {
+		return "BVerAnchorRelation [id=" + id + ", uid=" + uid
+				+ ", rechargeId=" + rechargeId + ", anchorUid=" + anchorUid
+				+ ", recommendStatus=" + recommendStatus + ", refuseReason="
+				+ refuseReason + ", createTime=" + createTime + ", updateTime="
+				+ updateTime + ", phone=" + phone + ", name=" + name + ", sex="
+				+ sex + ", liveType=" + liveType + ", liveTypeDesc="
+				+ liveTypeDesc + ", sourceChannelDesc=" + sourceChannelDesc
+				+ ", nickname=" + nickname + "]";
+	}
+
+	
+
+
+    
+}

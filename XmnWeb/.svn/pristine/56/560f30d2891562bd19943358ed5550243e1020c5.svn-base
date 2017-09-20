@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.business_cooperation.dao.SellerAskDao">
+
+	<parameterMap type="SellerAsk" id="sellerAsk" />
+	
+	<resultMap type="SellerAsk" id="sellerAskMap">
+		<result column="aid" property="aid" />
+		<result column="askname" property="askname" />
+		<result column="content" property="content" />
+		<result column="sdate" property="sdate" />
+	</resultMap>
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_seller_ask
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						askname,
+						content,
+						sdate,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.askname},
+						 #{item.content},
+						 #{item.sdate},
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" parameterMap="sellerAsk" >
+		INSERT INTO t_seller_ask
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != aid">
+					aid,
+				</if>
+			 	<if test=" null != askname and '' != askname ">
+					askname,
+				</if>
+			 	<if test=" null != content and '' != content ">
+					content,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != aid">
+					 	#{aid},
+				</if>
+			 	<if test=" null != askname and '' != askname ">
+					 	#{askname},
+				</if>
+			 	<if test=" null != content and '' != content ">
+					 	#{content},
+				</if>
+			 	<if test=" null != sdate">
+					 	#{sdate},
+				</if>
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_seller_ask WHERE aid IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterMap="sellerAsk">
+		UPDATE t_seller_ask
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != aid">
+					aid = #{aid},
+				</if>
+				<if test=" null != askname and '' != askname ">
+					askname = #{askname},
+				</if>
+				<if test=" null != content and '' != content ">
+					content = #{content},
+				</if>
+				<if test=" null != sdate">
+					sdate = #{sdate},
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="null != aid and '' != aid">
+				aid = #{aid}
+			</if>
+		</where>
+	</update>
+	
+	<select id="getList" resultMap="sellerAskMap" parameterMap="sellerAsk">
+		SELECT * FROM t_seller_ask
+		<where>
+			1=1
+			<if test=" null != aid">
+				AND aid = #{aid}
+			</if>
+			<if test=" null != askname and '' != askname ">
+				AND askname LIKE '%${askname}%'
+			</if>
+			<if test=" null != content and '' != content ">
+				AND content LIKE '%${content}%'
+			</if>
+			<if test=" null != sdateStart and '' != sdateStart">
+				AND  sdate &lt;= #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd and '' !=sdateEnd">
+				AND  sdate &lt;= #{sdateEnd}
+			</if>
+		</where>
+			ORDER BY aid DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="sellerAsk">
+		SELECT COUNT(*) FROM t_seller_ask
+		<where>
+			1=1
+			<if test=" null != aid">
+				AND aid = #{aid}
+			</if>
+			<if test=" null != askname and '' != askname ">
+				AND askname LIKE '%${askname}%'
+			</if>
+			<if test=" null != content and '' != content ">
+				AND content LIKE '%${content}%'
+			</if>
+			<if test=" null != sdateStart and '' != sdateStart">
+				AND  sdate &lt;= #{sdateStart}
+			</if>
+			<if test=" null != sdateEnd and '' !=sdateEnd">
+				AND  sdate &lt;= #{sdateEnd}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Integer">
+		SELECT Max(aid) AS VALUE FROM t_seller_ask
+	</select>
+	
+	<select id="getObject" resultMap="sellerAskMap" parameterType="Long">
+		SELECT * FROM t_seller_ask WHERE aid = #{0}
+	</select>
+	
+</mapper>

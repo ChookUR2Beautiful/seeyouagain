@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.SellerPicDao">
+
+	<parameterMap type="SellerPic" id="sellerPic" />
+	
+	<resultMap type="SellerPic" id="sellerPicMap">
+		<result column="picid" property="picid" />
+		<result column="sellerid" property="sellerid" />
+		<result column="pid" property="pid" />
+		<result column="breviary" property="breviary" />
+		<result column="picurl" property="picurl" />
+		<result column="bewrite" property="bewrite" />
+		<result column="sdate" property="sdate" />
+		<result column="type" property="type" />
+	</resultMap>
+	
+	<resultMap type="MSellerPic" id="msellerPicMap">
+		<result column="breviary" property="breviary" />
+		<result column="picurl" property="picurl" />
+		<result column="bewrite" property="bewrite" />
+	</resultMap>
+	
+	
+	
+	<insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_log
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						sellerid,
+						pid,
+						breviary,
+						picurl,
+						bewrite,
+						sdate,
+						islogo,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.sellerid},
+						 #{item.pid},
+						 #{item.breviary},
+						 #{item.picurl},
+						 #{item.bewrite},
+						 #{item.sdate},
+						 #{item.islogo},
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="add" parameterMap="sellerPic" >
+		INSERT INTO t_seller_pic
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != picid">
+					picid,
+				</if>
+			 	<if test=" null != sellerid">
+					sellerid,
+				</if>
+			 	<if test=" null != pid">
+					pid,
+				</if>
+			 	<if test=" null != breviary and '' != breviary ">
+					breviary,
+				</if>
+			 	<if test=" null != picurl and '' != picurl ">
+					picurl,
+				</if>
+			 	<if test=" null != bewrite and '' != bewrite ">
+					bewrite,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+			 	<if test=" null != islogo">
+					islogo,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != picid">
+					 	#{picid},
+				</if>
+			 	<if test=" null != sellerid">
+					 	#{sellerid},
+				</if>
+			 	<if test=" null != pid">
+					 	#{pid},
+				</if>
+			 	<if test=" null != breviary and '' != breviary ">
+					 	#{breviary},
+				</if>
+			 	<if test=" null != picurl and '' != picurl ">
+					 	#{picurl},
+				</if>
+			 	<if test=" null != bewrite and '' != bewrite ">
+					 	#{bewrite},
+				</if>
+			 	<if test=" null != sdate">
+					 	#{sdate},
+				</if>
+			 	<if test=" null != islogo">
+					 	#{islogo},
+				</if>
+		</trim>
+	</insert>
+	
+	<insert id="addReturnId" parameterMap="sellerPic" useGeneratedKeys="true" keyProperty="picid"
+		keyColumn="picid">
+		INSERT INTO t_seller_pic
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != picid">
+					picid,
+				</if>
+			 	<if test=" null != sellerid">
+					sellerid,
+				</if>
+			 	<if test=" null != pid">
+					pid,
+				</if>
+			 	<if test=" null != breviary and '' != breviary ">
+					breviary,
+				</if>
+			 	<if test=" null != picurl and '' != picurl ">
+					picurl,
+				</if>
+			 	<if test=" null != bewrite and '' != bewrite ">
+					bewrite,
+				</if>
+			 	<if test=" null != sdate">
+					sdate,
+				</if>
+			 	<if test=" null != islogo">
+					islogo,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != picid">
+					 	#{picid},
+				</if>
+			 	<if test=" null != sellerid">
+					 	#{sellerid},
+				</if>
+			 	<if test=" null != pid">
+					 	#{pid},
+				</if>
+			 	<if test=" null != breviary and '' != breviary ">
+					 	#{breviary},
+				</if>
+			 	<if test=" null != picurl and '' != picurl ">
+					 	#{picurl},
+				</if>
+			 	<if test=" null != bewrite and '' != bewrite ">
+					 	#{bewrite},
+				</if>
+			 	<if test=" null != sdate">
+					 	#{sdate},
+				</if>
+			 	<if test=" null != islogo">
+					 	#{islogo},
+				</if>
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_seller_pic WHERE picid IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 删除不存在的环境图片 -->
+	<delete id="deleteEnviByPicidNotIn" parameterType="sellerPic">
+		DELETE FROM t_seller_pic WHERE sellerid = #{sellerid} AND islogo = 0 AND NOT FIND_IN_SET(picid,#{picids});
+	</delete>
+	
+	<update id="update" parameterMap="sellerPic">
+		UPDATE t_seller_pic
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != picid">
+					picid = #{picid},
+				</if>
+				<if test=" null != sellerid">
+					sellerid = #{sellerid},
+				</if>
+				<if test=" null != pid">
+					pid = #{pid},
+				</if>
+				<if test=" null != breviary and '' != breviary ">
+					breviary = #{breviary},
+				</if>
+				<if test=" null != picurl">
+					picurl = #{picurl},
+				</if>
+				<if test=" null != bewrite and '' != bewrite ">
+					bewrite = #{bewrite},
+				</if>
+				<if test=" null != sdate">
+					sdate = #{sdate},
+				</if>
+				<if test=" null != islogo">
+					islogo = #{islogo},
+				</if>
+			</trim>
+		</set>
+		<where>
+			1=1
+			<if test="null != picid and '' != picid">
+				AND picid = #{picid}
+			</if>
+			<if test=" null != islogo">
+				AND	islogo = #{islogo}
+			</if>
+			<if test=" null != sellerid">
+				AND sellerid = #{sellerid}
+			</if>
+		</where>
+	</update>
+	
+	<select id="getList" resultMap="sellerPicMap" parameterMap="sellerPic">
+		SELECT * FROM t_seller_pic
+		<where>
+			1=1
+			<if test=" null != picid">
+				AND picid = #{picid}
+			</if>
+			<if test=" null != sellerid">
+				AND sellerid = #{sellerid}
+			</if>
+			<if test=" null != pid">
+				AND pid = #{pid}
+			</if>
+			<if test=" null != breviary and '' != breviary ">
+				AND breviary LIKE '%${breviary}%'
+			</if>
+			<if test=" null != picurl and '' != picurl ">
+				AND picurl LIKE '%${picurl}%'
+			</if>
+			<if test=" null != bewrite and '' != bewrite ">
+				AND bewrite LIKE '%${bewrite}%'
+			</if>
+			<if test=" null != sdate">
+				AND sdate = #{sdate}
+			</if>
+			<if test=" null != islogo">
+				AND islogo = #{islogo}
+			</if>
+		</where>
+			ORDER BY picid DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="sellerPic">
+		SELECT COUNT(*) FROM t_seller_pic
+		<where>
+			1=1
+			<if test=" null != picid">
+				AND picid = #{picid}
+			</if>
+			<if test=" null != sellerid">
+				AND sellerid = #{sellerid}
+			</if>
+			<if test=" null != pid">
+				AND pid = #{pid}
+			</if>
+			<if test=" null != breviary and '' != breviary ">
+				AND breviary LIKE '%${breviary}%'
+			</if>
+			<if test=" null != picurl and '' != picurl ">
+				AND picurl LIKE '%${picurl}%'
+			</if>
+			<if test=" null != bewrite and '' != bewrite ">
+				AND bewrite LIKE '%${bewrite}%'
+			</if>
+			<if test=" null != sdate">
+				AND sdate = #{sdate}
+			</if>
+			<if test=" null != islogo">
+				AND islogo = #{islogo}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMaxId"   resultType="Integer">
+		SELECT Max(picid) AS VALUE FROM t_seller_pic
+	</select>
+	
+	<select id="getObject" resultMap="sellerPicMap" parameterType="Long">
+		SELECT * FROM t_seller_pic WHERE picid = #{0}
+	</select>
+	<select id="getSellerLogo" resultMap="sellerPicMap" parameterType="Long">
+		SELECT * FROM t_seller_pic WHERE sellerid = #{0} AND islogo=1
+	</select>
+	<select id="getSellerPic" resultMap="sellerPicMap" parameterType="Long">
+		SELECT * FROM t_seller_pic WHERE sellerid = #{0} AND islogo=2
+	</select>
+	
+	<!-- mongodb 商家logo对象信息 -->
+	<select id="getMSellerLogo" resultMap="msellerPicMap" parameterType="Long">
+		SELECT breviary,picurl,bewrite FROM t_seller_pic WHERE sellerid = #{0} AND islogo=1
+	</select>
+	
+	<!-- mongodb 商家封面对象信息 -->
+	<select id="getMSellerCover" resultMap="msellerPicMap" parameterType="Long">
+		SELECT breviary,picurl,bewrite FROM t_seller_pic WHERE sellerid = #{0} AND islogo=2
+	</select>
+	
+	<!-- mongodb 商家环境对象信息 -->
+	<select id="getMSellerPics" resultMap="msellerPicMap" parameterType="Long">
+		SELECT breviary,picurl,bewrite FROM t_seller_pic WHERE sellerid = #{0} AND islogo=0
+	</select>
+	<!-- 批量更新环境图 -->
+    <update id="batchUpdate"  parameterType="Object">
+          <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+                update t_seller_pic
+                set breviary=#{item.breviary},picurl=#{item.picurl},bewrite=#{item.bewrite},sdate=#{item.sdateStr},islogo=#{item.islogo}
+                where picid = #{item.picid}
+         </foreach>
+    </update>
+    <!-- 删除某个商家的环境图 -->
+    <delete id="deleteSellerPic">
+       DELETE FROM t_seller_pic WHERE sellerid = #{sellerid} AND islogo IN(${types})
+    </delete>
+    <!-- 批量新增环境图 -->
+    <insert id="batchAdd" parameterType="java.util.List">
+		INSERT INTO t_seller_pic(sellerid,breviary,picurl,bewrite,sdate,islogo)VALUES
+		<foreach collection="list" item="item" index="index" separator="," >
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+					 #{item.sellerid},
+					 #{item.picurl},
+					 #{item.picurl},
+					 #{item.picname},
+					 #{item.updateDate},
+					 #{item.type},
+			</trim>
+		</foreach>
+    </insert>
+</mapper>

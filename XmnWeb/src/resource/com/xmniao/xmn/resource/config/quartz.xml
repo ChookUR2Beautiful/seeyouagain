@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 	
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-3.2.xsd 
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-3.2.xsd 
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+
+
+	<!-- 业务系统定时处理商户前一天订单数据的实现类 -->
+	<bean id="liveReferrerQuartz" class="com.xmniao.xmn.core.live_anchor.quartz.TLiveReferrerQuartzService" />
+	<!-- 定时处理前一天的订单数据队列 -->
+	<bean id="liveReferrerCensusQuartz"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="liveReferrerQuartz"></property>
+		<property name="targetMethod" value="liveReferrerCensusByDay"></property>
+		<!-- 是否允许任务并发执行。当值为false时，表示必须等到前一个线程处理完毕后才再启一个新的线程 --> 
+		<property name="concurrent" value="false"></property>
+	</bean>
+	<bean id="liveReferrerTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="liveReferrerCensusQuartz"></property>
+		<!-- 每天定时0点30分进行商家日统计 格式: [秒] [分] [小时] [日] [月] [周] [年]-->
+		<property name="cronExpression" value="0 45 0 * * ?"></property>
+	</bean>
+	
+
+	<!-- 定时任务业务处理的调度工厂 -->
+	<bean lazy-init="false" autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<!-- 直播企业推荐人下线统计定时任务 -->
+				<!-- <ref bean="liveReferrerTrigger" /> -->
+				<!-- 注入打赏活动业务定时处理 -->
+				<!-- <ref bean="rewardActtyTrigger" /> -->
+			</list>
+		</property>
+	</bean>
+	
+	
+</beans>

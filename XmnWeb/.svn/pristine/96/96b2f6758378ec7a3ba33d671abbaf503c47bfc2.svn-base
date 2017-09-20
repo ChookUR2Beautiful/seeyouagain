@@ -1,0 +1,39 @@
+# For all other servers: Comment out the Log4J listener in web.xml to activate Log4J.
+# Global logging configuration
+log4j.rootLogger=info,A1,R_INFO,R_ERROR
+
+#log4j.rootLogger=debug, stdout, R 
+
+log4j.appender.A1=org.apache.log4j.ConsoleAppender
+log4j.appender.A1.layout=org.apache.log4j.PatternLayout
+log4j.appender.A1.layout.ConversionPattern=%d %5p [%t] (%F:%L) - %m%n
+
+log4j.appender.R_INFO=org.apache.log4j.DailyRollingFileAppender
+##${catalina.home}/logs/saasService/info.log
+log4j.appender.R_INFO.File=${catalina.home}/logs/XmnWeb/info.log
+log4j.appender.R_ERROR.Threshold=ERROR
+log4j.appender.R_INFO.DatePattern='.'yyyy-MM-dd'.log'
+log4j.appender.R_INFO.layout=org.apache.log4j.PatternLayout
+log4j.appender.R_INFO.layout.ConversionPattern=[%p] %d %c - %m%n
+
+log4j.appender.R_ERROR=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.R_ERROR.File=${catalina.home}/logs/XmnWeb/error.log
+log4j.appender.R_ERROR.DatePattern='.'yyyy-MM-dd'.log'
+log4j.appender.R_ERROR.layout=org.apache.log4j.PatternLayout
+log4j.appender.R_ERROR.layout.ConversionPattern=[%p] %d %c - %m%n
+
+#log4j.logger.com.ibatis=DEBUG
+#log4j.logger.com.ibatis.common.jdbc.SimpleDataSource=DEBUG
+#log4j.logger.com.ibatis.sqlmap.engine.cache.CacheModel=DEBUG
+#log4j.logger.com.ibatis.sqlmap.engine.impl.SqlMapClientImpl=DEBUG
+#log4j.logger.com.ibatis.sqlmap.engine.builder.xml.SqlMapParser=DEBUG
+#log4j.logger.com.ibatis.common.util.StopWatch=DEBUG
+#log4j.logger.java.sql.Connection=DEBUG
+#log4j.logger.java.sql.Statement=DEBUG
+#log4j.logger.java.sql.PreparedStatement=DEBUG
+#log4j.logger.java.sql.ResultSet=DEBUG
+
+log4j.logger.java.sql.Connection = DEBUG
+log4j.logger.java.sql.Statement = DEBUG
+log4j.logger.java.sql.PreparedStatement = DEBUG
+log4j.logger.java.sql.ResultSet =DEBUG

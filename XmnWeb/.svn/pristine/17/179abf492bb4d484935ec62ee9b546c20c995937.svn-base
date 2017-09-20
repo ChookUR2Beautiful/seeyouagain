@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.reward_dividends.dao.BursEarningsRelationDao" >
+
+  <resultMap id="bursEarningsRelationMap" type="com.xmniao.xmn.core.reward_dividends.entity.BursEarningsRelation" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="object_oriented" property="objectOriented" jdbcType="INTEGER" />
+    <result column="uid_relation_chain_level" property="uidRelationChainLevel" jdbcType="INTEGER" />
+    <result column="indirect_uid" property="indirectUid" jdbcType="INTEGER" />
+    <result column="referrer_sellerid" property="referrerSellerid" jdbcType="INTEGER" />
+    <result column="referrer_sellertype" property="referrerSellertype" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="uid_relation_chain" property="uidRelationChain" jdbcType="LONGVARCHAR" />
+    <result column="uid_relation_chain_nname" property="uidRelationChainNname" jdbcType="LONGVARCHAR" />
+    <result column="nname" property="nname" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="indirect_name" property="indirectName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  
+  <sql id="bursEarningsRelation_column_list" >
+    relation.id, relation.uid, relation.object_oriented, relation.uid_relation_chain_level, relation.indirect_uid, relation.referrer_sellerid, 
+    relation.referrer_sellertype, relation.create_time,relation.uid_relation_chain, relation.uid_relation_chain_nname
+  </sql>
+  
+  <select id="getObjectById" resultMap="bursEarningsRelationMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="bursEarningsRelation_column_list" />,
+    urs.nname,
+	urs.phone
+    from b_urs_earnings_relation relation
+    LEFT JOIN b_urs urs ON relation.uid = urs.uid
+    where relation.id = #{id,jdbcType=INTEGER}
+    <![CDATA[
+    		AND relation.object_oriented<5
+   	]]>
+  </select>
+ 
+ 
+ <select id="getBaseList" resultMap="bursEarningsRelationMap" parameterType="Map" >
+    select 
+    <include refid="bursEarningsRelation_column_list" />
+    from b_urs_earnings_relation relation
+    <where>
+    	<if test="objectOriented != null and objectOriented != '' ">
+    		relation.object_oriented = #{objectOriented}
+    	</if>
+    	<if test="uids != null and uids != '' ">
+    		AND relation.uid in
+    		<foreach item="item" index="index" collection="uids"  open="(" separator="," close=") ">
+		 		#{item}
+			</foreach>
+    	</if>
+    </where>
+  </select>
+ 
+  
+  <select id="getList" resultMap="bursEarningsRelationMap" parameterType="com.xmniao.xmn.core.reward_dividends.entity.BursEarningsRelation" >
+    SELECT
+    	relation.id,
+	    relation.uid,
+	    relation.indirect_uid,
+	    relation.referrer_sellerid,
+	    relation.uid_relation_chain,
+	    relation.object_oriented,
+	    urs.nname,
+	    urs.phone,
+	    urs2.nname AS indirect_name,
+	    relation.uid_relation_chain_level
+	FROM
+	    b_urs_earnings_relation relation
+	LEFT JOIN b_urs urs ON relation.uid = urs.uid 				<!-- 当前会员 -->
+	LEFT JOIN b_urs urs2 ON relation.indirect_uid = urs2.uid	<!-- V客会员间接上级 -->
+    <where>
+    	<![CDATA[
+    		AND relation.object_oriented<5
+    	]]>
+    	<if test="uid != null and uid != '' ">
+    		AND relation.uid = #{uid,jdbcType=INTEGER}
+    	</if>
+    	<if test="phone != null and phone != '' ">
+    		AND urs.phone like  '%${phone}%'
+    	</if>
+    	<if test="nname != null and nname != '' ">
+    		AND urs.nname like  '%${nname}%'
+    	</if>
+    	<if test="objectOriented != null and objectOriented != '' ">
+    		AND relation.object_oriented = #{objectOriented,jdbcType=INTEGER}
+    	</if>
+    </where>
+    <if test="order != -1">
+    	order by relation.uid DESC
+    </if>
+    <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <!-- 获取会员列表 -->
+  <select id="getLiverInfoList" resultType="com.xmniao.xmn.core.live_anchor.entity.BLiver" parameterType="com.xmniao.xmn.core.live_anchor.entity.BLiver">
+  	SELECT
+		liver.id,
+		liver.uid,
+	  	urs.phone,
+	  	urs.nname AS nickname
+	FROM
+		b_liver liver
+	LEFT JOIN b_urs urs ON liver.uid = urs.uid
+	LEFT JOIN b_urs_earnings_relation relation on relation.uid = liver.uid
+	<where>
+		<![CDATA[
+    		AND relation.object_oriented<5
+    	]]>
+    	<if test=" null != id and '' != id ">
+  			AND liver.id=#{id}
+  		</if>
+		<if test="objectOriented != null and objectOriented != '' ">
+    		AND relation.object_oriented = #{objectOriented,jdbcType=INTEGER}
+    	</if>
+    	<!-- filterVal 当前会员的UID(不足11位,前面补0),用于排除等下级 -->
+		<if test=" null != filterVal and '' != filterVal">
+			AND relation.uid_relation_chain NOT LIKE '%${filterVal}%'
+		</if>
+		<!-- 搜索框输入值 -->
+		<if test=" null != showValue and '' != showValue">
+			AND (urs.nname like '%${showValue}%' OR urs.phone like '%${showValue}%')
+		</if>
+	</where> 
+	<if test="order != -1">
+    	order by relation.create_time DESC
+    </if>
+    <if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  
+  <!-- 获取等下级会员 -->
+  <select id="getJuniorList" resultMap="bursEarningsRelationMap" parameterType="com.xmniao.xmn.core.reward_dividends.entity.BursEarningsRelation" >
+    select 
+    	<include refid="bursEarningsRelation_column_list" />
+    from 
+    	b_urs_earnings_relation relation
+    <where>
+    	<if test="objectOriented != null and objectOriented !='' ">
+    		and relation.object_oriented = #{objectOriented}
+    	</if>
+    	<if test=" null != uid and '' != uid">
+    		and relation.uid_relation_chain like CONCAT('%',LPAD(#{uid}, 11, '0'),'%')
+    	</if>
+    </where>
+    <if test="order != -1 ">
+    	 order by relation.uid_relation_chain_level ASC
+    </if>
+  </select>
+  
+  <select id="count" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.reward_dividends.entity.BursEarningsRelation" >
+    SELECT
+	    count(1)
+	FROM
+	    b_urs_earnings_relation relation
+	LEFT JOIN b_urs urs ON relation.uid = urs.uid
+	LEFT JOIN b_urs urs2 ON relation.indirect_uid = urs2.uid
+    <where>
+    	<![CDATA[
+    		AND relation.object_oriented<5
+    	]]>
+    	<if test="uid != null and uid != '' ">
+    		AND relation.uid = #{uid,jdbcType=INTEGER}
+    	</if>
+    	<if test="phone != null and phone != '' ">
+    		AND urs.phone like  '%${phone}%'
+    	</if>
+    	<if test="nname != null and nname != '' ">
+    		AND urs.nname like  '%${nname}%'
+    	</if>
+    	<if test="objectOriented != null and objectOriented != '' ">
+    		AND relation.object_oriented = #{objectOriented,jdbcType=INTEGER}
+    	</if>
+    </where>
+  </select>
+  
+  <insert id="add" parameterType="com.xmniao.xmn.core.reward_dividends.entity.BursEarningsRelation" >
+    insert into b_urs_earnings_relation
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="objectOriented != null" >
+        object_oriented,
+      </if>
+      <if test="uidRelationChainLevel != null" >
+        uid_relation_chain_level,
+      </if>
+      <if test="indirectUid != null" >
+        indirect_uid,
+      </if>
+      <if test="referrerSellerid != null" >
+        referrer_sellerid,
+      </if>
+      <if test="referrerSellertype != null" >
+        referrer_sellertype,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="uidRelationChain != null" >
+        uid_relation_chain,
+      </if>
+      <if test="uidRelationChainNname != null" >
+        uid_relation_chain_nname,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="objectOriented != null" >
+        #{objectOriented,jdbcType=INTEGER},
+      </if>
+      <if test="uidRelationChainLevel != null" >
+        #{uidRelationChainLevel,jdbcType=INTEGER},
+      </if>
+      <if test="indirectUid != null" >
+        #{indirectUid,jdbcType=INTEGER},
+      </if>
+      <if test="referrerSellerid != null" >
+        #{referrerSellerid,jdbcType=INTEGER},
+      </if>
+      <if test="referrerSellertype != null" >
+        #{referrerSellertype,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uidRelationChain != null" >
+        #{uidRelationChain,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="uidRelationChainNname != null" >
+        #{uidRelationChainNname,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.reward_dividends.entity.BursEarningsRelation" >
+    update b_urs_earnings_relation
+    <set >
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="objectOriented != null" >
+        object_oriented = #{objectOriented,jdbcType=INTEGER},
+      </if>
+      <if test="uidRelationChainLevel != null" >
+        uid_relation_chain_level = #{uidRelationChainLevel,jdbcType=INTEGER},
+      </if>
+      <if test="indirectUid != null" >
+        indirect_uid = #{indirectUid,jdbcType=INTEGER},
+      </if>
+      <if test="referrerSellerid != null" >
+        referrer_sellerid = #{referrerSellerid,jdbcType=INTEGER},
+      </if>
+      <if test="referrerSellertype != null" >
+        referrer_sellertype = #{referrerSellertype,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uidRelationChain != null" >
+        uid_relation_chain = #{uidRelationChain,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="uidRelationChainNname != null" >
+        uid_relation_chain_nname = #{uidRelationChainNname,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 更新会员间接上级为null -->
+  <update id="updateIndirect2Null" parameterType="com.xmniao.xmn.core.reward_dividends.entity.BursEarningsRelation" >
+    update b_urs_earnings_relation
+    <set >
+      <!-- 间接上级-->
+        indirect_uid = null,
+    </set>
+    <where>
+    	object_oriented = '4'
+    	<if test="id != null and id != '' ">
+    		AND id = #{id,jdbcType=INTEGER}
+    	</if>
+    </where> 
+    
+  </update>
+  
+  <!-- 统计下线人数 -->
+  <select id="countJuniorsNum" resultType="long" parameterType="com.xmniao.xmn.core.reward_dividends.entity.BursEarningsRelation">
+	SELECT
+		count(id)
+	FROM
+		b_urs_earnings_relation
+	WHERE
+		uid_relation_chain LIKE CONCAT('%',LPAD(#{uid},11,'0'),'%')
+	AND object_oriented = #{objectOriented}
+	AND uid != #{uid}
+  </select>
+
+    <!-- 通过用户信息查询关系链数据 -->
+	<select id="getBursEarningsRelationByUid" resultMap="bursEarningsRelationMap" parameterType="com.xmniao.xmn.core.reward_dividends.entity.BursEarningsRelation">
+		select
+		<include refid="bursEarningsRelation_column_list" />
+		from b_urs_earnings_relation relation
+		<where>
+			<if test="uid != null and uid != '' ">
+				AND relation.uid = #{uid,jdbcType=INTEGER}
+			</if>
+			<if test="objectOriented != null and objectOriented != '' ">
+				AND relation.object_oriented = #{objectOriented,jdbcType=INTEGER}
+			</if>
+		</where>
+        LIMIT 0,1
+	</select>
+	
+	<!-- 查询下级信息 -->
+    <select id="getLowerBursEarningsRelationList" resultMap="bursEarningsRelationMap" parameterType="com.xmniao.xmn.core.reward_dividends.entity.BursEarningsRelation">
+		select
+		<include refid="bursEarningsRelation_column_list" />
+		from b_urs_earnings_relation relation
+		<where>
+			<if test="objectOriented != null and objectOriented != '' ">
+				AND relation.object_oriented = #{objectOriented,jdbcType=INTEGER}
+			</if>
+			<if test="uidRelationChain != null and uidRelationChain != '' ">
+				AND relation.uid_relation_chain LIKE '%${uidRelationChain}%'
+			</if>
+			<if test="uid != null and uid != '' ">
+				AND relation.uid != #{uid,jdbcType=INTEGER}
+			</if>
+			
+		</where>
+	</select>
+	
+</mapper>

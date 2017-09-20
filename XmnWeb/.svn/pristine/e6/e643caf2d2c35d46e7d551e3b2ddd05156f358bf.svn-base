@@ -1,0 +1,218 @@
+package com.xmniao.xmn.core.xmermanagerment.controller;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.xmniao.xmn.core.base.BaseController;
+import com.xmniao.xmn.core.base.Pageable;
+import com.xmniao.xmn.core.base.Resultable;
+import com.xmniao.xmn.core.util.DateHelper;
+import com.xmniao.xmn.core.util.DateUtil;
+import com.xmniao.xmn.core.util.handler.annotation.RequestLogging;
+import com.xmniao.xmn.core.xmermanagerment.dao.BXmerDao;
+import com.xmniao.xmn.core.xmermanagerment.entity.BXmer;
+import com.xmniao.xmn.core.xmermanagerment.entity.XmerSeller;
+import com.xmniao.xmn.core.xmermanagerment.service.BXmerService;
+/**
+ *@ClassName:BXmerController
+ *@Description:TODO
+ *@author hls
+ *@date:2016年5月25日上午10:27:10
+ */
+@RequestLogging(name="寻蜜客管理")
+@Controller
+@RequestMapping(value = "/xmer/manage")
+public class BXmerController extends BaseController {
+	
+	@Autowired
+	private BXmerDao bxmerDao;
+	@Autowired
+	private BXmerService bxmerService;
+	
+	/*
+	 * 初始化页面
+	 */
+	@RequestMapping(value = "init")
+	public String init(){
+		return "xmermanagerment/xmerList";
+	}
+	/**
+	 * @Title:directPartherInit
+	 * @Description:跳转到寻蜜客直接伙伴列表
+	 * @return String
+	 * @throw
+	 */
+	@RequestMapping(value = "directPartner/init")
+	public ModelAndView directPartherInit(BXmer bxmer){
+		ModelAndView modelAndView = new ModelAndView("xmermanagerment/directPartnerList");
+		modelAndView.addObject("uidtogetpart", bxmer.getUid());
+		return modelAndView;
+	}
+	/**
+	 * @Title:directPartherInit
+	 * @Description:跳转到寻蜜客间接伙伴列表
+	 * @return String
+	 * @throw
+	 */
+	@RequestMapping(value = "indirectPartner/init")
+	public ModelAndView indirectPartnerInit(BXmer bxmer){
+		ModelAndView modelAndView = new ModelAndView("xmermanagerment/indirectPartnerList");
+		modelAndView.addObject("uidtogetpart", bxmer.getUid());
+		return modelAndView;
+	}
+	/**
+	 * @Title:xmerSellerInit
+	 * @Description:跳转到寻蜜客商铺列表
+	 * @return String
+	 * @throw
+	 */
+	@RequestMapping(value = "xmerSeller/init")
+	public ModelAndView xmerSellerInit(XmerSeller xmerseller){
+		ModelAndView modelAndView = new ModelAndView("xmermanagerment/xmerSellerList");
+		modelAndView.addObject("uidtogetseller", xmerseller.getUid());
+		return modelAndView;
+	}
+	/**
+	 * @Title:getList
+	 * @Description:查询寻蜜客成员列表
+	 * @param bxmer
+	 * @return Object
+	 * @throw
+	 */
+	@RequestMapping(value = "init/list")
+	@ResponseBody
+	public Object getList(BXmer bxmer){
+		this.log.info("BXmerController-->list bxmer=" + bxmer);
+		Pageable<BXmer> pageable = new Pageable<BXmer>(bxmer);
+		pageable.setContent(bxmerService.selectXmerInfoList(bxmer));
+		pageable.setTotal(bxmerService.xmerInfoCount(bxmer));
+		return pageable;
+	}
+    /**
+     * @Title:view
+     * @Description:查看页面初始化
+     * @param request
+     * @param id
+     * @return ModelAndView
+     * @throw
+     */
+	@SuppressWarnings("finally")
+	@RequestMapping(value = "check")
+	public ModelAndView view(HttpServletRequest request, @RequestParam("uid") String uid) {
+		ModelAndView modelAndView = new ModelAndView("xmermanagerment/checkXmer");
+		try {
+			BXmer bxmer = bxmerService.getXmer(Integer.parseInt(uid));
+			modelAndView.addObject("bxmer", bxmer);
+		} catch (NumberFormatException e) {
+			this.log.error("查看页面初始化异常", e);
+		} finally {
+			return modelAndView;
+		}
+	}
+	/**
+	 * @Title:updateInit
+	 * @Description:寻蜜客成员修改初始化
+	 * @param request
+	 * @param id
+	 * @return ModelAndView
+	 * @throw
+	 */
+	@RequestMapping(value = "update/init")
+	public ModelAndView updateInit(HttpServletRequest request, @RequestParam("uid") String uid) {
+		ModelAndView modelAndView = new ModelAndView("xmermanagerment/addAndUpdateXmer");
+		try {
+			BXmer bxmer = bxmerService.getXmer(Integer.parseInt(uid));
+			modelAndView.addObject("isType", "update");
+			modelAndView.addObject("bxmer", bxmer);
+		} catch (NumberFormatException e) {
+			this.log.error("修改初始化异常", e);
+		} 
+		return modelAndView;
+	}
+	/**
+	 * @Title:update
+	 * @Description:修改寻蜜客成员
+	 * @param bxmer
+	 * @return Object
+	 * @throw
+	 */
+	@RequestMapping(value = "/update")
+	@ResponseBody
+	public Object update(BXmer bxmer) {
+		Resultable resultable = null;
+		try {
+			//获取当前时间作为更新时间
+			String updateTimeStr = DateHelper.getDateFormatter();
+			Date updateTime = DateUtil.smartFormat(updateTimeStr);
+			bxmer.setUpdateDate(updateTime);
+			bxmerService.updateXmer(bxmer);
+			this.log.info("修改成功");
+			resultable = new Resultable(true, "操作成功");
+		} catch (Exception e) {
+			this.log.error("修改异常", e);
+			resultable = new Resultable(false, "操作失败");
+		}  
+		return resultable;
+	}
+	/**
+	 * @Title:export
+	 * @Description:导出寻蜜客成员列表
+	 * @param bxmer
+	 * @param request
+	 * @param response
+	 * @throws FileNotFoundException
+	 * @throws IOException void
+	 * @throw
+	 */
+	@RequestMapping(value = "export")
+	public void export(BXmer bxmer, HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException, IOException {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("list", bxmerService.exportXmerList(bxmer));
+		doExport(request, response, "xmermanagerment/xmerList.xls", params);
+	}
+	/**
+	 * @Title:getDirectPartnerList
+	 * @Description:查询寻蜜客直接伙伴列表
+	 * @param bxmer
+	 * @return Object
+	 * @throw
+	 */
+	@RequestMapping(value = "directPartner/list")
+	@ResponseBody
+	public Object getDirectPartnerList(BXmer bxmer){
+		this.log.info("BXmerController-->list bxmer=" + bxmer);
+		Pageable<BXmer> pageable = new Pageable<BXmer>(bxmer);
+		pageable.setContent(bxmerService.selectXmerPartnerList(bxmer));
+		pageable.setTotal(bxmerService.xmerPartnerCount(bxmer));
+		return pageable;
+	}
+	/**
+	 * @Title:getXmerSellerList
+	 * @Description:获取寻蜜客商铺列表
+	 * @param bxmer
+	 * @return Object
+	 * @throw
+	 */
+	@RequestMapping(value = "xmerSeller/list")
+	@ResponseBody
+	public Object getXmerSellerList(XmerSeller xmerseller){
+		this.log.info("BXmerController-->list xmerseller=" + xmerseller);
+		Pageable<XmerSeller> pageable = new Pageable<XmerSeller>(xmerseller);
+		pageable.setContent(bxmerService.xmerSellerList(xmerseller));
+		pageable.setTotal(bxmerService.xmerSellerCount(xmerseller));
+		return pageable;
+	}
+}

@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.RecommendSpecialDao">
+	<resultMap id="BaseResultMap"
+		type="com.xmniao.xmn.core.businessman.entity.RecommendSpecial">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="title" jdbcType="VARCHAR" property="title" />
+		<result column="description" jdbcType="VARCHAR" property="description" />
+		<result column="video_url" jdbcType="VARCHAR" property="videoUrl" />
+		<result column="topic_type" jdbcType="INTEGER" property="topicType" />
+		<result column="is_nationwide" jdbcType="INTEGER" property="isNationwide" />
+		<result column="province_id" jdbcType="INTEGER" property="provinceId" />
+		<result column="city_id" jdbcType="INTEGER" property="cityId" />
+		<result column="home_sort" jdbcType="INTEGER" property="homeSort" />
+		<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="province_name" jdbcType="VARCHAR" property="provinceName" />
+		<result column="city_name" jdbcType="VARCHAR" property="cityName" />
+		<result column="sub_name" jdbcType="VARCHAR" property="subName" />
+	</resultMap>
+	<resultMap extends="BaseResultMap" id="ResultMapWithBLOBs"
+		type="com.xmniao.xmn.core.businessman.entity.RecommendSpecial">
+		<result column="content" jdbcType="LONGVARCHAR" property="content" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		t_special_topic_config.id, 
+		t_special_topic_config.title, 
+		t_special_topic_config.description, 
+		t_special_topic_config.video_url, 
+		t_special_topic_config.topic_type, 
+		t_special_topic_config.is_nationwide,
+		t_special_topic_config.province_id, 
+		t_special_topic_config.city_id,
+		t_special_topic_config.home_sort, 
+		t_special_topic_config.update_time
+	</sql>
+	<sql id="Blob_Column_List">
+		content
+	</sql>
+	<select id="getSpecialChoose" resultMap="ResultMapWithBLOBs">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from t_special_topic_config
+		where home_sort is null
+	</select>
+	<update id="deleteSpecial">
+		update t_special_topic_config set
+		home_sort = null , update_time=now(),province_id=null,city_id=null,is_nationwide=null where id=#{id}
+	</update>
+	<update id="updateRecommend"
+		parameterType="com.xmniao.xmn.core.businessman.entity.RecommendSpecial">
+		update t_special_topic_config
+		<set>
+			<if test="isNationwide != null">
+				is_nationwide = #{isNationwide},
+			</if>
+			<if test="provinceId != null">
+				province_id = #{provinceId},
+			</if>
+			<if test="cityId != null">
+				city_id = #{cityId},
+			</if>
+			<if test="homeSort != null">
+				home_sort = #{homeSort},
+			</if>
+			update_time=now(),
+		</set>
+		where id = #{id}
+	</update>
+	<select id="selectByPrimaryKey" parameterType="java.lang.Integer"
+		resultMap="ResultMapWithBLOBs">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from t_special_topic_config
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from t_special_topic_config
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert"
+		parameterType="com.xmniao.xmn.core.businessman.entity.RecommendSpecial">
+		insert into t_special_topic_config (id, title, description,
+		video_url, topic_type, is_nationwide,
+		province_id, city_id, home_sort,
+		update_time, content)
+		values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR},
+		#{description,jdbcType=VARCHAR},
+		#{videoUrl,jdbcType=VARCHAR}, #{topicType,jdbcType=INTEGER}, #{isNationwide,jdbcType=INTEGER},
+		#{provinceId,jdbcType=INTEGER}, #{cityId,jdbcType=INTEGER},
+		#{homeSort,jdbcType=INTEGER},
+		#{updateTime,jdbcType=TIMESTAMP}, #{content,jdbcType=LONGVARCHAR})
+	</insert>
+	<insert id="insertSelective"
+		parameterType="com.xmniao.xmn.core.businessman.entity.RecommendSpecial">
+		insert into t_special_topic_config
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="title != null">
+				title,
+			</if>
+			<if test="description != null">
+				description,
+			</if>
+			<if test="videoUrl != null">
+				video_url,
+			</if>
+			<if test="topicType != null">
+				topic_type,
+			</if>
+			<if test="isNationwide != null">
+				is_nationwide,
+			</if>
+			<if test="provinceId != null">
+				province_id,
+			</if>
+			<if test="cityId != null">
+				city_id,
+			</if>
+			<if test="homeSort != null">
+				home_sort,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+			<if test="content != null">
+				content,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="title != null">
+				#{title,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null">
+				#{description,jdbcType=VARCHAR},
+			</if>
+			<if test="videoUrl != null">
+				#{videoUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="topicType != null">
+				#{topicType,jdbcType=INTEGER},
+			</if>
+			<if test="isNationwide != null">
+				#{isNationwide,jdbcType=INTEGER},
+			</if>
+			<if test="provinceId != null">
+				#{provinceId,jdbcType=INTEGER},
+			</if>
+			<if test="cityId != null">
+				#{cityId,jdbcType=INTEGER},
+			</if>
+			<if test="homeSort != null">
+				#{homeSort,jdbcType=INTEGER},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="content != null">
+				#{content,jdbcType=LONGVARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective"
+		parameterType="com.xmniao.xmn.core.businessman.entity.RecommendSpecial">
+		update t_special_topic_config
+		<set>
+			<if test="title != null">
+				title = #{title,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null">
+				description = #{description,jdbcType=VARCHAR},
+			</if>
+			<if test="videoUrl != null">
+				video_url = #{videoUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="topicType != null">
+				topic_type = #{topicType,jdbcType=INTEGER},
+			</if>
+			<if test="isNationwide != null">
+				is_nationwide = #{isNationwide,jdbcType=INTEGER},
+			</if>
+			<if test="provinceId != null">
+				province_id = #{provinceId,jdbcType=INTEGER},
+			</if>
+			<if test="cityId != null">
+				city_id = #{cityId,jdbcType=INTEGER},
+			</if>
+			<if test="homeSort != null">
+				home_sort = #{homeSort,jdbcType=INTEGER},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="content != null">
+				content = #{content,jdbcType=LONGVARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<select id="getList"
+		parameterType="com.xmniao.xmn.core.businessman.entity.RecommendSpecial" resultMap="ResultMapWithBLOBs"> 
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />,a.title as province_name,b.title as city_name
+		from t_special_topic_config 
+		left join t_area a on t_special_topic_config.province_id=a.area_id
+		left join t_area b on  t_special_topic_config.city_id=b.area_id
+		 where home_sort is not null
+			<if test="provinceId != null and cityId != null">
+				and province_id = #{provinceId,jdbcType=INTEGER}
+				and city_id = #{cityId,jdbcType=INTEGER}
+			</if>
+		order by t_special_topic_config.home_sort desc
+	</select>
+	<update id="updateByPrimaryKeyWithBLOBs"
+		parameterType="com.xmniao.xmn.core.businessman.entity.RecommendSpecial">
+		update t_special_topic_config
+		set title = #{title,jdbcType=VARCHAR},
+		description = #{description,jdbcType=VARCHAR},
+		video_url = #{videoUrl,jdbcType=VARCHAR},
+		topic_type = #{topicType,jdbcType=INTEGER},
+		is_nationwide = #{isNationwide,jdbcType=INTEGER},
+		province_id = #{provinceId,jdbcType=INTEGER},
+		city_id = #{cityId,jdbcType=INTEGER},
+		home_sort = #{homeSort,jdbcType=INTEGER},
+		update_time = #{updateTime,jdbcType=TIMESTAMP},
+		content = #{content,jdbcType=LONGVARCHAR}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey"
+		parameterType="com.xmniao.xmn.core.businessman.entity.RecommendSpecial">
+		update t_special_topic_config
+		set title = #{title,jdbcType=VARCHAR},
+		description = #{description,jdbcType=VARCHAR},
+		video_url = #{videoUrl,jdbcType=VARCHAR},
+		topic_type = #{topicType,jdbcType=INTEGER},
+		is_nationwide = #{isNationwide,jdbcType=INTEGER},
+		province_id = #{provinceId,jdbcType=INTEGER},
+		city_id = #{cityId,jdbcType=INTEGER},
+		home_sort = #{homeSort,jdbcType=INTEGER},
+		update_time = #{updateTime,jdbcType=TIMESTAMP}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+</mapper>

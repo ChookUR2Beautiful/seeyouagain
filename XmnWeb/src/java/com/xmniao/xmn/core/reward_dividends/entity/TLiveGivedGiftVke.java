@@ -1,0 +1,270 @@
+package com.xmniao.xmn.core.reward_dividends.entity;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+import com.alibaba.fastjson.annotation.JSONField;
+import com.xmniao.xmn.core.base.BaseEntity;
+
+public class TLiveGivedGiftVke extends BaseEntity{
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -3859104581719466528L;
+
+	private Long id;
+
+    private Long givedId;
+
+    private Integer anchorUid;
+
+    private String anchorPhone;
+
+    private String anchorNname;
+
+    private Integer vkeUid;
+
+    private String vkePhone;
+
+    private String vkeNname;
+
+    private Long vkeRankid;
+
+    private String vkeRankname;
+
+    private Double vkeRatio;
+    
+    //自定义字段专区
+    private Integer type;  //商家ID
+    
+	private String orderNo;
+	
+    private BigDecimal money;  //订单金额
+    
+    private BigDecimal profit;  //收益
+    
+	private Double discount; //签约折扣
+	
+    private Date sdate;  //获取时间
+    
+    private Integer sellerId;  //商家ID
+    
+    private String sellerName; //商家名称
+    
+    private Integer saasChannel;  //渠道3-V客签约 4-主播签约
+    
+    private Date sdateStart;
+    
+    private Date sdateEnd;
+    
+    private String commission; //json串
+    
+    public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
+	public String getOrderNo() {
+		return orderNo;
+	}
+
+	public void setOrderNo(String orderNo) {
+		this.orderNo = orderNo;
+	}
+
+	public Double getDiscount() {
+		return discount;
+	}
+
+	public void setDiscount(Double discount) {
+		this.discount = discount;
+	}
+
+	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
+	public Date getSdate() {
+		return sdate;
+	}
+
+	public void setSdate(Date sdate) {
+		this.sdate = sdate;
+	}
+
+	public BigDecimal getMoney() {
+		return money;
+	}
+
+	public void setMoney(BigDecimal money) {
+		this.money = money;
+	}
+	
+	public BigDecimal getProfit() {
+		return profit;
+	}
+
+	public void setProfit(BigDecimal profit) {
+		this.profit = profit;
+	}
+
+	public Integer getSellerId() {
+		return sellerId;
+	}
+
+	public void setSellerId(Integer sellerId) {
+		this.sellerId = sellerId;
+	}
+
+	public String getSellerName() {
+		return sellerName;
+	}
+
+	public void setSellerName(String sellerName) {
+		this.sellerName = sellerName;
+	}
+
+	public Integer getSaasChannel() {
+		return saasChannel;
+	}
+
+	public void setSaasChannel(Integer saasChannel) {
+		this.saasChannel = saasChannel;
+	}
+	
+	public Date getSdateStart() {
+		return sdateStart;
+	}
+
+	public void setSdateStart(Date sdateStart) {
+		this.sdateStart = sdateStart;
+	}
+
+	public Date getSdateEnd() {
+		return sdateEnd;
+	}
+
+	public void setSdateEnd(Date sdateEnd) {
+		this.sdateEnd = sdateEnd;
+	}
+	
+	public String getCommission() {
+		return commission;
+	}
+
+	public void setCommission(String commission) {
+		this.commission = commission;
+	}
+	
+	
+    //自定义字段结束
+	
+
+	public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getGivedId() {
+        return givedId;
+    }
+
+    public void setGivedId(Long givedId) {
+        this.givedId = givedId;
+    }
+
+    public Integer getAnchorUid() {
+        return anchorUid;
+    }
+
+    public void setAnchorUid(Integer anchorUid) {
+        this.anchorUid = anchorUid;
+    }
+
+    public String getAnchorPhone() {
+        return anchorPhone;
+    }
+
+    public void setAnchorPhone(String anchorPhone) {
+        this.anchorPhone = anchorPhone == null ? null : anchorPhone.trim();
+    }
+
+    public String getAnchorNname() {
+        return anchorNname;
+    }
+
+    public void setAnchorNname(String anchorNname) {
+        this.anchorNname = anchorNname == null ? null : anchorNname.trim();
+    }
+
+    public Integer getVkeUid() {
+        return vkeUid;
+    }
+
+    public void setVkeUid(Integer vkeUid) {
+        this.vkeUid = vkeUid;
+    }
+
+    public String getVkePhone() {
+        return vkePhone;
+    }
+
+    public void setVkePhone(String vkePhone) {
+        this.vkePhone = vkePhone == null ? null : vkePhone.trim();
+    }
+
+    public String getVkeNname() {
+        return vkeNname;
+    }
+
+    public void setVkeNname(String vkeNname) {
+        this.vkeNname = vkeNname == null ? null : vkeNname.trim();
+    }
+
+    public Long getVkeRankid() {
+        return vkeRankid;
+    }
+
+    public void setVkeRankid(Long vkeRankid) {
+        this.vkeRankid = vkeRankid;
+    }
+
+    public String getVkeRankname() {
+        return vkeRankname;
+    }
+
+    public void setVkeRankname(String vkeRankname) {
+        this.vkeRankname = vkeRankname == null ? null : vkeRankname.trim();
+    }
+
+
+
+	public Double getVkeRatio() {
+		return vkeRatio;
+	}
+
+	public void setVkeRatio(Double vkeRatio) {
+		this.vkeRatio = vkeRatio;
+	}
+	
+
+	@Override
+	public String toString() {
+		return "TLiveGivedGiftVke [id=" + id + ", givedId=" + givedId
+				+ ", anchorUid=" + anchorUid + ", anchorPhone=" + anchorPhone
+				+ ", anchorNname=" + anchorNname + ", vkeUid=" + vkeUid
+				+ ", vkePhone=" + vkePhone + ", vkeNname=" + vkeNname
+				+ ", vkeRankid=" + vkeRankid + ", vkeRankname=" + vkeRankname
+				+ ", vkeRatio=" + vkeRatio + ", type=" + type + ", orderNo="
+				+ orderNo + ", money=" + money + ", profit=" + profit
+				+ ", discount=" + discount + ", sdate=" + sdate + ", sellerId="
+				+ sellerId + ", sellerName=" + sellerName + ", saasChannel="
+				+ saasChannel + ", sdateStart=" + sdateStart + ", sdateEnd="
+				+ sdateEnd + ", commission=" + commission  + "]";
+	}
+
+    
+}

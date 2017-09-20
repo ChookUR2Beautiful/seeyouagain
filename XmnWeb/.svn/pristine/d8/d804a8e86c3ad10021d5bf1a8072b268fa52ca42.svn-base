@@ -1,0 +1,185 @@
+/**
+ * 
+ */
+package com.xmniao.xmn.core.live_anchor.service;
+
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Service;
+
+import com.xmniao.xmn.core.base.BaseDao;
+import com.xmniao.xmn.core.base.BaseService;
+import com.xmniao.xmn.core.base.MapBeanUtil;
+import com.xmniao.xmn.core.base.Resultable;
+import com.xmniao.xmn.core.live_anchor.constant.LiveConstant;
+import com.xmniao.xmn.core.live_anchor.dao.TLiveRecordDao;
+import com.xmniao.xmn.core.live_anchor.dao.TLiveRobotSetDao;
+import com.xmniao.xmn.core.live_anchor.entity.TLiveRecord;
+import com.xmniao.xmn.core.live_anchor.entity.TLiveRobotSet;
+
+/**
+ * 项目名称：XmnWeb_LVB
+ * 
+ * 类名称：TLiveRobotSetService
+ *
+ * 类描述：机器人配置Service
+ * 
+ * 创建人： huang'tao
+ * 
+ * 创建时间：2016-8-29上午11:03:10
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司
+ */
+@Service
+public class TLiveRobotSetService extends BaseService<TLiveRobotSet> {
+
+	/**
+	 * 注入机器人配置服务
+	 */
+	@Autowired
+	private TLiveRobotSetDao robotSetDao;
+	
+	/**
+	 * 注入redisTemplate
+	 */
+	@Autowired
+	private StringRedisTemplate redisTemplate;
+	
+	private final static int TIME_ZONE=24*60*60*1000;//24小时(单位毫秒)
+	
+	/**
+	 * 注入直播通告DAO
+	 */
+	@Autowired
+	private TLiveRecordDao liveRecordDao;
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected BaseDao getBaseDao() {
+		return robotSetDao;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：删除机器人配置
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-29上午10:15:20
+	 * @param id
+	 * @return
+	 */
+    public int deleteById(Integer id){
+    	return robotSetDao.deleteById(id);
+    }
+
+	
+
+	/**
+	 * 
+	 * 方法描述：通过主键ID查询机器人配置
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-29上午10:19:55
+	 * @param id
+	 * @return
+	 */
+    public TLiveRobotSet selectById(Integer id){
+    	return robotSetDao.selectById(id);
+    }
+    
+    /**
+	 * 
+	 * 方法描述：查询机器人配置
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-29上午10:19:55
+	 * @param id
+	 * @return
+	 */
+    public TLiveRobotSet selectTheFirst(){
+    	return robotSetDao.selectTheFirst();
+    }
+    
+    /**
+	 * 
+	 * 方法描述：查询机器人配置
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-29上午10:19:55
+	 * @param id
+	 * @return
+	 */
+    public TLiveRobotSet selectByBean(TLiveRobotSet robotSet){
+    	return robotSetDao.selectByBean(robotSet);
+    }
+
+	/**
+	 * 方法描述：在此处添加方法描述
+	 * 创建人： huang'tao
+	 * 创建时间：2016-8-29下午2:16:56
+	 * @param robotSet
+	 * @return
+	 */
+	public Resultable saveRobotSet(TLiveRobotSet robotSet) {
+		Resultable result=new Resultable();
+		String id = robotSet.getId()==null ? "":robotSet.getId().toString();
+		try {
+			if(StringUtils.isBlank(id)){
+				robotSet.setCreateTime(new Date());
+				robotSetDao.add(robotSet);
+			}else{
+				robotSet.setUpdateTime(new Date());
+				robotSetDao.update(robotSet);
+			}
+			Integer recordId = robotSet.getRecordId();
+			if(recordId!=null){
+				redisTemplate.opsForHash().putAll(LiveConstant.LIVE_ROBOT_SET_KEY+recordId, MapBeanUtil.convertMap(robotSet, "robotSetMixNums","robotSetMaxNums","robotMinNums","robotMaxNums"));
+				setRobotSetTimeout(recordId);//设置REDIS超时时间
+			}else{
+				redisTemplate.opsForHash().putAll(LiveConstant.LIVE_ROBOT_SET_KEY+"common", MapBeanUtil.convertMap(robotSet, "robotSetMixNums","robotSetMaxNums","robotMinNums","robotMaxNums"));
+			}
+			result.setSuccess(true);
+			result.setMsg("保存机器人配置信息成功!");
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setSuccess(false);
+			result.setMsg("保存机器人配置信息失败!");
+			this.log.error(e.getMessage(), e);
+		}
+		return result;
+	}
+
+	/**
+	 * 方法描述：设置直播间机器人配置缓存超时时间<br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-8-11下午5:30:11 <br/>
+	 * @param recordId
+	 */
+	private void setRobotSetTimeout(Integer recordId) {
+		if(recordId !=null){
+			TLiveRecord liveRecord = liveRecordDao.getObject(new Long(recordId));
+			Date planStartDate = liveRecord.getPlanStartDate();
+			Date currentDate = new Date();
+			long timeout=0;
+			if(planStartDate!=null){
+				timeout=planStartDate.getTime()-currentDate.getTime()+TIME_ZONE;
+				if(timeout<0){
+					timeout=0;
+				}
+			}
+			
+			redisTemplate.expire(LiveConstant.LIVE_ROBOT_SET_KEY+recordId, timeout, TimeUnit.MILLISECONDS);
+		}
+	}
+
+	/**
+	 * 方法描述：根据通告ID删除机器人配置 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2017-7-24下午3:55:40 <br/>
+	 * @param recordId
+	 */
+	public void deleteByRecordId(Integer recordId) {
+		robotSetDao.deleteByRecordId(recordId);
+	}
+
+}

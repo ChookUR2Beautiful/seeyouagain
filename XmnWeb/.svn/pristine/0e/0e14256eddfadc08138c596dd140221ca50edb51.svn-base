@@ -1,0 +1,516 @@
+package com.xmniao.xmn.core.live_anchor.controller;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.xmniao.xmn.core.base.BaseController;
+import com.xmniao.xmn.core.base.Pageable;
+import com.xmniao.xmn.core.base.Resultable;
+import com.xmniao.xmn.core.live_anchor.constant.LiveConstant;
+import com.xmniao.xmn.core.live_anchor.entity.BLiveAnchorImage;
+import com.xmniao.xmn.core.live_anchor.entity.BLiveAnchorStartImage;
+import com.xmniao.xmn.core.live_anchor.entity.BLiver;
+import com.xmniao.xmn.core.live_anchor.service.BLiveAnchorImageService;
+import com.xmniao.xmn.core.live_anchor.service.TLiveAnchorService;
+import com.xmniao.xmn.core.util.PageConstant;
+import com.xmniao.xmn.core.util.handler.annotation.RequestLogging;
+
+/**
+ * 项目名称：XmnWeb_LVB
+ * 
+ * 类名称：LiveAnchorController
+ * 
+ * 类描述：商家版主播Controller
+ * 
+ * 创建人： huang'tao
+ * 
+ * 创建时间：2016-8-6下午4:07:43
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司
+ */
+@RequestLogging(name = "商家版展示管理")
+@Controller
+@RequestMapping(value = "anchorBusiness/manage")
+public class AnchorBusinessController extends BaseController {
+
+	/**
+	 * 注入主播服务
+	 */
+	@Autowired
+	private TLiveAnchorService liveAnchorService;
+
+	/**
+	 * 注入主播相册服务
+	 */
+	@Autowired
+	private BLiveAnchorImageService anchorImageService;
+
+	/**
+	 * 商家版主播管理列表初始页面
+	 * 
+	 * @author huang'tao
+	 * @date 2015年8月12日 下午4:34:01
+	 * @return
+	 */
+	@RequestMapping(value = "init")
+	public String init() {
+		return "live_anchor/anchorBusinessManage";
+	}
+
+	/**
+	 * 主播管理列表
+	 * 
+	 * @author huang'tao
+	 * @date 2015年8月12日 下午4:34:01
+	 * @return
+	 */
+	@RequestMapping(value = "init/list")
+	@ResponseBody
+	public Object initList(BLiver liveAnchor) {
+		Pageable<BLiver> pageable = new Pageable<BLiver>(liveAnchor);
+		// 商家是否可见： 1是 0否
+		liveAnchor.setSellerLookStatus(1);
+		//用户类型 1 主播 2 普通用户
+		liveAnchor.setUtype(LiveConstant.UTYPE_ANCHOR);
+		liveAnchorService.getListPage(liveAnchor, pageable);
+		return pageable;
+	}
+
+	/**
+	 * 商家版主播修改页面初始化
+	 * 
+	 * @author huang'tao
+	 * @date 2015年8月12日 下午4:34:01
+	 * @return
+	 */
+	@RequestMapping(value = "update/init")
+	public String updateInit(BLiver liveAnchor, Model model) {
+		model.addAttribute("anchor",
+				liveAnchorService.selectByPrimaryKey(liveAnchor.getId()));
+		return "live_anchor/anchorBusinessEdit";
+	}
+
+	/**
+	 * 
+	 * 方法描述：更新主播三围等信息 创建人： huang'tao 创建时间：2016-8-8上午11:13:04
+	 * 
+	 * @param liveAnchor
+	 * @return
+	 */
+	@RequestMapping(value = { "update" })
+	@ResponseBody
+	public Resultable updateThreeDimensional(BLiver liveAnchor) {
+		Resultable result = new Resultable();
+		try {
+			liveAnchor.setUpdateTime(new Date());
+			int count = liveAnchorService
+					.updateByPrimaryKeySelective(liveAnchor);
+			if (count > 0) {
+				result.setMsg("更新成功!");
+				result.setSuccess(true);
+			} else {
+				result.setMsg("更新失败!");
+				result.setSuccess(false);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			this.log.error(e.getMessage(), e);
+		}
+		return result;
+	}
+
+	/**
+	 * 
+	 * 方法描述：跳转到主播相册列表 创建人： huang'tao 创建时间：2016-8-18下午5:56:07
+	 * 
+	 * @return
+	 */
+	@RequestMapping(value = { "anchorImage/anchorImageInit" })
+	public String anchorImageInit(@RequestParam("id") String anchorId,
+			Model model) {
+		model.addAttribute("anchorId", anchorId);
+		return "live_anchor/anchorImageManage";
+	}
+
+	/**
+	 * 
+	 * 方法描述：加载主播相册列表 创建人： huang'tao 创建时间：2016-8-18下午5:56:07
+	 * 
+	 * @return
+	 */
+	@RequestMapping(value = { "anchorImage/anchorImageInit/list" })
+	@ResponseBody
+	public Object anchorImageList(BLiveAnchorImage anchorImage, Model model) {
+		Pageable<BLiveAnchorImage> pageabel = new Pageable<BLiveAnchorImage>(
+				anchorImage);
+		List<BLiveAnchorImage> list = anchorImageService.getList(anchorImage);
+		Long count = anchorImageService.count(anchorImage);
+		pageabel.setContent(list);
+		pageabel.setTotal(count);
+		return pageabel;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：跳转到主播相册选择列表 
+	 * 创建人： huang'tao 
+	 * 创建时间：2016-8-18下午5:56:07
+	 * 
+	 * @return
+	 */
+	@RequestMapping(value = { "anchorImage/anchorImageChooser" })
+	public String anchorImageChose(@RequestParam("id") String anchorId,@RequestParam(value="addImgId",required = false) String addImgId,
+			Model model) {
+		model.addAttribute("anchorId", anchorId);
+		model.addAttribute("addImgId", addImgId);
+		return "live_anchor/anchorImageChooser";
+	}
+
+	/**
+	 * 
+	 * 方法描述：跳转到添加主播相册页面 创建人： huang'tao 创建时间：2016-8-19上午9:53:37
+	 * 
+	 * @param anchorImage
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = { "anchorImage/addPhoto/init" })
+	public String addPhotoInit(@RequestParam("anchorId") String anchorId,
+			Model model) {
+		model.addAttribute("anchorId", anchorId);
+		return "live_anchor/anchorImageEdit";
+	}
+
+	/**
+	 * 
+	 * 方法描述：更新直播相册 创建人： huang'tao 创建时间：2016-8-19上午10:37:47
+	 * 
+	 * @return
+	 */
+	@RequestMapping(value = { "anchorImage/addPhoto" })
+	@ResponseBody
+	public Resultable addPhoto(BLiveAnchorImage image) {
+		Resultable result = new Resultable();
+		try {
+			image.setCreateTime(new Date());
+			image.setUpdateTime(new Date());
+			anchorImageService.add(image);
+			result.setSuccess(true);
+			result.setMsg("添加成功!");
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setSuccess(false);
+			result.setMsg("添加失败!");
+			this.log.error(e.getMessage(), e);
+		}
+
+		return result;
+	}
+
+	/**
+	 * 
+	 * 方法描述：跳转到编辑主播相册页面 创建人： huang'tao 创建时间：2016-8-19上午9:53:37
+	 * 
+	 * @param anchorImage
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = { "anchorImage/updatePhoto/init" })
+	public String updatePhotoInit(BLiveAnchorImage anchorImage, Model model) {
+		BLiveAnchorImage image = anchorImageService.selectById(anchorImage
+				.getId());
+		model.addAttribute("image", image);
+		return "live_anchor/anchorImageEdit";
+	}
+
+	/**
+	 * 
+	 * 方法描述：更新直播相册 创建人： huang'tao 创建时间：2016-8-19上午10:37:47
+	 * 
+	 * @return
+	 */
+	@RequestMapping(value = { "anchorImage/updatePhoto" })
+	@ResponseBody
+	public Resultable updatePhoto(BLiveAnchorImage image) {
+		Resultable result = new Resultable();
+		try {
+			image.setUpdateTime(new Date());
+			anchorImageService.update(image);
+			result.setSuccess(true);
+			result.setMsg("更新成功!");
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setSuccess(false);
+			result.setMsg("更新失败!");
+			this.log.error(e.getMessage(), e);
+		}
+
+		return result;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：删除主播相册 <br/>
+	 * 创建人：  huang'tao <br/>
+	 * 创建时间：2016-10-22下午3:25:44 <br/>
+	 * @param image
+	 * @return
+	 */
+	@RequestMapping(value = { "anchorImage/deletePhoto" })
+	@ResponseBody
+	public Resultable deletePhoto(BLiveAnchorImage image) {
+		Resultable result = new Resultable();
+		try {
+			anchorImageService.deleteById(image.getId());
+			result.setSuccess(true);
+			result.setMsg("更新成功!");
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setSuccess(false);
+			result.setMsg("删除失败!");
+			this.log.error(e.getMessage(), e);
+		}finally{
+			String[] s = { "主播相册ID", image.getId().toString(), "删除主播相册", "删除" };
+			anchorImageService.fireLoginEvent(s, result.getSuccess()?1:0);
+		}
+
+		return result;
+	}
+
+	/**
+	 * 获取主播信息
+	 * 
+	 * @author huang'tao
+	 * @date 2015年8月12日 下午4:34:01
+	 * @return
+	 */
+	@RequestMapping(value = "getAnchorById")
+	@ResponseBody
+	public Object getAnchorById(BLiver liveAnchor) {
+		BLiver anchor = liveAnchorService
+				.selectByPrimaryKey(liveAnchor.getId());
+		return anchor;
+	}
+
+	/**
+	 * 
+	 * 方法描述：导出主播信息 创建人： huang'tao 创建时间：2016-8-8下午2:57:30
+	 */
+	@RequestMapping(value = "export")
+	public void export(BLiver anchor, HttpServletRequest request,
+			HttpServletResponse response) {
+		anchor.setOrder(PageConstant.NOT_ORDER);
+		anchor.setLimit(PageConstant.PAGE_LIMIT_NO);
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("list", liveAnchorService.getList(anchor));
+		doExport(request, response, "live_anchor/anchor.xls", params);
+
+	}
+
+	/**
+	 * 
+	 * 方法描述：开始直播图片初始页面 创建人： jianming 创建时间：2016年9月5日下午2:13:38
+	 * 
+	 * @return
+	 */
+	@RequestMapping(value = "startImage/init")
+	public String liveImageInit() {
+		return "live_anchor/anchorStartImageManage";
+	}
+
+	/**
+	 * 
+	 * 方法描述：开始直播图片列表 创建人： jianming 创建时间：2016年9月5日下午2:14:30
+	 * 
+	 * @param bLiveAnchorStartImage
+	 * @return
+	 */
+	@RequestMapping(value = "startImage/init/list")
+	@ResponseBody
+	public Object startImageInitList(BLiveAnchorStartImage bLiveAnchorStartImage) {
+		Pageable<BLiveAnchorStartImage> pageable = new Pageable<BLiveAnchorStartImage>(
+				bLiveAnchorStartImage);
+		liveAnchorService
+				.getStartImageListPage(bLiveAnchorStartImage, pageable);
+		return pageable;
+	}
+
+	/**
+	 * 
+	 * 方法描述：开始直播图添加页面 创建人： Administrator 创建时间：2016年9月5日下午8:27:57
+	 * 
+	 * @param bLiveAnchorStartImage
+	 * @return
+	 */
+	@RequestMapping(value = "startImage/add/init")
+	public String startImageAddInit(
+			BLiveAnchorStartImage bLiveAnchorStartImage, Model model) {
+		return "live_anchor/anchorStartImageEdit";
+	}
+
+	/**
+	 * 
+	 * 方法描述：开始直播图添加 创建人： Administrator 创建时间：2016年9月5日下午8:27:57
+	 * 
+	 * @param bLiveAnchorStartImage
+	 * @return
+	 */
+	@RequestMapping(value =  "startImage/add" , method = RequestMethod.POST)
+	@ResponseBody
+	public Resultable addStartImage(BLiveAnchorStartImage bLiveAnchorStartImage) {
+		Resultable result = new Resultable();
+		try {
+			boolean msg=liveAnchorService.add(bLiveAnchorStartImage);
+			if (!msg) {
+				result.setSuccess(false);
+				result.setMsg(bLiveAnchorStartImage.getStringPageImage()
+						+ "已存在!");
+			} else {
+				result.setSuccess(true);
+				result.setMsg("添加成功!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setSuccess(false);
+			result.setMsg("添加失败!");
+			this.log.error(e.getMessage(), e);
+		}
+
+		return result;
+	}
+
+	/**
+	 * 
+	 * 方法描述：开始直播图修改页面 创建人： jianming 创建时间：2016年9月5日下午8:27:13
+	 * 
+	 * @param bLiveAnchorStartImage
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "startImage/update/init")
+	public String startImageUpdateInit(
+			BLiveAnchorStartImage bLiveAnchorStartImage, Model model) {
+		model.addAttribute("image", liveAnchorService
+				.selectAnchorStartImage(bLiveAnchorStartImage.getId()));
+		return "live_anchor/anchorStartImageEdit";
+	}
+	
+	/**
+	 * 
+	 * 方法描述：修改开始直播图
+	 * 创建人： jianming
+	 * 创建时间：2016年9月5日下午9:18:12
+	 * @param bLiveAnchorStartImage
+	 * @return
+	 */
+	@RequestMapping(value ="startImage/update",method=RequestMethod.POST)
+	@ResponseBody
+	public Resultable startImageUpdate(BLiveAnchorStartImage bLiveAnchorStartImage) {
+		Resultable result = new Resultable();
+		try {
+			boolean msg=liveAnchorService.update(bLiveAnchorStartImage);
+			if (!msg) {
+				result.setSuccess(false);
+				result.setMsg(bLiveAnchorStartImage.getStringPageImage()
+						+ "已存在!");
+			} else {
+				result.setSuccess(true);
+				result.setMsg("更新成功!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setSuccess(false);
+			result.setMsg("更新失败!");
+			this.log.error(e.getMessage(), e);
+		}
+
+		return result;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：删除开始直播图
+	 * 创建人： jianming
+	 * 创建时间：2016年9月6日上午10:47:41
+	 * @param bLiveAnchorStartImage
+	 * @return
+	 */
+	@RequestMapping(value ="startImage/delete",method=RequestMethod.DELETE)
+	@ResponseBody
+	public Resultable startImageDelete(BLiveAnchorStartImage bLiveAnchorStartImage){
+		Resultable result = new Resultable();
+		try{
+			liveAnchorService.delete(bLiveAnchorStartImage);
+			result.setSuccess(true);
+			result.setMsg("删除成功");
+		}catch(Exception e) {
+			e.printStackTrace();
+			result.setSuccess(false);
+			result.setMsg("删除失败!");
+			this.log.error(e.getMessage(), e);
+		}
+		return result;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：修改直播图状态
+	 * 创建人： jianming
+	 * 创建时间：2016年9月7日上午11:48:54
+	 * @param bLiveAnchorStartImage
+	 * @return
+	 */
+	@RequestMapping(value ="startImage/delete")
+	@ResponseBody
+	public Resultable startImageUpdateStatus(BLiveAnchorStartImage bLiveAnchorStartImage){
+		Resultable result = new Resultable();
+		try{
+			liveAnchorService.updateStartImageStatus(bLiveAnchorStartImage);
+			result.setSuccess(true);
+			result.setMsg("删除成功");
+		}catch(Exception e) {
+			e.printStackTrace();
+			result.setSuccess(false);
+			result.setMsg("删除失败!");
+			this.log.error(e.getMessage(), e);
+		}
+		return result;
+	}
+	
+	/**
+	 * 
+	 * 方法描述：获取直播图类型
+	 * 创建人： jianming
+	 * 创建时间：2016年9月7日上午11:51:09
+	 * @return
+	 */
+	@RequestMapping(value="startImage/initImageType")
+	@ResponseBody
+	public Object InitImageType(){
+		List<Map<String,String>> list=new ArrayList<>();
+		Map<String,String> map=new HashMap<String,String>();
+		map.put("imageType","1");
+		map.put("stringPageImage","经营页面入口图");
+		list.add(map);
+		Map<String,String> map2=new HashMap<String,String>();
+		map2.put("imageType","2");
+		map2.put("stringPageImage","开启直播banner图");
+		list.add(map2);
+		return list;
+	}
+	
+}

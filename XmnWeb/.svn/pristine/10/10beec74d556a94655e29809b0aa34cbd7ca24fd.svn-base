@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.ExpertManagementDao">
+
+	<parameterMap type="TexpertComment" id="texpertComment" />
+	
+	<resultMap type="TexpertComment" id="texpertCommentMap">
+		<result column="id" property="id" />
+		<result column="sellerid" property="sellerid" />
+		<result column="name" property="name" />
+		<result column="experttitle" property="experttitle" />
+		<result column="expertpic" property="expertpic" />
+		<result column="content" property="content" />
+		<result column="sdate" property="sdate" />
+		<result column="udate" property="udate" />
+	</resultMap>
+	
+	<resultMap type="TCommentLabel" id="tCommentLabelMap">
+		<result column="id" property="id" />
+		<result column="sellerid" property="sellerid" />
+		<result column="labelname" property="labelname" />
+		<result column="znum" property="znum" />
+		<result column="sdate" property="sdate" />
+		<result column="udate" property="udate" />
+	</resultMap>
+
+ 	<!-- 添加达人评论信息 -->
+	<insert id="addReturnId" parameterMap="texpertComment" >
+		INSERT INTO t_expert_comment
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != sellerid">
+					t_expert_comment.`sellerid`,
+				</if>
+				<if test=" null != name">
+					t_expert_comment.`name`,
+				</if>
+			 	<if test=" null != experttitle ">
+					t_expert_comment.`experttitle`,
+				</if>
+				<if test=" null != expertpic ">
+					t_expert_comment.`expertpic`,
+				</if>
+				<if test=" null != content ">
+					t_expert_comment.`content`,
+				</if>
+				<if test=" null != sdate ">
+					t_expert_comment.`sdate`,
+				</if>
+				<if test=" null != udate ">
+					t_expert_comment.`udate`,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != sellerid">
+					#{sellerid},
+				</if>
+				<if test=" null != name">
+					#{name},
+				</if>
+				<if test=" null != experttitle ">
+					#{experttitle},
+				</if>
+				<if test=" null != expertpic ">
+					#{expertpic},
+				</if>
+				<if test=" null != content ">
+					#{content},
+				</if>
+				<if test=" null != sdate ">
+					#{sdate},
+				</if>
+				<if test=" null != udate ">
+					#{udate},
+				</if>
+		</trim>
+	</insert>
+	
+	<!-- 获取商家达人评论信息 -->
+	<select id="getTexpertComment" resultMap="texpertCommentMap" parameterMap="texpertComment">
+	   SELECT te.* , ts.sellername FROM t_expert_comment te
+       LEFT JOIN  t_seller ts on te.sellerid = ts.sellerid
+		<where>
+			1=1
+			AND te.sellerid = ts.sellerid
+	 		<include refid="whereSQL"></include>
+ 		</where>
+		ORDER BY te.id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<!-- 获取商家达人评论信息条数 -->
+	<select id="getTexpertCommentCount" resultType="Long" parameterMap="texpertComment">
+		SELECT COUNT(1) FROM t_expert_comment te
+		LEFT JOIN  t_seller ts on te.sellerid = ts.sellerid
+		<where>
+			1=1
+			AND te.sellerid = ts.sellerid
+ 			<include refid="whereSQL"></include>
+		</where>
+	</select>
+	<!-- 获取商家标签个数 -->
+	<select id="getSellerLabelCount" resultType="Integer" parameterMap="texpertComment">
+		SELECT COUNT(1) FROM t_comment_label where sellerid = #{sellerid}
+	</select>
+	<!-- 获取商家标签个数 -->
+	<select id="getSellerLabel" resultMap="tCommentLabelMap" parameterMap="texpertComment">
+		SELECT * FROM t_comment_label where sellerid = #{sellerid}
+	</select>
+	<!-- 根据id获取商家达人评论信息用于初始化修改页面 -->
+	<select id="getTexpertCommentById" resultMap="texpertCommentMap" parameterType="Long">
+		SELECT * FROM t_expert_comment WHERE id = #{0}
+	</select>
+	<!-- 修改商家达人评论信息 -->
+	<update id="update" parameterMap="texpertComment">
+		UPDATE t_expert_comment
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != name">
+					t_expert_comment.`name` = #{name},
+				</if>
+				<if test=" null != experttitle">
+					t_expert_comment.`experttitle` = #{experttitle},
+				</if>
+				<if test=" null != expertpic">
+					t_expert_comment.`expertpic` = #{expertpic},
+				</if>
+				<if test=" null != content">
+					t_expert_comment.`content` = #{content},
+				</if>
+				<if test=" null != sdate">
+					t_expert_comment.`sdate` = #{sdate},
+				</if>
+				<if test=" null != udate">
+					t_expert_comment.`udate` = #{udate},
+				</if>
+			</trim>
+		</set>
+		<where>
+				t_expert_comment.`id` = #{id}
+		</where>
+	</update> 
+	<!-- 删除达人评论信息 -->
+	<delete id="delete" parameterType="Object">
+		DELETE FROM t_expert_comment WHERE id IN
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	</delete>
+	<!-- 可重用的Where 条件 -->
+	<sql id="whereSQL">
+		<if test=" null != name and '' != name">
+			AND te.name LIKE #{name}
+		</if>
+		<if test=" null != content and '' != content">
+			AND te.content LIKE '%${content}%'
+		</if>
+		<if test=" null != sellerid">
+			AND te.sellerid = #{sellerid}
+		</if>
+	</sql>
+</mapper>

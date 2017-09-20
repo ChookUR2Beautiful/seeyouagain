@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.xmermanagerment.dao.BXmerWalletRecordDao" >
+
+  <resultMap id="xmerWalletRecordMap" type="com.xmniao.xmn.core.xmermanagerment.entity.BXmerWalletRecord" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="xid" property="xid" jdbcType="INTEGER" />
+    <result column="rtype" property="rtype" jdbcType="INTEGER" />
+    <result column="profit" property="profit" jdbcType="DECIMAL" />
+    <result column="qprofit" property="qprofit" jdbcType="DECIMAL" />
+    <result column="hprofit" property="hprofit" jdbcType="DECIMAL" />
+    <result column="sdate" property="sdate" jdbcType="TIMESTAMP" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  
+  <sql id="xmerWalletRecord_column_list" >
+    id, xid, rtype, profit, qprofit, hprofit, sdate, remark, description
+  </sql>
+  
+  <sql id="whereSQL">
+  	<if test=" null != xid and '' != xid">
+  		AND xid = #{xid}
+  	</if>
+  	<if test=" null != rtype and '' != rtype or 0 == rtype">
+  		AND rtype = #{rtype}
+  	</if>
+  
+  </sql>
+  
+  
+  <select id="selectById" resultMap="xmerWalletRecordMap" parameterType="java.lang.Integer" >
+    select 
+    	<include refid="xmerWalletRecord_column_list" />
+    from b_xmer_wallet_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+   <select id="getList" resultMap="xmerWalletRecordMap" parameterType="com.xmniao.xmn.core.xmermanagerment.entity.BXmerWalletRecord" >
+    select 
+    	<include refid="xmerWalletRecord_column_list" />
+    from b_xmer_wallet_record
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+   	ORDER BY sdate DESC
+	<if test=" limit != -1 ">
+		LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <select id="count" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.xmermanagerment.entity.BXmerWalletRecord" >
+    select 
+    	count(1)
+    from b_xmer_wallet_record
+    <where>
+    	1=1
+    	<include refid="whereSQL"></include>
+    </where>
+  </select>
+  
+  <!-- 根据寻蜜客钱包ID分组统计佣金,流水 -->
+  <select id="getListByXids" resultType="com.xmniao.xmn.core.xmermanagerment.entity.BXmerWalletRecord" parameterType="java.lang.Object" >
+	SELECT
+		<!-- 佣金 -->
+		SUM(CASE WHEN rtype = 2 THEN profit ELSE 0 END ) AS commision,
+		<!-- 流水 -->
+	  	SUM(CASE WHEN rtype = 0 THEN profit ELSE 0 END) AS balance,
+	  	<!-- 寻蜜客钱包ID -->
+		xid
+	FROM
+		b_xmer_wallet_record
+	WHERE
+		rtype in( '0','2')
+		AND xid in
+		<foreach item="item" index="index" collection="array"  open="(" separator="," close=") ">
+			 #{item}
+		</foreach>
+	GROUP BY
+		xid
+  </select>
+  
+</mapper>

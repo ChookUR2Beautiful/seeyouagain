@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.live_anchor.dao.TLiveRecommendRecordDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.live_anchor.entity.TLiveRecommendRecord" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="rid" property="rid" jdbcType="INTEGER" />
+    <result column="rtype" property="rtype" jdbcType="INTEGER" />
+    <result column="is_nationwide" property="isNationwide" jdbcType="INTEGER" />
+    <result column="province_id" property="provinceId" jdbcType="INTEGER" />
+    <result column="city_id" property="cityId" jdbcType="INTEGER" />
+    <result column="module_type" property="moduleType" jdbcType="INTEGER" />    
+    <result column="home_sort" property="homeSort" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="anchor_name" property="anchorName" jdbcType="VARCHAR" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    t_live_recommend_record.id, 
+    t_live_recommend_record.rid, 
+    t_live_recommend_record.rtype, 
+    t_live_recommend_record.is_nationwide, 
+    t_live_recommend_record.province_id, 
+    t_live_recommend_record.city_id, 
+    t_live_recommend_record.module_type, 
+    t_live_recommend_record.home_sort, 
+    t_live_recommend_record.update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_live_recommend_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_live_recommend_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRecommendRecord" >
+    insert into t_live_recommend_record (id, rid, rtype, 
+      is_nationwide, province_id, city_id, module_type, 
+      home_sort, update_time)
+    values (#{id,jdbcType=INTEGER}, #{rid,jdbcType=INTEGER}, #{rtype,jdbcType=INTEGER}, 
+      #{isNationwide,jdbcType=INTEGER}, #{provinceId,jdbcType=INTEGER}, #{cityId,jdbcType=INTEGER},  
+       #{moduleType,jdbcType=INTEGER}, #{homeSort,jdbcType=INTEGER}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRecommendRecord" >
+    insert into t_live_recommend_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="rid != null" >
+        rid,
+      </if>
+      <if test="rtype != null" >
+        rtype,
+      </if>
+      <if test="isNationwide != null" >
+        is_nationwide,
+      </if>
+      <if test="provinceId != null" >
+        province_id,
+      </if>
+      <if test="cityId != null" >
+        city_id,
+      </if>
+      <if test="moduleType != null" >
+        module_type,
+      </if>      
+      <if test="homeSort != null" >
+        home_sort,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="rid != null" >
+        #{rid,jdbcType=INTEGER},
+      </if>
+      <if test="rtype != null" >
+        #{rtype,jdbcType=INTEGER},
+      </if>
+      <if test="isNationwide != null" >
+        #{isNationwide,jdbcType=INTEGER},
+      </if>
+      <if test="provinceId != null" >
+        #{provinceId,jdbcType=INTEGER},
+      </if>
+      <if test="cityId != null" >
+        #{cityId,jdbcType=INTEGER},
+      </if>
+      <if test="moduleType != null" >
+        #{moduleType,jdbcType=INTEGER},
+      </if>      
+      <if test="homeSort != null" >
+        #{homeSort,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRecommendRecord" >
+    update t_live_recommend_record
+    <set >
+      <if test="rid != null" >
+        rid = #{rid,jdbcType=INTEGER},
+      </if>
+      <if test="rtype != null" >
+        rtype = #{rtype,jdbcType=INTEGER},
+      </if>
+      <if test="isNationwide != null" >
+        is_nationwide = #{isNationwide,jdbcType=INTEGER},
+      </if>
+      <if test="provinceId != null" >
+        province_id = #{provinceId,jdbcType=INTEGER},
+      </if>
+      <if test="cityId != null" >
+        city_id = #{cityId,jdbcType=INTEGER},
+      </if>
+      <if test="moduleType != null" >
+          module_type = #{moduleType,jdbcType=INTEGER},
+      </if>       
+      <if test="homeSort != null" >
+        home_sort = #{homeSort,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRecommendRecord" >
+    update t_live_recommend_record
+    set rid = #{rid,jdbcType=INTEGER},
+      rtype = #{rtype,jdbcType=INTEGER},
+      is_nationwide = #{isNationwide,jdbcType=INTEGER},
+      province_id = #{provinceId,jdbcType=INTEGER},
+      city_id = #{cityId,jdbcType=INTEGER},
+      module_type = #{moduleType,jdbcType=INTEGER},
+      home_sort = #{homeSort,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  
+  <!-- 自定义查询区域 -->
+  <sql id="baseSellerCondition">
+      <if test="id != null" >
+          AND t.id = #{id}
+      </if>
+      <if test="rtype!= null" >
+          AND rtype = #{rtype}
+      </if>   
+      <if test="moduleType!= null" >
+          AND module_type = #{moduleType}
+      </if>          
+      <if test="updateTime != null" >
+        AND t.update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+      
+  </sql>
+
+  <select id="getLiveRecommendRecordList" resultMap="BaseResultMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRecommendRecord">
+		SELECT
+		t.*
+		, tr.title AS title, CASE tr.topic_type WHEN '1' THEN '商户' WHEN '2' THEN '连锁店' WHEN '3' THEN '区域代理' 
+          WHEN '4' THEN '主播' WHEN '5' THEN '预告' WHEN '6' THEN '粉丝券' WHEN '7' THEN '套餐' WHEN '8' THEN '商品' 
+          ELSE '-' END as topicTypeDesc, 
+		tp.title provinceName, tc.title AS cityName
+		FROM t_live_recommend_record t LEFT JOIN t_special_topic_config tr ON
+		t.rid = tr.id  LEFT JOIN t_area tp ON t.province_id = tp.area_id
+		LEFT JOIN t_area tc ON t.city_id = tc.area_id
+		<where>
+			1 = 1
+			<include refid="baseSellerCondition" />
+			<if test="title !=null and '' != title">
+				AND tr.title LIKE '%${title}%'
+			</if>
+		</where>
+		ORDER BY t.update_time DESC, t.id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit}, #{limit}
+		</if>
+  </select>
+  <select id="countLiveRecommendRecord" resultType="Long" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRecommendRecord">
+		SELECT COUNT(1) FROM t_live_recommend_record t
+		<where>
+			1=1
+			<include refid="baseSellerCondition" />
+		</where>
+  </select>
+  
+   <!-- 直播首页新人推荐 -->  
+  <select id="getFreshmanRecommendRecordList" resultMap="BaseResultMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRecommendRecord">
+        SELECT t.*, tr.anchor_id, tr.nname, tr.zhibo_title AS zhiboTitle, tr.sellerid, tr.sellername 
+               FROM t_live_recommend_record t INNER JOIN t_live_record tr 
+               ON t.rid = tr.id
+		<where>
+			1 = 1
+			<include refid="baseSellerCondition" />
+		</where>
+		ORDER BY t.update_time DESC, t.id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit}, #{limit}
+		</if>
+  </select>
+  
+  <select id="countFreshmanRecommendRecord" resultType="Long" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRecommendRecord">
+		SELECT COUNT(1) FROM t_live_recommend_record t INNER JOIN t_live_record tr 
+               ON t.rid = tr.id
+		<where>
+			1=1
+			<include refid="baseSellerCondition" />
+		</where>
+  </select>
+  
+     <!-- 直播首页新人视频推荐 -->  
+  <select id="getFreshmanVideoRecommendList" resultMap="BaseResultMap" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRecommendRecord">
+        SELECT t.*, tr.anchor_id, tr.anchor_name as nname, tr.title AS zhiboTitle
+               FROM t_live_recommend_record t INNER JOIN t_live_anchor_video tr 
+               ON t.rid = tr.id
+		<where>
+			1 = 1
+			<include refid="baseSellerCondition" />
+		</where>
+		ORDER BY t.update_time DESC, t.id DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit}, #{limit}
+		</if>
+  </select>
+  
+  <select id="countFreshmanVideoRecommend" resultType="Long" parameterType="com.xmniao.xmn.core.live_anchor.entity.TLiveRecommendRecord">
+		SELECT COUNT(1) FROM t_live_recommend_record t INNER JOIN t_live_anchor_video tr 
+               ON t.rid = tr.id
+		<where>
+			1=1
+			<include refid="baseSellerCondition" />
+		</where>
+  </select>
+  
+  
+  <select id="getTVstarRecords" resultMap="BaseResultMap" >
+  	 select <include refid="Base_Column_List" />,t_live_anchor_video.anchor_name,t_live_anchor_video.title
+    from t_live_recommend_record
+    left join t_live_anchor_video on t_live_recommend_record.rid = t_live_anchor_video.id
+    where t_live_recommend_record.module_type=4
+  </select>
+  
+  <update id="updateVideoSort">
+  	 update t_live_recommend_record set home_sort = #{sort} where id = #{id}
+  </update>
+  
+</mapper>

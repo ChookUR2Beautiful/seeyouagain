@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.fresh.dao.SupplierDao">
+
+	<!-- 查询条件 -->
+	<sql id="queryTSupplierCondition">
+		<if test="null != supplierId">
+			AND ts.supplierId = #{supplierId}
+		</if>
+		<if test="null != supplierName and '' != supplierName">
+			AND ts.supplierName LIKE '%${supplierName}%'
+		</if>
+		<if test="null != contacts and '' != contacts">
+			AND ts.contacts LIKE '%${contacts}%'
+		</if>
+		<if test="null != phone and '' != phone">
+			AND ts.phone = #{phone}
+		</if>
+		<if test="null != address and '' != address">
+			AND ts.address LIKE '%${address}%'
+		</if>
+		<if test="null != status">
+			AND ts.status = #{status}
+		</if>
+		<if test=" null != sDate and '' != sDate">
+			AND ts.sdate &gt; #{sDate} 
+		</if>
+		<if test=" null != eDate and ''!= eDate">
+			<choose>
+				<when test="sDate == eDate">
+					AND ts.sdate &lt; DATE_ADD(#{eDate}, INTERVAL 1 DAY) 
+				</when>
+				<otherwise>
+					AND ts.sdate &lt; #{eDate}
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+
+	<!-- 查询所有供应商 -->
+	<select id="getTSupplierList" resultType="com.xmniao.xmn.core.fresh.entity.TSupplier" 
+		parameterType="com.xmniao.xmn.core.fresh.entity.TSupplier">
+		SELECT 
+			ts.supplierId,
+			ts.supplierName,
+			ts.contacts,
+			ts.phone,
+			ts.address,
+			ts.`status`,
+			ts.sdate 
+		FROM 
+			t_supplier ts 
+		<where>
+			1=1 
+			<include refid="queryTSupplierCondition"></include>
+		</where>
+		<if test="order == 1">
+			ORDER BY ts.sdate DESC 
+		</if>
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<!-- 查询总记录数 -->
+	<select id="tSupplierCount"  parameterType="com.xmniao.xmn.core.fresh.entity.TSupplier" resultType="long">
+		SELECT 
+			COUNT(ts.supplierId) 
+		FROM 
+			t_supplier ts 
+		<where>
+			1=1 
+		    <include refid="queryTSupplierCondition"></include>
+		</where>
+	</select>
+	
+	<!-- 添加一条数据 -->
+	<insert id="addTSupplier" parameterType="com.xmniao.xmn.core.fresh.entity.TSupplier">
+		INSERT INTO 
+			`t_supplier` 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test=" null != supplierName and '' != supplierName">
+				supplierName,
+			</if>
+			<if test=" null != contacts and '' != contacts">
+				contacts,
+			</if>
+			<if test=" null != phone and '' != phone">
+				phone,
+			</if>
+			<if test=" null != address and '' != address">
+				address,
+			</if>
+			<if test=" null != status and '' != status">
+				status,
+			</if>
+			<if test=" null != sdate and '' != sdate">
+				sdate,
+			</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			<if test=" null != supplierName and '' != supplierName">
+				#{supplierName},
+			</if>
+			<if test=" null != contacts and '' != contacts">
+				#{contacts},
+			</if>
+			<if test=" null != phone and '' != phone">
+				#{phone},
+			</if>
+			<if test=" null != address and '' != address">
+				#{address},
+			</if>
+			<if test=" null != status and '' != status">
+				#{status},
+			</if>
+			<if test=" null != sdate and '' != sdate">
+				#{sdate},
+			</if>
+		</trim>	
+	</insert>
+	
+	<!-- 根据逐渐supplierId更新一条数据 -->
+	<update id="updateSupplierById" parameterType="com.xmniao.xmn.core.fresh.entity.TSupplier">
+		UPDATE 
+			`t_supplier` 
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != supplierName and '' != supplierName">
+					supplierName = #{supplierName},
+				</if>
+				<if test=" null != contacts and '' != contacts">
+					contacts = #{contacts},
+				</if>
+				<if test=" null != phone and '' != phone">
+					phone = #{phone},
+				</if>
+				<if test=" null != address and '' != address">
+					address = #{address},
+				</if>
+				<if test=" null != status and '' != status">
+					status = #{status},
+				</if>
+				<if test="null != sdate and '' != sdate">
+					sdate = #{sdate},  
+				</if>
+			</trim>
+		</set> 
+		WHERE 
+			supplierId = #{supplierId} 
+	</update>
+	
+	<!-- 条件查询一条记录 -->
+	<select id="getSupplier" resultType="com.xmniao.xmn.core.fresh.entity.TSupplier" 
+		parameterType="com.xmniao.xmn.core.fresh.entity.TSupplier">
+		SELECT 
+			ts.supplierId,
+			ts.supplierName,
+			ts.contacts,
+			ts.phone,
+			ts.address,
+			ts.`status`,
+			ts.sdate 
+		FROM 
+			t_supplier ts 
+		<where>
+			1=1 
+			<include refid="queryTSupplierCondition"></include>
+		</where>
+	</select>
+	
+	<!-- 根据供应商名称查询供应商 -->
+	<select id="getSupplierBySupplierName" resultType="com.xmniao.xmn.core.fresh.entity.TSupplier" 
+		parameterType="com.xmniao.xmn.core.fresh.entity.TSupplier">
+		SELECT 
+			ts.supplierId,
+			ts.supplierName,
+			ts.contacts,
+			ts.phone,
+			ts.address,
+			ts.`status`,
+			ts.sdate 
+		FROM 
+			t_supplier ts 
+		<where>
+			1=1 
+			AND supplierName = #{supplierName}
+			AND `status` = '0'
+			LIMIT 0,1
+		</where>
+	</select>
+		
+</mapper>

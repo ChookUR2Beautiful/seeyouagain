@@ -1,0 +1,907 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.SpreadDao">
+	<parameterMap type="Seller" id="seller" />
+	<parameterMap type="TSpread" id="tSpread" />
+	
+	<resultMap type="TSpread" id="tSpreadMap">
+		<result column="id" property="id" />
+		<result column="aid" property="aid" />
+		<result column="account" property="account" />
+		<result column="sellerid" property="sellerid" />
+		<result column="sellername" property="sellername" />
+		<result column="url" property="url" />
+		<result column="orderCount" property="orderCount" />
+		<result column="brokerage" property="brokerage" />
+		<result column="tgStatus" property="tgStatus" />
+		<result column="rdate" property="rdate" />
+		<result column="udate" property="udate" />
+	</resultMap>
+	
+	<resultMap type="Seller" id="sellerMap">
+		<result column="sellerid" property="sellerid" />
+		<result column="staffid" property="staffid" />
+		<result column="jointid" property="jointid" />
+		<result column="sellername" property="sellername" />
+		<result column="province" property="province" />
+		<result column="city" property="city" />
+		<result column="area" property="area" />
+		<result column="zoneid" property="zoneid" />
+		<result column="category" property="category" />
+		<result column="genre" property="genre" />
+		<result column="genre_ids" property="genreIds" />
+		<result column="bewrite" property="bewrite" />
+		<result column="address" property="address" />
+		<result column="tel" property="tel" />
+		<result column="fullname" property="fullname" />
+		<result column="identity" property="identity" />
+		<result column="phoneid" property="phoneid" />
+		<result column="orgid" property="orgid" />
+		<result column="licenseid" property="licenseid" />
+		<result column="licenseurl" property="licenseurl" />
+		<result column="sdate" property="sdate" />
+		<result column="sexplain" property="sexplain" />
+		<result column="svalidity" property="svalidity" />
+		<result column="evalidity" property="evalidity" />
+		<result column="status" property="status" />
+		<result column="examineinfo" property="examineinfo" />
+		<result column="signdate" property="signdate" />
+		<result column="udate" property="udate" />
+		<result column="give" property="give" />
+		<result column="fatherid" property="fatherid" />
+		<result column="remarks" property="remarks" />
+		<result column="email" property="email" />
+		<result column="identityzurl" property="identityzurl" />
+		<result column="identityfurl" property="identityfurl" />
+		<result column="licensefurl" property="licensefurl" />
+		<result column="typename" property="typename" />
+		<result column="tradename" property="tradename" />
+		<result column="agreement" property="agreement" />
+		<result column="lssellername" property="lssellername" />
+		<result column="nname" property="nname" />
+		<result column="title" property="title" />
+		<result column="areaTitle" property="areaTitle" />
+		<result column="baseagio" property="baseagio" />
+		<result column="corporate" property="corporate" />
+		<result column="salesman" property="salesman" />
+		<result column="commentCount" property="commentCount" />
+		<result column="isprotocol" property="isprotocol" />
+		<result column="isforce" property="isforce" />
+		<result column="agio_type" property="agioType" />
+		<result column="agio" property="baseagio" />
+		<result column="yledger" property="yledger" />
+		<result column="agio_time" property="agioTime" />
+		<result column="entry" property="entry" />
+		<result column="flat_agio" property="flatAgio" />
+		<result column="is_virtual" property="isVirtual" />
+		<result column="btitle" property="btitle" />
+		<result column="ptitle" property="ptitle" />
+		<result column="ctitle" property="ctitle" />
+		<result column="atitle" property="atitle" />
+		<result column="agio_agio" property="agioAgio" />
+		<result column="agio_instruction" property="agioInstruction" />
+		<result column="account" property="account" />
+		<result column="aid" property="accountid" />
+		<result column="iostoken" property="iostoken" />
+		<result column="id" property="allianceId" />
+		<result column="seller_grade" property="sellerGrade" />
+		<result column="type" property="type" />
+		<result column="phone" property="phone" />
+		<result column="date_operate" property="dateOperate" />
+		<result column="data_source" property="dataSource" />
+		<result column="offline_reason" property="offlineReason" />
+		<result column="isattend" property="isattend" />
+		<result column="islock" property="isLock" />
+
+		<result column="ratio" property="ratio" />
+		<result column="isfees" property="isfees" />
+		<result column="debit" property="debit" />
+		<result column="brand_id" property="brandId" />
+	</resultMap>
+
+ 	<!-- 添加服务员推广信息 -->
+	<insert id="add" parameterMap="tSpread" >
+		INSERT INTO t_spread
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+				<if test=" null != aid ">
+					t_spread.`aid`,
+				</if>
+				<if test=" null != account ">
+					t_spread.`account`,
+				</if>
+			 	<if test=" null != sellerid">
+					t_spread.`sellerid`,
+				</if>
+				<if test=" null != sellername">
+					t_spread.`sellername`,
+				</if>
+			 	<if test=" null != url ">
+					t_spread.`url`,
+				</if>
+				<if test=" null != orderCount ">
+					t_spread.`orderCount`,
+				</if>
+				<if test=" null != brokerage ">
+					t_spread.`brokerage`,
+				</if>
+				<if test=" null != tgStatus ">
+					t_spread.`tgStatus`,
+				</if>
+				<if test=" null != rdate ">
+					t_spread.`rdate`,
+				</if>
+				<if test=" null != udate ">
+					t_spread.`udate`,
+				</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+				<if test=" null != aid">
+					#{aid},
+				</if>
+				<if test=" null != account">
+					#{account},
+				</if>
+			 	<if test=" null != sellerid">
+					#{sellerid},
+				</if>
+				<if test=" null != sellername ">
+					#{sellername},
+				</if>
+				<if test=" null != url ">
+					#{url},
+				</if>
+				<if test=" null != orderCount ">
+					#{orderCount},
+				</if>
+				<if test=" null != brokerage ">
+					#{brokerage},
+				</if>
+				<if test=" null != tgStatus ">
+					#{tgStatus},
+				</if>
+				<if test=" null != rdate ">
+					#{rdate},
+				</if>
+				<if test=" null != udate ">
+					#{udate},
+				</if>
+		</trim>
+	</insert>
+	
+	<!-- 获取服务员推广信息 -->
+	<select id="getList" resultMap="tSpreadMap" parameterMap="tSpread">
+		SELECT ts.*,tsa.`fullname`,tsa.`uid` 
+		FROM t_seller_account tsa 
+		RIGHT JOIN( 
+		   SELECT * FROM t_spread
+			<where>
+				1=1
+		 		<include refid="whereSQL"></include>
+				</where>
+			ORDER BY id DESC
+			<if test=" limit != -1 ">
+				LIMIT ${(page-1)*limit},#{limit}
+			</if>
+		)ts
+		ON tsa.aid=ts.aid
+		ORDER BY id DESC
+	</select>
+	<!-- 获取商家服务员推广配置信息条数 -->
+	<select id="count" resultType="Long" parameterMap="tSpread">
+		SELECT COUNT(1) FROM t_spread
+		<where>
+			1=1
+ 			<include refid="whereSQL"></include>
+		</where>
+	</select>
+	<!-- 根据id查询商家服务员配置信息用于初始化修改页面 -->
+	<select id="getObject" resultMap="tSpreadMap" parameterType="Long">
+		SELECT * FROM t_spread WHERE id = #{0}
+	</select>
+	<!-- 修改服务员推广信息 -->
+	<update id="update" parameterMap="tSpread">
+		UPDATE t_spread
+		<set>
+			<trim suffixOverrides=",">
+				<if test=" null != url ">
+					t_spread.`url` = #{url},
+				</if>
+				<if test=" null != orderCount">
+					t_spread.`orderCount` = #{orderCount},
+				</if>
+				<if test=" null != brokerage">
+					t_spread.`brokerage` = #{brokerage},
+				</if>
+				<if test=" null != tgStatus">
+					t_spread.`tgStatus` = #{tgStatus},
+				</if>
+				<if test=" null != rdate ">
+					t_spread.`rdate` = #{rdate},
+				</if>
+				<if test=" null != udate ">
+					t_spread.`udate` = #{udate},
+				</if>
+			</trim>
+		</set>
+		<where>
+				t_spread.`id` = #{id}
+		</where>
+	</update> 
+	
+	<!-- 可重用的Where 条件 -->
+	<sql id="whereSQL">
+		<if test=" null != id and '' !=id">
+			AND id = #{id}
+		</if>
+		<if test=" null != sellerid and '' != sellerid">
+			AND sellerid = #{sellerid}
+		</if>
+		<if test=" null != sellername and '' != sellername">
+			AND sellername LIKE '%${sellername}%'
+		</if>
+		<if test=" null != account and '' != account">
+			AND account = #{account}
+		</if>
+		<if test=" null != url and '' != url">
+			AND url = #{url}
+		</if>
+		<if test=" null != tgStatus">
+			AND tgStatus = #{tgStatus}
+		</if>
+	</sql>
+	<!-- 获取商家列表(只查询已推广配置的商家) -->
+	<select id="getListTospread" resultMap="sellerMap" parameterMap="seller">
+		SELECT t.sellerid, 
+        t.sellername, 
+        t.address,
+        t.phoneid,
+		tc.title AS ctitle,
+		ta.title AS atitle
+		FROM
+		t_seller t
+		LEFT JOIN t_area tc ON t.city = tc.area_id
+		LEFT JOIN t_area ta ON t.area =	ta.area_id
+		LEFT JOIN t_spread_config ON t.sellerid = t_spread_config.sellerid 
+		<where>
+			1=1
+			AND t.is_virtual = 0
+			AND t.sellerid = t_spread_config.sellerid
+			<if test=" null != isonline">
+				AND t.isonline = #{isonline}
+			</if>
+			<if test=" null != ismultiple">
+				AND t.ismultiple = #{ismultiple}
+			</if>
+			<if test=" null != array">
+				AND t1.sellerid IN
+				<foreach item="item" index="index" collection="array" open="("
+					separator="," close=") ">
+					#{item}
+				</foreach>
+			</if>
+			<if test=" null != isonlines">
+				AND t.isonline IN
+				<foreach item="item" index="index" collection="isonlines"
+					open="(" separator="," close=") ">
+					#{item}
+				</foreach>
+			</if>
+			<if test=" null != sellerid">
+				AND t.sellerid = #{sellerid}
+			</if>
+			<if test=" null != staffid">
+				AND t.staffid = #{staffid}
+			</if>
+			<if test=" null != jointid">
+				AND t.jointid = #{jointid}
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND t.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != province and '' != province ">
+				AND t.province = #{province}
+			</if>
+			<if test=" null != city and '' != city ">
+				AND t.city = #{city}
+			</if>
+			<if test=" null != area and '' != area ">
+				AND t.area = #{area}
+			</if>
+
+			<if test=" null != zoneid">
+				AND t.zoneid = #{zoneid}
+			</if>
+			<if test=" null != category and '' != category ">
+				AND t.category LIKE '%${category}%'
+			</if>
+			<if test=" null != genre and '' != genre ">
+				AND t.genre LIKE '%${genre}%'
+			</if>
+			<if test=" null != bewrite and '' != bewrite ">
+				AND t.bewrite LIKE '%${bewrite}%'
+			</if>
+			<if test=" null != address and '' != address ">
+				AND t.address LIKE '%${address}%'
+			</if>
+			<if test=" null != tel and '' != tel ">
+				AND t.tel LIKE '%${tel}%'
+			</if>
+			<if test=" null != fullname and '' != fullname ">
+				AND t.fullname LIKE '%${fullname}%'
+			</if>
+			<if test=" null != identity and '' != identity ">
+				AND t.identity LIKE '%${identity}%'
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				AND t.phoneid LIKE '%${phoneid}%'
+			</if>
+			<if test=" null != orgid and '' != orgid ">
+				AND t.orgid LIKE '%${orgid}%'
+			</if>
+			<if test=" null != licenseid and '' != licenseid ">
+				AND t.licenseid LIKE '%${licenseid}%'
+			</if>
+			<if test=" null != licenseurl and '' != licenseurl ">
+				AND t.licenseurl LIKE '%${licenseurl}%'
+			</if>
+			<if test=" null != sdate and '' != sdate ">
+				AND t.sdate LIKE '%${sdate}%'
+			</if>
+			<if test=" null != sexplain and '' != sexplain ">
+				AND t.sexplain LIKE '%${sexplain}%'
+			</if>
+			<if test=" null != svalidity">
+				AND t.svalidity = #{svalidity}
+			</if>
+			<if test=" null != evalidity">
+				AND t.evalidity = #{evalidity}
+			</if>
+			<if test=" null != status">
+				AND t.status = #{status}
+			</if>
+			<if test=" null != examineinfo and '' != examineinfo ">
+				AND t.examineinfo LIKE '%${examineinfo}%'
+			</if>
+			<if test=" null != signdate">
+				AND t.signdate = #{signdate}
+			</if>
+			<if test=" null != udate">
+				AND t.udate = #{udate}
+			</if>
+			<if test=" null != give">
+				AND t.give = #{give}
+			</if>
+			<if test=" null != fatherid">
+				AND t.fatherid = #{fatherid}
+			</if>
+			<if test=" null != remarks and '' != remarks ">
+				AND t.remarks LIKE '%${remarks}%'
+			</if>
+			<if test=" null != email and '' != email ">
+				AND t.email LIKE '%${email}%'
+			</if>
+			<if test=" null != identityzurl and '' != identityzurl ">
+				AND t.identityzurl LIKE '%${identityzurl}%'
+			</if>
+			<if test=" null != identityfurl and '' != identityfurl ">
+				AND t.identityfurl LIKE '%${identityfurl}%'
+			</if>
+			<if test=" null != licensefurl and '' != licensefurl ">
+				AND t.licensefurl LIKE '%${licensefurl}%'
+			</if>
+
+			<if test=" null != agreement and '' != agreement ">
+				AND t.agreement LIKE '%${agreement}%'
+			</if>
+			<if test=" null != lssellername and '' != lssellername ">
+				AND t.lssellername LIKE '%${lssellername}%'
+			</if>
+			<if test=" null != cityids and '' != cityids ">
+				AND FIND_IN_SET(t.city,#{cityids})
+			</if>
+		</where>
+		ORDER BY t.sellerid DESC,t.udate DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<!-- 获取商家列表记录条数(只查询已推广配置的商家) -->
+	<select id="countTospread" resultType="Long" parameterMap="seller">
+		SELECT COUNT(*) FROM t_seller t 
+		LEFT JOIN t_spread_config ON t.sellerid = t_spread_config.sellerid
+		<where>
+			1=1
+			AND is_virtual = 0
+			AND t.sellerid = t_spread_config.sellerid
+			<if test=" null != isonline">
+				AND isonline = #{isonline}
+			</if>
+			<if test=" null != ismultiple">
+				AND ismultiple = #{ismultiple}
+			</if>
+			<if test=" null != array">
+				AND sellerid IN
+				<foreach item="item" index="index" collection="array" open="("
+					separator="," close=") ">
+					#{item}
+				</foreach>
+			</if>
+			<if test=" null != isonlines">
+				AND t.isonline IN
+				<foreach item="item" index="index" collection="isonlines"
+					open="(" separator="," close=") ">
+					#{item}
+				</foreach>
+			</if>
+			<if test=" null != sellerid">
+				AND t.sellerid = #{sellerid}
+			</if>
+			<if test=" null != staffid">
+				AND staffid = #{staffid}
+			</if>
+			<if test=" null != jointid">
+				AND jointid = #{jointid}
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND t.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != province and '' != province ">
+				AND province = #{province}
+			</if>
+			<if test=" null != city and '' != city ">
+				AND city = #{city}
+			</if>
+			<if test=" null != area and '' != area ">
+				AND area = #{area}
+			</if>
+			<if test=" null != zoneid">
+				AND zoneid = #{zoneid}
+			</if>
+			<if test=" null != category and '' != category ">
+				AND category LIKE '%${category}%'
+			</if>
+			<if test=" null != genre and '' != genre ">
+				AND genre LIKE '%${genre}%'
+			</if>
+			<if test=" null != bewrite and '' != bewrite ">
+				AND bewrite LIKE '%${bewrite}%'
+			</if>
+			<if test=" null != address and '' != address ">
+				AND address LIKE '%${address}%'
+			</if>
+			<if test=" null != tel and '' != tel ">
+				AND tel LIKE '%${tel}%'
+			</if>
+			<if test=" null != fullname and '' != fullname ">
+				AND fullname LIKE '%${fullname}%'
+			</if>
+			<if test=" null != identity and '' != identity ">
+				AND identity LIKE '%${identity}%'
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				AND phoneid LIKE '%${phoneid}%'
+			</if>
+			<if test=" null != orgid and '' != orgid ">
+				AND orgid LIKE '%${orgid}%'
+			</if>
+			<if test=" null != licenseid and '' != licenseid ">
+				AND licenseid LIKE '%${licenseid}%'
+			</if>
+			<if test=" null != licenseurl and '' != licenseurl ">
+				AND licenseurl LIKE '%${licenseurl}%'
+			</if>
+			<if test=" null != sdate and '' != sdate ">
+				AND sdate LIKE '%${sdate}%'
+			</if>
+			<if test=" null != sexplain and '' != sexplain ">
+				AND sexplain LIKE '%${sexplain}%'
+			</if>
+			<if test=" null != svalidity">
+				AND svalidity = #{svalidity}
+			</if>
+			<if test=" null != evalidity">
+				AND evalidity = #{evalidity}
+			</if>
+			<if test=" null != status">
+				AND t.status = #{status}
+			</if>
+			<if test=" null != examineinfo and '' != examineinfo ">
+				AND examineinfo LIKE '%${examineinfo}%'
+			</if>
+			<if test=" null != signdate">
+				AND signdate = #{signdate}
+			</if>
+			<if test=" null != udate">
+				AND udate = #{udate}
+			</if>
+			<if test=" null != give">
+				AND give = #{give}
+			</if>
+			<if test=" null != fatherid">
+				AND fatherid = #{fatherid}
+			</if>
+			<if test=" null != remarks and '' != remarks ">
+				AND remarks LIKE '%${remarks}%'
+			</if>
+			<if test=" null != email and '' != email ">
+				AND email LIKE '%${email}%'
+			</if>
+			<if test=" null != identityzurl and '' != identityzurl ">
+				AND identityzurl LIKE '%${identityzurl}%'
+			</if>
+			<if test=" null != identityfurl and '' != identityfurl ">
+				AND identityfurl LIKE '%${identityfurl}%'
+			</if>
+			<if test=" null != licensefurl and '' != licensefurl ">
+				AND licensefurl LIKE '%${licensefurl}%'
+			</if>
+
+			<if test=" null != agreement and '' != agreement ">
+				AND agreement LIKE '%${agreement}%'
+			</if>
+			<if test=" null != lssellername and '' != lssellername ">
+				AND lssellername LIKE '%${lssellername}%'
+			</if>
+			<if test=" null != cityids and '' != cityids ">
+				AND FIND_IN_SET(t.city,#{cityids})
+			</if>
+		</where>
+	</select>
+	<!-- 获取商家列表（已上线已签约的商家并且未配置） -->
+	<select id="getListToConfig" resultMap="sellerMap" parameterMap="seller">
+		SELECT t.sellerid, 
+        t.sellername, 
+        t.address,
+        t.phoneid,
+		tc.title AS ctitle,
+		ta.title AS atitle
+		FROM
+		t_seller t
+		LEFT JOIN
+		t_area tc ON t.city = tc.area_id
+		LEFT JOIN t_area ta ON t.area =
+		ta.area_id
+		<where>
+			1=1
+			AND t.is_virtual = 0
+			AND t.sellerid not in (select  t_spread_config.sellerid from t_spread_config where t_spread_config.sellerid is not null)
+			<if test=" null != isonline">
+				AND t.isonline = #{isonline}
+			</if>
+			<if test=" null != ismultiple">
+				AND t.ismultiple = #{ismultiple}
+			</if>
+			<if test=" null != array">
+				AND t1.sellerid IN
+				<foreach item="item" index="index" collection="array" open="("
+					separator="," close=") ">
+					#{item}
+				</foreach>
+			</if>
+			<if test=" null != isonlines">
+				AND t.isonline IN
+				<foreach item="item" index="index" collection="isonlines"
+					open="(" separator="," close=") ">
+					#{item}
+				</foreach>
+			</if>
+			<if test=" null != sellerid">
+				AND t.sellerid = #{sellerid}
+			</if>
+			<if test=" null != staffid">
+				AND t.staffid = #{staffid}
+			</if>
+			<if test=" null != jointid">
+				AND t.jointid = #{jointid}
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND t.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != province and '' != province ">
+				AND t.province = #{province}
+			</if>
+			<if test=" null != city and '' != city ">
+				AND t.city = #{city}
+			</if>
+			<if test=" null != area and '' != area ">
+				AND t.area = #{area}
+			</if>
+
+			<if test=" null != account and '' != account ">
+				AND sa.account = #{account}
+			</if>
+
+			<if test=" null != zoneid">
+				AND t.zoneid = #{zoneid}
+			</if>
+			<if test=" null != category and '' != category ">
+				AND t.category LIKE '%${category}%'
+			</if>
+			<if test=" null != genre and '' != genre ">
+				AND t.genre LIKE '%${genre}%'
+			</if>
+			<if test=" null != bewrite and '' != bewrite ">
+				AND t.bewrite LIKE '%${bewrite}%'
+			</if>
+			<if test=" null != address and '' != address ">
+				AND t.address LIKE '%${address}%'
+			</if>
+			<if test=" null != tel and '' != tel ">
+				AND t.tel LIKE '%${tel}%'
+			</if>
+			<if test=" null != fullname and '' != fullname ">
+				AND t.fullname LIKE '%${fullname}%'
+			</if>
+			<if test=" null != identity and '' != identity ">
+				AND t.identity LIKE '%${identity}%'
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				AND t.phoneid LIKE '%${phoneid}%'
+			</if>
+			<if test=" null != orgid and '' != orgid ">
+				AND t.orgid LIKE '%${orgid}%'
+			</if>
+			<if test=" null != licenseid and '' != licenseid ">
+				AND t.licenseid LIKE '%${licenseid}%'
+			</if>
+			<if test=" null != licenseurl and '' != licenseurl ">
+				AND t.licenseurl LIKE '%${licenseurl}%'
+			</if>
+			<if test=" null != sdate and '' != sdate ">
+				AND t.sdate LIKE '%${sdate}%'
+			</if>
+			<if test=" null != sexplain and '' != sexplain ">
+				AND t.sexplain LIKE '%${sexplain}%'
+			</if>
+			<if test=" null != svalidity">
+				AND t.svalidity = #{svalidity}
+			</if>
+			<if test=" null != evalidity">
+				AND t.evalidity = #{evalidity}
+			</if>
+			<if test=" null != status">
+				AND t.status = #{status}
+			</if>
+			<if test=" null != examineinfo and '' != examineinfo ">
+				AND t.examineinfo LIKE '%${examineinfo}%'
+			</if>
+			<if test=" null != signdate">
+				AND t.signdate = #{signdate}
+			</if>
+			<if test=" null != udate">
+				AND t.udate = #{udate}
+			</if>
+			<if test=" null != give">
+				AND t.give = #{give}
+			</if>
+			<if test=" null != fatherid">
+				AND t.fatherid = #{fatherid}
+			</if>
+			<if test=" null != remarks and '' != remarks ">
+				AND t.remarks LIKE '%${remarks}%'
+			</if>
+			<if test=" null != email and '' != email ">
+				AND t.email LIKE '%${email}%'
+			</if>
+			<if test=" null != identityzurl and '' != identityzurl ">
+				AND t.identityzurl LIKE '%${identityzurl}%'
+			</if>
+			<if test=" null != identityfurl and '' != identityfurl ">
+				AND t.identityfurl LIKE '%${identityfurl}%'
+			</if>
+			<if test=" null != licensefurl and '' != licensefurl ">
+				AND t.licensefurl LIKE '%${licensefurl}%'
+			</if>
+
+			<if test=" null != agreement and '' != agreement ">
+				AND t.agreement LIKE '%${agreement}%'
+			</if>
+			<if test=" null != lssellername and '' != lssellername ">
+				AND t.lssellername LIKE '%${lssellername}%'
+			</if>
+			<if test=" null != cityids and '' != cityids ">
+				AND FIND_IN_SET(t.city,#{cityids})
+			</if>
+		</where>
+		ORDER BY t.sellerid DESC,t.udate DESC
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	<!-- 获取商家列表记录数（已上线已签约的商家并且未配置） -->
+	<select id="countToConfig" resultType="Long" parameterMap="seller">
+		SELECT COUNT(*) FROM t_seller t
+		<where>
+			1=1
+			AND is_virtual = 0
+			AND t.sellerid not in (select  t_spread_config.sellerid from t_spread_config where t_spread_config.sellerid is not null)
+			<if test=" null != isonline">
+				AND isonline = #{isonline}
+			</if>
+			<if test=" null != ismultiple">
+				AND ismultiple = #{ismultiple}
+			</if>
+			<if test=" null != array">
+				AND sellerid IN
+				<foreach item="item" index="index" collection="array" open="("
+					separator="," close=") ">
+					#{item}
+				</foreach>
+			</if>
+			<if test=" null != isonlines">
+				AND t.isonline IN
+				<foreach item="item" index="index" collection="isonlines"
+					open="(" separator="," close=") ">
+					#{item}
+				</foreach>
+			</if>
+			<if test=" null != sellerid">
+				AND t.sellerid = #{sellerid}
+			</if>
+			<if test=" null != staffid">
+				AND staffid = #{staffid}
+			</if>
+			<if test=" null != jointid">
+				AND jointid = #{jointid}
+			</if>
+			<if test=" null != sellername and '' != sellername ">
+				AND sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != province and '' != province ">
+				AND province = #{province}
+			</if>
+			<if test=" null != city and '' != city ">
+				AND city = #{city}
+			</if>
+			<if test=" null != area and '' != area ">
+				AND area = #{area}
+			</if>
+			<if test=" null != zoneid">
+				AND zoneid = #{zoneid}
+			</if>
+			<if test=" null != category and '' != category ">
+				AND category LIKE '%${category}%'
+			</if>
+			<if test=" null != genre and '' != genre ">
+				AND genre LIKE '%${genre}%'
+			</if>
+			<if test=" null != bewrite and '' != bewrite ">
+				AND bewrite LIKE '%${bewrite}%'
+			</if>
+			<if test=" null != address and '' != address ">
+				AND address LIKE '%${address}%'
+			</if>
+			<if test=" null != tel and '' != tel ">
+				AND tel LIKE '%${tel}%'
+			</if>
+			<if test=" null != fullname and '' != fullname ">
+				AND fullname LIKE '%${fullname}%'
+			</if>
+			<if test=" null != identity and '' != identity ">
+				AND identity LIKE '%${identity}%'
+			</if>
+			<if test=" null != phoneid and '' != phoneid ">
+				AND phoneid LIKE '%${phoneid}%'
+			</if>
+			<if test=" null != orgid and '' != orgid ">
+				AND orgid LIKE '%${orgid}%'
+			</if>
+			<if test=" null != licenseid and '' != licenseid ">
+				AND licenseid LIKE '%${licenseid}%'
+			</if>
+			<if test=" null != licenseurl and '' != licenseurl ">
+				AND licenseurl LIKE '%${licenseurl}%'
+			</if>
+			<if test=" null != sdate and '' != sdate ">
+				AND sdate LIKE '%${sdate}%'
+			</if>
+			<if test=" null != sexplain and '' != sexplain ">
+				AND sexplain LIKE '%${sexplain}%'
+			</if>
+			<if test=" null != svalidity">
+				AND svalidity = #{svalidity}
+			</if>
+			<if test=" null != evalidity">
+				AND evalidity = #{evalidity}
+			</if>
+			<if test=" null != status">
+				AND t.status = #{status}
+			</if>
+			<if test=" null != examineinfo and '' != examineinfo ">
+				AND examineinfo LIKE '%${examineinfo}%'
+			</if>
+			<if test=" null != signdate">
+				AND signdate = #{signdate}
+			</if>
+			<if test=" null != udate">
+				AND udate = #{udate}
+			</if>
+			<if test=" null != give">
+				AND give = #{give}
+			</if>
+			<if test=" null != fatherid">
+				AND fatherid = #{fatherid}
+			</if>
+			<if test=" null != remarks and '' != remarks ">
+				AND remarks LIKE '%${remarks}%'
+			</if>
+			<if test=" null != email and '' != email ">
+				AND email LIKE '%${email}%'
+			</if>
+			<if test=" null != identityzurl and '' != identityzurl ">
+				AND identityzurl LIKE '%${identityzurl}%'
+			</if>
+			<if test=" null != identityfurl and '' != identityfurl ">
+				AND identityfurl LIKE '%${identityfurl}%'
+			</if>
+			<if test=" null != licensefurl and '' != licensefurl ">
+				AND licensefurl LIKE '%${licensefurl}%'
+			</if>
+
+			<if test=" null != agreement and '' != agreement ">
+				AND agreement LIKE '%${agreement}%'
+			</if>
+			<if test=" null != lssellername and '' != lssellername ">
+				AND lssellername LIKE '%${lssellername}%'
+			</if>
+			<if test=" null != sellerGrade and '' != sellerGrade ">
+				AND td.seller_grade = #{sellerGrade}
+			</if>
+			<if test=" null != cityids and '' != cityids ">
+				AND FIND_IN_SET(t.city,#{cityids})
+			</if>
+		</where>
+	</select>
+	<!-- 验证业务员账号是否存在 -->
+	<select id="vailStaff" resultType="Integer" parameterType="Long">
+		SELECT COUNT(1) FROM `t_spread` WHERE `t_spread`.`account` = #{0}
+	</select>
+	
+	<!-- 获取服务员推广信息 -->
+	<select id="getListDeail" resultMap="tSpreadMap" parameterMap="tSpread">
+		SELECT tm.*,tsa.`fullname`,tsa.`uid` 
+		FROM t_seller_account tsa 
+		RIGHT JOIN( 
+		   SELECT ts.*,CONCAT(CAST(start_money AS CHAR),' - ',CAST(end_money AS CHAR))  AS rule,money 
+		   FROM t_spread ts,t_spread_config tsc
+			<where>
+				ts.sellerid=tsc.sellerid
+			<if test=" null != id and '' !=id">
+				AND ts.id = #{id}
+			</if>
+			<if test=" null != sellerid and '' != sellerid">
+				AND ts.sellerid = #{sellerid}
+			</if>
+			<if test=" null != sellername and '' != sellername">
+				AND ts.sellername LIKE '%${sellername}%'
+			</if>
+			<if test=" null != account and '' != account">
+				AND ts.account = #{account}
+			</if>
+			<if test=" null != url and '' != url">
+				AND ts.url = #{url}
+			</if>
+			<if test=" null != tgStatus">
+				AND ts.tgStatus = #{tgStatus}
+			</if>
+	 		</where>
+		
+	 	 ) tm 
+	 	 ON tm.aid=tsa.aid
+	 	 ORDER BY tm.id DESC
+<!-- 
+			<if test=" limit != -1 ">
+				LIMIT ${(page-1)*limit},#{limit}
+			</if>
+ -->
+	</select>
+	
+	<!-- 根据商家帐号id删除商家服务员推广管理信息 -->
+	<delete id="deleteSpreadByAids" parameterType="Object">
+		DELETE FROM t_spread WHERE aid IN
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+</mapper>

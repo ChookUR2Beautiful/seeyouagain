@@ -1,0 +1,801 @@
+var checkDiscountVal = true;
+$(function(){
+	initbrandId();
+	 var valiinfo={
+				rules:{
+					saleType:{
+						required:true
+					},
+					pname:{
+						required:true
+					},
+					classa:{
+						required:true
+					},
+					price:{
+						required:true,
+						number:true,
+						doublearea:[10,2]
+					},
+					discount:{
+						required:true,
+						number:true,
+						doublearea:[10,2],
+						checkDiscountVal:true
+					},
+					cash:{
+						required:true,
+						number:true,
+						doublearea:[10,2]
+					},
+					quality:{
+						
+						digits:true	
+					}/*,
+					sort:{
+						digits:true
+					}*/,
+					pstatus:{
+						required:true
+					},
+					picsort:{
+						digits:true
+					}/*,
+					store:{
+						required:true,
+						digits:true,
+						range:[1,10000]
+					}*/,
+					sales:{
+						digits:true
+					},
+					supplierId:{
+						digits:true
+					},
+					province:{
+						required:true
+					},
+					city:{
+						required:true
+					},
+					expWeight:{
+						required:true,
+						number:true,
+						doublearea:[10,2]
+					},
+					purchasePrice:{
+						required:true,
+						number:true,
+						doublearea:[10,2]
+					},
+					integral : {
+						required:true,
+						number:true,
+						doublearea:[10,2]
+					}
+				},
+				messages:{
+					saleType:{
+						required:"产品类型未填写"
+					},
+					pname:{
+						 required:"产品名称未填写"
+					},
+					classa:{
+						 required:"产品一级类型未选择"
+					},
+					price:{
+						 required:"输入带2位小数点的价格",
+						 number:"价格必须为数字类型",
+						 doublearea:"必须为2位小数点的数据"
+						 
+					},
+					discount:{
+						 required:"输入带2位小数点的价格",
+						 number:"价格必须为数字类型",
+						 doublearea:"必须为2位小数点的数据"
+					},
+					cash:{
+						required:"积分价必填",
+						number:"积分价必须为数字类型",
+						doublearea:"必须为2位小数点的数据"
+					},
+					quality:{
+						
+						digits:"保质期必须为整数天"
+					},
+					sort:{
+						digits:"排序必须为数字类型"
+					},
+					pstatus:{
+						required:"产品状态未填写"
+					},
+					picsort:{
+						digits:"排序必须为数字类型"
+					}/*,
+					store:{
+						required:"必填项",
+						digits:"库存必须为数字类型",
+						range:"库存量须设定在1-10000之间的数据"
+					}*/,
+					sales:{
+						digits:"销量必须为数字类型"
+					},
+					supplierId:{
+						digits:"必须为数字类型"
+					},
+					province:{
+						required:"销售城市必填"
+					},
+					city:{
+						required:"销售城市必填"
+					},
+					expWeight:{
+						required:"快递计重必填",
+						number:"快递计重必须为数字类型",
+						doublearea:"必须为2位小数点的数据"
+					},
+					purchasePrice:{
+						required:"产品采购价必填",
+						number:"产品采购价必须为数字类型",
+						doublearea:"必须为2位小数点的数据"
+					},
+					integral : {
+						required:"积分个数必填",
+						number:"积分必须为数字类型",
+						doublearea:"必须为2位小数点的数据"
+					}
+				}
+		};
+	 
+	 //带2位小数字点
+	 $.validator.addMethod("doublearea",function(value,element,params){
+			 var len = value.length;
+			 if(len>12){
+				 return false;
+			 }
+			 if( value >= 1000000000 || value < 0){
+				 return false;
+			 }
+			 var indexOf = value.indexOf(".");
+			 if(indexOf>0){
+				 var numStr = value.substr(indexOf+1);
+				 return !(numStr.length > 2);
+			 }
+			 return true;
+			 
+		 },"请填写数值,最大值为999999999.99");
+	 
+	//验证现价必须大于采购价格的1.1倍
+	/* $.validator.addMethod("checkDiscountVal",function(value,element,params){
+		return checkDiscountVal;
+	 },"售价必须大于采购价的1.1倍！");*/
+	 
+
+	 validate("editFreshInfo",valiinfo,busave);
+	 
+	 checkEdit();
+		
+	 function busave(){
+		 
+			var success=true;
+			var url;
+			if ($('#isType').val() == 'add') {
+				url = "fresh/manage/add.jhtml" + "?t=" + Math.random();
+			}else{
+				url = "fresh/manage/update.jhtml" + "?t=" + Math.random();
+			}
+			if(success){
+					$.ajax({
+						type : 'post',
+						url : url,
+						data : jsonFromt($('#editFreshInfo').serializeArray()),
+						dataType : 'json',
+						beforeSend : function(XMLHttpRequest) {
+							$('#prompt').show();
+						},
+						success : function(data) {
+							
+							if(data.success){
+								showSmReslutWindow(data.success, data.msg);
+//								if ($('#isType').val() == 'add') {
+//									//$('#editFreshInfo')[0].reset() 
+//									$("#detail").removeClass("in active");
+//									$("#info").addClass("in active");
+//								}else{
+//									var callbackParam="&isBackButton=false&callbackParam="+getParam("callbackParam",window.location.search.substr(1));
+									var url = contextPath + "/fresh/manage.jhtml?freshPage="+freshPage;//?"+ callbackParam;
+									
+									setTimeout(function(){
+					        			location.href =url;
+					        		}, 1000);
+//								}
+								/*var callbackParam="&isBackButton=true&callbackParam="+getParam("callbackParam",window.location.search.substr(1));
+								var url = contextPath + "/fresh/manage/add.jhtml?sellerid="+ result.data+callbackParam;
+								
+								setTimeout(function(){
+				        			location.href =url;
+				        		}, 1000);
+				        		*/
+							}else{
+								showSmReslutWindow(data.success, data.msg);
+							}
+							
+						},
+						error : function(XMLHttpRequest, textStatus, errorThrown) {
+							console.log(XMLHttpRequest + "=" + textStatus + "=" + errorThrown);
+							showSmReslutWindow(false, errorThrown);
+						}
+					});
+		}
+	}
+	
+	 
+	 
+	if ($('#isType').val() == 'add') {
+		inserTitle(' > <span>添加产品信息','addProductInfo', false);
+	} else {
+		inserTitle(' > <span>编辑产品信息','editProductInfo', false);
+	}
+	 
+	 
+	// 产品图片
+	$("#pic1Upload").uploadImg({
+		urlId : "pic1",
+		showImg : $("#pic1").val()
+	});
+	$("#pic2Upload").uploadImg({
+		urlId : "pic2",
+		showImg : $("#pic2").val()
+	});
+	$("#pic3Upload").uploadImg({
+		urlId : "pic3",
+		showImg : $("#pic3").val()
+	});
+	$("#pic4Upload").uploadImg({
+		urlId : "pic4",
+		showImg : $("#pic4").val()
+	});
+	$("#pic5Upload").uploadImg({
+		urlId : "pic5",
+		showImg : $("#pic5").val()
+	});
+
+	$("#img1Upload").uploadImg({
+		urlId : "img1",
+		showImg : $("#img1").val()
+	});
+	$("#img2Upload").uploadImg({
+		urlId : "img2",
+		showImg : $("#img2").val()
+	});
+	$("#img3Upload").uploadImg({
+		urlId : "img3",
+		showImg : $("#img3").val()
+	});
+	$("#img4Upload").uploadImg({
+		urlId : "img4",
+		showImg : $("#img4").val()
+	});
+	$("#img5Upload").uploadImg({
+		urlId : "img5",
+		showImg : $("#img5").val()
+	});
+	$("#img6Upload").uploadImg({
+		urlId : "img6",
+		showImg : $("#img6").val()
+	});
+	$("#img7Upload").uploadImg({
+		urlId : "img7",
+		showImg : $("#img7").val()
+	});
+	$("#img8Upload").uploadImg({
+		urlId : "img8",
+		showImg : $("#img8").val()
+	});
+	$("#img9Upload").uploadImg({
+		urlId : "img9",
+		showImg : $("#img9").val()
+	});
+	$("#img10Upload").uploadImg({
+		urlId : "img10",
+		showImg : $("#img10").val()
+	});
+	$("#breviaryUpload").uploadImg({
+		urlId : "breviary",
+		showImg : $("#breviary").val()
+	});	
+	
+    // 网页编辑器
+    $( 'textarea#ckeditor_standard' ).ckeditor({
+//    	width:'98%', height: '150px', 
+//    	toolbar: [
+//			{ name: 'document', items: [ 'Source', '-', 'NewPage', 'Preview', '-', 'Templates' ] },	// Defines toolbar group with name (used to create voice label) and items in 3 subgroups.
+//			[ 'Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo' ],			// Defines toolbar group without name.
+//			{ name: 'basicstyles', items: [ 'Bold', 'Italic' ] }
+//			,['Image'] 
+//		]
+    });
+    
+    //加载经销商下拉列表数据 add by lifeng
+	initSupplier();
+	//
+    
+	/*$("#ptypeld").freshLd({
+		showConfig : [ {name : "classa", tipTitle : "--&nbsp;类别&nbsp; --"}]
+	});*/
+	
+	// 省市
+	/*var ld = $("#ld").cityLd({
+		isChosen : false
+	});*/
+	
+	
+	$("#nextStep").click(function(){
+		var supplierId=$("#supplierId").val();
+		if(!supplierId){
+			showWarningWindow("warning","请选择供应商!",9999);
+			return;
+		}
+		var store=$("[name='store']").val();
+		var propertyTab=$("#propertyTab").find("tbody").children();
+		if(propertyTab.size()==0&&store<=0){
+			showWarningWindow("warning","请填写产品规格或商品库存!",9999);
+			return;
+		}
+		var validated1 =  $("#editFreshInfo").validate(valiinfo).form();
+		var validated2 = valiImgData('#editFreshInfo',jsonFromt($('#editFreshInfo').serializeArray()));
+		var validated3 = validateAmountAndStock();
+		console.info(validated1+"-"+validated2 + "-" + validated3);
+		if(validated1 && !validated2 && validated3){
+			$("#info").removeClass("in active");
+			$("#detail").addClass("in active");
+		}else{
+			return false;
+		}
+	});
+	
+	$("#preStep").click(function(){
+			$("#detail").removeClass("in active");
+			$("#info").addClass("in active");
+	});
+	/**
+	 * 操作提示
+	 */
+	function showSmReslutWindow(isflag, content) {
+		$('#sm_reslut_window').find('.modal-title').html('操作提示');
+		if (isflag) {
+			$('#sm_reslut_window').find('.modal-body').html('<div class="alert with-icon alert-success"> <i class="icon-ok"></i> <div class="content">' + content + '</div></div>');
+		} else {
+			$('#sm_reslut_window').find('.modal-body').html('<div class="alert with-icon  alert-danger"><i class="icon-remove-sign"></i> <div class="content">' + content + '</div></div>');
+		}
+		$('#sm_reslut_window').modal();
+		setTimeout(function(){
+			$('#sm_reslut_window').modal('hide');
+		}, 2000);
+	}
+	
+	// 时间对象的格式化;
+	Date.prototype.format = function(format){
+		 var o = {
+		  "M+" : this.getMonth()+1, //month
+		  "d+" : this.getDate(), //day
+		  "h+" : this.getHours(), //hour
+		  "m+" : this.getMinutes(), //minute
+		  "s+" : this.getSeconds(), //second
+		  "q+" : Math.floor((this.getMonth()+3)/3), //quarter
+		  "S" : this.getMilliseconds() //millisecond
+		 };
+		   
+	  	if(/(y+)/.test(format)) {
+		  format = format.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+		}
+		  
+		  for(var k in o) {
+			  if(new RegExp("("+ k +")").test(format)) {
+			 	 format = format.replace(RegExp.$1, RegExp.$1.length==1 ? o[k] : ("00"+ o[k]).substr((""+ o[k]).length));
+			  }
+		  }
+		 return format;
+	};
+	
+});
+
+/*
+ * (add by lf 2016年6月6日 19:47:10)
+ * 获取经销商列表 
+ */
+//重写方法
+/**
+ * 单个下拉狂
+ */
+var chosenData = {};
+$.fn.chosenObject = function selectInfo(param){
+	var $this = $(this);
+	var isInit = true;
+	var defaults = {
+		id : "zoneid",//当前页面select框的id
+		hideValue : "bid",//实际传到后台进行筛选的值
+		showValue : "title",//下拉框显示的值
+		url : "",//"common/business/businessInfo.jhtml",//请求数据的url
+		limit : 50,//分页参数
+		isChosen:true,//是否支持模糊查询
+		isCode:false,//是否显示编号
+	    defaultValue:"--请选择--"//默认的显示值
+	};
+	var opts = $.extend(defaults, param);
+	//传到后台的参数	
+	var params = {"limit":opts.limit}
+	//获取数据
+	var getData = function(search){
+		var key = opts.url;
+		/*if(isInit){
+			isInit = false;
+			params[opts.hideValue] = $this.attr("initValue");
+		}else{
+			params[opts.hideValue] = undefined;
+		}*/
+		if(search){
+			params[opts.showValue] = search;
+		}
+		key += JSON.stringify(params);
+		if(chosenData[key]){
+			return chosenData[key];
+		}else{
+			$.ajax({
+				type: "POST",
+				url : opts.url,
+				async : false,
+				dataType : "json",
+				data: params,
+				success : function(data){
+					chosenData[key] = data.content;
+				}
+			});
+			return chosenData[key];
+		}
+	}
+	
+	//拼装数据
+	var build = function(search){
+		var data = getData(search);
+		if(data){
+			$this.empty().append('<option value="">'+opts.defaultValue+'</option>');
+			for(var i=0;i<data.length;i++){
+				var hide = data[i][opts.hideValue];
+				var show = data[i][opts.showValue];
+				//如果含有编号则拼装编号
+				if(opts.isCode){
+					$this.append('<option value="'+ hide +'" '+(hide ==$this.attr("initValue")?'selected':'')+'>'+"["+hide+"]"+ show +'</option>');
+				}else{
+					$this.append('<option value="'+ hide +'" '+(hide ==$this.attr("initValue")?'selected':'')+'>'+ show +'</option>');
+				}
+				
+			}
+		}
+	}
+	build();
+	
+	
+	//判断是否可以模糊搜索
+	if(opts.isChosen){
+		$this.chosen({
+				search_contains : true,
+				allow_single_deselect : false,
+				remote_function : function(search){
+					build(search);
+				},
+				width: opts.width?opts.width:"90%"
+		});
+	}
+	$.extend($this, {
+		initData : build
+	});
+	return $this;
+}
+//
+//初始化方法
+function initSupplier(){
+	$("#supplierId").chosenObject({
+		hideValue : "supplierId",
+		showValue : "supplierName",
+		url : "fresh/manage/initSupplier.jhtml",
+		isChosen:true,
+		isCode:true,
+		width:"100%"
+	});
+}
+//内容改变的时候，供应商相应的信息改变
+$("#supplierId").on("change",function(){
+	var value =  $(this).find("option:selected").val();
+	$.ajax({
+		type: "POST",
+		url : "fresh/manage/getSupplierById.jhtml?new Date()",
+		dataType : "json",
+		data: {"supplierId":value},
+		success : function(data){
+			if(data != null){
+				$("#supplier input[name='supplierName']").val(data.contacts);
+				$("#supplier input[name='contacts']").val(data.contacts);
+				$("#supplier input[name='phone']").val(data.phone);
+				$("#supplier input[name='address']").val(data.address);
+			}
+		}
+	});
+});
+
+/**
+ * 当输入产品采购价的时候，自动生成积分价
+ */
+$("#cash").on("keyup",function(){
+	var cash = !isNaN(parseFloat($("#cash").val())) ? parseFloat($("#cash").val()) : 0;
+	var integral = !isNaN(parseFloat($("#integral").val())) ? parseFloat($("#integral").val()) : 0;
+	var discount = $("#discount").val();
+	if(discount != 'undefined'){
+		$("#discount").val((cash + integral).toFixed(2));
+	}
+});
+
+/**
+ * 当输入产品售价的时候，积分个数的改变
+ */
+$("#integral").on("keyup",function(){
+	var cash = !isNaN(parseFloat($("#cash").val())) ? parseFloat($("#cash").val()) : 0;
+	var integral = !isNaN(parseFloat($("#integral").val())) ? parseFloat($("#integral").val()) : 0;
+	var discount = $("#discount").val();
+	if(discount != 'undefined'){
+		$("#discount").val((cash + integral).toFixed(2));
+	}
+});
+
+
+/**
+ * 选择线上和线下的时候改变供应商的可编辑功能
+ */
+$("#saleType").change(function(){
+	var value =  $(this).find("option:selected").text();
+	if(value == '线上'){
+		$("#editSupplier").text("编辑");
+	}else if(value == '线下'){
+		$("#editSupplier").text("");
+	}
+});
+
+/**
+ * 支持配送城市和不支持配送城市的下拉切换
+ */
+$("#chooseDeliveryCity").change(function(){
+	var value =  $(this).find("option:selected").val();
+	if(value==1){
+		$("#deliveryCityId").attr("name",'deliveryCity');
+		$("#deliveryCityId").val($("#dc").val());
+		$("#deliveryCity").val($("#sdc").val());
+	}else if(value==2){
+		$("#deliveryCityId").attr("name",'notDeliveryCity');
+		$("#deliveryCityId").val($("#ndc").val());
+		$("#deliveryCity").val($("#sndc").val());
+	}
+});
+
+/**
+ * 支持销售城市和不支持销售城市的切换
+ */
+$("#chooseSaleCity").change(function(){
+	var value =  $(this).find("option:selected").val();
+	if(value==1){
+		$("#saleCityId").attr("name",'saleCity').val($("#sc").val());
+		$("#saleCity").val($("#ssc").val());
+	}else if(value==2){
+		$("#saleCityId").attr("name",'notSaleCity').val($("#nsc").val());
+		$("#saleCity").val($("#snsc").val());
+	}
+});
+
+//判断当前页面如果是编辑配送城市和销售城市的选择改变
+function checkEdit(){
+	var isType = $("#isType").val();
+	if(isType == 'update'){
+		var ndc = $("#ndc").val();
+		if(ndc != null && ndc != 'undefined' && ndc != ''){
+			$("#chooseDeliveryCity").empty();
+			$("#chooseDeliveryCity").append('<option value="2">不支持配送城市</option><option value="1">支持配送城市</option>');
+			$("#deliveryCityId").attr("name",'notDeliveryCity').val(ndc);
+			$("#deliveryCity").val($("#sndc").val());
+		}
+		
+		var nsc = $("#nsc").val();
+		if(nsc != null && nsc != 'undefined' && nsc != ''){
+			$("#chooseSaleCity").empty();
+			$("#chooseSaleCity").append('<option value="2">不支持销售城市</option><option value="1">支持销售城市</option>');
+			$("#saleCityId").attr("name",'notSaleCity').val(nsc);
+			$("#saleCity").val($("#snsc").val());
+		}
+	}
+}
+
+/**
+ * 积分超市产品添加
+ * add by lifeng 20160805 14:25:10
+ */
+//添加属性名
+$("#propertyId").on("click",".icon-plus",function(){
+	$('#properties').append($("#propertyDivId").html());
+});
+
+//删除属性名
+function minusPro(_this){
+	var propertyLen = $(_this).parents(".property").parent().find(".property").length;
+	if(propertyLen > 0) {
+		$(_this).parents(".property").remove();
+		generateTab();
+	}
+}
+//添加属性值
+function addPro(_this){
+	$(_this).parents(".property").find(".propertyValues").append($("#propertyValueDivId").html());
+}
+
+//删除属性值
+function minusProVal(_this){
+	var propertyValLen = $(_this).parents(".propertyValue").parent().find(".propertyValue").length;
+	if(propertyValLen > 0) {
+		$(_this).parents(".propertyValue").remove();
+		generateTab();
+	}
+}
+//生成属性参数组合表
+function generateTab(){
+	var propNum = 0;
+	$("#propertyTab table").empty().append("<caption></caption><tbody></tbody>");
+	$("#propertyTab table").find("tbody").empty();
+	//console.log($("#properties .property").length);//打印属性个数
+	if($("#properties .property").length>0){
+		if($("#properties .property").find("input:first").val() == '' || $("#properties .property").find("input").val() == null){
+			jfslk;
+		}
+		$("#properties .property").each(function(){
+			var prop = $(this).find(".propertyName").find("input[type!='hidden']").val();//属性
+			var propId = $(this).find(".propertyName").find("input:eq(1)").val();//属性id
+			var propSort = $(this).find(".propertyName").find("input:eq(2)").val();//属性排序sort
+			if(propId == null || propId == 'undefined' || propId == ''){
+				propId = 'propId';
+			}
+			if(propSort == null || propSort == 'undefined' || propSort == ''){
+				propSort = 'propSort';
+			}
+			var prop_id = prop + "|" + propId + "|" + propSort;
+			var propVals = [];//多个属性值
+			var propVal_ids = [];//属性值|属性值id
+			if($(this).find(".propertyValues input").length>0){
+				if($(this).find(".propertyValues").find("input[type!='hidden']").val() == '' || $(this).find(".propertyValues").find("input[type!='hidden']").val() == null){
+					jfslk;
+				}
+				$("#propertyTab table").find("caption").empty().append('<font style="font-weight: 900;">产品属性参数表</font>');
+				$(this).find(".propertyValues .propertyValue").each(function(){
+					var propVal = $(this).find("input[type!='hidden']").val();//属性值
+					propVals.push(propVal);
+					var propValId = $(this).find("input:eq(1)").val();
+					if(propValId != null && propValId != '' && propValId != 'undefined'){
+						propValId = '|' + propValId;
+					}else{
+						propValId = '';
+					}
+					propVal_ids.push(propVal + propValId);
+				});
+				console.log(propVals);
+			}else{
+				//showSmReslutWindow(false, "没有添加属性值！");
+				jfslk;
+				//return;
+			}
+			if(propNum > 0){
+				$("#propertyTab table").find("thead").find("tr:first").append('<td>' + prop + '<input type="hidden" name="propList['+ propNum +']" value="'+ prop_id + ":" + propVal_ids +'" /></td>');
+				var num = $("#propertyTab table").find("tbody").find("tr").length;
+				var copyTrHtml = $("#propertyTab table").find("tbody").html();
+				var copyTrEle = $("#propertyTab table").find("tbody").find("tr");
+				for(var i in propVals){
+					if(i>0){
+						var numNew = num*i;
+						$("#propertyTab table").find("tbody").append(copyTrHtml);
+						$(copyTrEle).each(function(index, domEle){
+							var _no = numNew+index;
+							//console.log(_no);//表格的行号
+							$("#propertyTab table").find("tbody").find("tr:eq("+ _no +")").append('<td>' + propVals[i] + '</td>');	
+						});
+					}else{
+						$("#propertyTab table").find("tbody").find("tr").each(function(index, domEle){
+							//console.log(index);//表格的行号
+							$("#propertyTab table").find("tbody").find("tr:eq("+ index +")").append('<td>' + propVals[i] + '</td>');						
+						});
+					}
+				}
+			}else{
+				$("#propertyTab table").find("tbody").before('<thead><tr><td>' + prop + '<input type="hidden" name="propList['+ propNum +']" value="'+ prop_id + ":" + propVal_ids +'" /></td></tr></thead>');
+				for(var i in propVals){
+					$("#propertyTab table").find("tbody").append('<tr><td>' + propVals[i] + '</td></tr>');
+				}
+			}
+			propNum ++;
+		});
+		$("#propertyTab table").find("thead").find("tr:first").append('<td>加价金额（元）</td><td>库存（件）</td><td>排序（整数）</td>');
+		//加价和库存的input，同时拼装每一行的属性的值，和上面的属性值一一对应，如："红色,6.0英寸,64g,iPhone7s plus,1.5(元),200(件)"
+		$("#propertyTab table").find("tbody").find("tr").each(function(index, domEle){
+			var propValObj = "";
+			$(domEle).find("td").each(function(i,obj){
+				if(i>0){
+					propValObj += ",";
+				}
+				propValObj += $(obj).text();
+			});
+			var strObj = '<td><input name="saleGroupList['+ index +'].amount"/></td>';
+			strObj += '<td><input name="saleGroupList['+ index +'].stock" /></td>';
+			strObj += '<td><input name="saleGroupList['+ index +'].sort" />';
+			strObj += '<input type="hidden" name="propValList['+ index +']" value="'+ propValObj +'" /></td>';
+			$(domEle).append(strObj);
+		});
+	}
+}
+
+//验证输入的加价和库存必须为数值类型
+function validateAmountAndStock(){
+	var amountAndStockMsg = '';
+	$("#propertyTab table").find("tbody").find("tr").each(function(){
+		$(this).find("input[type!=hidden]").each(function(index,obj){
+			var value = $(obj).val();
+			var len = value.length;
+			if(len>12){
+				amountAndStockMsg = '数据过长！';
+				return false;
+			}
+			/*if( value >= 1000000000 || value < 0){
+				amountAndStockMsg = '数据范围超出0~1000000000！';
+				return false;
+			}*/
+			
+			if(index==0){
+				var reg = /^(-?\d+)(.[0-9]{0,2})?$/;
+				if(!reg.test(value.trim())){
+					amountAndStockMsg = "加价金额必须两位以内浮点数！";
+					return false;
+				}
+			}else if(index==1){
+				var reg = /^\d+$/;
+				if(!reg.test(value.trim())){
+					amountAndStockMsg = '库存必须为正整数！';
+					return false;
+				}
+			}else{
+				var reg = /^\d+$/;
+				if(!reg.test(value.trim())){
+					amountAndStockMsg = '排序必须为正整数！';
+					return false;
+				}
+			}
+		});
+	});
+	if(amountAndStockMsg.length > 0){
+		showSmReslutWindow(false, amountAndStockMsg);
+		return false;
+	}else{
+		return true;
+	}
+}
+
+//初始化品牌下拉框
+function initbrandId(){
+	$("#brandId").chosenObject({
+		hideValue : "id",
+		showValue : "name",
+		url : "fresh/manage/getBrand.jhtml",
+		isChosen:true,//是否支持模糊查询
+		isCode:true,//是否显示编号
+		isHistorical:false,//是否使用历史已加载数据
+		width:"100%"
+	});
+}
+
+$(".loadBack").on("click",function(){
+	window.location.href="fresh/manage.jhtml?freshPage="+freshPage;
+});
+
+

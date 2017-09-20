@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.vstar.dao.TVstarRewardRecordDao" >
+
+  <resultMap id="vstarRewardRecordMap" type="com.xmniao.xmn.core.vstar.entity.TVstarRewardRecord" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="player_id" property="playerId" jdbcType="INTEGER" />
+    <result column="player_uid" property="playerUid" jdbcType="INTEGER" />
+    <result column="receive_coin" property="receiveCoin" jdbcType="DECIMAL" />
+    <result column="receive_time" property="receiveTime" jdbcType="TIMESTAMP" />
+    <result column="receive_status" property="receiveStatus" jdbcType="INTEGER" />
+    <result column="read_status" property="readStatus" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    
+    <result column="referrer_uid" property="referrerUid" jdbcType="INTEGER" />
+    <result column="referrer_name" property="referrerName" jdbcType="VARCHAR" />
+    <result column="referrer_phone" property="referrerPhone" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  
+  <sql id="vstarRewardRecord_column_list" >
+    id, player_id,player_uid,referrer_uid, receive_coin, receive_time, receive_status, read_status, status, create_time, 
+    update_time
+  </sql>
+  
+  
+  <select id="getObject" resultMap="vstarRewardRecordMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="vstarRewardRecord_column_list" />
+    from t_vstar_reward_record
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getList" resultMap="vstarRewardRecordMap" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarRewardRecord" >
+    SELECT
+		record.player_id,
+		player.nname,
+		player.phone,
+		record.receive_coin,
+		record.referrer_uid,
+	    record.receive_time
+	FROM
+		t_vstar_reward_record record
+	LEFT JOIN t_vstar_player_info player ON record.player_id = player.id
+	<where>
+		record.`status` = 1
+		<if test="nname != null and nname != '' ">
+			and player.nname like '%${nname}%'
+		</if>
+		<if test="phone != null and phone != '' ">
+			and player.phone like '%${phone}%'
+		</if>
+	</where>
+	<if test="order != -1">
+		ORDER BY record.receive_time DESC
+	</if>
+	<if test="limit != -1">
+		limit ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <select id="count" resultType="java.lang.Long" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarRewardRecord" >
+    SELECT
+		count(1)
+	FROM
+		t_vstar_reward_record record
+	LEFT JOIN t_vstar_player_info player ON record.player_id = player.id
+	<where>
+		record.`status` = 1
+		<if test="nname != null and nname != '' ">
+			and player.nname like '%${nname}%'
+		</if>
+		<if test="phone != null and phone != '' ">
+			and player.phone like '%${phone}%'
+		</if>
+	</where>
+  </select>
+  
+  
+  <delete id="delete" parameterType="java.lang.Object" >
+    delete from t_vstar_reward_record
+    where id in
+    <foreach collection="array" item="item" index="index" open="(" separator="," close=")">
+    	#{item}
+    </foreach>
+  </delete>
+  
+  
+  <insert id="add" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarRewardRecord" >
+    insert into t_vstar_reward_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="playerId != null" >
+        player_id,
+      </if>
+      <if test="receiveCoin != null" >
+        receive_coin,
+      </if>
+      <if test="receiveTime != null" >
+        receive_time,
+      </if>
+      <if test="receiveStatus != null" >
+        receive_status,
+      </if>
+      <if test="readStatus != null" >
+        read_status,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="playerId != null" >
+        #{playerId,jdbcType=INTEGER},
+      </if>
+      <if test="receiveCoin != null" >
+        #{receiveCoin,jdbcType=DECIMAL},
+      </if>
+      <if test="receiveTime != null" >
+        #{receiveTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="receiveStatus != null" >
+        #{receiveStatus,jdbcType=INTEGER},
+      </if>
+      <if test="readStatus != null" >
+        #{readStatus,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.xmn.core.vstar.entity.TVstarRewardRecord" >
+    update t_vstar_reward_record
+    <set >
+      <if test="playerId != null" >
+        player_id = #{playerId,jdbcType=INTEGER},
+      </if>
+      <if test="receiveCoin != null" >
+        receive_coin = #{receiveCoin,jdbcType=DECIMAL},
+      </if>
+      <if test="receiveTime != null" >
+        receive_time = #{receiveTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="receiveStatus != null" >
+        receive_status = #{receiveStatus,jdbcType=INTEGER},
+      </if>
+      <if test="readStatus != null" >
+        read_status = #{readStatus,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+</mapper>

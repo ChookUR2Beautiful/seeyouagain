@@ -1,0 +1,351 @@
+var enrollList1;//报名审核
+var enrollList2;//试播审核
+var enrollList3;//限制中
+var imgRoot = $("#fastfdsHttp").val();
+
+
+$(document).ready(function() {
+	inserTitle('> 新食尚大赛> <a href="VstarEnroll/manage/init.jhtml" target="right">报名审核管理</a>','enrollConfirm',true);
+	
+	//加载区域控件
+	$("#ld1").areaLd({
+		showConfig : [{name:"provinceId",tipTitle:"--省--"},{name:"cityId",tipTitle:"--市--"},{name:"areaId",tipTitle:"--区--"}],
+		isChosen : true
+	});
+	
+	$("#ld2").areaLd({
+		showConfig : [{name:"provinceId",tipTitle:"--省--"},{name:"cityId",tipTitle:"--市--"},{name:"areaId",tipTitle:"--区--"}],
+		isChosen : true
+	});
+	
+	$("#ld3").areaLd({
+		showConfig : [{name:"provinceId",tipTitle:"--省--"},{name:"cityId",tipTitle:"--市--"},{name:"areaId",tipTitle:"--区--"}],
+		isChosen : true
+	});
+
+	pageInit();
+});
+
+/**
+ * 加载页面数据
+ */
+function pageInit(){
+	enrollList1 = $('#enrollList1').page({
+		url : 'VstarEnroll/manage/init/list.jhtml',
+		success : success1,
+		pageBtnNum : 10,//默认翻页按钮数量
+		pageSize : 3,//每页条数
+		paramForm : 'searchForm1',
+		param :{}
+	});
+	
+	enrollList2 = $('#enrollList2').page({
+		url : 'VstarEnroll/manage/init/list.jhtml',
+		success : success2,
+		pageBtnNum : 10,//默认翻页按钮数量
+		pageSize : 3,//每页条数
+		paramForm : 'searchForm2',
+		param :{}
+	});
+	
+	enrollList3 = $('#enrollList3').page({
+		url : 'VstarEnroll/manage/init/list.jhtml',
+		success : success3,
+		pageBtnNum : 10,//默认翻页按钮数量
+		pageSize : 3,//每页条数
+		paramForm : 'searchForm3',
+		param :{}
+	});
+}
+
+/**
+ * 加载报名审核数据
+ * 
+ * @param data
+ * @param obj
+ */
+function success1(data, obj) {
+	var html = [];
+	
+	html.push('<table class="table table-hover table-bordered table-striped info" >');
+	html.push('<caption style="background:#EED8D8; text-align:center; color:#703636; font-size:16px; line-height:40px;">报名信息</caption>');
+	html.push('<thead>');
+	html.push('<tr>');
+	if(!isEmptyObject(permissions)){
+		html.push('<th style="width:10%;">操作</th>');
+	}
+	html.push('<th style="width:8%;">选手编号</th>');
+	html.push('<th style="width:8%;">状态</th>');
+	html.push('<th style="width:8%;">报名照片</th>');
+	html.push('<th style="width:8%;">昵称</th>');
+	html.push('<th style="width:8%;">城市</th>');
+	html.push('<th style="width:8%;">手机</th>');
+	html.push('<th style="width:8%;">点赞数</th>');
+	html.push('</tr>');
+	html.push('</thead>');
+	html.push('<tbody');
+	if(null != data && data.content.length > 0)
+	{
+			for (var i = 0; i < data.content.length; i++) {
+				html.push('<tr>');
+				if(!isEmptyObject(permissions)){
+					html.push('<td>');
+					if(permissions.update == 'true'&& data.content[i].status==1 ){
+						html.push('<a href="javascript:update('+data.content[i].id+',2)">通过</a>&nbsp;&nbsp;');
+						html.push('<a href="javascript:;" data-type="ajax" data-toggle="modal" data-url="VstarEnroll/manage/update/init.jhtml?status=3&id='+data.content[i].id
+									+'" data-width="auto" data-position="fit" data-title="审核提示">拒绝</a>');
+					}
+					
+					if(permissions.update == 'true'&& data.content[i].status==2 ){
+						html.push('<a href="javascript:confine('+data.content[i].id+',1)">限制</a>&nbsp;&nbsp;');
+					}
+					
+					html.push('</td>');
+				}
+				html.push('<td>' + (undefined == data.content[i].id ? "-" : data.content[i].id) + '</td>');
+				html.push('<td>' + (undefined == data.content[i].statusText ? "-" : data.content[i].statusText) + '</td>');
+				var enrollImg0=data.content[i].enrollImgList[0];
+				var imgInfo="";
+				if(enrollImg0){
+					var img0=enrollImg0.imgUrl;
+					imgInfo='<img style="width:50px;height:50px;float:none;" src="'+imgRoot+img0 + '"/>';
+				}
+				html.push('<td>' + ("" == imgInfo ? "-" : imgInfo) + '</td>');
+				html.push('<td>' + (undefined == data.content[i].nname ? "-" : data.content[i].nname) + '</td>');
+				html.push('<td>' + (undefined == data.content[i].areaText ? "-" : data.content[i].areaText) + '</td>');
+				html.push('<td>' + (undefined == data.content[i].phone ? "-" : data.content[i].phone) + '</td>');
+				html.push('<td>' + (undefined == data.content[i].likeCount ? "0" : data.content[i].likeCount) + '</td>');
+				html.push('</tr>');
+			}
+	}
+	else
+	{
+		html.push('<tr>');
+		html.push('<td colspan="20">暂无数据</td>');
+		html.push('</tr>');
+	}
+	html.push('</tbody>');
+	html.push('</table>');
+	obj.find('div').eq(0).html(html.join(''));
+}
+
+/**
+ * 加载试播审核数据
+ * 
+ * @param data
+ * @param obj
+ */
+function success2(data, obj) {
+	var html = [];
+	
+	html.push('<table class="table table-hover table-bordered table-striped info" >');
+	html.push('<caption style="background:#EED8D8; text-align:center; color:#703636; font-size:16px; line-height:40px;">报名信息</caption>');
+	html.push('<thead>');
+	html.push('<tr>');
+	if(!isEmptyObject(permissions)){
+		html.push('<th style="width:10%;">操作</th>');
+	}
+	html.push('<th style="width:8%;">选手编号</th>');
+	html.push('<th style="width:8%;">状态</th>');
+	html.push('<th style="width:8%;">报名照片</th>');
+	html.push('<th style="width:8%;">昵称</th>');
+	html.push('<th style="width:8%;">城市</th>');
+	html.push('<th style="width:8%;">手机</th>');
+	html.push('<th style="width:8%;">点赞数</th>');
+	html.push('</tr>');
+	html.push('</thead>');
+	html.push('<tbody');
+	if(null != data && data.content.length > 0)
+	{
+			for (var i = 0; i < data.content.length; i++) {
+				html.push('<tr>');
+				if(!isEmptyObject(permissions)){
+					html.push('<td>');
+					if(permissions.update == 'true'&& data.content[i].status==5 ){
+						html.push('<a href="javascript:confirmPilot('+data.content[i].id+',7)">通过</a>&nbsp;&nbsp;');
+						html.push('<a href="javascript:confirmPilot('+data.content[i].id+',8)">不通过</a>');
+					}
+					
+					if(permissions.update == 'true'&& data.content[i].status==7 ){
+						html.push('<a href="javascript:confine('+data.content[i].id+',1)">限制</a>&nbsp;&nbsp;');
+					}
+					
+					html.push('</td>');
+				}
+				html.push('<td>' + (undefined == data.content[i].id ? "-" : data.content[i].id) + '</td>');
+				html.push('<td>' + (undefined == data.content[i].statusText ? "-" : data.content[i].statusText) + '</td>');
+				var enrollImg0=data.content[i].enrollImgList[0];
+				var imgInfo="";
+				if(enrollImg0){
+					var img0=enrollImg0.imgUrl;
+					imgInfo='<img style="width:50px;height:50px;float:none;" src="'+imgRoot+img0 + '"/>';
+				}
+				html.push('<td>' + ("" == imgInfo ? "-" : imgInfo) + '</td>');
+				html.push('<td>' + (undefined == data.content[i].nname ? "-" : data.content[i].nname) + '</td>');
+				html.push('<td>' + (undefined == data.content[i].areaText ? "-" : data.content[i].areaText) + '</td>');
+				html.push('<td>' + (undefined == data.content[i].phone ? "-" : data.content[i].phone) + '</td>');
+				html.push('<td>' + (undefined == data.content[i].likeCount ? "0" : data.content[i].likeCount) + '</td>');
+				html.push('</tr>');
+			}
+	}
+	else
+	{
+		html.push('<tr>');
+		html.push('<td colspan="20">暂无数据</td>');
+		html.push('</tr>');
+	}
+	html.push('</tbody>');
+	html.push('</table>');
+	obj.find('div').eq(0).html(html.join(''));
+}
+
+
+/**
+ * 加载限制中数据
+ * 
+ * @param data
+ * @param obj
+ */
+function success3(data, obj) {
+	var html = [];
+	
+	html.push('<table class="table table-hover table-bordered table-striped info" >');
+	html.push('<caption style="background:#EED8D8; text-align:center; color:#703636; font-size:16px; line-height:40px;">报名信息</caption>');
+	html.push('<thead>');
+	html.push('<tr>');
+	if(!isEmptyObject(permissions)){
+		html.push('<th style="width:10%;">操作</th>');
+	}
+	html.push('<th style="width:8%;">选手编号</th>');
+	html.push('<th style="width:8%;">状态</th>');
+	html.push('<th style="width:8%;">报名照片</th>');
+	html.push('<th style="width:8%;">昵称</th>');
+	html.push('<th style="width:8%;">城市</th>');
+	html.push('<th style="width:8%;">手机</th>');
+	html.push('<th style="width:8%;">点赞数</th>');
+	html.push('</tr>');
+	html.push('</thead>');
+	html.push('<tbody');
+	if(null != data && data.content.length > 0)
+	{
+			for (var i = 0; i < data.content.length; i++) {
+				html.push('<tr>');
+				if(!isEmptyObject(permissions)){
+					html.push('<td>');
+					if(permissions.update == 'true'&& data.content[i].confining==1 ){
+						html.push('<a href="javascript:confine('+data.content[i].id+',0)">恢复</a>&nbsp;&nbsp;');
+					}
+					html.push('</td>');
+				}
+				html.push('<td>' + (undefined == data.content[i].id ? "-" : data.content[i].id) + '</td>');
+				html.push('<td>' + (undefined == data.content[i].statusText ? "-" : data.content[i].statusText) + '</td>');
+				var enrollImg0=data.content[i].enrollImgList[0];
+				var imgInfo="";
+				if(enrollImg0){
+					var img0=enrollImg0.imgUrl;
+					imgInfo='<img style="width:50px;height:50px;float:none;" src="'+imgRoot+img0 + '"/>';
+				}
+				html.push('<td>' + ("" == imgInfo ? "-" : imgInfo) + '</td>');
+				html.push('<td>' + (undefined == data.content[i].nname ? "-" : data.content[i].nname) + '</td>');
+				html.push('<td>' + (undefined == data.content[i].areaText ? "-" : data.content[i].areaText) + '</td>');
+				html.push('<td>' + (undefined == data.content[i].phone ? "-" : data.content[i].phone) + '</td>');
+				html.push('<td>' + (undefined == data.content[i].likeCount ? "0" : data.content[i].likeCount) + '</td>');
+				html.push('</tr>');
+			}
+	}
+	else
+	{
+		html.push('<tr>');
+		html.push('<td colspan="20">暂无数据</td>');
+		html.push('</tr>');
+	}
+	html.push('</tbody>');
+	html.push('</table>');
+	obj.find('div').eq(0).html(html.join(''));
+}
+
+
+/**
+ * 更新报名审核状态
+ * @param id
+ * @param status
+ * @param telphones
+ */
+function update(id,status){
+	 $.ajax({
+        url : "VstarEnroll/manage/update.jhtml",
+        type : "post",
+        dataType : "json",
+        data:{"id":id,"status":status},
+        success : function(result) {
+       	 if (result.success) {
+    			showSmReslutWindow(result.success, result.msg);
+    			setTimeout(function() {
+    				pageInit();
+    			}, 1000);
+    		} else {
+    			window.messager.warning(result.msg);
+    		}
+        }
+    });
+}
+
+/**
+ * 更新报名限制状态
+ * @param id
+ * @param confining
+ */
+function confine(id,confining){
+	$.ajax({
+        url : "VstarEnroll/manage/update.jhtml",
+        type : "post",
+        dataType : "json",
+        data:{"id":id,"confining":confining},
+        success : function(result) {
+       	 if (result.success) {
+    			showSmReslutWindow(result.success, result.msg);
+    			setTimeout(function() {
+    				pageInit();
+    			}, 1000);
+    		} else {
+    			window.messager.warning(result.msg);
+    		}
+        }
+    });
+}
+
+/**
+ * 试播审核
+ */
+ function confirmPilot(id,status){
+	 if(id==undefined || id == '' || status== undefined || status == ''){
+		 window.messager.warning("报名信息不完整");
+	 }
+	 
+	 var tips="是否通过申请";
+	 if(status=="7"){
+		 tips="是否通过申请";
+	 }else if(status=="8"){
+		 tips="是否拒绝申请";
+	 }
+	 
+	 showSmConfirmWindow(function (){
+		 $.ajax({
+		        url : "VstarEnroll/manage/update.jhtml",
+		        type : "post",
+		        dataType : "json",
+		        data:{"id":id,"status":status},
+		        success : function(result) {
+		       	 if (result.success) {
+		    			showSmReslutWindow(result.success, result.msg);
+		    			setTimeout(function() {
+		    				pageInit();
+		    			}, 1000);
+		    		} else {
+		    			window.messager.warning(result.msg);
+		    		}
+		        }
+		    });
+	 },tips);
+ }
+

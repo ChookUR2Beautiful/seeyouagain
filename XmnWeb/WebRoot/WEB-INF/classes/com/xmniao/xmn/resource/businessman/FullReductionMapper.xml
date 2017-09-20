@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.businessman.dao.FullReductionDao" >
+
+  <resultMap id="BaseResultMap" type="com.xmniao.xmn.core.businessman.entity.FullReduction" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="sellername" property="sellerName" jdbcType="VARCHAR" />
+    <result column="begin_date" property="beginDate" jdbcType="TIMESTAMP" />
+    <result column="end_date" property="endDate" jdbcType="TIMESTAMP" />
+    <result column="offset_amount" property="offsetAmount" jdbcType="DECIMAL" />
+    <result column="limit_number" property="limitNumber" jdbcType="INTEGER" />
+    <result column="is_derate" property="isDerate" jdbcType="INTEGER" />
+    <result column="derate_level1_amount" property="derateLevel1Amount" jdbcType="DECIMAL" />
+    <result column="consume_and_pay1" property="consumeAndPay1" jdbcType="DECIMAL" />
+    <result column="derate_level2_amount" property="derateLevel2Amount" jdbcType="DECIMAL" />
+    <result column="consume_and_pay2" property="consumeAndPay2" jdbcType="DECIMAL" />
+    <result column="derate_level3_amount" property="derateLevel3Amount" jdbcType="DECIMAL" />
+    <result column="consume_and_pay3" property="consumeAndPay3" jdbcType="DECIMAL" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="reduction_amount" property="reductionAmount" jdbcType="DECIMAL" />
+    <result column="join_number" property="joinNumber" jdbcType="INTEGER" />
+    <result column="views" property="views" jdbcType="INTEGER" />
+    <result column="give_number" property="giveNumber" jdbcType="INTEGER" />
+    <result column="use_number" property="useNumber" jdbcType="INTEGER" />
+    <result column="newuser_num" property="newuserNum" jdbcType="INTEGER" />
+    <result column="consume_amount" property="consumeAmount" jdbcType="DECIMAL" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, sellerid, name, begin_date, end_date, offset_amount, limit_number, 
+    is_derate, derate_level1_amount, consume_and_pay1, derate_level2_amount, consume_and_pay2, 
+    derate_level3_amount, consume_and_pay3, status, reduction_amount, join_number, views, 
+    give_number, use_number, newuser_num, consume_amount, create_time
+  </sql>
+  
+  <!-- 获取满减活动列表 -->
+	<select id="getList" resultMap="BaseResultMap">
+		SELECT f.id,f.`sellerid`,s.`sellername`,f.`begin_date`,f.`end_date`,f.`name`,f.`status`,f.`reduction_amount`,f.`join_number`
+		FROM t_activity_fullreduction f
+		LEFT JOIN t_seller s ON f.sellerid =  s.sellerid
+		WHERE 1=1
+		<if test="name != null and name !=''">
+		AND f.name LIKE '%${name}%'
+		</if>
+		<if test="sellerName != null and sellerName !=''">
+		AND s.sellername LIKE '%${sellerName}%'
+		</if>
+		<if test="beginDate != null and beginDate !=''">
+		AND f.begin_date &gt;= #{beginDate}
+		</if>
+		<if test="endDate != null and endDate !=''">
+		AND f.end_date &lt;= #{endDate}
+		</if>
+		<if test="status != null">
+		AND f.status = #{status}
+		</if>
+		ORDER BY f.create_time DESC
+		<if test="limit != -1">
+		LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<!-- 统计记录总数 -->
+	<select id="count" resultType="long">
+		SELECT COUNT(1)
+		FROM t_activity_fullreduction f
+		LEFT JOIN t_seller s ON f.sellerid =  s.sellerid
+		WHERE 1=1
+		<if test="name != null and name !=''">
+		AND f.name LIKE '%${name}%'
+		</if>
+		<if test="sellerName != null and sellerName !=''">
+		AND s.sellername LIKE '%${sellerName}%'
+		</if>
+		<if test="beginDate != null and beginDate !=''">
+		AND f.begin_date &gt;= #{beginDate}
+		</if>
+		<if test="endDate != null and endDate !=''">
+		AND f.end_date &lt;= #{endDate}
+		</if>
+		<if test="status != null">
+		AND f.status = #{status}
+		</if>
+	</select>
+	
+	<!-- 终止进行中的满减活动 -->
+	<update id="shutdownFR" parameterType="com.xmniao.xmn.core.businessman.entity.FullReduction">
+		UPDATE t_activity_fullreduction
+		SET status = 1
+		WHERE id =#{id}
+	</update>
+</mapper>

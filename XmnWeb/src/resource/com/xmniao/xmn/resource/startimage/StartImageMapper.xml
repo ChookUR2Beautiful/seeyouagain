@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.startimage.dao.StartImageDao">
+
+	<parameterMap type="StartImage" id="startImage" />
+	
+	<resultMap type="StartImage" id="startImageMap">
+		<result column="id" property="id" />
+		<result column="type" property="type" />
+		<result column="atype" property="atype" />
+		<result column="status" property="status" />
+		<result column="pic" property="pic" />
+		<result column="pic_low" property="picLow" />
+		<result column="pic_middle" property="picMiddle" />
+		<result column="start_url" property="startUrl" />
+		<result column="sdate" property="sdate" />
+		<result column="edate" property="edate" />
+		<result column="remarks" property="remarks" />
+		<result column="index" property="index" />
+	    <result column="show_local" jdbcType="INTEGER" property="showLocal" />
+	    <result column="show_type" jdbcType="INTEGER" property="showType" />
+	    <result column="video_url" jdbcType="VARCHAR" property="videoUrl" />
+	    <result column="count_down" jdbcType="INTEGER" property="countDown" />		
+		<result column="province_id" property="provinceId" />
+		<result column="city_id" property="cityId" />
+	    <result column="live_begin" jdbcType="INTEGER" property="liveBegin" />
+	    <result column="live_end" jdbcType="INTEGER" property="liveEnd" />
+	    <result column="live_in" jdbcType="INTEGER" property="liveIn" />
+	    <result column="intervals" jdbcType="INTEGER" property="intervals" />		
+	</resultMap>
+	
+	<!-- 根据条件查询启动图信息 -->
+	<select id="getStartImageList" resultMap="startImageMap" parameterMap="startImage">
+		SELECT t.*, t1.title AS provinceName, t2.title AS cityName FROM t_start_img t
+		 LEFT JOIN t_area t1 ON t.province_id = t1.area_id 
+		 LEFT JOIN t_area t2 ON t.city_id = t2.area_id
+		<where>
+			1=1
+			<include refid="queryBillCondition"></include>
+		</where>
+			ORDER BY id DESC 
+		<if test=" limit != -1 ">
+			LIMIT ${(page-1)*limit},#{limit}
+		</if>
+	</select>
+	
+	<!-- 根据条件统计启动图数据记录数 -->
+	<select id="getStartImageListcount" resultType="Long" parameterMap="startImage">
+		SELECT COUNT(id) FROM t_start_img  
+		<where>
+			1 = 1
+			<include refid="queryBillCondition"></include>
+		</where>
+	</select>
+	
+	<!-- 添加启动图 -->
+	<insert id="add" parameterMap="startImage" >
+		INSERT INTO t_start_img
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					id,
+				</if>
+			 	<if test=" null != pic and '' != pic ">
+					pic,
+				</if>
+				<if test=" null != picLow and '' != picLow ">
+					pic_low,
+				</if>
+				<if test=" null != picMiddle and '' != picMiddle ">
+					pic_middle,
+				</if>
+				<if test=" null != startUrl and '' != startUrl ">
+					start_url,
+				</if>
+			 	<if test=" null != index">
+					`index`,
+				</if>
+		        <if test="showLocal != null">
+		           show_local,
+		        </if>
+		        <if test="showType != null">
+		           show_type,
+		        </if>
+		        <if test="videoUrl != null">
+		           video_url,
+		        </if>
+		        <if test="countDown != null">
+		           count_down,
+		        </if>				
+			 	<if test=" null != status">
+					status,
+				</if>
+			 	<if test=" null != type">
+					type,
+				</if>
+				<if test=" null != atype">
+					atype,
+				</if>
+			 	<if test=" null != remarks and '' != remarks">
+					remarks,
+				</if>
+				<if test=" null != sdate and '' != sdate">
+					sdate,
+				</if>
+				<if test=" null != edate and '' != edate">
+					edate,
+				</if>
+			    <if test=" null != provinceId and '' != provinceId ">
+				    province_id,
+			    </if>
+			    <if test=" null != cityId and '' != cityId ">
+				    city_id,
+			    </if>
+			    <if test="liveBegin != null">
+			        live_begin,
+			    </if>
+			    <if test="liveEnd != null">
+			        live_end,
+			    </if>
+			    <if test="liveIn != null">
+			        live_in,
+			    </if>
+			    <if test="intervals != null">
+			        intervals,
+			    </if>			    
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+			 	<if test=" null != id">
+					 	#{id},
+				</if>
+			 	<if test=" null != pic and '' != pic ">
+					 	#{pic},
+				</if>
+				<if test=" null != picLow and '' != picLow ">
+					#{picLow},
+				</if>
+				<if test=" null != picMiddle and '' != picMiddle ">
+					#{picMiddle},
+				</if>
+				<if test=" null != startUrl and '' != startUrl ">
+					#{startUrl},
+				</if>
+			 	<if test=" null != index">
+					 	#{index},
+				</if>
+		        <if test="showLocal != null">
+		        		#{showLocal,jdbcType=INTEGER},
+		        </if>
+		        <if test="showType != null">
+		        		#{showType,jdbcType=INTEGER},
+		        </if>
+		        <if test="videoUrl != null">
+		        		#{videoUrl,jdbcType=VARCHAR},
+		        </if>
+		        <if test="countDown != null">
+		        		#{countDown,jdbcType=INTEGER},
+		        </if>				
+				<if test=" null != status">
+						#{status},
+				</if>
+			 	<if test=" null != type">
+					 	#{type},
+				</if>
+				<if test=" null != atype">
+					 	#{atype},
+				</if>
+			 	<if test=" null != remarks and '' != remarks ">
+					 	#{remarks},
+				</if>
+				<if test=" null != sdate and '' != sdate">
+					#{sdate},
+				</if>
+				<if test=" null != edate and '' != edate">
+					#{edate},
+				</if>
+				<if test=" null != provinceId and '' != provinceId ">
+				    #{provinceId},
+				</if>
+				<if test=" null != cityId and '' != cityId ">
+					#{cityId},
+				</if>
+		       <if test="liveBegin != null">
+		        	#{liveBegin,jdbcType=INTEGER},
+		       </if>
+		       <if test="liveEnd != null">
+		        	#{liveEnd,jdbcType=INTEGER},
+		       </if>
+		       <if test="liveIn != null">
+		        	#{liveIn,jdbcType=INTEGER},
+		       </if>
+		       <if test="intervals != null">
+		        	#{intervals,jdbcType=INTEGER},
+		       </if>				
+				
+		</trim>
+	</insert>
+	
+	<select id="getStartObject" resultMap="startImageMap" parameterType="Integer">
+		SELECT t.*, t1.title AS provinceName, t2.title AS cityName FROM t_start_img t
+		 LEFT JOIN t_area t1 ON t.province_id = t1.area_id 
+		 LEFT JOIN t_area t2 ON t.province_id = t2.area_id WHERE t.id = #{id}
+	</select>
+	
+	<!-- 获取启动图信息的公用查询条件 -->
+	<sql id="queryBillCondition">
+	         <if test=" null != id">
+				AND id = #{id}
+			</if>
+			<if test=" null != status">
+				AND status = #{status}
+			</if>
+			<if test=" null != type">
+				AND type = #{type}
+			</if>
+			<if test=" null != atype">
+				AND atype = #{atype}
+			</if>
+	</sql>
+	<!-- 更新启动图信息 -->
+	<update id="update" parameterMap="startImage">
+		UPDATE t_start_img
+		<set>
+			<trim suffixOverrides=",">
+			 	<if test=" null != pic">
+					 pic = #{pic},
+				</if>
+				<if test=" null != picLow">
+					 pic_low = #{picLow},
+				</if>
+				<if test=" null != picMiddle">
+					 pic_middle = #{picMiddle},
+				</if>
+				<if test=" null != startUrl">
+					 start_url = #{startUrl},
+				</if>
+			 	<if test=" null != index">
+					 `index` = #{index},
+				</if>
+		        <if test="showLocal != null">
+		        	  show_local = #{showLocal,jdbcType=INTEGER},
+		        </if>
+		        <if test="showType != null">
+		        	  show_type = #{showType,jdbcType=INTEGER},
+		        </if>
+		        <if test="videoUrl != null">
+		        	  video_url = #{videoUrl,jdbcType=VARCHAR},
+		        </if>
+		        <if test="countDown != null">
+		        	  count_down = #{countDown,jdbcType=INTEGER},
+		        </if>				
+				<if test=" null != status">
+					  status = #{status},
+				</if>
+			 	<if test=" null != type">
+					 type =	#{type},
+				</if>
+				<if test=" null != atype">
+					 atype = #{atype},
+				</if>
+			 	<if test=" null != remarks and '' != remarks ">
+					 remarks = #{remarks},
+				</if>
+				<if test=" null != edate and '' != edate">
+					edate = #{edate},
+				</if>
+				<if test=" null != provinceId and '' != provinceId ">
+				    province_id = #{provinceId},
+				</if>
+				<if test=" null != cityId and '' != cityId ">
+					city_id = #{cityId},
+				</if>
+		        <if test="liveBegin != null">
+		        	 live_begin = #{liveBegin,jdbcType=INTEGER},
+		        </if>
+		        <if test="liveEnd != null">
+		        	 live_end = #{liveEnd,jdbcType=INTEGER},
+		        </if>
+		        <if test="liveIn != null">
+		        	 live_in = #{liveIn,jdbcType=INTEGER},
+		        </if>
+		        <if test="intervals != null">
+		        	 intervals = #{intervals,jdbcType=INTEGER},
+		        </if>				
+			</trim>
+		</set>
+		<where>
+			<if test="null != id and '' != id">
+				id = #{id}
+			</if>
+		</where>
+	</update>
+	
+		<!-- 查询 区域信息 -->
+	<select id="getSellerArea" resultType="map">
+		SELECT t1.title province,t2.title city,t3.title area
+		FROM t_area t1 
+		LEFT JOIN t_area t2 ON t1.area_id=t2.pid 
+		LEFT JOIN t_area t3 ON t2.area_id=t3.pid
+		WHERE t3.area_id=#{areaId} 
+	</select>
+	
+</mapper>

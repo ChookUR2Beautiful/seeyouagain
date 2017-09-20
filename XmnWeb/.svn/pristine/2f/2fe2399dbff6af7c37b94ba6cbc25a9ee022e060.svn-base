@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.xmn.core.business_statistics.dao.ApplicationOverviewDao">
+
+	<parameterMap type="ApplicationOverview" id="applicationOverview" />
+	
+	<resultMap type="ApplicationOverview" id="applicationOverviewMap">
+		<result column="newseller" property="increasedJointNum" />
+		<result column="sumseller" property="totalJointNum" />
+		<result column="water_total" property="amount" />
+		<result column="sdate" property="sdate" />
+	</resultMap>
+	<!-- 统计新增合作商，累计合作商，交易金额(流水金额) -->
+	<select id="getDataList" resultMap="applicationOverviewMap" parameterType="java.util.Map">
+		SELECT 
+		    IFNULL(tse.newseller, 0) AS newseller,
+		    IFNULL(tse.sumseller, 0) AS sumseller,
+		    waterNum.*
+		FROM
+		    (SELECT 
+		        SUM(water_total) AS water_total,
+		            DATE_FORMAT(tsdc.order_date, '%Y-%m-%d') AS sdate
+		    FROM
+		        t_seller_day_census tsdc
+		    WHERE
+		         DATE_FORMAT(tsdc.order_date , '%Y-%m-%d') &lt;= #{now}
+		            AND  DATE_FORMAT(tsdc.order_date , '%Y-%m-%d') &gt;= #{beforeYesterday}
+		    GROUP BY DATE_FORMAT(tsdc.order_date, '%Y-%m-%d')) waterNum
+		        LEFT JOIN
+		    (SELECT 
+		        sel.*, SUM(ts.sumseller) AS sumseller
+		    FROM
+		        (SELECT 
+		        COUNT(*) AS newseller,
+		            DATE_FORMAT(t.signdate, '%Y-%m-%d') AS signdate
+		    FROM
+		        t_seller t
+		    WHERE
+		       DATE_FORMAT(t.signdate, '%Y-%m-%d') &lt;= #{now}
+		            AND DATE_FORMAT(t.signdate, '%Y-%m-%d') &gt;= #{beforeYesterday}
+		            AND t.`status` = 3
+		    GROUP BY DATE_FORMAT(t.signdate, '%Y-%m-%d')) AS sel
+		    LEFT JOIN (SELECT 
+		        COUNT(*) AS sumseller,
+		            DATE_FORMAT(t.signdate, '%Y-%m-%d') AS sdate
+		    FROM
+		        t_seller t
+		    WHERE
+		        t.status = 3
+		    GROUP BY DATE_FORMAT(t.signdate, '%Y-%m-%d')) AS ts ON sel.signdate > ts.sdate
+		    GROUP BY sel.signdate) tse ON waterNum.sdate = tse.signdate
+		ORDER BY waterNum.sdate DESC
+	</select>
+	
+</mapper>

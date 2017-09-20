@@ -1,0 +1,406 @@
+package com.xmniao.xmn.core.vstar.entity;
+
+import java.util.Date;
+import java.util.List;
+
+import com.xmniao.xmn.core.base.BaseEntity;
+
+/**
+ * 
+ * 
+ * 项目名称：XmnWeb_vstar
+ * 
+ * 类名称：TVstarEnroll
+ * 
+ * 类描述： 新时尚大赛报名表实体类
+ * 
+ * 创建人：  huang'tao
+ * 
+ * 创建时间：2017-6-1 下午1:53:30 
+ * 
+ * Copyright (c) 广东寻蜜鸟网络技术有限公司
+ */
+public class TVstarEnroll extends BaseEntity{
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -3619402137679728432L;
+
+	private Integer id;//参赛编号
+	
+	private List<String> idList;//参赛编号
+
+    private String nname;//参赛昵称
+
+    private String phone;//参赛手机号
+
+    private Integer provinceId;//报名赛区省份
+
+    private Integer cityId;//报名赛区城市
+    
+    private Integer areaId;//区域ID
+    
+    private String areaText;//区域名称:广东-广州-天河区
+
+    private Integer status;//参赛状态 1.已报名 2.报名审核通过  3.报名审核拒绝 4.实名认证待审核 5.实名认证通过 6.实名认证拒绝 7.试播审核通过 8.试播审核拒绝
+    
+    private String statusText;//参赛状态文本描述
+
+    private Date enrollTime;//报名时间
+
+    private String identityName;//真实姓名
+
+    private String identityNumber;//身份证号
+
+    private Integer uid;//会员编号
+    
+    private String refusedType;//拒绝/限制原因,1 图片违规，2 姓名文字带有限制内容,多个以逗号分隔
+    
+    private Integer likeCount;//点赞总数
+    
+    private List<TVstarEnrollImg> enrollImgList;//报名相册信息
+    
+    private String imgUrl201;//身份证正面照
+    
+    private String imgUrl202;//身份证反面照
+    
+    private String imgUrl203;//手持身份证照
+    
+    private Integer privateLimit=20;//每页显示条数
+    
+    private Integer confining;//受限制的，0 否 ，1 是，默认否
+    
+    private String statusParam;//参赛状态参数
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+    
+    
+
+
+	/**
+	 * @return the idList
+	 */
+	public List<String> getIdList() {
+		return idList;
+	}
+
+	/**
+	 * @param idList the idList to set
+	 */
+	public void setIdList(List<String> idList) {
+		this.idList = idList;
+	}
+
+	public String getNname() {
+        return nname;
+    }
+
+    public void setNname(String nname) {
+        this.nname = nname == null ? null : nname.trim();
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone == null ? null : phone.trim();
+    }
+
+    public Integer getProvinceId() {
+        return provinceId;
+    }
+
+    public void setProvinceId(Integer provinceId) {
+        this.provinceId = provinceId;
+    }
+
+    public Integer getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(Integer cityId) {
+        this.cityId = cityId;
+    }
+    
+    
+
+    /**
+	 * @return the areaId
+	 */
+	public Integer getAreaId() {
+		return areaId;
+	}
+
+	/**
+	 * @param areaId the areaId to set
+	 */
+	public void setAreaId(Integer areaId) {
+		this.areaId = areaId;
+	}
+	
+	
+
+	/**
+	 * @return the areaText
+	 */
+	public String getAreaText() {
+		return areaText;
+	}
+
+	/**
+	 * @param areaText the areaText to set
+	 */
+	public void setAreaText(String areaText) {
+		this.areaText = areaText;
+	}
+
+	public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+    
+    
+
+    /**
+     * 参赛状态 1.已报名 2.报名审核通过  3.报名审核拒绝 4.实名认证待审核 5.实名认证通过 6.实名认证拒绝 7.试播审核通过 8.试播审核拒绝
+	 * @return the statusText
+	 */
+	public String getStatusText() {
+		if(status==null){
+			return null;
+		}
+		
+		switch (status) {
+		case 1:
+			statusText="已报名";
+			break;
+		case 2:
+			statusText="报名审核通过";
+			break;
+		case 3:
+			statusText="报名审核拒绝";
+			break;
+		case 4:
+			statusText="实名认证待审核";
+			break;
+		case 5:
+			statusText="实名认证通过";
+			break;
+		case 6:
+			statusText="实名认证拒绝";
+			break;
+		case 7:
+			statusText="试播审核通过";
+			break;
+		case 8:
+			statusText="试播审核拒绝";
+			break;
+		default:
+			statusText="已报名";
+			break;
+		}
+		return statusText;
+	}
+
+	/**
+	 * @param statusText the statusText to set
+	 */
+	public void setStatusText(String statusText) {
+		this.statusText = statusText;
+	}
+
+	public Date getEnrollTime() {
+        return enrollTime;
+    }
+
+    public void setEnrollTime(Date enrollTime) {
+        this.enrollTime = enrollTime;
+    }
+
+    public String getIdentityName() {
+        return identityName;
+    }
+
+    public void setIdentityName(String identityName) {
+        this.identityName = identityName == null ? null : identityName.trim();
+    }
+
+    public String getIdentityNumber() {
+        return identityNumber;
+    }
+
+    public void setIdentityNumber(String identityNumber) {
+        this.identityNumber = identityNumber == null ? null : identityNumber.trim();
+    }
+
+    public Integer getUid() {
+        return uid;
+    }
+
+    public void setUid(Integer uid) {
+        this.uid = uid;
+    }
+    
+    
+
+	/**
+	 * @return the refusedType
+	 */
+	public String getRefusedType() {
+		return refusedType;
+	}
+
+	/**
+	 * @param refusedType the refusedType to set
+	 */
+	public void setRefusedType(String refusedType) {
+		this.refusedType = refusedType;
+	}
+
+	
+	/**
+	 * @return the likeCount
+	 */
+	public Integer getLikeCount() {
+		return likeCount;
+	}
+
+	/**
+	 * @param likeCount the likeCount to set
+	 */
+	public void setLikeCount(Integer likeCount) {
+		this.likeCount = likeCount;
+	}
+
+	
+	
+	/**
+	 * @return the enrollImgList
+	 */
+	public List<TVstarEnrollImg> getEnrollImgList() {
+		return enrollImgList;
+	}
+
+	/**
+	 * @param enrollImgList the enrollImgList to set
+	 */
+	public void setEnrollImgList(List<TVstarEnrollImg> enrollImgList) {
+		this.enrollImgList = enrollImgList;
+	}
+
+	
+	
+
+	/**
+	 * @return the imgUrl201
+	 */
+	public String getImgUrl201() {
+		return imgUrl201;
+	}
+
+	/**
+	 * @param imgUrl201 the imgUrl201 to set
+	 */
+	public void setImgUrl201(String imgUrl201) {
+		this.imgUrl201 = imgUrl201;
+	}
+
+	/**
+	 * @return the imgUrl202
+	 */
+	public String getImgUrl202() {
+		return imgUrl202;
+	}
+
+	/**
+	 * @param imgUrl202 the imgUrl202 to set
+	 */
+	public void setImgUrl202(String imgUrl202) {
+		this.imgUrl202 = imgUrl202;
+	}
+
+	/**
+	 * @return the imgUrl203
+	 */
+	public String getImgUrl203() {
+		return imgUrl203;
+	}
+
+	/**
+	 * @param imgUrl203 the imgUrl203 to set
+	 */
+	public void setImgUrl203(String imgUrl203) {
+		this.imgUrl203 = imgUrl203;
+	}
+
+	/**
+	 * @return the privateLimit
+	 */
+	public Integer getPrivateLimit() {
+		return privateLimit;
+	}
+
+	/**
+	 * @param privateLimit the privateLimit to set
+	 */
+	public void setPrivateLimit(Integer privateLimit) {
+		this.privateLimit = privateLimit;
+	}
+	
+	
+
+	/**
+	 * @return the confining
+	 */
+	public Integer getConfining() {
+		return confining;
+	}
+
+	/**
+	 * @param confining the confining to set
+	 */
+	public void setConfining(Integer confining) {
+		this.confining = confining;
+	}
+
+	/**
+	 * @return the statusParam
+	 */
+	public String getStatusParam() {
+		return statusParam;
+	}
+
+	/**
+	 * @param statusParam the statusParam to set
+	 */
+	public void setStatusParam(String statusParam) {
+		this.statusParam = statusParam;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "TVstarEnroll [id=" + id + ", nname=" + nname + ", phone="
+				+ phone + ", provinceId=" + provinceId + ", cityId=" + cityId
+				+ ", areaId=" + areaId + ", areaText=" + areaText + ", status="
+				+ status + ", enrollTime=" + enrollTime + ", identityName="
+				+ identityName + ", identityNumber=" + identityNumber
+				+ ", uid=" + uid + ", refusedType=" + refusedType
+				+ ", likeCount=" + likeCount + ", enrollImgList="
+				+ enrollImgList + "]";
+	}
+    
+    
+}
