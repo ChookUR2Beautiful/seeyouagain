@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.vstar.TVstarRewardRecordDao" >
+
+  <resultMap id="vstarRewardRecordMap" type="com.xmniao.domain.vstar.TVstarRewardRecord" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="player_id" property="playerId" jdbcType="INTEGER" />
+    <result column="player_uid" property="playerUid" jdbcType="INTEGER" />
+    <result column="referrer_uid" property="referrerUid" jdbcType="INTEGER" />
+    <result column="receive_coin" property="receiveCoin" jdbcType="DECIMAL" />
+    <result column="receive_time" property="receiveTime" jdbcType="TIMESTAMP" />
+    <result column="receive_status" property="receiveStatus" jdbcType="INTEGER" />
+    <result column="read_status" property="readStatus" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="vstarRewardRecord_column_list" >
+    id, player_id, player_uid, referrer_uid, receive_coin, receive_time, receive_status, 
+    read_status, status, create_time, update_time
+  </sql>
+  
+  <select id="getObject" resultMap="vstarRewardRecordMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="vstarRewardRecord_column_list" />
+    from t_vstar_reward_record
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="selectByBean" resultMap="vstarRewardRecordMap" parameterType="com.xmniao.domain.vstar.TVstarRewardRecord" >
+    select 
+    <include refid="vstarRewardRecord_column_list" />
+    from t_vstar_reward_record
+    <where>
+    	<if test="id !=null and id !='' ">
+    		id =#{id}
+    	</if>
+    	<if test="playerId !=null and playerId !='' ">
+    		player_Id = #{playerId}
+    	</if>
+    	<if test="playerUid !=null and playerUid !='' ">
+    		player_uid = #{playerUid}
+    	</if>
+    </where>
+    limit 0,1
+  </select>
+  
+  
+  <delete id="delete" parameterType="java.lang.Long" >
+    delete from t_vstar_reward_record
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  
+  
+  <insert id="add" parameterType="com.xmniao.domain.vstar.TVstarRewardRecord" >
+    insert into t_vstar_reward_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="playerId != null" >
+        player_id,
+      </if>
+      <if test="playerUid != null" >
+        player_uid,
+      </if>
+      <if test="referrerUid != null" >
+        referrer_uid,
+      </if>
+      <if test="receiveCoin != null" >
+        receive_coin,
+      </if>
+      <if test="receiveTime != null" >
+        receive_time,
+      </if>
+      <if test="receiveStatus != null" >
+        receive_status,
+      </if>
+      <if test="readStatus != null" >
+        read_status,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="playerId != null" >
+        #{playerId,jdbcType=INTEGER},
+      </if>
+      <if test="playerUid != null" >
+        #{playerUid,jdbcType=INTEGER},
+      </if>
+      <if test="referrerUid != null" >
+        #{referrerUid,jdbcType=INTEGER},
+      </if>
+      <if test="receiveCoin != null" >
+        #{receiveCoin,jdbcType=DECIMAL},
+      </if>
+      <if test="receiveTime != null" >
+        #{receiveTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="receiveStatus != null" >
+        #{receiveStatus,jdbcType=INTEGER},
+      </if>
+      <if test="readStatus != null" >
+        #{readStatus,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.domain.vstar.TVstarRewardRecord" >
+    update t_vstar_reward_record
+    <set >
+      <if test="playerId != null" >
+        player_id = #{playerId,jdbcType=INTEGER},
+      </if>
+      <if test="playerUid != null" >
+        player_uid = #{playerUid,jdbcType=INTEGER},
+      </if>
+      <if test="referrerUid != null" >
+        referrer_uid = #{referrerUid,jdbcType=INTEGER},
+      </if>
+      <if test="receiveCoin != null" >
+        receive_coin = #{receiveCoin,jdbcType=DECIMAL},
+      </if>
+      <if test="receiveTime != null" >
+        receive_time = #{receiveTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="receiveStatus != null" >
+        receive_status = #{receiveStatus,jdbcType=INTEGER},
+      </if>
+      <if test="readStatus != null" >
+        read_status = #{readStatus,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="getVstarRewardConf" resultType="map" parameterType="map">
+	SELECT
+		pilot_time AS pilotTime,
+		reward_coin AS rewardCoin
+	FROM
+		t_vstar_reward_conf
+	WHERE
+		`status` = '1'
+	LIMIT 0,1
+  </select>
+  
+</mapper>

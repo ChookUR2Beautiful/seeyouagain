@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.vstar.TVstarPlayerInfoDao" >
+
+  <resultMap id="vstarPlayerInfoMap" type="com.xmniao.domain.vstar.TVstarPlayerInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="enroll_id" property="enrollId" jdbcType="INTEGER" />
+    <result column="liver_id" property="liverId" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="nname" property="nname" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="province_id" property="provinceId" jdbcType="INTEGER" />
+    <result column="province_name" property="provinceName" jdbcType="VARCHAR" />
+    <result column="city_id" property="cityId" jdbcType="INTEGER" />
+    <result column="city_name" property="cityName" jdbcType="VARCHAR" />
+    <result column="division_id" property="divisionId" jdbcType="INTEGER" />
+    <result column="division_name" property="divisionName" jdbcType="VARCHAR" />
+    <result column="live_count" property="liveCount" jdbcType="INTEGER" />
+    <result column="live_count_init" property="liveCountInit" jdbcType="INTEGER" />
+    <result column="live_time_count" property="liveTimeCount" jdbcType="BIGINT" />
+    <result column="live_time_count_init" property="liveTimeCountInit" jdbcType="BIGINT" />
+    <result column="fans_count" property="fansCount" jdbcType="INTEGER" />
+    <result column="egg_count" property="eggCount" jdbcType="INTEGER" />
+    <result column="egg_count_init" property="eggCountInit" jdbcType="INTEGER" />
+    <result column="comment_count" property="commentCount" jdbcType="INTEGER" />
+    <result column="like_count" property="likeCount" jdbcType="INTEGER" />
+    <result column="seller_count" property="sellerCount" jdbcType="INTEGER" />
+    <result column="player_type" property="playerType" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="fans_rank_num" property="fansRankNum" jdbcType="INTEGER" />
+    <result column="egg_rank_num" property="eggRankNum" jdbcType="INTEGER" />
+    
+    <result column="fans_count_init_week" property="fansCountInitWeek" jdbcType="INTEGER" />
+    <result column="fans_count_week" property="fansCountWeek" jdbcType="INTEGER" />
+    <result column="fans_count_init_month" property="fansCountInitMonth" jdbcType="INTEGER" />
+    <result column="fans_count_month" property="fansCountMonth" jdbcType="INTEGER" />
+    <result column="fans_rank_num_week" property="fansRankNumWeek" jdbcType="INTEGER" />
+    <result column="egg_rank_num_week" property="eggRankNumWeek" jdbcType="INTEGER" />
+    <result column="fans_rank_num_month" property="fansRankNumMonth" jdbcType="INTEGER" />
+    <result column="egg_rank_num_month" property="eggRankNumMonth" jdbcType="INTEGER" />
+    <result column="egg_count_week" property="eggCountWeek" jdbcType="INTEGER" />
+    <result column="egg_count_month" property="eggCountMonth" jdbcType="INTEGER" />
+    
+    <result column="live_count_week" property="liveCountWeek" jdbcType="INTEGER" />
+    <result column="live_count_month" property="liveCountMonth" jdbcType="INTEGER" />
+    <result column="like_count_week" property="likeCountWeek" jdbcType="INTEGER" />
+    <result column="like_count_month" property="likeCountMonth" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="vstarPlayerInfo_column_list" >
+    id, enroll_id,liver_id, uid, nname, phone, province_id, province_name, city_id, city_name, 
+    division_id, division_name, live_count, live_count_init,live_time_count,live_time_count_init, fans_count, egg_count,egg_count_init, comment_count, 
+    like_count, seller_count, player_type, create_time,fans_rank_num,egg_rank_num,
+    fans_count_init_week,fans_count_week,fans_count_init_month,fans_count_month,fans_rank_num_week,egg_rank_num_week,fans_rank_num_month,egg_rank_num_month,
+    egg_count_week,egg_count_month,live_count_week,live_count_month,like_count_week,like_count_month
+  </sql>
+  
+  <select id="getObject" resultMap="vstarPlayerInfoMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="vstarPlayerInfo_column_list" />
+    from t_vstar_player_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="getList" resultMap="vstarPlayerInfoMap" parameterType="com.xmniao.domain.vstar.TVstarPlayerInfo" >
+    select 
+    <include refid="vstarPlayerInfo_column_list" />
+    from t_vstar_player_info
+    <where>
+    	<if test="nodeTotal != 0">
+    		id % #{nodeTotal} = #{currentNode}
+    	</if>
+    </where>
+   	 ORDER BY id ASC
+    <if test=" limit != -1 ">
+		 LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+  
+  <select id="count" resultType="java.lang.Long" parameterType="com.xmniao.domain.vstar.TVstarPlayerInfo" >
+    select 
+    	count(1)
+    from t_vstar_player_info
+    <where>
+    	<if test="nodeTotal != 0">
+    		id % #{nodeTotal} = #{currentNode}
+    	</if>
+    </where>
+  </select>
+  
+  
+  <insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.domain.vstar.TVstarPlayerInfo" >
+    insert into t_vstar_player_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="enrollId != null" >
+        enroll_id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="nname != null" >
+        nname,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="provinceId != null" >
+        province_id,
+      </if>
+      <if test="provinceName != null" >
+        province_name,
+      </if>
+      <if test="cityId != null" >
+        city_id,
+      </if>
+      <if test="cityName != null" >
+        city_name,
+      </if>
+      <if test="divisionId != null" >
+        division_id,
+      </if>
+      <if test="divisionName != null" >
+        division_name,
+      </if>
+      <if test="liveCount != null" >
+        live_count,
+      </if>
+      <if test="liveTimeCount != null" >
+        live_time_count,
+      </if>
+      <if test="fansCount != null" >
+        fans_count,
+      </if>
+      <if test="eggCount != null" >
+        egg_count,
+      </if>
+      <if test="commentCount != null" >
+        comment_count,
+      </if>
+      <if test="likeCount != null" >
+        like_count,
+      </if>
+      <if test="sellerCount != null" >
+        seller_count,
+      </if>
+      <if test="playerType != null" >
+        player_type,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="enrollId != null" >
+        #{enrollId,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="nname != null" >
+        #{nname,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="provinceId != null" >
+        #{provinceId,jdbcType=INTEGER},
+      </if>
+      <if test="provinceName != null" >
+        #{provinceName,jdbcType=VARCHAR},
+      </if>
+      <if test="cityId != null" >
+        #{cityId,jdbcType=INTEGER},
+      </if>
+      <if test="cityName != null" >
+        #{cityName,jdbcType=VARCHAR},
+      </if>
+      <if test="divisionId != null" >
+        #{divisionId,jdbcType=INTEGER},
+      </if>
+      <if test="divisionName != null" >
+        #{divisionName,jdbcType=VARCHAR},
+      </if>
+      <if test="liveCount != null" >
+        #{liveCount,jdbcType=INTEGER},
+      </if>
+      <if test="liveTimeCount != null" >
+        #{liveTimeCount,jdbcType=BIGINT},
+      </if>
+      <if test="fansCount != null" >
+        #{fansCount,jdbcType=INTEGER},
+      </if>
+      <if test="eggCount != null" >
+        #{eggCount,jdbcType=INTEGER},
+      </if>
+      <if test="commentCount != null" >
+        #{commentCount,jdbcType=INTEGER},
+      </if>
+      <if test="likeCount != null" >
+        #{likeCount,jdbcType=INTEGER},
+      </if>
+      <if test="sellerCount != null" >
+        #{sellerCount,jdbcType=INTEGER},
+      </if>
+      <if test="playerType != null" >
+        #{playerType,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="update" parameterType="com.xmniao.domain.vstar.TVstarPlayerInfo" >
+    update t_vstar_player_info
+    <set >
+      <if test="enrollId != null" >
+        enroll_id = #{enrollId,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="nname != null" >
+        nname = #{nname,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="provinceId != null" >
+        province_id = #{provinceId,jdbcType=INTEGER},
+      </if>
+      <if test="provinceName != null" >
+        province_name = #{provinceName,jdbcType=VARCHAR},
+      </if>
+      <if test="cityId != null" >
+        city_id = #{cityId,jdbcType=INTEGER},
+      </if>
+      <if test="cityName != null" >
+        city_name = #{cityName,jdbcType=VARCHAR},
+      </if>
+      <if test="divisionId != null" >
+        division_id = #{divisionId,jdbcType=INTEGER},
+      </if>
+      <if test="divisionName != null" >
+        division_name = #{divisionName,jdbcType=VARCHAR},
+      </if>
+      <if test="liveCount != null" >
+        live_count = #{liveCount,jdbcType=INTEGER},
+      </if>
+      <if test="liveCountInit != null" >
+        live_count_init = #{liveCountInit,jdbcType=INTEGER},
+      </if>
+      <if test="liveTimeCount != null" >
+        live_time_count = #{liveTimeCount,jdbcType=BIGINT},
+      </if>
+      <if test="liveTimeCountInit != null" >
+        live_time_count_init = #{liveTimeCountInit,jdbcType=BIGINT},
+      </if>
+      <if test="fansCount != null" >
+        fans_count = #{fansCount,jdbcType=INTEGER},
+      </if>
+      <if test="eggCount != null" >
+        egg_count = #{eggCount,jdbcType=INTEGER},
+      </if>
+       <if test="eggCountInit != null" >
+        egg_count_init = #{eggCountInit,jdbcType=INTEGER},
+      </if>
+      <if test="commentCount != null" >
+        comment_count = #{commentCount,jdbcType=INTEGER},
+      </if>
+      <if test="likeCount != null" >
+        like_count = #{likeCount,jdbcType=INTEGER},
+      </if>
+      <if test="sellerCount != null" >
+        seller_count = #{sellerCount,jdbcType=INTEGER},
+      </if>
+      <if test="playerType != null" >
+        player_type = #{playerType,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 更新统计信息 -->
+  <update id="updateCountInfo" parameterType="com.xmniao.domain.vstar.TVstarPlayerInfo" >
+    update t_vstar_player_info
+    <set >
+      <if test="liveCount != null" >
+        live_count = #{liveCount,jdbcType=INTEGER},
+      </if>
+      <if test="liveTimeCount != null" >
+        live_time_count = #{liveTimeCount,jdbcType=BIGINT},
+      </if>
+      <if test="fansCount != null" >
+        fans_count = #{fansCount,jdbcType=INTEGER},
+      </if>
+      <if test="fansCountInit != null" >
+        fans_count_init = #{fansCountInit,jdbcType=INTEGER},
+      </if>
+      <if test="eggCount != null" >
+        egg_count = #{eggCount,jdbcType=INTEGER},
+      </if>
+      <if test="commentCount != null" >
+        comment_count = #{commentCount,jdbcType=INTEGER},
+      </if>
+      <if test="likeCount != null" >
+        like_count = #{likeCount,jdbcType=INTEGER},
+      </if>
+      <if test="sellerCount != null" >
+        seller_count = #{sellerCount,jdbcType=INTEGER},
+      </if>
+      
+      <if test="fansCountInitWeek != null" >
+        fans_count_init_week = #{fansCountInitWeek,jdbcType=INTEGER},
+      </if>
+      <if test="fansCountWeek != null" >
+        fans_count_week = #{fansCountWeek,jdbcType=INTEGER},
+      </if>
+      <if test="fansCountInitMonth != null" >
+        fans_count_init_month = #{fansCountInitMonth,jdbcType=INTEGER},
+      </if>
+      <if test="fansCountMonth != null" >
+        fans_count_month = #{fansCountMonth,jdbcType=INTEGER},
+      </if>
+      <if test="eggCountWeek != null" >
+        egg_count_week = #{eggCountWeek,jdbcType=INTEGER},
+      </if>
+      <if test="eggCountMonth != null" >
+        egg_count_month = #{eggCountMonth,jdbcType=INTEGER},
+      </if>
+      
+      <if test="liveCountWeek != null" >
+        live_count_week = #{liveCountWeek,jdbcType=INTEGER},
+      </if>
+      <if test="liveCountMonth != null" >
+        live_count_month = #{liveCountMonth,jdbcType=INTEGER},
+      </if>
+      <if test="likeCountWeek != null" >
+        like_count_week = #{likeCountWeek,jdbcType=INTEGER},
+      </if>
+      <if test="likeCountMonth != null" >
+        like_count_month = #{likeCountMonth,jdbcType=INTEGER},
+      </if>
+      
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 统计新时尚大赛选手被关注、点赞信息。type 关注类型 1 关注 2 点赞 -->
+  <select id="getVstarLikeList" resultType="map" parameterType="map">
+  	SELECT
+		player_id AS playerId,
+		IFNULL(count(player_id),0) AS likeCount,
+		type
+	FROM
+		t_vstar_like
+	WHERE
+		is_cancel = '1'
+	AND type IS NOT NULL
+	<if test="startTime !=null and startTime != '' ">
+		<![CDATA[
+			and DATE_FORMAT(update_time,'%Y-%m-%d')>=DATE_FORMAT(#{startTime},'%Y-%m-%d')
+		]]>
+	</if>
+	<if test="endTime !=null and endTime != '' ">
+		<![CDATA[
+			and DATE_FORMAT(update_time,'%Y-%m-%d')<=DATE_FORMAT(#{endTime},'%Y-%m-%d')
+		]]>
+	</if>
+	<if test="playerIdList != null and playerIdList != '' ">
+		AND player_id IN 
+		<foreach collection="playerIdList" index="index" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</if>
+	GROUP BY player_id,type
+  </select>
+  
+  <!-- 统计新时尚大赛选手被评论信息 -->
+  <select id="getVstarCommentList" resultType="map" parameterType="map">
+  	SELECT
+		player_id AS playerId,
+		IFNULL(count(id), 0) commentCount
+	FROM
+		t_vstar_comment
+	WHERE
+		state = '0'
+	<if test="playerIdList != null and playerIdList != '' ">
+		AND player_id IN 
+		<foreach collection="playerIdList" index="index" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</if>
+	GROUP BY
+		player_id
+  </select>
+  
+  <!-- 获取赛区列表 -->
+  <select id="getDivisionList" resultType="map" parameterType="map">
+  	SELECT * from t_vstar_division
+  </select>
+  
+  <!-- 获取不同赛区主播获得鸟蛋排名 -->
+  <select id="getRankList" resultMap="vstarPlayerInfoMap" parameterType="com.xmniao.domain.vstar.TVstarPlayerInfo" >
+    select 
+    	<include refid="vstarPlayerInfo_column_list" />
+    from t_vstar_player_info
+    <where>
+    	<if test="divisionId != null and divisionId != '' ">
+    		divisionId = #{divisionId}
+    	</if>
+    </where>
+   	 ORDER BY egg_count DESC
+    <if test=" limit != -1 ">
+		 LIMIT 0,#{limit}
+	</if>
+  </select>
+  
+  <!-- 更新选手类型信息 -->
+  <update id="updatePlayerType" parameterType="map" >
+	UPDATE t_vstar_player_info info
+		SET info.player_type = #{playerType}
+	<where>
+		info.id IN
+		<if test="playerIdList !=null ">
+			<foreach collection="playerIdList" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</where>
+  </update>
+  
+  <!-- 鸟蛋降序排名 -->
+  <update id="updateEggRankNum">
+  	UPDATE t_vstar_player_info d SET d.egg_rank_num=
+	(SELECT rownum from (SELECT
+		@rownum :=@rownum + 1 AS rownum,
+		id
+	FROM
+		t_vstar_player_info,
+		(SELECT @rownum := 0) r
+	ORDER BY
+		(egg_count-egg_count_init) DESC, (live_count - live_count_init) DESC, like_count DESC ) b
+	WHERE b.id= d.id)
+  </update>
+  
+  <!-- 鸟蛋降序排名 (周榜)-->
+  <update id="updateEggRankNumWeek">
+  	UPDATE t_vstar_player_info d SET d.egg_rank_num_week=
+	(SELECT rownum from (SELECT
+		@rownum :=@rownum + 1 AS rownum,
+		id
+	FROM
+		t_vstar_player_info,
+		(SELECT @rownum := 0) r
+	ORDER BY
+		egg_count_week DESC, live_count_week DESC, like_count_week DESC ) b
+	WHERE b.id= d.id)
+  </update>
+  
+   <!-- 鸟蛋降序排名 (月榜)-->
+  <update id="updateEggRankNumMonth">
+  	UPDATE t_vstar_player_info d SET d.egg_rank_num_month=
+	(SELECT rownum from (SELECT
+		@rownum :=@rownum + 1 AS rownum,
+		id
+	FROM
+		t_vstar_player_info,
+		(SELECT @rownum := 0) r
+	ORDER BY
+		egg_count_month DESC,live_count_month DESC,like_count_month DESC) b
+	WHERE b.id= d.id)
+  </update>
+  
+  <!-- 粉丝降序排名 -->
+  <update id="updateFansRankNum">
+  	UPDATE t_vstar_player_info d SET d.fans_rank_num=
+	(SELECT rownum from (SELECT
+		@rownum :=@rownum + 1 AS rownum,
+		id
+	FROM
+		t_vstar_player_info,
+		(SELECT @rownum := 0) r
+	ORDER BY
+		(fans_count+fans_count_init) DESC,(egg_count-egg_count_init) DESC, (live_count - live_count_init) DESC, like_count DESC) b
+	WHERE b.id= d.id)
+  </update>
+  
+  <!-- 粉丝降序排名 (周榜)-->
+  <update id="updateFansRankNumWeek">
+  	UPDATE t_vstar_player_info d SET d.fans_rank_num_week=
+	(SELECT rownum from (SELECT
+		@rownum :=@rownum + 1 AS rownum,
+		id
+	FROM
+		t_vstar_player_info,
+		(SELECT @rownum := 0) r
+	ORDER BY
+		(fans_count_init_week+fans_count_week) DESC,egg_count_week DESC, live_count_week DESC, like_count_week DESC) b
+	WHERE b.id= d.id)
+  </update>
+  
+   <!-- 粉丝降序排名 (月榜)-->
+  <update id="updateFansRankNumMonth">
+  	UPDATE t_vstar_player_info d SET d.fans_rank_num_month=
+	(SELECT rownum from (SELECT
+		@rownum :=@rownum + 1 AS rownum,
+		id
+	FROM
+		t_vstar_player_info,
+		(SELECT @rownum := 0) r
+	ORDER BY
+		(fans_count_init_month+fans_count_month) DESC,egg_count_month DESC,live_count_month DESC,like_count_month DESC) b
+	WHERE b.id= d.id)
+  </update>
+  
+  <!-- 获取APP端用户被关注数 -->
+  <select id="getFansCountInitList" resultType="map" parameterType="map">
+  	SELECT
+		end_uid AS endUid,
+		IFNULL(count(end_uid),0) AS fansCountInit
+	FROM
+		t_live_focus
+	WHERE
+		end_uid IS NOT NULL
+	<if test="startTime !=null and startTime != '' ">
+		<![CDATA[
+			and DATE_FORMAT(create_time,'%Y-%m-%d')>=DATE_FORMAT(#{startTime},'%Y-%m-%d')
+		]]>
+	</if>
+	<if test="endTime !=null and endTime != '' ">
+		<![CDATA[
+			and DATE_FORMAT(create_time,'%Y-%m-%d')<=DATE_FORMAT(#{endTime},'%Y-%m-%d')
+		]]>
+	</if>	
+	<if test="uidList != null and uidList != '' ">
+		AND end_uid in
+		<foreach collection="uidList" index="index" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</if>
+	GROUP BY
+		end_uid
+  </select>
+  
+</mapper>

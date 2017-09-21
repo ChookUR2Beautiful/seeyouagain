@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.manor.ManorFlowerRelationMapper" >
+  <resultMap id="BaseResultMap" type="com.xmniao.domain.manor.ManorFlowerRelation" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="TINYINT" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="location" property="location" jdbcType="TINYINT" />
+    <result column="pid" property="pid" jdbcType="INTEGER" />
+    <result column="left_node" property="leftNode" jdbcType="INTEGER" />
+    <result column="right_node" property="rightNode" jdbcType="INTEGER" />
+    <result column="zid" property="zid" jdbcType="INTEGER" />
+    <result column="level" property="level" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="from_uid" property="fromUid" jdbcType="INTEGER" />
+    <result column="state" property="state" jdbcType="TINYINT" />
+    <result column="relation_chain" property="relationChain" javaType="String"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, type, end_time, location, pid, left_node, right_node, zid, level, uid, from_uid,
+    state,relation_chain
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_manor_flower_relation
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_manor_flower_relation
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.domain.manor.ManorFlowerRelation" >
+    insert into t_manor_flower_relation (id, type, end_time, 
+      location, pid, left_node, 
+      right_node, zid, level, 
+      uid, from_uid, state
+      )
+    values (#{id,jdbcType=INTEGER}, #{type,jdbcType=TINYINT}, #{endTime,jdbcType=TIMESTAMP}, 
+      #{location,jdbcType=TINYINT}, #{pid,jdbcType=INTEGER}, #{leftNode,jdbcType=INTEGER}, 
+      #{rightNode,jdbcType=INTEGER}, #{zid,jdbcType=INTEGER}, #{level,jdbcType=INTEGER}, 
+      #{uid,jdbcType=INTEGER}, #{fromUid,jdbcType=INTEGER}, #{state,jdbcType=TINYINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.domain.manor.ManorFlowerRelation" >
+    insert into t_manor_flower_relation
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="endTime != null" >
+        end_time,
+      </if>
+      <if test="location != null" >
+        location,
+      </if>
+      <if test="pid != null" >
+        pid,
+      </if>
+      <if test="leftNode != null" >
+        left_node,
+      </if>
+      <if test="rightNode != null" >
+        right_node,
+      </if>
+      <if test="zid != null" >
+        zid,
+      </if>
+      <if test="level != null" >
+        level,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="fromUid != null" >
+        from_uid,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+      <if test="relationChain != null">
+        relation_chain,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=TINYINT},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="location != null" >
+        #{location,jdbcType=TINYINT},
+      </if>
+      <if test="pid != null" >
+        #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="leftNode != null" >
+        #{leftNode,jdbcType=INTEGER},
+      </if>
+      <if test="rightNode != null" >
+        #{rightNode,jdbcType=INTEGER},
+      </if>
+      <if test="zid != null" >
+        #{zid,jdbcType=INTEGER},
+      </if>
+      <if test="level != null" >
+        #{level,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="fromUid != null" >
+        #{fromUid,jdbcType=INTEGER},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=TINYINT},
+      </if>
+      <if test="relationChain != null" >
+        #{relationChain}
+      </if>
+    </trim>
+  </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.domain.manor.ManorFlowerRelation" >
+    update t_manor_flower_relation
+    <set >
+      <if test="type != null" >
+        type = #{type,jdbcType=TINYINT},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="location != null" >
+        location = #{location,jdbcType=TINYINT},
+      </if>
+      <if test="pid != null" >
+        pid = #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="leftNode != null" >
+        left_node = #{leftNode,jdbcType=INTEGER},
+      </if>
+      <if test="rightNode != null" >
+        right_node = #{rightNode,jdbcType=INTEGER},
+      </if>
+      <if test="zid != null" >
+        zid = #{zid,jdbcType=INTEGER},
+      </if>
+      <if test="level != null" >
+        level = #{level,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="fromUid != null" >
+        from_uid = #{fromUid,jdbcType=INTEGER},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.domain.manor.ManorFlowerRelation" >
+    update t_manor_flower_relation
+    set type = #{type,jdbcType=TINYINT},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      location = #{location,jdbcType=TINYINT},
+      pid = #{pid,jdbcType=INTEGER},
+      left_node = #{leftNode,jdbcType=INTEGER},
+      right_node = #{rightNode,jdbcType=INTEGER},
+      zid = #{zid,jdbcType=INTEGER},
+      level = #{level,jdbcType=INTEGER},
+      uid = #{uid,jdbcType=INTEGER},
+      from_uid = #{fromUid,jdbcType=INTEGER},
+      state = #{state,jdbcType=TINYINT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <!--查询用户的花朵关系链初始节点-->
+  <select id="selectInitialNode" resultMap="BaseResultMap">
+    SELECT * FROM t_manor_flower_relation WHERE uid = #{uid}
+  </select>
+  <!--根据zid查询父节点-->
+  <select id="selectParentNodeByZid" resultMap="BaseResultMap">
+    SELECT *
+    FROM t_manor_flower_relation
+    WHERE zid = #{zid}
+    ORDER BY level DESC
+    limit 1
+  </select>
+
+  <!--查询关系链中的最底层层节点-->
+  <select id="selectFootNode" resultMap="BaseResultMap">
+    SELECT *
+    FROM t_manor_flower_relation
+    WHERE left_node > #{leftNode}
+    AND #{rightNode} > right_node
+    AND location = #{location}
+    ORDER BY level DESC
+    LIMIT 1
+  </select>
+  <select id="selectMaxId" resultType="Integer">
+    select max(id) from t_manor_flower_relation
+  </select>
+
+  <!--更新花朵左值-->
+  <update id="updateFlowerLeft">
+    UPDATE t_manor_flower_relation
+    SET left_node = left_node +2
+    WHERE left_node > #{level}
+  </update>
+
+  <!--更新花朵右值-->
+  <update id="updateFlowerRight">
+    UPDATE t_manor_flower_relation
+    SET right_node = right_node + 2
+    WHERE right_node > #{level}
+  </update>
+
+  <!--更新花苗状态-->
+  <update id="updateSeedling">
+    UPDATE t_manor_flower_relation
+    SET type = 1, end_time = #{endTime}
+    WHERE id in (<include refid="selectFromuidIds" /> )
+  </update>
+
+  <!--更新花朵时间-->
+  <update id="updateFlower">
+    UPDATE t_manor_flower_relation
+    SET end_time = date_add(end_time,INTERVAL #{days} day)
+    where id in (<include refid="selectFromuidIds" /> )
+  </update>
+
+  <!--更新zid-->
+  <update id="updateZid">
+    UPDATE t_manor_flower_relation
+    SET zid = #{target}
+    where zid = #{preZid}
+  </update>
+
+  <!--更新level和关系链-->
+  <update id="updateLevelAndChainByInitNode">
+    UPDATE t_manor_flower_relation
+      SET  relation_chain = concat(#{parentNode.relationChain},',',relation_chain),
+        level = level + #{levelDifference}
+    WHERE relation_chain REGEXP concat('^',#{initialNode.relationChain},'.*');
+  </update>
+
+  <!--查询花朵链中的 花朵id-->
+  <sql id="selectFromuidIds">
+    select t.id
+    FROM (
+           select u.id id FROM t_manor_flower_relation s
+             LEFT JOIN t_manor_flower_relation p ON s.pid = p.id
+             LEFT JOIN t_manor_flower_relation u on u.relation_chain REGEXP concat('^',s.relation_chain,'.*')
+           WHERE p.uid = #{fromUid} and s.location = #{operate.location} and u.from_uid = #{fromUid} and u.type = #{operate.flowerType}
+              and u.end_time > now() AND u.state = 0
+           ORDER BY u.end_time ASC
+           LIMIT #{operate.quantity}
+    ) as t
+  </sql>
+
+  <!-- 统计花朵/花苗数量-->
+  <select id="countFlowerByNode" resultType="com.xmniao.domain.manor.ManorFlowerCount">
+    SELECT
+      count(1) count,
+      #{node.location} location,
+      s.type type
+    FROM `t_manor_flower_relation` s
+      LEFT JOIN t_manor_flower_relation p on s.relation_chain  REGEXP CONCAT('^',p.relation_chain,'.*')
+    where s.state = 0 and s.end_time > now() and p.id = #{node.id}
+    GROUP BY s.type;
+  </select>
+
+<!--  根据pid 和 位置查询下级节点-->
+  <select id="selectByPidAndLocation" resultMap="BaseResultMap">
+    select * from t_manor_flower_relation
+    WHERE pid = #{pid} and location = #{location}
+  </select>
+
+  <!--查询子节点-->
+  <select id="selectSubNodes" resultMap="BaseResultMap">
+    SELECT  * FROM t_manor_flower_relation s LEFT JOIN t_manor_flower_relation p ON s.pid = p.id
+    WHERE p.uid = #{uid}
+  </select>
+
+  <!--查询子节点-->
+  <select id="selectSubNode" resultMap="BaseResultMap">
+    select s.*
+      from t_manor_flower_relation s
+      LEFT JOIN t_manor_flower_relation p ON s.pid = p.id
+    WHERE p.uid = #{uid}  and s.location = #{location};
+  </select>
+
+<!--  * 统计子节点 已种植花数量-->
+  <select id="countFlowerByNodeAndFromuid" resultType="java.lang.Long">
+    SELECT
+      count(1) count
+    FROM `t_manor_flower_relation` s
+      LEFT JOIN t_manor_flower_relation p on s.relation_chain  REGEXP CONCAT('^',p.relation_chain,'.*')
+    where p.id = #{subNode.id} and s.from_uid = #{fromUid}
+  </select>
+
+
+
+  <!--查询子节点下已枯萎的花朵-->
+  <select id="selectSprishedFlowers" resultMap="BaseResultMap">
+      SELECT sub.*
+    FROM t_manor_flower_relation init LEFT JOIN t_manor_flower_relation secon ON secon.pid = init.id
+      LEFT JOIN t_manor_flower_relation sub ON sub.relation_chain  REGEXP CONCAT('^',secon.relation_chain,'.*')
+    WHERE init.uid = #{uid} AND secon.location = #{location} AND sub.from_uid = #{uid}
+      AND sub.type = 1 AND sub.state = 0 AND now() > sub.end_time
+  </select>
+
+  <!--插入节点到树-->
+  <insert id="insertFlowerToBranch">
+    INSERT INTO t_manor_flower_relation(id,type,state,end_time,location,pid,zid,level,uid,from_uid,relation_chain)
+        SELECT #{flowerInfo.id},#{flowerInfo.type},#{flowerInfo.state},#{flowerInfo.endTime},
+                #{flowerInfo.location},#{flowerInfo.pid},#{flowerInfo.zid},#{flowerInfo.level},
+                #{flowerInfo.uid},#{flowerInfo.fromUid},
+
+                <choose>
+                    <!--不是初始节点或初始二级节点 不生成新的关系链 -->
+                    <when test="flowerInfo.uid == null and parentNode.uid == null">
+                        relation_chain
+                    </when>
+                    <!-- 拼接父级节点 + id 作为关系链 -->
+                    <otherwise>
+                        concat(relation_chain,',',lpad(#{flowerInfo.id},12,'0'))
+                    </otherwise>
+                </choose>
+
+        from t_manor_flower_relation where id = #{flowerInfo.pid}
+  </insert>
+
+<!--  * 根据uid 更新节点花类型-->
+  <update id="updateFlowerType">
+    UPDATE t_manor_flower_relation
+    SET type = #{flowerType}
+    WHERE uid = #{uid}
+  </update>
+
+</mapper>

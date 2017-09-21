@@ -1,0 +1,509 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xmniao.urs.dao.UrsDao">
+	
+	<update id="updateUrsInfo" parameterType="map">
+		UPDATE b_urs
+		SET
+		<trim suffixOverrides=",">
+			<if test="genussellerid != null">genussellerid=#{genussellerid},</if>
+			<if test="genusname != null and genusname != ''">genusname=#{genusname},</if>
+			<if test="jointid != null">jointid=#{jointid},</if>
+			<if test="corporate != null and corporate != ''">corporate=#{corporate},</if>
+			<if test="mike_type != null and mike_type != ''">mike_type=#{mike_type},</if>
+			<if test="attach_time != null">attach_time=#{attach_time},</if>
+		</trim>
+		WHERE uid=#{uid} AND genussellerid IS NULL
+	</update>
+	
+	<select id="getUrsAscription" parameterType="map" resultType="map">
+		SELECT uid,genussellerid, genusname,jointid,corporate 
+		FROM b_urs WHERE uid=#{uid}
+	</select>
+	
+	<!-- 根据uid查询用户信息 -->
+	<select id="getUrsByUid" resultType="map">
+		SELECT uid,phone,email,nname,genussellerid,genusname,jointid,corporate,DATE_FORMAT(attach_time,'%Y-%m-%d %H:%i:%s') attachTime,mb_ecno AS mbEcno
+		FROM b_urs
+		WHERE 
+		uid = #{uid}
+	</select>
+	
+	<!-- 根据phone查询用户信息 -->
+	<select id="getUrsByPhone" resultType="map">
+		SELECT uid,phone,email,nname,genussellerid,genusname,jointid,corporate,DATE_FORMAT(attach_time,'%Y-%m-%d %H:%i:%s') attachTime
+		FROM b_urs
+		WHERE 
+		phone = #{phone}
+	</select>
+	
+	<!-- 获取用户详细信息 -->
+	<select id="getUsrInfo" parameterType="map" resultType="map">
+		SELECT uid,avatar
+		FROM b_urs_info
+		WHERE 1=1
+		<if test="uid != null and uid !=''">
+		AND uid=#{uid}
+		</if>
+		<if test="phone != null and phone !=''">
+		AND phone = #{phone}
+		</if>
+	</select>
+	
+	<!-- 新增寻蜜鸟用户 -->
+  <insert id="addUrs" parameterType="map" 
+  			useGeneratedKeys="true" keyProperty="uid" keyColumn="uid">
+    insert into b_urs
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="uname != null" >
+        uname,
+      </if>
+      <if test="nname != null" >
+        nname,
+      </if>
+      <if test="password != null" >
+        password,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="sign != null" >
+        sign,
+      </if>
+      <if test="regtime != null" >
+        regtime,
+      </if>
+      <if test="regip != null" >
+        regip,
+      </if>
+      <if test="regcity != null" >
+        regcity,
+      </if>
+      <if test="regarea != null" >
+        regarea,
+      </if>
+      <if test="regzoneid != null" >
+        regzoneid,
+      </if>
+      <if test="lastloginip != null" >
+        lastloginip,
+      </if>
+      <if test="lastlogintime != null" >
+        lastlogintime,
+      </if>
+      <if test="ukeys != null" >
+        ukeys,
+      </if>
+      <if test="pkeys != null" >
+        pkeys,
+      </if>
+      <if test="pttype != null" >
+        pttype,
+      </if>
+      <if test="uin != null" >
+        uin,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="zphone != null" >
+        zphone,
+      </if>
+      <if test="zuid != null" >
+        zuid,
+      </if>
+      <if test="regtype != null" >
+        regtype,
+      </if>
+      <if test="channelId != null" >
+        channel_id,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="phoneArea != null" >
+        phone_area,
+      </if>
+      <if test="usertype != null" >
+        usertype,
+      </if>
+      <if test="mikeType != null" >
+        mike_type,
+      </if>
+      <if test="mikeTime != null" >
+        mike_time,
+      </if>
+      <if test="mikeStart != null" >
+        mike_start,
+      </if>
+      <if test="mikeEnd != null" >
+        mike_end,
+      </if>
+      <if test="zcTime != null" >
+        zc_time,
+      </if>
+      <if test="iosToken != null" >
+        ios_token,
+      </if>
+      <if test="genussellerid != null" >
+        genussellerid,
+      </if>
+      <if test="genusname != null" >
+        genusname,
+      </if>
+      <if test="jointid != null" >
+        jointid,
+      </if>
+      <if test="corporate != null" >
+        corporate,
+      </if>
+      <if test="attachTime != null" >
+        attach_time,
+      </if>
+      <if test="isVirtual != null" >
+        is_virtual,
+      </if>
+      <if test="phoneType != null" >
+        phone_type,
+      </if>
+      <if test="appVersion != null" >
+        app_version,
+      </if>
+      <if test="appSeries != null" >
+        app_series,
+      </if>
+      <if test="imei != null" >
+        imei,
+      </if>
+      <if test="marks != null" >
+        marks,
+      </if>
+      <if test="unionid != null" >
+        unionid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="uname != null" >
+        #{uname,jdbcType=VARCHAR},
+      </if>
+      <if test="nname != null" >
+        #{nname,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="sign != null" >
+        #{sign,jdbcType=VARCHAR},
+      </if>
+      <if test="regtime != null" >
+        #{regtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="regip != null" >
+        #{regip,jdbcType=VARCHAR},
+      </if>
+      <if test="regcity != null" >
+        #{regcity,jdbcType=INTEGER},
+      </if>
+      <if test="regarea != null" >
+        #{regarea,jdbcType=INTEGER},
+      </if>
+      <if test="regzoneid != null" >
+        #{regzoneid,jdbcType=INTEGER},
+      </if>
+      <if test="lastloginip != null" >
+        #{lastloginip,jdbcType=VARCHAR},
+      </if>
+      <if test="lastlogintime != null" >
+        #{lastlogintime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="ukeys != null" >
+        #{ukeys,jdbcType=VARCHAR},
+      </if>
+      <if test="pkeys != null" >
+        #{pkeys,jdbcType=VARCHAR},
+      </if>
+      <if test="pttype != null" >
+        #{pttype,jdbcType=VARCHAR},
+      </if>
+      <if test="uin != null" >
+        #{uin,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="zphone != null" >
+        #{zphone,jdbcType=VARCHAR},
+      </if>
+      <if test="zuid != null" >
+        #{zuid,jdbcType=VARCHAR},
+      </if>
+      <if test="regtype != null" >
+        #{regtype,jdbcType=INTEGER},
+      </if>
+      <if test="channelId != null" >
+        #{channelId,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="phoneArea != null" >
+        #{phoneArea,jdbcType=VARCHAR},
+      </if>
+      <if test="usertype != null" >
+        #{usertype,jdbcType=INTEGER},
+      </if>
+      <if test="mikeType != null" >
+        #{mikeType,jdbcType=TINYINT},
+      </if>
+      <if test="mikeTime != null" >
+        #{mikeTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="mikeStart != null" >
+        #{mikeStart,jdbcType=DATE},
+      </if>
+      <if test="mikeEnd != null" >
+        #{mikeEnd,jdbcType=DATE},
+      </if>
+      <if test="zcTime != null" >
+        #{zcTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="iosToken != null" >
+        #{iosToken,jdbcType=VARCHAR},
+      </if>
+      <if test="genussellerid != null" >
+        #{genussellerid,jdbcType=INTEGER},
+      </if>
+      <if test="genusname != null" >
+        #{genusname,jdbcType=VARCHAR},
+      </if>
+      <if test="jointid != null" >
+        #{jointid,jdbcType=INTEGER},
+      </if>
+      <if test="corporate != null" >
+        #{corporate,jdbcType=VARCHAR},
+      </if>
+      <if test="attachTime != null" >
+        #{attachTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isVirtual != null" >
+        #{isVirtual,jdbcType=INTEGER},
+      </if>
+      <if test="phoneType != null" >
+        #{phoneType,jdbcType=BIT},
+      </if>
+      <if test="appVersion != null" >
+        #{appVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="appSeries != null" >
+        #{appSeries,jdbcType=INTEGER},
+      </if>
+      <if test="imei != null" >
+        #{imei,jdbcType=VARCHAR},
+      </if>
+      <if test="marks != null" >
+        #{marks,jdbcType=TINYINT},
+      </if>
+      <if test="unionid != null" >
+        #{unionid,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <!-- 向b_urs_info插入信息 -->
+  <insert id="insertBursInfo" parameterType="map">
+    insert into b_urs_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="uname != null" >
+        uname,
+      </if>
+      <if test="mobilephone != null" >
+        mobilephone,
+      </if>
+      <if test="model != null" >
+        model,
+      </if>
+      <if test="resolution != null" >
+        resolution,
+      </if>
+      <if test="lang != null" >
+        lang,
+      </if>
+      <if test="brand != null" >
+        brand,
+      </if>
+      <if test="lastBrand != null" >
+        last_brand,
+      </if>
+      <if test="lastModel != null" >
+        last_model,
+      </if>
+      <if test="networktype != null" >
+        networktype,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="avatar != null" >
+        avatar,
+      </if>
+      <if test="qq != null" >
+        qq,
+      </if>
+      <if test="sex != null" >
+        sex,
+      </if>
+      <if test="birthday != null" >
+        birthday,
+      </if>
+      <if test="idtype != null" >
+        idtype,
+      </if>
+      <if test="idcard != null" >
+        idcard,
+      </if>
+      <if test="referrerMemberId != null" >
+        referrer_member_id,
+      </if>
+      <if test="referrerName != null" >
+        referrer_name,
+      </if>
+      <if test="referrerZcId != null" >
+        referrer_zc_id,
+      </if>
+      <if test="province != null" >
+        province,
+      </if>
+      <if test="city != null" >
+        city,
+      </if>
+      <if test="region != null" >
+        region,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="zcTime != null" >
+        zc_time,
+      </if>
+      <if test="interest != null" >
+        interest,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="uname != null" >
+        #{uname,jdbcType=VARCHAR},
+      </if>
+      <if test="mobilephone != null" >
+        #{mobilephone,jdbcType=VARCHAR},
+      </if>
+      <if test="model != null" >
+        #{model,jdbcType=VARCHAR},
+      </if>
+      <if test="resolution != null" >
+        #{resolution,jdbcType=VARCHAR},
+      </if>
+      <if test="lang != null" >
+        #{lang,jdbcType=VARCHAR},
+      </if>
+      <if test="brand != null" >
+        #{brand,jdbcType=VARCHAR},
+      </if>
+      <if test="lastBrand != null" >
+        #{lastBrand,jdbcType=VARCHAR},
+      </if>
+      <if test="lastModel != null" >
+        #{lastModel,jdbcType=VARCHAR},
+      </if>
+      <if test="networktype != null" >
+        #{networktype,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="avatar != null" >
+        #{avatar,jdbcType=VARCHAR},
+      </if>
+      <if test="qq != null" >
+        #{qq,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="birthday != null" >
+        #{birthday,jdbcType=VARCHAR},
+      </if>
+      <if test="idtype != null" >
+        #{idtype,jdbcType=INTEGER},
+      </if>
+      <if test="idcard != null" >
+        #{idcard,jdbcType=VARCHAR},
+      </if>
+      <if test="referrerMemberId != null" >
+        #{referrerMemberId,jdbcType=VARCHAR},
+      </if>
+      <if test="referrerName != null" >
+        #{referrerName,jdbcType=VARCHAR},
+      </if>
+      <if test="referrerZcId != null" >
+        #{referrerZcId,jdbcType=INTEGER},
+      </if>
+      <if test="province != null" >
+        #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null" >
+        #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="region != null" >
+        #{region,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="zcTime != null" >
+        #{zcTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="interest != null" >
+        #{interest,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <!-- 根据uid查询主播id -->
+  <select id="getLiveId" resultType="int">
+  SELECT id
+  FROM b_liver
+  WHERE uid = #{0}
+  </select>
+  
+    <!-- 根据uid查询主播id -->
+  <select id="getAnchorUidList" resultType="int" parameterType="map">
+  SELECT uid
+  FROM b_liver
+  WHERE utype=1
+  <if test="uid!=null">AND uid=#{uid}</if>
+  </select>
+  
+  <select id="getUserInfo" resultType="map">
+  	SELECT CONCAT(IFNULL(u.nname,''),',',IFNULL(u.genussellerid,''),',',IFNULL(i.avatar,''),',',IFNULL(u.phone,''),',',IFNULL(u.attach_time,' ')) str
+	FROM b_urs u
+	LEFT JOIN b_urs_info i ON u.uid = i.uid
+	WHERE u.uid = #{0}
+  </select>
+</mapper>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.experienceOfficer.TExperienceOfficerOrderDao" >
+
+  <sql id="Base_Column_List" >
+    id, order_no as orderNo, uid, phone, nname, is_free, nums, days, amount, pay_type as payType, payid, live_coin as liveCoin, 
+    wallet_amount as walletAmount, samount, pay_state as payState, create_time as createTime, pay_time as payTime, description, version
+  </sql>
+  
+  
+  <select id="selectByOrderNo" resultType="map" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_experienceofficer_order
+    where order_no = #{orderNo,jdbcType=VARCHAR}
+  </select>
+  
+  <update id="update" parameterType="map" >
+    update t_experienceofficer_order
+    <set >
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="nname != null" >
+        nname = #{nname,jdbcType=VARCHAR},
+      </if>
+      <if test="isFree != null" >
+        is_free = #{isFree,jdbcType=INTEGER},
+      </if>
+      <if test="nums != null" >
+        nums = #{nums,jdbcType=INTEGER},
+      </if>
+      <if test="days != null" >
+        days = #{days,jdbcType=INTEGER},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="payType != null" >
+        pay_type = #{payType,jdbcType=VARCHAR},
+      </if>
+      <if test="payid != null" >
+        payid = #{payid,jdbcType=VARCHAR},
+      </if>
+      <if test="liveCoin != null" >
+        live_coin = #{liveCoin,jdbcType=DECIMAL},
+      </if>
+      <if test="walletAmount != null" >
+        wallet_amount = #{walletAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="samount != null" >
+        samount = #{samount,jdbcType=DECIMAL},
+      </if>
+      <if test="payState != null" >
+        pay_state = #{payState,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="payTime != null" >
+        pay_time = #{payTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+        version = version+1,
+    </set>
+    where order_no = #{orderNo}
+		AND version = #{version}
+  </update>
+  
+</mapper>

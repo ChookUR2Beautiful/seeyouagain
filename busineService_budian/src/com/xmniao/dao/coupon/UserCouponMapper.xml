@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.coupon.UserCouponDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.domain.coupon.UserCoupon" >
+    <id column="cuid" property="cuid" jdbcType="INTEGER" />
+    <result column="cid" property="cid" jdbcType="INTEGER" />
+    <result column="serial_no" property="serialNo" jdbcType="VARCHAR" />
+    <result column="denomination" property="denomination" jdbcType="DECIMAL" />
+    <result column="get_way" property="getWay" jdbcType="INTEGER" />
+    <result column="get_time" property="getTime" jdbcType="TIMESTAMP" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="use_status" property="useStatus" jdbcType="INTEGER" />
+    <result column="use_money" property="useMoney" jdbcType="DECIMAL" />
+    <result column="start_date" property="startDate" jdbcType="TIMESTAMP" />
+    <result column="end_date" property="endDate" jdbcType="TIMESTAMP" />
+    <result column="lock_time" property="lockTime" jdbcType="TIMESTAMP" />
+    <result column="use_time" property="useTime" jdbcType="TIMESTAMP" />
+    <result column="bid" property="bid" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    cuid, cid, serial_no, denomination, get_way, get_time, uid, phone, use_status, use_money, 
+    start_date, end_date, lock_time, use_time, bid
+  </sql>
+  
+  <!-- 统计用户获取的优惠券总数 -->
+  <select id="getUserCouponCout" parameterType="com.xmniao.domain.coupon.UserCoupon" resultType="int">
+  	SELECT COUNT(1) 
+  	FROM t_user_coupon
+  	WHERE 1=1
+  	<if test="cid!=null">AND cid=#{cid}</if>
+  	<if test="uid!=null">AND uid=#{uid}</if>
+  </select>
+  
+  <!-- 发送用户优惠券 -->
+  <insert id="addUserCoupon" parameterType="com.xmniao.domain.coupon.UserCoupon">
+  	INSERT INTO t_user_coupon
+  	<trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="cuid != null" >
+        cuid,
+      </if>
+      <if test="cid != null" >
+        cid,
+      </if>
+      <if test="serialNo != null" >
+        serial_no,
+      </if>
+      <if test="denomination != null" >
+        denomination,
+      </if>
+      <if test="getWay != null" >
+        get_way,
+      </if>
+      <if test="getTime != null" >
+        get_time,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="useStatus != null" >
+        use_status,
+      </if>
+      <if test="useMoney != null" >
+        use_money,
+      </if>
+      <if test="startDate != null" >
+        start_date,
+      </if>
+      <if test="endDate != null" >
+        end_date,
+      </if>
+      <if test="lockTime != null" >
+        lock_time,
+      </if>
+      <if test="useTime != null" >
+        use_time,
+      </if>
+      <if test="bid != null" >
+        bid,
+      </if>
+    </trim>
+    <trim prefix="VALUES (" suffix=")" suffixOverrides="," >
+      <if test="cuid != null" >
+        #{cuid,jdbcType=INTEGER},
+      </if>
+      <if test="cid != null" >
+        #{cid,jdbcType=INTEGER},
+      </if>
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="denomination != null" >
+        #{denomination,jdbcType=DECIMAL},
+      </if>
+      <if test="getWay != null" >
+        #{getWay,jdbcType=INTEGER},
+      </if>
+      <if test="getTime != null" >
+        #{getTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="useStatus != null" >
+        #{useStatus,jdbcType=INTEGER},
+      </if>
+      <if test="useMoney != null" >
+        #{useMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="startDate != null" >
+        #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lockTime != null" >
+        #{lockTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="useTime != null" >
+        #{useTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="bid != null" >
+        #{bid,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  
+  <!-- 批量发送用户优惠卷 -->
+  <insert id="addUserCouponList" parameterType="java.util.List">
+  	insert into t_user_coupon
+  	(cid,	  denomination,	  get_way,
+	  get_time,	  uid,	  phone,
+	  use_status,	  use_money,
+	  start_date,	  end_date,
+	  bid) VALUES 
+  	<foreach collection="list" item="item" index="index" separator="," >
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	        #{item.cid,jdbcType=INTEGER},
+	        #{item.denomination,jdbcType=DECIMAL},
+	        #{item.getWay,jdbcType=INTEGER},
+	        #{item.getTime,jdbcType=TIMESTAMP},
+	        #{item.uid,jdbcType=INTEGER},
+	        #{item.phone,jdbcType=VARCHAR},
+	        #{item.useStatus,jdbcType=INTEGER},
+	        #{item.useMoney,jdbcType=DECIMAL},
+	        #{item.startDate,jdbcType=TIMESTAMP},
+	        #{item.endDate,jdbcType=TIMESTAMP},
+	        #{item.bid,jdbcType=BIGINT},
+	    </trim>
+  	</foreach>
+  </insert>
+
+	<!-- 获取用户使用的优惠券信息-->
+	<select id="getUserCouponInfo" parameterType="string" resultMap="BaseResultMap">
+	SELECT uc.* 
+	FROM t_user_coupon uc, (SELECT * FROM t_coupon_relation WHERE bid=#{bid} AND ctype=2) cr 
+	WHERE uc.cuid=cr.cdid
+	</select>
+	
+	<select id="getUserCouponInfo2" parameterType="com.xmniao.domain.coupon.UserCoupon" resultMap="BaseResultMap">
+	SELECT uc.* 
+	FROM t_user_coupon uc 
+	WHERE uc.cuid=#{cuid}
+	</select>
+	
+	<!-- 修改用户使用的优惠券信息-->
+	<update id="modifyUserCoupon" parameterType="com.xmniao.domain.coupon.UserCoupon">
+	UPDATE t_user_coupon 
+	SET use_status=#{useStatus},lock_time=#{lockTime},use_time=#{useTime}
+	WHERE cuid=#{cuid}
+	</update>
+	
+	<!-- 获取订单中用户所获取的所有优惠券 -->
+	<select id="getUserCouponList" resultMap="BaseResultMap">
+	SELECT * FROM t_user_coupon WHERE bid=#{bid}
+	</select>
+	
+	<!-- 删除订单中所赠送的优惠券 -->
+	<select id="delectUserCoupon">
+	DELETE FROM t_user_coupon WHERE cuid=#{cuid}
+	</select>
+</mapper>

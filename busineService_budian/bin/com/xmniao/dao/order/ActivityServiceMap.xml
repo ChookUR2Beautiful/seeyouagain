@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 活动服务模块DAO层的mybatis映射SQL脚本 -->
+<mapper namespace="com.xmniao.dao.order.ActivityServiceDao">
+
+	<!-- 根据订单号获取手机订单的所有信息 -->
+	<select id="queryMobileBillAll" parameterType="java.lang.String" resultType="map">
+		SELECT bid,189_code,pcoler,pmodel,pnum,check_phone,get_user,get_card_id,get_user_phone,
+		province_id,province,city_id,city,address,pstatus,DATE_FORMAT(ptime,'%Y-%m-%d %H:%i:%s') as ptime,
+		uid,uphone,DATE_FORMAT(ftime,'%Y-%m-%d %H:%i:%s') as ftime,payid,number
+		FROM t_phone_bill WHERE bid=#{bid}
+	</select>
+
+	<!-- 活动订单更新接口 -->
+	<update id="mdyMobileActivitiesInfos" parameterType="map">
+		UPDATE  t_phone_bill
+		SET     pstatus=1,
+				ptime=#{ptime},
+				payid=#{payid},
+				number=#{number}
+		WHERE   bid=#{bid}
+	</update>
+	
+	<!-- 查询打赏活动业务 -->
+	<select id="queryRewardActtyInfos" resultType="com.xmniao.domain.activity.RewardActivityBean">
+	SELECT  p.order_code AS orderCode,p.sellerid AS sellerId,p.sellername AS sellerName,
+			b.consume_jointid AS jointId,b.consume_corporate AS corporate,b.area AS areaId,p.uid AS uid,
+			p.u_phone AS uPhone,p.u_nname AS uName,p.seller_id AS waiterId,p.s_phone AS sPhone,
+			p.s_nname AS sName,p.tip AS tip,p.status AS tipStatus 
+	FROM    t_tip AS p,t_bill AS b WHERE p.STATUS=0 AND b.bid=p.order_code
+	</select>
+	
+	<!-- 更新打赏活动记录状态 -->
+	<update id="modifyRewardActtyInfos" parameterType="com.xmniao.domain.activity.RewardActivityBean">
+	  UPDATE t_tip SET STATUS=1,sdate=#{sdate} WHERE order_code=#{orderCode}
+	</update>
+</mapper>

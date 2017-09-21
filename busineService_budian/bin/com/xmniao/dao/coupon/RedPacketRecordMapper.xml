@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.coupon.RedPacketRecordDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.domain.coupon.RedPacketRecord" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="redpacket_id" property="redpacketId" jdbcType="BIGINT" />
+    <result column="denomination" property="denomination" jdbcType="DECIMAL" />
+    <result column="record_time" property="recordTime" jdbcType="TIMESTAMP" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="is_new_user" property="isNewUser" jdbcType="INTEGER" />
+    <result column="is_binding" property="isBinding" jdbcType="INTEGER" />
+    <result column="is_share" property="isShare" jdbcType="INTEGER" />
+    <result column="sec_share_uid" property="secShareUid" jdbcType="BIGINT" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, redpacket_id, denomination, record_time, user_id, phone, is_new_user, is_binding, 
+    is_share, sec_share_uid, sellerid,order_no,status
+  </sql>
+  
+
+  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.xmniao.domain.coupon.RedPacketRecord" >
+    insert into t_redpacket_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="redpacketId != null" >
+        redpacket_id,
+      </if>
+      <if test="denomination != null" >
+        denomination,
+      </if>
+      <if test="recordTime != null" >
+        record_time,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="isNewUser != null" >
+        is_new_user,
+      </if>
+      <if test="isBinding != null" >
+        is_binding,
+      </if>
+      <if test="isShare != null" >
+        is_share,
+      </if>
+      <if test="secShareUid != null" >
+        sec_share_uid,
+      </if>
+      <if test="sellerid != null" >
+        sellerid,
+      </if>
+      <if test="orderNo != null" >
+        order_no,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="redpacketId != null" >
+        #{redpacketId,jdbcType=BIGINT},
+      </if>
+      <if test="denomination != null" >
+        #{denomination,jdbcType=DECIMAL},
+      </if>
+      <if test="recordTime != null" >
+        #{recordTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="isNewUser != null" >
+        #{isNewUser,jdbcType=INTEGER},
+      </if>
+      <if test="isBinding != null" >
+        #{isBinding,jdbcType=INTEGER},
+      </if>
+      <if test="isShare != null" >
+        #{isShare,jdbcType=INTEGER},
+      </if>
+      <if test="secShareUid != null" >
+        #{secShareUid,jdbcType=BIGINT},
+      </if>
+      <if test="sellerid != null" >
+        #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.domain.coupon.RedPacketRecord" >
+    update t_redpacket_record
+    <set >
+      <if test="redpacketId != null" >
+        redpacket_id = #{redpacketId,jdbcType=BIGINT},
+      </if>
+      <if test="denomination != null" >
+        denomination = #{denomination,jdbcType=DECIMAL},
+      </if>
+      <if test="recordTime != null" >
+        record_time = #{recordTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="isNewUser != null" >
+        is_new_user = #{isNewUser,jdbcType=INTEGER},
+      </if>
+      <if test="isBinding != null" >
+        is_binding = #{isBinding,jdbcType=INTEGER},
+      </if>
+      <if test="isShare != null" >
+        is_share = #{isShare,jdbcType=INTEGER},
+      </if>
+      <if test="secShareUid != null" >
+        sec_share_uid = #{secShareUid,jdbcType=BIGINT},
+      </if>
+      <if test="sellerid != null" >
+        sellerid = #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="orderNo != null" >
+        order_no = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  
+  <select id="getRedPacketRecord" parameterType="com.xmniao.domain.coupon.RedPacketRecord"  
+  		resultType="com.xmniao.domain.coupon.RedPacketRecord" >
+    SELECT 
+   		<include refid="Base_Column_List" />
+    FROM t_redpacket_record
+    WHERE 1=1 
+    	<if test="orderNo!=null">AND order_no=#{orderNo} </if>
+	    <if test="userId!=null">AND user_id=#{userId}</if>
+	    <if test="redpacketId!=null">AND redpacket_id=#{redpacketId}</if>
+	    <if test="id!=null">AND id=#{id}</if>
+  </select>
+  
+    <select id="getRedPacketRecordList" parameterType="com.xmniao.domain.coupon.RedPacketRecord"  resultType="com.xmniao.domain.coupon.RedPacketRecord" >
+    SELECT 
+   		<include refid="Base_Column_List" />
+    FROM t_redpacket_record
+    WHERE order_no=#{orderNo}
+	    AND user_id=#{userId}
+	    AND redpacket_id=#{redpacketId}
+  </select>
+</mapper>

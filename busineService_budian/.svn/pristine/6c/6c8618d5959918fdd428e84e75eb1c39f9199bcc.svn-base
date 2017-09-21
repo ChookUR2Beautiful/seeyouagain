@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.coupon.RedPacketDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.domain.coupon.RedPacket" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="redpacket_type" property="redpacketType" jdbcType="INTEGER" />
+    <result column="amount_type" property="amountType" jdbcType="INTEGER" />
+    <result column="redpacket_name" property="redpacketName" jdbcType="VARCHAR" />
+    <result column="begin_date" property="beginDate" jdbcType="DATE" />
+    <result column="end_date" property="endDate" jdbcType="DATE" />
+    <result column="begin_time" property="beginTime" jdbcType="VARCHAR" />
+    <result column="end_time" property="endTime" jdbcType="VARCHAR" />
+    <result column="total_amount" property="totalAmount" jdbcType="DECIMAL" />
+    <result column="random_amount_mini" property="randomAmountMini" jdbcType="DECIMAL" />
+    <result column="random_amount_max" property="randomAmountMax" jdbcType="DECIMAL" />
+    <result column="redpacket_number" property="redpacketNumber" jdbcType="INTEGER" />
+    <result column="single_amount" property="singleAmount" jdbcType="DECIMAL" />
+    <result column="new_user_amount" property="newUserAmount" jdbcType="DECIMAL" />
+    <result column="old_user_amount" property="oldUserAmount" jdbcType="DECIMAL" />
+    <result column="share_awards_proportion" property="shareAwardsProportion" jdbcType="VARCHAR" />
+    <result column="longitude" property="longitude" jdbcType="VARCHAR" />
+    <result column="latitude" property="latitude" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="receive_condition" property="receiveCondition" jdbcType="DECIMAL" />
+    <result column="deductible_amount" property="deductibleAmount" jdbcType="DECIMAL" />
+    <result column="views" property="views" jdbcType="BIGINT" />
+    <result column="real_spending" property="realSpending" jdbcType="DECIMAL" />
+    <result column="pay_status" property="payStatus" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="pay_type" property="payType" jdbcType="INTEGER" />
+    <result column="balance" property="balance" jdbcType="DECIMAL" />
+    <result column="commision" property="commision" jdbcType="DECIMAL" />
+    <result column="zbalance" property="zbalance" jdbcType="DECIMAL" />
+    <result column="integral" property="integral" jdbcType="DECIMAL" />
+    <result column="profit" property="profit" jdbcType="DECIMAL" />
+    <result column="payid" property="payid" jdbcType="VARCHAR" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="third_serial" property="thirdSerial" jdbcType="VARCHAR" />
+    <result column="get_redpacket" property="getRedpacket" jdbcType="DECIMAL" />
+    <result column="get_redpacket_number" property="getRedpacketNumber" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, sellerid, redpacket_type, amount_type, redpacket_name, begin_date, end_date, 
+    begin_time, end_time, total_amount, random_amount_mini, random_amount_max, redpacket_number, 
+    single_amount, new_user_amount, old_user_amount, share_awards_proportion, longitude, 
+    latitude, address, receive_condition, deductible_amount, views, real_spending, pay_status, 
+    status, create_time, pay_type, balance, commision, zbalance, integral, profit, payid, 
+    order_no, third_serial, get_redpacket, get_redpacket_number
+  </sql>
+
+    
+  <select id="getRedPacketList" resultMap="BaseResultMap" parameterType="com.xmniao.domain.coupon.RedPacket" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_redpacket
+    where 1=1
+    <if test="id!=null">AND id=#{id}</if>
+    <if test="sellerid != null">AND sellerid=#{sellerid}</if>
+    <if test="redpacketType !=null">AND redpacket_type=#{redpacketType}</if>
+    <if test="amountType!=null">AND amount_type=#{amountType}</if>
+    <if test="payStatus!=null">AND pay_status=#{payStatus}</if>
+    <if test="status!=null">AND status=#{status}</if>
+    <if test="hasSurplus!=null and hasSurplus==true">AND redpacket_number &gt; get_redpacket_number</if>
+    <if test="hasSurplus!=null and hasSurplus==false">AND redpacket_number &lt;= get_redpacket_number</if>
+    <if test="nowDate != null">
+    	AND DATE_FORMAT(#{nowDate},'%Y-%m-%d') BETWEEN DATE_FORMAT(begin_date,'%Y-%m-%d') AND DATE_FORMAT(end_date,'%Y-%m-%d') 
+    	AND TIME_FORMAT(#{nowDate},'%H:%i') BETWEEN TIME_FORMAT(begin_time,'%H:%i') AND TIME_FORMAT(end_time,'%H:%i') 
+    </if>
+    <if test="receiveCondition!=null">AND receive_condition&lt;=#{receiveCondition}</if>
+    <if test="beginDate!=null">AND begin_date &lt;= #{beginDate}</if>
+    <if test="endDate!=null">AND end_date &gt;=  #{endDate}</if>
+    <if test="beginTime!=null">AND begin_date &lt;= #{beginTime}</if>
+    <if test="endTime!=null">AND end_time &gt;= #{endTime}</if>  
+      
+  </select>
+  
+    <select id="getRecommendRedPacketList" resultMap="BaseResultMap" parameterType="com.xmniao.domain.coupon.RedPacket" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_redpacket
+    where 1=1
+    <if test="id!=null">AND id=#{id}</if>
+    <if test="sellerid != null">AND sellerid=#{sellerid}</if>
+    <if test="redpacketType !=null">AND redpacket_type=#{redpacketType}</if>
+    <if test="amountType!=null">AND amount_type=#{amountType}</if>
+    <if test="payStatus!=null">AND pay_status=#{payStatus}</if>
+    <if test="status!=null">AND status=#{status}</if>
+    <if test="hasSurplus!=null and hasSurplus==true">AND total_amount &gt; get_redpacket</if>
+    <if test="hasSurplus!=null and hasSurplus==false">AND total_amount &lt;= get_redpacket</if>
+    <if test="nowDate != null">
+    	AND DATE_FORMAT(#{nowDate},'%Y-%m-%d') BETWEEN DATE_FORMAT(begin_date,'%Y-%m-%d') AND DATE_FORMAT(end_date,'%Y-%m-%d') 
+    	AND TIME_FORMAT(#{nowDate},'%H:%i') BETWEEN TIME_FORMAT(begin_time,'%H:%i') AND TIME_FORMAT(end_time,'%H:%i') 
+    </if>
+    <if test="receiveCondition!=null">AND receive_condition&lt;=#{receiveCondition}</if>
+    <if test="beginDate!=null">AND begin_date &lt;= #{beginDate}</if>
+    <if test="endDate!=null">AND end_date &gt;=  #{endDate}</if>
+    <if test="beginTime!=null">AND begin_date &lt;= #{beginTime}</if>
+    <if test="endTime!=null">AND end_time &gt;= #{endTime}</if>  
+      
+  </select>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.domain.coupon.RedPacket" >
+    update t_redpacket
+    <set >
+      <if test="sellerid != null" >
+        sellerid = #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="redpacketType != null" >
+        redpacket_type = #{redpacketType,jdbcType=INTEGER},
+      </if>
+      <if test="amountType != null" >
+        amount_type = #{amountType,jdbcType=INTEGER},
+      </if>
+      <if test="redpacketName != null" >
+        redpacket_name = #{redpacketName,jdbcType=VARCHAR},
+      </if>
+      <if test="beginDate != null" >
+        begin_date = #{beginDate,jdbcType=DATE},
+      </if>
+      <if test="endDate != null" >
+        end_date = #{endDate,jdbcType=DATE},
+      </if>
+      <if test="beginTime != null" >
+        begin_time = #{beginTime,jdbcType=VARCHAR},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=VARCHAR},
+      </if>
+      <if test="totalAmount != null" >
+        total_amount = #{totalAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="randomAmountMini != null" >
+        random_amount_mini = #{randomAmountMini,jdbcType=DECIMAL},
+      </if>
+      <if test="randomAmountMax != null" >
+        random_amount_max = #{randomAmountMax,jdbcType=DECIMAL},
+      </if>
+      <if test="redpacketNumber != null" >
+        redpacket_number = #{redpacketNumber,jdbcType=INTEGER},
+      </if>
+      <if test="singleAmount != null" >
+        single_amount = #{singleAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="newUserAmount != null" >
+        new_user_amount = #{newUserAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="oldUserAmount != null" >
+        old_user_amount = #{oldUserAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="shareAwardsProportion != null" >
+        share_awards_proportion = #{shareAwardsProportion,jdbcType=VARCHAR},
+      </if>
+      <if test="longitude != null" >
+        longitude = #{longitude,jdbcType=VARCHAR},
+      </if>
+      <if test="latitude != null" >
+        latitude = #{latitude,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="receiveCondition != null" >
+        receive_condition = #{receiveCondition,jdbcType=VARCHAR},
+      </if>
+      <if test="deductibleAmount != null" >
+        deductible_amount = #{deductibleAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="views != null" >
+        views = #{views,jdbcType=BIGINT},
+      </if>
+      <if test="realSpending != null" >
+        real_spending = #{realSpending,jdbcType=DECIMAL},
+      </if>
+      <if test="payStatus != null" >
+        pay_status = #{payStatus,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="payType != null" >
+        pay_type = #{payType,jdbcType=INTEGER},
+      </if>
+      <if test="balance != null" >
+        balance = #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="commision != null" >
+        commision = #{commision,jdbcType=DECIMAL},
+      </if>
+      <if test="zbalance != null" >
+        zbalance = #{zbalance,jdbcType=DECIMAL},
+      </if>
+      <if test="integral != null" >
+        integral = #{integral,jdbcType=DECIMAL},
+      </if>
+      <if test="profit != null" >
+        profit = #{profit,jdbcType=DECIMAL},
+      </if>
+      <if test="payid != null" >
+        payid = #{payid,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        order_no = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="thirdSerial != null" >
+        third_serial = #{thirdSerial,jdbcType=VARCHAR},
+      </if>
+      <if test="getRedpacket != null" >
+        get_redpacket = #{getRedpacket,jdbcType=DECIMAL},
+      </if>
+      <if test="getRedpacketNumber != null" >
+        get_redpacket_number = #{getRedpacketNumber,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <update id="sendRedPacket" parameterType="java.lang.Long">
+ 	UPDATE t_redpacket 
+	SET 
+		get_redpacket=get_redpacket+single_amount,
+		get_redpacket_number=get_redpacket_number+1,
+		version_lock=version_lock+1
+	WHERE 
+		id=#{id} AND redpacket_type=2 
+		AND get_redpacket_number&lt;redpacket_number
+  </update>
+  
+  <update id="sendRecommendRedPacket" parameterType="Map">
+ 	UPDATE t_redpacket 
+	SET 
+		get_redpacket=get_redpacket+#{denomination},
+		get_redpacket_number=get_redpacket_number+1,
+		status=if(get_redpacket&gt;=total_amount,0,1),
+		version_lock=version_lock+1
+	WHERE 
+		id=#{id} AND redpacket_type=3 
+		AND total_amount &gt;= get_redpacket+#{denomination}
+  </update>
+</mapper>

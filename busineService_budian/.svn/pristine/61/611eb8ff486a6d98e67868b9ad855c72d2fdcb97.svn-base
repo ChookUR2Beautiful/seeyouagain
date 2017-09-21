@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+	xsi:schemaLocation="http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+		
+	<!-- mongo参数配置--> 		
+	<mongo:mongo id="mongo" host="192.168.50.50" port="27017">  
+        <mongo:options connections-per-host="100"  
+            threads-allowed-to-block-for-connection-multiplier="5"  
+            connect-timeout="10000" 
+            max-wait-time="12000" 
+            auto-connect-retry="false"  
+            socket-keep-alive="false" 
+            socket-timeout="10000" 
+            slave-ok="false"      
+          />  
+    </mongo:mongo> 	
+	
+	<!-- mongo的工厂--> 	
+	<mongo:db-factory id="mongoDbFactory" mongo-ref="mongo" dbname="seller" username="seller" password="123456" />
+	
+	
+	
+	<!-- 自动扫描以下包的类 -->
+	<mongo:mapping-converter base-package="com.xmniao.domain" />
+
+	<bean id="mappingContext" class="org.springframework.data.mongodb.core.mapping.MongoMappingContext" />
+	<!-- 配置mongodb映射类型 -->
+	<bean id="mappingMongoConverter" class="org.springframework.data.mongodb.core.convert.MappingMongoConverter">
+		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
+		<constructor-arg name="mappingContext" ref="mappingContext" />
+		<property name="typeMapper" ref="defaultMongoTypeMapper" />
+	</bean>
+
+	<!-- 默认Mongodb类型映射 设置为空,可以把 spring data mongodb 多余保存的_class字段去掉-->
+	<bean id="defaultMongoTypeMapper" class="org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper">
+		<constructor-arg name="typeKey"><null /></constructor-arg>
+	</bean>
+		
+	<!-- mongodb的操作对象，处理所有对mongodb的增删改查操作 -->  
+	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+		<constructor-arg  ref="mongoDbFactory" />
+		<constructor-arg ref="mappingMongoConverter" />
+	</bean>
+
+	<!-- 商户信息表 -->
+	<bean name="sellerMongo" class="java.lang.String">
+		<constructor-arg value="cb_seller"/>
+	</bean>
+		
+	<!-- 用户-商家行为表 -->
+	<bean name="sellerAction" class="java.lang.String">
+		<constructor-arg value="cb_xmn_seller"/>
+	</bean>
+	
+	<!-- 用户-商圈行为表 -->
+	<bean name="zoneAction" class="java.lang.String">
+		<constructor-arg value="cb_xmn_zone"/>
+	</bean>
+	
+	<!-- 用户-类别行为表 -->
+	<bean name="tradeAction" class="java.lang.String">
+		<constructor-arg value="cb_xmn_trade"/>
+	</bean>
+	
+	<!-- 用户-商家行为下线备份表 -->
+	<bean name="sellerActionBackup" class="java.lang.String">
+		<constructor-arg value="cb_xmn_seller_backup"/>
+	</bean>
+</beans>

@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.urs.dao.XmerDao" >
+	
+	<update id="updateXmerSoldNums">
+	    update b_xmer set sold_nums = #{soldNums}  where uid = #{uid}
+	</update>
+	
+	<update id="updateXmerLevel" parameterType="map">
+		update b_xmer set achievement=#{level_name},levels=#{level_no}
+		where uid = #{uid}
+	</update>
+	
+	<select id="getLevelByUid" resultType="map">	
+		SELECT id,level_no,sign_num,level_name 
+		FROM `b_level`  
+		where  sign_num &lt;= (select sold_nums from b_xmer where uid = #{uid}) ORDER BY level_no desc LIMIT 1;
+	</select>
+	
+	<!-- 寻蜜客对应关系 xmerId当前寻蜜客 towLevelXmerId 上级寻蜜客 oneLevelXmerId 上上级寻蜜客 -->
+	<select id="getXmerIssues" resultType="map">
+		SELECT  b1.uid xmerId,b2.uid twoLevelXmerId,b3.uid oneLevelXmerId
+		FROM b_xmer b1
+		LEFT JOIN b_xmer b2 ON b1.parentid=b2.uid AND b2.status=0
+		LEFT JOIN b_xmer b3 ON b2.parentid=b3.uid AND b3.status=0
+		WHERE b1.uid=#{1} AND b1.status=0 
+	</select>
+	
+	<select id="getXmerName" parameterType="list" resultType="map">
+		SELECT uid,name
+		FROM b_urs_info
+		WHERE uid in 
+		<foreach collection="array" item="id" index="index" open="(" close=")" separator=",">
+			#{id}
+		</foreach>
+	</select>
+	
+	
+	<select  id="queryXmer" resultType="map">
+	select 
+	ifNull(a.id,0) id,
+	ifNull(a.uid,0) uid,
+	ifNull(a.sold_nums,0) sold_nums,
+	ifNull(a.partner_nums,0) partner_nums,
+	ifNull(a.achievement,'') achievement,
+	ifNull(b.name,'') name,
+	ifNull(b.avatar,'') avatar
+	
+	 from b_xmer a left join b_urs_info b on a.uid=b.uid order by a.sold_nums desc LIMIT 0,500
+	</select>
+	
+	<!-- 统计寻蜜客个数 -->
+	<select id="getXmerByUid" resultType="map">
+		SELECT uid,parentid
+		FROM b_xmer
+		WHERE uid = #{uid} 
+	</select>
+	
+	<!-- 创建寻蜜客 -->
+	<insert id="insertXmer" parameterType="map" >
+		INSERT INTO b_xmer
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="uid != null">
+				uid,
+			</if>
+			<if test="rtype != null">
+				rtype,
+			</if>
+			<if test="phoneid != null">
+				phoneid,
+			</if>
+			<if test="parentid != null">
+				parentid,
+			</if>
+			<if test="levels != null">
+				levels,
+			</if>
+			<if test="soldnums != null">
+				sold_nums,
+			</if>
+			<if test="sdate != null">
+				sdate,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="updateDate != null">
+				update_date,
+			</if>
+			<if test="achievement != null">
+				achievement,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="uid != null">
+				#{uid,jdbcType=INTEGER},
+			</if>
+			<if test="rtype != null">
+				#{rtype,jdbcType=INTEGER},
+			</if>
+			<if test="phoneid != null">
+				#{phoneid,jdbcType=VARCHAR},
+			</if>
+			<if test="parentid != null">
+				#{parentid,jdbcType=INTEGER},
+			</if>
+			<if test="levels != null">
+				#{levels,jdbcType=INTEGER},
+			</if>
+			<if test="soldnums != null">
+				#{soldnums,jdbcType=INTEGER},
+			</if>
+			<if test="sdate != null">
+				#{sdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+			<if test="updateDate != null">
+				#{updateDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="achievement != null">
+				#{achievement},
+			</if>
+		</trim>
+	</insert>
+	
+	<!--  更新寻蜜客伙伴数量 -->
+	<update id="updatePartnerNum" parameterType="map">
+		UPDATE b_xmer
+		SET partner_nums = partner_nums+1
+		WHERE uid = #{uid}
+	</update>
+	
+	<select id="getInitAchievement" resultType="string">
+		SELECT level_name FROM b_level ORDER BY level_no LIMIT 0,1
+	</select>
+	
+	<select id="getXmerInfo" parameterType="int" resultType="map">
+		SELECT uid,rtype,phoneid,achievement,partner_nums,parentid,levels,sold_nums,status
+		FROM b_xmer
+		WHERE uid=#{uid}
+	</select>
+	
+	<!-- 创建寻蜜客 关系链信息表-->
+	<insert id="insertUrsEarningsRelation" parameterType="map" >
+		INSERT INTO b_urs_earnings_relation
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="uid != null">
+				uid,
+			</if>
+			<if test="objectOriented != null">
+				object_oriented,
+			</if>
+			<if test="uidRelationChain != null">
+				uid_relation_chain,
+			</if>
+			<if test="uidRelationChainNname != null">
+				uid_relation_chain_nname,
+			</if>
+			<if test="uidRelationChainLevel != null">
+				uid_relation_chain_level,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="uid != null">
+				#{uid,jdbcType=INTEGER},
+			</if>
+			<if test="objectOriented != null">
+				#{objectOriented,jdbcType=INTEGER},
+			</if>
+			<if test="uidRelationChain != null">
+				#{uidRelationChain,jdbcType=VARCHAR},
+			</if>
+			<if test="uidRelationChainNname != null">
+				#{uidRelationChainNname,jdbcType=VARCHAR},
+			</if>
+			<if test="uidRelationChainLevel != null">
+				#{uidRelationChainLevel,jdbcType=INTEGER},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	
+		<!-- 创建寻蜜客 关系链信息表-->
+	<insert id="insertUrseErningsRank" parameterType="map" >
+		INSERT INTO b_urs_earnings_relation
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="uid != null">
+				uid,
+			</if>
+			<if test="rankSource != null">
+				rank_source,
+			</if>
+			<if test="rankId != null">
+				rank_id,
+			</if>
+			<if test="modifyTime != null">
+				modify_time,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="uid != null">
+				#{uid,jdbcType=INTEGER},
+			</if>
+			<if test="rankSource != null">
+				#{rankSource,jdbcType=INTEGER},
+			</if>
+			<if test="rankId != null">
+				#{rankId,jdbcType=INTEGER},
+			</if>
+			<if test="modifyTime != null">
+				#{modifyTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	
+		<!-- 统计寻蜜客个数 -->
+	<select id="getXmerUrsEarningsRelationByUid" resultType="map">
+		SELECT uid, object_oriented
+		FROM b_urs_earnings_relation
+		WHERE uid = #{uid} 
+		AND object_oriented = #{objectOriented}  
+	</select>
+</mapper>

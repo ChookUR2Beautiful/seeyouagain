@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.dao.live.CouponOrderDao">
+	<!-- 查询粉丝券订单接口 -->
+	<select id="getCouponOrder" parameterType="map" resultType="map">
+		SELECT
+		id,order_sn,anchor_cid,IFNULL(cid_num,1) cid_num,uid,sellerid,status,payid,payment_type,total_amount,cash,balance,commision,
+		zbalance,commision,integral,cuser,beans,cdid,return_integral,version
+		FROM
+		t_coupon_order
+		WHERE order_sn = #{orderNo}
+	</select>
+	<!-- 更新订单状态 -->
+	<update id="updateOrderStatus" parameterType="map">
+		UPDATE
+		t_coupon_order
+		SET status=#{status},
+		<if test="payid != null and payid != ''">
+			payid =#{payid},
+		</if>
+		<if test="thirdUid != null and thirdUid != ''">
+			third_uid =#{thirdUid},
+		</if>
+		<if test="thirdSerial != null and thirdSerial != ''">
+			third_serial =#{thirdSerial},
+		</if>
+		<if test="return_integral != null and return_integral != ''">
+			return_integral =#{return_integral},
+		</if>
+		<if test="retrun_coupon_amount != null and retrun_coupon_amount != ''">
+			retrun_coupon_amount =#{retrun_coupon_amount},
+		</if>
+		modify_time = #{modify_time},
+		version = version+1
+		WHERE order_sn =
+		#{orderNo}
+		AND version=#{version}
+	</update>
+
+	<!-- 获取预售抵用券信息 -->
+	<select id="getCouponDetail" parameterType="map" resultType="map">
+		SELECT cdid,denomination,user_status status
+		FROM t_coupon_detail
+		WHERE cdid = #{cdid}
+		AND uid = #{uid}
+	</select>
+
+	<!-- 更新预售抵用券状态 -->
+	<update id="updateCouponDetailStatus">
+		UPDATE t_coupon_detail
+		SET user_status = #{status},
+		user_time = #{date}
+		WHERE cdid = #{cdid}
+	</update>
+
+	<select id="couponAnchorRef" resultType="map">
+		SELECT uid,anchor_cid,cid,uid,start_date,end_date,sellerid,sale_coupon_ration,use_coupon_ration
+		FROM
+		t_fans_coupon_anchor_ref
+		WHERE anchor_cid=#{0}
+	</select>
+
+	<select id="couponIssueRef" resultType="map">
+		SELECT
+		id,cid,gift_cid,num
+		FROM t_fans_coupon_issue_ref
+		WHERE cid=#{0}
+	</select>
+
+	<select id="getCouponMsg" resultType="map">
+		SELECT
+		cid,cname,denomination,start_date,end_date,invalid_today,day_num
+		FROM t_coupon
+		WHERE cid = #{0}
+	</select>
+
+
+	<insert id="insertCoupon" parameterType="java.util.List">
+		INSERT INTO t_coupon_detail
+		(cid,denomination,start_date,end_date,get_status,get_time,uid,phone,user_status,date_issue,order_no,ctype,anchor_cid
+		,sellerid,seats,serial
+		)
+		VALUES
+		<foreach collection="list" item="coupon" separator="," index="index">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+			#{coupon.cid,jdbcType=INTEGER},
+			#{coupon.denomination,jdbcType=DECIMAL},
+			#{coupon.start_date,jdbcType=TIMESTAMP},
+			#{coupon.end_date,jdbcType=TIMESTAMP},
+			#{coupon.get_status,jdbcType=INTEGER},
+			#{coupon.get_time,jdbcType=TIMESTAMP},
+			#{coupon.uid,jdbcType=INTEGER},
+			#{coupon.phone,jdbcType=VARCHAR},
+			#{coupon.user_status,jdbcType=INTEGER},
+			#{coupon.date_issue,jdbcType=TIMESTAMP},
+			#{coupon.order_no,jdbcType=VARCHAR},
+			#{coupon.ctype,jdbcType=INTEGER},
+			#{coupon.anchor_cid,jdbcType=INTEGER},
+			#{coupon.sellerid,jdbcType=INTEGER},
+			#{coupon.seats,jdbcType=INTEGER},
+			#{coupon.serial}
+			</trim>
+		</foreach>
+	</insert>
+	
+	<update id="updateStock">
+		UPDATE t_coupon
+		SET default_max_num = default_max_num +#{cid_num}
+		WHERE cid = #{cid}
+		
+	</update>
+	
+	<select id="getSellerFansCouponCount" parameterType="map" resultType="long">
+	SELECT
+		COUNT(1)
+	FROM
+		`t_live_record` AS `a`
+	LEFT JOIN `t_fans_coupon_anchor_ref` AS `b` ON a.id = b.record_id
+	LEFT JOIN `t_coupon` AS `c` ON `b`.`cid` = `c`.`cid`
+	WHERE
+		`a`.`sellerid` = #{sellerid}
+	AND `b`.`end_date` &gt; DATE_FORMAT(#{nowDate},'%Y-%m-%d %H:%i:%S')
+	AND `b`.`send_status` = 1
+	AND `a`.`zhibo_type` IN (0,1)
+	</select>
+	
+		<!-- 获取预售抵用券信息 -->
+	<select id="getCouponDetailByRelation" parameterType="map" resultType="map">
+		SELECT t.cdid, t.denomination, t.user_status status FROM
+		t_coupon_detail t INNER JOIN t_coupon_relation tr ON
+		t.cdid = tr.cdid
+		WHERE t.ctype IN (0, 4, 5)
+		AND t.uid = #{uid}
+		AND tr.bid = #{bid}
+	</select>
+	
+		<!-- 更新预售抵用券状态 -->
+	<update id="updateCouponDetailStatusByRelation" >
+		UPDATE t_coupon_detail t
+		SET user_status = #{status},
+		user_time = #{date}
+		WHERE t.ctype IN (0, 4, 5)
+		AND t.cdid IN  
+		<foreach collection="ids" item="item" index="index" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+</mapper>

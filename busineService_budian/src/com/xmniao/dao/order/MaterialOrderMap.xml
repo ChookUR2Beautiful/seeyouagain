@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.xmniao.dao.order.MaterialOrderDao">
+	<resultMap type="com.xmniao.domain.order.MaterialOrderBean" id="materialOrderMap">
+		<id column="id" property="id"/>
+		<result column="order_sn" property="orderSn"/>
+		<result column="status" property="status"/>
+		<result column="version" property="version"/>
+	</resultMap>
+	
+	<select id="getByOrderSn" resultMap="materialOrderMap">
+		select id,order_sn,status,version from t_material_order where order_sn=#{orderSn}
+	</select>
+	
+	<update id="updateForPayComplete" parameterType="com.xmniao.domain.order.MaterialOrderBean">
+		update t_material_order 
+		set status=#{status},
+		      payid=#{payid},
+		     
+			  <if test="status == 1">
+			 	 payment_type=#{paymentType},
+			 	 third_uid=#{thirdUid},
+			 	 third_serial=#{thirdSerial},
+			 	 cash=#{cash},
+			 	 balance=#{balance},
+			 	 integral=#{integral},
+			  </if>
+			  
+			  modify_time=#{modifyTime},
+			  version=version + 1
+			  
+		where order_sn=#{orderSn}  and  version=#{version} 
+	</update>
+	
+	<select id="getMaterialOrderInfo" resultType="map">
+		select t_material_order.*,t_seller.sellername from t_material_order 
+		left join t_seller on t_material_order.mid=t_seller.sellerid
+		where order_sn=#{orderSn}
+	</select>
+	<select id="getMaterialOrderItem" resultType="map">
+		select * from t_material_order_items where order_sn=#{orderSn}
+	</select>
+</mapper>

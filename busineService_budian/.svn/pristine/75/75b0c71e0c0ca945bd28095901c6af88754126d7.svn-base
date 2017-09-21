@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.manor.ManorFlowerRelationRecordMapper" >
+  <resultMap id="BaseResultMap" type="com.xmniao.domain.manor.ManorFlowerRelationRecord" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="trans_no" property="transNo" jdbcType="VARCHAR" />
+    <result column="from_uid" property="fromUid" jdbcType="INTEGER" />
+    <result column="oprate_type" property="oprateType" jdbcType="INTEGER" />
+    <result column="oprate_count" property="oprateCount" jdbcType="INTEGER" />
+    <result column="record_details" property="recordDetails" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, trans_no, from_uid, oprate_type, oprate_count, record_details, create_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_manor_flower_relation_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_manor_flower_relation_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.domain.manor.ManorFlowerRelationRecord" >
+    insert into t_manor_flower_relation_record (id, trans_no, from_uid, 
+      oprate_type, oprate_count, record_details, 
+      create_time)
+    values (#{id,jdbcType=INTEGER}, #{transNo,jdbcType=VARCHAR}, #{fromUid,jdbcType=INTEGER}, 
+      #{oprateType,jdbcType=INTEGER}, #{oprateCount,jdbcType=INTEGER}, #{recordDetails,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.domain.manor.ManorFlowerRelationRecord" >
+    insert into t_manor_flower_relation_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="transNo != null" >
+        trans_no,
+      </if>
+      <if test="fromUid != null" >
+        from_uid,
+      </if>
+      <if test="oprateType != null" >
+        oprate_type,
+      </if>
+      <if test="oprateCount != null" >
+        oprate_count,
+      </if>
+      <if test="recordDetails != null" >
+        record_details,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="state != null">
+        `state`,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="transNo != null" >
+        #{transNo,jdbcType=VARCHAR},
+      </if>
+      <if test="fromUid != null" >
+        #{fromUid,jdbcType=INTEGER},
+      </if>
+      <if test="oprateType != null" >
+        #{oprateType,jdbcType=INTEGER},
+      </if>
+      <if test="oprateCount != null" >
+        #{oprateCount,jdbcType=INTEGER},
+      </if>
+      <if test="recordDetails != null" >
+        #{recordDetails,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.domain.manor.ManorFlowerRelationRecord" >
+    update t_manor_flower_relation_record
+    <set >
+      <if test="transNo != null" >
+        trans_no = #{transNo,jdbcType=VARCHAR},
+      </if>
+      <if test="fromUid != null" >
+        from_uid = #{fromUid,jdbcType=INTEGER},
+      </if>
+      <if test="oprateType != null" >
+        oprate_type = #{oprateType,jdbcType=INTEGER},
+      </if>
+      <if test="oprateCount != null" >
+        oprate_count = #{oprateCount,jdbcType=INTEGER},
+      </if>
+      <if test="recordDetails != null" >
+        record_details = #{recordDetails,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.domain.manor.ManorFlowerRelationRecord" >
+    update t_manor_flower_relation_record
+    set trans_no = #{transNo,jdbcType=VARCHAR},
+      from_uid = #{fromUid,jdbcType=INTEGER},
+      oprate_type = #{oprateType,jdbcType=INTEGER},
+      oprate_count = #{oprateCount,jdbcType=INTEGER},
+      record_details = #{recordDetails,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

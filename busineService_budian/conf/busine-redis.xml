@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+	<!-- 缓存redis配置 -->
+	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<!-- 最大连接数 -->
+		<property name="maxActive" value="300" />
+		<!-- 最大空闲 -->
+		<property name="maxIdle" value="300" />
+		<!-- 最大建立连接等待时间 -->
+		<property name="maxWait" value="1000" />
+		<!-- 在borrow一个jedis实例时，是否提前进行validate操作；如果为true，则得到的jedis实例均是可用的； -->
+		<property name="testOnBorrow" value="true" />
+	</bean>
+	<!-- redis连接配置 -->
+	<bean id="jedisConnFactory"
+		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+		p:use-pool="true">
+		<property name="hostName" ref="redisHostName" />
+		<property name="port" ref="redisPort" />
+		<property name="poolConfig" ref="jedisPoolConfig" />
+		<property name="timeout" value="3000" />
+		<property name="password" value="redispasswd" />
+	</bean>
+	<!-- redis模板配置 -->
+	<bean id="redisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
+		p:connection-factory-ref="jedisConnFactory" />
+
+	<bean id="redisService" class="com.xmniao.common.RedisService"/>
+
+	<!-- 自动分账redis队列KEY -->
+	<bean id="zdQueueKey" class="java.lang.String">
+		<constructor-arg value="auto_orderform_queue_test_1002l" />
+	</bean>
+	
+	<!-- 手动分账redis队列KEY -->
+	<bean id="sdQueueKey" class="java.lang.String">
+		<constructor-arg value="manual_orderform_queue_libb" />
+	</bean>
+
+	<!-- 绑定向蜜客redis队列 -->
+	<bean id="xmkqueue" class="java.lang.String">
+		<constructor-arg value="user_binding_queue_libb" />
+	</bean>
+
+	<!-- 消息推送redis队列名称 -->
+	<bean id="pushmsgqueue" class="java.lang.String">
+		<constructor-arg value="push_queue_libb" />
+	</bean>
+
+	<!-- 短信发送的redis队列名称 -->
+	<bean id="smsqueue" class="java.lang.String">
+		<constructor-arg value="sms_queue_libb" />
+	</bean>
+	
+	<!-- 实时监听redis队列Key -->
+	<bean name="jtqueue_key" class="java.lang.String">
+		<constructor-arg value="monitor_queue" />
+	</bean>
+	
+	<!-- SAAS签约订单分账redis队列Key -->
+	<bean name="saasSoldKey" class="java.lang.String">
+		<constructor-arg value="delay_SAASLedger_queue_dev_1000l" />
+	</bean>
+	
+	<!-- 线下积分商城订单分账redis队列Key -->
+	<bean name="offlineKey" class="java.lang.String">
+		<constructor-arg value="incr_orderinfo_dev_1000l" />
+	</bean>
+	
+	<!-- 线上积分商城订单分账redis队列Key -->
+	<bean name="onlineKey" class="java.lang.String">
+		<constructor-arg value="incr_orderinfo_dev_1000l" />
+	</bean>
+	
+	<!-- 更新钱包金额redis队列Key -->
+	<bean name="xmnWalletKey" class="java.lang.String">
+		<constructor-arg value="xmn_wallet_modify_queue_cb" />
+	</bean>
+	
+	<!-- 用户浏览、消费行为队列Key -->
+	<bean name="userActionQueue" class="java.lang.String">
+		<constructor-arg value="user_action_queue"/>
+	</bean>
+	
+	<!-- 更新商家信息队列Key -->
+	<bean name="sellerInfoQueue" class="java.lang.String">
+		<constructor-arg value="seller_info_update_query"/>
+	</bean>
+	
+	<!-- 更新直播会员分账信息队列Key -->
+	<bean name="liverLedgerQueue" class="java.lang.String">
+		<constructor-arg value="liver_ledger_queue"/>
+	</bean>
+	
+	<!-- 商家消费随机数 -->
+	<bean name="sellerRandomNum" class="java.lang.String">
+		<constructor-arg value="seller_random_consu_number_sellerid"/>
+	</bean>
+	
+	<!-- 脉宝分账通知redis队列KEY -->
+	<bean id="maibaoLedgerQueueKey" class="java.lang.String">
+		<constructor-arg value="busine-service:queue:maibao.advence.ledger.queue" />
+	</bean>
+</beans>

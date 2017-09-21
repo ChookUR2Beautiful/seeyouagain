@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.sellerOrder.ActivityFreetryDao" >
+  <resultMap id="ActivityFreetryMap" type="com.xmniao.domain.coupon.ActivityFreetry" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="begin_date" property="beginDate" jdbcType="TIMESTAMP" />
+    <result column="end_date" property="endDate" jdbcType="TIMESTAMP" />
+    <result column="begin_time" property="beginTime" jdbcType="TIME" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="give_number" property="giveNumber" jdbcType="INTEGER" />
+    <result column="join_number" property="joinNumber" jdbcType="INTEGER" />
+    <result column="award_proportion" property="awardProportion" jdbcType="DECIMAL" />
+    <result column="prize_draw_number" property="prizeDrawNumber" jdbcType="INTEGER" />
+    <result column="limit_number" property="limitNumber" jdbcType="INTEGER" />
+    <result column="set_condition" property="setCondition" jdbcType="INTEGER" />
+    <result column="views" property="views" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="newuser_num" property="newuserNum" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="take_num" property="takeNum" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, sellerid, name, begin_date, end_date, begin_time, end_time, give_number, join_number, 
+    award_proportion, prize_draw_number, limit_number, set_condition, views, status, 
+    newuser_num, create_time, take_num
+  </sql>
+  
+  <select id="getActivityFreetryList" resultMap="ActivityFreetryMap" parameterType="com.xmniao.domain.coupon.ActivityFreetry" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_activity_freetry
+    where 1=1
+    <if test="status!=null">AND status=#{status}</if>
+    <if test="sellerid!=null">AND sellerid=#{sellerid}</if>
+    <if test="setCondition!=null">AND set_condition=#{setCondition}</if>
+    <if test="nowDate != null">
+    	AND #{nowDate} BETWEEN begin_date AND end_date 
+    </if>
+  </select>
+
+</mapper>

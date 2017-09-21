@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 	
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-3.2.xsd 
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-3.2.xsd 
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+
+	<!-- thrift服务client代理 -->
+	<bean name="thriftClientProxy" class="com.xmniao.proxy.ThriftClientProxy">
+	</bean>
+	
+	<!-- thrift服务器工厂 -->
+	<bean id="thriftServerFactory" class="com.xmniao.proxy.ThriftProxyFactory">
+		<!-- 服务端的端口 -->
+		<property name="port" value="7911" />
+		<!-- 工作线程数默认5 生产环境可修改为50 -->
+		<property name="workerThreads" value="10" />
+		<!-- 注入多个接口类列表 -->
+		<property name="proxys">
+			<list>
+				<!-- 注入订单服务模块 -->
+				<ref bean="orderService" />
+				<!-- 注入折扣服务模块 -->
+				<ref bean="discountService" />
+				<!-- 注入向蜜客服务模块 -->
+				<ref bean="mikeService" />
+				<!-- 活动服务模块 -->
+				<ref bean="activityService"/>
+				<!-- 连锁店服务模块 -->
+				<ref bean="storeService"/>
+				<!-- 订单退款服务模块 -->
+				<ref bean="refundOrderService"/>
+				<!-- 业务系统退款 -->
+				<ref bean="busiSysOrderService"/>
+				<!-- 提供给分账系统退款服务模块 -->
+				<ref bean="ledgerSysOrderService"/>
+				<!-- 寻蜜客SaaS订单服务模块 -->
+				<ref bean="saasOrderService"/>
+				<!-- 积分订单服务模块 -->
+				<ref bean="mallOrderService"/>
+				<!-- 物料订单服务模块 -->
+				<ref bean="materialOrderService"/>
+				
+				<!-- 直播订单服务 -->
+				<ref bean="liveOrderService"/>
+				
+				<!-- 用户服务 -->
+				<ref bean="UserService"/>
+				<!-- 商户订单服务 -->
+				<ref bean="sellerOrderService"/>
+				<!-- 商户地址服务 -->
+				<ref bean="sellerAddressService"/>
+				
+				<!-- 用户行为服务 -->
+				<ref bean="userActionService"/>
+				<!-- 商家服务 -->
+				<ref bean="sellerService"/>
+				
+				<!-- 公共服务 -->
+				<ref bean="xmnCommonService"/>
+				
+				<!-- 套餐优惠服务 -->
+				<ref bean="SellerPackageService"/>
+				
+				
+				<!-- 竞拍活动订单状态服务 -->
+				<ref bean="DeliverActivityAuctionService"/>
+				<ref bean="sellerVerifyOrderService"/>
+				<ref bean="debitcardService"/>
+				<ref bean="verTeamService"/>
+				
+				<!-- 美食体验卡订单服务 -->
+				<ref bean="experienceOfficerOrderService"/>
+				<!-- 星食尚大赛服务 -->
+				<ref bean="vstarService"/>
+
+				<!--V客充值奖励服务-->
+				<ref bean="verExcitationReceviceService"/>
+
+				<!--黄金庄园-->
+				<ref bean="manorService"/>
+				
+				<!-- V客兑换SAAS -->
+				<ref bean="verSaasService"/>
+			</list>
+		</property>
+	</bean>
+
+	<!-- 配置加载多个接口类和接口实现类、接口类的名字 -->
+	<!-- 出现多个接口类时，必须配置多个bean元素，一个接口类、接口实现类配置一个bean元素 -->
+	<!-- 订单服务模块bean -->
+	<bean id="orderService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.busine.order.OrderService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="orderServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="OrderService" />
+	</bean>
+	
+	<!-- 配置加载多个接口类和接口实现类、接口类的名字 -->
+	<!-- 出现多个接口类时，必须配置多个bean元素，一个接口类、接口实现类配置一个bean元素 -->
+	<!-- 订单服务模块bean -->
+	<bean id="sellerVerifyOrderService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.busine.seller.SellerVerifyOrderService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="sellerVerifyOrderServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="SellerVerifyOrderService" />
+	</bean>
+	
+	<!-- 折扣服务模块bean -->
+	<bean id="discountService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.busine.discount.DiscountService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="discountServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="DiscountService" />
+	</bean>
+	
+	<!-- 向蜜客模块bean配置 -->
+	<bean id="mikeService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.busine.mike.MikeService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="mikeServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="MikeService" />
+	</bean>
+	
+	<!-- 活动服务模块bean配置 -->
+	<bean id="activityService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.busine.activity.ActivityService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="activityServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="ActivityService" />
+	</bean>
+	
+	<!-- 连锁店服务模块 -->
+	<bean id="storeService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.busine.store.StoreService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="storeServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="StoreService" />
+	</bean>
+	
+	<!-- 订单退款服务模块 -->
+	<bean id="refundOrderService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.busine.refund.RefundOrderService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="refundOrderServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="RefundOrderService" />
+	</bean>
+	
+	<!-- 订单退款服务模块 -->
+	<bean id="busiSysOrderService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.busine.refund.BusiSysOrderService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="busiSysOrderServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="BusiSysOrderService" />
+	</bean>
+	
+	<!-- 提供给分账系统退款服务模块 -->
+	<bean id="ledgerSysOrderService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.busine.refund.LedgerSysOrderService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="ledgerSysOrderServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="LedgerSysOrderService" />
+	</bean>
+	
+	<!-- 寻蜜客SaaS订单服务 -->
+	<bean id="saasOrderService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.busine.xmer.SaasOrderService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="saasOrderServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="SaasOrderService" />
+	</bean>
+	
+	<!-- 直播订单服务 -->
+	<bean id="liveOrderService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.busine.live.LiveOrderService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="LiveOrderServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="LiveOrderService" />
+	</bean>
+	
+	<!-- 用户服务 -->
+	<bean id="UserService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.busine.user.UserService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="UserServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="UserService" />
+	</bean>
+	
+	<bean id="mallOrderService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.busine.order.MallOrderService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="mallOrderServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="MallOrderService" />
+	</bean>
+	
+	<bean id="materialOrderService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.busine.order.MaterialOrderService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="materialOrderServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="MaterialOrderService" />
+	</bean>
+	
+	<bean id="sellerOrderService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.busine.sellerOrder.SellerOrderService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="sellerOrderServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="SellerOrderService" />
+	</bean>
+	
+	<bean id="sellerAddressService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.busine.sellerAddress.SellerAddressService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="SellerAddressServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="sellerAddressService" />
+	</bean>
+	
+	<bean id="userActionService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.busine.userAction.UserActionService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="userActionServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="UserActionService" />
+	</bean>	
+	
+	<bean id="sellerService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.busine.seller.SellerService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="sellerServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="SellerService" />
+	</bean>	
+	
+	<bean id="xmnCommonService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.common.XmnCommonService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="XmnCommonServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="XmnCommonService" />
+	</bean>	
+	
+	<bean id="SellerPackageService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.busine.sellerPackage.SellerPackageService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="SellerPackageServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="SellerPackageService" />
+	</bean>	
+	
+	<bean id="DeliverActivityAuctionService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.busine.fresh.DeliverActivityAuctionService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="deliverActivityAuctionServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="DeliverActivityAuctionService" />
+	</bean>
+	
+	<bean id="debitcardService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.busine.live.DebitcardService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="debitcardServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="DebitcardService" />
+	</bean>	
+	
+	<bean id="verTeamService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.busine.live.VerTeamService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="verTeamServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="VerTeamService" />
+	</bean>	
+	
+	<bean id="experienceOfficerOrderService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.busine.experienceOfficer.ExperienceOfficerOrderService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="ExperienceOfficerOrderServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="ExperienceOfficerOrderService" />
+	</bean>
+
+	<bean id="manorService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.busine.manor.ManorService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="ManorServiceImpI" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="ManorService" />
+	</bean>
+	
+	<bean id="vstarService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<!-- thrift生成的接口类 -->
+		<property name="serviceInterface" value="com.xmniao.thrift.busine.vstar.FashionService" />
+		<!-- 接口实现类 -->
+		<property name="serviceImpl" ref="vstarServiceImpl" />
+		<!--接口类的名字,value值必须与接口类名字相同 -->
+		<property name="serviceName" value="FashionService" />
+	</bean>
+
+	<!--V客充值奖励服务-->
+	<bean id="verExcitationReceviceService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<property name="serviceInterface" value="com.xmniao.thrift.busine.live.VerExcitationReceiveService"/>
+		<property name="serviceImpl" ref="verExcitationReceviceServiceImpl"/>
+		<property name="serviceName" value="VerExcitationReceiveService"/>
+	</bean>
+	
+	<!--V客兑换SAAS-->
+	<bean id="verSaasService" class="com.xmniao.proxy.ThriftServiceProxy">
+		<property name="serviceInterface" value="com.xmniao.thrift.busine.live.VerSaasService"/>
+		<property name="serviceImpl" ref="verSaasServiceImpl"/>
+		<property name="serviceName" value="VerSaasService"/>
+	</bean>
+</beans>

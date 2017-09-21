@@ -1,0 +1,1082 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.xmniao.dao.order.OrderServiceDao">
+
+    
+    
+	<!-- 订单返回对象映射 -->
+	<resultMap type="com.xmniao.domain.order.RefundOrdRecordBean" id="refundOrdRecordMap">
+		<result column="sdate" property="sdate"/>  
+		<result column="bid" property="bid" javaType="java.lang.Long"/>  
+		<result column="status" property="status"/>
+		<result column="remarks" property="remarks"/>
+	</resultMap>
+	
+	<!-- 更新订单服务接口SQL -->
+	<update id="modifyOrderInfo" parameterType="com.xmniao.domain.order.ModifyOrderInfoBean">
+		update t_bill
+		set
+		<if test="status !=null">
+			status=#{status,jdbcType=INTEGER},
+		</if>
+		<if test="number !=null and number !=''">
+			number=#{number,jdbcType=VARCHAR},
+		</if>
+		<if test="paytype !=null">
+			paytype=#{paytype,jdbcType=VARCHAR},
+		</if>
+		<if test="payid !=null and payid !=''">
+			payid=#{payid,jdbcType=VARCHAR},
+		</if>
+		<if test="payment !=null">
+			payment=#{payment,jdbcType=DECIMAL},
+		</if>
+		<if test="profit !=null">
+			profit=#{profit,jdbcType=DECIMAL},
+		</if>
+		<if test="givemoney !=null">
+			give_money=#{givemoney,jdbcType=DECIMAL},
+		</if>
+		<if test="commision !=null">
+			commision=#{commision,jdbcType=DECIMAL},
+		</if>
+		<if test="thirduid !=null and thirduid !=''">
+			third_uid=#{thirduid,jdbcType=VARCHAR},
+		</if>
+		<if test="zdate !=null and zdate !=''">
+			zdate=#{zdate,jdbcType=VARCHAR},
+		</if>
+		<if test="commission !=null and commission !=''">
+			commission=#{commission,jdbcType=VARCHAR},
+		</if>
+		<if test="hstatus !=null">
+			hstatus=#{hstatus,jdbcType=INTEGER},
+		</if>
+		<if test="ldate !=null and ldate !=''">
+			ldate=#{ldate,jdbcType=VARCHAR},
+		</if>
+		<if test="miketype !=null">
+			mike_type=#{miketype,jdbcType=INTEGER},
+		</if>
+		<if test="bfirst !=null">
+			bfirst=#{bfirst,jdbcType=INTEGER},
+		</if>
+		<if test="ydate !=null and ydate !=''">
+			ydate=#{ydate,jdbcType=VARCHAR},
+		</if>
+		<if test="integral !=null">
+			integral=#{integral},
+		</if>
+		<if test="ledgerMode !=null">
+			ledger_mode=#{ledgerMode},
+		</if>
+		<if test="isverify !=null">
+			isverify=#{isverify},
+		</if>
+		<if test="cannelStatus !=null">
+			cannel_status=#{cannelStatus},
+		</if>
+		<if test="liveCoin !=null">
+			live_coin=#{liveCoin},
+		</if>
+		<if test="sellerCoin !=null">
+			seller_coin=#{sellerCoin},
+		</if>
+		<if test="liveCoinMoney !=null">
+			live_coin_money=#{liveCoinMoney},
+		</if>
+		<if test="liveCoinRatio !=null">
+			live_coin_ratio=#{liveCoinRatio},
+		</if>
+		<if test="parentXmerUid !=null">
+			parent_xmer_uid=#{parentXmerUid},
+		</if>
+		bid=bid
+		where bid=#{bid,jdbcType=INTEGER}
+	</update>
+	
+	<!-- 订单处理记录接口 -->
+	<insert id="insertBillRecord" parameterType="com.xmniao.domain.order.OrdRecordBean" 
+	        useGeneratedKeys="true" keyProperty="id">
+	INSERT INTO t_bill_record
+            (bid,
+             STATUS,
+             explains,
+             cdate,
+             remarks)
+	VALUES (#{bid},
+	        #{status},
+	        #{explains},
+	        #{cdate},
+	        #{remarks})
+	</insert>
+	<!-- 分账系统订单查询的SQL -->
+	<select id="getOrderInfo" parameterType="int" resultType="map">
+	SELECT
+		t.bid AS id,
+		t.uid AS memberid,
+		t.nname AS membername,
+	  	t.genussellerid as genussellerid,
+	  	t.genusname as genusname,
+	  	t.jointid AS bpartnerid,
+		t.corporate AS bpartnername,
+	  	t.sellerid as sellerid,
+		t.sellername as sellername,
+	  	t.consume_jointid AS cpartnerid,
+		t.consume_corporate as cpartnername,
+		t.genussellerid AS mikeid, 
+		t.genusname AS mikename, 
+		t.baseagio AS discount,
+		t.commission AS commission,
+		t.number AS paycode,
+		t.payid AS payid,
+		t.paytype AS paytype,
+		t.area AS areaid,
+		t.mike_type AS miketype,
+		t.money AS expense,
+		t.rebate AS rebate,
+		t.is_virtual AS isfictitious,
+		t.flat_agio AS subsidy,
+		t.flat_money as subsidy_money,
+		t.zdate AS zdate,
+		t.profit as profit,
+		t.commision as commision,
+		t.payment as payment,
+		t.give_money as givemoney,
+		t.cuser as cuser,
+		t.cdenom as cdenom,
+		t.ratio AS ratio_subsidy,
+		t.ratio_money
+	FROM
+		t_bill t
+	WHERE
+		bid = #{bid}
+		and hstatus in (0,10,11)
+		<![CDATA[ and status <> 0]]>
+	</select>
+	
+	<!-- 根据订单编号查询订单的所有信息 -->
+	<select id="selectBillAll" parameterType="java.lang.String" resultType="map">
+		SELECT bid,sellerid,sellername,consume_jointid,consume_corporate,genussellerid,genusname,jointid,corporate,
+		       mike_type,uid,nname,money,amount,profit,commision,payment,rebate,aid,fullname,phoneid,status,
+		       DATE_FORMAT(sdate,'%Y-%m-%d %H:%i:%s') as sdate,DATE_FORMAT(zdate,'%Y-%m-%d %H:%i:%s') as zdate,
+		       DATE_FORMAT(ydate,'%Y-%m-%d %H:%i:%s') as ydate,number,paytype,isaccount,baseagio,
+		       hstatus,commission,area,payid,DATE_FORMAT(ldate,'%Y-%m-%d %H:%i:%s') as ldate,
+		       DATE_FORMAT(fdate,'%Y-%m-%d %H:%i:%s') as fdate,DATE_FORMAT(edate,'%Y-%m-%d %H:%i:%s') as edate,
+		       flat_agio,give_money,bfirst,flat_money,cuser,cdenom,third_uid,activity_conent,source,xmer_uid
+		FROM   t_bill  where bid=#{bid}
+	</select>
+	
+	<!-- 根据订单的用户ID查询是否是首单的订单数 -->
+	<select id="queryOrderCountByUid" parameterType="String" resultType="String">
+	 SELECT bid AS orderCount FROM t_bill WHERE uid=#{uid} AND STATUS&lt;&gt;0 LIMIT 0,1
+	</select>
+
+    <!-- 批量查询订单信息 -->
+	<select id="batchQueryBillAll" parameterType="java.util.List" resultType="map">
+		SELECT bid,sellerid,sellername,consume_jointid,consume_corporate,genussellerid,genusname,
+		       jointid,corporate,money,status,isaccount,hstatus,commission FROM t_bill WHERE bid IN 
+		<foreach collection="list" item="bidItem" index="index" open="("  separator="," close=")" >
+			#{bidItem}
+		</foreach>
+		ORDER BY bid ASC
+	</select>
+	
+	<!-- 验证订单是否存在 -->
+	<select id="valideBillByBid" parameterType="long" resultType="int">
+		SELECT COUNT(bid) AS bidCount FROM t_bill WHERE bid=#{bid}
+	</select>
+
+	<!-- 获取所属合作商和消费合作商的业务员ID -->
+	<select id="selectSalesmanId" parameterType="map" resultType="map">
+		SELECT 
+		IFNULL((SELECT staffid FROM t_seller WHERE sellerid=#{genussellerId} AND jointid=#{jointId} AND STATUS=3),0) AS salesmanId,
+	    IFNULL((SELECT staffid FROM t_seller WHERE jointid=#{consumeJointId} AND sellerid=#{sellerId} AND STATUS=3),0) AS consumeId
+	</select>
+
+	<!-- 更新订单佣金SQL -->
+	<update id="modifyCommission" parameterType="map">
+		update t_bill set
+		<if test="commission !=null and commission !=''">
+			commission=#{commission,jdbcType=VARCHAR},
+		</if>
+		<if test="hstatus !=null and hstatus !=''">
+			hstatus=#{hstatus,jdbcType=INTEGER},
+		</if>
+		<if test="status !=null and status !=''">
+			status=#{status,jdbcType=INTEGER},
+		</if>
+		<if test="bfirst!=null and bfirst!=''">
+		    bfirst=#{bfirst,jdbcType=INTEGER},
+		</if>
+		<if test="mikeType!=null and mikeType!=''">
+		    mike_type=#{mikeType,jdbcType=INTEGER},
+		</if>
+		<if test="ldate != null and ldate !=''">
+			ldate = #{ldate,jdbcType=VARCHAR},
+		</if>		
+		bid=bid
+		where bid=#{bid}
+	</update>
+
+	<!-- 更新订单流程SQL -->
+	<update id="modifyOrderProcess" parameterType="map">
+		update t_bill 
+		 <trim prefix="SET" suffixOverrides=",">  
+		 <if test="status !=null and status !=''">
+			status=#{status,jdbcType=VARCHAR},
+		</if>
+		<if test="hstatus !=null and hstatus !=''">
+			hstatus=#{hstatus,jdbcType=INTEGER},
+		</if>
+		<if test="isaccount !=null and isaccount !=''">
+			isaccount=#{isaccount,jdbcType=INTEGER},
+		</if>
+		<if test="fdate !=null and fdate !=''">
+			fdate=#{fdate,jdbcType=VARCHAR}
+		</if>
+		</trim>
+		where bid=#{bid,jdbcType=INTEGER}
+	</update>
+
+    <!-- 获取是否是总部帮忙签约 -->
+	<select id="selectGiveInfo" parameterType="map" resultType="map">
+		SELECT 
+			IFNULL((SELECT give FROM t_seller WHERE sellerid=#{genusSellerId}),0) as genusGive,
+			IFNULL((SELECT give FROM t_seller WHERE sellerid=#{sellerId}),0) as sellerGive
+	</select>
+	
+	<!-- 更新向蜜客类型SQL -->
+	<update id="modifyMikeType" parameterType="java.lang.String">
+		UPDATE t_bill SET mike_type=2 WHERE bid=#{bid,jdbcType=INTEGER}
+	</update>
+	
+	<!-- 获取合作商员工的分账比例 -->
+	<select id="selectPercentageInfo" parameterType="map" resultType="map">
+	SELECT	IFNULL((SELECT percentage  FROM t_joint WHERE jointid=#{jointId}),0) AS percentage,
+			IFNULL((SELECT percentage  FROM t_joint WHERE jointid=#{consumeJointId}),0) AS consumePercentage
+	</select>
+	
+	<!-- 查询合作商员工的分账比例 -->
+	<select id="queryPercentageInfo" parameterType="String" resultType="String">
+	 SELECT percentage FROM t_joint WHERE percentage&lt;&gt;0 AND jointid=#{jointId}
+	</select>
+	
+	<!-- 插入合作商员工分账比例记录 -->
+	<insert id="addPercentageRecord" parameterType="map"
+		useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_take_record
+		            (jointid,
+		             staffid,
+		             bid,
+		             money,
+		             bpartner_amount,
+		             sellerid,
+		             sellername,
+		             payment,
+		             scale,
+		             sdate)
+			VALUES (#{jointId},
+			        #{staffId},
+			        #{bid},
+			        #{money},
+			        #{bpartnerAmount},
+			        #{sellerId},
+			        #{sellerName},
+			        #{payment},
+			        #{scale},
+			        #{sdate})
+			<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+			  SELECT LAST_INSERT_ID() AS id
+			</selectKey>
+	</insert>
+
+	<!-- 订单退款更新状态SQL -->
+	<update id="refundOrderInfo" parameterType="map">
+	UPDATE t_bill AS b,t_refund AS r
+	SET 
+	<if test="orderStatus!=null and orderStatus!=''">
+	    b.status=#{orderStatus,jdbcType=INTEGER},
+	</if>
+	<if test="refundStatus!=null and refundStatus!=''">
+		r.status=#{refundStatus,jdbcType=INTEGER},
+	</if>
+		r.remarks=#{remarks,jdbcType=VARCHAR},
+		b.edate=#{edate}
+	 WHERE b.bid=r.bid AND b.bid=#{bid,jdbcType=INTEGER}
+	</update>
+
+	<!-- 查询当天统计的商户订单总条数 -->
+	<select id="querySellerStatistics" resultType="java.lang.Integer" parameterType="String">
+		SELECT COUNT(id) FROM t_seller_day_census WHERE DATE_FORMAT(census_time,'%Y-%m-%d')=#{censusTime}
+	</select>
+	
+	<!-- 查询前一天所有已支付过的商户 -->
+	<select id="querySellerAndGenuseller" resultType="map" parameterType="map">
+	select sellerid,genussellerid from 
+	(SELECT sellerid,genussellerid FROM t_bill 
+    WHERE status&lt;&gt;0 AND (DATE_FORMAT(zdate,'%Y-%m-%d')=#{zdate} OR DATE_FORMAT(fdate,'%Y-%m-%d')=#{fdate})
+    UNION 
+    select sellerid,genussellerid from t_bill_bargain where status!=0  and DATE_FORMAT(pay_time,'%Y-%m-%d')=#{zdate}
+    UNION
+    select 0 sellerid,genussellerid from t_bill_fresh where status!=0 and DATE_FORMAT(zdate,'%Y-%m-%d')=#{zdate})t
+    
+	</select>
+	
+	<!-- 查询商户信息 -->
+	<select id="querySellerInfos" resultType="map" parameterType="String">
+	SELECT sellerid,sellername,jointid,isfees,debit FROM t_seller WHERE sellerid=#{sellerid} AND sellerid IS NOT NULL 
+	</select>
+	
+	<!-- 查询合作商信息 -->
+	<select id="queryJointInfos" resultType="String" parameterType="String">
+	SELECT corporate FROM t_joint WHERE jointid=#{jointid} AND jointid IS NOT NULL
+	</select>
+	
+   <!-- 获取商户日流水总额和日返利总额 -->
+	<select id="querySellerDayCensus" resultType="map" parameterType="map">
+		SELECT SUM(money) AS waterTotal,SUM(rebate) AS rebateTotal  
+		FROM  t_bill WHERE sellerid=#{sellerid} AND STATUS IN (1,2,3,6,8,9) AND DATE_FORMAT(zdate,'%Y-%m-%d')=DATE_FORMAT(#{orderDate},'%Y-%m-%d')
+	</select>
+	
+	<!-- 获取商户日订单数 -->
+	<select id="queryOrderTotalInfo" resultType="Integer" parameterType="map">
+	SELECT COUNT(bid) AS orderTotal FROM t_bill 
+      WHERE sellerid = #{sellerid} AND STATUS&lt;&gt;0 AND DATE_FORMAT(zdate,'%Y-%m-%d')=#{orderDate} AND source&lt;&gt;2
+	</select>
+	
+	<!-- 获取商户已分账订单数和日分账总额 -->
+	<select id="queryYLedgerInfo" resultType="map" parameterType="map">
+	SELECT COUNT(bid) AS yledger,SUM(rebate) AS ledgerTotal FROM t_bill
+		WHERE sellerid = #{sellerid} AND STATUS=2 AND DATE_FORMAT(fdate,'%Y-%m-%d')=#{orderDate} 
+	</select>
+	
+	<!-- 获取商户未分账订单数 -->
+	<select id="queryWLedgerInfo" resultType="Integer" parameterType="map">
+	SELECT COUNT(bid) AS wledger FROM t_bill WHERE  sellerid = #{sellerid} AND STATUS IN (1,3,6,8,9) 
+	       AND DATE_FORMAT(zdate,'%Y-%m-%d')=#{orderDate}
+	</select>
+	
+	<!-- 获取会员店外消费总额 -->
+	<select id="querySellerShopTotal" resultType="java.math.BigDecimal" parameterType="map">
+	SELECT SUM(money) AS shopTotal FROM t_bill WHERE STATUS IN (1,2,3,6,8,9) AND genussellerid=#{sellerid} 
+	 AND DATE_FORMAT(zdate,'%Y-%m-%d')=#{orderDate} AND sellerid &lt;&gt; genussellerid
+	</select>
+	
+		<!-- 获取商户订单会员店外消费收益 -->
+	<select id="querySellerMoney" resultType="String" parameterType="map">
+	SELECT commission  FROM t_bill WHERE STATUS IN (1,2,3,6,8,9) AND genussellerid=#{sellerid} 
+	 AND DATE_FORMAT(zdate,'%Y-%m-%d')=#{orderDate} <!-- AND sellerid &lt;&gt; genussellerid -->
+	 and commission is not null
+	</select>
+	
+	<!-- 获取商户爆品订单会员店外消费收益 -->
+	<select id="queryBSellerMoney" resultType="String" parameterType="map">
+	SELECT commission  FROM t_bill_bargain WHERE STATUS='1' AND genussellerid=#{sellerid} 
+	 AND DATE_FORMAT(pay_time,'%Y-%m-%d')=#{orderDate} <!-- AND sellerid &lt;&gt; genussellerid -->
+	 and commission is not null
+	</select>
+	
+	<!-- 获取商户爆品订单会员店外消费收益 -->
+	<select id="queryfreshSellerMoney" resultType="String" parameterType="map">
+	select b.commission from t_bill_fresh a ,t_bill_fresh_sub b 
+	where a.bid=b.order_sn and a.status in(1,3,6,8) and  DATE_FORMAT(zdate,'%Y-%m-%d')=#{orderDate}
+	and b.commission is not null and genussellerid=#{sellerid}
+	</select>
+	
+	<!-- 获取消费商户的营业收入 -->
+	<select id="selectOrderIncome" resultType="String" parameterType="map">
+	 SELECT commission AS commission FROM t_bill 
+	 WHERE  sellerid =#{sellerid} AND STATUS IN (1,2,3,6,8,9) AND DATE_FORMAT(zdate,'%Y-%m-%d')=#{orderDate} 
+	        AND commission IS NOT NULL
+	</select>
+	
+	<!-- 获取所属商户的订单佣金 -->
+	<select id="selectOrderCommission" resultType="String" parameterType="map">
+		SELECT commission AS commission FROM t_bill 
+		WHERE  genussellerid=#{sellerid} AND STATUS IN (1,2,3,6,8,9) AND DATE_FORMAT(zdate,'%Y-%m-%d')=#{orderDate} 
+		       AND commission IS NOT NULL
+		       
+	</select>
+	
+	<!-- 插入商户日统计表 -->
+	<insert id="insertSellerDayCensus" parameterType="com.xmniao.domain.order.SellerDayCensusBean" 
+		    useGeneratedKeys="true" keyProperty="id">
+	INSERT INTO t_seller_day_census
+            (sellerid,
+             sellername,
+             jointid,
+             corporate,
+             water_total,
+             rebate_total,
+             income,
+             commision,
+             ledger_total,
+             order_total,
+             yledger,
+             wledger,
+             order_date,
+             census_time,
+             shop_total,
+             seller_money
+             )
+	VALUES 
+			(#{sellerId},
+	        #{sellerName},
+	        #{jointId},
+	        #{corporate},
+	        #{waterTotal},
+	        #{rebateTotal},
+	        #{income},
+	        #{commision},
+	        #{ledgerTotal},
+	        #{orderTotal},
+	        #{yledger},
+	        #{wledger},
+	        #{orderDate},
+	        #{censusTime},
+	        #{shopTotal},
+	        #{sellerMoney}
+	        )
+	</insert>
+	
+	<!-- 查询插入的商户日订单统计表中全都为0的数据记录数 -->
+	<select id="querySellerDayCensusZero" parameterType="com.xmniao.domain.order.SellerDayCensusBean" resultType="java.lang.Integer">
+	SELECT COUNT(id) AS idCount FROM t_seller_day_census WHERE sellerid=#{sellerId} AND order_date=#{orderDate} 
+		AND water_total=0 AND rebate_total=0 AND income=0 AND commision=0 AND shop_total=0 
+		AND ledger_total=0 AND order_total=0 AND yledger=0 AND wledger=0 and seller_money=0
+	</select>
+	
+	<!-- 删除商户日订单统计表中全都为0的数据 -->
+	<delete id="delSellerDayCensusZero" parameterType="com.xmniao.domain.order.SellerDayCensusBean">
+	DELETE FROM t_seller_day_census WHERE sellerid=#{sellerId} AND order_date=#{orderDate}
+	</delete>
+		
+	<!-- 获取合作商日统计中的数据 -->
+	<select id="queryJointDayCensus" resultType="java.lang.Integer" parameterType="String">
+	SELECT  COUNT(id) FROM t_joint_day_census WHERE DATE_FORMAT(census_time,'%Y-%m-%d')=#{censusTime}
+	</select>
+	
+	<!-- 获取订单表中的消费合作商和所属合作商 -->
+	<select id="queryJointAndConsumJoint" resultType="map" parameterType="map">
+	SELECT DISTINCT jointid,consume_jointid FROM t_bill WHERE STATUS IN (1,2,3,6,8,9) AND 
+	 (DATE_FORMAT(zdate,'%Y-%m-%d')=#{zdate} OR DATE_FORMAT(fdate,'%Y-%m-%d')=#{fdate}) AND money&gt;0.01
+	</select>
+	
+	<!-- 查询合作商收益总额 -->
+	<select id="queryJointProfit" resultType="map" parameterType="map">
+	 SELECT jointid,consume_jointid,commission FROM t_bill WHERE STATUS IN (1,2,3,6,8,9) AND DATE_FORMAT(zdate,'%Y-%m-%d')=#{zdate} 
+ 	AND (jointid=#{jointid} OR consume_jointid=#{consume_jointid}) AND commission IS NOT NULL
+	</select>
+	
+	<!-- 查询合作商收益到账总额 -->
+	<select id="queryJointAccountTotal" resultType="map" parameterType="map">
+	 SELECT jointid,consume_jointid,commission FROM t_bill WHERE STATUS=2 AND DATE_FORMAT(fdate,'%Y-%m-%d')=#{fdate} 
+ 	 AND (jointid=#{jointid} OR consume_jointid=#{consume_jointid}) AND commission IS NOT NULL
+	</select>
+	
+	<!-- 根据jointid和order_date查询记录是否存在   -->
+	<select id="queryOneJointDayCensusByIDAndDate" resultType="int" parameterType="map">
+		select count(*)  from t_joint_day_census where jointid=#{jointid}  and  DATE_FORMAT(order_date,'%Y-%m-%d')=#{date} 
+	</select>
+	
+	<update id="updateOneJointDayCensusByIDAndDate" parameterType="com.xmniao.domain.order.JointDayCensusBean">
+		update t_joint_day_census  set  profit_total=#{profitTotal} ,  account_total=#{accountTotal}   where jointid=#{jointId}  and  DATE_FORMAT(order_date,'%Y-%m-%d')=#{orderDate} 
+	</update>
+	
+	<!-- 插入合作商订单日统计表 -->
+	<insert id="insertJointDayCensus" parameterType="com.xmniao.domain.order.JointDayCensusBean" 
+	        useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_joint_day_census
+					(jointid,
+					corporate,
+					profit_total,
+					account_total,
+					order_date,
+					census_time)
+		VALUES 
+				(#{jointId},
+				 #{corporate},
+				 #{profitTotal},
+				 #{accountTotal},
+				 #{orderDate},
+				 #{censusTime})
+	</insert>
+	
+	<!-- 根据区域id回去区域名称 -->
+	<select id="findAreaByid" resultType="string">
+		select title from t_area where area_id = #{areaid}
+	</select>
+	
+	<!-- 查询向密客所在的区域 -->
+	<select id="findAreaOrHc" resultType="map">
+		SELECT a.area_id as area, a.title FROM t_area a, t_honey_config h WHERE a.area_id = h.area AND h.uid = #{uid}
+	</select>
+	
+	<!-- 查询商家所在行业 -->
+	<select id="findSellerByid" resultType="map">
+		SELECT t.sellerid,t.area,t.category,t.typename,t.phoneid,t.agio FROM t_seller t WHERE t.sellerid  = #{sellerid}
+	</select>
+	
+	<!-- 获取商户活动信息 -->
+	<select id="querySellerActivity" parameterType="map" resultType="map">
+	SELECT m.sellerid AS sellerId,a.aid AS aid,m.isattend AS isAttend,a.rule AS activityRule,a.aname AS aname,
+		   a.type AS activityType,(SELECT COUNT(bid) FROM t_bill  WHERE uid=#{uid} AND status&lt;&gt;0 AND money&gt;=50) AS bidCount,
+	       (SELECT COUNT(pid) FROM t_activity_prize ap WHERE ap.aid=a.aid AND ap.uid=#{uid}) AS pidCount
+    FROM   t_seller_marketing AS m,t_activity AS a
+	WHERE  m.aid=a.aid AND a.type=2 AND m.sellerid=#{sellerId} AND m.isattend=0
+           AND DATE_FORMAT(#{zdate},'%Y-%m-%d') 
+           BETWEEN DATE_FORMAT(a.start_date,'%Y-%m-%d') AND DATE_FORMAT(a.end_date,'%Y-%m-%d')
+	</select>
+	
+	<!-- 插入活动抽奖信息 -->
+	<insert id="insertActivityPrize" parameterType="com.xmniao.domain.order.ActivitypPrizeBean" 
+	        useGeneratedKeys="true" keyProperty="pid">
+	INSERT INTO t_activity_prize
+            (aid,
+             prize_type,
+             prize_num,
+             uid,
+             nname,
+             phone,
+             ptime,
+             pi_id,
+             sellerid,
+             sellername,
+             order_no,
+             status)
+	VALUES (#{aid},
+	        #{prizeType},
+	        #{prizeNum},
+	        #{uid},
+	        #{uName},
+	        #{phone},
+	        #{ptime},
+	        #{piId},
+	        #{sellerId},
+	        #{sellerName},
+	        #{orderNumber},
+	        #{status})
+	</insert>
+	<!-- 查询当前订单在的用户在同一家商家d定时间内的订单总数 （风险识别）-->
+	<select id="findBillBySelloruser" resultType="Integer" parameterType="map">		
+		<![CDATA[ 
+			SELECT COUNT(1) AS counts FROM t_bill t WHERE t.uid = #{uid} AND t.sellerid = #{sellerid}  AND 
+			t.zdate > #{startdate} AND t.zdate <= #{enddate} AND t.status <> 0  ;
+		 ]]>
+	</select>
+	<!-- 查询当前订单的同一商家前一笔订单折扣（风险识别）-->
+	<select id="findPreviousBillBySell" resultType="Double" parameterType="map">		
+		<![CDATA[ 
+			SELECT t.baseagio FROM t_bill t WHERE t.status <> 0 AND  t.sellerid = #{sellerid} AND t.zdate < #{enddate} ORDER BY t.zdate DESC LIMIT 0,1
+		 ]]>
+	</select>
+	
+	<!-- 查询订单退款信息 -->
+	<select id="getRefund" resultType="Integer">
+		SELECT t.status FROM t_refund t WHERE t.bid = #{bid}
+	</select>
+	
+	<!-- 查询商户的区编号 -->
+	<select id="querySellerArea" resultType="java.lang.String" parameterType="java.lang.String">
+	 SELECT area FROM t_seller WHERE sellerid=#{sellerId}
+	</select>
+	
+	<!-- 更新订单信息为首单 -->
+	<update id="modifyOrderBfirst" parameterType="String">
+	 UPDATE t_bill SET bfirst=1 WHERE bid= #{bid}
+	</update>
+	
+	<!-- 查询商家的累积消费流水总额 -->
+	<select id="querySellerWaterTotal" resultType="Double" parameterType="String">
+	 SELECT SUM(money) AS money FROM t_bill WHERE sellerid=#{sellerId} AND status IN (1,2,3,6,8,9)
+	</select>
+	
+	<!-- 获取超过三天以上的的退款订单 -->
+	<select id="queryRefundOrderList" resultMap="refundOrdRecordMap">
+	<![CDATA[ 
+		SELECT t.sdate,t.bid,t.status,t.remarks FROM t_refund t WHERE t.status =0 AND DATE_ADD(t.sdate,INTERVAL 3 DAY) <= NOW()
+	]]>
+	</select>
+	
+	<!-- 批量更新退款的订单状态 -->
+	<update id="modifyBatchOrderMapStatus" parameterType="java.util.Map" >  
+	     UPDATE t_bill AS b,t_refund AS r
+		 SET b.status=13,
+		 r.status=1,
+		 r.remarks=#{remarks} where b.bid=r.bid and b.bid in 
+	    <foreach collection="idList" index="index" item="item" open="(" separator="," close=")">   
+	        #{item}
+	    </foreach>  
+	</update> 
+	
+	<!-- 插入系统信息发布表 -->
+	<insert id="addPushSysMsg" parameterType="com.xmniao.domain.push.PushSysMsgBean" 
+	        useGeneratedKeys="true" keyProperty="sid">
+	INSERT INTO t_system_msg
+            (sdate,
+             tdate,
+             edate,
+             status,
+             content,
+             number,
+             object,
+             ispush,
+             actiontype,
+             action,
+             type)
+	VALUES (#{sdate},
+	        #{tdate},
+	        #{edate},
+	        #{status},
+	        #{content},
+	        #{number},
+	        #{object},
+	        #{ispush},
+	        #{actiontype},
+	        #{action},
+	        #{type})
+	<selectKey resultType="java.lang.Integer" keyProperty="sid" order="AFTER">  
+        SELECT  LAST_INSERT_ID() as sid 
+    </selectKey>
+	</insert>
+	
+	<!-- 插入系统用户信息发布表 -->
+	<insert id="addPushSysUserMsg" parameterType="com.xmniao.domain.push.PushtSysUserMsgBean" 
+	        useGeneratedKeys="true" keyProperty="id">
+	INSERT INTO t_system_user
+            (sid,
+             isshow,
+             uid,
+             nname,
+             phoneid,
+             status,
+             sdate)
+	VALUES (#{sid},
+	        #{isshow},
+	        #{uid},
+	        #{nname},
+	        #{phoneid},
+	        #{status},
+	        #{sdate})
+	</insert>
+	
+	<!-- 查询商户账户信息 -->
+	<select id="querySellerAccountInfos" parameterType="String" resultType="map">
+	SELECT aid,sellerid,account,type,nonewstime,newstatus FROM t_seller_account WHERE sellerid=#{sellerid} and type=1
+	</select>
+	
+	<!-- 查询商户发行的优惠券订单关系信息 -->
+	<select id="querCouponRelation" parameterType="String" resultType="com.xmniao.domain.order.CouponRelationBean">
+	SELECT r.bid,r.cdid,r.cdenom,r.cuser,r.ctype FROM t_coupon_relation AS r
+		WHERE r.bid=#{bid} AND r.ctype=2
+	</select>
+	
+	<!-- 查询订单相关联 优惠劵-->
+	<select id="getOrderCoupon" resultType="java.util.Map">
+	SELECT id as id,bid as bid,serial as cserial,cdenom as cdenom, cuser as cuser,ctype as ctype,cdid as cdid 
+		 FROM t_coupon_relation WHERE bid= #{bid}
+	</select>
+	
+	<!-- 查询已使用的优惠券与订单关系-->
+	<select id="getOrderCouponList" resultType="java.util.Map" parameterType="String">
+		SELECT c.bid,c.cdid FROM t_coupon_relation c,t_coupon_detail d ,t_bill b
+		WHERE  c.cdid IN (SELECT cdid FROM t_coupon_relation WHERE bid= #{bid})
+		AND c.cdid = d. cdid AND b.bid = c.bid AND d.user_status = 2 AND b.status NOT IN (0,5) AND b.source&lt;&gt;2 
+	</select>
+	
+	<!-- 根据优惠券序列码修改用户使用状态 -->
+	<update id="mdyCouponUserStatus" parameterType="String">
+	    UPDATE t_coupon_detail SET user_status=0 WHERE cdid=#{cdid}
+	</update>
+	
+	<!-- 查询调单前的订单信息 -->
+	<select id="queryAdjBeforeOrderInfo" resultType="map" parameterType="String">
+	SELECT b.bid,b.sellerid as sellerId,b.sellername as sellerName,b.genussellerid,b.genusname,b.consume_jointid as consumeJointId,
+	b.consume_corporate as consumeCorporate,b.jointid,b.corporate,b.status as orderState,b.baseagio,b.uid,b.nname,
+	DATE_FORMAT(b.zdate,'%Y-%m-%d %H:%i:%s') AS zdate,b.paytype as payType,b.payid as payId,b.number as payCode,
+	b.money,b.give_money as giveMoney,b.profit,b.commision,b.payment,b.rebate,b.cdenom,b.cuser,b.area as sellerArea,
+	b.is_virtual as isFictitious,b.flat_agio as subsidy,b.flat_money as subsidy_money,b.commission
+	FROM   t_bill AS b 
+	WHERE  b.bid=#{bid}
+	</select>
+	
+	<!-- 查询调单后的订单信息resultMap -->
+	<resultMap type="java.util.Map" id="queryAdjAfterOrderInfo">
+		<result column="bid" property="bid" javaType="String"/>
+		<result column="sellerid" property="sellerid" javaType="String"/>
+		<result column="sellername" property="sellername" javaType="String"/>
+		<result column="genussellerid" property="genussellerid" javaType="String"/>
+		<result column="genusname" property="genusname" javaType="String"/>
+		<result column="consume_jointid" property="consume_jointid" javaType="String"/>
+		<result column="consume_corporate" property="consume_corporate" javaType="String"/>
+		<result column="jointid" property="jointid" javaType="String"/>
+		<result column="corporate" property="corporate" javaType="String"/>
+		<result column="baseagio" property="baseagio" javaType="String"/>
+		<result column="commission" property="commission" javaType="String"/>
+		<result column="bfirst" property="bfirst" javaType="String"/>
+		<result column="area" property="area" javaType="String"/>
+		<result column="uid" property="uid" javaType="String"/>
+		<result column="flat_agio" property="flat_agio" javaType="String"/>
+		<result column="paytype" property="paytype" javaType="String"/>
+		<result column="money" property="money" javaType="String"/>
+		<result column="flat_agio" property="flat_agio" javaType="String"/>
+		<result column="flat_money" property="flat_money" javaType="String"/>
+		<result column="status" property="status" javaType="String"/>
+	</resultMap>
+	
+	<!-- 查询调单后的订单信息 -->
+	<select id="queryAdjAfterOrderInfo" parameterType="String" resultMap="queryAdjAfterOrderInfo" >
+	SELECT b.bid,b.sellerid,b.sellername,b.genussellerid,b.genusname,b.consume_jointid,b.consume_corporate,
+		   b.jointid,b.corporate,b.baseagio,b.commission,b.bfirst,b.area,b.uid,b.flat_agio,b.paytype,b.money,
+		   b.flat_agio,b.flat_money,b.status
+	FROM   t_bill AS b 
+	WHERE b.bid=#{orderId}
+	</select>
+	
+	<!-- 查询调单信息 -->
+	<select id="queryAdjustInfo" parameterType="String" resultType="map">
+	SELECT sellerid,bid,phoneid,money,DATE_FORMAT(sdate,'%Y-%m-%d %H:%i:%s') AS sdate,handlestatu,remark,
+		   uid,DATE_FORMAT(pdate,'%Y-%m-%d %H:%i:%s') AS pdate,handleuser,reason
+	FROM   t_adjust_apply WHERE bid=#{bid}
+	</select>
+	
+	<!-- 更新调单后的订单信息 -->
+	<update id="modifyAdjustOrderInfo" parameterType="map">
+		UPDATE t_bill SET
+		<if test="sellerId!=null and sellerId!=''">
+			sellerid=#{sellerId},
+		</if>
+		<if test="sellerName!=null and sellerName!=''">
+			sellername=#{sellerName},
+		</if>
+		<if test="genussellerid!=null and genussellerid!=''">
+			genussellerid=#{genussellerid},
+		</if>
+		<if test="genusname!=null and genusname!=''">
+			genusname=#{genusname},
+		</if>
+		<if test="cpartnerId!=null and cpartnerId!=''">
+			consume_jointid=#{cpartnerId},
+		</if>
+		<if test="cpartnerName!=null and cpartnerName!=''">
+			consume_corporate=#{cpartnerName},
+		</if>
+		<if test="bpartnerId!=null and bpartnerId!=''">
+			jointid=#{bpartnerId},
+		</if>
+		<if test="bpartnerName!=null and bpartnerName!=''">
+			corporate=#{bpartnerName},
+		</if>
+		<if test="sellerAreaId!=null and sellerAreaId!=''">
+		 	area=#{sellerAreaId},
+		</if>
+		bid=bid
+		WHERE bid=#{orderId}
+	</update>
+	
+	<!-- 更新调单记录信息 -->
+	<update id="modifyAdjustApply" parameterType="map">
+		UPDATE t_adjust_apply SET
+		<if test="adjstatus!=null and adjstatus!=''">
+			handlestatu=#{adjstatus},
+		</if>
+		<if test="adjreason!=null and adjreason!=''">
+			reason=#{adjreason},
+		</if>
+		<if test="pdate!=null and pdate!=''">
+			pdate=#{pdate},
+		</if>
+		bid=bid
+		WHERE bid=#{bid} AND sellerid=#{sellerid}
+	</update>
+	
+	<!-- 根据商户ID和订单日期获取商户日订单统计信息 -->
+	<select id="querySellerCensusBySellerAndDate" parameterType="String" resultType="map">
+	SELECT * FROM t_seller_day_census WHERE sellerid=#{sellerid} and order_date=#{orderdate}
+	</select>
+	
+	<!-- 根据合作商ID和订单日期查询合作商统计信息 -->
+	<select id="queryJointCensusByJointAndDate" parameterType="map" resultType="map">
+	SELECT * FROM t_joint_day_census WHERE jointid=#{jointId} AND order_date=#{orderDate}
+	</select>
+	
+	<!-- 根据合作商ID和订单日期和商家ID查询合作商收益统计信息 -->
+	<select id="queryJointProfitCensus" parameterType="map" resultType="map">
+	SELECT * FROM t_joint_profit_censusd WHERE jointid=#{jointId} AND sellerid=#{sellerId} AND order_date=#{orderDate}
+	</select>
+	
+	<!-- 更新调单后的商户日统计 -->
+	<update id="modifySellerDayCensus" parameterType="com.xmniao.domain.order.SellerDayCensusBean">
+		UPDATE
+		t_seller_day_census
+		SET
+		water_total=#{waterTotal},
+		rebate_total=#{rebateTotal},
+		income=#{income},
+		commision=#{commision},
+		ledger_total=#{ledgerTotal},
+		order_total=#{orderTotal},
+		yledger=#{yledger},
+		wledger=#{wledger},
+		shop_total=#{shopTotal},
+		sellerid=sellerid
+		WHERE sellerid=#{sellerId} AND order_date=#{orderDate}
+	</update>
+	
+	<!-- 更新调单后的合作商订单统计 -->
+	<update id="modifyJointDayCensus" parameterType="map">
+		UPDATE t_joint_day_census
+		SET
+		<if test="profitTotal!=null and profitTotal!=''">
+			profit_total=#{profitTotal},
+		</if>
+		<if test="accountTotal!=null and accountTotal!=''">
+			account_total=#{accountTotal},
+		</if>
+		jointid=jointid
+		WHERE jointid=#{jointId} AND order_date=#{orderDate}
+	</update>
+	
+	<!-- 更新调单后的合作商收益订单统计 -->
+	<update id="modifyJointProfitDayCensus" parameterType="map">
+		UPDATE t_joint_profit_censusd
+		SET
+		<if test="ledgerProfit!=null and ledgerProfit!=''">
+			ledger_profit=#{ledgerProfit},
+		</if>
+		<if test="notProfit!=null and notProfit!=''">
+			not_profit=#{notProfit},
+		</if>
+		<if test="hasProfit!=null and hasProfit!=''">
+			has_profit=#{hasProfit},
+		</if>
+		<if test="poundage!=null and poundage!=''">
+			poundage=#{poundage},
+		</if>
+		<if test="waterTotal!=null and waterTotal!=''">
+			water_total=#{waterTotal},
+		</if>
+		<if test="commision!=null and commision!=''">
+			commision=#{commision},
+		</if>
+		jointid=jointid,
+		sellerid=sellerid
+		WHERE jointid=#{jointId} AND
+		sellerid=#{sellerId} AND
+		order_date=#{orderDate}
+	</update>
+	
+	<!-- 插入调单申请记录信息 -->
+	<insert id="addAdjustApplyInfo" parameterType="com.xmniao.domain.order.AdjustApplyBean"
+	 keyProperty="adid" useGeneratedKeys="true">
+	INSERT INTO t_adjust_apply
+            (sellerid,
+             bid,
+             phoneid,
+             money,
+             sdate,
+             handlestatu,
+             remark,
+             uid,
+             pdate,
+             handleuser,
+             reason)
+	VALUES (#{sellerid},
+        	#{bid},
+        	#{phoneid},
+        	#{money},
+        	#{sdate},
+        	#{handlestatu},
+        	#{remark},
+        	#{uid},
+        	#{pdate},
+        	#{handleuser},
+        	#{reason})
+	</insert>
+	
+	<!-- 查询 北京4323   上海4312  广州1964  深圳1988  区域编码 -->	
+	<select id="findAreaList" resultType="java.util.Map">
+		SELECT area_id,title,pid FROM t_area WHERE pid IN(4323,4312,1964,1988)
+	</select>
+	
+	<!-- 查询积分订单 总结算价 -->
+		<select id="selectBargainIncome" parameterType="int" resultType="java.math.BigDecimal">
+	select sum(seller_price) income 
+	from t_bill_bargain a,t_bargain_product b where b.bp_id = a.bpid and a.sellerid=#{sellerid} and a.status=1
+	and DATE_FORMAT(pay_time,'%Y-%m-%d')=#{orderDate}
+		</select>
+	<!-- 查询积分订单数量 -->
+	<select id="queryBargainCount" parameterType="map" resultType="int">
+	select count(1) count from t_bill_bargain a,t_bargain_product b where 
+	b.bp_id = a.bpid and a.status=1 and a.sellerid=#{sellerid} and DATE_FORMAT(pay_time,'%Y-%m-%d')=DATE_FORMAT(#{orderDate},'%Y-%m-%d')
+	</select>
+	<!-- 查询积分订单流水 -->
+	<select id="queryBargainMount" parameterType="map" resultType="java.math.BigDecimal">
+		select sum(seller_price) amount from t_bill_bargain 
+		where status=1 and sellerid=#{sellerid} and DATE_FORMAT(pay_time,'%Y-%m-%d')=DATE_FORMAT(#{orderDate},'%Y-%m-%d')
+	</select>
+	
+	
+	
+	<resultMap id="billBeanMap" type="com.xmniao.domain.order.BillBean" >
+    <id column="bid" property="bid" jdbcType="BIGINT" />
+    <result column="codeid" property="codeid" jdbcType="INTEGER" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="sellername" property="sellername" jdbcType="VARCHAR" />
+    <result column="consume_jointid" property="consumeJointid" jdbcType="INTEGER" />
+    <result column="nname" property="nname" jdbcType="VARCHAR" />
+    <result column="money" property="money" jdbcType="DECIMAL" />
+    <result column="profit" property="profit" jdbcType="DECIMAL" />
+    <result column="commision" property="commision" jdbcType="DECIMAL" />
+    <result column="payment" property="payment" jdbcType="DECIMAL" />
+    <result column="rebate" property="rebate" jdbcType="DECIMAL" />
+    <result column="aid" property="aid" jdbcType="INTEGER" />
+    <result column="fullname" property="fullname" jdbcType="VARCHAR" />
+    <result column="phoneid" property="phoneid" jdbcType="VARCHAR" />
+    <result column="bfirst" property="bfirst" jdbcType="BIT" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="sdate" property="sdate" jdbcType="TIMESTAMP" />
+    <result column="zdate" property="zdate" />
+    <result column="ydate" property="ydate" /> 
+    <result column="number" property="number" jdbcType="VARCHAR" />
+    <result column="paytype" property="paytype" jdbcType="VARCHAR" />
+    <result column="isaccount" property="isaccount" jdbcType="INTEGER" />
+    <result column="baseagio" property="baseagio" jdbcType="DOUBLE" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="hstatus" property="hstatus" jdbcType="INTEGER" />
+    <result column="consume_corporate" property="consumeCorporate" jdbcType="VARCHAR" />
+    <result column="genussellerid" property="genussellerid" jdbcType="INTEGER" />
+    <result column="genusname" property="genusname" jdbcType="VARCHAR" />
+    <result column="jointid" property="jointid" jdbcType="INTEGER" />
+    <result column="corporate" property="corporate" jdbcType="VARCHAR" />
+    <result column="mike_type" property="mikeType" jdbcType="TINYINT" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="commission" property="commission" jdbcType="VARCHAR" />
+    <result column="area" property="area" jdbcType="VARCHAR" />
+    <result column="zoneid" property="zoneid" jdbcType="INTEGER" />
+    <result column="payid" property="payid" jdbcType="VARCHAR" />
+    <result column="isverify" property="isverify" jdbcType="INTEGER" />
+    <result column="ldate" property="ldate" jdbcType="TIMESTAMP" />
+    <result column="fdate" property="fdate" jdbcType="TIMESTAMP" />
+    <result column="edate" property="edate" jdbcType="TIMESTAMP" />
+    <result column="comm_status" property="commStatus" jdbcType="TINYINT" />
+    <result column="estimate" property="estimate" jdbcType="TINYINT" />
+    <result column="is_virtual" property="isVirtual" jdbcType="INTEGER" />
+    <result column="flat_agio" property="flatAgio" jdbcType="DOUBLE" />
+    <result column="entry_status" property="entryStatus" jdbcType="TINYINT" />
+    <result column="give_money" property="giveMoney" jdbcType="DECIMAL" />
+    <result column="flat_money" property="flatMoney" jdbcType="DECIMAL" />
+    <result column="max_history" property="maxHistory" jdbcType="DECIMAL" />
+    <result column="cuser" property="cuser" jdbcType="DECIMAL" />
+    <result column="cdenom" property="cdenom" jdbcType="DECIMAL" />
+    <result column="third_uid" property="thirdUid" jdbcType="VARCHAR" />
+    <result column="normal" property="normal" jdbcType="TINYINT" />
+    <result column="is_activity" property="isActivity" jdbcType="TINYINT" />
+    <result column="prize_num" property="prizeNum" jdbcType="DECIMAL" />
+    <result column="source" property="source" jdbcType="INTEGER" />
+    <result column="phone_type" property="phoneType" jdbcType="TINYINT" />
+    <result column="version" property="version" jdbcType="VARCHAR" />
+    <result column="version_id" property="versionId" jdbcType="INTEGER" />
+    <result column="app_serial" property="appSerial" jdbcType="INTEGER" />
+    <result column="activity_conent" property="activityConent" jdbcType="VARCHAR"/>
+    <result column="imei" property="imei" jdbcType="VARCHAR" />
+    <result column="ratio" property="ratio" jdbcType="DOUBLE" />
+    <result column="ratio_money" property="ratioMoney" jdbcType="DECIMAL" />
+    <result column="order_source" property="orderSource" jdbcType="INTEGER" />
+    <result column="noId" property="noid" jdbcType="BIGINT" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="integral" property="integral" jdbcType="DOUBLE" />
+    <result column="xmer_uid" property="xmerUid" jdbcType="INTEGER" />
+    <result column="mikeid" property="mikeid" jdbcType="INTEGER" />
+    <result column="mikename" property="mikename" jdbcType="VARCHAR" />
+  	<result column="reduction" property="reduction" jdbcType="DECIMAL" />
+    <result column="coupon_type" property="couponType" jdbcType="INTEGER" />
+    <result column="r_phone" property="rPhone" jdbcType="VARCHAR" />
+    <result column="r_user_id" property="rUserId" jdbcType="INTEGER" />
+    <result column="full_reduction" property="fullReduction" jdbcType="DECIMAL" />
+    <result column="full_reduction_id" property="fullReductionId" jdbcType="INTEGER" />
+    <result column="ledger_mode" property="ledgerMode" jdbcType="INTEGER" />
+    <result column="cannel_status" property="cannelStatus" jdbcType="INTEGER" />
+    <result column="live_ledger" property="liveLedger" jdbcType="INTEGER" />
+    <result column="live_ledger_style" property="liveLedgerStyle" jdbcType="INTEGER" />
+    <result column="live_ledger_mode" property="liveLedgerMode" jdbcType="INTEGER" />
+    <result column="live_ledger_ratio" property="liveLedgerRatio" jdbcType="DOUBLE" />
+    <result column="seller_coin" property="sellerCoin" jdbcType="DECIMAL" />
+    <result column="live_coin" property="liveCoin" jdbcType="DECIMAL" />
+    <result column="live_coin_money" property="liveCoinMoney" jdbcType="DECIMAL" />
+    <result column="live_coin_ratio" property="liveCoinRatio" jdbcType="DECIMAL" />
+    <result column="uid_mb_ecno" property="uidMbEcno" jdbcType="VARCHAR" />
+    <result column="saas_channel" property="saasChannel" jdbcType="INTEGER" />
+</resultMap>
+  
+	<select id="getBillBean" resultMap="billBeanMap">
+		SELECT bill.*
+		FROM t_bill bill
+		WHERE bid=#{bid}
+	</select>
+	
+	<select id="getBillBeanList" resultMap="billBeanMap">
+		SELECT * 
+		FROM t_bill 
+		WHERE 
+		bid IN 
+		<foreach collection="list" item="bidItem" index="index" open="("  separator="," close=")" >
+			#{bidItem}
+		</foreach>
+	</select>
+	
+	<!-- 查询日营收 -->
+	<select id="queryIncome" parameterType="map" resultType="java.math.BigDecimal"> 
+	
+		SELECT 
+			sum(case when t_bill.coupon_type=2
+			then (money-cuser)*baseagio else
+			money*baseagio end)
+		 AS incone
+		FROM  t_bill WHERE sellerid=#{sellerid} AND STATUS IN (1,2,3,6,8,9) AND DATE_FORMAT(zdate,'%Y-%m-%d')=#{orderDate}
+	</select>
+	
+	<select id="getUserCountBySeller" parameterType="map" resultType="map">
+		SELECT V.uid,IFNULL(views,0)views,IFNULL(consumption,0)consumption  
+		FROM 
+		(SELECT uid,COUNT(1) views FROM t_bill WHERE sellerid=#{sellerid} GROUP BY uid) V LEFT JOIN
+		(SELECT uid,COUNT(1) consumption FROM t_bill WHERE sellerid=#{sellerid} AND STATUS>0 GROUP BY uid) C
+		ON V.uid=C.uid
+		ORDER BY uid
+		LIMIT ${pageNo*pageSize},#{pageSize}
+	</select>
+	
+	<select id="getUserCountByZone" parameterType="map" resultType="map">
+		SELECT V.uid,IFNULL(views,0)views,IFNULL(consumption,0)consumption  
+		FROM 
+		(SELECT uid,COUNT(1) views FROM t_bill WHERE zoneid=#{zoneid} GROUP BY uid) V LEFT JOIN
+		(SELECT uid,COUNT(1) consumption FROM t_bill WHERE zoneid=#{zoneid} AND STATUS>0 GROUP BY uid) C
+		ON V.uid=C.uid
+		ORDER BY uid
+		LIMIT ${pageNo*pageSize},#{pageSize}
+	</select>
+	
+	<select id="getUserCountByTrade" parameterType="map" resultType="map">
+		SELECT V.uid,IFNULL(views,0)views,IFNULL(consumption,0)consumption  
+		FROM 
+		(SELECT b.uid,COUNT(1) views FROM t_bill  b LEFT JOIN t_seller s ON b.`sellerid`=s.`sellerid` WHERE  s.genre=#{genre}  GROUP BY b.uid) V LEFT JOIN
+		(SELECT b.uid,COUNT(1) consumption FROM t_bill  b LEFT JOIN t_seller s ON b.`sellerid`=s.`sellerid` WHERE  s.genre=#{genre}  AND b.status>0 GROUP BY b.uid) C
+		ON V.uid=C.uid
+		ORDER BY uid
+		LIMIT ${pageNo*pageSize},#{pageSize}
+	</select>
+	
+	<update id="modifyBillVerify" parameterType="com.xmniao.domain.order.BillBean">
+		update t_bill 
+		set 
+		status=#{status},
+		ydate=#{ydate},
+		ldate=#{ldate}
+		where bid=#{bid} and status != 2
+	</update>
+	
+</mapper>

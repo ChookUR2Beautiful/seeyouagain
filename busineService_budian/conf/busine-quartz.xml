@@ -1,0 +1,555 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-3.2.xsd
+	http://www.springframework.org/schema/tx
+	http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+
+	<!-- 商家折扣定时更新业务逻辑处理实现类 -->
+	<bean id="jointQuertz" class="com.xmniao.service.quartz.JointQuertzService" />
+
+	<!-- 商家折扣更新 -->
+	<bean id="updateSellerAgio"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="jointQuertz" />
+		<property name="targetMethod" value="updateSellerAgio" />
+	</bean>
+	<!-- 商家折扣更新定时任务配置 -->
+	<bean id="timeUpdateSellerAgio"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="updateSellerAgio" />
+		<!-- 每天的 24点到24点59分(整点开始，每隔30分触发) -->
+		<property name="cronExpression" value="0 0/30 0 * * ?" />
+	</bean>
+	<!-- 总管理类 如果将lazy-init='false'那么容器启动就会执行调度程序 -->
+	<bean id="startQuertz" lazy-init="false" autowire="no"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="timeUpdateSellerAgio" />
+			</list>
+		</property>
+		<!-- <property name="autoStartup" value="false"></property> -->
+	</bean>
+
+	<!-- 业务系统服务商户日统计定时任务配置 -->
+	<!-- 业务系统定时处理商户前一天订单数据的实现类 -->
+	<bean id="orderQuertz" class="com.xmniao.service.quartz.OrderQuertzService" />
+	<!-- 定时处理前一天的订单数据队列 -->
+	<bean id="addOrderInfoQuertz"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="orderQuertz"></property>
+		<property name="targetMethod" value="addOrderInfo"></property>
+		<property name="concurrent" value="false"></property>
+	</bean>
+	<bean id="orderCronTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="addOrderInfoQuertz"></property>
+		<!-- 每天定时24点30分进行商家日统计 -->
+		<property name="cronExpression" value="0 03 11 * * ?"></property>
+	</bean>
+	
+	<!-- 收取寻蜜客服务费用任务 -->
+	<bean id="xmerQuertz" class="com.xmniao.service.quartz.XmerQuertzService" />
+	<!-- 任务详情 -->
+	<bean id="collectXmerFeeQuertz"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="xmerQuertz"></property>
+		<property name="targetMethod" value="collectXmerFee"></property>
+		<property name="concurrent" value="false"></property>
+	</bean>
+	<bean id="xmerCronTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="collectXmerFeeQuertz"></property>
+		<property name="cronExpression" value="0 * * * * ?"></property>
+	</bean>
+	
+	<!-- 合作商日统计定时任务配置 -->
+	<!-- 业务系统定时处理合作商前一天订单数据的实现类 -->
+	<bean id="partnerQuertz" class="com.xmniao.service.quartz.PartnerQuertzService" />
+	<bean id="addJointInfoQuertz"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="partnerQuertz"></property>
+		<property name="targetMethod" value="addPartnerInfo"></property>
+		<property name="concurrent" value="false"></property>
+	</bean>
+	<bean id="jointCronTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="addJointInfoQuertz"></property>
+		<!-- 每天定时凌晨1点进行合作商日统计 -->
+		<property name="cronExpression" value="0 00 15 * * ?"></property>
+	</bean>
+
+	<!-- 打赏活动业务定时任务配置 -->
+	<!-- 打赏活动业务处理实现类 -->
+	<bean id="rewardQuertz" class="com.xmniao.service.quartz.RewardActivityService">
+		<!-- 注入JMS生产者发送消息连接 -->
+		<property name="producer" ref="producerConnection" />
+		<!-- 注入JMS发送消息的主题 -->
+		<property name="msgtopic" ref="msgtopic" />
+		<!-- 注入打赏活动发送消息的标签Tags -->
+		<property name="tiptags" ref="tiptags" />
+	</bean>
+	<bean id="rewardacttyQuertz"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 注入执行定时任务的处理类 -->
+		<property name="targetObject" ref="rewardQuertz"></property>
+		<!-- 注入执行定时任务的处理方法 -->
+		<property name="targetMethod" value="rewardActivityProcess"></property>
+		<property name="concurrent" value="false"></property>
+	</bean>
+	<bean id="rewardActtyTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="rewardacttyQuertz"></property>
+		<!-- 每次10秒钟进行执行打赏业务 -->
+		<property name="cronExpression" value="0 */1 * * * ?"></property>
+	</bean>
+	
+	<!-- 退款定时任务配置srart -->
+	<bean id="refundQuertz" class="com.xmniao.service.quartz.ReFundQuertzService" />
+	<bean id="refundQuertzBean"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="refundQuertz"></property>
+		<property name="targetMethod" value="execute"></property>
+		<property name="concurrent" value="false"></property>
+	</bean>
+	<bean id="refundQuertzCronTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="refundQuertzBean"></property>
+		<!-- 测试时每隔一分钟执行一次 -->
+		<property name="cronExpression" value="0 0/1 * * * ?"></property>
+	</bean>
+	<!-- 退款定时任务配置end -->
+
+	<!-- 热点人物日统计定时任务配置 -->
+		<!-- 业务系统定时处理商户前一天订单数据的实现类 -->
+		<bean id="hotPersonQuertz" class="com.xmniao.service.quartz.HotPersonQuertzServie" />
+		<!-- 定时处理前一天的订单数据队列 -->
+		<bean id="hotPersonInfoQuertz"
+			class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+			<property name="targetObject" ref="hotPersonQuertz"></property>
+			<property name="targetMethod" value="execute"></property>
+	<!-- 		<property name="concurrent" value="false"></property>
+	 -->	</bean>
+		<bean id="hotPersonTrigger"
+			class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+			<property name="jobDetail" ref="hotPersonInfoQuertz"></property>
+			<!-- 每天定时24点30分进行商家日统计 -->
+			<property name="cronExpression" value="10 59 10 * * ?"></property>
+		</bean>
+	
+	<!-- 合作商日收益任务配置srart -->
+	<bean id="jointProfitQuertz" class="com.xmniao.service.quartz.JointProfitQuertzService" />
+	<bean id="jointProfitBean"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="jointProfitQuertz"></property>
+		<property name="targetMethod" value="jointProfitProcess"></property>
+		<property name="concurrent" value="false"></property>
+	</bean>
+	<bean id="jointProfitQuertzCronTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="jointProfitBean"></property>
+		<!-- 测试时每隔一分钟执行一次,线上零晨后只要跑一次 -->
+		<property name="cronExpression" value="0 21 15 * * ?"></property>
+	</bean>
+	<!-- 合作商日收益任务配置end -->
+
+	<!-- 积分商城线上订单任务配置srart -->
+	<bean id="onlineMallQuertz" class="com.xmniao.service.quartz.OnlineMallQuertzService" />
+	<bean id="onlineMallBean"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="onlineMallQuertz"></property>
+		<property name="targetMethod" value="appleyOnlineOrderLedger"></property>
+		<property name="concurrent" value="false"></property>
+	</bean>
+	<bean id="onlineMallTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="onlineMallBean"></property>
+		<!-- 测试时每隔一分钟执行一次,线上零晨后只要跑一次 -->
+		<property name="cronExpression" value="*/10 * * * * ?"></property>
+	</bean>
+	
+	<!-- 15天后自动确认收货任务配置start -->
+	<bean id="onlineOrderVerifyBean"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="onlineMallQuertz"></property>
+		<property name="targetMethod" value="onlineOrderVerify"></property>
+		<property name="concurrent" value="false"></property>
+	</bean>
+	<bean id="onlineOrderVerifyTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="onlineOrderVerifyBean"></property>
+		<property name="cronExpression" value="0 */2 * * * ?"></property>
+	</bean>
+	
+	<!-- 积分商城线上订单任务配置end -->
+
+	<!-- 积分商城线下订单任务配置srart -->
+	<bean id="offlineMallQuertz" class="com.xmniao.service.quartz.OfflineMallQuertzService" />
+	<bean id="offlineMallBean"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="offlineMallQuertz"></property>
+		<property name="targetMethod" value="appleyOfflineOrderLedger"></property>
+		<property name="concurrent" value="false"></property>
+	</bean>
+	<bean id="offlineMallTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="offlineMallBean"></property>
+		<!-- 测试时每隔一分钟执行一次,线上零晨后只要跑一次 -->
+		<property name="cronExpression" value="0 */2 * * * ?"></property>
+	</bean>
+	<!-- 积分商城线下订单任务配置end -->
+	
+	<!-- 积分商城线下订单自动验单任务配置srart -->
+	<bean id="offlineMallVerifyBean"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="offlineMallQuertz"></property>
+		<property name="targetMethod" value="offlineOrderVerify"></property>
+		<property name="concurrent" value="false"></property>
+	</bean>
+	<bean id="offlineMallVerifyTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="offlineMallVerifyBean"></property>
+		<!-- 测试时每隔一分钟执行一次,线上零晨后只要跑一次 -->
+		<property name="cronExpression" value="0 */1 * * * ?"></property>
+	</bean>
+	<!-- 积分商城线下订单任务配置end -->
+
+	<!-- 定时更新商家直播信息任务配置srart -->
+	<bean id="sellerLiveWeightsBean"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="sellerLiveWeightsQuertz"></property>
+		<property name="targetMethod" value="sellerLiveModify"></property>
+		<property name="concurrent" value="false"></property>
+	</bean>
+	<bean id="sellerLiveWeightsTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="sellerLiveWeightsBean"></property>
+		<!-- 测试时每隔一分钟执行一次,线上零晨后只要跑一次 -->
+		<property name="cronExpression" value="0 */1 9-0 * * ?"></property>
+	</bean>
+	<!-- 定时更新商家直播信息任务配置end -->
+	
+	<!-- 定时更新商家活动信息任务配置srart -->
+	<bean id="sellerActivityBean"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="sellerActivityQuertz"></property>
+		<property name="targetMethod" value="sellerActivityModify"></property>
+		<property name="concurrent" value="false"></property>
+	</bean>
+	<bean id="sellerActivityTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="sellerActivityBean"></property>
+		<!-- 测试时每隔一分钟执行一次,线上零晨后只要跑一次 -->
+		<property name="cronExpression" value="0 5 9-0 * * ?"></property>
+	</bean>
+	<!--  定时更新商家活动信息任务配置end -->
+	
+	<!-- 会员每日红包配置任务配置srart -->
+	<bean id="liverDividendsBean"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="liverDividends0610Quertz"></property>
+		<property name="targetMethod" value="liverDividends"></property>
+		<property name="concurrent" value="false"></property>
+	</bean>
+	<bean id="liverDividendsTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="liverDividendsBean"></property>
+		<!-- 测试时每隔一分钟执行一次,线上零晨后只要跑一次 -->
+		<property name="cronExpression" value="0 */30 * * * ?"></property>
+	</bean>
+	<!--  定时更新商家活动信息任务配置end -->
+	
+	
+	<!-- 积分商城定时扫描未支付订单 -->
+	<bean id="mallOrderQuertz" class="com.xmniao.service.quartz.MallOrderQuertzService"/>
+	<bean id="mallOrderBean" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="mallOrderQuertz"/>
+		<property name="targetMethod" value="updateFreshBillOrder"/>
+		<property name="concurrent" value="false"/>
+	</bean>
+	<bean id="mallOrderTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="mallOrderBean"/>
+		<property name="cronExpression" value="0 */1 * * * ?"/>
+	</bean>
+	
+	<!-- activityGroup -->
+	<bean id="freshActivityQuertz" class="com.xmniao.service.quartz.FreshActivityQuertzService"/>
+	<bean id="freshActivityBean" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="freshActivityQuertz"/>
+		<property name="targetMethod" value="restoreRepertory"/>
+		<property name="concurrent" value="false"/>
+	</bean>
+	<bean id="freshActivityTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="freshActivityBean"/>
+		<property name="cronExpression" value="0 0/2 * * * ?"/>
+	</bean>
+	
+	<!-- 一元夺宝扫描购买次数足够开奖   -->
+	<bean id="indianaLotteryQuertz" class="com.xmniao.service.quartz.IndianaLotteryQuertzService"/>
+	<bean id="indianaLotteryBean" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="indianaLotteryQuertz"/>
+		<property name="targetMethod" value="decideWinner"/>
+		<property name="concurrent" value="false"/>
+	</bean>
+	<bean id="indianaLotteryTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="indianaLotteryBean"/>
+		<property name="cronExpression" value="0 0/5 * * * ? *"/>
+	</bean>
+	
+	<!-- 一元夺宝扫描即将结束活动用机器人补全   -->
+	<bean id="joinRobotBean" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="indianaLotteryQuertz"/>
+		<property name="targetMethod" value="joinRobot"/>
+		<property name="concurrent" value="false"/>
+	</bean>
+	<bean id="joinRobotTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="joinRobotBean"/>
+		<property name="cronExpression" value="0 0/10 * * * ? *"/>
+	</bean>
+	
+	<!-- 一元夺宝活动终止退款操作   -->
+	<bean id="doRefundBean" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="indianaLotteryQuertz"/>
+		<property name="targetMethod" value="doRefund"/>
+		<property name="concurrent" value="false"/>
+	</bean>
+	<bean id="doRefundTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="doRefundBean"/>
+		<property name="cronExpression" value="0 0/30 * * * ? *"/>
+	</bean>
+
+	<!-- 每月一号统计主播工资   -->
+	
+	<bean id="liveSalaryQuertz" class="com.xmniao.service.quartz.LiveSalaryQuertzService"/>
+	<bean id="liveSalaryBean" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="liveSalaryQuertz"/>
+		<property name="targetMethod" value="exected"/>
+		<property name="concurrent" value="false"/>
+	</bean>
+	<bean id="liveSalaryTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="liveSalaryBean"/>
+		<property name="cronExpression" value="0 0 1 1 1/1 ?"/>
+	</bean>
+	
+	<!-- 定时任务业务处理的调度工厂 -->
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<!-- 注入定时订单处理 -->
+				<!-- <ref bean="orderCronTrigger" />
+				注入合作商统计定时处理
+				<ref bean="jointCronTrigger" /> -->
+				<!-- 注入打赏活动业务定时处理 -->
+				<!-- <ref bean="rewardActtyTrigger" /> -->
+				<!-- 注入退款定时任务处理 -->
+				<!-- <ref bean="refundQuertzCronTrigger"/> -->
+				<!-- 合作商日收益定时配置 -->
+				<!-- <ref bean="jointProfitQuertzCronTrigger"/> -->
+				<!-- <ref bean ="hotPersonTrigger"/> -->
+				<!-- <ref bean ="offlineMallTrigger" /> -->
+				<!-- <ref bean ="onlineMallTrigger" /> -->
+				<!-- <ref bean ="xmerCronTrigger" /> -->
+				<!-- <ref bean ="offlineMallVerifyTrigger" /> -->
+				<!-- <ref bean = "onlineOrderVerifyTrigger"/>  -->
+				<!-- <ref bean="sellerLiveWeightsTrigger"/>  -->
+				<!-- <ref bean="sellerActivityTrigger"/>  -->
+				<!-- <ref bean="liverDividendsTrigger"/> -->
+				<!-- <ref bean="mallOrderTrigger"/> -->
+				<!-- <ref bean="freshActivityTrigger"/> -->
+				<!-- <ref bean="executeAuctionTrigger"/> 
+				<ref bean="indianaLotteryTrigger"/>
+				<ref bean="joinRobotTrigger"/>
+				<ref bean="doRefundTrigger"/>
+				<ref bean="liveSalaryTrigger"/>-->
+				<!-- <ref bean="verExcitationTrigger"/>
+				<ref bean="maibaoAdvenceLedgerTrigger"/>
+				<ref bean="vstarPlayerInfoTrigger"/>
+				<ref bean="vstarPlayerRankTrigger"/>
+				<ref bean="vstarPlayerInfoWeekTrigger"/> -->
+
+				<!-- <ref bean="imageRemoveTrigger"/>
+				<ref bean="manorUpdateManorInfoTrigger"/>
+				<ref bean="manorUpdatePlantFlowerTrigger"/> -->
+				<!--<ref bean="manorPushMessageNewFriendTrigger"/>-->
+				<!-- <ref bean="manorPushMessageEarningTrigger"/>
+				<ref bean="manorDailyEarningTrigger"/> -->
+				
+			</list>
+		</property>
+	</bean>
+	
+	
+	<!-- 竞拍活动扫描竞拍成功   -->
+	<bean id="executeAuctionQuertz" class="com.xmniao.service.quartz.FreshActivityAuctionQuertzService"/>
+	
+	<bean id="executeAuctionBean" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="executeAuctionQuertz"/>
+		<property name="targetMethod" value="executeFreshActivityAuction"/>
+		<property name="concurrent" value="false"/>
+	</bean>
+	<bean id="executeAuctionTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="executeAuctionBean"/>
+		<property name="cronExpression" value="0 */30 * * * ?"/>
+	</bean>
+
+    <!--脉宝分账信息通知扫描-->
+    <bean id="maibaoAdvenceLedgerQuartz" class="com.xmniao.service.quartz.MaibaoAdvenceLedgerQuartzService"/>
+	<bean id="maibaoAdvenceLedgerJobDetaill" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="maibaoAdvenceLedgerQuartz"/>
+		<property name="targetMethod" value="scanAndSendLedgerMessage"/>
+		<property name="concurrent" value="false"/>
+	</bean>
+	<bean id="maibaoAdvenceLedgerTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="maibaoAdvenceLedgerJobDetaill"/>
+		<!--每天凌晨 2:00 点执行任务-->
+		<property name="cronExpression" value="0 0 2 * * ? *"/>
+	</bean>
+
+    <!--扫描满足奖励方案A发放条件的充值记录-->
+	<bean id="verExcitationQuartzService" class="com.xmniao.service.quartz.VerExcitationQuartzService"/>
+	<bean id="verExcitationJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="verExcitationQuartzService"/>
+		<property name="targetMethod" value="scanPlanA"/>
+		<property name="concurrent" value="false"/>
+	</bean>
+    <bean id="verExcitationTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="verExcitationJobDetail"/>
+		<!--每月25号 1:00 执行-->
+		<property name="cronExpression" value="0 0 1 25 * ? "/>
+	</bean>
+
+	<!--黄金庄园定时种花-->
+	<bean id="manorQuatrzService" class="com.xmniao.service.quartz.ManorQuatrzService"></bean>
+	<bean id="manorUpdatePlantFlowerJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="manorQuatrzService"/>
+		<property name="targetMethod" value="autoPlantFlowers"/>
+		<property name="concurrent" value="false"/>
+	</bean>
+    <bean id="manorUpdatePlantFlowerTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="manorUpdatePlantFlowerJobDetail"/>
+		<!--每半个小时更新触发一次-->
+		<property name="cronExpression" value="0 3/30 * * * ?"/>
+	</bean>
+	<!--黄金庄园定时更新庄园信息-->
+	<bean id="manorUpdateManorInfoJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="manorQuatrzService"/>
+		<property name="targetMethod" value="scanManorAndUpdateManorInfo"/>
+		<property name="concurrent" value="false"/>
+	</bean>
+	<bean id="manorUpdateManorInfoTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="manorUpdateManorInfoJobDetail"/>
+		<!--每半个小时更新触发一次-->
+		<property name="cronExpression" value="0 1/30 * * * ?"/>
+	</bean>
+	
+	<!--统计新时尚大赛选手信息定时任务-->
+	<bean id="vstarPlayerInfoQuartzService" class="com.xmniao.service.quartz.VstarPlayerInfoQuartzService">
+		<!-- 节点总数 -->
+		<property name="nodeTotal" value='1'></property>
+		<!-- 当前节点标志 -->
+		<property name="currentNode" value='0'></property>
+		<!-- 单次查询记录数 -->
+		<property name="limit" value='200'></property>
+	</bean>
+	<bean id="vstarPlayerInfoJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="vstarPlayerInfoQuartzService"/>
+		<property name="targetMethod" value="startJob"/>
+		<!-- 是否允许任务并发执行。当值为false时，表示必须等到前一个线程处理完毕后才再启一个新的线程 --> 
+		<property name="concurrent" value="false"/>
+	</bean>
+    <bean id="vstarPlayerInfoTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="vstarPlayerInfoJobDetail"/>
+		<!--格式: [秒] [分] [小时] [日] [月] [周] [年] 每隔5分钟执行一次-->
+		<property name="cronExpression" value="0 0/5 * * * ?"/>
+	</bean>
+	
+	<!-- 周榜、月榜信息  -->
+	<bean id="vstarPlayerInfoJobWeekDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="vstarPlayerInfoQuartzService"/>
+		<property name="targetMethod" value="startJobRankInfo"/>
+		<!-- 是否允许任务并发执行。当值为false时，表示必须等到前一个线程处理完毕后才再启一个新的线程 --> 
+		<property name="concurrent" value="false"/>
+	</bean>
+    <bean id="vstarPlayerInfoWeekTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="vstarPlayerInfoJobWeekDetail"/>
+		<!--格式: [秒] [分] [小时] [日] [月] [周] [年] 每天凌晨3点执行-->
+		<!-- <property name="cronExpression" value="0 0 3 * * ?"/> -->
+		<property name="cronExpression" value="0 0 0/1 * * ?"/>
+	</bean>
+	
+	
+	<!--新时尚大赛选手信息排名任务-->
+	<bean id="vstarPlayerRankQuartzService" class="com.xmniao.service.quartz.VstarPlayerRankQuartzService">
+	</bean>
+	<bean id="vstarPlayerRankJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="vstarPlayerRankQuartzService"/>
+		<property name="targetMethod" value="startJob"/>
+		<!-- 是否允许任务并发执行。当值为false时，表示必须等到前一个线程处理完毕后才再启一个新的线程 --> 
+		<property name="concurrent" value="false"/>
+	</bean>
+    <bean id="vstarPlayerRankTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="vstarPlayerRankJobDetail"/>
+		<!--格式: [秒] [分] [小时] [日] [月] [周] [年] 每天凌晨2点执行-->
+		<!-- <property name="cronExpression" value="0 0 2 * * ?"/> -->
+		<property name="cronExpression" value="0 0 0/1 * * ?"/>
+	</bean>
+
+	<!--黄金庄园定时发放庄园收益-->
+	<bean id="manorDailyEarningJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="manorQuatrzService"/>
+		<property name="targetMethod" value="manorDailyEarning"/>
+		<property name="concurrent" value="false"/>
+	</bean>
+	<bean id="manorDailyEarningTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="manorDailyEarningJob"/>
+		<!--每天凌晨1:00执行-->
+		<property name="cronExpression" value="0 0 1 * * ? "/>
+	</bean>
+
+	<!--自动推送新园友-->
+	<bean id="manorPushMessageNewFriend" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="manorQuatrzService"/>
+		<property name="targetMethod" value="pushNewFriend"/>
+		<property name="concurrent" value="false"/>
+	</bean>
+	<bean id="manorPushMessageNewFriendTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="manorPushMessageNewFriend"/>
+		<!--每5分钟执行一次-->
+		<property name="cronExpression" value="0 0 11 * * ?"/>
+	</bean>
+
+	<!--自动推送未领取花蜜-->
+	<bean id="manorPushMessageEarning" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="manorQuatrzService"/>
+		<property name="targetMethod" value="pushMessageEarning"/>
+		<property name="concurrent" value="false"/>
+	</bean>
+	<bean id="manorPushMessageEarningTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="manorPushMessageEarning"/>
+		<!--推送时间： 每天一条  11:00-->
+		<property name="cronExpression" value="0 0 12,19 * * ?"/>
+	</bean>
+
+
+
+	<!-- 定时清除图片任务 -->
+	<bean id="imageRemoveJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="imageRemoveQuertz"/>
+		<property name="targetMethod" value="removeImage"/>
+		<property name="concurrent" value="false"/>
+	</bean>
+	<bean id="imageRemoveTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="imageRemoveJob"/>
+		<!--推送时间： 每天第一条  12:00 每天第二条  19:00-->
+		<property name="cronExpression" value="0 8 0 1 */1 ? *"/>
+	</bean>
+
+</beans>

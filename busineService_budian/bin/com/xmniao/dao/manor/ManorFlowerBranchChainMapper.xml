@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.dao.manor.ManorFlowerBranchChainMapper">
+  <resultMap id="BaseResultMap" type="com.xmniao.domain.manor.ManorFlowerBranchChain">
+    <id column="branch_id" jdbcType="VARCHAR" property="branchId" />
+    <id column="parent_id" jdbcType="VARCHAR" property="parentId" />
+  </resultMap>
+  
+  <delete id="deleteByBranchIdAndParentId">
+  	 delete from t_manor_flower_branch_chain where branch_id = #{branchId} and parent_id = #{parentId}
+  </delete>
+   
+  <select id="selectByBranchId" resultType="java.lang.String" >
+  	  select parent_id from t_manor_flower_branch_chain where branch_id = #{branchId} 
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="com.xmniao.domain.manor.ManorFlowerBranchChain">
+    delete from t_manor_flower_branch_chain
+    where branch_id = #{branchId,jdbcType=VARCHAR}
+      and parent_id = #{parentId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.domain.manor.ManorFlowerBranchChain">
+    insert into t_manor_flower_branch_chain (branch_id, parent_id)
+    values (#{branchId,jdbcType=VARCHAR}, #{parentId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.domain.manor.ManorFlowerBranchChain">
+    insert into t_manor_flower_branch_chain
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="branchId != null">
+        branch_id,
+      </if>
+      <if test="parentId != null">
+        parent_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="branchId != null">
+        #{branchId,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null">
+        #{parentId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>

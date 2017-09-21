@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.dao.live.LiveRecordDao">
+	
+	<!-- 查询订单信息-->
+	<select id="getSellerLiveRecordCount" parameterType="map" resultType="map">
+		SELECT 
+		zhibo_type zhiboType,count(1) coutNum
+		FROM t_live_record
+		WHERE sellerid=#{sellerid}
+		GROUP BY zhiboType
+	</select>
+	
+	<!-- 查询所有有直播的商家 -->
+	<select id="getHasLiveRecordSellerList" resultType="map" parameterType="map">
+		SELECT 
+			sellerid
+		FROM t_live_record
+		WHERE zhibo_type IN (0,1) and sellerid is not null
+		GROUP BY sellerid
+	</select>
+	
+	
+	<!-- 1、分组统计新时尚大赛主播场次 -->
+	<select id="getLiveInfoList" resultType="map" parameterType="map">
+		SELECT
+			<!-- 选手直播用户ID -->
+			anchor_id AS liverId,
+			<!-- 直播场次 -->
+			IFNULL(count(id),0) AS liveCount,
+			<!-- 直播时长 -->
+			IFNULL(SUM(zhibo_duration/60),0) AS liveTimeCount 
+		FROM
+			t_live_record
+		WHERE
+			zhibo_type IN ('3', '4', '5')
+		AND zhibo_duration >= 900
+		<if test="liverIds !=null and liverIds !='' ">
+			AND anchor_id IN 
+			<foreach collection="liverIds" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="startTime !=null and startTime != '' ">
+			<![CDATA[
+				and DATE_FORMAT(start_date,'%Y-%m-%d')>=DATE_FORMAT(#{startTime},'%Y-%m-%d')
+			]]>
+		</if>
+		<if test="endTime !=null and endTime != '' ">
+			<![CDATA[
+				and DATE_FORMAT(start_date,'%Y-%m-%d')<=DATE_FORMAT(#{endTime},'%Y-%m-%d')
+			]]>
+		</if>
+		AND `status`='1'
+		GROUP BY anchor_id
+	</select>
+</mapper>

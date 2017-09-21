@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xmniao.dao.seller.SellerDao">
+	<resultMap id="SellerMap" type="com.xmniao.domain.seller.SellerBean" >
+	  <id column="sellerid" property="sellerid" jdbcType="INTEGER" />
+	  <result column="staffid" property="staffid" jdbcType="INTEGER" />
+	  <result column="jointid" property="jointid" jdbcType="INTEGER" />
+	  <result column="sellername" property="sellername" jdbcType="VARCHAR" />
+	  <result column="province" property="province" jdbcType="VARCHAR" />
+	  <result column="city" property="city" jdbcType="VARCHAR" />
+	  <result column="area" property="area" jdbcType="VARCHAR" />
+	  <result column="zoneid" property="zoneid" jdbcType="INTEGER" />
+	  <result column="category" property="category" jdbcType="VARCHAR" />
+	  <result column="genre" property="genre" jdbcType="VARCHAR" />
+	  <result column="bewrite" property="bewrite" jdbcType="VARCHAR" />
+	  <result column="address" property="address" jdbcType="VARCHAR" />
+	  <result column="tel" property="tel" jdbcType="VARCHAR" />
+	  <result column="fullname" property="fullname" jdbcType="VARCHAR" />
+	  <result column="identity" property="identity" jdbcType="VARCHAR" />
+	  <result column="phoneid" property="phoneid" jdbcType="VARCHAR" />
+	  <result column="orgid" property="orgid" jdbcType="VARCHAR" />
+	  <result column="licenseid" property="licenseid" jdbcType="VARCHAR" />
+	  <result column="licenseurl" property="licenseurl" jdbcType="VARCHAR" />
+	  <result column="sdate" property="sdate" jdbcType="VARCHAR" />
+	  <result column="sexplain" property="sexplain" jdbcType="VARCHAR" />
+	  <result column="svalidity" property="svalidity" jdbcType="TIMESTAMP" />
+	  <result column="evalidity" property="evalidity" jdbcType="TIMESTAMP" />
+	  <result column="status" property="status" jdbcType="INTEGER" />
+	  <result column="examineinfo" property="examineinfo" jdbcType="VARCHAR" />
+	  <result column="signdate" property="signdate" jdbcType="TIMESTAMP" />
+	  <result column="udate" property="udate" jdbcType="TIMESTAMP" />
+	  <result column="give" property="give" jdbcType="INTEGER" />
+	  <result column="fatherid" property="fatherid" jdbcType="INTEGER" />
+	  <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+	  <result column="email" property="email" jdbcType="VARCHAR" />
+	  <result column="identityzurl" property="identityzurl" jdbcType="VARCHAR" />
+	  <result column="identityfurl" property="identityfurl" jdbcType="VARCHAR" />
+	  <result column="identitynurl" property="identitynurl" jdbcType="VARCHAR" />
+	  <result column="licensefurl" property="licensefurl" jdbcType="VARCHAR" />
+	  <result column="agreement" property="agreement" jdbcType="VARCHAR" />
+	  <result column="lssellername" property="lssellername" jdbcType="VARCHAR" />
+	  <result column="typename" property="typename" jdbcType="VARCHAR" />
+	  <result column="tradename" property="tradename" jdbcType="VARCHAR" />
+	  <result column="isprotocol" property="isprotocol" jdbcType="INTEGER" />
+	  <result column="agio_type" property="agioType" jdbcType="TINYINT" />
+	  <result column="agio" property="agio" jdbcType="DOUBLE" />
+	  <result column="yledger" property="yledger" jdbcType="REAL" />
+	  <result column="agio_time" property="agioTime" jdbcType="TIMESTAMP" />
+	  <result column="entry" property="entry" jdbcType="REAL" />
+	  <result column="is_virtual" property="isVirtual" jdbcType="INTEGER" />
+	  <result column="flat_agio" property="flatAgio" jdbcType="DOUBLE" />
+	  <result column="isforce" property="isforce" jdbcType="INTEGER" />
+	  <result column="isonline" property="isonline" jdbcType="INTEGER" />
+	  <result column="agio_agio" property="agioAgio" jdbcType="INTEGER" />
+	  <result column="agio_instruction" property="agioInstruction" jdbcType="VARCHAR" />
+	  <result column="ismultiple" property="ismultiple" jdbcType="INTEGER" />
+	  <result column="recommend" property="recommend" jdbcType="BIT" />
+	  <result column="recom_num" property="recomNum" jdbcType="INTEGER" />
+	  <result column="data_source" property="dataSource" jdbcType="INTEGER" />
+	  <result column="offline_reason" property="offlineReason" jdbcType="VARCHAR" />
+	  <result column="date_operate" property="dateOperate" jdbcType="TIMESTAMP" />
+	  <result column="xmn_service" property="xmnService" jdbcType="INTEGER" />
+	  <result column="islock" property="islock" jdbcType="INTEGER" />
+	  <result column="ratio" property="ratio" jdbcType="DOUBLE" />
+	  <result column="isfees" property="isfees" jdbcType="INTEGER" />
+	  <result column="debit" property="debit" jdbcType="DOUBLE" />
+	  <result column="agreement2" property="agreement2" jdbcType="VARCHAR" />
+	  <result column="agreement3" property="agreement3" jdbcType="VARCHAR" />
+	  <result column="agreement4" property="agreement4" jdbcType="VARCHAR" />
+	  <result column="label" property="label" jdbcType="INTEGER" />
+	  <result column="order" property="order" jdbcType="INTEGER" />
+	  <result column="real_order" property="realOrder" jdbcType="INTEGER" />
+	  <result column="agio_agio_num" property="agioAgioNum" jdbcType="DECIMAL" />
+	  <result column="is_ka" property="isKa" jdbcType="INTEGER" />
+	  <result column="brand_id" property="brandId" jdbcType="INTEGER" />
+	  <result column="save_money" property="saveMoney" jdbcType="DECIMAL" />
+	  <result column="uid" property="uid" jdbcType="INTEGER" />
+	  <result column="identitynurl" property="identitynurl" jdbcType="VARCHAR" />
+	  <result column="is_public" property="isPublic" jdbcType="INTEGER" />
+	  <result column="is_paid" property="isPaid" jdbcType="INTEGER" />
+	  <result column="join_dividend" property="joinDividend" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Seller_Column_List" >
+	  sellerid, staffid, jointid, sellername, province, city, area, zoneid, category, genre, 
+	  bewrite, address, tel, fullname, identity, phoneid, orgid, licenseid, licenseurl, 
+	  sdate, sexplain, svalidity, evalidity, status, examineinfo, signdate, udate, give, 
+	  fatherid, remarks, email, identityzurl, identityfurl, identitynurl, licensefurl, 
+	  agreement, lssellername, typename, tradename, isprotocol, agio_type, agio, yledger, 
+	  agio_time, entry, is_virtual, flat_agio, isforce, isonline, agio_agio, agio_instruction, 
+	  ismultiple, recommend, recom_num, data_source, offline_reason, date_operate, xmn_service, 
+	  islock, ratio, isfees, debit, agreement2, agreement3, agreement4, label, `order`, real_order, 
+	  agio_agio_num, is_ka, brand_id, save_money, uid,is_public,is_paid,join_dividend
+	</sql>
+	
+	<!-- 获取商家信息 -->
+	<select id="getSellerInfo" resultMap="SellerMap">
+		SELECT
+		<include refid="Seller_Column_List" />
+		FROM t_seller
+		WHERE sellerid=#{sellerid}
+	</select>
+	
+	<!-- 更新商家签约信息 -->
+	<update id="modifySellerInfo" parameterType="com.xmniao.domain.seller.SellerBean">
+		UPDATE t_seller
+		SET
+		<trim suffixOverrides=",">
+			<if test="status != null"> status=#{status}, </if>
+			<if test="signdate != null"> signdate=#{signdate}, </if>
+			<if test="udate != null"> udate=#{udate}, </if>
+		</trim>
+		WHERE sellerid=#{sellerid}
+	</update>
+	
+	<!-- 获取商家是否上传了环境图 -->
+	<select id="getSellerPicCount" resultType="int">
+		SELECT
+		COUNT(1)
+		FROM t_seller_pic
+		WHERE sellerid=#{sellerid} AND islogo=0
+	</select>
+	
+	<!-- 获取合作商信息 -->
+	<select id="getJointInfo" parameterType="Integer" resultType="map">
+		SELECT *
+		FROM t_joint
+		WHERE jointid=#{jointid}
+	</select>	
+
+	<!-- 查询 区域信息 -->
+	<select id="getSellerArea" resultType="map">
+		SELECT t1.title province,t2.title city,t3.title area
+		FROM t_area t1 
+		LEFT JOIN t_area t2 ON t1.area_id=t2.pid 
+		LEFT JOIN t_area t3 ON t2.area_id=t3.pid
+		WHERE t3.area_id=#{areaId} 
+	</select>
+	
+	<!-- 统计被收藏次数 -->
+	<select id="countSellerBySaved" parameterType="Integer" resultType="Long">
+		select count(1)
+		from t_urs_collect
+		where sellerid=#{sellerid}
+	</select>
+	
+	<select id="getSellerBySavedList" parameterType="Integer" resultType="map">
+		select * from t_urs_collect
+		LIMIT ${pageNo*pageSize},#{pageSize}
+	</select>
+	
+	<select id="getSellerList" resultType="com.xmniao.domain.seller.SellerBean" parameterType="map">
+		SELECT
+		<include refid="Seller_Column_List" />
+		FROM t_seller
+		WHERE 1=1
+		<if test="isonline!=null and isonline!=''">
+			AND isonline=#{isonline}
+		</if>
+		LIMIT ${pageNo*pageSize},#{pageSize}
+		
+	</select>
+	
+	<select id="getBusinessList" resultType="map" parameterType="map">
+		SELECT bid
+		FROM t_business
+		ORDER BY bid
+		LIMIT ${pageNo*pageSize},#{pageSize}
+	</select>
+	
+	<select id="getTradeList"  resultType="map" parameterType="map">
+		SELECT T.tid genre,T.pid category
+		FROM t_trade T
+		LEFT JOIN t_trade T1 ON T.pid=T1.tid WHERE T.pid!=0
+		ORDER BY T.tid
+		LIMIT ${pageNo*pageSize},#{pageSize}
+	</select>
+	
+	<select id="getSellerAccountPhone" resultType="string">
+		SELECT DISTINCT phone
+		FROM t_seller_account
+		WHERE sellerid=#{sellerid} AND receive_message=1
+	</select>
+	
+	<!-- 查询没有商家详情信息的商家ID列表 -->
+	<select id="getSellerDetailNull" resultType="Integer">
+		SELECT t_seller.sellerid FROM t_seller LEFT JOIN t_seller_detailed ON t_seller.`sellerid`=t_seller_detailed.`sellerid` WHERE t_seller_detailed.`sellerid` IS NULL  
+		limit #{s},#{p}
+	</select>
+	
+	<!-- 批量插入默认的商家详情记录信息 -->
+	<insert id="insertSellerDetail" parameterType="list">
+		insert into t_seller_detailed(sellerid) values
+		<foreach collection="list" item="item" index="index" separator="," >  
+        (#{item})  
+    	</foreach>  
+	</insert>
+	
+	<update id="updateStatusBySellerId">
+		 update t_seller  set status = #{status} where sellerid = #{sellerid}
+	</update>
+</mapper>

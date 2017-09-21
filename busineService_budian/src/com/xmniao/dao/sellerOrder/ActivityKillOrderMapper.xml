@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.dao.sellerOrder.ActivityKillOrderDao">
+	<!-- 获取秒杀记录信息 -->
+	<select id="getActivityRecord" resultType="map">
+		SELECT
+		id,activity_id,codeid,cid,uid,use_status,pay_status,number,phone,version,pay_amount,sellerid,baseagio,
+		sec_kill_amount,pay_type,seller_amount,isaccount
+		FROM
+		t_activity_kill_record
+		WHERE number = #{0}
+	</select>
+
+	<!-- 获取秒杀信息 -->
+	<select id="getActivity" resultType="map">
+		SELECT id,sellerid,sec_kill_amount
+		FROM t_activity_kill
+		WHERE id = #{0}
+	</select>
+
+	<!-- 更新秒杀记录状态 -->
+	<update id="updateActivityRecordStatus" parameterType="map">
+		UPDATE
+		t_activity_kill_record
+		SET 
+		<if test="status!=null and status!=''">
+			pay_status=#{status},
+		</if>
+		<if test="payType != null and payType != ''">
+			pay_type = #{payType},
+		</if>
+		<if test="codeid != null">
+			codeid = #{codeid},
+		</if>
+		<if test="payTime != null and payTime !=''">
+			pay_time =#{payTime},
+		</if>
+		<if test="sellerAmount != null and sellerAmount !=''">
+			seller_amount =#{sellerAmount},
+		</if>
+		<if test="isaccount != null and isaccount !=''">
+			isaccount =#{isaccount},
+		</if>
+		<if test="payTime != null and payTime !=''">
+			pay_time =#{payTime},
+		</if>
+		version = version +1
+		WHERE number = #{number}
+		AND version = #{version}
+	</update>
+
+	<!-- 查询活动关联的奖品信息 -->
+	<select id="getActivityRelation" resultType="map">
+		SELECT
+		activity_id,award_id,award_type
+		FROM t_activity_award_relation
+		WHERE
+		activity_id =#{0}
+	</select>
+
+	<!-- 发放秒杀奖品 -->
+	<insert id="insertUserCoupon" parameterType="map">
+		INSERT INTO
+		t_user_coupon
+		(cid,serial_no,denomination,get_way,get_time,uid,sellerid,phone,use_status,start_date,end_date,bid,activity_id,activity_type)
+		VALUES
+		(#{cid},#{serial_no},#{denomination},#{get_way},#{get_time},#{uid},#{sellerid},#{phone},#{use_status},#{start_date},#{end_date}
+		,#{bid},#{activity_id},#{activity_type})
+	</insert>
+
+	<select id="getSellerCoupon" resultType="map">
+		SELECT
+		cid,cname,denomination,start_date,end_date,sellerid,coupon_type
+		FROM t_seller_coupon_detail
+		WHERE cid = #{0}
+	</select>
+	<select id="getRedPackage" resultType="map">
+		SELECT
+		id,sellerid,IFNULL(total_amount,0.00) totalAmount,pay_status status,pay_type
+		payType,balance,commision,zbalance,integral,profit,order_no
+		orderNo,third_serial flowId,IFNULL(version_lock,1) version
+		FROM t_redpacket
+		WHERE id = #{0}
+	</select>
+	
+	<select id="getActivityRelaction" resultType="map">
+ 	SELECT activity_id,award_id,award_type 
+ 	FROM t_activity_award_relation 
+ 	WHERE id = #{0}
+	</select>
+</mapper>

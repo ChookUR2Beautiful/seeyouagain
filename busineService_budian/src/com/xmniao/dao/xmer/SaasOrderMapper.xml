@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xmniao.dao.xmer.SaasOrderDao">
+  <resultMap id="SaasSoldOrderMap" type="com.xmniao.domain.order.SaasSoldOrderBean" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="ordersn" property="ordersn" jdbcType="VARCHAR" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="sellername" property="sellername" jdbcType="VARCHAR" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="reason" property="reason" jdbcType="VARCHAR" />
+    <result column="pay_type" property="payType" jdbcType="BIT" />
+    <result column="zdate" property="zdate" jdbcType="TIMESTAMP" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="samount" property="samount" jdbcType="DECIMAL" />
+    <result column="pay_id" property="payId" jdbcType="VARCHAR" />
+    <result column="pay_code" property="payCode" jdbcType="VARCHAR" />
+    <result column="commission" property="commission" jdbcType="VARCHAR" />
+    <result column="saas_ordersn" property="saasOrdersn" jdbcType="DECIMAL" />
+    <result column="hstatus" property="hstatus" jdbcType="INTEGER"/>
+    <result column="udate" property="udate" jdbcType="TIMESTAMP"/>
+    <result column="agio" property="agio" jdbcType="DECIMAL" />
+  </resultMap>
+  
+  	
+  	<select id="sumStock" resultType="java.lang.Long">
+  		select ifnull(sum(soldnums-returnnums),0)
+  		from t_saas_order 
+  		where uid = #{uid} and saas_channel = #{saasChannel}
+  	</select>
+  
+  	<update id="updateStock">
+  		update t_saas_order set soldnums= #{soldnums},
+  		<if test="stock != null">
+  			stock= #{stock},
+  		</if>
+  		<if test="returnnums">
+  			returnnums=#{returnnums},
+  		</if>
+  		version=version+1
+  		where version=#{version}
+  		and ordersn = #{ordersn}
+  	</update>
+  
+  	<select id="getSaasOrderByUidType"  resultType="map">
+  		SELECT id,ordersn,dpid,uid,nums,amount,status,reason,sdate,zdate,pay_type payType,parentid, uid_relation_chain uidRelationChain,soldnums,stock,version,returnnums
+		FROM t_saas_order 
+		WHERE uid = #{uid}
+		and saas_channel = #{saasChannel}
+		and ordersn = #{saasOrdersn}
+  	</select>
+  
+	<!-- 查询寻蜜客套餐订单 -->
+	<select  id="getSaasOrderById" resultType="map" parameterType="String">
+		SELECT id,ordersn,dpid,uid,nums,amount,status,reason,sdate,zdate,pay_type payType,parentid, uid_relation_chain uidRelationChain,
+		       from_uid as fromUid, stock, mb_ecno as mbEcno, agio
+		FROM t_saas_order 
+		WHERE ordersn = #{bid}
+	</select>
+	
+	<!-- 更新寻蜜客套餐订单 -->
+	<update  id="updateSaasOrder" parameterType="map">
+		UPDATE t_saas_order 
+		SET status =#{status},
+			zdate=#{zdate},
+			pay_type=#{payType},
+			pay_id=#{payId},
+			pay_code=#{payCode}
+		WHERE ordersn=#{ordersn}
+	</update>
+	
+	<!-- 查询商家签约订单 -->
+	<select  id="getSaasSoldOrderById" resultType="map" parameterType="String">
+		SELECT id,ordersn,sellerid,sellername,uid,amount,status,reason,pay_type payType,zdate,hstatus,create_date createDate,saas_source,saas_channel,saas_ordersn
+		FROM t_saas_sold_order
+		WHERE ordersn=#{bid}
+	</select>
+	
+	<!-- 更新商家签约订单 -->
+	<update  id="updateSaasSoldOrder" parameterType="map">
+		UPDATE t_saas_sold_order 
+		SET 
+		<trim suffixOverrides=",">
+			<if test="status!=null and status!=''">status=#{status},</if>
+			<if test="hstatus!=null and hstatus!=''">hstatus=#{hstatus},</if>
+			<if test="payType!=null and payType!=''">pay_type=#{payType},</if>
+			<if test="payId!=null and payId!=''">pay_id=#{payId},</if>
+			<if test="payCode!=null and payCode !=''">pay_code=#{payCode},</if>
+			<if test="zdate!=null and zdate!=''">zdate=#{zdate},</if>
+			<if test="udate!=null and udate!=''">udate=#{udate},</if>
+			<if test="commission!=null and commission!=''">commission=#{commission},</if>
+			<if test="commission!=null and commission!=''">commission=#{commission},</if>
+		</trim>
+		WHERE ordersn=#{ordersn}
+	</update>
+	
+	<select id="getResplitSaasSoldOrder" resultMap="SaasSoldOrderMap">
+		SELECT sso.* 
+		FROM t_saas_sold_order sso 
+		LEFT JOIN  t_seller ts
+		ON sso.`sellerid` = ts.`sellerid`
+		WHERE  ts.`status` IN (3,5) AND  sso.hstatus=0 AND sso.status=1 
+		ORDER BY sso. id DESC
+
+	</select>
+	
+	<!-- 查询寻蜜客套餐订单 -->
+	<select  id="getSaasOrderByOrdersn" resultType="com.xmniao.domain.order.SaasOrderBean" parameterType="String">
+		SELECT id,ordersn,dpid,uid,nums,agio,amount,status,reason,sdate,zdate,pay_type payType
+		FROM t_saas_order 
+		WHERE ordersn = #{ordersn}
+	</select>
+	
+	<!-- 查询寻蜜 客已支付成功的SAAS套数订单数 -->
+	<select id="getCountSaasPackageOrder" parameterType="map" resultType="Long">
+		select COUNT(1) from t_saas_order
+		 where status>0 
+		 <if test="uid != null">and uid=#{uid}</if> 
+		 <if test="ordersn != null and ordersn != ''"> and ordersn != #{ordersn}</if>
+	</select>
+	
+	
+	<!-- 添加脉宝分账记录 -->
+	<insert id="insertMaibaoLedgerNotify" useGeneratedKeys="true" keyProperty="id" parameterType="map" >
+		insert into t_maibao_ledger
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="id != null" >
+	        id,
+	      </if>
+	      <if test="transNo != null" >
+	        trans_no,
+	      </if>
+	      <if test="mobile != null" >
+	        mobile,
+	      </if>
+	      <if test="ecno != null" >
+	        ecno,
+	      </if>
+	      <if test="uid != null" >
+	        uid,
+	      </if>
+	      <if test="amount != null" >
+	        amount,
+	      </if>
+	      <if test="ledgerTime != null" >
+	        ledger_time,
+	      </if>
+	      <if test="ledgerAmount != null" >
+	        ledger_amount,
+	      </if>
+	      <if test="merchantType != null" >
+	        merchant_type,
+	      </if>
+	      <if test="updateTime != null" >
+	        update_time,
+	      </if>
+	      <if test="merchantName != null" >
+	        merchant_name,
+	      </if>
+	      <if test="discount != null" >
+	        discount,
+	      </if>
+	      <if test="signedEcno != null" >
+	        signed_ecno,
+	      </if>
+	      <if test="notifyState != null" >
+	        notify_state,
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="id != null" >
+	        #{id,jdbcType=INTEGER},
+	      </if>
+	      <if test="transNo != null" >
+	        #{transNo,jdbcType=VARCHAR},
+	      </if>
+	      <if test="mobile != null" >
+	        #{mobile,jdbcType=VARCHAR},
+	      </if>
+	      <if test="ecno != null" >
+	        #{ecno,jdbcType=VARCHAR},
+	      </if>
+	      <if test="uid != null" >
+	        #{uid,jdbcType=INTEGER},
+	      </if>
+	      <if test="amount != null" >
+	        #{amount,jdbcType=DOUBLE},
+	      </if>
+	      <if test="ledgerTime != null" >
+	        #{ledgerTime,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="ledgerAmount != null" >
+	        #{ledgerAmount,jdbcType=DOUBLE},
+	      </if>
+	      <if test="merchantType != null" >
+	        #{merchantType,jdbcType=INTEGER},
+	      </if>
+	      <if test="updateTime != null" >
+	        #{updateTime,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="merchantName != null" >
+	        #{merchantName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="discount != null" >
+	        #{discount,jdbcType=DOUBLE},
+	      </if>
+	      <if test="signedEcno != null" >
+	        #{signedEcno,jdbcType=VARCHAR},
+	      </if>
+	      <if test="notifyState != null" >
+	        #{notifyState,jdbcType=INTEGER},
+	      </if>
+	    </trim>
+	</insert>
+	
+	
+	<!-- 查询寻蜜客套餐订单 -->
+	<select  id="getMaibaoLedgerByorderNo" resultType="map" parameterType="String">
+		SELECT  *
+			FROM t_maibao_ledger 
+		WHERE trans_no = #{orderNo}
+		LIMIT 0,1
+	</select>
+	
+		<!-- 根据V客uid查询其名下所有兑换成功的订单 -->
+	<select  id="getSaasOrderByUid" resultType="map" parameterType="Integer">
+		SELECT id, ordersn, uid, saas_channel as saasChannel, status, stock, returnnums, version, soldnums
+		FROM t_saas_order 
+		WHERE
+		 1 = 1
+		 AND saas_channel = 3
+		 AND status = 1 
+		 AND (stock > 0 OR returnnums > 0)
+		 AND uid = #{uid}
+		 ORDER BY sdate
+	</select>
+	
+	<select id="sumSaasNumber" resultType="java.lang.Integer">
+		select ifnull(sum(nums),0) 
+		from t_saas_order
+		where uid=#{uid} and saas_channel=#{saasChannel} and status=1
+	</select>
+
+	<insert id="insertVkeSaasOrder" parameterType="Map" >
+		insert into t_saas_order (
+		  ordersn, uid, nums, 
+	      status, sdate, soldnums, stock,
+	      returnnums, saas_channel)
+	    values (#{ordersn,jdbcType=VARCHAR},
+	      #{uid,jdbcType=INTEGER}, #{nums,jdbcType=INTEGER},
+	      #{status,jdbcType=TINYINT}, #{sdate,jdbcType=TIMESTAMP}, 
+	      #{soldnums,jdbcType=INTEGER}, #{stock,jdbcType=INTEGER}, 
+	      #{returnnums,jdbcType=INTEGER}, #{saasChannel,jdbcType=INTEGER})
+    </insert>
+	
+</mapper>

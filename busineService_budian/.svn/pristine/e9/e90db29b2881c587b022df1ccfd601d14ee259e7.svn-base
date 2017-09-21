@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.live.DebitcardOrderDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.domain.live.DebitcardOrder" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="uname" property="uname" jdbcType="VARCHAR" />
+    <result column="debitcard_id" property="debitcardId" jdbcType="INTEGER" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="sellertype" property="sellertype" jdbcType="INTEGER" />
+    <result column="sellername" property="sellername" jdbcType="VARCHAR" />
+    <result column="pay_coin" property="payCoin" jdbcType="DECIMAL" />
+    <result column="denomination" property="denomination" jdbcType="DECIMAL" />
+    <result column="entry_sellerid" property="entrySellerid" jdbcType="INTEGER" />
+    <result column="entry_sellername" property="entrySellername" jdbcType="VARCHAR" />
+    <result column="entry_selleragio" property="entrySelleragio" jdbcType="DECIMAL" />
+    <result column="pay_state" property="payState" jdbcType="INTEGER" />
+    <result column="quota" property="quota" jdbcType="DECIMAL" />
+    <result column="q_quota" property="qQuota" jdbcType="DECIMAL" />
+    <result column="ledger_level" property="ledgerLevel" jdbcType="INTEGER" />
+    <result column="quantity" property="quantity" jdbcType="INTEGER" />
+    <result column="seller_income" property="sellerIncome" jdbcType="DECIMAL" />
+    <result column="offset_seller_income" property="offsetSellerIncome" jdbcType="DECIMAL" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="pay_time" property="payTime" jdbcType="TIMESTAMP" />
+    <result column="uid_relation_chain" property="uidRelationChain" jdbcType="LONGVARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, uid,phone,uname,debitcard_id, sellerid, sellertype, sellername, pay_coin, denomination, entry_sellerid, 
+    entry_sellername, entry_selleragio, pay_state, quota, q_quota, ledger_level, quantity, 
+    seller_income, offset_seller_income, create_time,uid_relation_chain,pay_time,order_no
+  </sql>
+
+  <insert id="add" parameterType="com.xmniao.domain.live.DebitcardOrder" >
+    insert into t_debitcard_order
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="debitcardId != null" >
+        debitcard_id,
+      </if>
+      <if test="sellerid != null" >
+        sellerid,
+      </if>
+      <if test="sellertype != null" >
+        sellertype,
+      </if>
+      <if test="sellername != null" >
+        sellername,
+      </if>
+      <if test="payCoin != null" >
+        pay_coin,
+      </if>
+      <if test="denomination != null" >
+        denomination,
+      </if>
+      <if test="entrySellerid != null" >
+        entry_sellerid,
+      </if>
+      <if test="entrySellername != null" >
+        entry_sellername,
+      </if>
+      <if test="entrySelleragio != null" >
+        entry_selleragio,
+      </if>
+      <if test="payState != null" >
+        pay_state,
+      </if>
+      <if test="quota != null" >
+        quota,
+      </if>
+      <if test="qQuota != null" >
+        q_quota,
+      </if>
+      <if test="ledgerLevel != null" >
+        ledger_level,
+      </if>
+      <if test="quantity != null" >
+        quantity,
+      </if>
+      <if test="sellerIncome != null" >
+        seller_income,
+      </if>
+      <if test="offsetSellerIncome != null" >
+        offset_seller_income,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="uidRelationChain != null" >
+        uid_relation_chain,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="debitcardId != null" >
+        #{debitcardId,jdbcType=INTEGER},
+      </if>
+      <if test="sellerid != null" >
+        #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="sellertype != null" >
+        #{sellertype,jdbcType=INTEGER},
+      </if>
+      <if test="sellername != null" >
+        #{sellername,jdbcType=VARCHAR},
+      </if>
+      <if test="payCoin != null" >
+        #{payCoin,jdbcType=DECIMAL},
+      </if>
+      <if test="denomination != null" >
+        #{denomination,jdbcType=DECIMAL},
+      </if>
+      <if test="entrySellerid != null" >
+        #{entrySellerid,jdbcType=INTEGER},
+      </if>
+      <if test="entrySellername != null" >
+        #{entrySellername,jdbcType=VARCHAR},
+      </if>
+      <if test="entrySelleragio != null" >
+        #{entrySelleragio,jdbcType=DECIMAL},
+      </if>
+      <if test="payState != null" >
+        #{pay_state,jdbcType=INTEGER},
+      </if>
+      <if test="quota != null" >
+        #{quota,jdbcType=DECIMAL},
+      </if>
+      <if test="qQuota != null" >
+        #{qQuota,jdbcType=DECIMAL},
+      </if>
+      <if test="ledgerLevel != null" >
+        #{ledgerLevel,jdbcType=INTEGER},
+      </if>
+      <if test="quantity != null" >
+        #{quantity,jdbcType=INTEGER},
+      </if>
+      <if test="sellerIncome != null" >
+        #{sellerIncome,jdbcType=DECIMAL},
+      </if>
+      <if test="offsetSellerIncome != null" >
+        #{offsetSellerIncome,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uidRelationChain != null" >
+        #{uidRelationChain,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="update" parameterType="com.xmniao.domain.live.DebitcardOrder" >
+    update t_debitcard_order
+    <set >
+      <if test="payState != null" >
+        pay_state = #{payState,jdbcType=INTEGER},
+      </if>
+      <if test="ledgerLevel != null" >
+        ledger_level = #{ledgerLevel,jdbcType=INTEGER},
+      </if>
+      <if test="sellerIncome != null" >
+        seller_income = #{sellerIncome,jdbcType=DECIMAL},
+      </if>
+      <if test="offsetSellerIncome != null" >
+        offset_seller_income = #{offsetSellerIncome,jdbcType=DECIMAL},
+      </if>
+      <if test="payTime != null" >
+        pay_time = #{payTime,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="getById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_debitcard_order
+    where id = #{id}
+  </select>
+  
+  <select id="getByOrderNo" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_debitcard_order
+    where order_no = #{orderNo}
+  </select>
+  
+  <select id="get" resultMap="BaseResultMap" parameterType="com.xmniao.domain.live.DebitcardOrder" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_debitcard_order
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="getList" resultMap="BaseResultMap" parameterType="com.xmniao.domain.live.DebitcardOrder" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_debitcard_order
+    where 1=1
+    <if test="uid!=null">uid=#{uid}</if>
+    <if test="debitcardId!=null">debitcard_id=#{debitcardId}</if>
+    <if test="payState!=null">pay_state=#{payState}</if>
+  </select>
+  
+  	<select id="countSellerOrder" parameterType="com.xmniao.domain.live.DebitcardOrder" resultType="java.math.BigDecimal">
+		SELECT SUM(seller_income-offset_seller_income) 
+		FROM t_debitcard_order 
+		WHERE pay_state=1  AND debitcard_id=#{debitcardId} AND uid=#{uid} AND seller_income>offset_seller_income
+	</select>
+	
+	<select id="getSellerRechargeList" parameterType="com.xmniao.domain.live.DebitcardOrder" resultMap="BaseResultMap">
+		SELECT <include refid="Base_Column_List" /> 
+		FROM t_debitcard_order 
+		WHERE pay_state=1  AND debitcard_id=#{debitcardId} AND uid=#{uid} AND seller_income>offset_seller_income
+	</select>
+	
+	<update id="updateSellerOrderOffset" parameterType="Map">
+		UPDATE t_debitcard_order
+		SET  
+		offset_seller_income=offset_seller_income+#{offsetSellerIncome}
+		WHERE 
+		order_no = #{orderNo} and offset_seller_income=#{oldOffsetSellerIncome}
+	</update>
+	
+	<update id="initPreLedgerInfo" parameterType="com.xmniao.domain.live.DebitcardOrder">
+	    update t_debitcard_order
+	    <set >
+	      <if test="payState != null" >
+	        pay_state = #{payState,jdbcType=INTEGER},
+	      </if>
+	      <if test="ledgerLevel != null" >
+	        ledger_level = #{ledgerLevel,jdbcType=INTEGER},
+	      </if>
+	      <if test="sellerIncome != null" >
+	        seller_income = #{sellerIncome,jdbcType=DECIMAL},
+	      </if>
+	      <if test="offsetSellerIncome != null" >
+	        offset_seller_income = #{offsetSellerIncome,jdbcType=DECIMAL},
+	      </if>
+	      <if test="payTime != null" >
+	        pay_time = #{payTime,jdbcType=INTEGER},
+	      </if>
+	    </set>
+	    where id = #{id,jdbcType=INTEGER}
+	</update>
+</mapper>

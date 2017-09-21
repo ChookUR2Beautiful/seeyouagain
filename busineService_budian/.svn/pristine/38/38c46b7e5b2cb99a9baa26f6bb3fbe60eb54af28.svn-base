@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.manor.ManorFlowerMapper" >
+  <resultMap id="BaseResultMap" type="com.xmniao.domain.manor.ManorFlower" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="branch_id" property="branchId" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="florist_uid" property="floristUid" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="perish_time" property="perishTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, branch_id, type, florist_uid, uid, perish_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_manor_flower
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_manor_flower
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.domain.manor.ManorFlower" >
+    insert into t_manor_flower (id, branch_id, type, 
+      florist_uid, uid, perish_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{branchId,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, 
+      #{floristUid,jdbcType=INTEGER}, #{uid,jdbcType=INTEGER}, #{perishTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.domain.manor.ManorFlower" >
+    insert into t_manor_flower
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="branchId != null" >
+        branch_id,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="floristUid != null" >
+        florist_uid,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="perishTime != null" >
+        perish_time,
+      </if>
+      <if test="shareType != null">
+        share_type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="branchId != null" >
+        #{branchId,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="floristUid != null" >
+        #{floristUid,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="perishTime != null" >
+        #{perishTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="shareType != null">
+        #{shareType,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.domain.manor.ManorFlower" >
+    update t_manor_flower
+    <set >
+      <if test="branchId != null" >
+        branch_id = #{branchId,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="floristUid != null" >
+        florist_uid = #{floristUid,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="perishTime != null" >
+        perish_time = #{perishTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.domain.manor.ManorFlower" >
+    update t_manor_flower
+    set branch_id = #{branchId,jdbcType=VARCHAR},
+      type = #{type,jdbcType=INTEGER},
+      florist_uid = #{floristUid,jdbcType=INTEGER},
+      uid = #{uid,jdbcType=INTEGER},
+      perish_time = #{perishTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+  <insert id="insertBatch" parameterType="com.xmniao.domain.manor.ManorFlower">
+    INSERT INTO t_manor_flower
+    (
+    branch_id, type, florist_uid, uid, perish_time,share_type
+    )
+    VALUES
+    <foreach collection="flowers" item="flower" separator=",">
+      (
+      #{flower.branchId},#{flower.type},#{flower.floristUid},#{flower.uid},#{flower.perishTime},#{flower.shareType}
+      )
+    </foreach>
+
+  </insert>
+
+  <!-- 根据uid 更新花朵庄园-->
+  <update id="updateTypeByUid">
+    UPDATE t_manor_flower SET type = #{type}
+    WHERE uid = #{uid}
+  </update>
+
+  <!--查询用户节点下已枯萎 自己种植的花朵-->
+  <select id="selectPerishedFlowers" resultMap="BaseResultMap">
+    select f.*
+    from t_manor_flower f, t_manor_flower_branch_chain c
+    where c.parent_id = #{branch.id}
+          and c.branch_id = f.branch_id and now() > f.perish_time and f.florist_uid = #{uid} and f.type in (1, 2)
+    limit 100
+  </select>
+  
+  <update id="updateFlowerByMigrate">
+  		update t_manor_flower set branch_id = #{parentId} 
+  		where type = 1
+  		and florist_uid not in 
+  		<foreach collection="manorFlowerBranchs" open="(" close=")" separator="," item="item" >
+  			#{item.uid}
+  		</foreach> 
+  		and branch_id in 
+  		<foreach collection="manorFlowerBranchs" open="(" close=")" separator="," item="item" >
+  			#{item.id}
+  		</foreach> 
+  </update>
+  
+  <update id="updateFlowerSeedlingMigrate">
+  	  update t_manor_flower set branch_id = #{newParentBranchId},florist_uid = #{newParentUid}
+  	  where uid = #{childUid}
+  </update>
+  
+</mapper>

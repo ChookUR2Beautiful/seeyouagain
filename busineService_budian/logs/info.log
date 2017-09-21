@@ -1,0 +1,72 @@
+[DEBUG] 2017-09-12 16:00:00,146 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:00:15,904 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:00:24,222 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:00:43,998 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:00:48,180 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:01:13,063 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:01:16,956 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:01:41,729 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:01:44,971 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:02:05,884 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:02:08,031 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:02:31,791 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:02:36,926 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:03:00,294 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:03:03,826 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:03:28,315 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:03:29,934 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:03:55,199 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:03:58,435 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:04:22,879 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:04:26,002 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:04:51,566 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:04:54,227 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:05:18,033 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:05:20,422 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:05:45,958 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:05:46,395 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:06:15,187 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:06:15,950 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:06:40,975 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:06:43,971 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:07:05,605 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 16:07:08,031 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[WARN] 2017-09-12 16:07:18,597 org.apache.thrift.server.AbstractNonblockingServer$FrameBuffer - Got an IOException in internalRead!
+java.io.IOException: 远程主机强迫关闭了一个现有的连接。
+	at sun.nio.ch.SocketDispatcher.read0(Native Method)
+	at sun.nio.ch.SocketDispatcher.read(SocketDispatcher.java:43)
+	at sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:223)
+	at sun.nio.ch.IOUtil.read(IOUtil.java:197)
+	at sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:379)
+	at org.apache.thrift.transport.TNonblockingSocket.read(TNonblockingSocket.java:141)
+	at org.apache.thrift.server.AbstractNonblockingServer$FrameBuffer.internalRead(AbstractNonblockingServer.java:537)
+	at org.apache.thrift.server.AbstractNonblockingServer$FrameBuffer.read(AbstractNonblockingServer.java:338)
+	at org.apache.thrift.server.AbstractNonblockingServer$AbstractSelectThread.handleRead(AbstractNonblockingServer.java:203)
+	at org.apache.thrift.server.TThreadedSelectorServer$SelectorThread.select(TThreadedSelectorServer.java:580)
+	at org.apache.thrift.server.TThreadedSelectorServer$SelectorThread.run(TThreadedSelectorServer.java:540)
+[WARN] 2017-09-12 16:07:18,599 org.apache.thrift.server.AbstractNonblockingServer$FrameBuffer - Got an IOException in internalRead!
+java.io.IOException: 远程主机强迫关闭了一个现有的连接。
+	at sun.nio.ch.SocketDispatcher.read0(Native Method)
+	at sun.nio.ch.SocketDispatcher.read(SocketDispatcher.java:43)
+	at sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:223)
+	at sun.nio.ch.IOUtil.read(IOUtil.java:197)
+	at sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:379)
+	at org.apache.thrift.transport.TNonblockingSocket.read(TNonblockingSocket.java:141)
+	at org.apache.thrift.server.AbstractNonblockingServer$FrameBuffer.internalRead(AbstractNonblockingServer.java:537)
+	at org.apache.thrift.server.AbstractNonblockingServer$FrameBuffer.read(AbstractNonblockingServer.java:338)
+	at org.apache.thrift.server.AbstractNonblockingServer$AbstractSelectThread.handleRead(AbstractNonblockingServer.java:203)
+	at org.apache.thrift.server.TThreadedSelectorServer$SelectorThread.select(TThreadedSelectorServer.java:580)
+	at org.apache.thrift.server.TThreadedSelectorServer$SelectorThread.run(TThreadedSelectorServer.java:540)
+[WARN] 2017-09-12 16:07:18,602 org.apache.thrift.server.AbstractNonblockingServer$FrameBuffer - Got an IOException in internalRead!
+java.io.IOException: 远程主机强迫关闭了一个现有的连接。
+	at sun.nio.ch.SocketDispatcher.read0(Native Method)
+	at sun.nio.ch.SocketDispatcher.read(SocketDispatcher.java:43)
+	at sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:223)
+	at sun.nio.ch.IOUtil.read(IOUtil.java:197)
+	at sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:379)
+	at org.apache.thrift.transport.TNonblockingSocket.read(TNonblockingSocket.java:141)
+	at org.apache.thrift.server.AbstractNonblockingServer$FrameBuffer.internalRead(AbstractNonblockingServer.java:537)
+	at org.apache.thrift.server.AbstractNonblockingServer$FrameBuffer.read(AbstractNonblockingServer.java:338)
+	at org.apache.thrift.server.AbstractNonblockingServer$AbstractSelectThread.handleRead(AbstractNonblockingServer.java:203)
+	at org.apache.thrift.server.TThreadedSelectorServer$SelectorThread.select(TThreadedSelectorServer.java:580)
+	at org.apache.thrift.server.TThreadedSelectorServer$SelectorThread.run(TThreadedSelectorServer.java:540)

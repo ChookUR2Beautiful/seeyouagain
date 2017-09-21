@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xmniao.dao.refund.RefundOrderServiceDao">
+
+	<resultMap type="java.util.Map" id="orderInfoResultMap">
+	<result column="bid" property="bid" javaType="String"/>
+	<result column="sellerid" property="sellerid" javaType="String"/>
+	<result column="sellername" property="sellername" javaType="String"/>
+	<result column="consume_jointid" property="consume_jointid" javaType="String"/>
+	<result column="consume_corporate" property="consume_corporate" javaType="String"/>
+	<result column="genussellerid" property="genussellerid" javaType="String"/>
+	<result column="genusname" property="genusname" javaType="String"/>
+	<result column="jointid" property="jointid" javaType="String"/>
+	<result column="corporate" property="corporate" javaType="String"/>
+	<result column="mike_type" property="mike_type" javaType="String"/>
+	<result column="uid" property="uid" javaType="String"/>
+	<result column="nname" property="nname" javaType="String"/>
+	<result column="money" property="money" javaType="BigDecimal"/>
+	<result column="profit" property="profit" javaType="BigDecimal"/>
+	<result column="commision" property="commision" javaType="BigDecimal"/>
+	<result column="payment" property="payment" javaType="BigDecimal"/>
+	<result column="rebate" property="rebate" javaType="BigDecimal"/>
+	<result column="phoneid" property="phoneid" javaType="String"/>
+	<result column="status" property="status" javaType="Integer"/>
+	<result column="sdate" property="sdate" javaType="String"/>
+	<result column="zdate" property="zdate" javaType="String"/>
+	<result column="ydate" property="ydate" javaType="String"/>
+	<result column="number" property="number" javaType="String"/>
+	<result column="paytype" property="paytype" javaType="Integer"/>
+	<result column="isaccount" property="isaccount" javaType="Integer"/>
+	<result column="baseagio" property="baseagio" javaType="BigDecimal"/>
+	<result column="hstatus" property="hstatus" javaType="Integer"/>
+	<result column="commission" property="commission" javaType="String"/>
+	<result column="area" property="area" javaType="Integer"/>
+	<result column="payid" property="payid" javaType="String"/>
+	<result column="ldate" property="ldate" javaType="String"/>
+	<result column="fdate" property="fdate" javaType="String"/>
+	<result column="edate" property="edate" javaType="String"/>
+	<result column="flat_agio" property="flat_agio" javaType="BigDecimal"/>
+	<result column="give_money" property="give_money" javaType="BigDecimal"/>
+	<result column="bfirst" property="bfirst" javaType="Integer"/>
+	<result column="flat_money" property="flat_money" javaType="BigDecimal"/>
+	<result column="cuser" property="cuser" javaType="BigDecimal"/>
+	<result column="cdenom" property="cdenom" javaType="BigDecimal"/>
+	<result column="source" property="source" javaType="Integer"/>
+	</resultMap>
+
+	<!-- 根据订单编号查询订单的所有信息 -->
+	<select id="queryOrderInfo" parameterType="java.lang.String" resultType="map">
+	SELECT bid,sellerid,sellername,consume_jointid,consume_corporate,genussellerid,
+		   genusname,jointid,corporate,mike_type,uid,nname,money,profit,commision,payment,
+		   rebate,phoneid,status,DATE_FORMAT(sdate,'%Y-%m-%d %H:%i:%s') as sdate,
+		   DATE_FORMAT(zdate,'%Y-%m-%d %H:%i:%s') as zdate,DATE_FORMAT(ydate,'%Y-%m-%d %H:%i:%s') as ydate,
+		   number,paytype,isaccount,baseagio,hstatus,commission,area,payid,
+		   DATE_FORMAT(ldate,'%Y-%m-%d %H:%i:%s') as ldate,DATE_FORMAT(fdate,'%Y-%m-%d %H:%i:%s') as fdate,
+		   DATE_FORMAT(edate,'%Y-%m-%d %H:%i:%s') as edate,flat_agio,give_money,bfirst,
+		   flat_money,cuser,cdenom,source
+	FROM   t_bill where bid=#{bid}
+	</select>
+	
+	<!-- 根据订单编号查询订单的所有信息 -->
+	<select id="queryOrderInfoForRefund" parameterType="java.lang.String" resultType="map">
+	SELECT bid,sellerid,consume_jointid,
+		   genussellerid,jointid,mike_type,status,genusname,corporate,uid,
+		   DATE_FORMAT(sdate,'%Y-%m-%d %H:%i:%s') as sdate,
+		   DATE_FORMAT(zdate,'%Y-%m-%d %H:%i:%s') as zdate,
+		   DATE_FORMAT(ldate,'%Y-%m-%d %H:%i:%s') as ldate,
+		   DATE_FORMAT(edate,'%Y-%m-%d %H:%i:%s') as edate,
+		   DATE_FORMAT(fdate,'%Y-%m-%d %H:%i:%s') as fdate
+	FROM   t_bill where bid=#{bid}
+	</select>
+	
+	<!-- 根据订单编号查询订单的需要的统计信息来统计商户日收益，合作商日收益 -->
+	<select id="queryOrderInfoByBid" parameterType="java.lang.String" resultType="map">
+		SELECT 
+		  bid,
+		  sellerid,
+		  sellername,
+		  consume_corporate,
+		  genusname,
+		  corporate,
+		  money,
+		  rebate,
+		  consume_jointid,
+		  genussellerid,
+		  jointid,
+		  status,
+		  commission,
+		  CASE WHEN status IN (1,2,3,6,8,9) THEN 1
+  		  WHEN status IN (4,5,13) THEN -1 ELSE 0 END tag,
+		  DATE_FORMAT(zdate, '%Y-%m-%d %H:%i:%s') AS zdate,
+		  DATE_FORMAT(ldate, '%Y-%m-%d %H:%i:%s') AS ldate,
+		  DATE_FORMAT(fdate, '%Y-%m-%d %H:%i:%s') AS fdate 
+		FROM
+		  t_bill 
+		WHERE bid = #{bid} and status!=0  
+	</select>
+	
+	<!-- 查询统计数据是否存在 -->
+	<select id="querySellerCensusBySellerid" parameterType="map" resultType="int">
+		select count(sellerid) rownum from t_seller_day_census where sellerid=#{sellerid} and order_date=#{order_date}
+	</select>
+	
+	<!-- 插入商户日统计表 -->
+	<insert id="addSellerDayCensus" parameterType="map" 
+		    useGeneratedKeys="true" keyProperty="id">
+	INSERT INTO t_seller_day_census
+            (sellerid,
+             sellername,
+             jointid,
+             corporate,
+             water_total,
+             rebate_total,
+             income,
+             commision,
+             ledger_total,
+             order_total,
+             yledger,
+             wledger,
+             order_date,
+             census_time,
+             shop_total
+             )
+	VALUES 
+			(#{sellerid},
+	        #{sellername},
+	        #{jointid},
+	        #{corporate},
+	        #{water_total},
+	        #{rebate_total},
+	        #{income},
+	        #{commision},
+	        #{ledger_total},
+	        #{order_total},
+	        #{yledger},
+	        #{wledger},
+	        #{order_date},
+	        #{census_time},
+	        #{shop_total})
+	</insert>
+	
+	<!-- 修改商户日统计 -->
+	<update id="modifySellerCensusBySellerid" parameterType="map">
+		UPDATE
+		t_seller_day_census
+		SET
+		<if test="water_total!=0">
+			water_total=water_total+#{water_total},
+		</if>
+		<if test="rebate_total!=0">
+			rebate_total=rebate_total+#{rebate_total},
+		</if>
+		<if test="income!=0">
+			income=income+#{income},
+		</if>
+		<if test="commision!=0">
+			commision=commision+#{commision},
+		</if>
+		<if test="ledger_total!=0">
+			ledger_total=ledger_total+#{ledger_total},
+		</if>
+		<if test="order_total!=0">
+			order_total=order_total+#{order_total},
+		</if>
+		<if test="yledger!=0">
+			yledger=yledger+#{yledger},
+		</if>
+		<if test="wledger!=0">
+			wledger=wledger+#{wledger},
+		</if>
+		<if test="shop_total!=0">
+			shop_total=shop_total+#{shop_total},
+		</if>
+		sellerid=sellerid
+		WHERE sellerid=#{sellerid} AND order_date=#{order_date}
+	</update>
+	
+	<!-- 插入商户日统计表 -->
+	<insert id="insertSellerDayCensus" parameterType="com.xmniao.domain.order.SellerDayCensusBean" 
+		    useGeneratedKeys="true" keyProperty="id">
+	INSERT INTO t_seller_day_census
+            (sellerid,
+             sellername,
+             jointid,
+             corporate,
+             water_total,
+             rebate_total,
+             income,
+             commision,
+             ledger_total,
+             order_total,
+             yledger,
+             wledger,
+             order_date,
+             census_time,
+             shop_total
+             )
+	VALUES 
+			(#{sellerId},
+	        #{sellerName},
+	        #{jointId},
+	        #{corporate},
+	        #{waterTotal},
+	        #{rebateTotal},
+	        #{income},
+	        #{commision},
+	        #{ledgerTotal},
+	        #{orderTotal},
+	        #{yledger},
+	        #{wledger},
+	        #{orderDate},
+	        #{censusTime},
+	        #{shopTotal})
+	</insert>
+	
+	<!-- 修改订单状态信息 -->
+	<update id="modifyOrderInfo" parameterType="map">
+		UPDATE t_bill SET
+		<if test="status!=null and status!=''">
+			status=#{status},
+		</if>
+		<if test="source!=null and source!=''">
+			source=#{source},
+		</if>
+		<if test="number!=null and number!=''">
+			number=#{number},
+		</if>
+		<if test="paytype!=null and paytype!=''">
+			paytype=#{paytype},
+		</if>
+		<if test="payid!=null and payid!=''">
+			payid=#{payid},
+		</if>
+		<if test="samount!=null and samount!=''">
+			payment=#{samount},
+		</if>
+		<if test="commision!=null and commision!=''">
+			commision=#{commision},
+		</if>
+		<if test="profit!=null and profit!=''">
+			profit=#{profit},
+		</if>
+		<if test="giveMoney!=null and giveMoney!=''">
+			give_money=#{giveMoney},
+		</if>
+		<if test="thirdUid!=null and thirdUid!=''">
+			third_uid=#{thirdUid},
+		</if>
+		<if test="hstatus!=null and hstatus!=''">
+			hstatus=#{hstatus},
+		</if>
+		<if test="commission!=null and commission!=''">
+			commission=#{commission},
+		</if>
+		<if test="zdate!=null and zdate!=''">
+		    zdate=#{zdate},
+		</if>
+		<if test="isverify!=null and isverify!=''">
+		    isverify=#{isverify},
+		</if>
+		<if test="ldate!=null and ldate!=''">
+		    ldate=#{ldate},
+		</if>
+		<if test="mikeType!=null and mikeType!=''">
+		    mike_type=#{mikeType},
+		</if>
+		<if test="bfirst!=null and bfirst!=''">
+		    bfirst=#{bfirst},
+		</if>
+		<if test="integral != null and integral !=''">
+			integral =#{integral},
+		</if>
+		bid=bid
+		WHERE bid=#{bid}
+	</update>
+	
+    <!-- 插入订单处理记录接口 -->
+	<insert id="insertBillRecord" parameterType="com.xmniao.domain.order.OrdRecordBean" 
+	        useGeneratedKeys="true" keyProperty="id">
+	INSERT INTO t_bill_record
+            (bid,
+             status,
+             explains,
+             cdate,
+             remarks)
+	VALUES (#{bid},
+	        #{status},
+	        #{explains},
+	        #{cdate},
+	        #{remarks})
+	</insert>
+	
+	<!-- 插入订单退款记录 -->
+	<insert id="insertOrderRefundRecord" parameterType="map" 
+	        useGeneratedKeys="true" keyProperty="id">
+	INSERT INTO t_refund
+            (bid,
+             sellerid,
+             sellername,
+             apply,
+             STATUS,
+             sdate,
+             remarks,
+             source)
+	VALUES (#{bid},
+	        #{sellerid},
+	        #{sellername},
+	        #{apply},
+	        #{status},
+	        #{sdate},
+	        #{remarks},
+	        #{source});
+	</insert>
+	
+	<!-- 删除订单退款记录 -->
+	<delete id="deleteOrderRefundRecord" parameterType="map" >
+		delete from t_refund where bid=#{bid} and sellerid=#{sellerid}
+	</delete>
+	
+	
+	<select id="queryJointDayCensus" parameterType="map" resultType="map">
+		select * from t_joint_day_census where jointid=#{jointid}
+		<![CDATA[  and DATE_FORMAT(order_date, '%Y-%m-%d') = DATE_FORMAT(#{order_date}, '%Y-%m-%d')    ]]>
+	</select>
+	
+	<update id="updateJointDayCensus" parameterType="map">
+		update t_joint_day_census set profit_total = #{profit_total}
+		where jointid=#{jointid}
+		<![CDATA[  and DATE_FORMAT(order_date, '%Y-%m-%d') = DATE_FORMAT(#{order_date}, '%Y-%m-%d')    ]]>
+	</update>
+	
+	<insert id="insertJointDayCensus" parameterType="map" useGeneratedKeys="true" keyProperty="id">
+			INSERT INTO t_joint_day_census
+	            (jointid,
+	             corporate,
+	             profit_total,
+	             account_total,
+	             order_date,
+	             census_time)
+			VALUES (#{jointid},
+		        #{corporate},
+		        #{profit_total},
+		        0,
+		        #{order_date},
+		        #{census_time});
+	</insert>
+	
+    <!-- 查询优惠券与订单关系-->
+	<select id="getOrderCouponList" resultType="java.util.Map" parameterType="String">
+	SELECT c.bid,c.cdid,d.user_status FROM t_coupon_relation c,t_coupon_detail d ,t_bill b
+		WHERE  c.cdid IN (SELECT cdid FROM t_coupon_relation WHERE bid= #{bid})
+		AND c.cdid = d. cdid AND b.bid = c.bid AND b.status NOT IN (0,5)
+	</select>
+	
+	<!-- 根据优惠券ID修改用户使用状态为已使用 -->
+	<update id="mdyCouponUserStatus" parameterType="String">
+	    UPDATE t_coupon_detail SET user_status=1 WHERE cdid=#{cdid}
+	</update>
+</mapper>

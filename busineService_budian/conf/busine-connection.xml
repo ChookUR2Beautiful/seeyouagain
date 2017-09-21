@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:tx="http://www.springframework.org/schema/tx" 
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 	
+	
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-3.2.xsd 
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-3.2.xsd 
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+	<!-- 所有连接URL地址的配置文件 -->
+
+	<!-- 短信服务URL地址 -->
+	<bean id="smsUrl" class="java.lang.String">
+		<constructor-arg value="http://192.168.50.111:8080/smsService/smsSend" />
+	</bean>
+	<!-- 微信消息推送URL地址 -->
+	<bean id="wxSmsUrl" class="java.lang.String">
+		<constructor-arg value="http://172.16.130.148:8080/smsService/wxPush" />
+	</bean>
+	<!-- 用户中心服务URL地址 -->
+	<bean id="userServerUrl" class="java.lang.String">
+		<constructor-arg value="http://192.168.50.105/user/" />
+	</bean>
+
+	<!-- 调用支付服务的修改钱包余额接口的IP地址 -->
+	<bean id="transLedgerIP" class="java.lang.String">
+		<constructor-arg value="192.168.50.110" />
+	</bean>
+	<!-- 调用支付服务的修改钱包余额接口的端口号 -->
+	<bean id="transLedgerPort" class="java.lang.String">
+		<constructor-arg value="7911" />
+	</bean>
+
+	<!-- 调用分账服务接口的IP地址 -->
+	<bean id="ledgerIP" class="java.lang.String">
+		<constructor-arg value="192.168.50.244" />
+	</bean>
+	<!-- 调用分账服务接口的端口号 -->
+	<bean id="ledgerPort" class="java.lang.String">
+		<constructor-arg value="7912" />
+	</bean>
+	
+	<!-- 推送消息服务URL地址 -->
+	<bean id="pushMsgUrl" class="java.lang.String">
+		<constructor-arg value="http://192.168.50.105/push/addMsg.html" />
+	</bean>
+
+	<!-- HTTP方式连接redis的URL地址 -->
+	<bean id="redisHttpURL" class="java.lang.String">
+		<constructor-arg value="http://192.168.50.118/luatest" />
+	</bean>
+	
+	<!-- redis服务器连接URL地址 -->
+	<bean id="redisHostName" class="java.lang.String">
+		<constructor-arg value="192.168.50.50" />
+	</bean>
+	<!-- redis服务器连接端口地址 -->
+	<bean id="redisPort" class="java.lang.String">
+		<constructor-arg value="6379" />
+	</bean>
+	
+	<!-- 物料订单支付成功，下发短信通知查看，配置多用户接收时，用','隔开 -->
+	<bean id="materialPhone" class="java.lang.String">
+		<constructor-arg value="13723728427,15362652040" />
+	</bean>
+	
+	<!-- 超过15天，自动确认收货 -->
+	<bean name="lastDay" class="java.lang.String">
+		<constructor-arg value="20" />
+	</bean>
+	
+	
+<!-- *************  慎重！   **  天降壕礼配置   ********* 以下配置将严重影响天降壕礼功能的作用，在正式环境下，请仔细检查配置项是否正确 *******************  -->
+	<!-- 停止发放红包分红日期 -->
+	<bean name="disableDividendsDate" class="java.lang.String">
+		<constructor-arg value ="2017-04-04"/>
+	</bean>
+	
+	<!-- 是否开启测试红包功能，设置为TRUE时，开启测试发放红包功能，允许一天发放多个红包，设置为FALSE时，关闭。正式运营时，需设置为FALSE -->
+	<bean name="liveDividendsTest" class="java.lang.String">
+		<constructor-arg value="TRUE" />
+	</bean>
+	
+	<!-- 开启测试红包功能后，限定只给以下指定用户发放测试红包。
+			为用户手机号时，限定指定手机号用户发放测试红包，
+			为空时，限定所有用户均不发放测试红包，
+			为ALLUSER时，不限定用户发放测试红包
+		正式运营时，请保持该list为空   -->
+	<util:list id="testRedpackagePhone" list-class="java.util.ArrayList" value-type="java.lang.String">
+	   <value>ALLUSER</value>		
+<!-- 
+	   <value>13723728427</value>
+	   <value>11112222777</value>
+	   <value>11112222888</value>
+-->	   
+	</util:list>
+	
+	<!-- 不受VIP类型会员直接下线充值不足订单金额则红包收益减半影响的VIP会员 -->
+	<util:list id="notHalvedRedpackagePhone" list-class="java.util.ArrayList" value-type="java.lang.String">
+ 	   <value>17713536515</value>
+	   <value>18980647677</value>
+	   <value>18081036169</value>
+	   <value>18583311166</value>
+	   <value>15281959099</value>	   
+	</util:list>
+<!--**********************  天降壕礼配置  *** 结束  ************************************************************************  -->
+	
+	<!-- 成为寻蜜客赠送饮用水优惠券配置 -->
+	<bean name="waterCoupon" class="java.util.HashMap">
+		<constructor-arg>
+			<map>
+			<!-- KEY-对应的SAAS软件销售套数，VALUE-对应的优惠券ID ,不填默认系统匹配优惠券金额与订单金额一致的优惠券-->
+				<entry key="SAAS_5" value="261"/>
+				<entry key="SAAS_10" value="262"/>
+				<entry key="SAAS_20" value="263"/>
+			</map>
+		</constructor-arg>
+	</bean>
+	
+
+ 	
+	<!-- 退还鸟币服务URL地址 -->
+	<bean id="returnDepositServerUrl" class="java.lang.String">
+		<constructor-arg value="http://tpay.xmniao.com:8800/xmnpay/unified_order/refund" />
+	</bean>
+	
+	<!-- 直播推荐分账消息标签 -->
+	<bean id="freshKey" class="java.lang.String">
+	 <constructor-arg value="5RDkevmhd9vVyXmBnvpE5o/u60otfdXxCxxOKY2Uxf7vMLGy9F7d6JgAsoaKQCMc5224/nHMlPnoBbMkiG2q0A=="/>
+	</bean>
+
+
+<!--	xmnService 消息推送地址-->
+	<bean id="xmnServiceMessageUrl" class="java.lang.String">
+		<constructor-arg value="http://192.168.50.205:8080/xmnService/pushXingeMessage"></constructor-arg>
+	</bean>
+
+	<!--黄金庄园首页地址-->
+	<bean id="manorHomeUrl" class="java.lang.String">
+		<constructor-arg value="http://once.xmniao.com/embed/app_manor_home"/>
+	</bean>
+</beans>

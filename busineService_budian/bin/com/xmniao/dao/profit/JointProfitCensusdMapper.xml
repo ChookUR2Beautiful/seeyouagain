@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.profit.JointProfitCensusdMapper">
+
+    <!-- 查询当天统计的合作商日收益订单总条数 -->
+	<select id="queryProfitCensus" resultType="Integer">
+     SELECT COUNT(id) AS idCount FROM t_joint_profit_censusd WHERE DATEDIFF(DATE_ADD(NOW(),INTERVAL 0 DAY),census_time)=0
+	</select>
+	
+	<!-- 查询合作商和消费合作商 -->
+	<select id="queryJointAndConsumJoint" resultType="map" parameterType="map">
+	SELECT DISTINCT jointid,consume_jointid FROM t_bill WHERE STATUS IN (1,2,3,6,8,9) 
+	AND (DATE_FORMAT(zdate,'%Y-%m-%d')=#{zdate} OR DATE_FORMAT(fdate,'%Y-%m-%d')=#{fdate})
+	</select>
+	
+	<!-- 查询商户和合作商信息 -->
+	<select id="querySellerAndJointInfo" resultType="com.xmniao.domain.profit.JointProfitCensusd" parameterType="String">
+	SELECT s.sellerid,s.sellername,j.jointid,j.corporate FROM t_seller AS s,t_joint AS j 
+		   WHERE s.jointid=j.jointid AND j.jointid=#{jointid} 
+	</select>
+	
+	<!-- 查询合作商分账收益总额 -->
+	<select id="queryJointLedgerProfit" resultType="map" parameterType="map">
+	SELECT jointid,consume_jointid,commission FROM t_bill WHERE STATUS IN (1,2,3,6,8,9) AND DATE_FORMAT(zdate,'%Y-%m-%d')=#{zdate} 
+ 	AND (jointid=#{jointid} OR consume_jointid=#{consume_jointid}) AND sellerid=#{sellerid}
+ 	AND commission IS NOT NULL
+	</select>
+	
+	<!-- 合作商未到账收益总额 -->
+	<select id="queryJointNotLedgerProfit" resultType="map" parameterType="map">
+	SELECT jointid,consume_jointid,commission FROM t_bill WHERE STATUS IN (1,3,6,8,9) AND DATE_FORMAT(zdate,'%Y-%m-%d')=#{zdate} 
+ 	AND (jointid=#{jointid} OR consume_jointid=#{consume_jointid}) AND sellerid=#{sellerid} 
+ 	AND commission IS NOT NULL
+	</select>
+	
+	<!-- 已到账收益总额 -->
+	<select id="queryJointHasLedgerProfit" resultType="map" parameterType="map">
+	SELECT jointid,consume_jointid,commission FROM t_bill WHERE STATUS=2 AND DATE_FORMAT(fdate,'%Y-%m-%d')=#{fdate} 
+ 	AND (jointid=#{jointid} OR consume_jointid=#{consume_jointid}) AND sellerid=#{sellerid} 
+ 	AND commission IS NOT NULL
+	</select>
+	
+	<!-- 渠道手续费收益总额 -->
+	<select id="queryJointChannelFeesProfit" resultType="map" parameterType="map">
+	SELECT jointid,consume_jointid,commission FROM t_bill WHERE STATUS IN (1,2,3,6,8,9) AND DATE_FORMAT(zdate,'%Y-%m-%d')=#{zdate} 
+ 	AND (jointid=#{jointid} OR consume_jointid=#{consume_jointid}) AND sellerid=#{sellerid} 
+ 	AND commission IS NOT NULL
+	</select>
+	
+	<!-- 商户流水总额 -->
+	<select id="querySellerWaterTotal" resultType="BigDecimal" parameterType="map">
+	SELECT SUM(money) AS waterTotal FROM t_bill WHERE STATUS IN (1,2,3,6,8,9) 
+	AND DATE_FORMAT(zdate,'%Y-%m-%d')=#{zdate} AND sellerid=#{sellerid} AND consume_jointid=#{consume_jointid}
+	</select>
+	
+	<!-- 商户佣金总额 -->
+	<select id="querySellerCommision" resultType="String" parameterType="map">
+	SELECT commission FROM t_bill WHERE STATUS IN (1,2,3,6,8,9) AND DATE_FORMAT(zdate,'%Y-%m-%d')=#{zdate}
+	AND jointid=#{jointid} AND genussellerid=#{genussellerid} AND commission IS NOT NULL
+	</select>
+	
+	<!-- 插入合作商收益表 -->
+	<insert id="insertJointProfitCensusd" parameterType="com.xmniao.domain.profit.JointProfitCensusd" 
+			useGeneratedKeys="true" keyProperty="pid">
+    INSERT INTO t_joint_profit_censusd(
+		 	jointid,
+         	corporate,
+         	ledger_profit,
+         	not_profit,
+         	has_profit,
+         	poundage,
+         	sellerid,
+         	sellername,
+         	water_total,
+         	commision,
+         	order_date,
+         	census_time)
+     VALUES
+           (#{jointid},
+         	#{corporate},
+         	#{ledgerProfit},
+         	#{notProfit},
+         	#{hasProfit},
+         	#{poundage},
+         	#{sellerid},
+         	#{sellername},
+         	#{waterTotal},
+         	#{commision},
+         	#{orderDate},
+         	#{censusTime})
+    </insert>
+    
+    <!-- 查询合作商收益全都为0的记录 -->
+    <select id="queryJointProfitZero" parameterType="com.xmniao.domain.profit.JointProfitCensusd" resultType="Integer">
+    SELECT COUNT(id) AS idCount FROM t_joint_profit_censusd WHERE  
+    ledger_profit=0 AND not_profit=0 AND has_profit=0 AND poundage=0 
+    AND water_total=0 AND commision=0 AND jointid=#{jointid} AND sellerid=#{sellerid} AND order_date=#{orderDate}
+    </select>
+    
+    <!-- 删掉合作商收益全都为0的记录 -->
+    <delete id="deleteJointProfitZero" parameterType="com.xmniao.domain.profit.JointProfitCensusd">
+    DELETE FROM t_joint_profit_censusd WHERE jointid=#{jointid} AND sellerid=#{sellerid} AND order_date=#{orderDate}
+    </delete>
+</mapper>

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.live.LiveLedgerRecordDao" >
+  <resultMap id="LiveLedgerRecordMap" type="com.xmniao.domain.live.LiveLedgerRecord" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="sellertype" property="sellertype" jdbcType="INTEGER" />
+    <result column="uid_role" property="uidRole" jdbcType="INTEGER" />
+    <result column="ledger_amount" property="ledgerAmount" jdbcType="DECIMAL" />
+    <result column="real_ledger_amount" property="realLedgerAmount" jdbcType="DECIMAL" />
+    <result column="ledger_coin" property="ledgerCoin" jdbcType="DECIMAL" />
+    <result column="real_ledger_coin" property="realLedgerCoin" jdbcType="DECIMAL" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    <result column="ledger_source" property="ledgerSource" jdbcType="INTEGER" />
+    <result column="ledger_source_info" property="ledgerSourceInfo" jdbcType="VARCHAR" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="object_oriented" property="objectOriented" jdbcType="INTEGER" />    
+    <result column="gived_gift_id" property="givedGiftId" jdbcType="INTEGER" />
+    <result column="redpacket_rocord_date" property="redpacketRocordDate" jdbcType="VARCHAR" />
+    <result column="ledger_uid" property="ledgerUid" jdbcType="INTEGER" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Live_ledger_Record_List" >
+    id, uid, sellerid, sellertype, uid_role, ledger_amount, real_ledger_amount, ledger_coin, real_ledger_coin, status, create_date, update_date, 
+    ledger_source, ledger_source_info, order_no, gived_gift_id, redpacket_rocord_date,ledger_uid,version,object_oriented
+  </sql>
+  
+  <select id="getLiveLedgerRecord" resultMap="LiveLedgerRecordMap" parameterType="com.xmniao.domain.live.LiveLedgerRecord" >
+    select 
+    <include refid="Live_ledger_Record_List" />
+    from t_live_ledger_record
+    where 1=1
+    <if test="id!=null">and id=#{id}</if>
+    <if test="uid!=null">and uid=#{uid}</if>
+    <if test="status!=null">and status=#{status}</if>
+  </select>
+
+  <select id="getLiveLedgerRecordList" resultMap="LiveLedgerRecordMap" parameterType="com.xmniao.domain.live.LiveLedgerRecord" >
+    select 
+    <include refid="Live_ledger_Record_List" />
+    from t_live_ledger_record
+    where 1=1
+    <if test="id!=null">and id=#{id}</if>
+    <if test="uid!=null">and uid=#{uid}</if>
+    <if test="status!=null">and status=#{status}</if>
+    <if test="redpacketRocordDate">and redpacket_rocord_date = #{redpacketRocordDate}</if>
+  </select>
+  
+  <insert id="insertLiveLedgerRecord" parameterType="com.xmniao.domain.live.LiveLedgerRecord" useGeneratedKeys="true" keyProperty="id">
+    insert into t_live_ledger_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+    <if test="uid!=null">
+   		uid,
+    </if>
+    <if test="sellerid!=null">
+    	sellerid,
+    </if>
+    <if test="sellertype!=null">
+    	sellertype,
+    </if>
+        uid_role,
+        ledger_amount,
+        ledger_coin,
+        status,
+        create_date,
+        update_date,
+        ledger_source,
+      <if test="realLedgerAmount!=null">
+      	real_ledger_amount,
+      </if>
+      <if test="realLedgerCoin!=null">
+      	real_ledger_coin,
+      </if>
+      <if test="ledgerSourceInfo != null" >
+        ledger_source_info,
+      </if>
+      <if test="orderNo != null" >
+        order_no,
+      </if>
+      <if test="objectOriented != null">
+     	 object_oriented,
+      </if>
+      <if test="givedGiftId != null" >
+        gived_gift_id,
+      </if>
+      <if test="redpacketRocordDate != null" >
+        redpacket_rocord_date,
+      </if>
+      <if test="ledgerUid != null" >
+        ledger_uid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+		<if test="uid!=null">
+			 #{uid,jdbcType=INTEGER},
+		</if>
+		<if test="sellerid!=null">
+			 #{sellerid,jdbcType=INTEGER},
+		</if>
+		<if test="sellertype!=null">
+			 #{sellertype,jdbcType=INTEGER},
+		</if>
+        #{uidRole,jdbcType=INTEGER},
+        #{ledgerAmount,jdbcType=DECIMAL},
+        #{ledgerCoin,jdbcType=DECIMAL},
+        #{status,jdbcType=INTEGER},
+        #{createDate,jdbcType=TIMESTAMP},
+        #{updateDate,jdbcType=TIMESTAMP},
+        #{ledgerSource,jdbcType=INTEGER},
+      <if test="realLedgerAmount!=null">
+      	#{realLedgerAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="realLedgerCoin!=null">
+      	#{realLedgerCoin,jdbcType=DECIMAL},
+      </if>
+      <if test="ledgerSourceInfo != null" >
+        #{ledgerSourceInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="objectOriented != null">
+      	#{objectOriented},
+      </if>
+      <if test="givedGiftId != null" >
+        #{givedGiftId,jdbcType=INTEGER},
+      </if>
+      <if test="redpacketRocordDate != null" >
+        #{redpacketRocordDate,jdbcType=VARCHAR},
+      </if>
+      <if test="ledgerUid != null" >
+        #{ledgerUid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateLiveLedgerRecord" parameterType="com.xmniao.domain.live.LiveLedgerRecord" >
+    update t_live_ledger_record
+    <set >
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="realLedgerAmount != null" >
+        real_ledger_amount = #{realLedgerAmount},
+      </if>
+      <if test="realLedgerCoin != null" >
+        real_ledger_coin = #{realLedgerCoin},
+      </if>
+      <if test="createDate != null" >
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="version!=null">
+      	version = #{version}+1,
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER} 
+	<if test="version!=null">and version=#{version}</if>
+  </update>
+  
+  <select id="countLedgerRecord" parameterType="com.xmniao.domain.live.LiveLedgerRecord" resultType="Long">
+  	select count(1) 
+  	from t_live_ledger_record 
+  	where ledger_source=#{ledgerSource}
+  	<if test="redpacketRocordDate">and redpacket_rocord_date=#{redpacketRocordDate}</if> 
+  	<if test="orderNo">and order_no=#{orderNo}</if> 
+  	<if test="givedGiftId">and gived_gift_id=#{givedGiftId}</if> 
+  </select>
+</mapper>

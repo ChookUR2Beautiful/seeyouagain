@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<entry key="app_preset_prof_preset_name">ThriftClient (1) Launch Configuration</entry>
+<entry key="app_preset_prof_preset_filter_s"/>
+<entry key="app_preset_prof_preset_filter_p">com.xmniao.common.*,
+com.xmniao.dao.common.*,
+com.xmniao.dao.coupon.*,
+com.xmniao.dao.discount.*,
+com.xmniao.dao.ledger.*,
+com.xmniao.dao.live.*,
+com.xmniao.dao.mike.*,
+com.xmniao.dao.order.*,
+com.xmniao.dao.profit.*,
+com.xmniao.dao.refund.*,
+com.xmniao.dao.seller.*,
+com.xmniao.dao.store.*,
+com.xmniao.dao.xmer.*,
+com.xmniao.domain.activity.*,
+com.xmniao.domain.coupon.*,
+com.xmniao.domain.ledger.*,
+com.xmniao.domain.message.*,
+com.xmniao.domain.order.*,
+com.xmniao.domain.profit.*,
+com.xmniao.domain.push.*,
+com.xmniao.domain.seller.*,
+com.xmniao.main.*,
+com.xmniao.proxy.*,
+com.xmniao.service.common.*,
+com.xmniao.service.discount.*,
+com.xmniao.service.ledger.*,
+com.xmniao.service.live.*,
+com.xmniao.service.message.fault.*,
+com.xmniao.service.message.push.*,
+com.xmniao.service.message.seller.*,
+com.xmniao.service.message.sms.*,
+com.xmniao.service.message.useraction.*,
+com.xmniao.service.message.xmike.*,
+com.xmniao.service.mike.*,
+com.xmniao.service.order.*,
+com.xmniao.service.quertz.*,
+com.xmniao.service.refund.*,
+com.xmniao.service.seller.*,
+com.xmniao.service.store.*,
+com.xmniao.service.user.*,
+com.xmniao.service.xmer.*,
+com.xmniao.thrift.busine.activity.*,
+com.xmniao.thrift.busine.common.*,
+com.xmniao.thrift.busine.discount.*,
+com.xmniao.thrift.busine.live.*,
+com.xmniao.thrift.busine.mike.*,
+com.xmniao.thrift.busine.order.*,
+com.xmniao.thrift.busine.refund.*,
+com.xmniao.thrift.busine.seller.*,
+com.xmniao.thrift.busine.store.*,
+com.xmniao.thrift.busine.user.*,
+com.xmniao.thrift.busine.xmer.*,
+com.xmniao.thrift.ledger.*,
+com.xmniao.thrift.pay.*,
+com.xmniao.urs.dao.*,
+com.xmniao.util.*</entry>
+<entry key="app_preset_prof_preset_alloc_p">10</entry>
+<entry key="app_preset_"/>
+<entry key="app_preset_prof_preset_samplingRefreshRate_s">1000</entry>
+<entry key="app_preset_prof_preset_stacks_p">false</entry>
+<entry key="app_preset_prof_preset_roots_p">com.xmniao.common.**
+com.xmniao.dao.common.**
+com.xmniao.dao.coupon.**
+com.xmniao.dao.discount.**
+com.xmniao.dao.ledger.**
+com.xmniao.dao.live.**
+com.xmniao.dao.mike.**
+com.xmniao.dao.order.**
+com.xmniao.dao.profit.**
+com.xmniao.dao.refund.**
+com.xmniao.dao.seller.**
+com.xmniao.dao.store.**
+com.xmniao.dao.xmer.**
+com.xmniao.domain.activity.**
+com.xmniao.domain.coupon.**
+com.xmniao.domain.ledger.**
+com.xmniao.domain.message.**
+com.xmniao.domain.order.**
+com.xmniao.domain.profit.**
+com.xmniao.domain.push.**
+com.xmniao.domain.seller.**
+com.xmniao.main.**
+com.xmniao.proxy.**
+com.xmniao.service.common.**
+com.xmniao.service.discount.**
+com.xmniao.service.ledger.**
+com.xmniao.service.live.**
+com.xmniao.service.message.fault.**
+com.xmniao.service.message.push.**
+com.xmniao.service.message.seller.**
+com.xmniao.service.message.sms.**
+com.xmniao.service.message.useraction.**
+com.xmniao.service.message.xmike.**
+com.xmniao.service.mike.**
+com.xmniao.service.order.**
+com.xmniao.service.quertz.**
+com.xmniao.service.refund.**
+com.xmniao.service.seller.**
+com.xmniao.service.store.**
+com.xmniao.service.user.**
+com.xmniao.service.xmer.**
+com.xmniao.thrift.busine.activity.**
+com.xmniao.thrift.busine.common.**
+com.xmniao.thrift.busine.discount.**
+com.xmniao.thrift.busine.live.**
+com.xmniao.thrift.busine.mike.**
+com.xmniao.thrift.busine.order.**
+com.xmniao.thrift.busine.refund.**
+com.xmniao.thrift.busine.seller.**
+com.xmniao.thrift.busine.store.**
+com.xmniao.thrift.busine.user.**
+com.xmniao.thrift.busine.xmer.**
+com.xmniao.thrift.ledger.**
+com.xmniao.thrift.pay.**
+com.xmniao.urs.dao.**
+com.xmniao.util.**
+</entry>
+<entry key="profiler.settings.instrument.empty.methods">false</entry>
+<entry key="myeclipse.profiling.mode">0</entry>
+<entry key="profiler.settings.istrument.getter.setter.methods">false</entry>
+<entry key="app_preset_prof_preset_samplingRate_s">100</entry>
+<entry key="app_preset_prof_preset_filterMode_s">true</entry>
+<entry key="app_preset_prof_preset_selector"/>
+<entry key="app_preset_prof_preset_refreshRate_s">1000</entry>
+<entry key="app_preset_prof_preset_runnables_p">true</entry>
+<entry key="app_preset_prof_preset_filterMode_p">false</entry>
+<entry key="app_preset_prof_preset_memoryMode_p">true</entry>
+</properties>

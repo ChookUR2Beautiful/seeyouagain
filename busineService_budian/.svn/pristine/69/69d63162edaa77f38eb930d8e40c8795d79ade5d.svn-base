@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.vstar.VstarTicketsDetailDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.domain.vstar.VstarTicketsDetail" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="sid" property="sid" jdbcType="INTEGER" />
+    <result column="zone_no" property="zoneNo" jdbcType="INTEGER" />
+    <result column="seat_no" property="seatNo" jdbcType="INTEGER" />
+    <result column="sell_status" property="sellStatus" jdbcType="INTEGER" />
+    <result column="use_status" property="useStatus" jdbcType="INTEGER" />
+    <result column="use_time" property="useTime" jdbcType="TIMESTAMP" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, fid, sid, zone_no, seat_no, sell_status, use_status, use_time, uid, order_no
+  </sql>
+  
+  <select id="getTicketsDetailList" resultMap="BaseResultMap" parameterType="com.xmniao.domain.vstar.VstarTicketsDetail" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_vstar_tickets_detail
+    where order_no = #{orderNo,jdbcType=INTEGER}
+  </select>
+
+  <insert id="addTicketsDetail" parameterType="com.xmniao.domain.vstar.VstarTicketsDetail" >
+    insert into t_vstar_tickets_detail (id, fid, sid, 
+      zone_no, seat_no, sell_status, 
+      use_status, use_time, uid
+      )
+    values (#{id,jdbcType=INTEGER}, #{fid,jdbcType=INTEGER}, #{sid,jdbcType=INTEGER}, 
+      #{zoneNo,jdbcType=INTEGER}, #{seatNo,jdbcType=INTEGER}, #{sellStatus,jdbcType=INTEGER}, 
+      #{useStatus,jdbcType=INTEGER}, #{useTime,jdbcType=TIMESTAMP}, #{uid,jdbcType=INTEGER}
+      )
+  </insert>
+
+  <update id="updateTicketsDetail" parameterType="com.xmniao.domain.vstar.VstarTicketsDetail" >
+    update t_vstar_tickets_detail
+    <set >
+      <if test="sellStatus != null" >
+        sell_status = #{sellStatus,jdbcType=INTEGER},
+      </if>
+      <if test="useStatus != null" >
+        use_status = #{useStatus,jdbcType=INTEGER},
+      </if>
+      <if test="useTime != null" >
+        use_time = #{useTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+    </set>
+    where order_no=#{orderNo}
+  </update>
+  
+  <update id="resumeTicketsDetail" parameterType="com.xmniao.domain.vstar.VstarTicketsDetail" >
+    update t_vstar_tickets_detail
+    set
+        sell_status = 0,
+        uid=null,
+        order_no=null
+    where order_no=#{orderNo}
+  </update>
+</mapper>

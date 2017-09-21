@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.live.DebitcardSellerDao" >
+  <resultMap id="DebitcardSellerMap" type="com.xmniao.domain.live.DebitcardSeller" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="sellertype" property="sellertype" jdbcType="INTEGER" />
+    <result column="sellername" property="sellername" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="sub_sellerid" property="subSellerid" jdbcType="VARCHAR" />
+    <result column="total_limit_recharge" property="totalLimitRecharge" jdbcType="DECIMAL" />
+    <result column="recharge_item" property="rechargeItem" jdbcType="VARCHAR" />
+    <result column="referrer_ratio" property="referrerRatio" jdbcType="INTEGER" />
+    <result column="parent_referrer_ratio" property="parentReferrerRatio" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Debitcard_Seller_List" >
+    id, sellerid, sellertype, sellername, status, sub_sellerid, total_limit_recharge, 
+    recharge_item, referrer_ratio, parent_referrer_ratio, update_time
+  </sql>
+  
+  <select id="getDebitcardSeller" resultMap="DebitcardSellerMap" parameterType="com.xmniao.domain.live.DebitcardSeller" >
+    select 
+    <include refid="Debitcard_Seller_List" />
+    from t_debitcard_seller
+    where 1=1
+    <if test="id!=null">and id=#{id}</if>
+    <if test="sellerid!=null">and sellerid=#{sellerid}</if>
+    <if test="sellertype!=null">and sellertype=#{sellertype}</if>
+    <if test="status!=null">and status=#{status}</if>
+  </select>
+  
+  <select id="getDebitcardForSellerid" parameterType="Integer" resultMap="DebitcardSellerMap">
+ 	 SELECT <include refid="Debitcard_Seller_List" /> 
+ 	 FROM t_debitcard_seller 
+ 	 WHERE status =0 AND (sellerid=#{sellerid} OR sub_sellerid LIKE CONCAT("%",#{sellerid},"%"))
+  </select>
+</mapper>

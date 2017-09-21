@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.dao.sellerAddress.SellerAddressDao">
+
+	<sql id="Base_Column_List">
+		id, sellerid, nname,sex, province_id, province, city, city_id, area_name,
+		area_id, address,
+		zip_code, phone, status, is_default, create_date, update_date
+	</sql>
+	
+	<!-- 删除 -->
+	<delete id="delete" parameterType="map">
+		UPDATE 
+		t_seller_address
+		SET status = 1
+		WHERE 
+		id = #{id,jdbcType=INTEGER}
+	</delete>
+
+	<!-- 添加 -->
+	<insert id="add" parameterType="map" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+		INSERT INTO t_seller_address
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="sellerid != null">
+				sellerid,
+			</if>
+			<if test="nname != null">
+				nname,
+			</if>
+			<if test="sex != null">
+				sex,
+			</if>
+			<if test="province_id != null">
+				province_id,
+			</if>
+			<if test="province != null">
+				province,
+			</if>
+			<if test="city != null">
+				city,
+			</if>
+			<if test="city_id != null">
+				city_id,
+			</if>
+			<if test="area_name != null">
+				area_name,
+			</if>
+			<if test="area_id != null">
+				area_id,
+			</if>
+			<if test="address != null">
+				address,
+			</if>
+			<if test="zip_code != null">
+				zip_code,
+			</if>
+			<if test="phone != null">
+				phone,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="is_default != null">
+				is_default,
+			</if>
+			<if test="create_date != null">
+				create_date,
+			</if>
+			<if test="update_date != null">
+				update_date,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="sellerid != null">
+				#{sellerid,jdbcType=INTEGER},
+			</if>
+			<if test="nname != null">
+				#{nname,jdbcType=VARCHAR},
+			</if>
+			<if test="sex != null">
+				#{sex,jdbcType=INTEGER},
+			</if>
+			<if test="province_id != null">
+				#{province_id,jdbcType=INTEGER},
+			</if>
+			<if test="province != null">
+				#{province,jdbcType=VARCHAR},
+			</if>
+			<if test="city != null">
+				#{city,jdbcType=VARCHAR},
+			</if>
+			<if test="city_id != null">
+				#{city_id,jdbcType=INTEGER},
+			</if>
+			<if test="area_name != null">
+				#{area_name,jdbcType=VARCHAR},
+			</if>
+			<if test="area_id != null">
+				#{area_id,jdbcType=INTEGER},
+			</if>
+			<if test="address != null">
+				#{address,jdbcType=VARCHAR},
+			</if>
+			<if test="zip_code != null">
+				#{zip_code,jdbcType=INTEGER},
+			</if>
+			<if test="phone != null">
+				#{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+			<if test="is_default != null">
+				#{is_default,jdbcType=INTEGER},
+			</if>
+			<if test="create_date != null">
+				#{create_date,jdbcType=TIMESTAMP},
+			</if>
+			<if test="update_date != null">
+				#{update_date,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update" parameterType="map">
+		UPDATE t_seller_address
+		<set>
+			<if test="sellerid != null">
+				sellerid = #{sellerid,jdbcType=INTEGER},
+			</if>
+			<if test="nname != null">
+				nname = #{nname,jdbcType=VARCHAR},
+			</if>
+			<if test="sex != null">
+				sex = #{sex,jdbcType=INTEGER},
+			</if>
+			<if test="province_id != null">
+				province_id = #{province_id,jdbcType=INTEGER},
+			</if>
+			<if test="province != null">
+				province = #{province,jdbcType=VARCHAR},
+			</if>
+			<if test="city != null">
+				city = #{city,jdbcType=VARCHAR},
+			</if>
+			<if test="city_id != null">
+				city_id = #{city_id,jdbcType=INTEGER},
+			</if>
+			<if test="area_name != null">
+				area_name = #{area_name,jdbcType=VARCHAR},
+			</if>
+			<if test="area_id != null">
+				area_id = #{area_id,jdbcType=INTEGER},
+			</if>
+			<if test="address != null">
+				address = #{address,jdbcType=VARCHAR},
+			</if>
+			<if test="zip_code != null">
+				zip_code = #{zip_code,jdbcType=INTEGER},
+			</if>
+			<if test="phone != null">
+				phone = #{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="is_default != null">
+				is_default = #{is_default,jdbcType=INTEGER},
+			</if>
+			<if test="create_date != null">
+				create_date = #{create_date,jdbcType=TIMESTAMP},
+			</if>
+			<if test="update_date != null">
+				update_date = #{update_date,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		WHERE id = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<!-- 查询 -->
+	<select id="getList" resultType="map">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM t_seller_address
+		WHERE status = 0
+		<if test="id != null">
+		AND id = #{id,jdbcType=INTEGER}
+		</if>
+		<if test="sellerid != NULL">
+		AND sellerid = #{sellerid,jdbcType=INTEGER} 
+		</if>
+		<if test="is_default != null">
+		AND is_default = #{is_default}
+		</if>
+		ORDER BY update_date DESC
+	</select>
+	
+	<!-- 根据区域id获取区域名称 -->
+	<select id="getArea" resultType="map">
+		SELECT title 
+		FROM t_area 
+		WHERE 
+		area_id = #{0}
+	</select>
+	
+	<!-- 根据区域id获取所有下级区域信息 -->
+	<select id="areaList" parameterType="map" resultType="map">
+	SELECT area_id,title,rid,pid,region_id,firstletter,hot
+	FROM t_area
+	WHERE 1=1
+	<if test="area_id != null">
+	AND pid = #{area_id}
+	</if>
+	</select>
+	
+	<!-- 根据区域名称获取区域信息 -->
+	<select id="getAreaByTitle" parameterType="map" resultType="map">
+	SELECT area_id,title,rid,pid,region_id,firstletter,hot
+	FROM t_area
+	WHERE pid = 0
+	<if test="title != null">
+	AND title = #{title}
+	</if>
+	</select>
+</mapper>

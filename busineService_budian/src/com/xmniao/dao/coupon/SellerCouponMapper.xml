@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.coupon.SellerCouponDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.domain.coupon.SellerCoupon" >
+    <id column="cid" property="cid" jdbcType="INTEGER" />
+    <result column="cname" property="cname" jdbcType="VARCHAR" />
+    <result column="denomination" property="denomination" jdbcType="DECIMAL" />
+    <result column="start_date" property="startDate" jdbcType="TIMESTAMP" />
+    <result column="end_date" property="endDate" jdbcType="TIMESTAMP" />
+    <result column="conditions" property="conditions" jdbcType="DECIMAL" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="use_num" property="useNum" jdbcType="INTEGER" />
+    <result column="coupon_type" property="couponType" jdbcType="INTEGER" />
+    <result column="send_type" property="sendType" jdbcType="INTEGER" />
+    <result column="send_num" property="sendNum" jdbcType="INTEGER" />
+    <result column="min_m" property="minM" jdbcType="DECIMAL" />
+    <result column="max_m" property="maxM" jdbcType="DECIMAL" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="send_object" property="sendObject" jdbcType="VARCHAR" />
+    <result column="send_status" property="sendStatus" jdbcType="INTEGER" />
+    <result column="award_condition" property="awardCondition" jdbcType="INTEGER" />
+    <result column="award_number" property="awardNumber" jdbcType="INTEGER" />
+    <result column="use_number" property="useNumber" jdbcType="INTEGER" />
+    <result column="limit_number" property="limitNumber" jdbcType="INTEGER" />
+    <result column="views" property="views" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="maximum" property="maximum" jdbcType="INTEGER" />
+    <result column="limit_amount" property="limitAmount" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="SellerCouponDetail" >
+    cid, cname, denomination, start_date, end_date, conditions, sellerid, use_num,  coupon_type, 
+    send_type, send_num, min_m, max_m, amount, send_object, send_status, create_date, 
+    maximum, limit_amount,award_condition, award_number, use_number, limit_number, views, status, 
+    description 
+  </sql>
+ 
+  <!-- 获取商家优惠券列表 -->
+  <select id="getSellerCouponList" parameterType="com.xmniao.domain.coupon.SellerCoupon" resultMap="BaseResultMap">
+  	SELECT 
+	<include refid="SellerCouponDetail"></include>
+	FROM t_seller_coupon_detail
+  	WHERE  	1=1
+  	AND sellerid=#{sellerid}
+  	AND send_type = #{sendType}
+  	AND send_status=#{sendStatus}
+  	AND end_date &gt; #{endDate}
+  	AND maximum &gt; send_num
+  </select>
+  
+    <!-- 获取商家优惠券列表 -->
+  <select id="getSellerCouponList2" parameterType="com.xmniao.domain.coupon.SellerCoupon" resultMap="BaseResultMap">
+  	SELECT 
+	<include refid="SellerCouponDetail"></include>
+	FROM t_seller_coupon_detail
+  	WHERE  	1=1
+  	<if test="sellerid!=null">AND sellerid=#{sellerid}  </if>
+  	<if test="sendType!=null">AND send_type = #{sendType}  </if>
+  	<if test="status!=null">AND status = #{status}  </if>
+  	<if test="limitAmount!=null">AND limit_amount &lt;= #{limitAmount}  </if>
+  	<if test="awardCondition!=null">AND award_condition = #{awardCondition}  </if>
+  	<if test="awardConditions!=null">AND award_condition in (${awardConditions}) </if>
+  	<if test="sendStatus!=null">AND send_status=#{sendStatus}  </if>
+  	<if test="endDate!=null">AND end_date &gt; #{endDate}  </if>
+  	<if test="hasSurplus!=null and hasSurplus==true">AND maximum &gt; send_num  </if>
+  	<if test="hasSurplus!=null and hasSurplus==false">AND maximum &lt;= send_num  </if>
+  	<if test="nowDate != null">
+    	AND DATE_FORMAT(#{nowDate},'%Y-%m-%d %H:%i:%S') BETWEEN DATE_FORMAT(start_date,'%Y-%m-%d %H:%i:%S') AND DATE_FORMAT(end_date,'%Y-%m-%d %H:%i:%S') 
+    </if>
+  </select>
+  
+  <!-- 更新商家优惠券 -->
+  <update id="sendSellerCoupon" parameterType="com.xmniao.domain.coupon.SellerCoupon">
+  	UPDATE t_seller_coupon_detail
+  	SET 
+  	send_num=send_num+1,
+  	views = views+1,
+  	send_status = IF(maximum>send_num,1,2) 
+  	WHERE cid= #{cid} AND maximum>send_num
+  </update>
+  
+  <!-- 批量更新商家优惠卷 -->
+  <update id="mdfSellerCoupon" parameterType="com.xmniao.domain.coupon.SellerCoupon">
+	  	UPDATE t_seller_coupon_detail
+	  	SET 
+	  	send_status=#{sendStatus},
+	  	views = views+1,
+	  	send_num=#{sendNum}
+	  	WHERE cid= #{cid} 
+  </update>
+
+  <!-- 更新商家优惠券已使用数+1 -->
+  <update id="useSellerCoupon" parameterType="com.xmniao.domain.coupon.SellerCoupon">
+  	UPDATE t_seller_coupon_detail
+  	SET 
+  	use_number=use_number+1
+  	WHERE cid= #{cid} AND send_num>use_number
+  </update>
+</mapper>

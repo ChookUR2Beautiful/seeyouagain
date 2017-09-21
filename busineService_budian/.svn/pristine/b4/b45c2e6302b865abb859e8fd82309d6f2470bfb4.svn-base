@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.order.BillFreshSubDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.domain.order.BillFreshSub" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="order_sn" property="orderSn" jdbcType="VARCHAR" />
+    <result column="sub_order_sn" property="subOrderSn" jdbcType="VARCHAR" />
+    <result column="supplier_id" property="supplierId" jdbcType="BIGINT" />
+    <result column="uid" property="uid" jdbcType="BIGINT" />
+    <result column="total_amount" property="totalAmount" jdbcType="DECIMAL" />
+    <result column="preferential" property="preferential" jdbcType="DECIMAL" />
+    <result column="cash_amount" property="cashAmount" jdbcType="DECIMAL" />
+    <result column="coin_amount" property="coinAmount" jdbcType="DECIMAL" />
+    <result column="balance_amount" property="balanceAmount" jdbcType="DECIMAL" />
+    <result column="integral_amount" property="integralAmount" jdbcType="DECIMAL" />
+    <result column="freight" property="freight" jdbcType="DECIMAL" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="courier_number" property="courierNumber" jdbcType="VARCHAR" />
+    <result column="courier_type" property="courierType" jdbcType="VARCHAR" />
+    <result column="delivery_time" property="deliveryTime" jdbcType="TIMESTAMP" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP" />
+    <result column="memo" property="memo" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="consignee" property="consignee" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="operator" property="operator" jdbcType="VARCHAR" />
+    <result column="hstatus" property="hstatus" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, order_sn, sub_order_sn, supplier_id, uid, total_amount, preferential, cash_amount, 
+    balance_amount, integral_amount, freight, status, courier_number, courier_type, delivery_time, 
+    create_time, modify_time, memo, address, mobile, consignee, version, operator
+  </sql>
+  
+  <!-- 获取已收货订单列表 -->
+  <select id="getLedgerBillList" resultMap="BaseResultMap">
+  	SELECT s.*,t.number,t.payid,t.paytype,t.nname 
+  	FROM t_bill_fresh_sub s,t_bill_fresh t 
+	WHERE s.order_sn=t.bid AND  s.status=6 AND s.hstatus=0  ORDER BY id DESC
+  </select>
+  
+  <!-- 修改订单分账状态  -->
+  <update id="modifyLedgerBill" parameterType="com.xmniao.domain.order.BillFreshSub">
+  	update t_bill_fresh_sub SET hstatus=#{hstatus},modify_time=#{modifyTime} 
+  	WHERE order_sn=#{orderSn} AND sub_order_sn=#{subOrderSn} 
+  </update>
+  
+  <select id="getBillPurchasePrice" parameterType="map" resultType="map">
+	SELECT codeId,wareNum,purchasePrice,price-integral as cash 
+	FROM t_product_bill
+	WHERE bid=#{bid} AND sub_bid=#{subBid}
+  </select>
+  
+  <update id="modifySubBillInfo" parameterType="com.xmniao.domain.order.BillFreshSub">
+  	UPDATE t_bill_fresh_sub 
+  	SET hstatus=#{hstatus},
+  		<if test="null != commission and 'null'!= commission">
+  			commission=#{commission},
+  		</if>
+  		modify_time=#{modifyTime}
+  	WHERE sub_order_sn=#{subOrderSn}
+  
+  </update>
+  
+  <select id="getSubBillInfo" resultMap="BaseResultMap">
+  select * from t_bill_fresh_sub where sub_order_sn = #{subOrdersn}
+  </select>
+  
+  <!-- 更新超时未确认收货的订单，为已收货 -->
+  <update id="updateOutTimeOrder">
+  		UPDATE t_bill_fresh_sub
+  		SET status = 6,
+  			operator = #{operator},
+  			memo = #{memo}
+  		WHERE #{sysdate} &gt;= DATE_ADD(delivery_time,INTERVAL #{lastDay} DAY)
+  		AND create_time &gt; '2016-07-20 00:00:00'
+		AND STATUS = 1
+  </update>
+  
+  <select id="getCashCoupon" resultType="Map">
+  	SELECT bid,cdenom,cuser,ctype,cdid
+  	from t_cash_coupon
+  	where bid=#{ordersn}
+  </select>
+</mapper>

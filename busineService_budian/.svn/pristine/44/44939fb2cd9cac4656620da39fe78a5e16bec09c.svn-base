@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.xmniao.dao.order.MallOrderDao">
+
+	<resultMap type="com.xmniao.domain.order.MallOrderBean" id="mallOrderMap">
+		<id column="bid" property="bid"/>
+		<result column="uid" property="uid"/>
+		<result column="money" property="money"/>
+		<result column="profit" property="profit"/>
+		<result column="commision" property="commision"/>
+		<result column="give_money" property="giveMoney"/>
+		<result column="live_coin" property="liveCoin"/>
+		<result column="integral" property="integral"/>
+		<result column="payment" property="payment"/>
+		<result column="status" property="status"/>
+		<result column="version" property="version"/>
+		<result column="max_integral" property="maxIntegral"/>
+		<result column="address" property="address"/>
+		<result column="username" property="username"/>
+		<result column="mobile" property="mobile"/>
+		<result column="freight" property="freight"/>
+		<result column="rank_type" property="rankType"/>
+		<result column="rank_id" property="rankId"/>
+	</resultMap>
+	
+	<resultMap type="com.xmniao.domain.order.MallOrderProductBean" id="mallOrderProductMap">
+		<id column="id" property="id"/>
+		<result column="wareNum" property="wareNum"/>
+		<result column="price" property="price"/>
+		<result column="integral" property="integral"/>
+		<result column="freight" property="freight"/>
+		<result column="supplier_id" property="supplierId"/>
+		<result column="activity_type" property="activityType"/>
+	</resultMap>
+	
+	<select id="getByBid" resultMap="mallOrderMap">
+		select bid,
+		          uid,
+		          money,
+		          phoneid,
+		          profit,
+		          commision,
+		          give_money,
+		          integral,
+		          max_integral,
+		          payment,
+		          status,
+		          version,
+		          address,
+		          username,
+		          mobile,
+		          cuser,
+		          cdid,
+		          rid,
+		          live_coin,
+		          freight,
+		          rank_type,
+		          rank_id
+		 from t_bill_fresh where bid=#{bid}
+	</select>
+	
+	<update id="updateForPayComplete" parameterType="map">
+		update t_bill_fresh
+		set status=#{status},
+		      zdate=#{zdate},
+		      
+			  <if test="number != null and number != ''">
+			 	 number=#{number},
+			  </if>
+		  
+			  <if test="thirdUid != null and thirdUid != ''">
+			 	 third_uid=#{thirdUid},
+			  </if>
+			  
+			  <if test="payType != null and payType !=''">
+			  	paytype = #{payType},
+			  </if>
+			  <if test="balance !=null">
+			 	 profit =  #{balance},
+			  </if>
+			  <if test="commision !=null">
+			 	commision =  #{commision},
+			  </if>
+			  <if test="zbalance !=null">
+				 give_money =  #{zbalance},
+			  </if>
+			  <if test="birdCoin !=null">
+			  	live_coin =  #{birdCoin},
+			  </if>
+			  <if test="payment !=null">
+			 	payment =  #{payment},
+			  </if>
+			  <if test="rankType !=null">
+			  	rank_type =  #{rankType},
+			  </if>
+			  <if test="rankId !=null">
+			 	rank_id =  #{rankId},
+			  </if>
+			  
+			  payid=#{payid},
+		      udate=#{udate},
+		      version=version+1
+		where bid=#{bid} and status=0 and  version=#{version}
+	</update>
+	
+	<insert id="addSubOrder" parameterType="com.xmniao.domain.order.MallSubOrderBean">
+		insert into t_bill_fresh_sub(
+								order_sn,
+								sub_order_sn,
+								supplier_id,
+								uid,
+								total_amount,
+								cash_amount,
+								coin_amount,
+								balance_amount,
+								integral_amount,
+								preferential,
+								freight,
+								status,
+								create_time,
+								modify_time,
+								address,
+								mobile,
+								consignee,
+								rid,
+								wareNum,
+								expTid
+		                    ) values(
+		                        #{orderSn},
+								#{subOrderSn},
+								#{supplierId},
+								#{uid},
+								#{totalAmount},
+								#{cashAmount},
+								#{coinAmount},
+								#{balanceAmount},
+								#{integralAmount},
+								#{preferential},
+								#{freight},
+								#{status},
+								#{createTime},
+								#{modifyTime},
+								#{address},
+								#{mobile},
+								#{consignee},
+								#{rid},
+								#{wareNum},
+								#{expTid}
+		                    )
+	</insert>
+	
+	<select id="getOrderProductByBid"  resultMap="mallOrderProductMap">
+		select id,codeId,activityId,attrids,wareNum,price,integral,freight,supplier_id,expTid,activity_type from t_product_bill where bid=#{bid}
+	</select>
+	
+	<update id="setSubBidForOrderProduct">
+		update t_product_bill set sub_bid=#{subBid} where id=#{id}
+	</update>
+	
+	<select id="getCouponDetail" resultType="map">
+		SELECT cdid,user_status status
+		FROM t_coupon_detail
+		WHERE cdid = #{0}
+	</select>
+	
+	<update id="updateCouponStatus" parameterType="map">
+		UPDATE t_coupon_detail
+		SET user_status = #{status}
+		<if test="status != null and status == 2">
+			,user_time = #{date}
+		</if>
+		WHERE cdid = #{cdid}
+	</update>
+	
+	<!-- 扫描超过两小时未支付订单 -->
+	<select id="scanNoPaymentOrder" resultMap="mallOrderMap">
+		SELECT * 
+		FROM t_bill_fresh
+		WHERE status = 0
+		AND DATE_ADD(sdate,INTERVAL 2 HOUR)&lt;=NOW()
+		AND sdate>=DATE_ADD(#{date},INTERVAL -2 DAY)
+		ORDER BY sdate DESC
+		LIMIT ${page*20},20
+	</select>
+	
+	<update id="updateFreshRepertory" parameterType="map">
+		UPDATE t_sale_group
+		SET stock = stock + #{num}
+		WHERE codeId = #{codeId}
+		AND pv_ids = #{attrIds}
+	</update>
+	
+	<update id="updateRepertory" parameterType="map">
+		UPDATE t_fresh_activity_group
+		SET stock = stock + #{num}
+		WHERE codeId = #{codeId}
+		AND pv_ids = #{attrIds}
+		AND activity_id = #{activityId}
+	</update>
+	
+	<update id="updateFreshActivityProduct" parameterType="map">
+		UPDATE t_fresh_activity_product
+		<if test="status ==1">
+			SET sell_num = #{num}+sell_num
+		</if>
+		<if test="status !=1">
+			SET sell_store = #{num}+sell_store
+		</if>
+		WHERE codeId = #{codeId}
+		AND activity_id = #{activityId}
+	</update>
+	
+	<update id="updateFreshProductInfo" parameterType="map">
+		UPDATE t_product_info
+		<if test="status ==1">
+			SET sales = #{num}+sales
+		</if>
+		<if test="status !=1">
+			SET store = #{num}+store
+		</if>
+		WHERE codeId = #{codeId}
+	</update>
+	
+	<select id="getCouponDetailByBid" resultType="map">
+		SELECT cdid, user_status status, bid, cid
+		FROM t_coupon_detail
+		WHERE bid = #{0}   <!-- 订单编号 -->
+	</select>
+	
+	
+	<update id="updateCouponStatusByBid" parameterType="map">
+		UPDATE t_coupon_detail
+		<!-- user_status:使用状态，0未使用，1锁定，2已使用 3 已过期并退款 -->
+		SET user_status = #{status}   
+		<if test="status != null and status == 2">
+			,user_time = #{date}
+		</if>
+		WHERE bid = #{bid}  <!-- 订单编号 -->
+	</update>
+</mapper>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.dao.live.LiveOrderDao">
+	
+   <resultMap id="LivePayOrderMap" type="com.xmniao.domain.live.LivePayOrder" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="pay_no" property="payNo" jdbcType="VARCHAR" />
+    <result column="pay_code" property="payCode" jdbcType="VARCHAR" />
+    <result column="combo_id" property="comboId" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="payment" property="payment" jdbcType="DECIMAL" />
+    <result column="free_coin" property="freeCoin" jdbcType="DECIMAL" />
+    <result column="real_coin" property="realCoin" jdbcType="DECIMAL" />
+    <result column="pay_type" property="payType" jdbcType="VARCHAR" />
+    <result column="pay_state" property="payState" jdbcType="INTEGER" />
+    <result column="pay_time" property="payTime" jdbcType="TIMESTAMP" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="receipt" property="receipt" jdbcType="LONGVARCHAR" /> 
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="total_ledger_amount" property="totalLedgerAmount" jdbcType="DECIMAL" />
+    <result column="consume_ledger" property="consumeLedger" jdbcType="DECIMAL" />
+    <result column="privilege_ledger" property="privilegeLedger" jdbcType="DECIMAL" />
+    <result column="ledger_level" property="ledgerLevel" jdbcType="INTEGER" />
+    <result column="current_consume_ledger" property="currentConsumeLedger" jdbcType="DECIMAL" />
+    <result column="current_privilege_ledger" property="currentPrivilegeLedger" jdbcType="DECIMAL" />
+    <result column="current_dividend_ledger" property="currentDividendLedger" jdbcType="DECIMAL" />
+    <result column="current_dividend_coin_ledger" property="currentDividendCoinLedger" jdbcType="DECIMAL" />
+    <result column="quantity" property="quantity" jdbcType="INTEGER" />
+    <result column="has_recomend" property="hasRecomend" jdbcType="INTEGER" />
+    <result column="has_dividend" property="hasDividend" jdbcType="INTEGER" />
+    <result column="object_oriented" property="objectOriented" jdbcType="INTEGER" />
+    <result column="quota" property="quota" jdbcType="DECIMAL" />
+    <result column="debitcard_id" property="debitcardId" jdbcType="INTEGER" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="sellertype" property="sellertype" jdbcType="INTEGER" />
+    <result column="sellername" property="sellername" jdbcType="VARCHAR" />
+    <result column="seller_income" property="sellerIncome" jdbcType="DECIMAL" />
+    <result column="offset_seller_income" property="offsetSellerIncome" jdbcType="DECIMAL" />    
+    <result column="entry_sellerid" property="entrySellerid" jdbcType="INTEGER" />
+    <result column="entry_selleragio"  property="entrySelleragio" jdbcType="DECIMAL" />
+    <result column="uid_relation_chain" property="uidRelationChain" jdbcType="VARCHAR"/>
+    <result column="excitation_project"  property="excitationProject" jdbcType="VARCHAR" />
+    <result column="is_virtual" property="isVirtual" jdbcType="INTEGER"/>
+  </resultMap>
+  
+  <sql id="Live_Pay_Order_List" >
+    id, order_no, pay_no, pay_code, combo_id, uid, payment, free_coin, real_coin, pay_type, 
+    pay_state, pay_time, version, create_time, update_time, total_ledger_amount, consume_ledger, 
+    privilege_ledger, ledger_level, current_consume_ledger, current_privilege_ledger,quantity,
+    has_recomend,has_dividend,current_dividend_ledger,current_dividend_coin_ledger,object_oriented,
+    quota,sellerid,sellertype,sellername,seller_income,offset_seller_income,debitcard_id,
+    entry_sellerid,entry_selleragio,uid_relation_chain,excitation_project,is_virtual
+  </sql>
+  
+	<!-- 查询订单信息-->
+	<select id="getLiveOrder" parameterType="java.lang.String" resultMap="LivePayOrderMap">
+		SELECT <include refid="Live_Pay_Order_List" />
+		FROM t_live_pay_order
+		WHERE order_no = #{bid}
+	</select>
+	
+	<!-- 更新订单状态 -->
+	<update id="updateLiveOrder" parameterType="com.xmniao.domain.live.LivePayOrder">
+		UPDATE t_live_pay_order
+		SET  pay_state = #{payState},pay_type = #{payType},pay_no =#{payNo},pay_time = #{payTime},update_time = #{updateTime},version=version+1
+		<if test="payCode != null and payCode != 'null'">
+			,pay_code = #{payCode}
+		</if>
+		<if test="uidRelationChain!=null and uidRelationChain !=''">
+			,uid_relation_chain = #{uidRelationChain}
+		</if>
+		WHERE 
+		order_no = #{orderNo}
+		AND version = #{version}
+	</update>
+		
+	<select id="countSubordinateOrderAmount" resultType="java.math.BigDecimal" parameterType="Integer">
+		SELECT SUM(payment) 
+		FROM t_live_pay_order 
+		WHERE  RIGHT(uid_relation_chain,23) LIKE CONCAT(LPAD(${uid},11,'0'),',%')
+	</select>
+	
+	
+	<select id="getHighestSellerLedgerOrder" parameterType="Map" resultMap="LivePayOrderMap">
+		SELECT *
+		FROM t_live_pay_order 
+		WHERE  pay_state=1 AND object_oriented =2 AND uid=#{uid} AND privilege_ledger>0  AND privilege_ledger>current_privilege_ledger 
+		ORDER BY payment DESC LIMIT 1
+	</select>
+	
+	
+	<select id="getVerDirectPerformance" parameterType="Map" resultType="map">
+		 SELECT IFNULL(SUM(payment),0) directPerformance ,COUNT(*) directCount
+		 FROM t_live_pay_order 
+		 WHERE pay_state=1 and object_oriented=4  and uid_relation_chain LIKE CONCAT('%',LPAD(#{uid},11,'0'),'%') 
+		 <if test="sdate!=null and sdate !='' and edate !=null and edate!=''">
+    		AND DATE_FORMAT(pay_time,'%Y-%m-%d') BETWEEN DATE_FORMAT(#{sdate},'%Y-%m-%d') AND DATE_FORMAT(#{edate},'%Y-%m-%d') 
+		 </if>
+	</select>
+	
+	<select id="getVerIndirectPerformance" parameterType="Map" resultType="map">
+		 SELECT IFNULL(SUM(payment),0) directPerformance ,COUNT(*) directCount
+		 FROM t_live_pay_order 
+		 WHERE pay_state=1 and object_oriented=4 and uid_relation_chain REGEXP ${uidStr}
+		 <if test="sdate!=null and sdate !='' and edate !=null and edate!=''">
+    		AND DATE_FORMAT(pay_time,'%Y-%m-%d') BETWEEN DATE_FORMAT(#{sdate},'%Y-%m-%d') AND DATE_FORMAT(#{edate},'%Y-%m-%d') 
+		 </if>
+	</select>
+
+</mapper>

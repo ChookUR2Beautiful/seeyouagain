@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.xmniao.dao.mike.MikeServiceDao">
+
+	<!-- 向蜜客缴费更新订单状态接口 -->
+	<update id="modifyMikeInviteInfo" parameterType="map">
+		update t_honey_apply
+		set
+		<if test="status !=null and status !=''">
+			status=#{status,jdbcType=INTEGER},
+		</if>
+		<if test="pid !=null and pid !=''">
+			pid=#{pid,jdbcType=INTEGER},
+		</if>
+		<if test="paytype !=null and paytype !=''">
+			paytype=#{paytype,jdbcType=VARCHAR},
+		</if>
+		<if test="number !=null and number !=''">
+			number=#{number,jdbcType=VARCHAR},
+		</if>
+		<if test="remarks !=null and remarks !=''">
+			remarks=#{remarks,jdbcType=VARCHAR}
+		</if>
+		where id=#{id,jdbcType=INTEGER}
+	</update>
+	
+</mapper>

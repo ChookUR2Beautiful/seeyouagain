@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 	
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-3.2.xsd 
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-3.2.xsd 
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+
+	<context:property-placeholder location="properties/busine_*.properties" />
+
+	<!-- 数据源配置 -->
+	<bean id="jointDataSource" class="com.alibaba.druid.pool.DruidDataSource"
+		init-method="init" destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+	 	<property name="url" value="jdbc:mysql://192.168.50.251/test_data4?characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull&amp;transformedBitIsBoolean=true" />
+		<property name="username" value="joint" />
+		<property name="password" value="123456" />
+		<!-- 配置过滤 -->
+		<property name="filters" value="stat" />
+		<!-- 配置初始化大小、最小、最大 -->
+		<property name="initialSize" value="1" />
+		<property name="minIdle" value="1" />
+		<property name="maxActive" value="20" />
+		<!-- 配置获取连接等待超时的时间 -->
+		<property name="maxWait" value="60000" />
+		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+		<!-- 检测连接是否有效的SQL -->
+		<property name="validationQuery" value="SELECT 'x' from DUAL" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<property name="poolPreparedStatements" value="true" />
+		<property name="maxPoolPreparedStatementPerConnectionSize"
+			value="20" />
+	</bean>
+
+	<!-- 用户数据源配置 -->
+	<bean id="ursDataSource" class="com.alibaba.druid.pool.DruidDataSource"
+		init-method="init" destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://192.168.50.251:3306/test_data10?characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull&amp;transformedBitIsBoolean=true" />
+		<property name="username" value="joint" />
+		<property name="password" value="123456" />
+		<!-- 配置过滤 -->
+		<property name="filters" value="stat" />
+		<!-- 配置初始化大小、最小、最大 -->
+		<property name="initialSize" value="1" />
+		<property name="minIdle" value="1" />
+		<property name="maxActive" value="20" />
+		<!-- 配置获取连接等待超时的时间 -->
+		<property name="maxWait" value="60000" />
+		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+		<!-- 检测连接是否有效的SQL -->
+		<property name="validationQuery" value="SELECT 'x' from DUAL" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<property name="poolPreparedStatements" value="true" />
+		<property name="maxPoolPreparedStatementPerConnectionSize"
+			value="20" />
+	</bean>
+	
+   
+	<!-- 配置Mybatis SqlSessionFactoryBean 自动装配映射文件 -->
+	<bean id="jointSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="jointDataSource" />
+		<property name="mapperLocations" value="classpath*:com/xmniao/dao/**/*.xml" />
+	</bean>
+	<!-- 自动 映射DAO层 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.xmniao.dao.**" />
+		<property name="sqlSessionFactoryBeanName" value="jointSessionFactory"/>
+	</bean>
+
+	<!-- 配置Mybatis SqlSessionFactoryBean 自动装配映射文件 -->
+	<bean id="ursSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="ursDataSource" />
+		<property name="configLocation" value="conf/busine-mybatis.xml"/>
+		<property name="mapperLocations" value="classpath*:com/xmniao/urs/dao/**/*.xml" />
+	</bean>
+	<!-- 自动 映射DAO层 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.xmniao.urs.dao.**" />
+		<property name="sqlSessionFactoryBeanName" value="ursSessionFactory"/>
+	</bean>
+	
+
+    <!-- 配置quartz aop -->
+    <aop:config>
+        <aop:aspect id="c" ref="redisLockUtil">
+            <aop:pointcut id="quartz" expression="execution(* com.xmniao.*.quartz.*.*(..))"/>
+            <aop:around pointcut-ref="quartz" method="redisLock"/>
+
+        </aop:aspect>
+    </aop:config> 
+    
+	<!-- 自动注入SERVICE层 -->
+	<context:component-scan base-package="com.xmniao.service.**" />
+
+
+	
+	<!-- 加载redis的配置 -->
+	<import resource="busine-redis.xml"/>
+	
+	<!-- 加载mongo的配置 -->
+	<import resource="busine-mongo.xml"/>
+	
+	<!-- 加载JMS消息服务的配置 -->
+	<import resource="busine-jms.xml"/>
+	
+	<!-- 加载thrift服务接口及实现 -->
+	<import resource="busine-thrift.xml" />
+	
+	<!-- 加载定时任务的配置 -->
+	<import resource="busine-quartz.xml"/>
+	
+	<!-- 加载所有连接URL地址的配置 -->
+	<import resource="busine-connection.xml"/>
+	
+	<!-- 加载异步线程配置 -->
+	<import resource="busine-ansynthread.xml"/>
+	
+	<!-- 公共服务实现类,调用其它服务地址的配置 -->
+	<bean name="commonServiceImpl" class="com.xmniao.service.common.CommonServiceImpl">
+		<!-- 短信服务URL地址 -->
+		<property name="smsUrl" ref="smsUrl"/>
+		<!-- 用户中心服务URL地址 -->
+		<property name="userServerUrl" ref="userServerUrl"/>
+		<!-- 调用支付服务的修改钱包余额接口的IP地址 -->
+		<property name="transLedgerIP" ref="transLedgerIP"/>
+		<!-- 调用支付服务的修改钱包余额接口的端口号 -->
+		<property name="transLedgerPort" ref="transLedgerPort"/>
+		<!-- 推送消息服务URL地址 -->
+		<property name="pushMsgUrl" ref="pushMsgUrl"/>
+		<!-- 调用分账服务接口的IP地址 -->
+		<property name="ledgerIP" ref="ledgerIP"/>
+		<!-- 调用分账服务接口的端口号 -->
+		<property name="ledgerPort" ref="ledgerPort"/>
+	</bean>
+	
+	<!-- 订单服务接口实现类bean配置 -->
+	<bean name="orderServiceImpl" class="com.xmniao.service.order.OrderServiceImpl">
+		<!-- 商家分账类型为自动和手动的bean配置 -->
+		<property name="zdQueueKey" ref="zdQueueKey" />
+		<property name="sdQueueKey" ref="sdQueueKey" />
+		<!-- 注入通用接口服务实现类 -->
+		<property name="commonServiceImpl" ref="commonServiceImpl" />
+		<!-- 注入向蜜客绑定消息队列 -->
+		<property name="mikeQueue" ref="xmkqueue"/>
+		<!-- 注入订单发送的短信内容 （用户）-->
+		<property name="orderSmsContent" value="欢迎使用寻蜜鸟,您在{0},消费{1}元,支付已成功,{2}"/>
+		<!-- 注入订单发送的短信内容  （商家） -->
+		<property name="sellerSmsContent" value="亲爱的商家，您有一笔来自寻蜜鸟的订单，订单号：{0}，营收金额：{1}元"/>		
+		<!-- 注入推送消息redis队列 -->
+		<property name="pushMsgQueue" ref="pushmsgqueue" />
+		<!-- 注入短信发送redis队列Key -->
+		<property name="smsQueue" ref="smsqueue"/>
+		<property name="dataCache" ref="dataCahe"/>
+		<!-- 脉宝分账通知队列key -->
+		<property name="maibaoLedgerQueueKey" ref="maibaoLedgerQueueKey"/>
+	</bean>
+	
+		<!-- 订单服务接口实现类bean配置    退款模块-->
+	<bean name="busiSysOrderServiceImpl" class="com.xmniao.service.refund.BusiSysOrderServiceImpl">
+		<!-- 商家分账类型为自动和手动的bean配置 -->
+		<property name="zdQueueKey" ref="zdQueueKey" />
+		<!-- 注入向蜜客绑定消息队列 -->
+		<property name="mikeQueue" ref="xmkqueue"/>
+		<!-- 注入即时监听队列 -->
+		<property name="jtqueue_key" ref="jtqueue_key"/>
+	</bean>
+	
+	<!-- 分账服务消费者实现处理类 -->
+	<bean id="ledgerConsumerImpl" class="com.xmniao.service.ledger.LedgerConsumerImpl" init-method="init">
+		<!-- 注入分账服务消费者消费消息连接配置 -->
+		<property name="ledgerConsumConnection" ref="ledgerConsumConnection" />
+		<!-- 注入分账服务消费者消费消息的主题 -->
+		<property name="ledgerTopic" ref="ledgerTopic" />
+		<!-- 注入分账服务消费者消费消息的标签 -->
+		<property name="ledgerTags" ref="ledgerTags" />
+		<!-- 注入直播分账服务消费者消费消息的主题 -->
+		<property name="liveLedgerReturnbackTopic" ref="liveLedgerReturnbackTopic" />
+		<!-- 注入直播分账服务消费者消费消息的标签 -->
+		<property name="liveRecommendLedgerReturnbackTags" ref="liveRecommendLedgerReturnbackTags" />
+		<!-- 注入直播分账服务消费者消费消息的标签 -->
+		<property name="liveDividendsLedgerReturnbackTags" ref="liveDividendsLedgerReturnbackTags" />
+		<!-- 注入直播分账服务消费者消费消息V2的标签 -->
+		<property name="liveDividendsLedgerV2ReturnbackTags" ref="liveDividendsLedgerV2ReturnbackTags" />
+		<!-- 注入直播分账服务消费者消费消息V3的标签 -->
+		<property name="liveDividendsLedgerV3ReturnbackTags" ref="liveDividendsLedgerV3ReturnbackTags" />	
+		<!-- 注入支付服务黄金庄园消费者消费消息的主题 -->
+		<property name="manorPayTopic" ref="manorPayTopic" />
+		<!-- 注入支付服务黄金庄园消费者花蜜收益回调消费消息的标签 -->
+		<property name="manorNectarReturnbackTag" ref="manorNectarReturnbackTag" />	
+		<!-- 注入支付服务黄金庄园消费者花蜜收益回调消费消息的标签 -->
+		<property name="manorGiftNectarReturnbackTag" ref="manorGiftNectarReturnbackTag" />	
+		<!-- 注入订单服务模块实现处理类 -->
+		<property name="orderServiceImpl" ref="orderServiceImpl"/>
+	</bean>
+
+	<!-- 向蜜客服务实现类注入 -->
+	<bean name="mikeServiceImpl" class="com.xmniao.service.mike.MikeServiceImpl">
+		<!-- 注入通用服务实现类 -->
+		<property name="commonServiceImpl" ref="commonServiceImpl" />
+	</bean>
+
+	<!-- 向蜜客消息处理实现类注入 -->
+	<bean name="queueDelegateImpl" class="com.xmniao.service.message.xmike.QueueDelegateImpl">
+		<!-- 注入通用服务实现类 -->
+		<property name="commonServiceImpl" ref="commonServiceImpl" />
+		<!-- 注入向蜜客队列 -->
+		<property name="mikeQueue" ref="xmkqueue"/>
+	</bean>
+	
+	<!-- 容错机制业务逻辑实现处理类 -->
+	<bean name="faultTolerantImpl" class="com.xmniao.service.message.fault.FaultTolerantImpl">
+	 	<!-- 注入向蜜客redis队列key -->
+		<property name="mikeQueue" ref="xmkqueue" />
+		<!-- 注入短信redis队列key -->
+		<property name="smsQueue" ref="smsqueue" />
+		<!-- 注入推送消息redis队列key -->
+		<property name="pushMsgQueue" ref="pushmsgqueue" />
+		<!-- 注入自动分账redis队列key -->
+		<property name="zdQueueKey" ref="zdQueueKey"/>
+		<!-- 公共服务接口实现类 -->
+		<property name="commonServiceImpl" ref="commonServiceImpl" />
+		<!-- HTTP方式连接redis的URL地址  -->
+		<property name="redisHttpURL" ref="redisHttpURL"/>
+	</bean>
+	
+	<!-- 消息推送服务模块相关注入 -->
+	<!-- 消息推送订单支付标题 -->
+	<bean id="pmgordertitle" class="java.lang.String">
+	 <constructor-arg value="您有一笔订单支付成功"/>
+	</bean>
+	<!-- 消息推送分账成功标题 -->
+	<bean id="pmgledgertitle" class="java.lang.String">
+	 <constructor-arg value="您有一笔订单返利到账"/>
+	</bean>
+	<!-- 消息推送商户订单支付内容 -->
+	<bean id="pmgsordercontent" class="java.lang.String">
+	 <constructor-arg value="订单:{0}，金额:{1}元，支付成功"/>
+	</bean>
+	<!-- 消息推送用户消费订单支付内容 -->
+	<bean id="pmguordercontent" class="java.lang.String">
+	 <constructor-arg value="欢迎使用寻蜜鸟，您在{0}，消费{1}元，支付成功"/>
+	</bean>
+	<!-- 消息推送用户返利到账内容 -->
+	<bean id="pmgluordercontent" class="java.lang.String">
+	 <constructor-arg value="订单:{0}，返利:{1}元，已到账"/>
+	</bean>
+	<!-- 下线充值订单金额最低为多少时，上线才允许获取分账 -->
+	<bean id="recomendLedgerOrderMinAmount" class="java.lang.String">
+	 <constructor-arg value="1000"/>
+	</bean>
+	<!-- 推送消息业务逻辑处理实现类 -->
+	<bean name="pushMessageImpl" class="com.xmniao.service.message.push.PushMessageImpl">
+		<!-- 注入推送消息redis队列 -->
+		<property name="pushMsgQueue" ref="pushmsgqueue" />
+		<!-- 注入消息推送订单支付标题 -->
+		<property name="pmgordertitle" ref="pmgordertitle"/>
+		<!-- 注入消息推送分账成功标题 -->
+		<property name="pmgledgertitle" ref="pmgledgertitle"/>
+		<!-- 注入消息推送商户订单支付内容 -->
+		<property name="pmgsordercontent" ref="pmgsordercontent"/>
+		<!-- 注入消息推送用户消费订单支付内容 -->
+		<property name="pmguordercontent" ref="pmguordercontent"/>
+		<!-- 注入消息推送用户返利到账内容 -->
+		<property name="pmgluordercontent" ref="pmgluordercontent"/>
+		<!-- 注入通用接口服务实现类 -->
+		<property name="commonServiceImpl" ref="commonServiceImpl" />
+	</bean>
+
+
+	<!--黄金花园MQ消息服务-->
+	<bean id="manorMqService" class="com.xmniao.service.manor.ManorMqRegister"
+		  init-method="init">
+        <property name="consumerGroup" value="Manor_Flower_Plant_Group_Dev"/>
+	</bean>
+
+	<!-- 发送短信业务处理实现类 -->
+	<bean id="sendSmsImpl" class="com.xmniao.service.message.sms.SendSmsImpl">
+	 <!-- 注入发送短信的redis队列 -->
+	 <property name="smsQueue" ref="smsqueue"/>
+	 <!-- 发送短信的URL地址 -->
+	 <property name="smsUrl" ref="smsUrl"/>
+	 <!-- 微信消息推送URL地址 -->
+	 <property name="wxSmsUrl" ref="wxSmsUrl"/>
+	</bean>
+	
+	<!-- 事务管理器 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="jointDataSource"/>
+    </bean>
+    <!-- 开启事务注解驱动 -->
+    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/> 
+	
+	<!-- 本地Ecahe缓存机制配置 -->
+	<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+	 <property name="configLocation" value="classpath:ehcache.xml"/>
+	</bean>
+	<!-- 数据缓存 -->
+	<bean id="dataCahe" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+	 <property name="cacheManager" ref="cacheManager"/>
+	 <property name="cacheName" value="dataCache"/>
+	</bean>
+
+	<!-- 线程池执行工厂 -->
+	<bean id="executorPoolFactory"
+		class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean">
+		<property name="scheduledExecutorTasks">
+			<list>
+				<!-- 更新直播会员分账信息配置 -->
+				<ref bean="liverLedgerPoolExecutor"/>
+			    <!-- 绑定向蜜客注入redis线程池配置 -->
+				<ref bean="xmikeRedisPoolExecutor" />
+				<!-- 推送消息注入redis线程池配置 -->
+				<ref bean="pushMsgRedisPoolExecutor" />
+				<!--脉宝通知分账线程池配置-->
+				<ref bean="maibaoAdvenceLedgerExecutor"/>
+				<!-- 短信发送注入redis线程池配置 -->
+				<ref bean="sendSmsQueuePoolExecutor"/>
+				<!-- 发送商户行为统计配置 -->
+				<ref bean="sellerInfoQueuePoolExecutor"/>
+				<!-- 发送用户行为统计配置 -->
+				<ref bean="userActionQueuePoolExecutor"/>
+				<!-- 发送Ecache缓存容错机制配置 -->
+				<ref bean="faultTolerantPoolExecutor"/>
+				<!-- 注入thrift线程池配置 -->
+				<ref bean="thriftPoolExecutor" />
+			</list>
+		</property>
+	</bean>
+</beans>

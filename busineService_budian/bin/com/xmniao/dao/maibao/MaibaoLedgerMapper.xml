@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.maibao.MaibaoLedgerMapper" >
+  <resultMap id="BaseResultMap" type="com.xmniao.domain.maibao.MaibaoLedger" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="trans_no" property="transNo" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="ecno" property="ecno" jdbcType="VARCHAR" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="amount" property="amount" jdbcType="DOUBLE" />
+    <result column="ledger_time" property="ledgerTime" jdbcType="TIMESTAMP" />
+    <result column="ledger_amount" property="ledgerAmount" jdbcType="DOUBLE" />
+    <result column="merchant_type" property="merchantType" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="merchant_name" property="merchantName" jdbcType="VARCHAR" />
+    <result column="discount" property="discount" jdbcType="DOUBLE" />
+    <result column="signed_ecno" property="signedEcno" jdbcType="VARCHAR" />
+    <result column="notify_state" property="notifyState" jdbcType="INTEGER" />
+    <result column="notify_result" property="notifyResult" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, trans_no, mobile, ecno, uid, amount, ledger_time, ledger_amount, merchant_type, 
+    update_time, merchant_name, discount, signed_ecno, notify_state,notify_result
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_maibao_ledger
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <insert id="insert" parameterType="com.xmniao.domain.maibao.MaibaoLedger" >
+    insert into t_maibao_ledger (id, trans_no, mobile, 
+      ecno, uid, amount, ledger_time, 
+      ledger_amount, merchant_type, update_time, 
+      merchant_name, discount, signed_ecno, 
+      notify_state)
+    values (#{id,jdbcType=INTEGER}, #{transNo,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, 
+      #{ecno,jdbcType=VARCHAR}, #{uid,jdbcType=INTEGER}, #{amount,jdbcType=DOUBLE}, #{ledgerTime,jdbcType=TIMESTAMP}, 
+      #{ledgerAmount,jdbcType=DOUBLE}, #{merchantType,jdbcType=INTEGER}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{merchantName,jdbcType=VARCHAR}, #{discount,jdbcType=DOUBLE}, #{signedEcno,jdbcType=VARCHAR}, 
+      #{notifyState,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.domain.maibao.MaibaoLedger" >
+    insert into t_maibao_ledger
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="transNo != null" >
+        trans_no,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="ecno != null" >
+        ecno,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="ledgerTime != null" >
+        ledger_time,
+      </if>
+      <if test="ledgerAmount != null" >
+        ledger_amount,
+      </if>
+      <if test="merchantType != null" >
+        merchant_type,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="merchantName != null" >
+        merchant_name,
+      </if>
+      <if test="discount != null" >
+        discount,
+      </if>
+      <if test="signedEcno != null" >
+        signed_ecno,
+      </if>
+      <if test="notifyState != null" >
+        notify_state,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="transNo != null" >
+        #{transNo,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="ecno != null" >
+        #{ecno,jdbcType=VARCHAR},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=DOUBLE},
+      </if>
+      <if test="ledgerTime != null" >
+        #{ledgerTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="ledgerAmount != null" >
+        #{ledgerAmount,jdbcType=DOUBLE},
+      </if>
+      <if test="merchantType != null" >
+        #{merchantType,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="merchantName != null" >
+        #{merchantName,jdbcType=VARCHAR},
+      </if>
+      <if test="discount != null" >
+        #{discount,jdbcType=DOUBLE},
+      </if>
+      <if test="signedEcno != null" >
+        #{signedEcno,jdbcType=VARCHAR},
+      </if>
+      <if test="notifyState != null" >
+        #{notifyState,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.domain.maibao.MaibaoLedger" >
+    update t_maibao_ledger
+    <set >
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="notifyState != null" >
+        notify_state = #{notifyState,jdbcType=INTEGER},
+      </if>
+      <if test="notifyResult != null" >
+        notify_result = #{notifyResult,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER} and notify_state!= 1
+  </update>
+ 
+  <!--查询所有未通知分账记录-->
+  <select id="getNoAdvenceLedger" resultMap="BaseResultMap" parameterType="date">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM t_maibao_ledger
+    WHERE notify_state  in (0)
+      AND ledger_time &lt; #{queryDate}
+  </select>
+</mapper>

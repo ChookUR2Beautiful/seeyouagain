@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.urs.dao.LiverDao" >
+  <resultMap id="LiverMap" type="com.xmniao.domain.live.LiverBean" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="utype" property="utype" jdbcType="INTEGER" />
+    <result column="anchor_room_no" property="anchorRoomNo" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="weixin" property="weixin" jdbcType="VARCHAR" />
+    <result column="height" property="height" jdbcType="DECIMAL" />
+    <result column="weight" property="weight" jdbcType="DECIMAL" />
+    <result column="age" property="age" jdbcType="INTEGER" />
+    <result column="three_dimensional" property="threeDimensional" jdbcType="VARCHAR" />
+    <result column="ledger_ratio" property="ledgerRatio" jdbcType="DECIMAL" />
+    <result column="rank_id" property="rankId" jdbcType="INTEGER" />
+    <result column="rank_no" property="rankNo" jdbcType="INTEGER" />
+    <result column="achievement" property="achievement" jdbcType="VARCHAR" />
+    <result column="current_expe" property="currentExpe" jdbcType="INTEGER" />
+    <result column="concern_nums" property="concernNums" jdbcType="INTEGER" />
+    <result column="concerned_nums" property="concernedNums" jdbcType="INTEGER" />
+    <result column="give_gifts_nums" property="giveGiftsNums" jdbcType="INTEGER" />
+    <result column="gived_gifts_nums" property="givedGiftsNums" jdbcType="INTEGER" />
+    <result column="praised_nums" property="praisedNums" jdbcType="INTEGER" />
+    <result column="view_duration_day" property="viewDurationDay" jdbcType="INTEGER" />
+    <result column="live_duration_day" property="liveDurationDay" jdbcType="INTEGER" />
+    <result column="view_duration" property="viewDuration" jdbcType="INTEGER" />
+    <result column="live_duration" property="liveDuration" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="BIT" />
+    <result column="isInside" property="isinside" jdbcType="INTEGER" />
+    <result column="msg_status" property="msgStatus" jdbcType="BIT" />
+    <result column="seller_look_status" property="sellerLookStatus" jdbcType="INTEGER" />
+    <result column="group_id" property="groupId" jdbcType="VARCHAR" />
+    <result column="group_name" property="groupName" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="wechat_pic" property="wechatPic" jdbcType="VARCHAR" />
+    <result column="sale_coupon_ratio" property="saleCouponRatio" jdbcType="DECIMAL" />
+    <result column="use_coupon_ration" property="useCouponRation" jdbcType="DECIMAL" />
+    <result column="isTlsRegister" property="istlsregister" jdbcType="INTEGER" />
+    <result column="register_source" property="registerSource" jdbcType="INTEGER" />
+    <result column="wechat_group" property="wechatGroup" jdbcType="VARCHAR" />
+    <result column="sort_val" property="sortVal" jdbcType="INTEGER" />
+    <result column="introduce_mv" property="introduceMv" jdbcType="VARCHAR" />
+    <result column="linktype" property="linktype" jdbcType="VARCHAR" />
+    <result column="office_name" property="officeName" jdbcType="VARCHAR" />
+    <result column="self_comment" property="selfComment" jdbcType="LONGVARCHAR" />
+    <result column="enterprise_uid" property="enterpriseUid" jdbcType="INTEGER" />
+    <result column="referrer_ratio" property="referrerRatio" jdbcType="INTEGER" />
+    <result column="parent_referrer_ratio" property="parentReferrerRatio" jdbcType="INTEGER" />
+    <result column="red_packet_authority" property="redPacketAuthority" jdbcType="INTEGER" />
+    <result column="user_platform" property="userPlatform" jdbcType="INTEGER" />
+    <result column="dividends_role" property="dividendsRole" jdbcType="INTEGER" />
+<!--    <result column="referrer_sellerid" property="referrerSellerid" jdbcType="INTEGER" />
+    <result column="referrer_sellertype" property="referrerSellertype" jdbcType="INTEGER" /> --> 
+    <result column="junior_limit_ratio" property="juniorLimitRatio" jdbcType="DECIMAL" />
+    <result column="level_id" property="levelId"/>
+    <result column="root_role" property="rootRole"/>
+    <result column="sign_type" property="signType"/>
+  </resultMap>
+  <sql id="Live_List" >
+    id, uid, utype, anchor_room_no, phone, weixin, height, weight, age, three_dimensional, 
+    ledger_ratio, rank_id, rank_no, achievement, current_expe, concern_nums, concerned_nums, 
+    give_gifts_nums, gived_gifts_nums, praised_nums, view_duration_day, live_duration_day, 
+    view_duration, live_duration, status, isInside, msg_status, seller_look_status, group_id, 
+    group_name, create_time, update_time, wechat_pic, sale_coupon_ratio, use_coupon_ration, 
+    isTlsRegister, register_source, wechat_group, sort_val, introduce_mv, linktype, enterprise_uid, 
+    office_name,self_comment, referrer_type,red_packet_authority,user_platform,
+    dividends_role,junior_limit_ratio,level_id,root_role
+  </sql>
+  
+  
+  <resultMap type="com.xmniao.domain.live.LiverBean" id="LiverLeverMap" extends="LiverMap">
+  	   <association property="liveLever" javaType="com.xmniao.domain.live.LiveLever">
+  	   	   <id column="v_id"/>
+  	   	   <result column="level_income" property="levelIncome"/>
+  	   	   <result column="float_performance" property="floatPerformance"/>
+  	   	   <result column="top_income" property="topIncome"/>
+  	   	   <result column="gift_allot" property="giftAllot"/>
+  	   	   <result column="percent_complete" property="percentComplete"/>
+  	   	   <result column="percent_complete_80" property="percentComplete80"/>
+  	   	   <result column="percent_complete_60" property="percentComplete60"/>
+  	   	   <result column="percent_complete_40" property="percentComplete40"/>
+  	   </association>
+  </resultMap>
+  
+  <select id="getLiverLever" resultMap="LiverLeverMap">
+  	  select liver.*,lever.id as v_id,level_income,float_performance,top_income,gift_allot,percent_complete,percent_complete_80,percent_complete_60,percent_complete_40
+  	   from b_liver liver 
+  	  JOIN  b_live_level  lever on liver.level_id=lever.id  
+  	  <where>
+  	  	  utype = 1  and liver.status = 1
+  	  	  and liver.isInside = 0
+  	  </where>
+  </select>
+  <select id="getLiverLeverById" resultMap="LiverLeverMap">
+  	  select 
+  	  	<include refid="Live_List"/>,
+  	  	lever.id as v_id,level_income,float_performance,top_income,gift_allot,percent_complete,percent_complete_80,percent_complete_60,percent_complete_40
+  	   from b_liver liver 
+  	  JOIN  b_live_level  lever on liver.level_id=lever.id  
+  	  <where>
+  	  	  utype = 1  and liver.status = 1
+  	  	  and liver.isInside = 0
+  	  	  	 and liver.id = #{anchorId}
+  	  </where>
+  </select>
+  <select id="getLiverLeverByIds" parameterType="List" resultMap="LiverLeverMap">
+  	  select <include refid="Live_List"/>,
+  	  	lever.id as v_id,level_income,float_performance,top_income,gift_allot,percent_complete,percent_complete_80,percent_complete_60,percent_complete_40
+  	   from b_liver liver 
+  	  JOIN  b_live_level  lever on liver.level_id=lever.id  
+  	  <where>
+  	  	  utype = 1
+  	  	  and liver.id in 
+  		<foreach collection="list" item="item" open="(" close=")" separator=",">
+  			#{item}
+  		</foreach>
+  	  </where>
+  </select>
+  
+  <select id="getLiverInfo" resultMap="LiverMap" parameterType="com.xmniao.domain.live.LiverBean" >
+    select 
+    	b_liver.*,
+        reward_lowest, reward_highest
+    from b_liver left join b_live_fans_rank
+    on b_liver.fans_rank_id = b_live_fans_rank.id
+    where 1=1
+    <if test="uid!=null"> AND b_liver.uid=#{uid}</if>
+    <if test="id!=null"> AND b_liver.id=#{id}</if>
+  </select>
+  
+  <select id="getLiverByUid" resultMap="LiverMap" parameterType="int" >
+    select 
+    <include refid="Live_List" />
+    from b_liver
+    where  uid=#{uid}
+  </select>
+  
+  <select id="getLiverUidList" parameterType="map" resultType="Integer">
+  	SELECT uid
+  	FROM b_liver
+  	WHERE red_packet_authority=#{redPacketAuthority}
+  	<if test="uid!=null">AND uid=#{uid}</if>
+  </select>
+	
+  <select id="getLiverListByUids" parameterType="List" resultMap="LiverMap">
+  	select 
+  		<include refid="Live_List" />
+  	from b_liver
+  	<where>
+  		uid in 
+  		<foreach collection="list" item="item" open="(" close=")" separator=",">
+  			#{item}
+  		</foreach>
+  	</where>
+  </select>
+
+  <select id="getLiverListByPhone" parameterType="List" resultMap="LiverMap">
+  	select 
+  		<include refid="Live_List" />
+  	from b_liver
+  	<where>
+  		phone in 
+  		<foreach collection="list" item="item" open="(" close=")" separator=",">
+  			#{item}
+  		</foreach>
+  	</where>
+  </select>
+  
+  <resultMap id="LiverJournalMap" type="com.xmniao.domain.live.LiverJournalCount" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="order_amount" property="orderAmount" jdbcType="DECIMAL" />
+    <result column="comsum_amount" property="comsumAmount" jdbcType="DECIMAL" />
+    <result column="comsum_ledger" property="comsumLedger" jdbcType="DECIMAL" />
+    <result column="privilege_ledger" property="privilegeLedger" jdbcType="DECIMAL" />
+    <result column="current_consume_ledger" property="currentConsumeLedger" jdbcType="DECIMAL" />
+    <result column="current_dividend_ledger" property="currentDividendLedger" jdbcType="DECIMAL" />
+    <result column="current_recommend_ledger" property="currentRecommendLedger" jdbcType="DECIMAL" />
+    <result column="current_dividend_coin_ledger" property="currentDividendCoinLedger" jdbcType="DECIMAL" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="Liver_Journal_List" >
+    id, uid, order_amount, comsum_amount, comsum_ledger, privilege_ledger, current_consume_ledger, 
+    current_dividend_ledger,current_dividend_coin_ledger, current_recommend_ledger, update_date
+  </sql>
+  
+    <insert id="insertLiverJournal" parameterType="com.xmniao.domain.live.LiverJournalCount" >
+    insert into b_liver_journal_count
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="orderAmount != null" >
+        order_amount,
+      </if>
+      <if test="comsumAmount != null" >
+        comsum_amount,
+      </if>
+      <if test="comsumLedger != null" >
+        comsum_ledger,
+      </if>
+      <if test="privilegeLedger != null" >
+        privilege_ledger,
+      </if>
+      <if test="expectedPriviledgeLedger != null" >
+        expected_priviledge_ledger,
+      </if>
+      <if test="currentConsumeLedger != null" >
+        current_consume_ledger,
+      </if>
+      <if test="currentDividendLedger != null" >
+        current_dividend_ledger,
+      </if>
+      <if test="currentDividendCoinLedger != null" >
+        current_dividend_coin_ledger,
+      </if>
+      <if test="currentRecommendLedger != null" >
+        current_recommend_ledger,
+      </if>
+      <if test="updateDate != null" >
+        update_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="orderAmount != null" >
+        #{orderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="comsumAmount != null" >
+        #{comsumAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="comsumLedger != null" >
+        #{comsumLedger,jdbcType=DECIMAL},
+      </if>
+      <if test="privilegeLedger != null" >
+        #{privilegeLedger,jdbcType=DECIMAL},
+      </if>
+      <if test="expectedPriviledgeLedger != null" >
+        #{expectedPriviledgeLedger,jdbcType=DECIMAL},
+      </if>
+      <if test="currentConsumeLedger != null" >
+        #{currentConsumeLedger,jdbcType=DECIMAL},
+      </if>
+      <if test="currentDividendLedger != null" >
+        #{currentDividendLedger,jdbcType=DECIMAL},
+      </if>
+      <if test="currentDividendCoinLedger != null" >
+        #{currentDividendCoinLedger,jdbcType=DECIMAL},
+      </if>
+      <if test="currentRecommendLedger != null" >
+        #{currentRecommendLedger,jdbcType=DECIMAL},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateLiverJournal" parameterType="com.xmniao.domain.live.LiverJournalCount" >
+    update b_liver_journal_count
+    <set >
+      <if test="orderAmount != null" >
+        order_amount = order_amount+#{orderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="comsumAmount != null" >
+        comsum_amount = comsum_amount+#{comsumAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="comsumLedger != null" >
+        comsum_ledger = comsum_ledger+#{comsumLedger,jdbcType=DECIMAL},
+      </if>
+      <if test="privilegeLedger != null" >
+        privilege_ledger = privilege_ledger+#{privilegeLedger,jdbcType=DECIMAL},
+      </if>
+      <if test="expectedPriviledgeLedger != null" >
+        expected_priviledge_ledger = #{expectedPriviledgeLedger,jdbcType=DECIMAL},
+      </if>
+
+      <if test="currentConsumeLedger != null" >
+        current_consume_ledger = current_consume_ledger+#{currentConsumeLedger,jdbcType=DECIMAL},
+      </if>
+      <if test="currentDividendLedger != null" >
+        current_dividend_ledger = current_dividend_ledger+#{currentDividendLedger,jdbcType=DECIMAL},
+      </if>
+      <if test="currentDividendCoinLedger != null" >
+        current_dividend_coin_ledger = current_dividend_coin_ledger+#{currentDividendCoinLedger,jdbcType=DECIMAL},
+      </if>
+      <if test="currentRecommendLedger != null" >
+        current_recommend_ledger = current_recommend_ledger+#{currentRecommendLedger,jdbcType=DECIMAL},
+      </if>
+      <if test="updateDate != null" >
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where  uid = #{uid,jdbcType=INTEGER}
+  </update>
+  
+   <select id="getLiverJournal" parameterType="int" resultMap="LiverJournalMap">
+   	select 
+   	<include refid="Liver_Journal_List"></include>
+   	from b_liver_journal_count
+   	where uid=#{uid}
+   	for update
+   </select>
+   
+   
+   	<select id="queryLiverInfoByAnchorId" resultType="java.util.Map">
+		 SELECT 
+	  		lv.*, urs.nname, info.avatar, info.sex
+  		FROM b_liver lv  
+  		LEFT JOIN  b_urs  urs ON urs.uid = lv.uid
+  		LEFT JOIN  b_urs_info info ON urs.uid = info.uid
+  		WHERE 1=1 
+		AND id=#{id}
+	</select>
+	
+	<!--更新新时尚大赛选手类型信息  -->
+	<update id="update" parameterType="map">
+		
+	</update>
+	
+	<select id="getAnchorBaseInfo" resultType="java.util.Map">
+		SELECT t1.uid anchorUid,t2.uname anchorPhone,t2.nname anchorNname,t3.uid vkeUid
+		FROM b_liver  t1 
+		LEFT JOIN b_urs t2 ON t1.uid=t2.uid
+		LEFT JOIN (SELECT uid,anchor_uid FROM`b_ver_anchor_relation` WHERE  recommend_status=2) t3 ON t1.uid=t3.anchor_uid
+		WHERE t1.utype=1 AND t1.uid=#{uid}
+	</select>
+
+	<select id="getVkeAnchorInfo" resultType="java.util.Map">
+		SELECT t1.uid vkeUid,t2.rank_name vkeRankname,t2.id vkeRankid,t2.vke_ratio vkeRatio,t3.uname vkePhone,t3.nname vkeNname
+		FROM `b_urs_earnings_rank` t1 
+		LEFT JOIN `b_live_fans_rank` t2 ON t1.rank_id=t2.id
+		LEFT JOIN b_urs t3 ON t1.uid=t3.uid
+		WHERE t1.uid=#{uid}
+	</select>
+</mapper>

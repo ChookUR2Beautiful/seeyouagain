@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.urs.dao.UrsEarningsRankDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.domain.live.UrsEarningsRank" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="uid" property="uid" jdbcType="BIGINT" />
+    <result column="rank_source" property="rankSource" jdbcType="BIT" />
+    <result column="rank_id" property="rankId" jdbcType="BIGINT" />
+    <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, uid, rank_source, rank_id, modify_time
+  </sql>
+  
+  <select id="selectByUid" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from b_urs_earnings_rank
+    where uid = #{uid} and rank_source=#{rankSource}
+  </select>
+
+
+  <insert id="insertSelective" parameterType="com.xmniao.domain.live.UrsEarningsRank" >
+    insert into b_urs_earnings_rank
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        uid,
+        rank_source,
+        rank_id,
+        modify_time,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        #{uid,jdbcType=BIGINT},
+        #{rankSource,jdbcType=BIT},
+        #{rankId,jdbcType=BIGINT},
+        #{modifyTime,jdbcType=TIMESTAMP},
+    </trim>
+  </insert>
+  
+  <update id="updateSelective" parameterType="com.xmniao.domain.live.UrsEarningsRank" >
+    update b_urs_earnings_rank
+    <set >
+      <if test="rankId != null" >
+        rank_id = #{rankId,jdbcType=BIGINT},
+      </if>
+      <if test="modifyTime != null" >
+        modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where uid = #{uid} and  rank_source = #{rankSource}
+  </update>
+  
+  <!-- 根据UID获取V客关于主播直播分账比例 -->
+  <select id="getVkeRatioByUid" resultType="map" parameterType="java.lang.String" >
+    SELECT
+		earnings_rank.uid,
+		fans_rank.vke_ratio
+	FROM
+		b_urs_earnings_rank earnings_rank
+	LEFT JOIN b_live_fans_rank fans_rank ON earnings_rank.rank_id = fans_rank.id
+	WHERE
+		earnings_rank.rank_source = '4'
+	AND fans_rank.rank_type = '2'
+	AND earnings_rank.uid = #{uid}
+  </select>
+
+  <!--查询用户等级id-->
+  <select id="selectRankidByUid" resultType="java.lang.Integer">
+    select rank_id
+    from b_urs_earnings_rank
+    WHERE uid = #{uid}
+    AND rank_source = #{rankSource}
+  </select>
+
+</mapper>

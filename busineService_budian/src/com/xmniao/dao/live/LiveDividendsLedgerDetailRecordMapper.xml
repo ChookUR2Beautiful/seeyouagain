@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.live.LiveDividendsLedgerDetailRecordDao" >
+  <resultMap id="LiveDividendsLedgerDetailRecordMap" type="com.xmniao.domain.live.LiveDividendsLedgerDetailRecord" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="pid" property="pid" jdbcType="INTEGER" />
+    <result column="ledger_amount" property="ledgerAmount" jdbcType="DECIMAL" />
+    <result column="ledger_coin" property="ledgerCoin" jdbcType="DECIMAL" />
+    <result column="ledger_common_coin" property="ledgerCommonCoin" jdbcType="DECIMAL" />
+    <result column="ledger_seller_coin" property="ledgerSellerCoin" jdbcType="DECIMAL" />
+    <result column="real_ledger_amount" property="realLedgerAmount" jdbcType="DECIMAL" />
+    <result column="real_ledger_coin" property="realLedgerCoin" jdbcType="DECIMAL" />
+    <result column="real_ledger_common_coin" property="realLedgerCommonCoin" jdbcType="DECIMAL" />
+    <result column="real_ledger_seller_coin" property="realLedgerSellerCoin" jdbcType="DECIMAL" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="object_oriented" property="objectOriented" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Live_Dividends_Ledger_Detail_Record" >
+    id, pid, ledger_amount, ledger_coin, ledger_common_coin, ledger_seller_coin, real_ledger_amount, 
+    real_ledger_coin, real_ledger_common_coin, real_ledger_seller_coin, order_no, create_date,uid,object_oriented
+  </sql>
+  
+  <select id="getDiviDendsLedgerDetailRecordList" resultMap="LiveDividendsLedgerDetailRecordMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Live_Dividends_Ledger_Detail_Record" />
+    from t_live_dividends_ledger_detail_record
+    where pid = #{pid,jdbcType=INTEGER}
+  </select>
+
+  <insert id="insertList"  >
+    insert into t_live_dividends_ledger_detail_record 
+    (pid, ledger_amount, ledger_coin,ledger_common_coin, ledger_seller_coin, order_no,uid,object_oriented, create_date)
+    values
+    	<foreach collection="list" separator="," item="item">
+    	(
+    	 #{pid,jdbcType=INTEGER},
+    	 #{item.ledgerAmount,jdbcType=DECIMAL}, 
+     	 #{item.ledgerCoin,jdbcType=DECIMAL},
+     	 #{item.ledgerCommonCoin,jdbcType=DECIMAL}, 
+     	 #{item.ledgerSellerCoin,jdbcType=DECIMAL}, 
+     	 #{item.orderNo,jdbcType=VARCHAR}, 
+     	 #{item.uid,jdbcType=INTEGER},
+     	 #{item.objectOriented,jdbcType=INTEGER},
+     	 #{createDate,jdbcType=TIMESTAMP}
+     	 )
+    	</foreach>
+  </insert>
+  
+  
+  <update id="updateDividendsLedgerDetailRecord" parameterType="com.xmniao.domain.live.LiveDividendsLedgerDetailRecord">
+  	update t_live_dividends_ledger_detail_record
+  	set real_ledger_amount=#{realLedgerAmount},
+  		real_ledger_coin=#{realLedgerCoin},
+  		real_ledger_common_coin=#{realLedgerCommonCoin},
+  		real_ledger_seller_coin=#{realLedgerSellerCoin}
+  	where id=#{id}
+  </update>
+  
+  <select id="getDiviDendsLedgerDetailRecordSum" resultMap="LiveDividendsLedgerDetailRecordMap" parameterType="java.lang.Integer">
+  select pid,
+  	sum(real_ledger_amount) realLedgerAmount,
+  	sum(real_ledger_coin) realLedgerCoin,
+  	sum(real_ledger_common_coin) realLedgerCommonCoin,
+  	sum(real_ledger_seller_coin) realLedgerSellerCoin
+  from t_live_dividends_ledger_detail_record
+  where pid=#{pid}
+  </select>
+</mapper>

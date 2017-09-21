@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.urs.dao.manor.ManorInfoRecordMapper" >
+  <resultMap id="BaseResultMap" type="com.xmniao.domain.manor.ManorInfoRecord" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="trans_no" property="transNo" jdbcType="VARCHAR" />
+    <result column="manor_id" property="manorId" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="oprate_type" property="oprateType" jdbcType="INTEGER" />
+    <result column="record_details" property="recordDetails" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, trans_no, manor_id, uid, oprate_type, record_details, create_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from b_manor_info_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from b_manor_info_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.domain.manor.ManorInfoRecord" >
+    insert into b_manor_info_record (id, trans_no, manor_id, 
+      uid, oprate_type, record_details, 
+      create_time)
+    values (#{id,jdbcType=INTEGER}, #{transNo,jdbcType=VARCHAR}, #{manorId,jdbcType=INTEGER}, 
+      #{uid,jdbcType=INTEGER}, #{oprateType,jdbcType=INTEGER}, #{recordDetails,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.domain.manor.ManorInfoRecord" >
+    insert into b_manor_info_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="transNo != null" >
+        trans_no,
+      </if>
+      <if test="manorId != null" >
+        manor_id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="oprateType != null" >
+        oprate_type,
+      </if>
+      <if test="recordDetails != null" >
+        record_details,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="transNo != null" >
+        #{transNo,jdbcType=VARCHAR},
+      </if>
+      <if test="manorId != null" >
+        #{manorId,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="oprateType != null" >
+        #{oprateType,jdbcType=INTEGER},
+      </if>
+      <if test="recordDetails != null" >
+        #{recordDetails,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.domain.manor.ManorInfoRecord" >
+    update b_manor_info_record
+    <set >
+      <if test="transNo != null" >
+        trans_no = #{transNo,jdbcType=VARCHAR},
+      </if>
+      <if test="manorId != null" >
+        manor_id = #{manorId,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="oprateType != null" >
+        oprate_type = #{oprateType,jdbcType=INTEGER},
+      </if>
+      <if test="recordDetails != null" >
+        record_details = #{recordDetails,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.domain.manor.ManorInfoRecord" >
+    update b_manor_info_record
+    set trans_no = #{transNo,jdbcType=VARCHAR},
+      manor_id = #{manorId,jdbcType=INTEGER},
+      uid = #{uid,jdbcType=INTEGER},
+      oprate_type = #{oprateType,jdbcType=INTEGER},
+      record_details = #{recordDetails,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.urs.dao.manor.ManorRelationMapper" >
+  <resultMap id="BaseResultMap" type="com.xmniao.domain.urs.UrsEarningsRelation" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="object_oriented" property="objectOriented" jdbcType="INTEGER" />
+    <result column="uid_relation_chain" property="uidRelationChain" jdbcType="LONGVARCHAR" />
+    <result column="uid_relation_chain_nname" property="uidRelationChainNname" jdbcType="LONGVARCHAR" />
+    <result column="uid_relation_chain_level" property="uidRelationChainLevel" jdbcType="INTEGER" />
+    <result column="manor_level" property="manorLevel" jdbcType="INTEGER" />
+    <result column="manor_nectar" property="manorNectar" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, uid, object_oriented, uid_relation_chain_level,uid_relation_chain, uid_relation_chain_nname, manor_nectar,manor_level, create_time
+  </sql>
+  
+  <select id="getManorRelation" parameterType="Integer" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List" /> 
+  	from b_urs_earnings_relation 
+  	where uid=#{uid} and object_oriented=9
+  </select>
+
+  <update id="updateManorRelation" parameterType="com.xmniao.domain.urs.UrsEarningsRelation">
+  	update b_urs_earnings_relation
+  	set
+  	<trim suffixOverrides=",">
+  	<if test="manorLevel != null">manor_level=#{manorLevel},</if>
+  	<if test="manorNectar != null">manor_nectar=manor_nectar+#{manorNectar},</if>
+  	</trim>
+  	where uid=#{uid} and object_oriented=9
+  </update>
+  
+  <insert id="insertManorRelation" parameterType="com.xmniao.domain.urs.UrsEarningsRelation" >
+    insert into b_urs_earnings_relation
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        uid,
+        object_oriented,
+        uid_relation_chain,
+        uid_relation_chain_nname,
+        uid_relation_chain_level,
+        manor_nectar,
+        manor_level,
+        create_time,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        #{uid,jdbcType=INTEGER},
+        9,
+        #{uidRelationChain,jdbcType=LONGVARCHAR},
+        #{uidRelationChainNname,jdbcType=LONGVARCHAR},
+        #{uidRelationChainLevel,jdbcType=INTEGER},
+        0,
+        #{manorLevel},
+        #{createTime,jdbcType=TIMESTAMP},
+    </trim>
+  </insert>
+</mapper>

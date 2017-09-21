@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.dao.order.IndianaBoutDao">
+  <resultMap id="BaseResultMap" type="com.xmniao.domain.order.IndianaBout">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="activity_id" jdbcType="INTEGER" property="activityId" />
+    <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+    <result column="term_time" jdbcType="TIMESTAMP" property="termTime" />
+    <result column="codeId" jdbcType="BIGINT" property="codeId" />
+    <result column="bout_th" jdbcType="INTEGER" property="boutTh" />
+    <result column="sale_num" jdbcType="INTEGER" property="saleNum" />
+    <result column="uid" jdbcType="INTEGER" property="uid" />
+    <result column="robot_id" jdbcType="INTEGER" property="robotId" />
+    <result column="give_type" jdbcType="INTEGER" property="giveType" />
+    <result column="luckynum" jdbcType="BIGINT" property="luckynum" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="activity_end_time" jdbcType="TIMESTAMP" property="activityEndTime" />
+    <result column="begin_time" jdbcType="TIMESTAMP" property="beginTime" />
+    <result column="pname" jdbcType="VARCHAR" property="pname" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="point" jdbcType="INTEGER" property="point" />
+    <result column="name" jdbcType="INTEGER" property="name" />
+    <result column="phone" jdbcType="INTEGER" property="phone" />
+    <result column="pv_ids" jdbcType="VARCHAR" property="pvIds" />
+    <result column="pv_value" jdbcType="VARCHAR" property="pvValue" />
+    <result column="breviary" jdbcType="VARCHAR" property="breviary" />
+    <result column="base_price" jdbcType="DECIMAL" property="basePrice" />
+    <result column="bout_residue" jdbcType="INTEGER" property="boutResidue" />
+    <result column="point_price" jdbcType="DECIMAL" property="pointPrice" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    t_fresh_activity_indiana_bout.id, 
+    t_fresh_activity_indiana_bout.activity_id, 
+    t_fresh_activity_indiana_bout.end_time, 
+    t_fresh_activity_indiana_bout.term_time, 
+    t_fresh_activity_indiana_bout.codeId, 
+    t_fresh_activity_indiana_bout.bout_th, 
+    t_fresh_activity_indiana_bout.sale_num, 
+    t_fresh_activity_indiana_bout.uid, 
+    t_fresh_activity_indiana_bout.robot_id, 
+    t_fresh_activity_indiana_bout.give_type, 
+    t_fresh_activity_indiana_bout.luckynum, 
+    t_fresh_activity_indiana_bout.status, 
+    t_fresh_activity_indiana_bout.create_time, 
+    t_fresh_activity_indiana_bout.update_time,
+    t_fresh_activity_indiana_bout.name,
+    t_fresh_activity_indiana_bout.phone
+  </sql>
+  <sql id="whereSQL">
+  	 <if test="title != null and title !=''">
+        and indiana.title like '%${title}%'
+      </if>
+      <if test="status != null">
+        and t_fresh_activity_indiana_bout.status = #{status,jdbcType=INTEGER}
+      </if>
+       <if test="beginTime != null and endTime != null">
+          and t_fresh_activity_indiana_bout.create_time > #{beginTime} and t_fresh_activity_indiana_bout.end_time &lt; #{endTime}
+     </if>
+     <choose>
+    		<when test="proceedStatus == 1">
+    			and t_fresh_activity_indiana_bout.create_time > now() and t_fresh_activity_indiana_bout.status = 0
+    		</when>
+    		<when test="proceedStatus == 2">
+    			and t_fresh_activity_indiana_bout.create_time &lt; now() and t_fresh_activity_indiana_bout.end_time is null and indiana.end_time > now() and t_fresh_activity_indiana_bout.status = 0
+    		</when>
+    		<when test="proceedStatus == 3">
+    			and (t_fresh_activity_indiana_bout.end_time is not null  or t_fresh_activity_indiana_bout.status &lt;> 0 or indiana.end_time &lt; now())
+    		</when>
+    	</choose>
+  </sql>
+  <update id="updateIndianaState" parameterType="java.lang.Integer">
+  	   update t_fresh_activity_indiana set status = #{status} where id = #{id}
+  </update>
+  <update id="clearResidue" parameterType="java.lang.Integer">
+  	 update t_fresh_activity_indiana set bout_residue = 0 where id = #{id}
+  </update>
+  <update id="updateSaleNum" parameterType="java.lang.Integer">
+  	 update t_fresh_activity_indiana_bout  set  sale_num= sale_num + #{saleNum} where id = #{id}
+  </update>
+  
+  <select id="getNotFinishAtTime" resultMap="BaseResultMap">
+  	 select
+ 	<include refid="Base_Column_List" />,indiana.point
+ 	from t_fresh_activity_indiana_bout join t_fresh_activity_indiana  indiana  on  indiana.id=t_fresh_activity_indiana_bout.activity_id 
+ 	where indiana.status=0  and t_fresh_activity_indiana_bout.status = 0
+ 	and t_fresh_activity_indiana_bout.sale_num &lt; indiana.point  and (ADDDATE(now(),interval 5 minute) >= indiana.end_time or now() > indiana.end_time);
+ 	
+  </select>
+  <select id="getSellOut" resultMap="BaseResultMap">
+  	 select
+ 	<include refid="Base_Column_List" />,indiana.pv_ids,indiana.end_time as activity_end_time,indiana.bout_residue,indiana.pv_value,indiana.base_price,product.breviary,product.pname,indiana.title,indiana.point,indiana.point_price
+  	 from t_fresh_activity_indiana_bout join t_fresh_activity_indiana  indiana  on  indiana.id=t_fresh_activity_indiana_bout.activity_id 
+  	 join t_product_info product  on product.codeId=t_fresh_activity_indiana_bout.codeId
+	where t_fresh_activity_indiana_bout.sale_num >= indiana.point and (indiana.status=0 or indiana.status=3)  and (t_fresh_activity_indiana_bout.status = 0 or t_fresh_activity_indiana_bout.status = 4)
+  </select>
+  
+  <update id="updateLastBout">
+  	update t_fresh_activity_indiana set bout_residue = bout_residue-1 where id = #{activityId}
+  </update>
+  <update id="restoreStore" >
+  	  update t_product_info  set  store=store+1 where codeId=#{codeId}
+  	  <if test="pvIds != null and pvId != ''">
+  	  	update t_sale_group set stock = stock+1 where codeId=#{codeId} and pv_ids = #{pvIds}
+  	  </if>
+  </update>
+  
+  <select id="getByActivityId" resultMap="BaseResultMap">
+  	 select 
+  	 <include refid="Base_Column_List" />
+  	  from t_fresh_activity_indiana_bout
+  	  where activity_id =#{activityId}
+  </select>
+  <select id="getList" parameterType="com.xmniao.domain.order.IndianaBout" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />,indiana.title,indiana.begin_time,indiana.end_time as activity_end_time,product.pname,
+    indiana.point
+    from t_fresh_activity_indiana_bout
+    left join t_fresh_activity_indiana indiana on t_fresh_activity_indiana_bout.activity_id=indiana.id
+    left join t_product_info product on product.codeId=indiana.codeId where 1=1
+     <include refid="whereSQL"></include>
+      order by update_time desc
+  </select>
+  <select id="count" parameterType="com.xmniao.domain.order.IndianaBout" resultType="java.lang.Long">
+    select 
+   	count(1)
+    from t_fresh_activity_indiana_bout
+    left join t_fresh_activity_indiana indiana on t_fresh_activity_indiana_bout.activity_id=indiana.id
+    left join t_product_info product on product.codeId=indiana.codeId where 1=1
+     <include refid="whereSQL"></include>
+  </select>
+  <select id="getObject" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_fresh_activity_indiana_bout
+    where id = #{id}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_fresh_activity_indiana_bout
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.domain.order.IndianaBout">
+    insert into t_fresh_activity_indiana_bout (id, activity_id, end_time, 
+      term_time, codeId, bout_th, 
+      sale_num, uid, robot_id, 
+      give_type, luckynum, status, 
+      create_time, update_time)
+    values (#{id,jdbcType=INTEGER}, #{activityId,jdbcType=INTEGER}, #{endTime,jdbcType=TIMESTAMP}, 
+      #{termTime,jdbcType=TIMESTAMP}, #{codeId,jdbcType=BIGINT}, #{boutTh,jdbcType=INTEGER}, 
+      #{saleNum,jdbcType=INTEGER}, #{uid,jdbcType=INTEGER}, #{robotId,jdbcType=INTEGER}, 
+      #{giveType,jdbcType=INTEGER}, #{luckynum,jdbcType=BIGINT}, #{status,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="add" parameterType="com.xmniao.domain.order.IndianaBout">
+    insert into t_fresh_activity_indiana_bout
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="activityId != null">
+        activity_id,
+      </if>
+      <if test="endTime != null">
+        end_time,
+      </if>
+      <if test="termTime != null">
+        term_time,
+      </if>
+      <if test="codeId != null">
+        codeId,
+      </if>
+      <if test="boutTh != null">
+        bout_th,
+      </if>
+      <if test="saleNum != null">
+        sale_num,
+      </if>
+      <if test="uid != null">
+        uid,
+      </if>
+      <if test="robotId != null">
+        robot_id,
+      </if>
+      <if test="giveType != null">
+        give_type,
+      </if>
+      <if test="luckynum != null">
+        luckynum,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="activityId != null">
+        #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="endTime != null">
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="termTime != null">
+        #{termTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="codeId != null">
+        #{codeId,jdbcType=BIGINT},
+      </if>
+      <if test="boutTh != null">
+        #{boutTh,jdbcType=INTEGER},
+      </if>
+      <if test="saleNum != null">
+        #{saleNum,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null">
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="robotId != null">
+        #{robotId,jdbcType=INTEGER},
+      </if>
+      <if test="giveType != null">
+        #{giveType,jdbcType=INTEGER},
+      </if>
+      <if test="luckynum != null">
+        #{luckynum,jdbcType=BIGINT},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="update" parameterType="com.xmniao.domain.order.IndianaBout">
+    update t_fresh_activity_indiana_bout
+    <set>
+      <if test="activityId != null">
+        activity_id = #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="endTime != null">
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="termTime != null">
+        term_time = #{termTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="codeId != null">
+        codeId = #{codeId,jdbcType=BIGINT},
+      </if>
+      <if test="boutTh != null">
+        bout_th = #{boutTh,jdbcType=INTEGER},
+      </if>
+      <if test="saleNum != null">
+        sale_num = #{saleNum,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null">
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="robotId != null">
+        robot_id = #{robotId,jdbcType=INTEGER},
+      </if>
+      <if test="giveType != null">
+        give_type = #{giveType,jdbcType=INTEGER},
+      </if>
+      <if test="luckynum != null">
+        luckynum = #{luckynum,jdbcType=BIGINT},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.domain.order.IndianaBout">
+    update t_fresh_activity_indiana_bout
+    set activity_id = #{activityId,jdbcType=INTEGER},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      term_time = #{termTime,jdbcType=TIMESTAMP},
+      codeId = #{codeId,jdbcType=BIGINT},
+      bout_th = #{boutTh,jdbcType=INTEGER},
+      sale_num = #{saleNum,jdbcType=INTEGER},
+      uid = #{uid,jdbcType=INTEGER},
+      robot_id = #{robotId,jdbcType=INTEGER},
+      give_type = #{giveType,jdbcType=INTEGER},
+      luckynum = #{luckynum,jdbcType=BIGINT},
+      status = #{status,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      veces =  #{veces,jdbcType=INTEGER},
+      name=#{name}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

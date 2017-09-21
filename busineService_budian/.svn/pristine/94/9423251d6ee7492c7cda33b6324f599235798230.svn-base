@@ -1,0 +1,146 @@
+package com.xmniao.domain.urs;
+
+import java.util.Date;
+
+public class UrsEarningsRelation {
+    private Integer id;
+
+    private Integer uid;
+
+    private Integer objectOriented;
+	
+    private String uidRelationChain;
+
+    private String uidRelationChainNname;
+	
+    private Integer uidRelationChainLevel;
+
+    private Integer indirectUid;
+
+    private Integer referrerSellerid;
+
+    private Integer referrerSellertype;
+
+    private Date createTime;
+
+    private Integer manorLevel;
+    
+    private Integer manorNectar;
+    private Long parentUid;
+
+    public Long getParentUid() {
+        return parentUid;
+    }
+
+    public void setParentUid(Long parentUid) {
+        this.parentUid = parentUid;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getUid() {
+        return uid;
+    }
+
+    public void setUid(Integer uid) {
+        this.uid = uid;
+    }
+
+    public Integer getObjectOriented() {
+        return objectOriented;
+    }
+
+    public void setObjectOriented(Integer objectOriented) {
+        this.objectOriented = objectOriented;
+    }
+
+    public Integer getUidRelationChainLevel() {
+        return uidRelationChainLevel;
+    }
+
+    public void setUidRelationChainLevel(Integer uidRelationChainLevel) {
+        this.uidRelationChainLevel = uidRelationChainLevel;
+    }
+
+    public Integer getIndirectUid() {
+        return indirectUid;
+    }
+
+    public void setIndirectUid(Integer indirectUid) {
+        this.indirectUid = indirectUid;
+    }
+
+    public Integer getReferrerSellerid() {
+        return referrerSellerid;
+    }
+
+    public void setReferrerSellerid(Integer referrerSellerid) {
+        this.referrerSellerid = referrerSellerid;
+    }
+
+    public Integer getReferrerSellertype() {
+        return referrerSellertype;
+    }
+
+    public void setReferrerSellertype(Integer referrerSellertype) {
+        this.referrerSellertype = referrerSellertype;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+	public String getUidRelationChain() {
+		return uidRelationChain;
+	}
+
+	public void setUidRelationChain(String uidRelationChain) {
+		this.uidRelationChain = uidRelationChain;
+	}
+
+	public String getUidRelationChainNname() {
+		return uidRelationChainNname;
+	}
+
+	public void setUidRelationChainNname(String uidRelationChainNname) {
+		this.uidRelationChainNname = uidRelationChainNname;
+	}
+
+	public Integer getManorLevel() {
+		return manorLevel;
+	}
+
+	public void setManorLevel(Integer manorLevel) {
+		this.manorLevel = manorLevel;
+	}
+
+	public Integer getManorNectar() {
+		return manorNectar;
+	}
+
+	public void setManorNectar(Integer manorNectar) {
+		this.manorNectar = manorNectar;
+	}
+
+	public UrsEarningsRelation() {
+		super();
+	}
+
+	public UrsEarningsRelation(Integer uid, Integer objectOriented) {
+		super();
+		this.uid = uid;
+		this.objectOriented = objectOriented;
+	}
+    
+	
+}

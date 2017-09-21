@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.seller.SellerLiveLedgerDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.domain.seller.SellerLiveLedger" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="ledger_style" property="ledgerStyle" jdbcType="INTEGER" />
+    <result column="ledger_mode" property="ledgerMode" jdbcType="INTEGER" />
+    <result column="ledger_ratio" property="ledgerRatio" jdbcType="DOUBLE" />
+    <result column="start_date" property="startDate" jdbcType="TIMESTAMP" />
+    <result column="end_date" property="endDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, sellerid, ledger_style, ledger_mode, ledger_ratio, start_date, end_date
+  </sql>
+  <select id="getSellerLiveLedger" resultMap="BaseResultMap" parameterType="com.xmniao.domain.seller.SellerLiveLedger" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_live_seller_ledger
+    where sellerid=#{sellerid}
+  </select>
+
+</mapper>

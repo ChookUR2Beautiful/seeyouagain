@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.coupon.TCouponMapper" >
+  <resultMap id="BaseResultMap" type="com.xmniao.domain.coupon.TCoupon" >
+    <id column="cid" property="cid" jdbcType="INTEGER" />
+    <result column="cname" property="cname" jdbcType="VARCHAR" />
+    <result column="denomination" property="denomination" jdbcType="DECIMAL" />
+    <result column="validity_desc" property="validityDesc" jdbcType="VARCHAR" />
+    <result column="start_date" property="startDate" jdbcType="TIMESTAMP" />
+    <result column="end_date" property="endDate" jdbcType="TIMESTAMP" />
+    <result column="condition" property="condition" jdbcType="DECIMAL" />
+    <result column="use_num" property="useNum" jdbcType="INTEGER" />
+    <result column="pic" property="pic" jdbcType="VARCHAR" />
+    <result column="breviary" property="breviary" jdbcType="VARCHAR" />
+    <result column="showall" property="showall" jdbcType="TINYINT" />
+    <result column="is_all_seller" property="isAllSeller" jdbcType="INTEGER" />
+    <result column="day_num" property="dayNum" jdbcType="INTEGER" />
+    <result column="ctype" property="ctype" jdbcType="INTEGER" />
+    <result column="invalid_today" property="invalidToday" jdbcType="INTEGER" />
+    <result column="default_max_num" property="defaultMaxNum" jdbcType="INTEGER" />
+    <result column="sales_num" property="salesNum" jdbcType="INTEGER" />
+    <result column="introduce" property="introduce" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="original_price" property="originalPrice" jdbcType="DECIMAL" />
+    <result column="is_recom" property="isRecom" jdbcType="INTEGER" />
+    <result column="stock" property="stock" jdbcType="INTEGER" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="sale_start_time" property="saleStartTime" jdbcType="TIMESTAMP" />
+    <result column="sale_end_time" property="saleEndTime" jdbcType="TIMESTAMP" />
+    <result column="forbid_start_time" property="forbidStartTime" jdbcType="TIMESTAMP" />
+    <result column="forbid_end_time" property="forbidEndTime" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="overlay" property="overlay" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.xmniao.domain.coupon.TCouponWithBLOBs" extends="BaseResultMap" >
+    <result column="rule" property="rule" jdbcType="LONGVARCHAR" />
+    <result column="fans_description" property="fansDescription" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    cid, cname, denomination, validity_desc, start_date, end_date, condition, use_num, 
+    pic, breviary, showall, is_all_seller, day_num, ctype, invalid_today, default_max_num, 
+    sales_num, introduce, update_time, original_price, is_recom, stock, sellerid, sale_start_time, 
+    sale_end_time, forbid_start_time, forbid_end_time, status, overlay
+  </sql>
+  <sql id="Blob_Column_List" >
+    rule, fans_description
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_coupon
+    where cid = #{cid,jdbcType=INTEGER}
+  </select>
+  <select id="selectByCid" resultMap="BaseResultMap">
+    SELECT *
+    FROM t_coupon
+    WHERE cid = #{cid}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_coupon
+    where cid = #{cid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.domain.coupon.TCouponWithBLOBs" >
+    insert into t_coupon (cid, cname, denomination, 
+      validity_desc, start_date, end_date, 
+      condition, use_num, pic, 
+      breviary, showall, is_all_seller, 
+      day_num, ctype, invalid_today, 
+      default_max_num, sales_num, introduce, 
+      update_time, original_price, is_recom, 
+      stock, sellerid, sale_start_time, 
+      sale_end_time, forbid_start_time, forbid_end_time, 
+      status, overlay, rule, 
+      fans_description)
+    values (#{cid,jdbcType=INTEGER}, #{cname,jdbcType=VARCHAR}, #{denomination,jdbcType=DECIMAL}, 
+      #{validityDesc,jdbcType=VARCHAR}, #{startDate,jdbcType=TIMESTAMP}, #{endDate,jdbcType=TIMESTAMP}, 
+      #{condition,jdbcType=DECIMAL}, #{useNum,jdbcType=INTEGER}, #{pic,jdbcType=VARCHAR}, 
+      #{breviary,jdbcType=VARCHAR}, #{showall,jdbcType=TINYINT}, #{isAllSeller,jdbcType=INTEGER}, 
+      #{dayNum,jdbcType=INTEGER}, #{ctype,jdbcType=INTEGER}, #{invalidToday,jdbcType=INTEGER}, 
+      #{defaultMaxNum,jdbcType=INTEGER}, #{salesNum,jdbcType=INTEGER}, #{introduce,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{originalPrice,jdbcType=DECIMAL}, #{isRecom,jdbcType=INTEGER}, 
+      #{stock,jdbcType=INTEGER}, #{sellerid,jdbcType=INTEGER}, #{saleStartTime,jdbcType=TIMESTAMP}, 
+      #{saleEndTime,jdbcType=TIMESTAMP}, #{forbidStartTime,jdbcType=TIMESTAMP}, #{forbidEndTime,jdbcType=TIMESTAMP}, 
+      #{status,jdbcType=INTEGER}, #{overlay,jdbcType=INTEGER}, #{rule,jdbcType=LONGVARCHAR}, 
+      #{fansDescription,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.domain.coupon.TCouponWithBLOBs" >
+    insert into t_coupon
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="cid != null" >
+        cid,
+      </if>
+      <if test="cname != null" >
+        cname,
+      </if>
+      <if test="denomination != null" >
+        denomination,
+      </if>
+      <if test="validityDesc != null" >
+        validity_desc,
+      </if>
+      <if test="startDate != null" >
+        start_date,
+      </if>
+      <if test="endDate != null" >
+        end_date,
+      </if>
+      <if test="condition != null" >
+        condition,
+      </if>
+      <if test="useNum != null" >
+        use_num,
+      </if>
+      <if test="pic != null" >
+        pic,
+      </if>
+      <if test="breviary != null" >
+        breviary,
+      </if>
+      <if test="showall != null" >
+        showall,
+      </if>
+      <if test="isAllSeller != null" >
+        is_all_seller,
+      </if>
+      <if test="dayNum != null" >
+        day_num,
+      </if>
+      <if test="ctype != null" >
+        ctype,
+      </if>
+      <if test="invalidToday != null" >
+        invalid_today,
+      </if>
+      <if test="defaultMaxNum != null" >
+        default_max_num,
+      </if>
+      <if test="salesNum != null" >
+        sales_num,
+      </if>
+      <if test="introduce != null" >
+        introduce,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="originalPrice != null" >
+        original_price,
+      </if>
+      <if test="isRecom != null" >
+        is_recom,
+      </if>
+      <if test="stock != null" >
+        stock,
+      </if>
+      <if test="sellerid != null" >
+        sellerid,
+      </if>
+      <if test="saleStartTime != null" >
+        sale_start_time,
+      </if>
+      <if test="saleEndTime != null" >
+        sale_end_time,
+      </if>
+      <if test="forbidStartTime != null" >
+        forbid_start_time,
+      </if>
+      <if test="forbidEndTime != null" >
+        forbid_end_time,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="overlay != null" >
+        overlay,
+      </if>
+      <if test="rule != null" >
+        rule,
+      </if>
+      <if test="fansDescription != null" >
+        fans_description,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="cid != null" >
+        #{cid,jdbcType=INTEGER},
+      </if>
+      <if test="cname != null" >
+        #{cname,jdbcType=VARCHAR},
+      </if>
+      <if test="denomination != null" >
+        #{denomination,jdbcType=DECIMAL},
+      </if>
+      <if test="validityDesc != null" >
+        #{validityDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="startDate != null" >
+        #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="condition != null" >
+        #{condition,jdbcType=DECIMAL},
+      </if>
+      <if test="useNum != null" >
+        #{useNum,jdbcType=INTEGER},
+      </if>
+      <if test="pic != null" >
+        #{pic,jdbcType=VARCHAR},
+      </if>
+      <if test="breviary != null" >
+        #{breviary,jdbcType=VARCHAR},
+      </if>
+      <if test="showall != null" >
+        #{showall,jdbcType=TINYINT},
+      </if>
+      <if test="isAllSeller != null" >
+        #{isAllSeller,jdbcType=INTEGER},
+      </if>
+      <if test="dayNum != null" >
+        #{dayNum,jdbcType=INTEGER},
+      </if>
+      <if test="ctype != null" >
+        #{ctype,jdbcType=INTEGER},
+      </if>
+      <if test="invalidToday != null" >
+        #{invalidToday,jdbcType=INTEGER},
+      </if>
+      <if test="defaultMaxNum != null" >
+        #{defaultMaxNum,jdbcType=INTEGER},
+      </if>
+      <if test="salesNum != null" >
+        #{salesNum,jdbcType=INTEGER},
+      </if>
+      <if test="introduce != null" >
+        #{introduce,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="originalPrice != null" >
+        #{originalPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="isRecom != null" >
+        #{isRecom,jdbcType=INTEGER},
+      </if>
+      <if test="stock != null" >
+        #{stock,jdbcType=INTEGER},
+      </if>
+      <if test="sellerid != null" >
+        #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="saleStartTime != null" >
+        #{saleStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="saleEndTime != null" >
+        #{saleEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="forbidStartTime != null" >
+        #{forbidStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="forbidEndTime != null" >
+        #{forbidEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="overlay != null" >
+        #{overlay,jdbcType=INTEGER},
+      </if>
+      <if test="rule != null" >
+        #{rule,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="fansDescription != null" >
+        #{fansDescription,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.domain.coupon.TCouponWithBLOBs" >
+    update t_coupon
+    <set >
+      <if test="cname != null" >
+        cname = #{cname,jdbcType=VARCHAR},
+      </if>
+      <if test="denomination != null" >
+        denomination = #{denomination,jdbcType=DECIMAL},
+      </if>
+      <if test="validityDesc != null" >
+        validity_desc = #{validityDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="startDate != null" >
+        start_date = #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        end_date = #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="condition != null" >
+        condition = #{condition,jdbcType=DECIMAL},
+      </if>
+      <if test="useNum != null" >
+        use_num = #{useNum,jdbcType=INTEGER},
+      </if>
+      <if test="pic != null" >
+        pic = #{pic,jdbcType=VARCHAR},
+      </if>
+      <if test="breviary != null" >
+        breviary = #{breviary,jdbcType=VARCHAR},
+      </if>
+      <if test="showall != null" >
+        showall = #{showall,jdbcType=TINYINT},
+      </if>
+      <if test="isAllSeller != null" >
+        is_all_seller = #{isAllSeller,jdbcType=INTEGER},
+      </if>
+      <if test="dayNum != null" >
+        day_num = #{dayNum,jdbcType=INTEGER},
+      </if>
+      <if test="ctype != null" >
+        ctype = #{ctype,jdbcType=INTEGER},
+      </if>
+      <if test="invalidToday != null" >
+        invalid_today = #{invalidToday,jdbcType=INTEGER},
+      </if>
+      <if test="defaultMaxNum != null" >
+        default_max_num = #{defaultMaxNum,jdbcType=INTEGER},
+      </if>
+      <if test="salesNum != null" >
+        sales_num = #{salesNum,jdbcType=INTEGER},
+      </if>
+      <if test="introduce != null" >
+        introduce = #{introduce,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="originalPrice != null" >
+        original_price = #{originalPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="isRecom != null" >
+        is_recom = #{isRecom,jdbcType=INTEGER},
+      </if>
+      <if test="stock != null" >
+        stock = #{stock,jdbcType=INTEGER},
+      </if>
+      <if test="sellerid != null" >
+        sellerid = #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="saleStartTime != null" >
+        sale_start_time = #{saleStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="saleEndTime != null" >
+        sale_end_time = #{saleEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="forbidStartTime != null" >
+        forbid_start_time = #{forbidStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="forbidEndTime != null" >
+        forbid_end_time = #{forbidEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="overlay != null" >
+        overlay = #{overlay,jdbcType=INTEGER},
+      </if>
+      <if test="rule != null" >
+        rule = #{rule,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="fansDescription != null" >
+        fans_description = #{fansDescription,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where cid = #{cid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.xmniao.domain.coupon.TCouponWithBLOBs" >
+    update t_coupon
+    set cname = #{cname,jdbcType=VARCHAR},
+      denomination = #{denomination,jdbcType=DECIMAL},
+      validity_desc = #{validityDesc,jdbcType=VARCHAR},
+      start_date = #{startDate,jdbcType=TIMESTAMP},
+      end_date = #{endDate,jdbcType=TIMESTAMP},
+      condition = #{condition,jdbcType=DECIMAL},
+      use_num = #{useNum,jdbcType=INTEGER},
+      pic = #{pic,jdbcType=VARCHAR},
+      breviary = #{breviary,jdbcType=VARCHAR},
+      showall = #{showall,jdbcType=TINYINT},
+      is_all_seller = #{isAllSeller,jdbcType=INTEGER},
+      day_num = #{dayNum,jdbcType=INTEGER},
+      ctype = #{ctype,jdbcType=INTEGER},
+      invalid_today = #{invalidToday,jdbcType=INTEGER},
+      default_max_num = #{defaultMaxNum,jdbcType=INTEGER},
+      sales_num = #{salesNum,jdbcType=INTEGER},
+      introduce = #{introduce,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      original_price = #{originalPrice,jdbcType=DECIMAL},
+      is_recom = #{isRecom,jdbcType=INTEGER},
+      stock = #{stock,jdbcType=INTEGER},
+      sellerid = #{sellerid,jdbcType=INTEGER},
+      sale_start_time = #{saleStartTime,jdbcType=TIMESTAMP},
+      sale_end_time = #{saleEndTime,jdbcType=TIMESTAMP},
+      forbid_start_time = #{forbidStartTime,jdbcType=TIMESTAMP},
+      forbid_end_time = #{forbidEndTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=INTEGER},
+      overlay = #{overlay,jdbcType=INTEGER},
+      rule = #{rule,jdbcType=LONGVARCHAR},
+      fans_description = #{fansDescription,jdbcType=LONGVARCHAR}
+    where cid = #{cid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.domain.coupon.TCoupon" >
+    update t_coupon
+    set cname = #{cname,jdbcType=VARCHAR},
+      denomination = #{denomination,jdbcType=DECIMAL},
+      validity_desc = #{validityDesc,jdbcType=VARCHAR},
+      start_date = #{startDate,jdbcType=TIMESTAMP},
+      end_date = #{endDate,jdbcType=TIMESTAMP},
+      condition = #{condition,jdbcType=DECIMAL},
+      use_num = #{useNum,jdbcType=INTEGER},
+      pic = #{pic,jdbcType=VARCHAR},
+      breviary = #{breviary,jdbcType=VARCHAR},
+      showall = #{showall,jdbcType=TINYINT},
+      is_all_seller = #{isAllSeller,jdbcType=INTEGER},
+      day_num = #{dayNum,jdbcType=INTEGER},
+      ctype = #{ctype,jdbcType=INTEGER},
+      invalid_today = #{invalidToday,jdbcType=INTEGER},
+      default_max_num = #{defaultMaxNum,jdbcType=INTEGER},
+      sales_num = #{salesNum,jdbcType=INTEGER},
+      introduce = #{introduce,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      original_price = #{originalPrice,jdbcType=DECIMAL},
+      is_recom = #{isRecom,jdbcType=INTEGER},
+      stock = #{stock,jdbcType=INTEGER},
+      sellerid = #{sellerid,jdbcType=INTEGER},
+      sale_start_time = #{saleStartTime,jdbcType=TIMESTAMP},
+      sale_end_time = #{saleEndTime,jdbcType=TIMESTAMP},
+      forbid_start_time = #{forbidStartTime,jdbcType=TIMESTAMP},
+      forbid_end_time = #{forbidEndTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=INTEGER},
+      overlay = #{overlay,jdbcType=INTEGER}
+    where cid = #{cid,jdbcType=INTEGER}
+  </update>
+</mapper>

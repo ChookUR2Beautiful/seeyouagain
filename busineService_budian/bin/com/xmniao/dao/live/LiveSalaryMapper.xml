@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.dao.live.LiveSalaryDao">
+  <resultMap id="BaseResultMap" type="com.xmniao.domain.live.LiveSalary">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="anchor_id" jdbcType="INTEGER" property="anchorId" />
+    <result column="sign_type" jdbcType="INTEGER" property="signType" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="balance" jdbcType="DECIMAL" property="balance" />
+    <result column="base_salary" jdbcType="DECIMAL" property="baseSalary" />
+    <result column="after_salary" jdbcType="DECIMAL" property="afterSalary" />
+    <result column="bout" jdbcType="INTEGER" property="bout" />
+    <result column="level_income" jdbcType="DECIMAL" property="levelIncome" />
+    <result column="float_performance" jdbcType="DECIMAL" property="floatPerformance" />
+    <result column="top_income" jdbcType="DECIMAL" property="topIncome" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="count_time" jdbcType="VARCHAR" property="countTime" />
+    <result column="percent" jdbcType="DECIMAL" property="percent" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, anchor_id, sign_type, status, balance, base_salary, after_salary, bout, level_income, float_performance, top_income, create_time, update_time,count_time,percent
+  </sql>
+    <resultMap type="com.xmniao.domain.live.LiveSalaryData" id="DataMap">
+  	  <result column="anchor_id" property="anchorId" />
+  	   <result column="gift_price" property="giftPrice" />
+  	   <result column="bout" property="bout"/>
+  </resultMap>
+  
+  <select id="hasThisMonSalary" resultType="java.lang.Long">
+  	 select count(1) from t_live_salary where date_format(begin_date,'%Y-%m')=date_format(DATE_SUB(curdate(), INTERVAL 1 MONTH),'%Y-%m')
+  </select>
+  
+  <select id="selectAnchorAtTime" resultMap="BaseResultMap">
+  	  select <include refid="Base_Column_List"/>
+  	  from t_live_salary 
+  	  where anchor_id = #{anchorId} and count_time = #{countTime}
+  </select>
+  
+  <update id="updateFailToSuccess" >
+  	  update t_live_salary_fail  set  is_dispose =1 where anchor_id = #{anchorId} and count_time = #{countTime}
+   </update>
+  
+  <update id="updateFail">
+  	  update t_live_salary_fail set
+  	  msg = #{liverBean.msg},
+  	  update_time = now()
+      where anchor_id = #{anchorId}
+      and count_time = #{countTime}
+  </update>
+  
+  <insert id="addFailBatch" parameterType="java.util.HashMap">
+  		INSERT INTO t_live_salary_fail
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						count_time,
+						anchor_id,
+						uid,
+						msg,
+						create_time,
+						update_time,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="fail" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{countTime},
+						 #{item.id},
+						 #{item.uid},
+						 #{item.msg},
+						 now(),
+						 now(),
+			</trim>
+		</foreach>
+  </insert>
+  
+  <insert id="addBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO t_live_salary
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						anchor_id,
+						sign_type,
+						balance,
+						base_salary,
+						count_time,
+						bout,
+						level_income,
+						float_performance,
+						top_income,
+						create_time,
+						update_time,
+						uid,
+						percent,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.anchorId},
+						 #{item.signType},
+						 #{item.balance},
+						 #{item.baseSalary},
+						 #{item.countTime},
+						 #{item.bout},
+						 #{item.levelIncome},
+						 #{item.floatPerformance},
+						 #{item.topIncome},
+						 #{item.createTime},
+						 #{item.updateTime},
+						 #{item.uid},
+						 #{item.percent}
+			</trim>
+		</foreach>
+	</insert>
+  
+  <select id="getLastMonGive" resultMap="DataMap">
+  	  select * from 
+		(select anchor_id,percentAmount,
+		IFNULL((select count(t_live_record.id) from t_live_record where t_live_record.anchor_id = a.anchor_id and is_valid = 1 and  create_time >=#{beginDate} and create_time &lt; #{endDate}),0) as bout
+		 from (select anchor_id,sum(percentAmount) as percentAmount from t_live_gived_gift where create_time >=#{beginDate} and create_time &lt; #{endDate} and `status` = 1 and gift_source = 0 group by anchor_id ) a
+		) b where bout>0
+  </select>
+  <select id="getLastMonGiveByAnchorId" resultMap="DataMap">
+  	    select * from 
+		(select anchor_id,percentAmount,
+		IFNULL((select count(t_live_record.id) from t_live_record where t_live_record.anchor_id = a.anchor_id and is_valid = 1 and create_time >=#{beginDate} and create_time &lt; #{endDate}),0) as bout
+		 from (select anchor_id,sum(percentAmount) as percentAmount from t_live_gived_gift where create_time >=#{beginDate} and create_time &lt; #{endDate} and `status` = 1 and gift_source = 0
+		 and anchor_id = #{anchorId} group by anchor_id ) a
+		) b where bout>0
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_live_salary
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_live_salary
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.domain.live.LiveSalary">
+    insert into t_live_salary (id, anchor_id, sign_type, 
+      status, balance, base_salary, 
+      after_salary,count_time, 
+      bout, level_income, float_performance, 
+      top_income, create_time, update_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{anchorId,jdbcType=INTEGER}, #{signType,jdbcType=INTEGER}, 
+      #{status,jdbcType=INTEGER}, #{balance,jdbcType=DECIMAL}, #{baseSalary,jdbcType=DECIMAL}, 
+      #{afterSalary,jdbcType=DECIMAL}, #{countTime,jdbcType=VARCHAR}, 
+      #{bout,jdbcType=INTEGER}, #{levelIncome,jdbcType=DECIMAL}, #{floatPerformance,jdbcType=DECIMAL}, 
+      #{topIncome,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.domain.live.LiveSalary">
+    insert into t_live_salary
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="anchorId != null">
+        anchor_id,
+      </if>
+      <if test="signType != null">
+        sign_type,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="balance != null">
+        balance,
+      </if>
+      <if test="baseSalary != null">
+        base_salary,
+      </if>
+      <if test="afterSalary != null">
+        after_salary,
+      </if>
+      <if test="countTime != null">
+        count_time,
+      </if>
+      <if test="bout != null">
+        bout,
+      </if>
+      <if test="levelIncome != null">
+        level_income,
+      </if>
+      <if test="floatPerformance != null">
+        float_performance,
+      </if>
+      <if test="topIncome != null">
+        top_income,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="anchorId != null">
+        #{anchorId,jdbcType=INTEGER},
+      </if>
+      <if test="signType != null">
+        #{signType,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="balance != null">
+        #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="baseSalary != null">
+        #{baseSalary,jdbcType=DECIMAL},
+      </if>
+      <if test="afterSalary != null">
+        #{afterSalary,jdbcType=DECIMAL},
+      </if>
+      <if test="countTime != null">
+        #{countTime,jdbcType=VARCHAR},
+      </if>
+      <if test="bout != null">
+        #{bout,jdbcType=INTEGER},
+      </if>
+      <if test="levelIncome != null">
+        #{levelIncome,jdbcType=DECIMAL},
+      </if>
+      <if test="floatPerformance != null">
+        #{floatPerformance,jdbcType=DECIMAL},
+      </if>
+      <if test="topIncome != null">
+        #{topIncome,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.domain.live.LiveSalary">
+    update t_live_salary
+    <set>
+      <if test="anchorId != null">
+        anchor_id = #{anchorId,jdbcType=INTEGER},
+      </if>
+      <if test="signType != null">
+        sign_type = #{signType,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="balance != null">
+        balance = #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="baseSalary != null">
+        base_salary = #{baseSalary,jdbcType=DECIMAL},
+      </if>
+      <if test="afterSalary != null">
+        after_salary = #{afterSalary,jdbcType=DECIMAL},
+      </if>
+      <if test="countTime != null">
+        count_time = #{countTime,jdbcType=VARCHAR},
+      </if>
+      <if test="bout != null">
+        bout = #{bout,jdbcType=INTEGER},
+      </if>
+      <if test="levelIncome != null">
+        level_income = #{levelIncome,jdbcType=DECIMAL},
+      </if>
+      <if test="floatPerformance != null">
+        float_performance = #{floatPerformance,jdbcType=DECIMAL},
+      </if>
+      <if test="topIncome != null">
+        top_income = #{topIncome,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.domain.live.LiveSalary">
+    update t_live_salary
+    set anchor_id = #{anchorId,jdbcType=INTEGER},
+      sign_type = #{signType,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      balance = #{balance,jdbcType=DECIMAL},
+      base_salary = #{baseSalary,jdbcType=DECIMAL},
+      after_salary = #{afterSalary,jdbcType=DECIMAL},
+      count_time = #{countTime,jdbcType=DATE},
+      bout = #{bout,jdbcType=INTEGER},
+      level_income = #{levelIncome,jdbcType=DECIMAL},
+      float_performance = #{floatPerformance,jdbcType=DECIMAL},
+      top_income = #{topIncome,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      percent = #{percent}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

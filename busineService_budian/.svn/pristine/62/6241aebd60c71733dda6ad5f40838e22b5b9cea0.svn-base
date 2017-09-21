@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.profit.JointProfitCensusdMapper2">
+
+    <!-- 查询当天统计的合作商日收益订单总条数 -->
+	<select id="queryProfitCensus" resultType="Integer">
+     SELECT COUNT(id) AS idCount FROM t_joint_profit_censusd WHERE DATEDIFF(DATE_ADD(NOW(),INTERVAL 0 DAY),census_time)=0
+	</select>
+	
+	<!-- 查询合作商和消费合作商 -->
+	<select id="queryJointAndConsumJoint" resultType="map" parameterType="Integer">
+	SELECT ifnull(consume_jointid,0) consume_jointid FROM t_bill WHERE STATUS IN (1,2,3,6,8,9) 
+	AND (DATE_FORMAT(zdate,'%Y-%m-%d')=#{zdate} OR DATE_FORMAT(fdate,'%Y-%m-%d')=#{fdate})
+	UNION 
+	SELECT ifnull(jointid,0) as consume_jointid FROM t_bill WHERE STATUS IN (1,2,3,6,8,9) 
+	AND (DATE_FORMAT(zdate,'%Y-%m-%d')=#{zdate} OR DATE_FORMAT(fdate,'%Y-%m-%d')=#{fdate}) 
+	</select>
+	
+	<!-- 查询商户和合作商信息 -->
+	<select id="querySellerAndJointInfo" resultType="com.xmniao.domain.profit.JointProfitCensusd" parameterType="map">
+	SELECT s.sellerid,s.sellername,j.jointid,j.corporate FROM t_seller AS s,t_joint AS j 
+		   WHERE s.jointid=j.jointid AND j.jointid=#{jointid} and status = 3
+	</select>
+		
+	<!-- 商户佣金总额 -->
+	<select id="querySellerCommision" resultType="String" parameterType="map">
+	SELECT commission FROM t_bill WHERE STATUS IN (1,2,3,6,8,9) AND DATE_FORMAT(zdate,'%Y-%m-%d')=#{zdate}
+	AND jointid=#{jointid} AND genussellerid=#{genussellerid} and money &gt;0.01 AND commission IS NOT NULL
+	</select>
+	
+	
+	<select id="queryOneJointProfitCensusdBySelleridAndJointIdAndDate" parameterType="com.xmniao.domain.profit.JointProfitCensusd" resultType="int">
+		select count(*) from t_joint_profit_censusd where sellerid=#{sellerid} and jointid=#{jointid} and order_date = #{orderDate}
+	</select>
+	
+	<update id="updateOneJointProfitCensusdBySelleridAndJointIdAndDate" parameterType="com.xmniao.domain.profit.JointProfitCensusd" >
+		update t_joint_profit_censusd 
+		set ledger_profit = #{ledgerProfit},not_profit=#{notProfit},has_profit=#{hasProfit},poundage=#{poundage},water_total=#{waterTotal},commision=#{commision}
+		where sellerid=#{sellerid} and jointid=#{jointid} and order_date = #{orderDate}
+	</update>
+	
+	
+	<!-- 插入合作商收益表 -->
+	<insert id="insertJointProfitCensusd" parameterType="com.xmniao.domain.profit.JointProfitCensusd" 
+			useGeneratedKeys="true" keyProperty="pid">
+    INSERT INTO t_joint_profit_censusd(
+		 	jointid,
+         	corporate,
+         	ledger_profit,
+         	not_profit,
+         	has_profit,
+         	poundage,
+         	sellerid,
+         	sellername,
+         	water_total,
+         	commision,
+         	order_date,
+         	census_time)
+     VALUES
+           (#{jointid},
+         	#{corporate},
+         	#{ledgerProfit},
+         	#{notProfit},
+         	#{hasProfit},
+         	#{poundage},
+         	#{sellerid},
+         	#{sellername},
+         	#{waterTotal},
+         	#{commision},
+         	#{orderDate},
+         	#{censusTime})
+    </insert>
+    
+    <!-- 查询合作商收益全都为0的记录 -->
+    <select id="queryJointProfitZero" parameterType="com.xmniao.domain.profit.JointProfitCensusd" resultType="Integer">
+    SELECT COUNT(id) AS idCount FROM t_joint_profit_censusd WHERE  
+    ledger_profit=0 AND not_profit=0 AND has_profit=0 AND poundage=0 
+    AND water_total=0 AND commision=0 AND jointid=#{jointid} AND sellerid=#{sellerid} AND order_date=#{orderDate}
+    </select>
+    
+    <!-- 删掉合作商收益全都为0的记录 -->
+    <delete id="deleteJointProfitZero" parameterType="com.xmniao.domain.profit.JointProfitCensusd">
+    DELETE FROM t_joint_profit_censusd WHERE jointid=#{jointid} AND sellerid=#{sellerid} AND order_date=#{orderDate}
+    </delete>
+    
+    
+    	
+	
+	<!-- 查询  commission ，money-->
+	<select id="queryCommissionAndMoney" resultType="map" parameterType="map">
+	SELECT sellerid,genussellerid,ifnull(jointid,0) jointid,ifnull(consume_jointid,0) consume_jointid,commission, money,status,DATE_FORMAT(fdate,'%Y-%m-%d') fdate FROM t_bill WHERE STATUS IN (1,2,3,6,8,9) AND DATE_FORMAT(zdate,'%Y-%m-%d')=#{zdate} 
+ 	AND jointid = #{consume_jointid} AND genussellerid=#{sellerid} AND genussellerid!=sellerid and money&gt;0.01 AND commission IS NOT NULL
+ 	UNION ALL
+ 	SELECT sellerid,genussellerid,ifnull(jointid,0) jointid,ifnull(consume_jointid,0) consume_jointid,commission, money,status,DATE_FORMAT(fdate,'%Y-%m-%d') fdate FROM t_bill WHERE STATUS IN (1,2,3,6,8,9) AND DATE_FORMAT(zdate,'%Y-%m-%d')=#{zdate} 
+ 	AND consume_jointid=#{consume_jointid} AND sellerid=#{sellerid} and money&gt;0.01 AND commission IS NOT NULL
+	</select>
+	
+	<select id="querySellerAndJointInfo2" parameterType="map" resultType="com.xmniao.domain.profit.JointProfitCensusd">
+	SELECT  DISTINCT a.sellerid,a.sellername,a.jointid,a.corporate FROM 
+	
+	(
+	(SELECT s.sellerid,s.sellername,j.jointid,j.corporate 
+	 FROM t_bill AS b INNER JOIN t_seller AS s ON b.genussellerid = s.sellerid INNER JOIN t_joint AS j ON b.jointid = j.jointid 
+	 WHERE b.jointid = #{jointid} and b.genussellerid != b.sellerid
+	 AND  b.STATUS IN (1, 2, 3, 6, 8, 9) and money&gt;0.01
+	 AND DATE_FORMAT(b.zdate, '%Y-%m-%d') = #{orderDate}
+	 GROUP BY DATE_FORMAT(b.zdate, '%Y-%m-%d'),b.genussellerid  ) 
+	 
+	 UNION ALL
+	 
+	(SELECT s.sellerid,s.sellername,j.jointid,j.corporate 
+	 FROM t_bill AS b INNER JOIN t_seller AS s ON b.genussellerid = s.sellerid INNER JOIN t_joint AS j ON b.jointid = j.jointid 
+	 WHERE b.jointid = #{jointid} and b.genussellerid != b.sellerid  
+	 AND  b.STATUS = 2 and money&gt;0.01
+	 AND DATE_FORMAT(b.fdate, '%Y-%m-%d') = #{orderDate}
+	 GROUP BY DATE_FORMAT(b.fdate, '%Y-%m-%d'),b.genussellerid) 
+	    
+	 UNION ALL 
+	 
+	 (SELECT s.sellerid,s.sellername,j.jointid,j.corporate 
+	  FROM t_bill AS b INNER JOIN t_seller AS s ON b.sellerid = s.sellerid INNER JOIN t_joint AS j ON b.consume_jointid = j.jointid 
+	  WHERE b.consume_jointid = #{jointid} and b.STATUS IN (1, 2, 3, 6, 8, 9) 
+	  AND money&gt;0.01
+	  AND DATE_FORMAT(b.zdate, '%Y-%m-%d') = #{orderDate}
+	  GROUP BY DATE_FORMAT(b.zdate, '%Y-%m-%d'),b.sellerid) 
+	  
+	  UNION ALL
+	  
+	  (SELECT s.sellerid,s.sellername,j.jointid,j.corporate 
+	   FROM t_bill AS b INNER JOIN t_seller AS s ON b.sellerid = s.sellerid INNER JOIN t_joint AS j ON b.consume_jointid = j.jointid 
+	   WHERE b.consume_jointid = #{jointid} 
+	   AND  b.STATUS = 2 and money&gt;0.01
+	   AND DATE_FORMAT(b.fdate, '%Y-%m-%d') = #{orderDate}
+	   GROUP BY DATE_FORMAT(b.fdate, '%Y-%m-%d'),b.sellerid) 
+	
+   )  a
+	
+	</select>
+    
+    <!-- 已到账收益总额 -->
+	<select id="queryJointHasLedgerProfit" resultType="map" parameterType="map">
+	SELECT bid,sellerid,genussellerid,ifnull(jointid,0) jointid,ifnull(consume_jointid,0) consume_jointid,commission FROM t_bill WHERE STATUS=2 AND DATE_FORMAT(fdate,'%Y-%m-%d')=#{fdate} 
+ 	AND consume_jointid=#{consume_jointid} AND sellerid=#{sellerid} and money&gt;0.01 AND commission IS NOT NULL
+ 	union 
+	SELECT bid,sellerid,genussellerid,ifnull(jointid,0) jointid,ifnull(consume_jointid,0) consume_jointid,commission FROM t_bill WHERE STATUS=2 AND DATE_FORMAT(fdate,'%Y-%m-%d')=#{fdate} 
+ 	AND jointid=#{jointid} AND genussellerid=#{sellerid} and sellerid!=genussellerid and money&gt;0.01 AND commission IS NOT NULL
+	</select>
+	
+	<select id="getSellernameBySellerid" parameterType="String" resultType="String">
+		select sellername from t_seller where sellerid=#{sellerid}
+	</select>
+	
+	<select id="getCorporateByjointid" parameterType="String" resultType="String">
+		select corporate from t_joint where jointid=#{jointid}
+	</select>
+    
+</mapper>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.manor.ManorLevelEarningRecordMapper" >
+  <resultMap id="BaseResultMap" type="com.xmniao.domain.manor.ManorLevelEarningRecord" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="trans_no" property="transNo" jdbcType="VARCHAR" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="level_id" property="levelId" jdbcType="INTEGER" />
+    <result column="level_name" property="levelName" jdbcType="VARCHAR" />
+    <result column="yesterday" property="yesterday" jdbcType="DATE" />
+    <result column="earning_chanel" property="earningChanel" jdbcType="INTEGER" />
+    <result column="earning_type" property="earningType" jdbcType="INTEGER" />
+    <result column="number" property="number" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, trans_no, uid, phone, level_id, level_name, yesterday, earning_chanel, earning_type, number, 
+    status, create_time, update_time, description
+  </sql>
+  <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_manor_level_earning_record
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getByTransNo" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_manor_level_earning_record
+    where trans_no = #{transNo,jdbcType=VARCHAR}
+  </select>
+    <insert id="insert" parameterType="com.xmniao.domain.manor.ManorLevelEarningRecord" useGeneratedKeys="true" keyProperty="id">
+    insert into t_manor_level_earning_record (
+      id, trans_no, uid, phone, 
+      level_id, level_name, yesterday, 
+      earning_chanel, earning_type, number, 
+      status, create_time, update_time, 
+      description)
+    values (#{id,jdbcType=BIGINT}, #{transNo,jdbcType=VARCHAR}, #{uid,jdbcType=INTEGER}, #{phone,jdbcType=VARCHAR}, 
+      #{levelId,jdbcType=INTEGER}, #{levelName,jdbcType=VARCHAR}, #{yesterday,jdbcType=DATE}, 
+      #{earningChanel,jdbcType=INTEGER}, #{earningType,jdbcType=INTEGER}, #{number,jdbcType=INTEGER}, 
+      #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{description,jdbcType=VARCHAR})
+  </insert>
+  
+   <update id="updateStatus" parameterType="com.xmniao.domain.manor.ManorLevelEarningRecord" >
+    update t_manor_level_earning_record
+    <set >
+        status = #{status,jdbcType=INTEGER},
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where
+    <trim prefixOverrides="AND">
+    <if test="id != null">
+  	  AND id = #{id,jdbcType=BIGINT}
+    </if>
+    <if test="transNo!=null">
+     AND trans_no = #{transNo}
+    </if>
+    
+    </trim>
+    
+  </update>
+
+
+
+    <!--根据状态查询收益-->
+    <select id="selectTodayByStatus" resultMap="BaseResultMap">
+        SELECT * FROM `t_manor_level_earning_record` where `status` = #{status} and create_time > DATE_FORMAT(now(),'%Y-%m-%d');
+    </select>
+
+	<!--根据状态查询收益-->
+    <select id="countEarningToday" resultType="Long">
+        SELECT count(*) FROM `t_manor_level_earning_record` 
+        WHERE yesterday = DATE_ADD(DATE_FORMAT(#{yesterday},'%Y-%m-%d'), INTERVAL -1 DAY);
+    </select>
+</mapper>

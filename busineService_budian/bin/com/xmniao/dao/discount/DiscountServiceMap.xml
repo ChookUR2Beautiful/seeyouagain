@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 折扣服务模块 -->
+<mapper namespace="com.xmniao.dao.discount.DiscountServiceDao">
+	<!-- 获取合作商业务员的分账比例 -->
+	<select id="inquirySplitAccount" resultType="java.lang.Double">
+		SELECT percentage FROM t_joint WHERE jointid=#{jointId}
+	</select>
+	
+	<!-- 获取合作商业务员的总分账金额和提成折扣 -->
+	<select id="inquiryStaffDiscount" resultType="map">
+		SELECT amount,baseagio FROM t_staff WHERE category=1 and staffid=#{staffid}
+	</select>
+	
+	<!-- 查询需要更新到商户折扣设置表的折扣记录表 -->
+	<sql id="findAgioFile">
+		select a.id, a.aid as aid,a.sellerid as sellerid, a.baseagio as baseagio, a.income as income, a.sledger as sledger, a.yledger as yledger, a.pledger as pledger,
+		a.stdate as stdate, a.endate as endate, a.week as week, a.weektime as weektime,a.eweektime as eweektime,a.status as status,a.type as type,
+		 a.sdate as sdate,a.remarks as remarks
+	</sql>
+	<!-- 查询需要更新到商户折扣设置表的折扣记录表   商家已存在的折扣 -->
+	<select id="findAgioRecord" parameterType="map" resultType="map">
+		<include refid="findAgioFile"/>
+		FROM  t_agio_record a,t_seller_agio s, (SELECT MAX(id) AS id FROM t_agio_record WHERE excdate IS NULL GROUP BY sellerid,TYPE) ta 
+		WHERE ta.id = a.id AND a.sellerid = s.sellerid AND a.type = s.type 
+		GROUP BY a.sellerid,a.type;
+	</select>
+	
+	<!-- 查询周末折扣  商家折扣率还没有数据的数据 -->
+	<select id="findAgioRecordNotSeller" parameterType="map" resultType="map">
+		<include refid="findAgioFile"/>
+		<![CDATA[
+			FROM  t_agio_record a,(SELECT MAX(id) AS id FROM t_agio_record WHERE excdate IS NULL GROUP BY sellerid,TYPE) ta  WHERE 
+			ta.id = a.id AND a.sellerid NOT IN (SELECT sellerid FROM t_seller_agio s WHERE s.type = 2 OR s.type =3) AND (a.type =2 OR a.type = 3)	
+			GROUP BY a.sellerid,a.type
+		]]>
+	</select>
+	
+	
+	<!-- 更新商家打折记录表 -->
+	<update id="updateSellerAgio" parameterType="map">
+		UPDATE t_seller_agio t SET t.baseagio = #{baseagio}, t.income = #{income}, t.sledger = #{sledger}, t.yledger = #{yledger}, t.pledger = #{pledger},
+		t.stdate = #{stdate},t.status = #{status}, t.endate = #{endate}, t.sdate = #{cdate}, t.week = #{week},t.weektime = #{weektime},t.eweektime = #{eweektime}
+		 WHERE aid = #{aid}
+	</update>
+	
+	<!-- 商家插入周末周口 -->
+	<insert id="insertSellerAgio" parameterType="map" useGeneratedKeys="true"  keyProperty="aid">
+		insert into t_seller_agio(sellerid,type,baseagio,status,Income,sledger, yledger, pledger,stdate, endate,week,weektime,eweektime,remarks,sdate)
+		values (#{sellerid} ,#{type} ,#{baseagio}, #{status} ,#{Income} ,#{sledger}, #{yledger}, #{pledger},#{stdate}, #{endate},#{week},
+		${weektime},${eweektime},#{remarks},#{cdate});
+	</insert>
+	
+	<!-- 更新折扣设置记录表 -->
+	<update id="updateBatchAgioRecord" parameterType="map">
+		UPDATE t_agio_record t SET t.excdate = #{cdate} 
+		<if test="aid != null and aid != '' ">
+			,aid = ${aid}
+		</if>
+		WHERE (t.excdate IS NULL) and t.type = ${type} and t.sellerid = ${sellerid}
+	</update>
+</mapper>

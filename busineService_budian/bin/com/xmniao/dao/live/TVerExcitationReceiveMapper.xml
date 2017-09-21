@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.live.TVerExcitationReceiveDao" >
+
+  <resultMap id="verExcitationReceiveMap" type="com.xmniao.domain.live.TVerExcitationReceive" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="project_name" property="projectName" jdbcType="VARCHAR" />
+    <result column="cid" property="cid" jdbcType="INTEGER" />
+    <result column="num" property="num" jdbcType="TINYINT" />
+    <result column="type" property="type" jdbcType="TINYINT" />
+    <result column="worth" property="worth" jdbcType="DOUBLE" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="excitation_date" property="excitationDate" jdbcType="TIMESTAMP" />
+    <result column="receive_date" property="receiveDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  
+  <sql id="verExcitationReceive_column_list" >
+    id, order_no, uid, project_name, cid, num, type, worth, status, excitation_date, 
+    receive_date
+  </sql>
+  
+  <!-- 根据条件查询奖励发放记录列表 -->
+  <select id="getList" resultMap="verExcitationReceiveMap" parameterType="com.xmniao.domain.live.TVerExcitationReceive" >
+    select 
+    <include refid="verExcitationReceive_column_list" />
+    from t_ver_excitation_receive
+    <where>
+    	<if test="id != null and id !='' ">
+    		id =#{id}
+    	</if>
+    	<if test="orderNo != null and orderNo !='' ">
+    		order_no = #{orderNo}
+    	</if>
+    	<if test="uid != null and uid !='' ">
+    		uid = #{uid}
+    	</if>
+    	<if test="projectName != null and projectName !='' ">
+    		project_name = #{projectName}
+    	</if>
+    	<if test="status != null and status !='' or status ==0 ">
+    		status = #{status}
+    	</if>
+    </where>
+  </select>
+
+    <!--查询未领取的奖励记录-->
+    <select id="selectUnclaimedByType" resultMap="verExcitationReceiveMap">
+        SELECT *
+        FROM t_ver_excitation_receive
+        WHERE type = #{type}
+        AND uid = #{uid}
+        AND `status` = 0
+    </select>
+
+    <!-- 添加奖励发放记录 -->
+  <insert id="add" parameterType="com.xmniao.domain.live.TVerExcitationReceive" >
+    insert into t_ver_excitation_receive
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="orderNo != null" >
+        order_no,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="projectName != null" >
+        project_name,
+      </if>
+      <if test="cid != null" >
+        cid,
+      </if>
+      <if test="num != null" >
+        num,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="worth != null" >
+        worth,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="excitationDate != null" >
+        excitation_date,
+      </if>
+      <if test="receiveDate != null" >
+        receive_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="projectName != null" >
+        #{projectName,jdbcType=VARCHAR},
+      </if>
+      <if test="cid != null" >
+        #{cid,jdbcType=INTEGER},
+      </if>
+      <if test="num != null" >
+        #{num,jdbcType=TINYINT},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=TINYINT},
+      </if>
+      <if test="worth != null" >
+        #{worth,jdbcType=DOUBLE},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="excitationDate != null" >
+        #{excitationDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="receiveDate != null" >
+        #{receiveDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  <!-- 批量插入发放奖励信息 -->
+  <insert id="addBatch" parameterType="java.util.ArrayList">
+	INSERT INTO t_ver_excitation_receive
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+		<include refid="verExcitationReceive_column_list" /> 
+	</trim>
+	VALUES
+	<foreach item="item" index="index" collection="list" separator=",">
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			#{item.id},
+			#{item.orderNo},
+			#{item.uid},
+			#{item.projectName},
+			#{item.cid},
+			#{item.num},
+			#{item.type},
+			#{item.worth},
+			#{item.status},
+			#{item.excitationDate},
+			#{item.receiveDate}
+		</trim>
+	</foreach>
+  </insert>
+
+  <!-- 更新奖励发放记录 -->
+  <update id="update" parameterType="com.xmniao.domain.live.TVerExcitationReceive" >
+    update t_ver_excitation_receive
+    <set >
+      <if test="orderNo != null" >
+        order_no = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="projectName != null" >
+        project_name = #{projectName,jdbcType=VARCHAR},
+      </if>
+      <if test="cid != null" >
+        cid = #{cid,jdbcType=INTEGER},
+      </if>
+      <if test="num != null" >
+        num = #{num,jdbcType=TINYINT},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=TINYINT},
+      </if>
+      <if test="worth != null" >
+        worth = #{worth,jdbcType=DOUBLE},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="excitationDate != null" >
+        excitation_date = #{excitationDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="receiveDate != null" >
+        receive_date = #{receiveDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <!--批量更新领取状态-->
+  <update id="updateStatusBatch">
+    UPDATE t_ver_excitation_receive
+    SET status = #{status}, receive_date = #{receiveDate}
+    WHERE id IN
+    <foreach collection="receives" open="(" close=")" item="receive" separator="," >
+      #{receive.id}
+    </foreach>
+  </update>
+
+  <select id="countExcitationRecord" resultType="java.lang.Integer">
+	select count(1) from t_ver_excitation_receive
+	where order_no=#{orderNo}
+  </select>
+</mapper>

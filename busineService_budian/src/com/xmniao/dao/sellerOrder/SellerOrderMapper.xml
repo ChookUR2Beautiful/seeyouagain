@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.dao.sellerOrder.SellerOrderDao">
+	<!-- 根据订单id查询订单信息 -->
+	<select id="getRedPacket" resultType="map">
+		SELECT
+		id,sellerid,IFNULL(total_amount,0.00) totalAmount,pay_status status,pay_type
+		payType,balance,commision,zbalance,amount,integral,profit,order_no
+		orderNo,third_serial flowId,IFNULL(version_lock,1) version
+		FROM t_redpacket
+		WHERE order_no = #{0}
+	</select>
+	<!-- 更新订单状态 -->
+	<update id="updateRedPacketState" parameterType="map">
+		UPDATE t_redpacket
+		SET pay_status = #{status},version_lock = version_lock+1
+		<if test="status == 2">
+		,status = 1
+		</if>
+		<if test="pay_id != null">
+		 ,payid = #{pay_id}
+		</if>
+		<if test="pay_code != null">
+		,third_serial = #{pay_code}
+		</if>
+		WHERE order_no = #{order_no}
+		AND version_lock = #{version}
+	</update>
+	<update id="updateRedPacketRecord" parameterType="map">
+		UPDATE t_redpacket_record
+		SET status = #{status}
+		WHERE id = #{id}
+	</update>
+	
+	<select id="getMicroBill" parameterType="String" resultType="map">
+		select 
+			id,pay_type payType,order_name orderName,source,order_number orderNumber,
+			total_amount totalAmount,auth_code authCode,pay_status payStatus,sellerid,
+			uid,create_time createTime,seller_amount sellerAmount,isaccount
+		from t_micro_bill
+		where order_number=#{orderNumber}
+	</select>
+	
+	<update id="updateMicroBill" parameterType="map">
+		update t_micro_bill
+		set 
+		<trim suffixOverrides=",">
+			<if test="authCode!=null and authCode!=''">
+				auth_code = #{authCode},
+			</if>
+			<if test="payStatus!=null and payStatus!=''">
+				pay_status=#{payStatus},
+			</if>
+			<if test="sellerAmount!=null">
+				seller_amount=#{sellerAmount},
+			</if>
+			<if test="isaccount!=null">
+				isaccount=#{isaccount},
+			</if>
+		</trim>
+		where order_number=#{orderNumber}
+	</update>
+	
+	<!-- 获取网红订单 -->
+	<select id="getCelebrityOrder" parameterType="map" resultType="map">
+		SELECT id,order_no,seller_id,pay_status,version_lock,pay_type,price
+		FROM t_celebrity_order
+		WHERE order_no = #{orderNo}
+	</select>
+	
+	<!-- 更新网红订单 -->
+	<update id="updateCelebrityOrder" parameterType="map">
+		UPDATE t_celebrity_order
+		SET version_lock = version_lock+1
+		,pay_status = #{payStatus}
+		<if test="flowNo != null and  flowNo != ''">
+		,third_serial = #{flowNo}
+		</if>
+		<if test="payStatus == 2">
+		,pay_time = #{payTime}
+		</if>
+		<if test="payType != null and payType != ''">
+		,pay_type = #{payType}
+		</if>
+		WHERE order_no = #{orderNo}
+		AND version_lock =#{lock}
+	</update>
+</mapper>
+

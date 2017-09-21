@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.order.BillBargainDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.domain.order.BillBargain" >
+    <id column="boid" property="boid" jdbcType="INTEGER" />
+    <result column="bid" property="bid" jdbcType="BIGINT" />
+    <result column="isbargain" property="isbargain" jdbcType="TINYINT" />
+    <result column="bpid" property="bpid" jdbcType="INTEGER" />
+    <result column="pname" property="pname" jdbcType="VARCHAR" />
+    <result column="price" property="price" jdbcType="DECIMAL" />
+    <result column="num" property="num" jdbcType="INTEGER" />
+    <result column="sdate" property="sdate" jdbcType="TIMESTAMP" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="integral" property="integral" jdbcType="DOUBLE" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="all_amount" property="allAmount" jdbcType="DECIMAL" />
+    <result column="bstatus" property="bstatus" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="uname" property="uname" jdbcType="VARCHAR" />
+    <result column="phoneid" property="phoneid" jdbcType="VARCHAR" />
+    <result column="sellername" property="sellername" jdbcType="VARCHAR" />
+    <result column="codeid" property="codeid" jdbcType="INTEGER" />
+    
+    <result column="commission" property="commission" jdbcType="VARCHAR" />
+    <result column="genussellerid" property="genussellerid" jdbcType="INTEGER" />
+    <result column="commission" property="commission" jdbcType="VARCHAR" />
+    <result column="genussellerid" property="genussellerid" jdbcType="INTEGER" />
+    <result column="genusname" property="genusname" jdbcType="VARCHAR" />
+    <result column="consume_jointid" property="consumeJointid" jdbcType="INTEGER" />
+    <result column="consume_jointname" property="comsumeJointname" jdbcType="VARCHAR" />  
+    <result column="hstatus" property="hstatus" jdbcType="INTEGER" />
+    <result column="version" property="version" />  
+    <result column="payment_type" property="paymentType" />  
+    <result column="payid" property="payid" />  
+    <result column="balance" property="balance" />  
+    <result column="thirdid" property="thirdid" />  
+    <result column="third_uid" property="thirdUid" />  
+    <result column="pay_time" property="payTime" />  
+    <result column="seller_price" property="sellerPrice" />  
+  </resultMap>
+  <sql id="Base_Column_List" >
+    boid, bid, isbargain, bpid, pname, price, num, sdate, remark, amount, integral, status, 
+    all_amount, bstatus, uid, sellerid, uname, phoneid, sellername, codeid
+  </sql>
+
+	<!-- 获取指定线下积分商品订单的信息 --> 
+	<select id="getBillBargain" parameterType="com.xmniao.domain.order.BillBargain" resultType="com.xmniao.domain.order.BillBargain">
+		SELECT * FROM t_bill_bargain WHERE bid=#{bid}
+	</select>
+	
+	<select id="getByBid" resultMap="BaseResultMap">
+		select * from t_bill_bargain where bid=#{bid}
+	</select>
+
+	<!-- 获取线下积分商品订单的信息列表 -->
+	<select id="getBillBargainList" parameterType="com.xmniao.domain.order.BillBargain" resultMap="BaseResultMap">
+		SELECT * FROM t_bill_bargain 
+		WHERE 
+			1=1
+			<if test="status!=null">AND status=#{status}</if>  
+			<if test="bstatus!=null">AND bstatus=#{bstatus}</if>  
+			<if test="hstatus!=null">AND hstatus=#{hstatus}</if>  
+			<if test="hstatusStr!=null">AND hstatus IN (${hstatusStr})</if>  
+			AND sdate>'2016-07-18'
+		order by boid desc	
+	</select>
+	
+	<!-- 修改线下积分商品订单的信息信息 -->
+	<update id="modifyBillBargainInfo" parameterType="com.xmniao.domain.order.BillBargain">
+		UPDATE t_bill_bargain 
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="bstatus!=null">bstatus=#{bstatus},</if>
+			<if test="sdate!=null">sdate=#{sdate},</if>
+			<if test="commission!=null and commission!=''">commission=#{commission},</if>
+			<if test="hstatus!=null">hstatus=#{hstatus},</if>
+		</trim>
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="bid!=null and bid!=''">AND bid=#{bid}</if>
+			<if test="status!=null">AND status=#{status}</if>
+			<if test="bstatus!=null">AND bstatus=#{bstatus}</if>
+		</trim>
+		
+	</update>
+	
+	<!-- 批量修改线下积分商品订单的信息信息 -->
+	<update id="modifyBillBargainInfoByBatch" parameterType="com.xmniao.domain.order.BillBargain">
+		UPDATE t_bill_bargain 
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="bstatus!=null and bstatus!=''">bstatus=#{bstatus},</if>
+			<if test="sdate!=null and sdate!=''">sdate=#{sdate},</if>
+		</trim>
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="bids!=null and bids!=''">bid IN (${bids})</if>
+
+		</trim>
+		
+	</update>
+	
+	<select id="getBargainProduct" resultType="map">
+		SELECT bp_id bpId,purchase_price purchasePrice,cash
+		FROM t_bargain_product
+		WHERE bp_id=#{bpId}
+	</select>
+	
+	<update id="updateForPayComplete" parameterType="java.util.Map">
+		update t_bill_bargain 
+			 set status=#{status},
+			      amount=#{amount},
+			      integral=#{integral},
+			      balance=#{balance},
+			      payment_type=#{paymentType},
+			      payid=#{payid},
+			      thirdid=#{thirdid},
+			      third_uid=#{thirduid},
+			      pay_time=#{payTime},
+			      version=version+1
+			where bid=#{bid} and version=#{version}
+	</update>
+	
+	<insert id="insertOrderRefundRecord" parameterType="java.util.Map">
+		INSERT INTO t_bargain_refund
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bid!=null">bid,</if>
+			<if test="sellerid!=null">sellerid,</if>
+			<if test="sellername!=null">sellername,</if>
+			<if test="apply!=null">apply,</if>
+			<if test="status!=null">STATUS,</if>
+			<if test="sdate!=null">sdate,</if>
+			<if test="remarks!=null">remarks,</if>
+		</trim>
+		VALUES
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bid!=null">#{bid},</if>
+			<if test="sellerid!=null">#{sellerid},</if>
+			<if test="sellername!=null">#{sellername},</if>
+			<if test="apply!=null">#{apply},</if>
+			<if test="status!=null">#{status},</if>
+			<if test="sdate!=null">#{sdate},</if>
+			<if test="remarks!=null">#{remarks},</if>
+		</trim>
+	</insert>
+	
+	<!-- 修改线下积分商品订单的状态-->
+	<update id="modifyBillBargainStatus" parameterType="com.xmniao.domain.order.BillBargain">
+		UPDATE t_bill_bargain 
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="bstatus!=null">bstatus=#{bstatus},</if>
+			<if test="sdate!=null">sdate=#{sdate},</if>
+			<if test="commission!=null and commission!=''">commission=#{commission},</if>
+			<if test="hstatus!=null">hstatus=#{hstatus},</if>
+			<if test="status!=null">status=#{status},</if>
+		</trim>
+		WHERE bid=#{bid}
+	</update>
+</mapper>

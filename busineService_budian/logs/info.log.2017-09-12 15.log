@@ -1,0 +1,548 @@
+[DEBUG] 2017-09-12 15:00:03,330 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:00:20,683 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:00:26,584 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:00:44,034 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:00:49,588 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:01:09,437 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:01:17,643 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:01:38,647 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:01:42,123 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:02:05,699 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:02:07,149 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:02:33,537 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:02:35,038 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:02:56,638 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:03:00,629 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:03:22,550 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:03:28,540 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:03:51,888 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:03:53,233 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:04:17,529 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:04:19,170 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:04:44,922 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:04:46,673 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:05:08,415 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:05:13,608 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:05:35,217 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:05:43,112 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:06:02,504 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:06:08,611 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:06:27,466 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:06:34,991 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:06:54,604 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:06:58,697 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:07:22,279 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:07:26,820 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:07:51,636 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:07:52,053 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:08:16,591 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:08:19,021 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:08:44,528 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:08:46,491 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:09:09,305 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:09:15,805 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:09:37,567 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:09:42,660 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:10:06,248 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:10:06,550 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:10:07,717 org.mybatis.spring.SqlSessionUtils - Creating a new SqlSession
+[DEBUG] 2017-09-12 15:10:07,718 org.mybatis.spring.SqlSessionUtils - SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4f72596f] was not registered for synchronization because synchronization is not active
+[DEBUG] 2017-09-12 15:10:07,718 org.springframework.jdbc.datasource.DataSourceUtils - Fetching JDBC Connection from DataSource
+[DEBUG] 2017-09-12 15:10:07,720 org.mybatis.spring.transaction.SpringManagedTransaction - JDBC Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@78ffe030] will not be managed by Spring
+[DEBUG] 2017-09-12 15:10:07,720 com.xmniao.urs.dao.UrsEarningsRelationDao.getUrsEarningsRelation - ooo Using Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@78ffe030]
+[DEBUG] 2017-09-12 15:10:07,720 com.xmniao.urs.dao.UrsEarningsRelationDao.getUrsEarningsRelation - ==>  Preparing: select id, uid, object_oriented, parent_uid,uid_relation_chain_level,uid_relation_chain, uid_relation_chain_nname, indirect_uid, referrer_sellerid, referrer_sellertype, create_time from b_urs_earnings_relation where uid=? and object_oriented=? 
+[DEBUG] 2017-09-12 15:10:07,721 com.xmniao.urs.dao.UrsEarningsRelationDao.getUrsEarningsRelation - ==> Parameters: 609298(Integer), 9(Integer)
+[DEBUG] 2017-09-12 15:10:07,724 com.alibaba.druid.pool.PreparedStatementPool - {conn-110001, pstmt-120009} enter cache
+[DEBUG] 2017-09-12 15:10:07,724 org.mybatis.spring.SqlSessionUtils - Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4f72596f]
+[DEBUG] 2017-09-12 15:10:07,725 org.springframework.jdbc.datasource.DataSourceUtils - Returning JDBC Connection to DataSource
+[DEBUG] 2017-09-12 15:10:07,725 org.mybatis.spring.SqlSessionUtils - Creating a new SqlSession
+[DEBUG] 2017-09-12 15:10:07,725 org.mybatis.spring.SqlSessionUtils - SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@70269a6f] was not registered for synchronization because synchronization is not active
+[DEBUG] 2017-09-12 15:10:07,725 org.springframework.jdbc.datasource.DataSourceUtils - Fetching JDBC Connection from DataSource
+[DEBUG] 2017-09-12 15:10:07,725 org.mybatis.spring.transaction.SpringManagedTransaction - JDBC Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@78ffe030] will not be managed by Spring
+[DEBUG] 2017-09-12 15:10:07,725 com.xmniao.urs.dao.UrsEarningsRelationDao.getUrsEarningsRelation - ooo Using Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@78ffe030]
+[DEBUG] 2017-09-12 15:10:07,725 com.xmniao.urs.dao.UrsEarningsRelationDao.getUrsEarningsRelation - ==>  Preparing: select id, uid, object_oriented, parent_uid,uid_relation_chain_level,uid_relation_chain, uid_relation_chain_nname, indirect_uid, referrer_sellerid, referrer_sellertype, create_time from b_urs_earnings_relation where uid=? and object_oriented=? 
+[DEBUG] 2017-09-12 15:10:07,726 com.xmniao.urs.dao.UrsEarningsRelationDao.getUrsEarningsRelation - ==> Parameters: 605705(Integer), 9(Integer)
+[DEBUG] 2017-09-12 15:10:07,735 org.mybatis.spring.SqlSessionUtils - Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@70269a6f]
+[DEBUG] 2017-09-12 15:10:07,735 org.springframework.jdbc.datasource.DataSourceUtils - Returning JDBC Connection to DataSource
+[DEBUG] 2017-09-12 15:10:07,735 org.springframework.jdbc.datasource.DataSourceTransactionManager - Creating new transaction with name [com.xmniao.service.manor.ManorInfoService.usrChainBindingParent]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT; ''
+[DEBUG] 2017-09-12 15:10:07,737 org.springframework.jdbc.datasource.DataSourceTransactionManager - Acquired Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@616b9c0e] for JDBC transaction
+[DEBUG] 2017-09-12 15:10:07,737 org.springframework.jdbc.datasource.DataSourceTransactionManager - Switching JDBC Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@616b9c0e] to manual commit
+[DEBUG] 2017-09-12 15:10:07,740 org.mybatis.spring.SqlSessionUtils - Creating a new SqlSession
+[DEBUG] 2017-09-12 15:10:07,740 org.mybatis.spring.SqlSessionUtils - Registering transaction synchronization for SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@391bb07f]
+[DEBUG] 2017-09-12 15:10:07,741 org.springframework.jdbc.datasource.DataSourceUtils - Fetching JDBC Connection from DataSource
+[DEBUG] 2017-09-12 15:10:07,741 org.springframework.jdbc.datasource.DataSourceUtils - Registering transaction synchronization for JDBC Connection
+[DEBUG] 2017-09-12 15:10:07,741 org.mybatis.spring.transaction.SpringManagedTransaction - JDBC Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@78ffe030] will be managed by Spring
+[DEBUG] 2017-09-12 15:10:07,741 com.xmniao.urs.dao.UrsEarningsRelationDao.getUrsEarningsRelation - ooo Using Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@78ffe030]
+[DEBUG] 2017-09-12 15:10:07,741 com.xmniao.urs.dao.UrsEarningsRelationDao.getUrsEarningsRelation - ==>  Preparing: select id, uid, object_oriented, parent_uid,uid_relation_chain_level,uid_relation_chain, uid_relation_chain_nname, indirect_uid, referrer_sellerid, referrer_sellertype, create_time from b_urs_earnings_relation where uid=? and object_oriented=? 
+[DEBUG] 2017-09-12 15:10:07,741 com.xmniao.urs.dao.UrsEarningsRelationDao.getUrsEarningsRelation - ==> Parameters: 605705(Integer), 9(Integer)
+[DEBUG] 2017-09-12 15:10:07,744 org.mybatis.spring.SqlSessionUtils - Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@391bb07f]
+[DEBUG] 2017-09-12 15:10:07,744 org.mybatis.spring.SqlSessionUtils - Fetched SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@391bb07f] from current transaction
+[DEBUG] 2017-09-12 15:10:07,745 com.xmniao.urs.dao.UrsEarningsRelationDao.insertUrsEarningsRelation - ooo Using Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@78ffe030]
+[DEBUG] 2017-09-12 15:10:07,745 com.xmniao.urs.dao.UrsEarningsRelationDao.insertUrsEarningsRelation - ==>  Preparing: insert into b_urs_earnings_relation ( uid, object_oriented, parent_uid, uid_relation_chain_level, create_time ) values ( ?, ?, ?, ?, ? ) 
+[DEBUG] 2017-09-12 15:10:07,748 com.xmniao.urs.dao.UrsEarningsRelationDao.insertUrsEarningsRelation - ==> Parameters: 609298(Integer), 9(Integer), 605705(Long), 2(Integer), 2017-09-12 15:10:07.744(Timestamp)
+[DEBUG] 2017-09-12 15:10:07,804 com.alibaba.druid.pool.PreparedStatementPool - {conn-110001, pstmt-120010} enter cache
+[DEBUG] 2017-09-12 15:10:07,804 org.mybatis.spring.SqlSessionUtils - Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@391bb07f]
+[DEBUG] 2017-09-12 15:10:07,805 org.mybatis.spring.SqlSessionUtils - Fetched SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@391bb07f] from current transaction
+[DEBUG] 2017-09-12 15:10:07,805 com.xmniao.urs.dao.UrsEarningsRelationDao.getParentsByUid - ooo Using Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@78ffe030]
+[DEBUG] 2017-09-12 15:10:07,805 com.xmniao.urs.dao.UrsEarningsRelationDao.getParentsByUid - ==>  Preparing: select id, uid, object_oriented, parent_uid,uid_relation_chain_level,uid_relation_chain, uid_relation_chain_nname, indirect_uid, referrer_sellerid, referrer_sellertype, create_time from b_urs_earnings_relation where uid in (select parent_id from b_urs_earnings_relation_chain where object_oriented = ? and uid = ?) and object_oriented = ? 
+[DEBUG] 2017-09-12 15:10:07,806 com.xmniao.urs.dao.UrsEarningsRelationDao.getParentsByUid - ==> Parameters: 9(Integer), 605705(Integer), 9(Integer)
+[DEBUG] 2017-09-12 15:10:07,810 com.alibaba.druid.pool.PreparedStatementPool - {conn-110001, pstmt-120011} enter cache
+[DEBUG] 2017-09-12 15:10:07,810 org.mybatis.spring.SqlSessionUtils - Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@391bb07f]
+[DEBUG] 2017-09-12 15:10:07,810 org.mybatis.spring.SqlSessionUtils - Fetched SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@391bb07f] from current transaction
+[DEBUG] 2017-09-12 15:10:07,812 com.xmniao.urs.dao.UrsEarningsRelationDao.addChainBatch - ooo Using Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@78ffe030]
+[DEBUG] 2017-09-12 15:10:07,812 com.xmniao.urs.dao.UrsEarningsRelationDao.addChainBatch - ==>  Preparing: INSERT INTO b_urs_earnings_relation_chain ( uid, object_oriented, parent_id ) VALUES ( ?, ?, ? ) , ( ?, ?, ? ) 
+[DEBUG] 2017-09-12 15:10:07,813 com.xmniao.urs.dao.UrsEarningsRelationDao.addChainBatch - ==> Parameters: 609298(Long), 9(Integer), 605705(Long), 609298(Long), 9(Integer), 609298(Long)
+[DEBUG] 2017-09-12 15:10:07,834 com.alibaba.druid.pool.PreparedStatementPool - {conn-110001, pstmt-120012} enter cache
+[DEBUG] 2017-09-12 15:10:07,834 org.mybatis.spring.SqlSessionUtils - Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@391bb07f]
+[DEBUG] 2017-09-12 15:10:07,835 org.springframework.jdbc.datasource.DataSourceTransactionManager - Initiating transaction commit
+[DEBUG] 2017-09-12 15:10:07,835 org.springframework.jdbc.datasource.DataSourceTransactionManager - Committing JDBC transaction on Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@616b9c0e]
+[DEBUG] 2017-09-12 15:10:07,837 org.mybatis.spring.SqlSessionUtils - Transaction synchronization committing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@391bb07f]
+[DEBUG] 2017-09-12 15:10:07,837 org.mybatis.spring.SqlSessionUtils - Transaction synchronization closing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@391bb07f]
+[DEBUG] 2017-09-12 15:10:07,837 org.springframework.jdbc.datasource.DataSourceUtils - Returning JDBC Connection to DataSource
+[DEBUG] 2017-09-12 15:10:07,838 org.springframework.jdbc.datasource.DataSourceTransactionManager - Releasing JDBC Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@616b9c0e] after transaction
+[DEBUG] 2017-09-12 15:10:07,838 org.springframework.jdbc.datasource.DataSourceUtils - Returning JDBC Connection to DataSource
+[DEBUG] 2017-09-12 15:10:29,647 org.mybatis.spring.SqlSessionUtils - Creating a new SqlSession
+[DEBUG] 2017-09-12 15:10:29,647 org.mybatis.spring.SqlSessionUtils - SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@100c7926] was not registered for synchronization because synchronization is not active
+[DEBUG] 2017-09-12 15:10:29,648 org.springframework.jdbc.datasource.DataSourceUtils - Fetching JDBC Connection from DataSource
+[DEBUG] 2017-09-12 15:10:29,648 org.mybatis.spring.transaction.SpringManagedTransaction - JDBC Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@78ffe030] will not be managed by Spring
+[DEBUG] 2017-09-12 15:10:29,648 com.xmniao.urs.dao.UrsEarningsRelationDao.getUrsEarningsRelation - ooo Using Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@78ffe030]
+[DEBUG] 2017-09-12 15:10:29,649 com.xmniao.urs.dao.UrsEarningsRelationDao.getUrsEarningsRelation - ==>  Preparing: select id, uid, object_oriented, parent_uid,uid_relation_chain_level,uid_relation_chain, uid_relation_chain_nname, indirect_uid, referrer_sellerid, referrer_sellertype, create_time from b_urs_earnings_relation where uid=? and object_oriented=? 
+[DEBUG] 2017-09-12 15:10:29,649 com.xmniao.urs.dao.UrsEarningsRelationDao.getUrsEarningsRelation - ==> Parameters: 609297(Integer), 9(Integer)
+[DEBUG] 2017-09-12 15:10:29,652 org.mybatis.spring.SqlSessionUtils - Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@100c7926]
+[DEBUG] 2017-09-12 15:10:29,653 org.springframework.jdbc.datasource.DataSourceUtils - Returning JDBC Connection to DataSource
+[DEBUG] 2017-09-12 15:10:29,653 org.mybatis.spring.SqlSessionUtils - Creating a new SqlSession
+[DEBUG] 2017-09-12 15:10:29,653 org.mybatis.spring.SqlSessionUtils - SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@26535b24] was not registered for synchronization because synchronization is not active
+[DEBUG] 2017-09-12 15:10:29,653 org.springframework.jdbc.datasource.DataSourceUtils - Fetching JDBC Connection from DataSource
+[DEBUG] 2017-09-12 15:10:29,653 org.mybatis.spring.transaction.SpringManagedTransaction - JDBC Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@78ffe030] will not be managed by Spring
+[DEBUG] 2017-09-12 15:10:29,653 com.xmniao.urs.dao.UrsEarningsRelationDao.getUrsEarningsRelation - ooo Using Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@78ffe030]
+[DEBUG] 2017-09-12 15:10:29,653 com.xmniao.urs.dao.UrsEarningsRelationDao.getUrsEarningsRelation - ==>  Preparing: select id, uid, object_oriented, parent_uid,uid_relation_chain_level,uid_relation_chain, uid_relation_chain_nname, indirect_uid, referrer_sellerid, referrer_sellertype, create_time from b_urs_earnings_relation where uid=? and object_oriented=? 
+[DEBUG] 2017-09-12 15:10:29,654 com.xmniao.urs.dao.UrsEarningsRelationDao.getUrsEarningsRelation - ==> Parameters: 596026(Integer), 9(Integer)
+[DEBUG] 2017-09-12 15:10:29,657 org.mybatis.spring.SqlSessionUtils - Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@26535b24]
+[DEBUG] 2017-09-12 15:10:29,657 org.springframework.jdbc.datasource.DataSourceUtils - Returning JDBC Connection to DataSource
+[DEBUG] 2017-09-12 15:10:29,657 org.springframework.jdbc.datasource.DataSourceTransactionManager - Creating new transaction with name [com.xmniao.service.manor.ManorInfoService.usrChainBindingParent]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT; ''
+[DEBUG] 2017-09-12 15:10:29,657 org.springframework.jdbc.datasource.DataSourceTransactionManager - Acquired Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@616b9c0e] for JDBC transaction
+[DEBUG] 2017-09-12 15:10:29,657 org.springframework.jdbc.datasource.DataSourceTransactionManager - Switching JDBC Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@616b9c0e] to manual commit
+[DEBUG] 2017-09-12 15:10:29,661 org.mybatis.spring.SqlSessionUtils - Creating a new SqlSession
+[DEBUG] 2017-09-12 15:10:29,661 org.mybatis.spring.SqlSessionUtils - Registering transaction synchronization for SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2a84ac24]
+[DEBUG] 2017-09-12 15:10:29,661 org.springframework.jdbc.datasource.DataSourceUtils - Fetching JDBC Connection from DataSource
+[DEBUG] 2017-09-12 15:10:29,662 org.springframework.jdbc.datasource.DataSourceUtils - Registering transaction synchronization for JDBC Connection
+[DEBUG] 2017-09-12 15:10:29,662 org.mybatis.spring.transaction.SpringManagedTransaction - JDBC Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@78ffe030] will be managed by Spring
+[DEBUG] 2017-09-12 15:10:29,662 com.xmniao.urs.dao.UrsEarningsRelationDao.getUrsEarningsRelation - ooo Using Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@78ffe030]
+[DEBUG] 2017-09-12 15:10:29,662 com.xmniao.urs.dao.UrsEarningsRelationDao.getUrsEarningsRelation - ==>  Preparing: select id, uid, object_oriented, parent_uid,uid_relation_chain_level,uid_relation_chain, uid_relation_chain_nname, indirect_uid, referrer_sellerid, referrer_sellertype, create_time from b_urs_earnings_relation where uid=? and object_oriented=? 
+[DEBUG] 2017-09-12 15:10:29,662 com.xmniao.urs.dao.UrsEarningsRelationDao.getUrsEarningsRelation - ==> Parameters: 596026(Integer), 9(Integer)
+[DEBUG] 2017-09-12 15:10:29,666 org.mybatis.spring.SqlSessionUtils - Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2a84ac24]
+[DEBUG] 2017-09-12 15:10:29,666 org.mybatis.spring.SqlSessionUtils - Fetched SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2a84ac24] from current transaction
+[DEBUG] 2017-09-12 15:10:29,666 com.xmniao.urs.dao.UrsEarningsRelationDao.insertUrsEarningsRelation - ooo Using Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@78ffe030]
+[DEBUG] 2017-09-12 15:10:29,666 com.xmniao.urs.dao.UrsEarningsRelationDao.insertUrsEarningsRelation - ==>  Preparing: insert into b_urs_earnings_relation ( uid, object_oriented, parent_uid, uid_relation_chain_level, create_time ) values ( ?, ?, ?, ?, ? ) 
+[DEBUG] 2017-09-12 15:10:29,667 com.xmniao.urs.dao.UrsEarningsRelationDao.insertUrsEarningsRelation - ==> Parameters: 609297(Integer), 9(Integer), 596026(Long), 3(Integer), 2017-09-12 15:10:29.666(Timestamp)
+[DEBUG] 2017-09-12 15:10:29,696 org.mybatis.spring.SqlSessionUtils - Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2a84ac24]
+[DEBUG] 2017-09-12 15:10:29,696 org.mybatis.spring.SqlSessionUtils - Fetched SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2a84ac24] from current transaction
+[DEBUG] 2017-09-12 15:10:29,696 com.xmniao.urs.dao.UrsEarningsRelationDao.getParentsByUid - ooo Using Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@78ffe030]
+[DEBUG] 2017-09-12 15:10:29,697 com.xmniao.urs.dao.UrsEarningsRelationDao.getParentsByUid - ==>  Preparing: select id, uid, object_oriented, parent_uid,uid_relation_chain_level,uid_relation_chain, uid_relation_chain_nname, indirect_uid, referrer_sellerid, referrer_sellertype, create_time from b_urs_earnings_relation where uid in (select parent_id from b_urs_earnings_relation_chain where object_oriented = ? and uid = ?) and object_oriented = ? 
+[DEBUG] 2017-09-12 15:10:29,697 com.xmniao.urs.dao.UrsEarningsRelationDao.getParentsByUid - ==> Parameters: 9(Integer), 596026(Integer), 9(Integer)
+[DEBUG] 2017-09-12 15:10:29,700 org.mybatis.spring.SqlSessionUtils - Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2a84ac24]
+[DEBUG] 2017-09-12 15:10:29,700 org.mybatis.spring.SqlSessionUtils - Fetched SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2a84ac24] from current transaction
+[DEBUG] 2017-09-12 15:10:29,700 com.xmniao.urs.dao.UrsEarningsRelationDao.addChainBatch - ooo Using Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@78ffe030]
+[DEBUG] 2017-09-12 15:10:29,701 com.xmniao.urs.dao.UrsEarningsRelationDao.addChainBatch - ==>  Preparing: INSERT INTO b_urs_earnings_relation_chain ( uid, object_oriented, parent_id ) VALUES ( ?, ?, ? ) , ( ?, ?, ? ) , ( ?, ?, ? ) 
+[DEBUG] 2017-09-12 15:10:29,701 com.xmniao.urs.dao.UrsEarningsRelationDao.addChainBatch - ==> Parameters: 609297(Long), 9(Integer), 596026(Long), 609297(Long), 9(Integer), 606880(Long), 609297(Long), 9(Integer), 609297(Long)
+[DEBUG] 2017-09-12 15:10:29,728 com.alibaba.druid.pool.PreparedStatementPool - {conn-110001, pstmt-120013} enter cache
+[DEBUG] 2017-09-12 15:10:29,728 org.mybatis.spring.SqlSessionUtils - Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2a84ac24]
+[DEBUG] 2017-09-12 15:10:29,729 org.springframework.jdbc.datasource.DataSourceTransactionManager - Initiating transaction commit
+[DEBUG] 2017-09-12 15:10:29,729 org.springframework.jdbc.datasource.DataSourceTransactionManager - Committing JDBC transaction on Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@616b9c0e]
+[DEBUG] 2017-09-12 15:10:29,730 org.mybatis.spring.SqlSessionUtils - Transaction synchronization committing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2a84ac24]
+[DEBUG] 2017-09-12 15:10:29,730 org.mybatis.spring.SqlSessionUtils - Transaction synchronization closing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2a84ac24]
+[DEBUG] 2017-09-12 15:10:29,730 org.springframework.jdbc.datasource.DataSourceUtils - Returning JDBC Connection to DataSource
+[DEBUG] 2017-09-12 15:10:29,731 org.springframework.jdbc.datasource.DataSourceTransactionManager - Releasing JDBC Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@616b9c0e] after transaction
+[DEBUG] 2017-09-12 15:10:29,731 org.springframework.jdbc.datasource.DataSourceUtils - Returning JDBC Connection to DataSource
+[DEBUG] 2017-09-12 15:10:31,930 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:10:35,735 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:10:55,185 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:11:05,576 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:11:23,550 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:11:33,342 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:11:52,467 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:11:57,040 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:12:16,816 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:12:21,112 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:12:43,594 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:12:44,681 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:13:07,908 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:13:10,165 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:13:33,384 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:13:37,697 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:13:58,761 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:14:03,061 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[INFO] 2017-09-12 15:14:04,965 com.xmniao.service.manor.ThriftManorServiceImpl - 调用Thrift接口[1.20.1 激活/续租黄金庄园]{transNo=1505200444962, uid=609297}
+[DEBUG] 2017-09-12 15:14:04,965 org.springframework.jdbc.datasource.DataSourceTransactionManager - Creating new transaction with name [com.xmniao.service.manor.ManorInfoService.activateManor]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT; ''
+[DEBUG] 2017-09-12 15:14:04,968 org.springframework.jdbc.datasource.DataSourceTransactionManager - Acquired Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@616b9c0e] for JDBC transaction
+[DEBUG] 2017-09-12 15:14:04,968 org.springframework.jdbc.datasource.DataSourceTransactionManager - Switching JDBC Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@616b9c0e] to manual commit
+[INFO] 2017-09-12 15:14:04,970 com.xmniao.service.manor.ManorInfoService - 用户[609297], 激活/续租庄园 transNo=1505200444962 months=1
+[DEBUG] 2017-09-12 15:14:04,970 org.mybatis.spring.SqlSessionUtils - Creating a new SqlSession
+[DEBUG] 2017-09-12 15:14:04,971 org.mybatis.spring.SqlSessionUtils - Registering transaction synchronization for SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7fde17df]
+[DEBUG] 2017-09-12 15:14:04,971 org.springframework.jdbc.datasource.DataSourceUtils - Fetching JDBC Connection from DataSource
+[DEBUG] 2017-09-12 15:14:04,972 org.springframework.jdbc.datasource.DataSourceUtils - Registering transaction synchronization for JDBC Connection
+[DEBUG] 2017-09-12 15:14:04,973 org.mybatis.spring.transaction.SpringManagedTransaction - JDBC Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@78ffe030] will be managed by Spring
+[DEBUG] 2017-09-12 15:14:04,973 com.xmniao.urs.dao.manor.ManorInfoMapper.selectByUid - ooo Using Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@78ffe030]
+[DEBUG] 2017-09-12 15:14:04,973 com.xmniao.urs.dao.manor.ManorInfoMapper.selectByUid - ==>  Preparing: SELECT * FROM b_manor_info WHERE uid = ? 
+[DEBUG] 2017-09-12 15:14:04,974 com.xmniao.urs.dao.manor.ManorInfoMapper.selectByUid - ==> Parameters: 609297(Integer)
+[DEBUG] 2017-09-12 15:14:04,976 org.mybatis.spring.SqlSessionUtils - Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7fde17df]
+[DEBUG] 2017-09-12 15:14:04,976 org.mybatis.spring.SqlSessionUtils - Fetched SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7fde17df] from current transaction
+[DEBUG] 2017-09-12 15:14:04,977 com.xmniao.urs.dao.UrsEarningsRelationDao.selectSuperUidByUid - ooo Using Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@78ffe030]
+[DEBUG] 2017-09-12 15:14:04,977 com.xmniao.urs.dao.UrsEarningsRelationDao.selectSuperUidByUid - ==>  Preparing: SELECT parent_uid FROM b_urs_earnings_relation WHERE uid = ? and object_oriented = ? 
+[DEBUG] 2017-09-12 15:14:04,977 com.xmniao.urs.dao.UrsEarningsRelationDao.selectSuperUidByUid - ==> Parameters: 609297(Integer), 9(Integer)
+[DEBUG] 2017-09-12 15:14:04,979 org.mybatis.spring.SqlSessionUtils - Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7fde17df]
+[INFO] 2017-09-12 15:14:05,051 com.xmniao.service.manor.ManorInfoService - 调用支付接口 growFlowersByUid result:{"code":1,"message":"激活庄园成功.","setCode":true,"setExceptionMessage":false,"setMessage":true,"setStatusCode":true,"setValues":true,"statusCode":"10000","values":{},"valuesSize":0}
+[DEBUG] 2017-09-12 15:14:05,052 org.mybatis.spring.SqlSessionUtils - Fetched SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7fde17df] from current transaction
+[DEBUG] 2017-09-12 15:14:05,052 com.xmniao.urs.dao.UrsEarningsRelationDao.countUserRelation - ooo Using Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@78ffe030]
+[DEBUG] 2017-09-12 15:14:05,053 com.xmniao.urs.dao.UrsEarningsRelationDao.countUserRelation - ==>  Preparing: SELECT count(1) FROM b_urs_earnings_relation WHERE uid = ? and object_oriented = ? 
+[DEBUG] 2017-09-12 15:14:05,053 com.xmniao.urs.dao.UrsEarningsRelationDao.countUserRelation - ==> Parameters: 609297(Integer), 9(Integer)
+[DEBUG] 2017-09-12 15:14:05,055 org.mybatis.spring.SqlSessionUtils - Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7fde17df]
+[INFO] 2017-09-12 15:14:05,055 com.xmniao.service.manor.ManorInfoService - 用户[609297]创建庄园 manorInfo:{"createTime":"2017-09-12 15:14:05","manorDeadline":"2017-10-12 15:14:05","superUid":596026,"uid":609297,"updateTime":"2017-09-12 15:14:05"}
+[DEBUG] 2017-09-12 15:14:05,056 org.mybatis.spring.SqlSessionUtils - Fetched SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7fde17df] from current transaction
+[DEBUG] 2017-09-12 15:14:05,056 com.xmniao.urs.dao.manor.ManorInfoMapper.insertSelective - ooo Using Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@78ffe030]
+[DEBUG] 2017-09-12 15:14:05,056 com.xmniao.urs.dao.manor.ManorInfoMapper.insertSelective - ==>  Preparing: insert into b_manor_info ( uid, super_uid, manor_deadline, create_time, update_time ) values ( ?, ?, ?, ?, ? ) 
+[DEBUG] 2017-09-12 15:14:05,057 com.xmniao.urs.dao.manor.ManorInfoMapper.insertSelective - ==> Parameters: 609297(Integer), 596026(Integer), 2017-10-12 15:14:05.055(Timestamp), 2017-09-12 15:14:05.055(Timestamp), 2017-09-12 15:14:05.055(Timestamp)
+[DEBUG] 2017-09-12 15:14:05,089 com.alibaba.druid.pool.PreparedStatementPool - {conn-110001, pstmt-120014} enter cache
+[DEBUG] 2017-09-12 15:14:05,090 org.mybatis.spring.SqlSessionUtils - Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7fde17df]
+[DEBUG] 2017-09-12 15:14:05,090 org.mybatis.spring.SqlSessionUtils - Fetched SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7fde17df] from current transaction
+[DEBUG] 2017-09-12 15:14:05,090 com.xmniao.urs.dao.UrsEarningsRelationDao.updateManorLevel - ooo Using Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@78ffe030]
+[DEBUG] 2017-09-12 15:14:05,091 com.xmniao.urs.dao.UrsEarningsRelationDao.updateManorLevel - ==>  Preparing: UPDATE b_urs_earnings_relation SET manor_level = ? where uid = ? and object_oriented = 9 
+[DEBUG] 2017-09-12 15:14:05,091 com.xmniao.urs.dao.UrsEarningsRelationDao.updateManorLevel - ==> Parameters: 1(Integer), 609297(Integer)
+[DEBUG] 2017-09-12 15:14:05,122 org.mybatis.spring.SqlSessionUtils - Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7fde17df]
+[INFO] 2017-09-12 15:14:05,127 com.xmniao.service.manor.ManorMqRegister - 用户[609297]创建初始节点
+[INFO] 2017-09-12 15:14:05,127 com.xmniao.service.manor.ManorFlowerProducer - 发送消息队列成功! sendResult:{"messageQueue":{"brokerName":"broker-b","queueId":0,"topic":"manor_busine_topic_dev"},"msgId":"C0A8327B00002A9F000000001C984B88","queueOffset":13752,"sendStatus":"SEND_OK"}
+[INFO] 2017-09-12 15:14:05,127 com.xmniao.service.manor.FlowerService - 黄金庄园-初始化分支节点 : 用户[609297]插入3个初始节点
+[DEBUG] 2017-09-12 15:14:05,127 org.mybatis.spring.SqlSessionUtils - Creating a new SqlSession
+[DEBUG] 2017-09-12 15:14:05,127 org.mybatis.spring.SqlSessionUtils - Creating a new SqlSession
+[DEBUG] 2017-09-12 15:14:05,128 org.mybatis.spring.SqlSessionUtils - SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@69d62926] was not registered for synchronization because synchronization is not active
+[DEBUG] 2017-09-12 15:14:05,127 org.mybatis.spring.SqlSessionUtils - Registering transaction synchronization for SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5b38bc5b]
+[DEBUG] 2017-09-12 15:14:05,128 org.mybatis.spring.transaction.SpringManagedTransaction - JDBC Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@616b9c0e] will be managed by Spring
+[DEBUG] 2017-09-12 15:14:05,128 com.xmniao.dao.manor.ManorCouponConfigMapper.selectByType - ooo Using Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@616b9c0e]
+[DEBUG] 2017-09-12 15:14:05,129 com.xmniao.dao.manor.ManorCouponConfigMapper.selectByType - ==>  Preparing: select * from t_manor_coupon_config WHERE type = ? 
+[DEBUG] 2017-09-12 15:14:05,129 com.xmniao.dao.manor.ManorCouponConfigMapper.selectByType - ==> Parameters: 1(Integer)
+[DEBUG] 2017-09-12 15:14:05,130 org.springframework.jdbc.datasource.DataSourceUtils - Fetching JDBC Connection from DataSource
+[DEBUG] 2017-09-12 15:14:05,131 com.alibaba.druid.pool.PreparedStatementPool - {conn-10001, pstmt-20005} enter cache
+[DEBUG] 2017-09-12 15:14:05,131 org.mybatis.spring.SqlSessionUtils - Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5b38bc5b]
+[INFO] 2017-09-12 15:14:05,131 com.xmniao.service.manor.ManorInfoService - 黄金庄园发放优惠券, uid=596026  赠送人:609297
+[DEBUG] 2017-09-12 15:14:05,132 org.mybatis.spring.SqlSessionUtils - Fetched SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7fde17df] from current transaction
+[DEBUG] 2017-09-12 15:14:05,132 com.xmniao.urs.dao.UrsDao.getUrsByUid - ooo Using Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@78ffe030]
+[DEBUG] 2017-09-12 15:14:05,132 com.xmniao.urs.dao.UrsDao.getUrsByUid - ==>  Preparing: SELECT uid,phone,email,nname,genussellerid,genusname,jointid,corporate,DATE_FORMAT(attach_time,'%Y-%m-%d %H:%i:%s') attachTime,mb_ecno AS mbEcno FROM b_urs WHERE uid = ? 
+[DEBUG] 2017-09-12 15:14:05,134 com.xmniao.urs.dao.UrsDao.getUrsByUid - ==> Parameters: 596026(String)
+[DEBUG] 2017-09-12 15:14:05,138 com.alibaba.druid.pool.PreparedStatementPool - {conn-110001, pstmt-120015} enter cache
+[DEBUG] 2017-09-12 15:14:05,138 org.mybatis.spring.SqlSessionUtils - Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7fde17df]
+[INFO] 2017-09-12 15:14:05,139 com.xmniao.service.manor.ManorInfoService - 黄金庄园发放优惠劵-优惠劵配置开关已关闭! {"state":0,"id":1,"number":1,"type":1,"cid":740}
+[DEBUG] 2017-09-12 15:14:05,139 org.springframework.data.redis.core.RedisConnectionUtils - Opening RedisConnection
+[DEBUG] 2017-09-12 15:14:05,163 org.mybatis.spring.transaction.SpringManagedTransaction - JDBC Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@321577ff] will not be managed by Spring
+[DEBUG] 2017-09-12 15:14:05,164 com.xmniao.dao.manor.ManorFlowerBranchMapper.insertBatch - ooo Using Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@321577ff]
+[DEBUG] 2017-09-12 15:14:05,164 com.xmniao.dao.manor.ManorFlowerBranchMapper.insertBatch - ==>  Preparing: INSERT INTO t_manor_flower_branch ( id, parent_id, uid, location, level, zid ) VALUES ( ?,?,?,?,?,? ) , ( ?,?,?,?,?,? ) , ( ?,?,?,?,?,? ) 
+[DEBUG] 2017-09-12 15:14:05,165 com.xmniao.dao.manor.ManorFlowerBranchMapper.insertBatch - ==> Parameters: c0ae6306820947c091bbb1834fc95c15(String), c0ae6306820947c091bbb1834fc95c15(String), 609297(Integer), 0(Integer), 1(Integer), c0ae6306820947c091bbb1834fc95c15(String), bc51005db8de4161ad10ea604b6dcb9e(String), bc51005db8de4161ad10ea604b6dcb9e(String), 609297(Integer), 1(Integer), 1(Integer), bc51005db8de4161ad10ea604b6dcb9e(String), a0605b8f671d441683f91e223c82f649(String), a0605b8f671d441683f91e223c82f649(String), 609297(Integer), 2(Integer), 1(Integer), a0605b8f671d441683f91e223c82f649(String)
+[DEBUG] 2017-09-12 15:14:05,170 org.springframework.data.redis.core.RedisConnectionUtils - Closing Redis Connection
+[DEBUG] 2017-09-12 15:14:05,170 org.springframework.data.redis.core.RedisConnectionUtils - Closing Redis Connection
+[DEBUG] 2017-09-12 15:14:05,170 org.springframework.data.redis.core.RedisConnectionUtils - Opening RedisConnection
+[DEBUG] 2017-09-12 15:14:05,173 org.springframework.data.redis.core.RedisConnectionUtils - Closing Redis Connection
+[DEBUG] 2017-09-12 15:14:05,173 org.springframework.data.redis.core.RedisConnectionUtils - Closing Redis Connection
+[DEBUG] 2017-09-12 15:14:05,173 org.springframework.data.redis.core.RedisConnectionUtils - Opening RedisConnection
+[DEBUG] 2017-09-12 15:14:05,175 org.springframework.data.redis.core.RedisConnectionUtils - Closing Redis Connection
+[DEBUG] 2017-09-12 15:14:05,175 org.springframework.data.redis.core.RedisConnectionUtils - Closing Redis Connection
+[DEBUG] 2017-09-12 15:14:05,176 org.springframework.data.redis.core.RedisConnectionUtils - Opening RedisConnection
+[DEBUG] 2017-09-12 15:14:05,178 org.springframework.data.redis.core.RedisConnectionUtils - Closing Redis Connection
+[DEBUG] 2017-09-12 15:14:05,178 org.springframework.data.redis.core.RedisConnectionUtils - Closing Redis Connection
+[DEBUG] 2017-09-12 15:14:05,178 org.springframework.data.redis.core.RedisConnectionUtils - Opening RedisConnection
+[DEBUG] 2017-09-12 15:14:05,180 org.springframework.data.redis.core.RedisConnectionUtils - Closing Redis Connection
+[DEBUG] 2017-09-12 15:14:05,183 org.mybatis.spring.SqlSessionUtils - Fetched SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7fde17df] from current transaction
+[DEBUG] 2017-09-12 15:14:05,184 com.xmniao.urs.dao.manor.ManorInfoRecordMapper.insertSelective - ooo Using Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@78ffe030]
+[DEBUG] 2017-09-12 15:14:05,184 com.xmniao.urs.dao.manor.ManorInfoRecordMapper.insertSelective - ==>  Preparing: insert into b_manor_info_record ( trans_no, manor_id, uid, oprate_type, record_details, create_time ) values ( ?, ?, ?, ?, ?, ? ) 
+[DEBUG] 2017-09-12 15:14:05,185 com.xmniao.urs.dao.manor.ManorInfoRecordMapper.insertSelective - ==> Parameters: 1505200444962(String), 118(Integer), 609297(Integer), 1(Integer), {"优惠劵发放数据":[{"cid":740,"id":1,"number":1,"state":0,"type":1}],"庄园开通数据":{"createTime":"2017-09-12 15:14:05","id":118,"manorDeadline":"2017-10-12 15:14:05","superUid":596026,"uid":609297,"updateTime":"2017-09-12 15:14:05"},"支付返回数据":{"code":1,"message":"激活庄园成功.","setCode":true,"setExceptionMessage":false,"setMessage":true,"setStatusCode":true,"setValues":true,"statusCode":"10000","values":{},"valuesSize":0}}(String), 2017-09-12 15:14:05.183(Timestamp)
+[DEBUG] 2017-09-12 15:14:05,226 org.mybatis.spring.SqlSessionUtils - Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7fde17df]
+[DEBUG] 2017-09-12 15:14:05,226 org.springframework.jdbc.datasource.DataSourceTransactionManager - Initiating transaction commit
+[DEBUG] 2017-09-12 15:14:05,226 org.springframework.jdbc.datasource.DataSourceTransactionManager - Committing JDBC transaction on Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@616b9c0e]
+[DEBUG] 2017-09-12 15:14:05,228 org.mybatis.spring.SqlSessionUtils - Transaction synchronization committing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7fde17df]
+[DEBUG] 2017-09-12 15:14:05,228 org.mybatis.spring.SqlSessionUtils - Transaction synchronization closing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7fde17df]
+[DEBUG] 2017-09-12 15:14:05,228 org.mybatis.spring.SqlSessionUtils - Transaction synchronization committing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5b38bc5b]
+[DEBUG] 2017-09-12 15:14:05,228 org.mybatis.spring.SqlSessionUtils - Transaction synchronization closing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5b38bc5b]
+[DEBUG] 2017-09-12 15:14:05,228 org.springframework.jdbc.datasource.DataSourceUtils - Returning JDBC Connection to DataSource
+[DEBUG] 2017-09-12 15:14:05,230 org.springframework.jdbc.datasource.DataSourceTransactionManager - Releasing JDBC Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@616b9c0e] after transaction
+[DEBUG] 2017-09-12 15:14:05,230 org.springframework.jdbc.datasource.DataSourceUtils - Returning JDBC Connection to DataSource
+[DEBUG] 2017-09-12 15:14:05,249 com.alibaba.druid.pool.PreparedStatementPool - {conn-10002, pstmt-20006} enter cache
+[DEBUG] 2017-09-12 15:14:05,250 org.mybatis.spring.SqlSessionUtils - Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@69d62926]
+[DEBUG] 2017-09-12 15:14:05,250 org.springframework.jdbc.datasource.DataSourceUtils - Returning JDBC Connection to DataSource
+[DEBUG] 2017-09-12 15:14:05,250 org.mybatis.spring.SqlSessionUtils - Creating a new SqlSession
+[DEBUG] 2017-09-12 15:14:05,250 org.mybatis.spring.SqlSessionUtils - SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@434d7142] was not registered for synchronization because synchronization is not active
+[DEBUG] 2017-09-12 15:14:05,251 org.springframework.jdbc.datasource.DataSourceUtils - Fetching JDBC Connection from DataSource
+[DEBUG] 2017-09-12 15:14:05,251 org.mybatis.spring.transaction.SpringManagedTransaction - JDBC Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@321577ff] will not be managed by Spring
+[DEBUG] 2017-09-12 15:14:05,251 com.xmniao.dao.manor.ManorFlowerBranchMapper.insertInitChainBatch - ooo Using Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@321577ff]
+[DEBUG] 2017-09-12 15:14:05,251 com.xmniao.dao.manor.ManorFlowerBranchMapper.insertInitChainBatch - ==>  Preparing: INSERT INTO t_manor_flower_branch_chain( branch_id, parent_id ) VALUES ( ?,? ) , ( ?,? ) , ( ?,? ) 
+[DEBUG] 2017-09-12 15:14:05,252 com.xmniao.dao.manor.ManorFlowerBranchMapper.insertInitChainBatch - ==> Parameters: c0ae6306820947c091bbb1834fc95c15(String), c0ae6306820947c091bbb1834fc95c15(String), bc51005db8de4161ad10ea604b6dcb9e(String), bc51005db8de4161ad10ea604b6dcb9e(String), a0605b8f671d441683f91e223c82f649(String), a0605b8f671d441683f91e223c82f649(String)
+[DEBUG] 2017-09-12 15:14:05,274 com.alibaba.druid.pool.PreparedStatementPool - {conn-10002, pstmt-20007} enter cache
+[DEBUG] 2017-09-12 15:14:05,274 org.mybatis.spring.SqlSessionUtils - Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@434d7142]
+[DEBUG] 2017-09-12 15:14:05,274 org.springframework.jdbc.datasource.DataSourceUtils - Returning JDBC Connection to DataSource
+[DEBUG] 2017-09-12 15:14:05,274 org.mybatis.spring.SqlSessionUtils - Creating a new SqlSession
+[DEBUG] 2017-09-12 15:14:05,274 org.mybatis.spring.SqlSessionUtils - SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@62c6f9d1] was not registered for synchronization because synchronization is not active
+[DEBUG] 2017-09-12 15:14:05,275 org.springframework.jdbc.datasource.DataSourceUtils - Fetching JDBC Connection from DataSource
+[DEBUG] 2017-09-12 15:14:05,275 org.mybatis.spring.transaction.SpringManagedTransaction - JDBC Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@321577ff] will not be managed by Spring
+[DEBUG] 2017-09-12 15:14:05,275 com.xmniao.dao.manor.ManorConfigMapper.selectByType - ooo Using Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@321577ff]
+[DEBUG] 2017-09-12 15:14:05,275 com.xmniao.dao.manor.ManorConfigMapper.selectByType - ==>  Preparing: select * from t_manor_config WHERE type = ? 
+[DEBUG] 2017-09-12 15:14:05,275 com.xmniao.dao.manor.ManorConfigMapper.selectByType - ==> Parameters: 1(Integer)
+[DEBUG] 2017-09-12 15:14:05,278 com.alibaba.druid.pool.PreparedStatementPool - {conn-10002, pstmt-20008} enter cache
+[DEBUG] 2017-09-12 15:14:05,278 org.mybatis.spring.SqlSessionUtils - Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@62c6f9d1]
+[DEBUG] 2017-09-12 15:14:05,278 org.springframework.jdbc.datasource.DataSourceUtils - Returning JDBC Connection to DataSource
+[DEBUG] 2017-09-12 15:14:05,278 org.mybatis.spring.SqlSessionUtils - Creating a new SqlSession
+[DEBUG] 2017-09-12 15:14:05,278 org.mybatis.spring.SqlSessionUtils - SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@39eb921] was not registered for synchronization because synchronization is not active
+[DEBUG] 2017-09-12 15:14:05,279 org.springframework.jdbc.datasource.DataSourceUtils - Fetching JDBC Connection from DataSource
+[DEBUG] 2017-09-12 15:14:05,279 org.mybatis.spring.transaction.SpringManagedTransaction - JDBC Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@321577ff] will not be managed by Spring
+[DEBUG] 2017-09-12 15:14:05,279 com.xmniao.dao.manor.ManorConfigMapper.selectByType - ooo Using Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@321577ff]
+[DEBUG] 2017-09-12 15:14:05,279 com.xmniao.dao.manor.ManorConfigMapper.selectByType - ==>  Preparing: select * from t_manor_config WHERE type = ? 
+[DEBUG] 2017-09-12 15:14:05,280 com.xmniao.dao.manor.ManorConfigMapper.selectByType - ==> Parameters: 3(Integer)
+[DEBUG] 2017-09-12 15:14:05,282 org.mybatis.spring.SqlSessionUtils - Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@39eb921]
+[DEBUG] 2017-09-12 15:14:05,282 org.springframework.jdbc.datasource.DataSourceUtils - Returning JDBC Connection to DataSource
+[DEBUG] 2017-09-12 15:14:05,283 org.mybatis.spring.SqlSessionUtils - Creating a new SqlSession
+[DEBUG] 2017-09-12 15:14:05,283 org.mybatis.spring.SqlSessionUtils - SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@298c2762] was not registered for synchronization because synchronization is not active
+[DEBUG] 2017-09-12 15:14:05,283 org.springframework.jdbc.datasource.DataSourceUtils - Fetching JDBC Connection from DataSource
+[DEBUG] 2017-09-12 15:14:05,283 org.mybatis.spring.transaction.SpringManagedTransaction - JDBC Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@321577ff] will not be managed by Spring
+[DEBUG] 2017-09-12 15:14:05,283 com.xmniao.dao.manor.ManorConfigMapper.selectByType - ooo Using Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@321577ff]
+[DEBUG] 2017-09-12 15:14:05,283 com.xmniao.dao.manor.ManorConfigMapper.selectByType - ==>  Preparing: select * from t_manor_config WHERE type = ? 
+[DEBUG] 2017-09-12 15:14:05,283 com.xmniao.dao.manor.ManorConfigMapper.selectByType - ==> Parameters: 3(Integer)
+[DEBUG] 2017-09-12 15:14:05,285 org.mybatis.spring.SqlSessionUtils - Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@298c2762]
+[DEBUG] 2017-09-12 15:14:05,285 org.springframework.jdbc.datasource.DataSourceUtils - Returning JDBC Connection to DataSource
+[INFO] 2017-09-12 15:14:05,286 com.xmniao.service.manor.FlowerService - 黄金庄园-种植花朵 : 用户[609297] location[0], 种植[1]朵花
+[DEBUG] 2017-09-12 15:14:05,286 org.mybatis.spring.SqlSessionUtils - Creating a new SqlSession
+[DEBUG] 2017-09-12 15:14:05,286 org.mybatis.spring.SqlSessionUtils - SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@306da83d] was not registered for synchronization because synchronization is not active
+[DEBUG] 2017-09-12 15:14:05,286 org.springframework.jdbc.datasource.DataSourceUtils - Fetching JDBC Connection from DataSource
+[DEBUG] 2017-09-12 15:14:05,286 org.mybatis.spring.transaction.SpringManagedTransaction - JDBC Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@321577ff] will not be managed by Spring
+[DEBUG] 2017-09-12 15:14:05,286 com.xmniao.dao.manor.ManorFlowerBranchMapper.selectLowestByUidAndLocation - ooo Using Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@321577ff]
+[DEBUG] 2017-09-12 15:14:05,286 com.xmniao.dao.manor.ManorFlowerBranchMapper.selectLowestByUidAndLocation - ==>  Preparing: select b1.* from t_manor_flower_branch b1 JOIN t_manor_flower_branch b2 ON b1.zid = b2.zid WHERE b2.uid = ? and b2.location = ? order by b1.level desc limit 1 
+[DEBUG] 2017-09-12 15:14:05,287 com.xmniao.dao.manor.ManorFlowerBranchMapper.selectLowestByUidAndLocation - ==> Parameters: 609297(Integer), 0(Integer)
+[DEBUG] 2017-09-12 15:14:05,289 com.alibaba.druid.pool.PreparedStatementPool - {conn-10002, pstmt-20009} enter cache
+[DEBUG] 2017-09-12 15:14:05,290 org.mybatis.spring.SqlSessionUtils - Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@306da83d]
+[DEBUG] 2017-09-12 15:14:05,290 org.springframework.jdbc.datasource.DataSourceUtils - Returning JDBC Connection to DataSource
+[INFO] 2017-09-12 15:14:05,290 com.xmniao.service.manor.FlowerService - 黄金庄园-种植花朵 : 花朵列表:[{"perishTime":1507737600283,"branchId":"c0ae6306820947c091bbb1834fc95c15","floristUid":609297,"type":2,"shareType":1}]
+[DEBUG] 2017-09-12 15:14:05,290 org.mybatis.spring.SqlSessionUtils - Creating a new SqlSession
+[DEBUG] 2017-09-12 15:14:05,291 org.mybatis.spring.SqlSessionUtils - SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7137a5e7] was not registered for synchronization because synchronization is not active
+[DEBUG] 2017-09-12 15:14:05,294 org.springframework.jdbc.datasource.DataSourceUtils - Fetching JDBC Connection from DataSource
+[DEBUG] 2017-09-12 15:14:05,294 org.mybatis.spring.transaction.SpringManagedTransaction - JDBC Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@321577ff] will not be managed by Spring
+[DEBUG] 2017-09-12 15:14:05,295 com.xmniao.dao.manor.ManorFlowerMapper.insertBatch - ooo Using Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@321577ff]
+[DEBUG] 2017-09-12 15:14:05,295 com.xmniao.dao.manor.ManorFlowerMapper.insertBatch - ==>  Preparing: INSERT INTO t_manor_flower ( branch_id, type, florist_uid, uid, perish_time,share_type ) VALUES ( ?,?,?,?,?,? ) 
+[DEBUG] 2017-09-12 15:14:05,296 com.xmniao.dao.manor.ManorFlowerMapper.insertBatch - ==> Parameters: c0ae6306820947c091bbb1834fc95c15(String), 2(Integer), 609297(Integer), null, 2017-10-12 00:00:00.283(Timestamp), 1(Integer)
+[DEBUG] 2017-09-12 15:14:05,330 com.alibaba.druid.pool.PreparedStatementPool - {conn-10002, pstmt-20010} enter cache
+[DEBUG] 2017-09-12 15:14:05,330 org.mybatis.spring.SqlSessionUtils - Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7137a5e7]
+[DEBUG] 2017-09-12 15:14:05,330 org.springframework.jdbc.datasource.DataSourceUtils - Returning JDBC Connection to DataSource
+[INFO] 2017-09-12 15:14:05,330 com.xmniao.service.manor.FlowerService - 黄金庄园-种植花朵 : 种植花朵成功,共种植[1]朵花, 耗时44
+[DEBUG] 2017-09-12 15:14:05,330 org.mybatis.spring.SqlSessionUtils - Creating a new SqlSession
+[DEBUG] 2017-09-12 15:14:05,331 org.mybatis.spring.SqlSessionUtils - SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1f62ea0f] was not registered for synchronization because synchronization is not active
+[DEBUG] 2017-09-12 15:14:05,331 org.springframework.jdbc.datasource.DataSourceUtils - Fetching JDBC Connection from DataSource
+[DEBUG] 2017-09-12 15:14:05,331 org.mybatis.spring.transaction.SpringManagedTransaction - JDBC Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@321577ff] will not be managed by Spring
+[DEBUG] 2017-09-12 15:14:05,331 com.xmniao.dao.manor.ManorConfigMapper.selectByType - ooo Using Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@321577ff]
+[DEBUG] 2017-09-12 15:14:05,331 com.xmniao.dao.manor.ManorConfigMapper.selectByType - ==>  Preparing: select * from t_manor_config WHERE type = ? 
+[DEBUG] 2017-09-12 15:14:05,332 com.xmniao.dao.manor.ManorConfigMapper.selectByType - ==> Parameters: 5(Integer)
+[DEBUG] 2017-09-12 15:14:05,334 org.mybatis.spring.SqlSessionUtils - Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1f62ea0f]
+[DEBUG] 2017-09-12 15:14:05,334 org.springframework.jdbc.datasource.DataSourceUtils - Returning JDBC Connection to DataSource
+[INFO] 2017-09-12 15:14:05,334 com.xmniao.service.manor.FlowerService - 黄金庄园-种植花朵 : 用户[609297] location[2], 种植[0]朵花
+[INFO] 2017-09-12 15:14:05,334 com.xmniao.service.manor.FlowerService - 黄金庄园-初始化分支节点 : 成功!!! 用户[609297]插入3个初始节点, 共计耗时:207
+[DEBUG] 2017-09-12 15:14:28,482 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:14:29,439 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:14:54,324 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:14:59,369 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:15:22,044 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:15:24,109 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:15:49,933 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:15:50,517 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:16:19,261 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:16:19,791 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:16:45,654 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:16:49,542 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:17:09,430 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:17:16,093 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:17:37,025 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:17:43,170 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:18:02,625 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:18:09,495 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:18:26,159 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:18:35,010 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:18:54,314 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:19:04,154 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:19:23,389 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:19:27,814 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:19:49,093 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:19:54,585 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:20:16,647 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:20:21,704 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:20:41,236 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:20:50,438 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:21:09,272 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:21:15,254 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:21:38,124 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:21:40,453 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:22:04,455 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:22:05,642 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:22:28,091 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:22:29,947 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:22:54,543 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:22:58,520 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:23:17,859 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:23:24,773 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:23:41,222 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:23:53,484 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:24:04,573 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:24:20,372 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:24:29,982 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:24:47,712 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:24:58,006 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:25:15,385 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:25:24,605 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:25:42,463 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:25:49,480 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:26:06,278 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:26:13,518 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:26:31,138 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:26:39,548 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:26:55,205 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:27:06,411 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:27:20,133 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:27:33,157 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:27:49,487 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:27:58,974 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:28:13,291 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:28:22,527 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:28:39,824 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:28:49,326 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:29:04,198 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:29:13,310 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:29:31,306 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:29:38,816 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:29:57,747 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:30:07,264 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:30:26,933 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:30:36,652 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:30:50,934 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:31:01,725 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:31:14,054 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:31:28,602 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:31:37,500 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:31:53,882 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:32:03,265 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:32:19,066 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:32:28,749 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:32:45,475 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:32:58,228 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:33:15,027 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:33:24,637 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:33:44,901 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:33:53,987 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:34:13,118 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:34:19,803 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:34:41,989 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:34:43,463 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:35:07,557 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:35:09,566 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:35:32,867 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:35:36,258 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:36:00,608 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:36:05,840 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:36:30,083 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:36:33,637 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:36:56,641 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:36:57,562 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:37:23,580 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:37:24,622 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:37:51,651 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:37:51,795 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:38:17,423 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:38:21,392 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:38:40,925 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:38:50,366 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:39:07,088 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:39:16,086 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:39:33,821 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:39:40,471 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:39:58,667 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:40:09,385 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:40:24,860 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:40:35,888 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:40:50,517 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:40:59,059 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:41:15,983 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:41:24,066 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:41:44,505 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:41:48,675 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:42:11,346 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:42:16,134 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:42:40,112 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:42:41,018 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:43:04,408 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:43:10,107 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:43:28,723 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:43:37,377 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:43:57,995 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:44:04,257 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:44:26,993 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:44:27,290 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:44:53,931 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:44:56,724 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:45:20,621 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:45:21,066 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:45:45,214 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:45:48,274 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:46:11,768 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:46:12,674 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:46:36,823 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:46:40,025 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:47:00,657 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:47:03,838 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:47:23,930 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:47:30,884 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:47:49,421 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:47:55,293 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:48:16,353 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:48:21,949 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:48:40,520 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:48:50,145 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:49:07,853 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:49:15,880 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:49:34,888 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:49:43,624 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:50:04,034 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:50:09,409 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:50:30,758 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:50:36,918 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:50:59,508 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:51:02,996 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:51:24,557 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:51:30,973 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:51:51,300 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:52:00,589 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:52:16,248 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:52:24,239 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:52:42,657 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:52:48,998 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:53:07,711 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:53:14,445 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:53:33,224 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:53:39,769 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:54:00,098 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:54:03,837 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:54:28,375 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:54:30,151 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:54:54,274 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:54:56,253 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:55:17,525 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:55:26,128 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:55:45,197 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:55:54,071 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:56:08,627 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:56:18,201 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:56:37,858 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:56:44,958 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:57:02,345 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:57:08,648 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:57:25,853 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:57:32,662 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:57:51,299 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:57:59,424 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:58:18,964 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:58:26,331 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:58:43,693 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:58:52,043 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:59:08,441 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:59:17,117 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:59:34,569 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+[DEBUG] 2017-09-12 15:59:46,990 org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers

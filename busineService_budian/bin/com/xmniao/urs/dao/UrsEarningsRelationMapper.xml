@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.urs.dao.UrsEarningsRelationDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.domain.urs.UrsEarningsRelation" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="object_oriented" property="objectOriented" jdbcType="INTEGER" />
+    <result column="parent_uid" property="parentUid" jdbcType="INTEGER" />
+    <result column="uid_relation_chain" property="uidRelationChain" jdbcType="LONGVARCHAR" />
+    <result column="uid_relation_chain_nname" property="uidRelationChainNname" jdbcType="LONGVARCHAR" />
+    <result column="uid_relation_chain_level" property="uidRelationChainLevel" jdbcType="INTEGER" />
+    <result column="indirect_uid" property="indirectUid" jdbcType="INTEGER" />
+    <result column="referrer_sellerid" property="referrerSellerid" jdbcType="INTEGER" />
+    <result column="referrer_sellertype" property="referrerSellertype" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="parent_uid" property="parentUid" jdbcType="BIGINT"/>
+  </resultMap>
+
+  <resultMap id="ChainResultMap" type="com.xmniao.domain.urs.BursEarningsRelationChain" >
+    <id column="uid" property="uid" jdbcType="BIGINT" />
+    <id column="object_oriented" property="objectOriented" jdbcType="TINYINT" />
+    <id column="parent_id" property="parentId" jdbcType="BIGINT" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, uid, object_oriented, parent_uid,uid_relation_chain_level,uid_relation_chain, uid_relation_chain_nname, indirect_uid, referrer_sellerid, 
+    referrer_sellertype, create_time
+  </sql>
+  
+   <sql id="Chain_Column_List"> 
+  	  uid,object_oriented,parent_id
+  </sql>
+  
+  <update id="updateParentUid">
+  	 update b_urs_earnings_relation set parent_uid = #{parentId} where uid = #{childId} and object_oriented = #{objectOriented}
+  </update>
+  
+  	<update id="updateManorLevels">
+  		update b_urs_earnings_relation set  uid_relation_chain_level = uid_relation_chain_level+#{level}
+  		where object_oriented = 9 and uid in 
+  		<foreach collection="childIds" item="item" open="(" close=")" separator="," >
+			#{item}  		
+  		</foreach>
+  	</update>
+  
+	<delete id="deleteChains">
+		 delete  from b_urs_earnings_relation_chain
+		 where object_oriented = 9 
+		 and uid in 
+		 <foreach collection="childIds" item="child" open="(" close=")" separator="," >
+			 #{child}		 
+		 </foreach>
+		 and parent_id in 
+		  <foreach collection="beforeUids" item="parent" open="(" close=")" separator="," >
+			 #{parent}		 
+		 </foreach>
+	</delete>
+
+	<select id="getParentsByUid" resultMap="BaseResultMap">
+  	 select <include refid="Base_Column_List"/> from b_urs_earnings_relation where
+  	  uid in (select parent_id from b_urs_earnings_relation_chain where object_oriented = #{objectOriented} and uid = #{uid})
+  	   and object_oriented = #{objectOriented}
+  </select>
+  
+    <insert id="addChainBatch"  parameterType="java.util.ArrayList">
+		INSERT INTO b_urs_earnings_relation_chain
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+						uid,
+						object_oriented,
+						parent_id,
+		</trim>
+		VALUES
+		<foreach item="item" index="index" collection="list" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+						 #{item.uid},
+						 #{item.objectOriented},
+						 #{item.parentId},
+			</trim>
+		</foreach>
+	</insert>
+
+  <select id="getUrsEarningsRelation" resultMap="BaseResultMap" parameterType="com.xmniao.domain.urs.UrsEarningsRelation" >
+    select 
+    <include refid="Base_Column_List" />
+    from b_urs_earnings_relation
+    where 
+    <trim  prefixOverrides="and" >
+        <if test="id != null">and id = #{id,jdbcType=INTEGER}</if>
+    	<if test="uid!=null">and uid=#{uid}</if>
+    	<if test="objectOriented != null">and object_oriented=#{objectOriented}</if>
+    </trim>
+  </select>
+  
+
+  <insert id="insertUrsEarningsRelation" parameterType="com.xmniao.domain.urs.UrsEarningsRelation" useGeneratedKeys="true" keyProperty="id" >
+    insert into b_urs_earnings_relation
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        uid,
+        object_oriented,
+      <if test="parentUid != null" >
+        parent_uid,
+      </if>
+      <if test="uidRelationChain != null" >
+        uid_relation_chain,
+      </if>
+      <if test="uidRelationChainNname != null" >
+        uid_relation_chain_nname,
+      </if>
+      <if test="uidRelationChainLevel != null" >
+        uid_relation_chain_level,
+      </if>
+      <if test="indirectUid != null" >
+        indirect_uid,
+      </if>
+      <if test="referrerSellerid != null" >
+        referrer_sellerid,
+      </if>
+      <if test="referrerSellertype != null" >
+        referrer_sellertype,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        #{uid,jdbcType=INTEGER},
+        #{objectOriented,jdbcType=INTEGER},
+         <if test="parentUid != null" >
+        #{parentUid},
+      </if>
+      <if test="uidRelationChain != null" >
+        #{uidRelationChain,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="uidRelationChainNname != null" >
+        #{uidRelationChainNname,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="uidRelationChainLevel != null" >
+        #{uidRelationChainLevel,jdbcType=INTEGER},
+      </if>
+      <if test="indirectUid != null" >
+        #{indirectUid,jdbcType=INTEGER},
+      </if>
+      <if test="referrerSellerid != null" >
+        #{referrerSellerid,jdbcType=INTEGER},
+      </if>
+      <if test="referrerSellertype != null" >
+        #{referrerSellertype,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateUrsEarningsRelation" parameterType="com.xmniao.domain.urs.UrsEarningsRelation" >
+    update b_urs_earnings_relation
+    <set >
+      <if test="uidRelationChain != null" >
+        uid_relation_chain = #{uidRelationChain,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="uidRelationChainNname != null" >
+        uid_relation_chain_nname = #{uidRelationChainNname,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="uidRelationChainLevel != null" >
+        uid_relation_chain_level = #{uidRelationChainLevel,jdbcType=INTEGER},
+      </if>
+      <if test="indirectUid != null" >
+        indirect_uid = #{indirectUid,jdbcType=INTEGER},
+      </if>
+      <if test="referrerSellerid != null" >
+        referrer_sellerid = #{referrerSellerid,jdbcType=INTEGER},
+      </if>
+      <if test="referrerSellertype != null" >
+        referrer_sellertype = #{referrerSellertype,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where 
+    <trim  prefixOverrides="and" >
+        <if test="id != null">and id = #{id,jdbcType=INTEGER}</if>
+    	<if test="uid!=null">and uid=#{uid}</if>
+    	<if test="objectOriented != null">and object_oriented=#{objectOriented}</if>
+    </trim>
+
+  </update>
+
+  <!--更新黄金庄园等级-->
+    <update id="updateManorLevel">
+      UPDATE b_urs_earnings_relation
+      SET manor_level = #{no}
+      where uid = #{uid} and object_oriented = 9
+    </update>
+
+    <select id="getVerIndirectSubordinateList" parameterType="Integer" resultType="String">
+		select lpad(uid,11,'0')
+		from b_liver 
+		where indirect_uid=#{uid} and object_oriented=4
+	</select>
+
+  <!--查询用户的关系链-->
+  <select id="selectUserRelation" resultType="java.lang.String">
+    select uid_relation_chain from b_urs_earnings_relation
+    where uid = #{uid} and object_oriented = #{objectOriented}
+  </select>
+
+  <!--统计用户-->
+  <select id="countUserRelation" resultType="integer">
+    SELECT count(1) FROM b_urs_earnings_relation
+    WHERE uid = #{uid} and object_oriented = #{objectOriented}
+  </select>
+
+  <insert id="insertInitChain">
+    INSERT INTO b_urs_earnings_relation_chain(uid, parent_id, object_oriented)
+      VALUES (#{uid},#{parentUid},#{object_oriented})
+  </insert>
+
+  <select id="selectSuperUidByUid" resultType="java.lang.Integer">
+    SELECT parent_uid FROM b_urs_earnings_relation
+      WHERE uid = #{uid} and object_oriented = #{objectOriented}
+  </select>
+
+
+  <select id="selectAll" resultMap="BaseResultMap">
+    SELECT * FROM b_urs_earnings_relation_ver
+  </select>
+  <select id="selectByUid" resultMap="BaseResultMap">
+    select * FROM b_urs_earnings_relation_ver
+    WHERE uid = #{parentUid}
+  </select>
+    <insert id="insertChain">
+        INSERT INTO b_urs_earnings_relation_chain_ver(uid,object_oriented,parent_id)
+        VALUES (#{subUid},9,#{parentUid})
+    </insert>
+
+    <!--查询所有下级uid-->
+  <select id="selectUidBySuperUid" resultType="java.lang.Integer">
+    SELECT uid FROM b_urs_earnings_relation where parent_uid = #{parentUid}
+  </select>
+  
+  <select id="getManorChildsUid" resultType="java.lang.Integer">
+    select uid from b_urs_earnings_relation_chain where parent_id = #{parentId} and object_oriented = 9
+  </select>
+  
+</mapper>

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmniao.dao.sellerPackage.SellerPackageDao">
+	<sql id="Base_Column_List" >
+	    id, order_no, pid, title, sellerid, uid, phone, uname, create_time, pay_time, last_time, 
+	    nums, original_price, selling_price, selling_coin_price, total_amount, cash, balance,total_coin_amount, 
+	    commision, zbalance, beans, cuser, cdid, retrun_coupon_amount, payment_type, payid, 
+	    status, ledger_type, ledger_ratio, update_time, uid_relation_chain, version,seller_agio,base_agio
+  	</sql>
+	<select id="getPackageOrder" parameterType="map" resultType="map">
+		SELECT 
+		<include refid="Base_Column_List"/>
+		FROM t_seller_package_order
+		WHERE order_no = #{orderNo}
+	</select>
+	
+	<!-- 更新订单 -->
+	<update id="updatePackageOrder" parameterType="map">
+		UPDATE t_seller_package_order
+		SET version = version+1
+		,retrun_coupon_amount = #{retrun_coupon_amount}
+		,status = #{status}
+		,update_time = #{updateTime}
+		,pay_time = #{updateTime}
+		<if test="payid != null">
+		,payid = #{payid}
+		</if>
+		<if test="payType != null and payType !=''">
+		,payment_type = #{payType}
+		</if>
+		<if test="cash !=null and cash !=''">
+		,cash = #{cash}
+		</if>
+		<if test="balance !=null and balance !=''">
+		,balance = #{balance}
+		</if>
+		<if test="commision !=null and commision !=''">
+		,commision = #{commision}
+		</if>
+		<if test="zbalance !=null and zbalance !=''">
+		,zbalance = #{zbalance}
+		</if>
+		<if test="beans !=null and beans !=''">
+		,beans = #{beans}
+		</if>
+		<if test="sellerCoin !=null and sellerCoin !=''">
+		,seller_coin = #{sellerCoin}
+		</if>
+		WHERE 
+		order_no = #{order_no}
+		AND version = #{version}
+	</update>
+	
+	<select id="getPackageCoupon" resultType="map">
+		SELECT pid,gift_cid,num
+		FROM t_seller_package_issue_ref
+		WHERE pid = #{0}
+	</select>
+	
+	<select id="getPackageIssue" resultType="map">
+		SELECT sellerid,stock,selling_price,ledger_type,ledger_ratio,selling_coin_price,sales,status,use_start_time,use_end_time,forbid_start_time,forbid_end_time
+		FROM t_seller_package
+		WHERE id = #{0}
+	</select>
+	
+	<insert id="insertCoupon" parameterType="java.util.List">
+		INSERT INTO t_seller_package_grant
+		(serial,pid,denomination,use_start_time,use_end_time,forbid_start_time,forbid_end_time,get_time,uid,phone,user_status,order_no
+		,sellerid,ledger_amount
+		)
+		VALUES
+		<foreach collection="list" item="coupon" separator="," index="index">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+			#{coupon.serial,jdbcType=VARCHAR},
+			#{coupon.pid,jdbcType=INTEGER},
+			#{coupon.denomination,jdbcType=DECIMAL},
+			#{coupon.use_start_time,jdbcType=TIMESTAMP},
+			#{coupon.use_end_time,jdbcType=TIMESTAMP},
+			#{coupon.forbid_start_time,jdbcType=TIMESTAMP},
+			#{coupon.forbid_end_time,jdbcType=TIMESTAMP},
+			#{coupon.get_time,jdbcType=TIMESTAMP},
+			#{coupon.uid,jdbcType=INTEGER},
+			#{coupon.phone,jdbcType=VARCHAR},
+			#{coupon.user_status,jdbcType=INTEGER},
+			#{coupon.order_no,jdbcType=VARCHAR},
+			#{coupon.sellerid,jdbcType=INTEGER},
+			#{coupon.ledger_amount,jdbcType=DECIMAL}
+			</trim>
+		</foreach>
+	</insert>
+	
+	<update id="updateStock" parameterType="map">
+		UPDATE t_seller_package
+		SET stock = stock +#{nums}
+		,sales = sales -#{nums}
+		WHERE id = #{pid}
+	</update>
+	
+	<select id="getSellerPackageGrantByConsume" parameterType="Map" resultType="Map">
+		SELECT 
+		  `id`,
+		  `serial`,
+		  `pid`,
+		  `denomination`,
+		  ledger_amount ledgerAmount,
+		  `use_start_time` useStartTime,
+		  `use_end_time` useEndTime,
+		  `forbid_start_time` forbidStartTime,
+		  `forbid_end_time` forbidEndTime,
+		  `get_time` getTime,
+		  `uid`,
+		  `phone`,
+		  `user_status` userStatus,
+		  `user_time` userTime,
+		  `order_no` orderNo,
+		  `sellerid`,
+		  `bid`
+		FROM t_seller_package_grant WHERE bid =#{bid}
+	</select>
+	
+	<update id="useSellerPackageGrant" parameterType="Map">
+		UPDATE t_seller_package_grant
+		SET 
+		 user_status=#{userStatus},
+		 user_time=#{userTime}
+		WHERE id=#{id}
+	</update>
+	
+	<select id="getUserPackageInfo" parameterType="Long" resultType="Map">
+		SELECT o.selling_price sellingPrice,selling_coin_price sellingCoinPrice, o.ledger_type ledgerType,o.ledger_ratio ledgerRatio
+		FROM t_seller_package_grant g LEFT JOIN t_seller_package_order o ON g.order_no=o.order_no 
+		WHERE g.bid=#{bid}
+	</select>
+
+
+	<update id="updateSellerPackageState" parameterType="map">
+		UPDATE t_seller_package
+		SET status = #{status}
+		WHERE id = #{pid}
+		<if test="status !=null and status==3 ">
+		<![CDATA[ AND stock <= 0  ]]>
+		</if>
+
+	</update>
+</mapper>
+

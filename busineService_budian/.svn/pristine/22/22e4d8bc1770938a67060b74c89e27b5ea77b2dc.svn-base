@@ -1,0 +1,62 @@
+package com.xmniao.urs.dao;
+
+import com.xmniao.domain.urs.UrsEarningsRelation;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+
+public interface UrsEarningsRelationDao {
+
+	UrsEarningsRelation getUrsEarningsRelation(UrsEarningsRelation relation);
+
+    int insertUrsEarningsRelation(UrsEarningsRelation record);
+
+    int updateUrsEarningsRelation(UrsEarningsRelation record);
+    
+	/**
+	 * 查询v客的所有间接下级
+	 * 方法描述：
+	 * 创建人： ChenBo
+	 * 创建时间：2017年4月28日
+	 * @param uid
+	 * @return List<Integer>
+	 */
+	List<String> getVerIndirectSubordinateList(Integer uid);
+
+	/**
+	 * 查询用户关系链
+	 * @param uid               用户uid
+	 * @param objectOriented    会员渠道来源
+	 * @return
+	 */
+    String selectUserRelation(@Param("uid") Integer uid, @Param("objectOriented") Integer objectOriented);
+
+	/**
+	 * 查询用户关系链
+	 * @param uid               用户uid
+	 * @param objectOriented    会员渠道来源
+	 * @return
+	 */
+	int countUserRelation(@Param("uid") Integer uid, @Param("objectOriented") Integer objectOriented);
+
+	/**
+	 * 更新关系链中的庄园的等级
+	 * @param uid
+	 * @param no
+	 */
+    void updateManorLevel(@Param("uid") Integer uid, @Param("no") Integer no);
+
+    void insertInitChain(@Param("uid") Integer uid, @Param("parentUid") Integer parentUid, @Param("object_oriented") Integer object_oriented);
+
+    /** 查询上级 uid */
+	Integer selectSuperUidByUid(@Param("uid") Integer uid, @Param("objectOriented") Integer objectOriented);
+
+	List<UrsEarningsRelation> selectAll();
+
+	UrsEarningsRelation selectByUid(Long parentUid);
+
+	void insertChain(@Param("subUid") Integer subUid, @Param("parentUid") Long parentUid);
+
+	/** 查询所有下级UID */
+    List<Integer> selectUidBySuperUid(@Param("parentUid") Integer parentUid);
+}

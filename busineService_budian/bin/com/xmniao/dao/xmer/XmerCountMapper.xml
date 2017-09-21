@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xmniao.dao.xmer.XmerCountDao">
+	
+	<!-- 查询月消费额大于500的寻蜜客id -->
+	<select id="queryXmerUid" parameterType="map" resultType="int">
+		SELECT uid FROM (SELECT xmer_uid uid,SUM(money) AS money FROM t_bill WHERE
+		<![CDATA[
+		STATUS !=0 AND STATUS !=5 AND zdate>#{startDate} AND zdate<#{endDate}
+		]]>
+		GROUP BY xmer_uid) t WHERE t.money >= 500
+	</select>
+</mapper>

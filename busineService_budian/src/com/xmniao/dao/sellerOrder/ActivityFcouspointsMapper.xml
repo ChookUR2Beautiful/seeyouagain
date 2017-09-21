@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.sellerOrder.ActivityFcouspointsDao" >
+
+  <resultMap id="ActivityFcouspointsMap" type="com.xmniao.domain.coupon.ActivityFcouspoints" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="begin_date" property="beginDate" jdbcType="TIMESTAMP" />
+    <result column="end_date" property="endDate" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="give_number" property="giveNumber" jdbcType="INTEGER" />
+    <result column="points_number" property="pointsNumber" jdbcType="INTEGER" />
+    <result column="full_price" property="fullPrice" jdbcType="DECIMAL" />
+    <result column="is_suposition" property="isSuposition" jdbcType="INTEGER" />
+    <result column="count_points" property="countPoints" jdbcType="INTEGER" />
+    <result column="join_number" property="joinNumber" jdbcType="INTEGER" />
+    <result column="conversion_number" property="conversionNumber" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="views" property="views" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="ActivityFcouspointsColumn" >
+    id, sellerid, name, begin_date, end_date, end_time, give_number, points_number, full_price, 
+    is_suposition, count_points, join_number, conversion_number, status, views, create_time
+  </sql>
+  
+  <resultMap id="ActivityFcouspointsPointsMap" type="com.xmniao.domain.coupon.ActivityFcouspointsPoints" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="activity_id" property="activityId" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="points" property="points" jdbcType="INTEGER" />
+    <result column="give_number" property="giveNumber" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="ActivityFcouspointsPointsColumn" >
+    id, activity_id, uid, phone, points, give_number, update_time, create_time
+  </sql>
+  
+  <!-- 获取商家聚点活动列表 -->
+  <select id="getActivityFcouspointsList" resultMap="ActivityFcouspointsMap" parameterType="map" >
+    select 
+    <include refid="ActivityFcouspointsColumn" />
+    from t_activity_fcouspoints
+    where 1=1
+    <if test="status!=null">and status=#{status}</if>
+    <if test="sellerid!=null">and sellerid=#{sellerid}</if>
+    <if test="nowDate!=null">and #{nowDate} between begin_date and end_date</if>
+    <if test="fullPrice!=null">and full_price &lt;= #{fullPrice}</if>
+  </select>
+  
+  <!-- 更新商家聚点活动 --> 
+  <update id="updateActivityFcouspoints" parameterType="com.xmniao.domain.coupon.ActivityFcouspoints" >
+    update t_activity_fcouspoints
+    set 
+      count_points = count_points+#{countPoints,jdbcType=INTEGER},
+      join_number = join_number+1
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 插入商家聚点活动记录 -->   
+  <insert id="insertActivityFcouspointsRecord" parameterType="com.xmniao.domain.coupon.ActivityFcouspointsRecord" >
+    insert into t_activity_fcouspoints_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="activityId != null" >
+        activity_id,
+      </if>
+      <if test="sellerid != null" >
+        sellerid,
+      </if>
+      <if test="bid != null" >
+        bid,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="givePoints != null" >
+        give_points,
+      </if>
+      <if test="getTime != null" >
+        get_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="activityId != null" >
+        #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="sellerid != null" >
+        #{sellerid,jdbcType=INTEGER},
+      </if>
+      <if test="bid != null" >
+        #{bid,jdbcType=BIGINT},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="givePoints != null" >
+        #{givePoints,jdbcType=INTEGER},
+      </if>
+      <if test="getTime != null" >
+        #{getTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  <select id="countActivityFcouspointsRecord" resultType="long" parameterType="com.xmniao.domain.coupon.ActivityFcouspointsRecord">
+  	select count(1)
+  	from t_activity_fcouspoints_record
+  	where 1=1
+  	<if test="bid!=null">and bid=#{bid}</if>
+  	<if test="uid!=null">and uid=#{uid}</if>
+  	<if test="activityId!=null">and activity_id=#{activityId}</if>
+  </select>
+  
+  <update id="updateActivityFcouspointsPoints" parameterType="com.xmniao.domain.coupon.ActivityFcouspointsPoints" >
+    update t_activity_fcouspoints_points
+    set
+      points = IF(points+#{points}>20,20,points+#{points}),
+      update_time = #{updateTime}
+    where id = #{id}
+  </update>
+  
+  <insert id="insertActivityFcouspointsPoints" parameterType="com.xmniao.domain.coupon.ActivityFcouspointsPoints" >
+    insert into t_activity_fcouspoints_points
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="activityId != null" >
+        activity_id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="points != null" >
+        points,
+      </if>
+      <if test="giveNumber != null" >
+        give_number,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="activityId != null" >
+        #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="points != null" >
+        #{points,jdbcType=INTEGER},
+      </if>
+      <if test="giveNumber != null" >
+        #{giveNumber,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  <select id="getActivityFcouspointsPoints" resultMap="ActivityFcouspointsPointsMap" parameterType="com.xmniao.domain.coupon.ActivityFcouspointsPoints" >
+    select 
+    <include refid="ActivityFcouspointsPointsColumn" />
+    from t_activity_fcouspoints_points
+    where 
+    activity_id=#{activityId} and uid=#{uid}
+  </select>
+  
+</mapper>

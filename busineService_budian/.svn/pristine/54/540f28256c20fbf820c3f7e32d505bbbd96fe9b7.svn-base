@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.urs.dao.manor.ManorInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.xmniao.domain.manor.ManorInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="super_uid" property="superUid" jdbcType="INTEGER" />
+    <result column="manor_status" property="manorStatus" jdbcType="INTEGER" />
+    <result column="manor_level" property="manorLevel" jdbcType="INTEGER" />
+    <result column="manor_deadline" property="manorDeadline" jdbcType="TIMESTAMP" />
+    <result column="build_status" property="buildStatus" jdbcType="INTEGER" />
+    <result column="build_time" property="buildTime" jdbcType="TIMESTAMP" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="activate_count" property="activateCount" jdbcType="INTEGER"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, uid, super_uid, manor_status, manor_level, manor_deadline, build_status, build_time, 
+    create_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from b_manor_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from b_manor_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xmniao.domain.manor.ManorInfo" >
+    insert into b_manor_info (id, uid, super_uid, 
+      manor_status, manor_level, manor_deadline, 
+      build_status, build_time, create_time, 
+      update_time)
+    values (#{id,jdbcType=INTEGER}, #{uid,jdbcType=INTEGER}, #{superUid,jdbcType=INTEGER}, 
+      #{manorStatus,jdbcType=INTEGER}, #{manorLevel,jdbcType=INTEGER}, #{manorDeadline,jdbcType=TIMESTAMP}, 
+      #{buildStatus,jdbcType=INTEGER}, #{buildTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xmniao.domain.manor.ManorInfo" useGeneratedKeys="true" keyProperty="id">
+    insert into b_manor_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="superUid != null" >
+        super_uid,
+      </if>
+      <if test="manorStatus != null" >
+        manor_status,
+      </if>
+      <if test="manorLevel != null" >
+        manor_level,
+      </if>
+      <if test="manorDeadline != null" >
+        manor_deadline,
+      </if>
+      <if test="buildStatus != null" >
+        build_status,
+      </if>
+      <if test="buildTime != null" >
+        build_time,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="superUid != null" >
+        #{superUid,jdbcType=INTEGER},
+      </if>
+      <if test="manorStatus != null" >
+        #{manorStatus,jdbcType=INTEGER},
+      </if>
+      <if test="manorLevel != null" >
+        #{manorLevel,jdbcType=INTEGER},
+      </if>
+      <if test="manorDeadline != null" >
+        #{manorDeadline,jdbcType=TIMESTAMP},
+      </if>
+      <if test="buildStatus != null" >
+        #{buildStatus,jdbcType=INTEGER},
+      </if>
+      <if test="buildTime != null" >
+        #{buildTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.domain.manor.ManorInfo" >
+    update b_manor_info
+    <set >
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="superUid != null" >
+        super_uid = #{superUid,jdbcType=INTEGER},
+      </if>
+      <if test="manorStatus != null" >
+        manor_status = #{manorStatus,jdbcType=INTEGER},
+      </if>
+      <if test="manorLevel != null" >
+        manor_level = #{manorLevel,jdbcType=INTEGER},
+      </if>
+      <if test="manorDeadline != null" >
+        manor_deadline = #{manorDeadline,jdbcType=TIMESTAMP},
+      </if>
+      <if test="buildStatus != null" >
+        build_status = #{buildStatus,jdbcType=INTEGER},
+      </if>
+      <if test="buildTime != null" >
+        build_time = #{buildTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="activateCount != null">
+        activate_count = #{activateCount,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xmniao.domain.manor.ManorInfo" >
+    update b_manor_info
+    set uid = #{uid,jdbcType=INTEGER},
+      super_uid = #{superUid,jdbcType=INTEGER},
+      manor_status = #{manorStatus,jdbcType=INTEGER},
+      manor_level = #{manorLevel,jdbcType=INTEGER},
+      manor_deadline = #{manorDeadline,jdbcType=TIMESTAMP},
+      build_status = #{buildStatus,jdbcType=INTEGER},
+      build_time = #{buildTime,jdbcType=TIMESTAMP},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+    <update id="updateBranchLocationByUid">
+      UPDATE b_manor_info SET branch_location = #{location} where uid = #{uid}
+    </update>
+
+
+    <!--根据uid查询该用户的庄园信息-->
+  <select id="selectByUid" resultMap="BaseResultMap">
+    SELECT *
+    FROM b_manor_info
+    WHERE uid = #{uid}
+  </select>
+
+
+  <!--查询激活状态的庄园-->
+  <select id="selectActivatedManors" resultMap="BaseResultMap">
+    SELECT *
+    FROM b_manor_info
+    where  manor_deadline > now() and manor_status = 1
+    and manor_type = 1
+  </select>
+  
+    <!--查询激活状态的庄园-->
+  <select id="selectActivatedManorsByPage" resultMap="BaseResultMap" parameterType="Map">
+    SELECT manor.*,urs.phone
+    FROM b_manor_info manor left join b_urs urs on manor.uid=urs.uid
+    where  manor_deadline > now() and manor_status = 1 and manor_type = 1
+    <if test=" limit != -1 ">
+		LIMIT ${(page-1)*limit},#{limit}
+	</if>
+  </select>
+     	
+</mapper>

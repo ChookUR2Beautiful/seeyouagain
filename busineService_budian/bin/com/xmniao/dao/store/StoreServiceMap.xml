@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 活动服务模块DAO层的mybatis映射SQL脚本 -->
+<mapper namespace="com.xmniao.dao.store.StoreServiceDao">
+
+    <!-- 根据提现编号查询资金并拢信息 -->
+	<select id="queryStoreWithdrawalInfo" parameterType="String" resultType="map">
+		SELECT flowid,status,operation_category FROM t_withdrawal_together
+		WHERE flowid=#{flowid} AND operation_category=2
+	</select>
+	
+	<!-- 连锁店提现回调更新 -->
+	<update id="modifyStoreWithdrawals" parameterType="map">
+		UPDATE t_withdrawal_together SET 
+		<if test="status!=null and status!=''">
+		status=#{status},
+		</if>
+		<if test="remarks!=null and remarks!=''">
+		remarks=#{remarks},
+		</if>
+		sucdate=#{sucdate}
+		WHERE flowid=#{flowid} AND operation_category=2
+	</update>
+</mapper>

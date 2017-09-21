@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.seller.JointDao">
+	<resultMap type="com.xmniao.domain.seller.JointBean" id="jointMap">
+		<result column="jointid" property="jointid" />
+		<result column="corporate" property="corporate" />
+		<result column="legalperson" property="legalperson" />
+		<result column="idnumber" property="idnumber" />
+		<result column="idnumberurl" property="idnumberurl" />
+		<result column="license" property="license" />
+		<result column="licenseurl" property="licenseurl" />
+		<result column="city" property="city" />
+		<result column="area" property="area" />
+		<result column="address" property="address" />
+		<result column="status" property="status" />
+		<result column="Industry" property="industry" />
+		<result column="sdate" property="sdate" />
+		<result column="edate" property="edate" />
+		<result column="startnum" property="startnum" />
+		<result column="percentage" property="percentage" />
+		<result column="logo" property="logo" />
+		<result column="remarks" property="remarks" />
+		<result column="phoneid" property="phoneid" />
+		<result column="applicant" property="applicant" />
+		<result column="number" property="number" />
+		<result column="cityTitle" property="cityTitle" />
+		<result column="areaTitle" property="areaTitle" />
+		<result column="areaNum" property="areaNum" />
+		<result column="sellerNum" property="sellerNum" />
+		<result column="agreeNum" property="agreeNum" />
+		<result column="loginAccount" property="loginAccount" />
+		<result column="staffid" property="staffid" />
+		<result column="saasnum" property="saasnum"/>
+		<result column="saasagio" property="saasagio"/>
+		<result column="saasamount" property="saasamount"/>
+	</resultMap>
+	
+	<!-- 根据合作商id查询对应的合作商信息 -->	
+	<select id="getJointInfo" resultMap="jointMap">
+		SELECT *
+		FROM
+		  t_joint
+		WHERE jointid=#{jointid}
+	</select>
+	
+	<!-- 更新合作商SAAS库存 -->
+	<update id="modifyJonitSaasInfo" parameterType="com.xmniao.domain.seller.JointBean">
+		UPDATE t_joint SET
+		stocknum = stocknum-1
+		WHERE stocknum>0 AND jointid=#{jointid}
+	</update>
+	
+	<insert id="addJointSaasLedger" parameterType="com.xmniao.domain.seller.JointSaasLedgerBean">
+		INSERT INTO t_joint_saas_ledger 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+		 	<if test="null != jointid">
+				jointid,
+			</if>
+		 	<if test="null != sellerid">
+				sellerid,
+			</if>
+		 	<if test="null != xmerUid">
+				xmer_uid,
+			</if>
+		 	<if test="null != saasBid">
+				saas_bid,
+			</if>
+		 	<if test="null != commison and '' != commison">
+				commison,
+			</if>
+			<if test="null != date and '' != date">
+				date,
+			</if>
+		</trim>
+		<trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+		 	<if test=" null != jointid">
+				 #{jointid},
+			</if>
+			 <if test="null != sellerid">
+				#{sellerid},
+			</if>
+		 	<if test="null != xmerUid">
+				#{xmerUid},
+			</if>
+		 	<if test="null != saasBid">
+				#{saasBid},
+			</if>
+		 	<if test="null != commison and '' != commison">
+				#{commison},
+			</if>
+			<if test="null != date and '' != date">
+				#{date},
+			</if>
+		</trim>
+	</insert>
+</mapper>

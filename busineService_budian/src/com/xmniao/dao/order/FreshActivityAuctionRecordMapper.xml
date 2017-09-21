@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.order.FreshActivityAuctionRecordDao" >
+  <resultMap id="BaseResultMap" type="com.xmniao.domain.order.FreshActivityAuctionRecord" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="activity_id" property="activityId" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="rised_price" property="risedPrice" jdbcType="DECIMAL" />
+    <result column="rised_num" property="risedNum" jdbcType="INTEGER" />
+    <result column="deposit_order" property="depositOrder" jdbcType="VARCHAR" />
+    <result column="finish_order" property="finishOrder" jdbcType="VARCHAR" />
+    <result column="state" property="state" jdbcType="INTEGER" />
+    <result column="deposit_price" property="depositPrice" jdbcType="DECIMAL" />
+    <result column="deposit_state" property="depositState" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, activity_id, uid, phone, rised_price, rised_num, deposit_order, finish_order, 
+    state, deposit_price, deposit_state, create_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_fresh_activity_auction_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_fresh_activity_auction_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insertSelective" parameterType="com.xmniao.domain.order.FreshActivityAuctionRecord" >
+    insert into t_fresh_activity_auction_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="activityId != null" >
+        activity_id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="risedPrice != null" >
+        rised_price,
+      </if>
+      <if test="risedNum != null" >
+        rised_num,
+      </if>
+      <if test="depositOrder != null" >
+        deposit_order,
+      </if>
+      <if test="finishOrder != null" >
+        finish_order,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+      <if test="depositPrice != null" >
+        deposit_price,
+      </if>
+      <if test="depositState != null" >
+        deposit_state,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="activityId != null" >
+        #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="risedPrice != null" >
+        #{risedPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="risedNum != null" >
+        #{risedNum,jdbcType=INTEGER},
+      </if>
+      <if test="depositOrder != null" >
+        #{depositOrder,jdbcType=VARCHAR},
+      </if>
+      <if test="finishOrder != null" >
+        #{finishOrder,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="depositPrice != null" >
+        #{depositPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="depositState != null" >
+        #{depositState,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xmniao.domain.order.FreshActivityAuctionRecord" >
+    update t_fresh_activity_auction_record
+    <set >
+      <if test="activityId != null" >
+        activity_id = #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="risedPrice != null" >
+        rised_price = #{risedPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="risedNum != null" >
+        rised_num = #{risedNum,jdbcType=INTEGER},
+      </if>
+      <if test="depositOrder != null" >
+        deposit_order = #{depositOrder,jdbcType=VARCHAR},
+      </if>
+      <if test="finishOrder != null" >
+        finish_order = #{finishOrder,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="depositPrice != null" >
+        deposit_price = #{depositPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="depositState != null" >
+        deposit_state = #{depositState,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 自定义查询区域 -->
+  
+  <!-- 查询竞拍成功的参与人信息 -->
+  <select id="getMaxPriceRecordByActivityId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    FROM t_fresh_activity_auction_record t WHERE 1 = 1 
+	AND rised_price = ( SELECT MAX(tr.rised_price) FROM t_fresh_activity_auction_record tr 
+	    WHERE tr.activity_id = t.activity_id)
+    AND activity_id = #{activityId,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 查询竞拍不成功的参与人信息 -->
+  <select id="getFaultRecordByActivityId" resultMap="BaseResultMap">
+	select
+		<include refid="Base_Column_List" />
+	FROM t_fresh_activity_auction_record t WHERE 1 = 1
+	<if test="activityId != null">
+	    AND activity_id = #{activityId,jdbcType=INTEGER} 
+	</if>
+	<if test="id != null">
+        AND id &lt;> #{id,jdbcType=VARCHAR}
+    </if>
+  </select>
+
+  <!-- 更改竞拍人的状态 -->
+  <update id="updateAuctionRecordState">
+	    update t_fresh_activity_auction_record
+		set state = #{state,jdbcType=INTEGER}
+		WHERE 1 = 1
+		<if test="activityId != null">
+			AND activity_id = #{activityId,jdbcType=INTEGER}
+		</if>
+		<if test="id != null">
+			AND id &lt;> #{id,jdbcType=INTEGER}
+		</if>
+      
+  </update>
+  
+  <select id="selectByActivityIdAndOrderId" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_fresh_activity_auction_record
+    where activity_id = #{activityId,jdbcType=INTEGER} and finish_order = #{finishOrder,jdbcType=VARCHAR}
+  </select>
+  
+</mapper>

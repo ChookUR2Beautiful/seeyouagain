@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmniao.dao.live.LiveGivedGiftDao" >
+
+  <sql id="Base_Column_List" >
+    id, gived_gift_key, live_record_id, liver_id, wallet_record_id, liver_utype, anchor_id, 
+    anchor_room_no, gift_id, gift_name, gift_nums, gift_price, gift_experience, percentAmount, 
+    status, advanced_status, isfailed, create_time, update_time, return_coin, uid, gift_source,
+    uid_relation_chain
+  </sql>
+
+  <select id="dailyConsumeCountList" parameterType="Map" resultType="Map">
+	SELECT uid,SUM(gift_price*gift_nums) consumeAmount
+	FROM t_live_gived_gift 
+	WHERE 
+		DATE_FORMAT(create_time,'%Y-%m-%d') LIKE DATE_FORMAT(#{nowDate},'%Y-%m-%d')
+		AND uid in
+  			<foreach collection="ursList"  open="(" close=")" item="item" separator=",">
+  				#{item}
+  			</foreach>
+		AND status > 0
+		AND gift_source=0
+	GROUP BY uid
+  </select>
+  
+  <!-- 	获取直播结束24小时内的记录 -->
+	<select id="queryLiveRecordByEnd"  resultType="java.util.Map">
+		SELECT 
+			anchor_id as anchorId,id
+		FROM t_live_record 
+		WHERE 1=1 AND zhibo_type IN (3,5)
+		<![CDATA[  and hour(timediff(date_format(NOW(),'%Y-%m-%d %H:%i:%s'),date_format(end_date,'%Y-%m-%d %H:%i:%s')))  BETWEEN 0 and 24   ]]>
+		
+	</select>
+	
+	
+	<!-- 描述: 查询观众/主播 接收/发送礼物记录   未接收 或 预接收状态 -->
+	<select id="getLoseGifts"  resultType="java.util.Map">
+		SELECT 
+			 gg.id, gg.gived_gift_key as givedGiftKey, gg.live_record_id as liveRecordId, gg.liver_id as liverId,  gg.wallet_record_id walletRecordId, 
+			 gg.liver_utype liverUtype, gg.anchor_id as anchorId,gg.anchor_room_no as anchorRoomNo, gg.gift_id as giftId, gg.gift_name as giftName, 
+			 gg.gift_nums as giftNums, gg.gift_price as giftPrice, gg.gift_experience as giftExperience, gg.status, gg.advanced_status as advancedStatus,
+			 gg.isfailed as isfailed,gg.percentAmount as percentAmount
+		FROM t_live_gived_gift gg 
+		LEFT JOIN t_live_gift  lg  ON gg.gift_id = lg.id 
+		JOIN t_live_record record on gg.live_record_id = record.id
+		WHERE gg.advanced_status = 1 AND lg.gift_type = 2
+		and gg.percentAmount > 0
+		AND record.zhibo_type
+		IN (3,5)
+	</select>
+	
+	<update id="updateBackState" >
+		update t_live_gived_gift set advanced_status = 3,update_time = now() where id = #{id}
+	</update>
+	
+	<update id="updateIncomeEggNums">
+  	 update t_live_record set income_egg_nums =  income_egg_nums + #{percentamount},update_time = now()  where id = #{liveRecordId} 
+  </update>
+	
+	<update id="modifyBatchLiveGivedGiftById" parameterType="list">
+	UPDATE 
+				t_live_gived_gift 
+			SET 
+				advanced_status=3,
+				update_time=now()
+			WHERE id in
+		<foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+			 #{item.id}
+		</foreach>
+	</update>
+
+
+</mapper>

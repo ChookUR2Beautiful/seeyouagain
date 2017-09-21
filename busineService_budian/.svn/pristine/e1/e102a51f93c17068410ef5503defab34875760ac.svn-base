@@ -1,0 +1,31 @@
+package com.xmniao.dao.manor;
+
+import com.xmniao.domain.manor.ManorFlower;
+import com.xmniao.domain.manor.ManorFlowerBranch;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+
+public interface ManorFlowerMapper {
+    int deleteByPrimaryKey(Integer id);
+
+    int insert(ManorFlower record);
+
+    int insertSelective(ManorFlower record);
+
+    ManorFlower selectByPrimaryKey(Integer id);
+
+    int updateByPrimaryKeySelective(ManorFlower record);
+
+    int updateByPrimaryKey(ManorFlower record);
+
+    /** 批量插入数据 */
+    int insertBatch(@Param("flowers") List<ManorFlower> flowers);
+
+    /** 根据uid 更新花朵庄园 */
+    int updateTypeByUid(@Param("uid") Integer uid, @Param("type") Integer type);
+
+    /** 根据uid 和location  分支下已枯萎未种植的*/
+    List<ManorFlower> selectPerishedFlowers(@Param("uid") Integer uid, @Param("branch") ManorFlowerBranch branch);
+
+}

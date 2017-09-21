@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 折扣服务模块 -->
+<mapper namespace="com.xmniao.dao.coupon.CouponDao">
+
+  <resultMap id="CouponRelationMap" type="com.xmniao.domain.coupon.CouponRelation" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="bid" property="bid" jdbcType="BIGINT" />
+    <result column="cserial" property="cserial" jdbcType="VARCHAR" />
+    <result column="cdenom" property="cdenom" jdbcType="DECIMAL" />
+    <result column="cuser" property="cuser" jdbcType="DECIMAL" />
+    <result column="ctype" property="ctype" jdbcType="TINYINT" />
+    <result column="cdid" property="cdid" jdbcType="INTEGER" />
+    <result column="serial" property="serial" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="CouponRelation_Column_List" >
+    id, bid, cserial, cdenom, cuser, ctype, cdid, serial
+  </sql>
+  
+  
+	<select id="getCouponList" parameterType="map" resultType="map">
+		SELECT cid,cname,denomination,validity_desc validityDesc,start_date startDate,end_date endDate,`condition`,
+				use_num useNum,pic,breviary,showall,is_all_seller isAllSeller,day_num dayNum,rule,ctype
+		FROM t_coupon
+		WHERE 1=1
+		<if test="cid != null">AND cid =#{cid}</if>
+		<if test="denomination != null">AND denomination =#{denomination}</if>
+		<if test="ctype != null">AND ctype =#{ctype}</if>
+	</select>
+	
+	<select id="getCouponIssue" resultType="map">
+		SELECT issue.issue_id issueId, issue.activity_type activityType,issue.activity_name activityName,issue.status,issue.message,issue.date_created dateCreated 
+		FROM t_coupon_issue_ref  ref 
+		LEFT JOIN t_coupon_issue issue 
+		ON ref.issue_id=issue.issue_id 
+		WHERE cid=#{cid} AND status>0
+	</select>
+	
+	<insert id="insertCouponDetail">
+		insert into t_coupon_detail (
+		cid,serial,denomination,get_way,start_date,end_date,get_time,uid,phone,user_status,issue_id,date_issue,send_status,get_status,ctype,order_no
+		)values (
+		#{cid},#{serial},#{denomination},#{getWay},#{startDate},#{endDate},#{getTime},#{uid},#{phone},#{userStatus},#{issueId},#{dateIssue},#{sendStatus},#{getStatus},#{ctype},#{orderNo}
+		)
+	</insert>
+	
+	<select id="getCouponDetailList" parameterType="map" resultType="map">
+		select cid,serial,denomination,get_way,start_date,end_date,get_time,uid,phone,user_status,issue_id,date_issue,send_status,get_status
+		from t_coupon_detail where 1=1
+		<if test="uid != null and uid !=0">AND uid=#{uid}</if>
+		<if test="cid != null">AND cid=#{cid}</if>
+		<if test="ctype != null">AND ctype=#{ctype}</if>
+	</select>
+	
+	<select id="getCouponRelation" resultMap="CouponRelationMap" >
+		select 
+			<include refid="CouponRelation_Column_List"/>
+		from t_coupon_relation
+		where bid=#{bid}
+	</select>
+	
+	<select id="getCouponDetail" resultType="com.xmniao.domain.coupon.CouponDetail">
+		select 
+			cdid,user_status userStatus,order_no orderNo,denomination,anchor_cid anchorCid
+		from t_coupon_detail
+		where cdid=#{cdid}
+	</select>
+	
+	<update id="updateCouponDetail" >
+		update t_coupon_detail
+		set
+			user_status=#{userStatus},
+			lock_time=#{lockTime},
+			user_time=#{userTime}
+		where cdid=#{cdid}
+	</update>
+	
+	<select id="getCouponAnchorRef" resultType="map">
+		SELECT uid,use_coupon_ration,sale_coupon_ration
+		FROM t_fans_coupon_anchor_ref
+		WHERE anchor_cid = #{0}
+	</select>
+	
+   <resultMap id="CouponMap" type="com.xmniao.domain.coupon.Coupon" >
+    <id column="cid" property="cid" jdbcType="INTEGER" />
+    <result column="cname" property="cname" jdbcType="VARCHAR" />
+    <result column="denomination" property="denomination" jdbcType="DECIMAL" />
+    <result column="validity_desc" property="validityDesc" jdbcType="VARCHAR" />
+    <result column="start_date" property="startDate" jdbcType="TIMESTAMP" />
+    <result column="end_date" property="endDate" jdbcType="TIMESTAMP" />
+    <result column="condition" property="condition" jdbcType="DECIMAL" />
+    <result column="use_num" property="useNum" jdbcType="INTEGER" />
+    <result column="pic" property="pic" jdbcType="VARCHAR" />
+    <result column="breviary" property="breviary" jdbcType="VARCHAR" />
+    <result column="showall" property="showall" jdbcType="TINYINT" />
+    <result column="is_all_seller" property="isAllSeller" jdbcType="INTEGER" />
+    <result column="day_num" property="dayNum" jdbcType="INTEGER" />
+    <result column="ctype" property="ctype" jdbcType="INTEGER" />
+    <result column="invalid_today" property="invalidToday" jdbcType="INTEGER" />
+    <result column="default_max_num" property="defaultMaxNum" jdbcType="INTEGER" />
+    <result column="sales_num" property="salesNum" jdbcType="INTEGER" />
+    <result column="introduce" property="introduce" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="original_price" property="originalPrice" jdbcType="DECIMAL" />
+    <result column="is_recom" property="isRecom" jdbcType="INTEGER" />
+    <result column="stock" property="stock" jdbcType="INTEGER" />
+    <result column="sellerid" property="sellerid" jdbcType="INTEGER" />
+    <result column="sale_start_time" property="saleStartTime" jdbcType="TIMESTAMP" />
+    <result column="sale_end_time" property="saleEndTime" jdbcType="TIMESTAMP" />
+    <result column="forbid_start_time" property="forbidStartTime" jdbcType="TIMESTAMP" />
+    <result column="forbid_end_time" property="forbidEndTime" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="overlay" property="overlay" jdbcType="INTEGER" />
+    <result column="rule" property="rule" jdbcType="LONGVARCHAR" />
+    <result column="fans_description" property="fansDescription" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Coupon_Column_List" >
+    cid, cname, denomination, validity_desc, start_date, end_date, `condition`, use_num, 
+    pic, breviary, showall, is_all_seller, day_num, ctype, invalid_today, default_max_num, 
+    sales_num, introduce, update_time, original_price, is_recom, stock, sellerid, sale_start_time, 
+    sale_end_time, forbid_start_time, forbid_end_time, status, overlay,rule, fans_description
+  </sql>
+  
+    <select id="getCoupon" resultMap="CouponMap" parameterType="com.xmniao.domain.coupon.Coupon" >
+	    select 
+	    <include refid="Coupon_Column_List" />
+	    from t_coupon
+	    where cid = #{cid,jdbcType=INTEGER}
+    </select>
+  
+  
+  <insert id="insertCouponDetailList">
+  		insert into t_coupon_detail (
+			cid,serial,denomination,get_way,start_date,end_date,get_time,
+			uid,phone,user_status,issue_id,date_issue,send_status,get_status,ctype,order_no,source_uid
+		)values 
+		<foreach collection="list" item="item" index="index" separator=",">
+		(
+			#{item.cid},#{item.serial},#{item.denomination},#{item.getWay},#{item.startDate},#{item.endDate},#{item.getTime},
+			#{item.uid},#{item.phone},#{item.userStatus},#{item.issueId},#{item.dateIssue},#{item.sendStatus},#{item.getStatus},
+			#{item.ctype},#{item.orderNo},#{item.sourceUid}
+		)
+		</foreach>
+  </insert>
+</mapper>

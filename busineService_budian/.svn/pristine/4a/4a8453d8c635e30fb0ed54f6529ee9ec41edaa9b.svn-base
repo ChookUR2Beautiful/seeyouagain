@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 	
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-3.2.xsd 
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-3.2.xsd 
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+	
+	<!-- JMS消息服务器地址 -->
+	<bean id="namesrvAddr" class="java.lang.String">
+	 <constructor-arg value="192.168.50.123:9876"/>
+	</bean>
+	
+	<!-- 活动生产者发送消息的主题 -->
+	<bean id="msgtopic" class="java.lang.String">
+		<constructor-arg value="topic_activity_libb" />
+	</bean>
+	
+	<!-- 分账消费者主题 -->
+	<bean id="ledgerTopic" class="java.lang.String">
+	 <constructor-arg value="topic_withdraw_192_168_20_221"/>
+	</bean>
+	
+	<!-- 发送支付的分账主题 -->
+	<bean id="ledgerPayTopic" class="java.lang.String">
+	 <constructor-arg value="topic_withdraw_192_168_50_109"/>
+	</bean>
+	
+	<!-- 打赏活动发送消息的标签Tags -->
+	<bean id="tiptags" class="java.lang.String">
+		<constructor-arg value="tip_libb" />
+	</bean>
+	
+	<!-- 分账消费者标签Tags -->
+	<bean id="ledgerTags" class="java.lang.String">
+	 <constructor-arg value="divide_busine"/>
+	</bean>
+	
+	<!-- 分账消费者标签Tags -->
+	<bean id="mallPackageTags" class="java.lang.String">
+	 <constructor-arg value="package_ledger_push"/>
+	</bean>
+	
+	<!-- SaaS订单服务消息主题 -->
+	<bean id="saasOrderTopic" class="java.lang.String">
+	 <constructor-arg value="topic_payorder"/>
+	</bean>
+	
+	<!-- SaaS订单服务消息标签 -->
+	<bean id="saasOrderTags" class="java.lang.String">
+	 <constructor-arg value="deposit_pay"/>
+	</bean>
+	
+	<!-- SaaS签约订单立即到账消息主题 -->
+	<bean id="saasLedgerTopic" class="java.lang.String">
+	 <constructor-arg value="topic_withdraw_172_16_130_198"/>
+	</bean>
+	
+	<!-- SaaS签约订单立即到账消息标签 -->
+	<bean id="saasLedgerTags" class="java.lang.String">
+	 <constructor-arg value="saas_ledger_prepush"/>
+	</bean>
+	
+	<!-- 直播分红分账立即到账消息主题 -->
+	<bean id="liveLedgerTopic" class="java.lang.String">
+	 <constructor-arg value="live_ledger_172_16_130_198"/>
+	</bean>
+	
+	<!-- 直播推荐分账消息标签 -->
+	<bean id="liveRecommendLedgerTags" class="java.lang.String">
+	 <constructor-arg value="live_recommend_ledger"/>
+	</bean>
+	
+	<!-- 直播分红分账消息标签 -->
+	<bean id="liveDividendsLedgerTags" class="java.lang.String">
+	 <constructor-arg value="live_dividends_ledger"/>
+	</bean>
+		
+	<!-- 直播分红分账消息标签v2版本 -->
+	<bean id="liveDividendsLedgerTagsV2" class="java.lang.String">
+	 <constructor-arg value="live_dividends_ledger_v2"/>
+	</bean>
+	<!-- 直播分红分账消息标签v3版本 -->
+	<bean id="liveDividendsLedgerTagsV3" class="java.lang.String">
+	 <constructor-arg value="live_dividends_ledger_v3"/>
+	</bean>
+	<!-- 直播分红分账回调消息主题 -->
+	<bean id="liveLedgerReturnbackTopic" class="java.lang.String">
+	 <constructor-arg value="live_ledger_returnback_172_16_130_196"/>
+	</bean>
+	
+	<!-- 直播推荐分账回调消息标签 -->
+	<bean id="liveRecommendLedgerReturnbackTags" class="java.lang.String">
+	 <constructor-arg value="live_recommend_ledger_returnback"/>
+	</bean>
+	
+	<!-- 直播分红分账回调消息标签 -->
+	<bean id="liveDividendsLedgerReturnbackTags" class="java.lang.String">
+	 <constructor-arg value="live_dividends_ledger_returnback"/>
+	</bean>
+	
+	<!-- 直播分红分账回调消息标签 -->
+	<bean id="liveDividendsLedgerV2ReturnbackTags" class="java.lang.String">
+	 <constructor-arg value="live_dividends_ledger_v2_returnback"/>
+	</bean>
+	
+	<!-- 直播分红分账回调消息标签 -->
+	<bean id="liveDividendsLedgerV3ReturnbackTags" class="java.lang.String">
+	 <constructor-arg value="live_dividends_ledger_v3_returnback"/>
+	</bean>
+	
+	<!-- 积分商城未支付订单主题 -->
+	<bean id="freshOrderTopic" class="java.lang.String">
+		<constructor-arg value="fresh_order_noPayment"/>
+	</bean>
+	
+	<!-- 积分商城未支付订单主题 -->
+	<bean id="freshOrderTags" class="java.lang.String">
+		<constructor-arg value="fresh_order_noPayment"/>
+	</bean>
+	
+	<!-- 直播礼物打赏鸟蛋分账消息主题 -->
+	<bean id="liveRewardLedgerTopic" class="java.lang.String">
+	 <constructor-arg value="live_ledger_"/>
+	</bean>
+	
+	<!-- 直播礼物打赏鸟蛋分账消息标签 -->
+	<bean id="liveRewardLedgerTag" class="java.lang.String">
+	 <constructor-arg value="live_gift_ledger"/>
+	</bean>
+	
+	<!-- 黄金庄园主题 -->
+	<bean id="manorBusineTopic" class="java.lang.String">
+	 <constructor-arg value="manor_busine_topic_dev"/>
+	</bean>
+	
+	<!-- 累计能量标签 -->
+	<bean id="manorEnergyTag" class="java.lang.String">
+	 <constructor-arg value="manor_energy_tag"/>
+	</bean>
+
+	<!--种花标签-->
+	<bean id="manorPlantTag" class="java.lang.String">
+		<constructor-arg value="manor_plant_tag_dev"/>
+	</bean>
+    <bean id="manorInsertInitNodeTag" class="java.lang.String">
+		<constructor-arg value="manor_insert_init_node_tag_dev"/>
+	</bean>
+    <bean id="manorUpdateFlowerTypeTag" class="java.lang.String">
+		<constructor-arg value="manor_update_flower_type_tag_dev"/>
+	</bean>
+	<bean id="manorMigrateChainTag" class="java.lang.String">
+		<constructor-arg value="manor_migrate_chain_tag_dev"/>
+	</bean>
+
+	<!-- 更新manorInfo location -->
+	<bean id="manorUpdateLocationForManorInfoTag" class="java.lang.String">
+		<constructor-arg value="manor_update_location_for_manor_info_tag_dev"/>
+	</bean>
+
+
+	<!-- 收获花蜜标签 -->
+	<bean id="manorNectarTag" class="java.lang.String">
+	 <constructor-arg value="manor_nectar_tag"/>
+	</bean>
+	
+	<!-- 支付 黄金庄园主题 -->
+	<bean id="manorPayTopic" class="java.lang.String">
+	 <constructor-arg value="manor_pay_topic_172_16_130_198"/>
+	</bean>
+	
+	<!-- 支付 黄金庄园收益花蜜回调标签 -->
+	<bean id="manorNectarReturnbackTag" class="java.lang.String">
+	 <constructor-arg value="manor_nectar_returnback_tag"/>
+	</bean>
+	<!-- 支付 黄金庄园领取赠送花蜜回调标签 -->
+	<bean id="manorGiftNectarReturnbackTag" class="java.lang.String">
+		<constructor-arg value="manor_gift_nectar_returnback_tag"/>
+	</bean>
+	
+	<!-- 活动生产者消息服务连接配置 -->
+	<bean id="producerConnection" class="com.alibaba.rocketmq.client.producer.DefaultMQProducer"
+		init-method="start" destroy-method="shutdown">
+		<!-- JMS生产者组的名字 -->
+		<property name="producerGroup" value="ProducerGroup_libb"></property>
+		<!-- JMS生产者发送消息地址 -->
+		<property name="namesrvAddr" ref="namesrvAddr"></property>
+		<!-- JMS生产者实例名字 -->
+		<property name="instanceName" value="Producer_libb"></property>
+	</bean>
+
+	<!-- 分账消费者消费消息连接配置 -->
+	<bean id="ledgerConsumConnection" class="com.alibaba.rocketmq.client.consumer.DefaultMQPushConsumer">
+		<!-- 消费者消费组 -->
+		<property name="consumerGroup" value="ConsumerWithdraw_192_168_30_240" />
+		<!-- 消费者消费消息地址 -->
+		<property name="namesrvAddr" ref="namesrvAddr" />
+		<!-- 消费者消费消息实例名字 -->
+		<property name="instanceName" value="consumerInstance_192_168_30_240" />
+		<!--设置消费者第一次启动是从队列头部开始消费还是队列尾部开始消费 -->
+		<property name="consumeFromWhere" value="CONSUME_FROM_FIRST_OFFSET" />
+		<!-- 设置消费者最大线程数 -->
+		<property name="consumeThreadMax" value="1" />
+		<!-- 设置消费者最小线程数 -->
+		<property name="consumeThreadMin" value="1" />
+	</bean>
+</beans>

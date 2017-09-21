@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xmniao.dao.common.ImageTempDao">
+	
+	<select id="getImageList" resultType="com.xmniao.domain.common.ImageTempEntity">
+		select id,url,create_time createTime 
+		from t_image_temp 
+		order by id limit 500
+	</select>	
+	
+	<delete id="removeImage">
+		delete from t_image_temp 
+ 		<where>
+ 			id in
+ 			<foreach collection="list"  open="(" close=")" item="item" separator=",">
+  				#{item}
+  			</foreach>
+ 		</where>
+	</delete>	
+
+</mapper>
